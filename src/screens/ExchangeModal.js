@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDebounce } from 'use-debounce/lib';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -57,6 +58,7 @@ import {
   useSwapDerivedOutputs,
   useSwapInputHandlers,
   useSwapInputRefs,
+  useSwapIsSufficientBalance,
   useSwapSettings,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
@@ -297,6 +299,7 @@ export default function ExchangeModal({
   } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
+  const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
   const {
     isHighPriceImpact,
@@ -312,7 +315,7 @@ export default function ExchangeModal({
     currentNetwork,
     loading
   );
-
+  const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 500);
   const swapSupportsFlashbots = currentNetwork === Network.mainnet;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
@@ -519,7 +522,7 @@ export default function ExchangeModal({
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
-        isHighPriceImpact,
+        isHighPriceImpact: debouncedIsHighPriceImpact,
         liquiditySources: tradeDetails?.protocols || [],
         network: currentNetwork,
         outputTokenAddress: outputCurrency?.address || '',
@@ -577,7 +580,7 @@ export default function ExchangeModal({
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
-        isHighPriceImpact,
+        isHighPriceImpact: debouncedIsHighPriceImpact,
         liquiditySources: tradeDetails?.protocols || [],
         network: currentNetwork,
         outputTokenAddress: outputCurrency?.address || '',
@@ -600,6 +603,7 @@ export default function ExchangeModal({
   }, [
     chainId,
     currentNetwork,
+    debouncedIsHighPriceImpact,
     flashbots,
     genericAssets,
     getNextNonce,
@@ -607,7 +611,6 @@ export default function ExchangeModal({
     inputCurrency?.address,
     inputCurrency?.name,
     inputCurrency?.symbol,
-    isHighPriceImpact,
     nativeAmount,
     nativeCurrency,
     navigate,
@@ -633,7 +636,8 @@ export default function ExchangeModal({
       inputAmount,
       insufficientLiquidity,
       isAuthorizing,
-      isHighPriceImpact,
+      isHighPriceImpact: debouncedIsHighPriceImpact,
+      isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
       tradeDetails,
@@ -645,11 +649,12 @@ export default function ExchangeModal({
       handleSubmit,
       inputAmount,
       isAuthorizing,
-      isHighPriceImpact,
+      debouncedIsHighPriceImpact,
       testID,
       tradeDetails,
       type,
       insufficientLiquidity,
+      isSufficientBalance,
     ]
   );
 
@@ -744,6 +749,7 @@ export default function ExchangeModal({
   const handleTapWhileDisabled = useCallback(() => {
     lastFocusedInputHandle?.current?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
+      inputToken: inputCurrency?.symbol,
       network: currentNetwork,
       onClose: () => {
         InteractionManager.runAfterInteractions(() => {
@@ -752,9 +758,16 @@ export default function ExchangeModal({
           }, 250);
         });
       },
+      outputToken: outputCurrency?.symbol,
       type: 'output_disabled',
     });
-  }, [currentNetwork, lastFocusedInputHandle, navigate]);
+  }, [
+    currentNetwork,
+    inputCurrency?.symbol,
+    lastFocusedInputHandle,
+    navigate,
+    outputCurrency?.symbol,
+  ]);
 
   const showConfirmButton = isSavings
     ? !!inputCurrency
@@ -823,7 +836,7 @@ export default function ExchangeModal({
             <DepositInfo
               amount={(inputAmount > 0 && outputAmount) || null}
               asset={outputCurrency}
-              isHighPriceImpact={isHighPriceImpact}
+              isHighPriceImpact={debouncedIsHighPriceImpact}
               onPress={navigateToSwapDetailsModal}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
@@ -833,7 +846,12 @@ export default function ExchangeModal({
           )}
           {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
-              isHighPriceImpact={isHighPriceImpact}
+              isHighPriceImpact={
+                !confirmButtonProps.disabled &&
+                !confirmButtonProps.loading &&
+                debouncedIsHighPriceImpact &&
+                isSufficientBalance
+              }
               onFlipCurrencies={loading ? NOOP : flipCurrencies}
               onPressImpactWarning={navigateToSwapDetailsModal}
               onPressSettings={navigateToSwapSettingsSheet}

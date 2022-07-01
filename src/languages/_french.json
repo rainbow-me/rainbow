@@ -205,6 +205,7 @@
       },
       "connect": "Connect :)",
       "connect_walletconnect": "Utiliser WalletConnect",
+      "continue": "Continue :)",
       "delete": "Effacer",
       "donate": "Donner de l’ETH",
       "done": "Terminé",
@@ -215,6 +216,7 @@
       "exchange_again": "Échanger encore",
       "exchange_search_placeholder": "Cherche",
       "go_back": "Retourner",
+      "go_back_undercase": "Go back :)",
       "got_it": "Got it :)",
       "hide": "Cacher",
       "hold_to_authorize": {
@@ -366,11 +368,6 @@
       "route_picker": "Route Swaps via :)",
       "use_flashbots": "Use Flashbots :)",
       "swapping_for_prefix": "Swapping for :)",
-      "unverified_token": {
-        "go_back": "Go Back :)",
-        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens! :)",
-        "unverified_token_title": "Unverified Token :)"
-      },
       "view_details": "View Details :)"
     },
     "expanded_state": {
@@ -531,8 +528,9 @@
     },
     "explain": {
       "output_disabled": {
-        "text": "Currently specifying an output amount isn't supported on %{network}.\n Enter an input amount instead. :)",
-        "title": "Output Amount Disabled :)"
+        "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
+        "title": "Enter %{inputToken} Instead :)",
+        "title_empty": "Choose a Token :)"
       },
       "available_networks": {
         "text": "%{tokenSymbol} is also available on %{networks}. To get %{tokenSymbol} on these networks, use a Bridge like Hop. :)",
@@ -590,6 +588,19 @@
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust. :)",
         "title": "Verified Tokens :)"
+      },
+      "unverified": {
+        "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
+        "fragment2": "token contract :)",
+        "fragment3": " and always do research to ensure that you interact with tokens you trust. :)",
+        "title": "%{symbol} is Unverified :)",
+        "go_back": "Go back :)"
+      },
+      "obtain_l2_asset": {
+        "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. \n\n Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? :)",
+        "fragment2": "Read more :)",
+        "fragment3": " about bridges. :)",
+        "title": "No Tokens on %{networkName} :)"
       }
     },
     "fields": {

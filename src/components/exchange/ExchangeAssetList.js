@@ -1,5 +1,4 @@
 import { useIsFocused } from '@react-navigation/native';
-import lang from 'i18n-js';
 import React, {
   forwardRef,
   Fragment,
@@ -8,7 +7,7 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
-import { Alert, Keyboard, SectionList } from 'react-native';
+import { InteractionManager, Keyboard, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
@@ -143,22 +142,20 @@ const ExchangeAssetList = (
 
   const handleUnverifiedTokenPress = useCallback(
     item => {
-      Alert.alert(
-        lang.t('exchange.unverified_token.unverified_token_title'),
-        lang.t('exchange.unverified_token.token_not_verified'),
-        [
-          {
-            onPress: () => itemProps.onPress(item),
-            text: lang.t('button.proceed_anyway'),
-          },
-          {
-            style: 'cancel',
-            text: lang.t('exchange.unverified_token.go_back'),
-          },
-        ]
-      );
+      android && Keyboard.dismiss();
+      navigate(Routes.EXPLAIN_SHEET, {
+        asset: item,
+        onClose: () => {
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(() => {
+              itemProps.onPress(item);
+            }, 250);
+          });
+        },
+        type: 'unverified',
+      });
     },
-    [itemProps]
+    [itemProps, navigate]
   );
 
   const openVerifiedExplainer = useCallback(() => {

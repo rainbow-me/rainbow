@@ -278,7 +278,7 @@ export default function CurrencySelectModal() {
           android && Keyboard.dismiss();
           InteractionManager.runAfterInteractions(() => {
             navigate(Routes.EXPLAIN_SHEET, {
-              assetName: item?.name,
+              assetName: item?.symbol,
               network: ethereumUtils.getNetworkFromChainId(currentChainId),
               networkName: currentL2Name,
               onClose: linkToHop,
