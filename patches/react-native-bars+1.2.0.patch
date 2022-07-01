@@ -1,0 +1,18 @@
+diff --git a/node_modules/react-native-bars/dist/commonjs/module.js b/node_modules/react-native-bars/dist/commonjs/module.js
+index 643e622..c35e7ea 100644
+--- a/node_modules/react-native-bars/dist/commonjs/module.js
++++ b/node_modules/react-native-bars/dist/commonjs/module.js
+@@ -5,8 +5,9 @@ Object.defineProperty(exports, "__esModule", {
+ });
+ exports.NativeModule = void 0;
+ 
+-var _reactNative = require("react-native");
++var { NativeModules } = require("react-native");
+ 
+-const NativeModule = _reactNative.NativeModules.RNBars;
+-exports.NativeModule = NativeModule;
++const { RNBars } = NativeModules;
++
++exports.NativeModule = RNBars;
+ //# sourceMappingURL=module.js.map
+\ No newline at end of file
