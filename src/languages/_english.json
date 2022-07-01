@@ -530,7 +530,8 @@
     "explain": {
       "output_disabled": {
         "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
-        "title": "Enter %{inputToken} Instead"
+        "title": "Enter %{inputToken} Instead",
+        "title_empty": "Choose a Token"
       },
       "available_networks": {
         "text": "%{tokenSymbol} is available on %{networks}. To move %{tokenSymbol} between networks, use a Bridge like Hop.",
@@ -595,7 +596,7 @@
         "fragment2": "token contract",
         "fragment3": " and always do research to ensure that you interact with tokens you trust.",
         "title": "%{symbol} is Unverified",
-         "go_back": "Go back"
+        "go_back": "Go back"
       },
       "obtain_l2_asset": {
         "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. \n\n Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? ",
