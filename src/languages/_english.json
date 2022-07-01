@@ -589,9 +589,9 @@
         "title": "Verified Tokens"
       },
       "unverified": {
-        "fragment1": "Rainbow surfaces as many tokens as possible to serve all users, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please check the ",
+        "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the ",
         "fragment2": "token contract",
-        "fragment3": " and always do your own research to ensure that you are interacting with a token you trust.",
+        "fragment3": " and always do research to ensure that you interact with tokens you trust.",
         "title": "%{symbol} is Unverified",
          "go_back": "Go back"
       },
