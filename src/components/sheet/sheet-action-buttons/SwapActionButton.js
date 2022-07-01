@@ -36,7 +36,7 @@ function SwapActionButton({
   const navigate = useExpandedStateNavigation(inputType);
   const goToSwap = useCallback(() => {
     navigate(Routes.EXCHANGE_MODAL, params => {
-      if (asset) {
+      if (params.outputAsset) {
         return {
           params: {
             chainId: ethereumUtils.getChainIdFromType(asset.type),
@@ -50,7 +50,7 @@ function SwapActionButton({
             },
             showCoinIcon: true,
             title: lang.t('swap.modal_types.get_symbol_with', {
-              symbol: params.outputAsset.symbol,
+              symbol: params?.outputAsset?.symbol,
             }),
             type: CurrencySelectionTypes.input,
           },
