@@ -285,18 +285,25 @@ const useSwapCurrencyList = (
       const importedAsset = importedAssets?.[0];
       let verifiedAssetsWithImport = verifiedAssets;
       let highLiquidityAssetsWithImport = highLiquidityAssets;
+      let lowLiquidityAssetsWithoutImport = lowLiquidityAssets;
       const verifiedAddresses = verifiedAssets.map(({ address }) =>
         address.toLowerCase()
       );
       const highLiquidityAddresses = verifiedAssets.map(({ address }) =>
         address.toLowerCase()
       );
+      // this conditional prevents the imported token from jumping
+      // sections if verified/highliquidity search responds later
+      // than the contract checker in getImportedAsset
       if (importedAsset && !isFavorite(importedAsset?.address)) {
+        lowLiquidityAssetsWithoutImport = lowLiquidityAssets.filter(
+          ({ address }) => address.toLowerCase() !== importedAsset?.address
+        );
         if (
           importedAsset?.isVerified &&
           !verifiedAddresses.includes(importedAsset?.address.toLowerCase())
         ) {
-          verifiedAssetsWithImport = [...verifiedAssets, importedAsset];
+          verifiedAssetsWithImport = [importedAsset, ...verifiedAssets];
         } else {
           if (
             highLiquidityAddresses.includes(
@@ -304,8 +311,8 @@ const useSwapCurrencyList = (
             )
           ) {
             highLiquidityAssetsWithImport = [
-              ...highLiquidityAssets,
               importedAsset,
+              ...highLiquidityAssets,
             ];
           }
         }
@@ -335,7 +342,7 @@ const useSwapCurrencyList = (
       }
       if (lowLiquidityAssets?.length) {
         list.push({
-          data: lowLiquidityAssets,
+          data: lowLiquidityAssetsWithoutImport,
           key: 'lowLiqudiity',
           title: tokenSectionTypes.lowLiquidityTokenSection,
         });
