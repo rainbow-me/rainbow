@@ -6,6 +6,7 @@ import { Text } from '../text';
 import { GasSpeedEmoji } from '.';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
