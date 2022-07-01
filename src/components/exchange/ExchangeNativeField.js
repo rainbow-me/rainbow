@@ -4,7 +4,7 @@ import { useDebounce } from 'use-debounce';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { useColorForAsset } from '@rainbow-me/hooks';
+import { useColorForAsset, useTimeout } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { fonts } from '@rainbow-me/styles';
@@ -42,6 +42,8 @@ const ExchangeNativeField = (
   const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState(nativeAmount);
   const [debouncedValue] = useDebounce(value, 300);
+  const [startTimeout, stopTimeout] = useTimeout();
+  const [editing, setEditing] = useState(false);
 
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
     nativeCurrency
@@ -76,6 +78,12 @@ const ExchangeNativeField = (
     return colors.alpha(color, opacity);
   }, [colors, isFocused, nativeAmount]);
 
+  useEffect(() => {
+    setEditing(true);
+    startTimeout(() => setEditing(false), 1000);
+    return () => stopTimeout();
+  }, [value, startTimeout, stopTimeout]);
+
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
       <Row align="center" flex={1} height={height}>
@@ -94,7 +102,7 @@ const ExchangeNativeField = (
           ref={ref}
           selectionColor={colorForAsset}
           testID={testID}
-          value={isFocused ? value : nativeAmount}
+          value={editing ? value : nativeAmount}
         />
       </Row>
     </TouchableWithoutFeedback>
