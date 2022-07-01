@@ -709,9 +709,12 @@ export default function ExchangeModal({
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
-        name: outputCurrency?.name ?? '',
-        symbol: outputCurrency?.symbol ?? '',
-        tokenAddress: outputCurrency?.address ?? '',
+        inputTokenAddress: defaultInputAsset?.address || '',
+        inputTokenName: defaultInputAsset?.name || '',
+        inputTokenSymbol: defaultInputAsset?.symbol || '',
+        outputTokenAddress: outputCurrency?.address || '',
+        outputTokenName: outputCurrency?.name || '',
+        outputTokenSymbol: outputCurrency?.symbol || '',
         type,
       });
     };
@@ -721,6 +724,9 @@ export default function ExchangeModal({
   }, [
     confirmButtonProps,
     currentNetwork,
+    defaultInputAsset?.address,
+    defaultInputAsset?.name,
+    defaultInputAsset?.symbol,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,
