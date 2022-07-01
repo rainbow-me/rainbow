@@ -57,6 +57,7 @@ import {
   useSwapDerivedOutputs,
   useSwapInputHandlers,
   useSwapInputRefs,
+  useSwapSettings,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -122,6 +123,7 @@ export default function ExchangeModal({
 }) {
   const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
+  const { slippageInBips } = useSwapSettings();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute();
@@ -512,14 +514,20 @@ export default function ExchangeModal({
       logger.log('error getting the swap amount in USD price', e);
     } finally {
       analytics.track(`Submitted ${type}`, {
+        aggregator: tradeDetails?.source || '',
         amountInUSD,
-        defaultInputAsset: defaultInputAsset?.symbol ?? '',
+        inputTokenAddress: defaultInputAsset?.address || '',
+        inputTokenName: defaultInputAsset?.name || '',
+        inputTokenSymbol: defaultInputAsset?.symbol || '',
         isHighPriceImpact,
-        name: outputCurrency?.name ?? '',
+        liquiditySources: tradeDetails?.protocols || [],
+        outputTokenAddress: outputCurrency?.address || '',
+        outputTokenName: outputCurrency?.name || '',
+        outputTokenSymbol: outputCurrency?.symbol || '',
         priceImpact: priceImpactPercentDisplay,
-        symbol: outputCurrency?.symbol || '',
-        tokenAddress: outputCurrency?.address || '',
+        slippageInBips,
         type,
+        walletAddress: tradeDetails?.from || '',
       });
     }
 
@@ -563,10 +571,20 @@ export default function ExchangeModal({
       await executeRap(wallet, rapType, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
+        aggregator: tradeDetails?.source || '',
         amountInUSD,
-        input: defaultInputAsset?.symbol || '',
-        output: outputCurrency?.symbol || '',
+        inputTokenAddress: defaultInputAsset?.address || '',
+        inputTokenName: defaultInputAsset?.name || '',
+        inputTokenSymbol: defaultInputAsset?.symbol || '',
+        isHighPriceImpact,
+        liquiditySources: tradeDetails?.protocols || [],
+        outputTokenAddress: outputCurrency?.address || '',
+        outputTokenName: outputCurrency?.name || '',
+        outputTokenSymbol: outputCurrency?.symbol || '',
+        priceImpact: priceImpactPercentDisplay,
+        slippageInBips,
         type,
+        walletAddress: tradeDetails?.from || '',
       });
       // Tell iOS we finished running a rap (for tracking purposes)
       NotificationManager &&
@@ -593,6 +611,9 @@ export default function ExchangeModal({
     outputCurrency?.address,
     outputCurrency?.name,
     outputCurrency?.symbol,
+    defaultInputAsset?.name,
+    slippageInBips,
+    defaultInputAsset?.address,
     outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
