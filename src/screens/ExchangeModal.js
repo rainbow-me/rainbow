@@ -300,7 +300,7 @@ export default function ExchangeModal({
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
   const {
-    isHighPriceImpact: useIsHighPriceImpact,
+    isHighPriceImpact,
     outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
@@ -313,7 +313,7 @@ export default function ExchangeModal({
     currentNetwork,
     loading
   );
-  const [isHighPriceImpact] = useDebounce(useIsHighPriceImpact, 500);
+  const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 500);
   const swapSupportsFlashbots = currentNetwork === Network.mainnet;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
@@ -517,7 +517,7 @@ export default function ExchangeModal({
       analytics.track(`Submitted ${type}`, {
         amountInUSD,
         defaultInputAsset: defaultInputAsset?.symbol ?? '',
-        isHighPriceImpact,
+        isHighPriceImpact: debouncedIsHighPriceImpact,
         name: outputCurrency?.name ?? '',
         priceImpact: priceImpactPercentDisplay,
         symbol: outputCurrency?.symbol || '',
@@ -588,7 +588,7 @@ export default function ExchangeModal({
     getNextNonce,
     inputAmount,
     inputCurrency?.address,
-    isHighPriceImpact,
+    debouncedIsHighPriceImpact,
     nativeAmount,
     nativeCurrency,
     navigate,
@@ -613,7 +613,7 @@ export default function ExchangeModal({
       inputAmount,
       insufficientLiquidity,
       isAuthorizing,
-      isHighPriceImpact,
+      isHighPriceImpact: debouncedIsHighPriceImpact,
       isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
@@ -626,7 +626,7 @@ export default function ExchangeModal({
       handleSubmit,
       inputAmount,
       isAuthorizing,
-      isHighPriceImpact,
+      debouncedIsHighPriceImpact,
       testID,
       tradeDetails,
       type,
@@ -799,7 +799,7 @@ export default function ExchangeModal({
             <DepositInfo
               amount={(inputAmount > 0 && outputAmount) || null}
               asset={outputCurrency}
-              isHighPriceImpact={isHighPriceImpact}
+              isHighPriceImpact={debouncedIsHighPriceImpact}
               onPress={navigateToSwapDetailsModal}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
@@ -812,7 +812,7 @@ export default function ExchangeModal({
               isHighPriceImpact={
                 !confirmButtonProps.disabled &&
                 !confirmButtonProps.loading &&
-                isHighPriceImpact &&
+                debouncedIsHighPriceImpact &&
                 isSufficientBalance
               }
               onFlipCurrencies={loading ? NOOP : flipCurrencies}
