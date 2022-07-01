@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { Alert } from 'react-native';
 import SheetActionButton from './SheetActionButton';
 import {
   CurrencySelectionTypes,
@@ -19,8 +18,6 @@ function SwapActionButton({
   color: givenColor,
   inputType,
   label,
-  requireVerification,
-  verified,
   weight = 'heavy',
   ...props
 }) {
@@ -39,7 +36,7 @@ function SwapActionButton({
   const navigate = useExpandedStateNavigation(inputType);
   const goToSwap = useCallback(() => {
     navigate(Routes.EXCHANGE_MODAL, params => {
-      if (params.outputAsset) {
+      if (asset) {
         return {
           params: {
             chainId: ethereumUtils.getChainIdFromType(asset.type),
@@ -49,6 +46,7 @@ function SwapActionButton({
             params: {
               ...params,
               ignoreInitialTypeCheck: true,
+              outputAsset: asset,
             },
             showCoinIcon: true,
             title: lang.t('swap.modal_types.get_symbol_with', {
@@ -77,33 +75,13 @@ function SwapActionButton({
       }
     });
   }, [asset, navigate, updateInputCurrency, updateOutputCurrency]);
-  const handlePress = useCallback(() => {
-    if (requireVerification && !verified) {
-      Alert.alert(
-        lang.t('exchange.unverified_token.unverified_token_title'),
-        lang.t('exchange.unverified_token.token_not_verified'),
-        [
-          {
-            onPress: goToSwap,
-            text: lang.t('button.proceed_anyway'),
-          },
-          {
-            style: 'cancel',
-            text: lang.t('exchange.unverified_token.go_back'),
-          },
-        ]
-      );
-    } else {
-      goToSwap();
-    }
-  }, [goToSwap, requireVerification, verified]);
 
   return (
     <SheetActionButton
       {...props}
       color={color}
       label={label || `􀖅 ${lang.t('button.swap')}`}
-      onPress={handlePress}
+      onPress={goToSwap}
       testID="swap"
       weight={weight}
     />
