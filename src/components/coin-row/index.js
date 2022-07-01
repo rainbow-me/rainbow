@@ -1,3 +1,4 @@
+export { default as BalanceCoinRow } from './BalanceCoinRow';
 export { default as BottomRowText } from './BottomRowText';
 export { default as CoinRow, CoinRowHeight } from './CoinRow';
 export { default as CoinRowAddButton } from './CoinRowAddButton';
