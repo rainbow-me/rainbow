@@ -131,7 +131,7 @@ export default function SwapSettingsState({ asset }) {
       testID="swap-settings-state"
     >
       <FloatingPanel radius={android ? 30 : 39} testID="swap-settings">
-        <ExchangeHeader />
+        <ExchangeHeader testID="swap-settings" />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="body" space="24px">
             <Text align="center" color="primary" size="18px" weight="bold">
