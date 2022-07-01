@@ -32,21 +32,19 @@ export default React.memo(function UniswapCoinRow({
         >
           <View style={sx.container}>
             <View style={sx.reverseRow}>
-              <View style={{ transform: [{ translateX: -20 }] }}>
+              <View style={{ transform: [{ translateX: -8 }] }}>
                 <FastCoinIcon
                   address={item.tokens[1].address.toLowerCase()}
                   symbol={item.tokens[1].symbol}
                   theme={item.theme}
                 />
               </View>
-
               <FastCoinIcon
                 address={item.tokens[0].address.toLowerCase()}
                 symbol={item.tokens[0].symbol}
                 theme={item.theme}
               />
             </View>
-
             <View style={sx.innerContainer}>
               <View style={sx.row}>
                 <Text
@@ -85,6 +83,7 @@ const sx = StyleSheet.create({
     marginTop: 12,
   },
   container: {
+    alignItems: 'center',
     flexDirection: 'row',
     marginLeft: 2,
     marginRight: 19,
@@ -104,7 +103,7 @@ const sx = StyleSheet.create({
   reverseRow: {
     flexDirection: 'row-reverse',
     justifyContent: 'flex-end',
-    width: 60,
+    width: 72,
   },
   rootContainer: {
     alignItems: 'center',
