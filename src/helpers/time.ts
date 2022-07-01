@@ -1,9 +1,7 @@
 import lang from 'i18n-js';
-import { findKey, isObjectLike, isString, omitBy, pick } from 'lodash';
+import { findKey, isObjectLike, isString, omitBy } from 'lodash';
 import parseMilliseconds from 'parse-ms';
 import { convertStringToNumber } from './utilities';
-
-const MinimalTimeUnitWhitelist = ['days', 'hours', 'minutes', 'seconds'];
 
 const buildLocalizedTimeUnitString = ({ plural, short, unit }: any) => {
   const length = short ? 'short' : 'long';
@@ -39,10 +37,8 @@ export const getMinimalTimeUnitStringForMs = (
       ? convertStringToNumber(value)
       : value;
 
-  const parsedMs = omitBy(
-    pick(parseMilliseconds(Number(ms)), MinimalTimeUnitWhitelist),
-    isZero
-  );
+  const { days, hours, minutes, seconds } = parseMilliseconds(Number(ms));
+  const parsedMs = omitBy({ days, hours, minutes, seconds }, isZero);
 
   const {
     unit: highestResolutionUnit,
