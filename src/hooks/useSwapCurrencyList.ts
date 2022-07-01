@@ -1,5 +1,5 @@
 import { isAddress } from '@ethersproject/address';
-import { ChainId } from '@rainbow-me/swaps';
+import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
 import { Contract, ethers } from 'ethers';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -19,7 +19,7 @@ import {
 import tokenSearch from '@rainbow-me/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
-import { erc20ABI } from '@rainbow-me/references';
+import { erc20ABI, rainbowTokenList } from '@rainbow-me/references';
 import { ethereumUtils, filterList, logger } from '@rainbow-me/utils';
 
 const MAINNET_CHAINID = 1;
@@ -76,18 +76,24 @@ const useSwapCurrencyList = (
 
   const [loading, setLoading] = useState(true);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
-  const [importedAssets, setimportedAssets] = useState<RT[]>([]);
+  const [importedAssets, setImportedAssets] = useState<RT[]>([]);
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
 
+  const isFavorite = useCallback(
+    (address: EthereumAddress) =>
+      favoriteAddresses
+        .map(a => a.toLowerCase())
+        .includes(address.toLowerCase()),
+    [favoriteAddresses]
+  );
   const handleSearchResponse = useCallback(
     (tokens: RT[]) => {
-      const addresses = favoriteAddresses.map(a => a.toLowerCase());
       // These transformations are necessary for L2 tokens to match our spec
       return tokens
         .map(token => {
-          token.address = token.networks[chainId].address;
+          token.address = token.networks?.[chainId]?.address || token.address;
           if (chainId !== MAINNET_CHAINID) {
             const network = ethereumUtils.getNetworkFromChainId(chainId);
             token.type = network;
@@ -98,9 +104,9 @@ const useSwapCurrencyList = (
           }
           return token;
         })
-        .filter(({ address }) => !addresses.includes(address));
+        .filter(({ address }) => !isFavorite(address));
     },
-    [chainId, favoriteAddresses]
+    [chainId, isFavorite]
   );
 
   const getCurated = useCallback(() => {
@@ -116,10 +122,15 @@ const useSwapCurrencyList = (
       : unfilteredFavorites;
   }, [chainId, searchQuery, searching, unfilteredFavorites]);
 
-  const getimportedAsset = useCallback(
+  const getImportedAsset = useCallback(
     async (searchQuery, chainId): Promise<RT[] | null> => {
       if (searching) {
         if (isAddress(searchQuery)) {
+          const tokenListEntry =
+            rainbowTokenList.RAINBOW_TOKEN_LIST[searchQuery.toLowerCase()];
+          if (tokenListEntry) {
+            return [tokenListEntry];
+          }
           const network = ethereumUtils.getNetworkFromChainId(chainId);
           const provider = await getProviderForNetwork(network);
           const tokenContract = new Contract(searchQuery, erc20ABI, provider);
@@ -193,18 +204,18 @@ const useSwapCurrencyList = (
           setFavoriteAssets((await getFavorites()) || []);
           break;
         case 'importedAssets': {
-          const importedAssetResult = await getimportedAsset(
+          const importedAssetResult = await getImportedAsset(
             searchQuery,
             chainId
           );
           if (importedAssetResult) {
-            setimportedAssets(handleSearchResponse(importedAssetResult));
+            setImportedAssets(handleSearchResponse(importedAssetResult));
           }
           break;
         }
       }
     },
-    [getFavorites, getimportedAsset, handleSearchResponse, searchQuery, chainId]
+    [getFavorites, getImportedAsset, handleSearchResponse, searchQuery, chainId]
   );
 
   const search = useCallback(async () => {
@@ -238,7 +249,7 @@ const useSwapCurrencyList = (
     setLowLiquidityAssets([]);
     setHighLiquidityAssets([]);
     setVerifiedAssets([]);
-    setimportedAssets([]);
+    setImportedAssets([]);
   }, [getResultsForAssetType]);
 
   const wasSearching = usePrevious(searching);
@@ -271,12 +282,33 @@ const useSwapCurrencyList = (
   const currencyList = useMemo(() => {
     const list = [];
     if (searching) {
-      if (importedAssets?.length) {
-        list.push({
-          data: importedAssets,
-          key: 'imported',
-          title: tokenSectionTypes.importedTokenSection,
-        });
+      const importedAsset = importedAssets?.[0];
+      let verifiedAssetsWithImport = verifiedAssets;
+      let highLiquidityAssetsWithImport = highLiquidityAssets;
+      const verifiedAddresses = verifiedAssets.map(({ address }) =>
+        address.toLowerCase()
+      );
+      const highLiquidityAddresses = verifiedAssets.map(({ address }) =>
+        address.toLowerCase()
+      );
+      if (importedAsset && !isFavorite(importedAsset?.address)) {
+        if (
+          importedAsset?.isVerified &&
+          !verifiedAddresses.includes(importedAsset?.address.toLowerCase())
+        ) {
+          verifiedAssetsWithImport = [...verifiedAssets, importedAsset];
+        } else {
+          if (
+            highLiquidityAddresses.includes(
+              importedAsset?.address.toLowerCase()
+            )
+          ) {
+            highLiquidityAssetsWithImport = [
+              ...highLiquidityAssets,
+              importedAsset,
+            ];
+          }
+        }
       }
       if (favoriteAssets?.length && chainId === MAINNET_CHAINID) {
         list.push({
@@ -288,7 +320,7 @@ const useSwapCurrencyList = (
       }
       if (verifiedAssets?.length) {
         list.push({
-          data: verifiedAssets,
+          data: verifiedAssetsWithImport,
           key: 'verified',
           title: tokenSectionTypes.verifiedTokenSection,
           useGradientText: IS_TESTING === 'true' ? false : true,
@@ -296,7 +328,7 @@ const useSwapCurrencyList = (
       }
       if (highLiquidityAssets?.length) {
         list.push({
-          data: highLiquidityAssets,
+          data: highLiquidityAssetsWithImport,
           key: 'highLiquidity',
           title: tokenSectionTypes.unverifiedTokenSection,
         });
@@ -341,6 +373,7 @@ const useSwapCurrencyList = (
     unfilteredFavorites,
     chainId,
     getCurated,
+    isFavorite,
   ]);
 
   const updateFavorites = useCallback(
