@@ -87,7 +87,6 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 2,
     marginRight: 19,
-    marginVertical: 4,
   },
   flex: {
     flex: 1,

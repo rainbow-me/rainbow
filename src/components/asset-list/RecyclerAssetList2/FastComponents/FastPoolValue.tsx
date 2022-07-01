@@ -74,9 +74,10 @@ export default MemoFastPoolValue;
 
 const cx = StyleSheet.create({
   container: {
+    alignItems: 'center',
     borderRadius: 15,
     height: 30,
-    ...padding.object(2, 9, 0),
+    ...padding.object(0, 9, 0),
     justifyContent: 'center',
   },
 });
