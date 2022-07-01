@@ -506,13 +506,13 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
           tradeDetails: data.tradeDetails,
         })
       );
-
       analytics.track(`Updated ${type} details`, {
         aggregator: data.tradeDetails?.source || '',
         inputTokenAddress: inputToken?.address || '',
         inputTokenName: inputToken?.name || '',
         inputTokenSymbol: inputToken?.symbol || '',
         liquiditySources: (data.tradeDetails?.protocols as any[]) || [],
+        network: ethereumUtils.getNetworkFromChainId(chainId),
         outputTokenAddress: outputToken?.address || '',
         outputTokenName: outputToken?.name || '',
         outputTokenSymbol: outputToken?.symbol || '',
