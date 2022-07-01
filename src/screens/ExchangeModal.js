@@ -525,7 +525,7 @@ export default function ExchangeModal({
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
         priceImpact: priceImpactPercentDisplay,
-        slippageInBips,
+        slippage: slippageInBips / 100,
         type,
         walletAddress: tradeDetails?.from || '',
       });
@@ -582,7 +582,7 @@ export default function ExchangeModal({
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
         priceImpact: priceImpactPercentDisplay,
-        slippageInBips,
+        slippage: slippageInBips / 100,
         type,
         walletAddress: tradeDetails?.from || '',
       });
