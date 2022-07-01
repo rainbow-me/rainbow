@@ -529,7 +529,8 @@
     "explain": {
       "output_disabled": {
         "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
-        "title": "Enter %{inputToken} Instead :)"
+        "title": "Enter %{inputToken} Instead :)",
+        "title_empty": "Choose a Token :)"
       },
       "available_networks": {
         "text": "%{tokenSymbol} is also available on %{networks}. To get %{tokenSymbol} on these networks, use a Bridge like Hop. :)",
