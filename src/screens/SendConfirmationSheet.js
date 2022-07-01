@@ -3,7 +3,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { capitalize, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { Keyboard, StatusBar } from 'react-native';
+import { Keyboard } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import Divider from '../components/Divider';
@@ -371,7 +371,6 @@ export default function SendConfirmationSheet() {
       height={contentHeight}
       insets={insets}
     >
-      {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet

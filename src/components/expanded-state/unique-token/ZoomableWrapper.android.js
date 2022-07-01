@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -18,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { useDimensions } from '@rainbow-me/hooks';
+import { StatusBarService } from '@rainbow-me/services';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -129,10 +130,10 @@ export const ZoomableWrapper = ({
 
   useEffect(() => {
     if (isZoomed) {
-      StatusBar.setHidden(true);
+      StatusBarService.setHidden(true);
       onZoomIn?.();
     } else {
-      StatusBar.setHidden(false);
+      StatusBarService.setHidden(false);
       onZoomOut?.();
     }
   }, [isZoomed, onZoomIn, onZoomOut]);

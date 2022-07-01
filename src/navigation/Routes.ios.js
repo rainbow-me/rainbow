@@ -2,7 +2,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
-import { StatusBar } from 'react-native';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -73,6 +72,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import { StatusBarService } from '@rainbow-me/services';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
@@ -188,9 +188,7 @@ function NativeStackFallbackNavigator() {
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
         options={{
           ...sheetPreset,
-          onTransitionStart: () => {
-            StatusBar.setBarStyle('light-content');
-          },
+          onTransitionStart: StatusBarService.setLightContent,
         }}
       />
       <Stack.Screen
@@ -208,9 +206,7 @@ function NativeStackFallbackNavigator() {
         name={Routes.SEND_SHEET}
         options={{
           ...omit(sheetPreset, 'gestureResponseDistance'),
-          onTransitionStart: () => {
-            StatusBar.setBarStyle('light-content');
-          },
+          onTransitionStart: StatusBarService.setLightContent,
         }}
       />
       <Stack.Screen
