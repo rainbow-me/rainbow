@@ -531,7 +531,6 @@ export default function ExchangeModal({
         priceImpact: priceImpactPercentDisplay,
         slippage: slippageInBips / 100,
         type,
-        walletAddress: tradeDetails?.from || '',
       });
     }
 
@@ -589,7 +588,6 @@ export default function ExchangeModal({
         priceImpact: priceImpactPercentDisplay,
         slippage: slippageInBips / 100,
         type,
-        walletAddress: tradeDetails?.from || '',
       });
       // Tell iOS we finished running a rap (for tracking purposes)
       NotificationManager &&
