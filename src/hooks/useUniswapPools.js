@@ -1,10 +1,11 @@
-import { pick, sortBy, toLower } from 'lodash';
+import { sortBy, toLower } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import {
   emitAssetRequest,
   emitChartsRequest,
@@ -64,6 +65,12 @@ function parseData(
   newData.annualized_fees =
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
+  const { id, name, symbol } = newData.token0;
+  const {
+    id: idToken1,
+    name: nameToken1,
+    symbol: symbolToken1,
+  } = newData.token1;
   return {
     address: newData?.id,
     annualized_fees: newData.annualized_fees,
@@ -71,8 +78,8 @@ function parseData(
     oneDayVolumeUSD: newData.oneDayVolumeUSD,
     profit30d: newData.profit30d,
     symbol: 'UNI-V2',
-    token0: pick(newData.token0, ['id', 'name', 'symbol']),
-    token1: pick(newData.token1, ['id', 'name', 'symbol']),
+    token0: { id, name, symbol },
+    token1: { id: idToken1, name: nameToken1, symbol: symbolToken1 },
     tokenNames: `${newData.token0.symbol}-${newData.token1.symbol}`.replace(
       'WETH',
       'ETH'
@@ -251,7 +258,8 @@ export default function useUniswapPools(sortField, sortDirection, token) {
         liquidity: pair.liquidity * currenciesRate,
         oneDayVolumeUSD: pair.oneDayVolumeUSD * currenciesRate,
       };
-      return pick(pairAdjustedForCurrency, [
+
+      return pickShallow(pairAdjustedForCurrency, [
         'address',
         'annualized_fees',
         'liquidity',
