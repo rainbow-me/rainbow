@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { get, isEmpty, keyBy, map, mapValues, toLower, uniqBy } from 'lodash';
+import { isEmpty, keyBy, mapValues, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
@@ -278,7 +278,7 @@ const getTokenTxDataFromEtherscan = async (
 
 const fetchAssetBalances = async (tokens, address, network) => {
   const balanceCheckerContract = new Contract(
-    get(networkInfo[network], 'balance_checker_contract_address'),
+    networkInfo[network]?.balance_checker_contract_address,
     balanceCheckerContractAbi,
     web3Provider
   );
@@ -372,7 +372,9 @@ export const fetchOnchainBalances = ({
       return;
     }
 
-    const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
+    const tokenAddresses = Object.values(
+      assets
+    ).map(({ asset: { asset_code } }) =>
       asset_code === ETH_ADDRESS
         ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
         : toLower(asset_code)
@@ -407,8 +409,7 @@ export const fetchOnchainBalances = ({
     }
 
     if (withPrices) {
-      const coingeckoIds = map(
-        updatedAssets,
+      const coingeckoIds = Object.values(updatedAssets).map(
         ({ asset: { coingecko_id } }) => coingecko_id
       );
       const prices = await fetchAssetPricesWithCoingecko(

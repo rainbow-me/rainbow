@@ -1,5 +1,5 @@
 import { ChainId, WETH } from '@uniswap/sdk';
-import { isEmpty, join, map, orderBy, toLower } from 'lodash';
+import { isEmpty, join, orderBy, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -8,7 +8,7 @@ import {
   PositionsState,
   UniswapPosition,
 } from '@rainbow-me/redux/usersPositions';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
 import {
   convertAmountToNativeDisplay,
   divide,
@@ -72,7 +72,7 @@ const switchWethToEth = (token: Token, chainId: ChainId): Token => {
 const transformPool = (
   liquidityToken: ParsedAddressAsset | undefined,
   position: UniswapPosition,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   chainId: ChainId
 ): UniswapPool | null => {
   if (isEmpty(position)) {
@@ -118,14 +118,14 @@ const transformPool = (
     nativeCurrency
   );
 
-  const formattedTokens = map(tokens, token => ({
+  const formattedTokens = tokens.map(token => ({
     ...token,
     ...getTokenMetadata(token.address),
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
   const tokenNames = join(
-    map(formattedTokens, token => token.symbol),
+    formattedTokens.map(token => token.symbol),
     '-'
   );
 
@@ -142,18 +142,20 @@ const transformPool = (
 const buildUniswapCards = (
   accountAddress: string,
   chainId: number,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   uniswapLiquidityTokens: ParsedAddressAsset[],
   allUniswapLiquidityPositions: PositionsState
 ): UniswapCard => {
   const uniswapLiquidityPositions =
     allUniswapLiquidityPositions?.[accountAddress];
-  const uniswapPools = map(uniswapLiquidityPositions, position => {
-    const liquidityToken = uniswapLiquidityTokens.find(
-      token => token.address === position?.pair?.id
-    );
-    return transformPool(liquidityToken, position, nativeCurrency, chainId);
-  }).filter(notEmpty);
+  const uniswapPools = uniswapLiquidityPositions
+    ?.map(position => {
+      const liquidityToken = uniswapLiquidityTokens.find(
+        token => token.address === position?.pair?.id
+      );
+      return transformPool(liquidityToken, position, nativeCurrency, chainId);
+    })
+    .filter(notEmpty);
 
   const orderedUniswapPools = orderBy(
     uniswapPools,

@@ -7,7 +7,11 @@ export {
   estimateWithdrawFromCompound,
   createWithdrawFromCompoundRap,
 } from './withdrawFromCompound';
-export { executeRap, getSwapRapEstimationByType } from './common';
+export {
+  executeRap,
+  getSwapRapEstimationByType,
+  getSwapRapTypeByExchangeType,
+} from './common';
 export {
   createRegisterENSRap,
   createCommitENSRap,

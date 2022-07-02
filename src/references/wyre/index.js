@@ -1,4 +1,4 @@
-import { get, keys } from 'lodash';
+import keys from 'lodash/keys';
 import { orderExceptions } from './orderExceptions';
 import { wyreSupportedCountries } from './supportedCountries';
 import { upperFirst } from '@rainbow-me/helpers/utilities';
@@ -7,10 +7,7 @@ const WYRE_SUPPORTED_COUNTRIES_ISO = keys(wyreSupportedCountries);
 
 const getWyreErrorOverride = error => {
   const { errorCategory, errorCode, errorMessage } = error;
-  const errorMessageDetails = get(orderExceptions, [
-    `${errorCategory}`,
-    `${errorCode}`,
-  ]);
+  const errorMessageDetails = orderExceptions?.[errorCategory]?.[errorCode];
   if (!errorMessageDetails) {
     return {
       ...error,
