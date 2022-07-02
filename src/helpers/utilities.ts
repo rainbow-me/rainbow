@@ -1,12 +1,17 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import { get, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
 interface Dictionary<T> {
   [index: string]: T;
 }
+// <<<<<<< HEAD
+// =======
+type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
+type nativeCurrencyType = typeof supportedNativeCurrencies;
+// >>>>>>> a1d661b89369889d43d911ecc674c811e996afdf
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
@@ -264,7 +269,7 @@ export const convertAmountToNativeAmount = (
 export const convertAmountAndPriceToNativeDisplay = (
   amount: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
   skipDecimals: boolean = false
 ): { amount: string; display: string } => {
@@ -288,7 +293,7 @@ export const convertRawAmountToNativeDisplay = (
   rawAmount: BigNumberish,
   assetDecimals: number,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number
 ) => {
   const assetBalance = convertRawAmountToDecimalFormat(
@@ -311,7 +316,7 @@ export const convertRawAmountToBalance = (
   asset: { decimals: number },
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
+  const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
@@ -325,12 +330,12 @@ export const convertRawAmountToBalance = (
  */
 export const convertAmountToBalanceDisplay = (
   value: BigNumberish,
-  asset: { decimals: number },
+  asset: { decimals: number; symbol?: string },
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
+  const decimals = asset?.decimals ?? 18;
   const display = handleSignificantDecimals(value, decimals, buffer);
-  return `${display} ${get(asset, 'symbol', '')}`;
+  return `${display} ${asset?.symbol || ''}`;
 };
 
 /**
@@ -375,11 +380,11 @@ export const convertBipsToPercentage = (
  */
 export const convertAmountToNativeDisplay = (
   value: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
   skipDecimals?: boolean
 ) => {
-  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { decimals } = nativeSelected;
   const display = handleSignificantDecimals(
     value,
@@ -441,4 +446,39 @@ export const groupBy = <
     acc[groupedKey].push(val);
     return acc;
   }, {});
+};
+
+/**
+ * Creates an object composed of the picked object properties.
+ * @param obj The source object
+ * @param paths The property paths to pick
+ */
+export const pickShallow = <T, K extends keyof T>(
+  obj: T,
+  paths: K[]
+): Pick<T, K> => {
+  return paths.reduce((acc, key) => {
+    if (obj[key] !== undefined) {
+      acc[key] = obj[key];
+      return acc;
+    }
+    return acc;
+  }, {} as Pick<T, K>);
+};
+
+/**
+ * Creates an object composed of the picked object properties by some predicate function.
+ * @param obj The source object
+ * @param predicate The function invoked per property
+ */
+export const pickBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
 };
