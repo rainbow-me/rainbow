@@ -59,6 +59,7 @@ import {
   useSwapInputHandlers,
   useSwapInputRefs,
   useSwapIsSufficientBalance,
+  useSwapSettings,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -124,6 +125,7 @@ export default function ExchangeModal({
 }) {
   const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
+  const { slippageInBips } = useSwapSettings();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute();
@@ -515,13 +517,19 @@ export default function ExchangeModal({
       logger.log('error getting the swap amount in USD price', e);
     } finally {
       analytics.track(`Submitted ${type}`, {
+        aggregator: tradeDetails?.source || '',
         amountInUSD,
-        defaultInputAsset: defaultInputAsset?.symbol ?? '',
+        inputTokenAddress: inputCurrency?.address || '',
+        inputTokenName: inputCurrency?.name || '',
+        inputTokenSymbol: inputCurrency?.symbol || '',
         isHighPriceImpact: debouncedIsHighPriceImpact,
-        name: outputCurrency?.name ?? '',
+        liquiditySources: tradeDetails?.protocols || [],
+        network: currentNetwork,
+        outputTokenAddress: outputCurrency?.address || '',
+        outputTokenName: outputCurrency?.name || '',
+        outputTokenSymbol: outputCurrency?.symbol || '',
         priceImpact: priceImpactPercentDisplay,
-        symbol: outputCurrency?.symbol || '',
-        tokenAddress: outputCurrency?.address || '',
+        slippage: slippageInBips / 100,
         type,
       });
     }
@@ -566,9 +574,19 @@ export default function ExchangeModal({
       await executeRap(wallet, rapType, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
+        aggregator: tradeDetails?.source || '',
         amountInUSD,
-        input: defaultInputAsset?.symbol || '',
-        output: outputCurrency?.symbol || '',
+        inputTokenAddress: inputCurrency?.address || '',
+        inputTokenName: inputCurrency?.name || '',
+        inputTokenSymbol: inputCurrency?.symbol || '',
+        isHighPriceImpact: debouncedIsHighPriceImpact,
+        liquiditySources: tradeDetails?.protocols || [],
+        network: currentNetwork,
+        outputTokenAddress: outputCurrency?.address || '',
+        outputTokenName: outputCurrency?.name || '',
+        outputTokenSymbol: outputCurrency?.symbol || '',
+        priceImpact: priceImpactPercentDisplay,
+        slippage: slippageInBips / 100,
         type,
       });
       // Tell iOS we finished running a rap (for tracking purposes)
@@ -582,13 +600,15 @@ export default function ExchangeModal({
     }
   }, [
     chainId,
-    defaultInputAsset?.symbol,
+    currentNetwork,
+    debouncedIsHighPriceImpact,
     flashbots,
     genericAssets,
     getNextNonce,
     inputAmount,
     inputCurrency?.address,
-    debouncedIsHighPriceImpact,
+    inputCurrency?.name,
+    inputCurrency?.symbol,
     nativeAmount,
     nativeCurrency,
     navigate,
@@ -596,6 +616,7 @@ export default function ExchangeModal({
     outputCurrency?.address,
     outputCurrency?.name,
     outputCurrency?.symbol,
+    slippageInBips,
     outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
@@ -693,9 +714,12 @@ export default function ExchangeModal({
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
-        name: outputCurrency?.name ?? '',
-        symbol: outputCurrency?.symbol ?? '',
-        tokenAddress: outputCurrency?.address ?? '',
+        inputTokenAddress: inputCurrency?.address || '',
+        inputTokenName: inputCurrency?.name || '',
+        inputTokenSymbol: inputCurrency?.symbol || '',
+        outputTokenAddress: outputCurrency?.address || '',
+        outputTokenName: outputCurrency?.name || '',
+        outputTokenSymbol: outputCurrency?.symbol || '',
         type,
       });
     };
@@ -705,6 +729,9 @@ export default function ExchangeModal({
   }, [
     confirmButtonProps,
     currentNetwork,
+    inputCurrency?.address,
+    inputCurrency?.name,
+    inputCurrency?.symbol,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,

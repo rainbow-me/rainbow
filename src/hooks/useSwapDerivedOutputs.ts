@@ -4,6 +4,7 @@ import {
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
+import analytics from '@segment/analytics-react-native';
 import { useEffect, useMemo, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NativeModules } from 'react-native';
@@ -505,6 +506,20 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
           tradeDetails: data.tradeDetails,
         })
       );
+      analytics.track(`Updated ${type} details`, {
+        aggregator: data.tradeDetails?.source || '',
+        inputTokenAddress: inputToken?.address || '',
+        inputTokenName: inputToken?.name || '',
+        inputTokenSymbol: inputToken?.symbol || '',
+        liquiditySources: (data.tradeDetails?.protocols as any[]) || [],
+        network: ethereumUtils.getNetworkFromChainId(chainId),
+        outputTokenAddress: outputToken?.address || '',
+        outputTokenName: outputToken?.name || '',
+        outputTokenSymbol: outputToken?.symbol || '',
+        slippage: slippageInBips / 100,
+        type,
+      });
+
       // @ts-ignore next-line
       setResult(data);
       setLoading(false);
@@ -513,18 +528,19 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   }, [
     accountAddress,
     chainId,
+    derivedValuesFromRedux,
     dispatch,
     independentField,
     independentValue,
     inputCurrency,
     inputPrice,
+    isSavings,
+    maxInputUpdate,
     outputCurrency,
     outputPrice,
     slippageInBips,
     source,
-    derivedValuesFromRedux,
-    isSavings,
-    maxInputUpdate,
+    type,
   ]);
 
   return {
