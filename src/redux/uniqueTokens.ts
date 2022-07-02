@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, uniqBy, without } from 'lodash';
+import { concat, isEmpty, uniqBy } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -23,6 +23,7 @@ import {
 } from '@rainbow-me/handlers/opensea-api';
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { withoutSomeStrings } from '@rainbow-me/helpers/utilities';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //
@@ -304,7 +305,10 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       if (shouldStopFetching) {
         const existingFamilies = getFamilies(existingUniqueTokens);
         const newFamilies = getFamilies(uniqueTokens);
-        const incomingFamilies = without(newFamilies, ...existingFamilies);
+        const incomingFamilies = withoutSomeStrings(
+          newFamilies,
+          existingFamilies
+        );
         if (incomingFamilies.length) {
           const dedupedAssets = dedupeAssetsWithFamilies(
             accountAssetsData,

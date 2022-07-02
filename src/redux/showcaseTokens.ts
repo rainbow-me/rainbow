@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, toLower, without } from 'lodash';
+import { concat, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
@@ -10,6 +10,7 @@ import {
   saveWebDataEnabled,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { withoutSomeStrings } from '@rainbow-me/helpers/utilities';
 
 // -- Constants --------------------------------------- //
 
@@ -154,7 +155,7 @@ export const removeShowcaseToken = (tokenId: string) => (
   const { accountAddress, network } = getState().settings;
   const { showcaseTokens } = getState().showcaseTokens;
 
-  const updatedShowcaseTokens = without(showcaseTokens, tokenId);
+  const updatedShowcaseTokens = withoutSomeStrings(showcaseTokens, tokenId);
 
   dispatch({
     payload: updatedShowcaseTokens,
