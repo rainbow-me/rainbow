@@ -163,7 +163,7 @@ export const addRequestToApprove = (
         name?: string;
         url?: string;
         scheme?: string;
-        icons?: string;
+        icons?: string[];
       }
 ) => (
   dispatch: Dispatch<RequestsUpdateRequestsToApproveAction>,
