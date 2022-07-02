@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, map, mapValues, pickBy, toLower } from 'lodash';
+import { isEmpty, keyBy, mapValues, toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -15,6 +15,7 @@ import { ZerionAsset } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { pickBy } from '@rainbow-me/helpers/utilities';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,
@@ -162,9 +163,9 @@ export const optimismExplorerInit = () => async (
       asset => `${asset.asset.asset_code}_${Network.optimism}`
     );
 
-    const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
-      toLower(asset_code)
-    );
+    const tokenAddresses = Object.values(
+      assets
+    ).map(({ asset: { asset_code } }) => toLower(asset_code));
 
     const balances = await fetchAssetBalances(tokenAddresses, accountAddress);
 
@@ -187,7 +188,9 @@ export const optimismExplorerInit = () => async (
       dispatch(emitAssetRequest(tokenAddresses));
       dispatch(emitChartsRequest(tokenAddresses));
 
-      const coingeckoIds = map(assetsWithBalance, 'asset.coingecko_id');
+      const coingeckoIds = Object.values(assetsWithBalance).map(
+        ({ asset }) => asset.coingecko_id
+      );
       const prices = await fetchAssetPricesWithCoingecko(
         coingeckoIds,
         formattedNativeCurrency

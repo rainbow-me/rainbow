@@ -1,6 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, isEmpty, keys, map, values } from 'lodash';
+import { filter, flatMap, isEmpty, keys, values } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
@@ -154,7 +154,7 @@ export const walletsLoadState = (profilesEnabled: boolean = false) => async (
     if (isEmpty(wallets)) return;
     const selected = await getSelectedWallet();
     // Prevent irrecoverable state (no selected wallet)
-    let selectedWallet = get(selected, 'wallet', undefined);
+    let selectedWallet = selected?.wallet;
     // Check if the selected wallet is among all the wallets
     if (selectedWallet && !wallets[selectedWallet.id]) {
       // If not then we should clear it and default to the first one
@@ -472,7 +472,7 @@ export const fetchWalletNames = () => async (
   await Promise.all(
     flatMap(values(wallets), wallet => {
       const visibleAccounts = filter(wallet.addresses, 'visible');
-      return map(visibleAccounts, async account => {
+      return visibleAccounts.map(async account => {
         try {
           const ens = await fetchReverseRecordWithRetry(account.address);
           if (ens && ens !== account.address) {

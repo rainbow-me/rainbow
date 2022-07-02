@@ -29,6 +29,7 @@ const CollectibleTokenFamily = ({
         external={external}
         item={item[i]}
         key={`${familyName}_${i}`}
+        uniqueId={item[i].uniqueId}
       />
     ),
     [external, familyName, item]

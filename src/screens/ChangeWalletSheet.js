@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { get, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -404,8 +404,8 @@ export default function ChangeWalletSheet() {
             onCloseModal: async args => {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
-                const name = get(args, 'name', '');
-                const color = get(args, 'color', null);
+                const name = args?.name ?? '';
+                const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id
