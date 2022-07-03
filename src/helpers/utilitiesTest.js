@@ -608,6 +608,73 @@ export const groupBy = (arr, groupBy) =>
     return acc;
   }, {});
 
+export const uniqBy = (arr, predicate) => {
+  const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
+
+  return [
+    ...arr
+      .reduce((map, item) => {
+        const key = item === null || item === undefined ? item : cb(item);
+        map.has(key) || map.set(key, item);
+        return map;
+      }, new Map())
+      .values(),
+  ];
+};
+export const uniqBy2 = (arr, predicate) => {
+  const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
+  return Array.from(
+    arr.reduce((map, item) => {
+      const key = item === null || item === undefined ? item : cb(item);
+      map.has(key) || map.set(key, item);
+      return map;
+    }, new Map()),
+    ([_, value]) => value
+  );
+};
+export const uniqBy3 = (arr, predicate) => {
+  const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
+  return Array.from(
+    arr.reduce((map, item) => {
+      const key = item === null || item === undefined ? item : cb(item);
+      map.has(key) || map.set(key, item);
+      return map;
+    }, new Map())
+  ).map(([_, value]) => value);
+};
+
+export const uniqBy4 = (arr, predicate) => {
+  const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
+
+  const map = arr.reduce((map, item) => {
+    const key = item === null || item === undefined ? item : cb(item);
+    map.has(key) || map.set(key, item);
+    return map;
+  }, new Map());
+  const array = [];
+
+  for (const [name, value] of map) {
+    array.push(value);
+  }
+  // return Array.from(
+  //   arr.reduce((map, item) => {
+  //     const key = item === null || item === undefined ? item : cb(item);
+  //     map.has(key) || map.set(key, item);
+  //     return map;
+  //   }, new Map()),
+  //   ([_, value]) => value
+  // );
+
+  // return [
+  //   ...arr
+  //     .reduce((map, item) => {
+  //       const key = item === null || item === undefined ? item : cb(item);
+  //       map.has(key) || map.set(key, item);
+  //       return map;
+  //     }, new Map())
+  //     .values(),
+  // ];
+};
 
 export const assetsTest = [
   {

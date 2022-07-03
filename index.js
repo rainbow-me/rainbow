@@ -23,6 +23,7 @@ import {
   reverse as _reverse,
   sortBy as _sortBy,
   times as _times,
+  uniqBy as _uniqBy,
 } from 'lodash';
 // import { foregroundColors } from 'src/design-system/color/palettes';
 // import { StartTime } from './src/performance/start-time';
@@ -74,6 +75,10 @@ import {
   sorterByFamiliesNameReverse,
   sorterByFamiliesNameWithDestr,
   times,
+  uniqBy,
+  uniqBy2,
+  uniqBy3,
+  uniqBy4,
   uniqueTokensLarge,
 } from '@rainbow-me/helpers/utilitiesTest';
 import {
@@ -474,10 +479,15 @@ export default function measurement() {
   // });
   measure('10: Filter', 200, () => {
     average('lodash filter', () =>
-      _filter(testRows, ({ familyName }) => familyName === 'CRYPTODRAGOON')
+      _filter(
+        testRows,
+        ({ familyName }) => familyName === 'CRYPTODRAGOON' || 'ENS'
+      )
     );
     average('JS filter', () =>
-      testRows.filter(({ familyName }) => familyName === 'CRYPTODRAGOON')
+      testRows.filter(
+        ({ familyName }) => familyName === 'CRYPTODRAGOON' || 'ENS'
+      )
     );
   });
   // measure('12: Other', 200, () => {
@@ -531,32 +541,68 @@ export default function measurement() {
     );
     average('JS sort', () => testRows.sort(sorterByFamiliesName));
   });
-  // measure('13: Other', 200, () => {
-  //   average('lodash filter', () =>
-  //     _sortBy(testRows, ({ familyName }) =>
-  //       familyName.replace(regex, '').toLowerCase()
-  //     )
-  //   );
-  //   average('JS filter', () => testRows.sort(sorterByFamiliesNameWithDestr));
-  // });
-  // measure('13: Other', 200, () => {
-  //   average('lodash filter', () =>
-  //     _reverse(
-  //       _sortBy(testRows, row =>
-  //         row.familyName.replace(regex, '').toLowerCase()
-  //       )
-  //     )
-  //   );
-  //   average('JS filter', () => testRows.sort(sorterByFamiliesNameReverse));
-  // });
-  // measure('13: Other', 200, () => {
-  //   average('lodash filter', () =>
-  //     _sortBy(testRows, ({ familyName }) =>
-  //       familyName.replace(regex, '').toLowerCase()
-  //     )
-  //   );
-  //   average('JS filter', () => testRows.sort(sorterByFamiliesNameWithDestr));
-  // });
+  measure('13: uniqBy', 200, () => {
+    average('lodash uniqBy', () =>
+      _uniqBy(assetsTest, v => v.asset.asset_code)
+    );
+    average('lodash uniqBy2', () =>
+      _uniqBy(assetsTest, ({ asset }) => asset.asset_code)
+    );
+    average('lodash uniqBy3', () =>
+      _uniqBy(assetsTestTwice, 'asset.asset_code')
+    );
+    average('JS uniqBy1', () =>
+      uniqBy(assetsTestTwice, v => v.asset.asset_code)
+    );
+    average('JS uniqBy2', () =>
+      uniqBy2(assetsTestTwice, v => v.asset.asset_code)
+    );
+    average('JS uniqBy3', () =>
+      uniqBy3(assetsTestTwice, v => v.asset.asset_code)
+    );
+    average('JS uniqBy4', () =>
+      uniqBy4(assetsTestTwice, v => v.asset.asset_code)
+    );
+    average('JS uniqBy5', () =>
+      uniqBy(assetsTestTwice, ({ asset }) => asset.asset_code)
+    );
+  });
+
+  measure('14: uniqBy', 200, () => {
+    average('lodash uniqBy', () =>
+      _uniqBy(assetsTestTwice, token => token.asset.asset_code)
+    );
+    average('JS uniqBy', () =>
+      uniqBy(assetsTestTwice, token => token.asset.asset_code)
+    );
+  });
+  /////
+  measure('15: sortBy', 200, () => {
+    average('lodash sortBy', () =>
+      _sortBy(testRows, ({ familyName }) =>
+        familyName.replace(regex, '').toLowerCase()
+      )
+    );
+    average('JS sortBy', () => testRows.sort(sorterByFamiliesNameWithDestr));
+  });
+  measure('16: sortBy reverse', 200, () => {
+    average('lodash sortBy', () =>
+      _reverse(
+        _sortBy(testRows, row =>
+          row.familyName.replace(regex, '').toLowerCase()
+        )
+      )
+    );
+    average('JS sort', () => testRows.sort(sorterByFamiliesNameReverse));
+  });
+  measure('17: Filter ', 200, () => {
+    average('lodash filter destructing ', () =>
+      _sortBy(testRows, ({ familyName }) =>
+        familyName.replace(regex, '').toLowerCase()
+      )
+    );
+    average('JS sort', () => testRows.sort(sorterByFamiliesNameWithDestr));
+  });
 
   ////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
