@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { forEach, get, keys, values } from 'lodash';
+import keys from 'lodash/keys';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
@@ -27,8 +27,8 @@ const useWalletBalances = wallets => {
     const walletBalances = {};
 
     // Get list of addresses to get balances for
-    forEach(values(wallets), wallet => {
-      forEach(wallet.addresses, account => {
+    Object.values(wallets).forEach(wallet => {
+      wallet.addresses.forEach(account => {
         walletBalances[account.address] = '0.00';
       });
     });
@@ -36,7 +36,7 @@ const useWalletBalances = wallets => {
     try {
       // Check all the ETH balances at once
       const balanceCheckerContract = new Contract(
-        get(networkInfo[network], 'balance_checker_contract_address'),
+        networkInfo[network]?.balance_checker_contract_address,
         balanceCheckerContractAbi,
         web3Provider
       );
@@ -46,7 +46,7 @@ const useWalletBalances = wallets => {
         [ETH_ADDRESS]
       );
 
-      forEach(keys(walletBalances), (address, index) => {
+      Object.keys(walletBalances).forEach((address, index) => {
         const amountInETH = fromWei(balances[index].toString());
         const formattedBalance = handleSignificantDecimals(amountInETH, 4);
         walletBalances[address] = formattedBalance;

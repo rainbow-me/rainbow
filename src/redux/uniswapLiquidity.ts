@@ -1,4 +1,4 @@
-import { concat, filter, map, uniqBy } from 'lodash';
+import { concat, filter, uniqBy } from 'lodash';
 import { AppState } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -178,7 +178,7 @@ export const uniswapUpdateLiquidityTokens = (
       token => !!Number(token?.balance?.amount ?? 0)
     );
   } else {
-    const assetCodes = map(liquidityTokens, token => token.address);
+    const assetCodes = liquidityTokens.map(token => token.address);
     dispatch(emitChartsRequest(assetCodes));
   }
   const { accountAddress, network } = getState().settings;

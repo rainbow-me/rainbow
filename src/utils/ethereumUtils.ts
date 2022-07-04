@@ -80,6 +80,7 @@ import {
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
+  supportedNativeCurrencies,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
@@ -238,7 +239,7 @@ const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
 const formatGenericAsset = (
   asset: ParsedAddressAsset,
-  nativeCurrency: string
+  nativeCurrency: keyof typeof supportedNativeCurrencies
 ) => {
   return {
     ...asset,
@@ -364,6 +365,19 @@ const fetchTxWithAlwaysCache = async (address: EthereumAddress) => {
   const txTime = parsedResponse.result[0].timeStamp;
   AsyncStorage.setItem(`first-tx-${address}`, txTime);
   return txTime;
+};
+
+export const fetchContractABI = async (address: EthereumAddress) => {
+  const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`;
+  const cachedAbi = await AsyncStorage.getItem(`abi-${address}`);
+  if (cachedAbi) {
+    return cachedAbi;
+  }
+  const response = await fetch(url);
+  const parsedResponse = await response.json();
+  const abi = parsedResponse.result;
+  AsyncStorage.setItem(`abi-${address}`, abi);
+  return abi;
 };
 
 export const daysFromTheFirstTx = (address: EthereumAddress) => {
