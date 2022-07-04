@@ -44,7 +44,7 @@ class ImgixImage extends React.PureComponent<
   }
 
   handleError = (err: any) => {
-    const { retryOnError, maxRetries = 5 } = this.props;
+    const { onError, retryOnError, maxRetries = 5 } = this.props;
     const { retryCount } = this.state;
     // We don't want to retry if there is a 404.
     const isNotFound =
@@ -56,7 +56,7 @@ class ImgixImage extends React.PureComponent<
       this.setState(({ retryCount }) => ({ retryCount: retryCount + 1 }));
     } else {
       // @ts-expect-error
-      props.onError?.(err);
+      onError?.(err);
     }
   };
 
