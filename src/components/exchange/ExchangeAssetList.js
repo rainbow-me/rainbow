@@ -6,22 +6,29 @@ import React, {
   useCallback,
   useContext,
   useImperativeHandle,
+  useMemo,
   useRef,
+  useState,
 } from 'react';
-import { Alert, Keyboard, SectionList } from 'react-native';
+import { Alert, Keyboard, SectionList, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '../../components/animations';
-import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
+import useAccountSettings from '../../hooks/useAccountSettings';
+import FastCurrencySelectionRow from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
+import { CoinRowHeight } from '../coin-row';
 import { ContactRow } from '../contacts';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
+import contextMenuProps from './exchangeAssetRowContextMenuProps';
 import { TokenSectionTypes } from '@rainbow-me/helpers';
 import { usePrevious } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -62,7 +69,9 @@ const HeaderTitleGradient = styled(GradientText).attrs({
 const HeaderTitleWrapper = styled.View({});
 
 const contentContainerStyle = { paddingBottom: 9.5 };
+const scrollIndicatorInsets = { bottom: 24 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
+
 const getItemLayout = ({ showBalance }, index) => {
   const height = showBalance ? CoinRowHeight + 1 : CoinRowHeight;
   return {
@@ -96,15 +105,31 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   contentContainerStyle,
   directionalLockEnabled: true,
   getItemLayout,
-  initialNumToRender: 10,
   keyboardShouldPersistTaps: 'always',
   keyExtractor,
-  maxToRenderPerBatch: 50,
-  scrollEventThrottle: 32,
-  windowSize: 41,
+  scrollIndicatorInsets,
+  windowSize: 7,
 })({
   height: '100%',
 });
+
+function renderItem({ item }) {
+  if (item.ens) {
+    // TODO RNBW-3676
+    return (
+      <ContactRow
+        accountType="contact"
+        address={item.address}
+        color={item.color}
+        nickname={item.nickname}
+        onPress={item.onPress}
+        showcaseItem={item}
+        testID={item.testID}
+      />
+    );
+  }
+  return <FastCurrencySelectionRow item={item} />;
+}
 
 const ExchangeAssetList = (
   {
@@ -114,7 +139,6 @@ const ExchangeAssetList = (
     items,
     onLayout,
     query,
-    scrollIndicatorInsets = { bottom: 24 },
     testID,
   },
   ref
@@ -140,10 +164,6 @@ const ExchangeAssetList = (
       viewPosition: 0,
     });
   }
-
-  const createItem = useCallback(item => Object.assign(item, itemProps), [
-    itemProps,
-  ]);
 
   const handleUnverifiedTokenPress = useCallback(
     item => {
@@ -193,72 +213,111 @@ const ExchangeAssetList = (
     ) : null;
   };
 
-  // either show ENS row or Currency row
-  const LineToRender = useCallback(
-    ({ item }) => {
-      return item.ens ? (
-        <ContactRow
-          accountType="suggestions"
-          address={item.address}
-          color={item.color}
-          image={item.image}
-          nickname={item.nickname}
-          onPress={itemProps.onPress}
-          showcaseItem={item}
-          symmetricalMargins
-          testID={testID}
-        />
-      ) : (
-        <ExchangeCoinRow
-          {...itemProps}
-          isVerified={item.isVerified}
-          item={item}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-          onUnverifiedTokenPress={handleUnverifiedTokenPress}
-          testID={testID}
-        />
-      );
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onCopySwapDetailsText]
-  );
-  const renderItemCallback = useCallback(
-    ({ item, index, section }) => (
-      // in the Discover screen search results, we mix in ENS rows with coin rows
-      <LineToRender
-        item={item}
-        key={`${item.address}_${index}_${section.key}`}
-      />
-    ),
-    []
-  );
-
   const FooterSpacer = useCallback(() => (footerSpacer ? <Spacer /> : null), [
     footerSpacer,
   ]);
 
   const isFocused = useIsFocused();
 
-  const sections = useMemo(() => items.map(createItem), [createItem, items]);
+  const theme = useTheme();
+
+  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
+  const [localFavorite, setLocalFavorite] = useState(() => {
+    const meta = store.getState().uniswap.favoritesMeta;
+    if (!meta) {
+      return;
+    }
+    return Object.keys(meta).reduce((acc, curr) => {
+      acc[curr] = meta[curr].favorite;
+      return acc;
+    }, {});
+  });
+
+  const enrichedItems = useMemo(
+    () =>
+      items.map(({ data, ...item }) => ({
+        ...item,
+        data: data.map(rowData => ({
+          ...rowData,
+          contextMenuProps: contextMenuProps(
+            store.getState().data.genericAssets?.[rowData.address],
+            onCopySwapDetailsText
+          ),
+          favorite: !!localFavorite[rowData.address],
+          nativeCurrency,
+          nativeCurrencySymbol,
+          onCopySwapDetailsText,
+          onPress: givenItem => {
+            if (rowData.ens) {
+              return itemProps.onPress(givenItem);
+            }
+            const asset = store.getState().data.genericAssets?.[
+              rowData.address
+            ];
+            if (rowData.isVerified || itemProps.showBalance) {
+              itemProps.onPress(asset || rowData);
+            } else {
+              handleUnverifiedTokenPress(asset || rowData);
+            }
+          },
+          showAddButton: itemProps.showAddButton,
+          showBalance: itemProps.showBalance,
+          showFavoriteButton: itemProps.showFavoriteButton,
+          testID,
+          theme,
+          toggleFavorite: () => {
+            setLocalFavorite(prev => {
+              const newValue = !prev[rowData.address];
+              itemProps.onActionAsset(
+                store.getState().data.genericAssets?.[rowData.address] ||
+                  rowData,
+                newValue
+              );
+              return {
+                ...prev,
+                [rowData.address]: newValue,
+              };
+            });
+          },
+        })),
+      })),
+    [
+      handleUnverifiedTokenPress,
+      itemProps,
+      items,
+      localFavorite,
+      nativeCurrency,
+      nativeCurrencySymbol,
+      onCopySwapDetailsText,
+      testID,
+      theme,
+    ]
+  );
 
   return (
     <Fragment>
-      <ExchangeAssetSectionList
-        ListFooterComponent={FooterSpacer}
-        keyboardDismissMode={keyboardDismissMode}
-        onLayout={onLayout}
-        ref={sectionListRef}
-        renderItem={renderItemCallback}
-        renderSectionHeader={ExchangeAssetSectionListHeader}
-        scrollIndicatorInsets={scrollIndicatorInsets}
-        scrollsToTop={isFocused}
-        sections={sections}
-      />
+      <View style={cx.wrapper}>
+        <ExchangeAssetSectionList
+          ListFooterComponent={FooterSpacer}
+          keyboardDismissMode={keyboardDismissMode}
+          onLayout={onLayout}
+          ref={sectionListRef}
+          renderItem={renderItem}
+          renderSectionHeader={ExchangeAssetSectionListHeader}
+          scrollsToTop={isFocused}
+          sections={enrichedItems}
+        />
+      </View>
+
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
       </ToastPositionContainer>
     </Fragment>
   );
 };
+
+const cx = StyleSheet.create({
+  wrapper: { height: '100%', width: '100%' },
+});
 
 export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query']);
