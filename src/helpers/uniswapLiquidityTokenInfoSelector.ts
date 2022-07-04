@@ -1,5 +1,5 @@
 import { ChainId, WETH } from '@uniswap/sdk';
-import { compact, isEmpty, join, orderBy, sumBy, toLower } from 'lodash';
+import { compact, isEmpty, join, sumBy, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -155,10 +155,8 @@ const buildUniswapCards = (
       return transformPool(liquidityToken, position, nativeCurrency, chainId);
     })
   );
-  const orderedUniswapPools = orderBy(
-    uniswapPools,
-    [({ totalBalancePrice }) => Number(totalBalancePrice)],
-    ['desc']
+  const orderedUniswapPools = uniswapPools.sort((a, b) =>
+    a.totalBalancePrice > b.totalBalancePrice ? -1 : 1
   );
 
   let uniswapTotal = 0;
