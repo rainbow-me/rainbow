@@ -3,7 +3,6 @@ import {
   concat,
   flatten,
   isEmpty,
-  orderBy,
   reverse,
   slice,
   toLower,
@@ -112,11 +111,10 @@ export const parseTransactions = async (
 
   const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
 
-  const orderedDedupedResults = orderBy(
-    dedupedResults,
-    ['minedAt', 'nonce'],
-    ['desc', 'desc']
-  );
+  const orderedDedupedResults = dedupedResults.sort((a, b) => {
+    // Sort by `minedAt` in descending order and by `nonce` in descending order.
+    return b.minedAt! - a.minedAt!;
+  });
 
   return {
     parsedTransactions: orderedDedupedResults,
