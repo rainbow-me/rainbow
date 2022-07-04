@@ -84,7 +84,7 @@ const AddressField = (
       setInputValue(text);
       onChangeText(text);
     },
-    [setInputValue, expandAbbreviatedClipboard, onChangeText]
+    [validateAddress, setInputValue, expandAbbreviatedClipboard, onChangeText]
   );
 
   useEffect(() => {
@@ -92,6 +92,7 @@ const AddressField = (
       setInputValue(name);
       validateAddress(address);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, editable, name, validateAddress]);
 
   return (
