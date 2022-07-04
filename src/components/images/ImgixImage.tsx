@@ -59,7 +59,13 @@ class ImgixImage extends React.PureComponent<
         {...props}
         key={retryCount}
         onError={(err: any) => {
-          if (retryOnError && retryCount < maxRetries) {
+          // We don't want to retry if there is a 404.
+          const isNotFound =
+            err.nativeEvent.statusCode === 404 ||
+            err.nativeEvent.message?.includes('404');
+          const shouldRetry = retryOnError && !isNotFound;
+
+          if (shouldRetry && retryCount < maxRetries) {
             this.setState(({ retryCount }) => ({ retryCount: retryCount + 1 }));
           } else {
             // @ts-expect-error
