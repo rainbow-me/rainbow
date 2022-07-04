@@ -627,7 +627,12 @@ export default function TransactionConfirmationScreen() {
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
-    txPayloadUpdated = omitFlatten(txPayloadUpdated, ['from', 'gas']);
+    txPayloadUpdated = omitFlatten(txPayloadUpdated, [
+      'from',
+      'gas',
+      'chainId',
+    ]);
+
     let response = null;
 
     try {
