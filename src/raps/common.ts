@@ -3,7 +3,7 @@ import { Wallet } from '@ethersproject/wallet';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Trade } from '@uniswap/sdk';
-import { join, map } from 'lodash';
+import join from 'lodash/join';
 import {
   depositCompound,
   ens,
@@ -35,7 +35,7 @@ import {
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
-import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import logger from 'logger';
 
 const {
@@ -160,14 +160,26 @@ export const RapActionTypes = {
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
 
+export const getSwapRapTypeByExchangeType = (type: string) => {
+  switch (type) {
+    case ExchangeModalTypes.withdrawal:
+      return RapActionTypes.withdrawCompound;
+    case ExchangeModalTypes.deposit:
+      return RapActionTypes.depositCompound;
+
+    default:
+      return RapActionTypes.swap;
+  }
+};
+
 const createSwapRapByType = (
   type: string,
   swapParameters: SwapActionParameters
 ) => {
   switch (type) {
-    case ExchangeModalTypes.deposit:
+    case RapActionTypes.depositCompound:
       return createSwapAndDepositCompoundRap(swapParameters);
-    case ExchangeModalTypes.withdrawal:
+    case RapActionTypes.withdrawCompound:
       return createWithdrawFromCompoundRap(swapParameters);
     default:
       return createUnlockAndSwapRap(swapParameters);
@@ -198,11 +210,11 @@ export const getSwapRapEstimationByType = (
   swapParameters: SwapActionParameters
 ) => {
   switch (type) {
-    case ExchangeModalTypes.deposit:
+    case RapActionTypes.depositCompound:
       return estimateSwapAndDepositCompound(swapParameters);
-    case ExchangeModalTypes.swap:
+    case RapActionTypes.swap:
       return estimateUnlockAndSwap(swapParameters);
-    case ExchangeModalTypes.withdrawal:
+    case RapActionTypes.withdrawCompound:
       return estimateWithdrawFromCompound();
     default:
       return null;
@@ -266,7 +278,7 @@ const findENSActionByType = (type: RapActionType) => {
 };
 
 const getRapFullName = (actions: RapAction[]) => {
-  const actionTypes = map(actions, 'type');
+  const actionTypes = actions.map(action => action.type);
   return join(actionTypes, ' + ');
 };
 

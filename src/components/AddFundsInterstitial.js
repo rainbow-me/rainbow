@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
@@ -281,7 +280,7 @@ const AddFundsInterstitial = ({ network }) => {
         <Fragment>
           <Title>
             {lang.t('add_funds.test_eth.request_test_eth', {
-              testnetName: get(networkInfo[network], 'name'),
+              testnetName: networkInfo[network]?.name,
             })}
           </Title>
           <Row marginTop={30}>
@@ -301,10 +300,9 @@ const AddFundsInterstitial = ({ network }) => {
           <Subtitle isSmallPhone={isSmallPhone}>
             {lang.t('add_funds.test_eth.or_send_test_eth')}
           </Subtitle>
-
           <Paragraph>
             {lang.t('add_funds.test_eth.send_test_eth_from_another_source', {
-              testnetName: get(networkInfo[network], 'name'),
+              testnetName: networkInfo[network]?.name,
             })}
           </Paragraph>
         </Fragment>
