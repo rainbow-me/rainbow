@@ -43,13 +43,25 @@ class ImgixImage extends React.PureComponent<
     };
   }
 
+  handleError = (err: any) => {
+    const { retryOnError, maxRetries = 5 } = this.props;
+    const { retryCount } = this.state;
+    // We don't want to retry if there is a 404.
+    const isNotFound =
+      err.nativeEvent.statusCode === 404 ||
+      err.nativeEvent.message?.includes('404');
+    const shouldRetry = retryOnError && !isNotFound;
+
+    if (shouldRetry && retryCount < maxRetries) {
+      this.setState(({ retryCount }) => ({ retryCount: retryCount + 1 }));
+    } else {
+      // @ts-expect-error
+      props.onError?.(err);
+    }
+  };
+
   render() {
-    const {
-      Component: maybeComponent,
-      maxRetries = 5,
-      retryOnError,
-      ...props
-    } = this.props;
+    const { Component: maybeComponent, ...props } = this.props;
     // Use the local state as the signing source, as opposed to the prop directly.
     // (The source prop may point to an untrusted URL.)
     const { retryCount, source } = this.state;
@@ -58,20 +70,7 @@ class ImgixImage extends React.PureComponent<
       <Component
         {...props}
         key={retryCount}
-        onError={(err: any) => {
-          // We don't want to retry if there is a 404.
-          const isNotFound =
-            err.nativeEvent.statusCode === 404 ||
-            err.nativeEvent.message?.includes('404');
-          const shouldRetry = retryOnError && !isNotFound;
-
-          if (shouldRetry && retryCount < maxRetries) {
-            this.setState(({ retryCount }) => ({ retryCount: retryCount + 1 }));
-          } else {
-            // @ts-expect-error
-            props.onError?.(err);
-          }
-        }}
+        onError={this.handleError}
         source={source}
       />
     );
