@@ -273,6 +273,7 @@ export default function useSwapCurrencyHandlers({
         setParams({ focused: false });
         delayNext();
         navigate(Routes.CURRENCY_SELECT_SCREEN, {
+          callback: inputFieldRef?.current?.clear,
           chainId,
           onSelectCurrency: updateInputCurrency,
           restoreFocusOnSwapModal: () => setParams({ focused: true }),
@@ -281,7 +282,14 @@ export default function useSwapCurrencyHandlers({
         });
       });
     },
-    [dangerouslyGetParent, navigate, setParams, title, updateInputCurrency]
+    [
+      dangerouslyGetParent,
+      inputFieldRef,
+      navigate,
+      setParams,
+      title,
+      updateInputCurrency,
+    ]
   );
 
   const navigateToSelectOutputCurrency = useCallback(
@@ -289,6 +297,7 @@ export default function useSwapCurrencyHandlers({
       InteractionManager.runAfterInteractions(() => {
         setParams({ focused: false });
         navigate(Routes.CURRENCY_SELECT_SCREEN, {
+          callback: outputFieldRef?.current?.clear,
           chainId,
           onSelectCurrency: updateOutputCurrency,
           restoreFocusOnSwapModal: () => setParams({ focused: true }),
@@ -297,7 +306,7 @@ export default function useSwapCurrencyHandlers({
         });
       });
     },
-    [navigate, setParams, updateOutputCurrency]
+    [navigate, outputFieldRef, setParams, updateOutputCurrency]
   );
 
   return {

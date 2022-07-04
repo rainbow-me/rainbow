@@ -87,6 +87,7 @@ export default function CurrencySelectModal() {
       restoreFocusOnSwapModal,
       toggleGestureEnabled,
       type,
+      callback,
     },
   } = useRoute();
 
@@ -299,7 +300,7 @@ export default function CurrencySelectModal() {
       dispatch(emitChartsRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
       setIsTransitioning(true); // continue to display list during transition
-
+      callback?.();
       onSelectCurrency(
         isMainnet && type === CurrencySelectionTypes.output
           ? { ...item, type: 'token' }
@@ -314,6 +315,7 @@ export default function CurrencySelectModal() {
       onSelectCurrency,
       type,
       handleNavigate,
+      callback,
     ]
   );
 
