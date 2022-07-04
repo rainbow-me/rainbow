@@ -72,7 +72,7 @@ const OuterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
-function SendFlowNavigator() {
+function SendFlowNavigator({ route: { params } }) {
   return (
     <Stack.Navigator
       {...stackNavigationConfig}
@@ -80,6 +80,7 @@ function SendFlowNavigator() {
     >
       <Stack.Screen
         component={SendSheet}
+        initialParams={params}
         name={Routes.SEND_SHEET}
         options={sheetPreset}
       />

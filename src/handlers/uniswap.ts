@@ -12,7 +12,6 @@ import {
   TradeType,
   WETH,
 } from '@uniswap/sdk';
-import { get } from 'lodash';
 import { loadWallet } from '../model/wallet';
 import { estimateGasWithPadding, toHex, web3Provider } from './web3';
 import { Asset } from '@rainbow-me/entities';
@@ -46,11 +45,8 @@ const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
 export const getTestnetUniswapPairs = (
   network: Network
 ): { [key: string]: Asset } => {
-  const pairs: { [address: string]: Asset } = get(
-    UNISWAP_TESTNET_TOKEN_LIST,
-    network,
-    {}
-  );
+  const pairs: { [address: string]: Asset } =
+    (UNISWAP_TESTNET_TOKEN_LIST as any)?.[network] ?? {};
 
   const keysToLowerCase = Object.entries(pairs).reduce<Record<string, Asset>>(
     (acc, [key, value]) => {

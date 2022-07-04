@@ -1,5 +1,4 @@
-import { get } from 'lodash';
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
@@ -57,7 +56,7 @@ const PriceContainer = ios
 
 const BottomRow = ({ balance, native }) => {
   const { colors } = useTheme();
-  const percentChange = get(native, 'change');
+  const percentChange = native?.change;
   const percentageChangeDisplay = formatPercentageString(percentChange);
 
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
@@ -66,7 +65,7 @@ const BottomRow = ({ balance, native }) => {
     <BottomRowContainer>
       <FlexItem flex={1}>
         <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-          {get(balance, 'display', '')}
+          {balance?.display ?? ''}
         </BottomRowText>
       </FlexItem>
       <View>
@@ -79,7 +78,7 @@ const BottomRow = ({ balance, native }) => {
 };
 
 const TopRow = ({ name, native, nativeCurrencySymbol }) => {
-  const nativeDisplay = get(native, 'balance.display');
+  const nativeDisplay = native?.balance?.display;
   const { colors } = useTheme();
 
   return (
@@ -154,15 +153,9 @@ const BalanceCoinRow = ({
     []
   );
 
-  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
-  const isPinned = useMemo(() => {
-    return pinnedCoins.includes(item.uniqueId);
-  }, [pinnedCoins, item.uniqueId]);
-
-  const isHidden = useMemo(() => {
-    return hiddenCoins.includes(item.uniqueId);
-  }, [hiddenCoins, item.uniqueId]);
-
+  const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
+  const isPinned = pinnedCoinsObj[item.uniqueId];
+  const isHidden = hiddenCoinsObj[item.uniqueId];
   return (
     <Row flex={1}>
       <Animated.View style={paddingStyle}>

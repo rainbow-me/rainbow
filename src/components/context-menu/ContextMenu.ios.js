@@ -1,10 +1,12 @@
-import { omit, pick } from 'lodash';
+import omit from 'lodash/omit';
 import React, { Fragment, useCallback, useRef, useState } from 'react';
 import ActionSheet from 'react-native-actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import { padding } from '@rainbow-me/styles';
+const style = padding.object(12, 8);
 
 const ActionSheetProps = [
   'cancelButtonIndex',
@@ -15,8 +17,6 @@ const ActionSheetProps = [
   'tintColor',
   'title',
 ];
-
-const style = padding.object(12, 8);
 
 const ContextButton = props => (
   <Centered style={style} {...props}>
@@ -66,7 +66,7 @@ export default function ContextMenu({
         </ButtonPressAnimation>
       )}
       <ActionSheet
-        {...pick(props, ActionSheetProps)}
+        {...pickShallow(props, ActionSheetProps)}
         cancelButtonIndex={
           Number.isInteger(cancelButtonIndex)
             ? cancelButtonIndex

@@ -155,6 +155,7 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
   const { charts: existingCharts } = getState().charts;
   const assetCharts = message?.payload?.charts ?? {};
   const { nativeCurrency } = getState().settings;
+
   if (nativeCurrency?.toLowerCase() === message?.meta?.currency) {
     const newChartData = Object.entries(assetCharts).reduce<
       ChartsState['charts']
