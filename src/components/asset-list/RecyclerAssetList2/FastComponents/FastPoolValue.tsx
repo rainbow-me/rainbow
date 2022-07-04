@@ -59,6 +59,7 @@ const MemoFastPoolValue = React.memo(function FastPoolValue({
     }
     return { color, formattedValue };
   }, [colors, nativeCurrency, type, value]);
+
   return (
     <View
       style={[{ backgroundColor: colors.alpha(color, 0.06) }, cx.container]}
