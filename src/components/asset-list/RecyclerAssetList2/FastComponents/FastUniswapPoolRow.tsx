@@ -111,7 +111,6 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
   },
   row: {
-    // backgroundColor: 'rgba(0, 255, 255, 0.1)',
     flexDirection: 'row',
   },
   translateX: {
