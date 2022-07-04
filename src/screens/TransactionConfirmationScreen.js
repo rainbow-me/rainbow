@@ -632,6 +632,7 @@ export default function TransactionConfirmationScreen() {
       'gas',
       'chainId',
     ]);
+
     let response = null;
 
     try {
