@@ -18,7 +18,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/uniswap';
 import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { withoutSomeStrings } from '@rainbow-me/helpers/utilities';
+import { excludeSpecifiedStrings } from '@rainbow-me/helpers/utilities';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
@@ -243,7 +243,7 @@ export const uniswapUpdateFavorites = (
 
   const updatedFavorites = add
     ? uniq(concat(normalizedFavorites, assetAddress))
-    : withoutSomeStrings(normalizedFavorites, assetAddress);
+    : excludeSpecifiedStrings(normalizedFavorites, assetAddress);
   const updatedFavoritesMeta =
     (await getUniswapFavoritesMetadata(updatedFavorites)) || favoritesMeta;
   dispatch({

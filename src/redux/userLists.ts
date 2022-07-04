@@ -10,7 +10,7 @@ import {
   saveSelectedUserList,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
-import { withoutSomeStrings } from '@rainbow-me/helpers/utilities';
+import { excludeSpecifiedStrings } from '@rainbow-me/helpers/utilities';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import { AppGetState, AppState } from '@rainbow-me/redux/store';
 import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';
@@ -197,7 +197,7 @@ export const userListsUpdateList = (
     if (listIndex !== null) {
       const updatedListTokens = add
         ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
-        : withoutSomeStrings(allNewLists[listIndex].tokens, assetAddress);
+        : excludeSpecifiedStrings(allNewLists[listIndex].tokens, assetAddress);
       if (add) {
         dispatch(emitAssetRequest(assetAddress));
       }

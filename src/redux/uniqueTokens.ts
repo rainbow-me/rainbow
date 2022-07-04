@@ -23,7 +23,7 @@ import {
 } from '@rainbow-me/handlers/opensea-api';
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { withoutSomeStrings } from '@rainbow-me/helpers/utilities';
+import { excludeSpecifiedStrings } from '@rainbow-me/helpers/utilities';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //
@@ -305,7 +305,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       if (shouldStopFetching) {
         const existingFamilies = getFamilies(existingUniqueTokens);
         const newFamilies = getFamilies(uniqueTokens);
-        const incomingFamilies = withoutSomeStrings(
+        const incomingFamilies = excludeSpecifiedStrings(
           newFamilies,
           existingFamilies
         );

@@ -520,9 +520,9 @@ export const partition = <
  * @param values The values to exclude.
  * @return Returns the new array of filtered values.
  */
-export const withoutSomeStrings = <T>(arr: T[], values: T | T[]): T[] => {
+export const excludeSpecifiedStrings = <T>(arr: T[], values: T | T[]): T[] => {
   if (Array.isArray(values)) {
-    return arr.filter(e => !values.some(v => v === e));
+    return arr.filter(e => !values.includes(e));
   }
   return arr.filter(e => e !== values);
 };
