@@ -3,7 +3,7 @@ import {
   StatusBar as RNStatusBar,
   StatusBarAnimation,
 } from 'react-native';
-import { StatusBar, StatusBarProps } from 'react-native-bars';
+import { NavigationBar, StatusBar, StatusBarProps } from 'react-native-bars';
 
 class StatusBarService {
   setBackgroundColor(color: ColorValue, animated?: boolean): void {
@@ -27,11 +27,17 @@ class StatusBarService {
       animated: isAnimated,
       barStyle: 'light-content',
     });
+    NavigationBar.pushStackEntry({
+      barStyle: 'light-content',
+    });
   }
 
   setDarkContent(isAnimated = true) {
     StatusBar.pushStackEntry({
       animated: isAnimated,
+      barStyle: 'dark-content',
+    });
+    NavigationBar.pushStackEntry({
       barStyle: 'dark-content',
     });
   }

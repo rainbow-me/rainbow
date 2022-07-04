@@ -28,7 +28,6 @@ export function triggerOnSwipeLayout(newAction) {
 }
 
 export function onHandleStatusBar() {
-  // StatusBarService.setHidden(false);
   const routeName = Navigation.getActiveRouteName();
   if (currentColors.theme === 'dark') {
     StatusBarService.setLightContent();

@@ -1,13 +1,12 @@
 import analytics from '@segment/analytics-react-native';
 import { useCallback, useRef } from 'react';
-import { NativeModules } from 'react-native';
+import { InteractionManager, NativeModules } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
 import { onHandleStatusBar } from '@rainbow-me/navigation/onNavigationStateChange';
-// import { StatusBarService } from '@rainbow-me/services';
-// import { currentColors } from '@rainbow-me/theme';
+import { StatusBarService } from '@rainbow-me/services';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
@@ -25,18 +24,12 @@ export default function useHideSplashScreen() {
       }
     }
     onHandleStatusBar();
-    // if (android) {
-    //   StatusBarService.setBackgroundColor('transparent', false);
-    //   StatusBarService.setTranslucent(true);
-    //   StatusBarService.setBarStyle('dark-content', true);
-    // }
     // // show the StatusBar
     onHandleStatusBar();
-    // (ios && StatusBarService.setHidden(false, 'fade')) ||
-    //   InteractionManager.runAfterInteractions(() => {
-    //     StatusBarService.setHidden(false, 'fade');
-    //   });
-    // console.log('currentColors.0.0', currentColors.theme);
+    (ios && StatusBarService.setHidden(false, 'fade')) ||
+      InteractionManager.runAfterInteractions(() => {
+        StatusBarService.setHidden(false, 'fade');
+      });
 
     if (!alreadyLoggedPerformance.current) {
       PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive);
