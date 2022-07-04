@@ -455,3 +455,38 @@ export const omitFlatten = <T extends object, K extends keyof T>(
 
 export const times = (n: number, fn: (i: number) => unknown) =>
   Array.from({ length: n }, (_, i) => fn(i));
+
+/**
+ * Creates an object composed of the picked object properties.
+ * @param obj The source object
+ * @param paths The property paths to pick
+ */
+export const pickShallow = <T, K extends keyof T>(
+  obj: T,
+  paths: K[]
+): Pick<T, K> => {
+  return paths.reduce((acc, key) => {
+    if (obj[key] !== undefined) {
+      acc[key] = obj[key];
+      return acc;
+    }
+    return acc;
+  }, {} as Pick<T, K>);
+};
+
+/**
+ * Creates an object composed of the picked object properties by some predicate function.
+ * @param obj The source object
+ * @param predicate The function invoked per property
+ */
+export const pickBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
+};

@@ -3,7 +3,7 @@ import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
-import { clone, isEmpty, mapValues, pickBy, values } from 'lodash';
+import { clone, isEmpty, mapValues, values } from 'lodash';
 import { Alert, AppState, InteractionManager, Linking } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
@@ -27,6 +27,7 @@ import {
   convertHexToString,
   delay,
   omitBy,
+  pickBy,
 } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@rainbow-me/routes';

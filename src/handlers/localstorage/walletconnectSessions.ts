@@ -1,6 +1,5 @@
-import pickBy from 'lodash/pickBy';
 import { getGlobal, saveGlobal } from './common';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
+import { omitFlatten, pickBy } from '@rainbow-me/helpers/utilities';
 
 const WALLETCONNECT = 'walletconnect';
 
@@ -9,7 +8,12 @@ const WALLETCONNECT = 'walletconnect';
  * @return {Object}
  */
 export const getAllValidWalletConnectSessions = async () => {
-  const allSessions = await getAllWalletConnectSessions();
+  const allSessions: {
+    [key: string]: {
+      connected?: boolean;
+    };
+  } = await getAllWalletConnectSessions();
+
   return pickBy(allSessions, value => value.connected);
 };
 

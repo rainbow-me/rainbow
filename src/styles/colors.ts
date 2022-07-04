@@ -383,7 +383,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
  * @deprecated used for safely retrieving color values in JS not needed with TypeScript anymore
  */
 const getColorForString = (colorString = '', providedThemeColors = colors) => {
-  if (!colorString) return null;
+  //FIXME: sometimes receive non string value
+  if (!colorString || typeof colorString !== 'string') return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);
   return isValidColorString
