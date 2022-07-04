@@ -47,7 +47,9 @@ export default function SwapDetailsContent({
   const [detailsExpanded, setDetailsExpanded] = useState(false);
 
   const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
-
+  const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+    inputCurrency?.type
+  );
   return (
     <AccentColorProvider color={colorForAsset}>
       <Container
@@ -66,7 +68,10 @@ export default function SwapDetailsContent({
             <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
           )}
           {tradeDetails.feePercentageBasisPoints !== 0 && (
-            <SwapDetailsFeeRow tradeDetails={tradeDetails} />
+            <SwapDetailsFeeRow
+              network={inputCurrencyNetwork}
+              tradeDetails={tradeDetails}
+            />
           )}
           {!detailsExpanded && (
             <ButtonPressAnimation
@@ -90,10 +95,7 @@ export default function SwapDetailsContent({
             <Rows space="24px">
               <Divider />
               <SwapDetailsPriceRow tradeDetails={tradeDetails} />
-              {!isNativeAsset(
-                inputCurrency?.address,
-                ethereumUtils.getNetworkFromType(inputCurrency?.type)
-              ) && (
+              {!isNativeAsset(inputCurrency?.address, inputCurrencyNetwork) && (
                 <SwapDetailsContractRow
                   asset={inputCurrency}
                   onCopySwapDetailsText={onCopySwapDetailsText}
@@ -101,7 +103,7 @@ export default function SwapDetailsContent({
               )}
               {!isNativeAsset(
                 outputCurrency?.address,
-                ethereumUtils.getNetworkFromType(inputCurrency?.type)
+                inputCurrencyNetwork
               ) && (
                 <SwapDetailsContractRow
                   asset={outputCurrency}
