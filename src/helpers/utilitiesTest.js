@@ -676,6 +676,19 @@ export const uniqBy4 = (arr, predicate) => {
   // ];
 };
 
+export const withoutSomeStrings = (arr, values) => {
+  if (Array.isArray(values)) {
+    return arr.filter(e => !values.includes(e));
+  }
+  return arr.filter(e => e !== values);
+};
+export const differenceStrings = (arr, values) => {
+  if (Array.isArray(values)) {
+    return arr.filter(e => values.includes(e));
+  }
+  return arr.filter(e => e === values);
+};
+
 export const assetsTest = [
   {
     asset: {
