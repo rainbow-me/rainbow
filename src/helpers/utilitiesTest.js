@@ -689,6 +689,8 @@ export const differenceStrings = (arr, values) => {
   return arr.filter(e => e === values);
 };
 
+export const sortDESC = (a, b) => (a > b ? -1 : 1);
+
 export const assetsTest = [
   {
     asset: {

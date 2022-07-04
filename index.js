@@ -18,6 +18,7 @@ import {
   mapValues as _mapValues,
   omit as _omit,
   omitBy as _omitBy,
+  orderBy as _orderBy,
   pick as _pick,
   pickBy as _pickBy,
   reduce as _reduce,
@@ -74,6 +75,7 @@ import {
   regex,
   smallArr,
   smallObj,
+  sortDESC,
   sorterByFamiliesName,
   sorterByFamiliesNameReverse,
   sorterByFamiliesNameWithDestr,
@@ -537,6 +539,7 @@ export default function measurement() {
   });
 
   const newFamilies = testRows.map(i => i.familyName); //162 el
+  const arrWithNumbers = testRows.map(i => i.childrenAmount); //162 el
   const existingFamilies = [
     newFamilies[3],
     newFamilies[90],
@@ -560,6 +563,23 @@ export default function measurement() {
     );
     average('JS differenceStrings', () =>
       differenceStrings(newFamilies, existingFamilies)
+    );
+  });
+
+  measure('18: orderBy `desc`', 200, () => {
+    average('lodash orderBy `desc`', () =>
+      _orderBy(testRows, ({ childrenAmount }) => Number(childrenAmount), [
+        'desc',
+      ])
+    );
+    average('JS orderBy `desc`', () =>
+      testRows.sort((a, b) => {
+        // 'desc'
+        return a.childrenAmount > b.childrenAmount ? -1 : 1;
+      })
+    );
+    average('JS orderBy `desc 2`', () =>
+      testRows.sort((a, b) => sortDESC(a.childrenAmount, b.childrenAmount))
     );
   });
 
