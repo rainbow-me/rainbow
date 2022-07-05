@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from '@rainbow-me/design-system';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { padding } from '@rainbow-me/styles';
 
 const MemoFastPoolValue = React.memo(function FastPoolValue({
   type,
@@ -64,7 +63,7 @@ const MemoFastPoolValue = React.memo(function FastPoolValue({
     <View
       style={[{ backgroundColor: colors.alpha(color, 0.06) }, cx.container]}
     >
-      <Text color={{ custom: color }} size="16px" weight="bold">
+      <Text align="center" color={{ custom: color }} size="16px" weight="bold">
         {formattedValue}
       </Text>
     </View>
@@ -77,8 +76,8 @@ const cx = StyleSheet.create({
   container: {
     alignItems: 'center',
     borderRadius: 15,
-    height: 30,
-    ...padding.object(0, 9, 0),
-    justifyContent: 'center',
+    paddingBottom: 11,
+    paddingHorizontal: 8,
+    paddingTop: 9,
   },
 });

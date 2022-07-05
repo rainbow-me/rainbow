@@ -48,12 +48,7 @@ export default React.memo(function UniswapCoinRow({
             </View>
             <View style={sx.innerContainer}>
               <View style={sx.row}>
-                <Text
-                  align="right"
-                  numberOfLines={1}
-                  size="16px"
-                  weight="regular"
-                >
+                <Text numberOfLines={1} size="16px" weight="regular">
                   {item.tokenNames}
                 </Text>
               </View>
@@ -83,7 +78,7 @@ export default React.memo(function UniswapCoinRow({
 
 const sx = StyleSheet.create({
   bottom: {
-    marginTop: 17,
+    marginTop: 16,
   },
   container: {
     flexDirection: 'row',
@@ -94,14 +89,14 @@ const sx = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
-    marginLeft: 14,
+    marginLeft: 13,
     marginTop: 14,
   },
   nonEditMode: {
     paddingLeft: 19,
   },
   poolValue: {
-    marginTop: 8,
+    marginTop: 9,
   },
   reverseRow: {
     flexDirection: 'row-reverse',
