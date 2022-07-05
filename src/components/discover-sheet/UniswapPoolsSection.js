@@ -204,35 +204,32 @@ export default function UniswapPools({
   );
   const { uniswap } = useSelector(readableUniswapSelector);
 
-  const handleOpenExpandedState = useLatestCallback(
-    item => {
-      let poolAsset = uniswap.find(pool => pool.address === item.address);
-      if (!poolAsset) {
-        poolAsset = parseAssetNative(
-          { ...item, ...genericAssets[item.address] },
-          nativeCurrency
-        );
-      }
+  const handleOpenExpandedState = useLatestCallback(item => {
+    let poolAsset = uniswap.find(pool => pool.address === item.address);
+    if (!poolAsset) {
+      poolAsset = parseAssetNative(
+        { ...item, ...genericAssets[item.address] },
+        nativeCurrency
+      );
+    }
 
-      analytics.track('Pressed Pools Item', {
-        category: 'discover',
-        symbol: poolAsset.tokenNames,
-        type: item.attribute,
-      });
+    analytics.track('Pressed Pools Item', {
+      category: 'discover',
+      symbol: poolAsset.tokenNames,
+      type: item.attribute,
+    });
 
-      // on iOS we handle this on native side
-      android && removeNextToLastRoute();
+    // on iOS we handle this on native side
+    android && removeNextToLastRoute();
 
-      push(Routes.EXPANDED_ASSET_SHEET_POOLS, {
-        asset: poolAsset,
-        dpi: true,
-        fromDiscover: true,
-        longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
-        type: 'uniswap',
-      });
-    },
-    [genericAssets, nativeCurrency, push, removeNextToLastRoute, uniswap]
-  );
+    push(Routes.EXPANDED_ASSET_SHEET_POOLS, {
+      asset: poolAsset,
+      dpi: true,
+      fromDiscover: true,
+      longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
+      type: 'uniswap',
+    });
+  });
 
   const theme = useTheme();
 

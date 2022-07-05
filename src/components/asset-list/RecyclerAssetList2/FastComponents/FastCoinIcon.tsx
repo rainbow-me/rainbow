@@ -98,7 +98,7 @@ export default React.memo(function FastCoinIcon({
 
   const shouldRenderFallback = !eth && !tokenMetadata;
   const shouldRenderLocalCoinIconImage =
-    !shouldRenderFallback && CoinIconsImages[formattedSymbol];
+    !shouldRenderFallback && !!CoinIconsImages[formattedSymbol];
   const shouldRenderContract = symbol === 'contract';
 
   return (
