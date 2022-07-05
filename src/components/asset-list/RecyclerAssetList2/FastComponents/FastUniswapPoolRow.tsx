@@ -110,6 +110,6 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
   },
   translateX: {
-    transform: [{ translateX: -10 }],
+    marginLeft: -10,
   },
 });
