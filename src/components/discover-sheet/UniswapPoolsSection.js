@@ -14,7 +14,11 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
-import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useLatestCallback,
+  useUniswapPools,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { useRemoveNextToLast } from '@rainbow-me/navigation/useRemoveNextToLast';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -200,7 +204,7 @@ export default function UniswapPools({
   );
   const { uniswap } = useSelector(readableUniswapSelector);
 
-  const handleOpenExpandedState = useCallback(
+  const handleOpenExpandedState = useLatestCallback(
     item => {
       let poolAsset = uniswap.find(pool => pool.address === item.address);
       if (!poolAsset) {
