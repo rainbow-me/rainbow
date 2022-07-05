@@ -326,7 +326,7 @@ export default function UniswapPools({
             }}
             data={listDataFiltered}
             horizontal
-            keyExtractor={item => item?.address}
+            keyExtractor={item => item?.id}
             ref={listRef}
             renderItem={renderTypeItem}
             scrollsToTop={false}
@@ -349,7 +349,7 @@ export default function UniswapPools({
           <FlatList
             contentContainerStyle={flatListContainerStyle}
             data={pairsSorted}
-            keyExtractor={(item, index) => index}
+            keyExtractor={item => item?.address}
             renderItem={renderUniswapPoolListRow}
             scrollsToTop={false}
           />
