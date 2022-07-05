@@ -1084,7 +1084,7 @@
         "deposit": "Deposit",
         "receive": "Receive",
         "swap": "Swap",
-        "get_symbol_with": "Get %{symbol} With",
+        "get_symbol_with": "Get %{symbol} with",
         "withdraw": "Withdraw",
         "withdraw_symbol": "Withdraw %{symbol}"
       },
