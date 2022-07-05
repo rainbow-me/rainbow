@@ -137,14 +137,7 @@ export default function useSwapCurrencyHandlers({
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
       outputFieldRef.current?.clear();
-      if (nativeFieldRef.current === currentlyFocusedInput()) {
-        focusTextInput(inputFieldRef.current);
-        focusTextInput(nativeFieldRef.current);
-      } else {
-        focusTextInput(nativeFieldRef.current);
-        focusTextInput(inputFieldRef.current);
-      }
-
+      inputFieldRef.current?.clear();
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
           ? nativeFieldRef
@@ -163,10 +156,18 @@ export default function useSwapCurrencyHandlers({
     } else if (inputFieldRef.current === currentlyFocusedInput()) {
       inputFieldRef.current?.clear();
       nativeFieldRef.current?.clear();
-      flipSwapCurrenciesWithTimeout(outputFieldRef, true, null);
+      flipSwapCurrenciesWithTimeout(
+        outputFieldRef,
+        true,
+        updatePrecisionToDisplay(derivedValues?.inputAmount)
+      );
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
       outputFieldRef.current?.clear();
-      flipSwapCurrenciesWithTimeout(inputFieldRef, false, null);
+      flipSwapCurrenciesWithTimeout(
+        inputFieldRef,
+        false,
+        updatePrecisionToDisplay(derivedValues?.outputAmount)
+      );
     }
   }, [
     currentNetwork,
