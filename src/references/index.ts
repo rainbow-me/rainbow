@@ -86,7 +86,8 @@ export const COVALENT_ETH_ADDRESS =
   '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-export const WMATIC_ADDRESS = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
+export const WMATIC_POLYGON_ADDRESS =
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
