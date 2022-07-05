@@ -4,11 +4,12 @@ import { ButtonPressAnimation } from '../../../animations';
 import FastCoinIcon from './FastCoinIcon';
 import FastPoolValue from './FastPoolValue';
 import { Text } from '@rainbow-me/design-system';
+import { UniswapPoolAddressDetailsFull } from '@rainbow-me/redux/uniswapLiquidity';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 interface UniswapCoinRowItem {
   onPress: () => void;
-  tokens: any[];
+  tokens: UniswapPoolAddressDetailsFull[];
   theme: any;
   tokenNames: string;
   symbol: string;
@@ -34,13 +35,13 @@ export default React.memo(function UniswapCoinRow({
             <View style={sx.reverseRow}>
               <View style={sx.translateX}>
                 <FastCoinIcon
-                  address={item.tokens[1].address.toLowerCase()}
+                  address={item.tokens[1].address?.toLowerCase()!}
                   symbol={item.tokens[1].symbol}
                   theme={item.theme}
                 />
               </View>
               <FastCoinIcon
-                address={item.tokens[0].address.toLowerCase()}
+                address={item.tokens[0].address?.toLowerCase()!}
                 symbol={item.tokens[0].symbol}
                 theme={item.theme}
               />
