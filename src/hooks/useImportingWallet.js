@@ -266,7 +266,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             .then(success => {
               handleSetImporting(false);
               if (success) {
-                goBack();
+                ios && goBack();
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
                     replace(Routes.SWIPE_LAYOUT, {
