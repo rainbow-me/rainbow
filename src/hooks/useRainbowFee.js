@@ -1,4 +1,5 @@
 import { ETH_ADDRESS } from '@rainbow-me/swaps';
+import { useEffect, useState } from 'react';
 import {
   convertRawAmountToDecimalFormat,
   divide,
@@ -8,8 +9,9 @@ import {
 import { useSwapCurrencies } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-export default function useRainbowFee({ tradeDetails }) {
+export default function useRainbowFee({ tradeDetails, network }) {
   const { inputCurrency } = useSwapCurrencies();
+  const [nativeAsset, setNativeAsset] = useState(null);
 
   const rainbowFeePercentage = useMemo(() => {
     const convertToNumber = Number(tradeDetails.feePercentageBasisPoints);
@@ -18,7 +20,7 @@ export default function useRainbowFee({ tradeDetails }) {
 
   const rainbowFeeNative = useMemo(() => {
     // token to ETH
-    if (inputCurrency?.price && tradeDetails.sellAmount) {
+    if (nativeAsset && inputCurrency?.price && tradeDetails.sellAmount) {
       if (
         tradeDetails.buyTokenAddress.toLowerCase() === ETH_ADDRESS.toLowerCase()
       ) {
@@ -35,9 +37,9 @@ export default function useRainbowFee({ tradeDetails }) {
           18
         );
 
-        const priceOfEth = ethereumUtils.getEthPriceUnit();
-
-        return Number(feeInOutputToken) * priceOfEth;
+        return (
+          Number(feeInOutputToken) * Number(nativeAsset.price.value)
+        ).toFixed(2);
         // eth to token or token to token
       } else {
         const feeInInputTokensRawAmount = subtract(
@@ -56,15 +58,15 @@ export default function useRainbowFee({ tradeDetails }) {
       }
     }
     return null;
-  }, [
-    inputCurrency.decimals,
-    inputCurrency.price,
-    tradeDetails.buyAmount,
-    tradeDetails.buyTokenAddress,
-    tradeDetails.feePercentageBasisPoints,
-    tradeDetails.sellAmount,
-    tradeDetails.sellAmountMinusFees,
-  ]);
+  }, [inputCurrency, tradeDetails, nativeAsset]);
+
+  useEffect(() => {
+    const getNativeAsset = async () => {
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(network);
+      setNativeAsset(nativeAsset);
+    };
+    !nativeAsset && getNativeAsset();
+  }, [nativeAsset, network]);
 
   return { rainbowFeeNative, rainbowFeePercentage };
 }
