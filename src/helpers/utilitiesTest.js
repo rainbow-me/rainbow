@@ -621,6 +621,34 @@ export const uniqBy = (arr, predicate) => {
       .values(),
   ];
 };
+export const uniqBy0 = (arr, predicate) => {
+  const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
+
+  return Array.from(
+    arr
+      .reduce((map, item) => {
+        const key = cb(item);
+        map.has(key) || map.set(key, item);
+        return map;
+      }, new Map())
+      .values()
+  );
+};
+
+export const uniqBy0 = (arr, predicate) => {
+  const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
+
+  const keys = 
+  return Array.from(
+    arr
+      .reduce((map, item) => {
+        const key = cb(item);
+        map.has(key) || map.set(key, item);
+        return map;
+      }, new Map())
+      .values()
+  );
+};
 export const uniqBy2 = (arr, predicate) => {
   const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
   return Array.from(
@@ -676,6 +704,52 @@ export const uniqBy4 = (arr, predicate) => {
   // ];
 };
 
+export const uniqBy5 = (arr, predicate) => {
+  const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
+
+  const keys = new Set(arr.map(i => cb(i)));
+
+  return arr.reduce((acc, item) => {
+    const key = item === null || item === undefined ? item : cb(item);
+    if (keys.has(key)) {
+      acc.push(item);
+      keys.delete(key);
+    }
+    return acc;
+  }, []);
+};
+
+export const uniqueArray = (objects, uniqueBy, keepFirst = true) => {
+  const orderedObject = value => {
+    if (typeof value !== 'object') return value;
+    return Object.keys(value)
+      .sort()
+      .reduce((pre, key) => {
+        pre[key] = orderedObject(value[key]);
+        return pre;
+      }, {});
+  };
+
+  return Array.from(
+    objects
+      .reduce((map, e) => {
+        let key = uniqueBy
+          .map(prop => {
+            let value = prop
+              .split('.')
+              .reduce((object, cur) => object?.[cur], e);
+            return [JSON.stringify(orderedObject(value)), typeof value];
+          })
+          .flat()
+          .join('-');
+
+        if (keepFirst && map.has(key)) return map;
+        return map.set(key, e);
+      }, new Map())
+      .values()
+  );
+};
+
 export const withoutSomeStrings = (arr, values) => {
   if (Array.isArray(values)) {
     return arr.filter(e => !values.includes(e));
@@ -690,6 +764,29 @@ export const differenceStrings = (arr, values) => {
 };
 
 export const sortDESC = (a, b) => (a > b ? -1 : 1);
+
+export function groupByFunc(arr, mapper) {
+  return arr.reduce((accumulator, val) => {
+    const groupedKey = mapper(val);
+    if (!accumulator[groupedKey]) {
+      accumulator[groupedKey] = [];
+    }
+    accumulator[groupedKey].push(val);
+    return accumulator;
+  }, {});
+}
+
+export function groupByK2(arr, key) {
+  return arr.reduce((accumulator, val) => {
+    const groupedKey = val[key];
+    if (!accumulator[groupedKey]) {
+      accumulator[groupedKey] = [val];
+      return accumulator;
+    }
+    accumulator[groupedKey].push(val);
+    return accumulator;
+  }, {});
+}
 
 export const assetsTest = [
   {

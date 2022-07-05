@@ -57,6 +57,9 @@ import {
   forOfLikeReduceObjSpread,
   groupBy,
   groupBy2,
+  groupByFunc,
+  groupByK,
+  groupByK2,
   isIdEven,
   largeObj,
   omitBy,
@@ -81,9 +84,13 @@ import {
   sorterByFamiliesNameWithDestr,
   times,
   uniqBy,
+  uniqBy0,
+  uniqBy01,
   uniqBy2,
   uniqBy3,
   uniqBy4,
+  uniqBy5,
+  uniqueArray,
   uniqueTokensLarge,
   withoutSomeStrings,
   withoutSomeStrings2,
@@ -465,6 +472,14 @@ export default function measurement() {
         return acc;
       }, {})
     );
+    average('JS groupByFunc', () =>
+      groupByFunc(uniqueTokensLarge, ({ familyName }) => familyName)
+    );
+    average('JS groupByFunc 2', () =>
+      groupByFunc(uniqueTokensLarge, v => v.familyName)
+    );
+    // average('JS groupByK', () => groupByK(uniqueTokensLarge, 'familyName'));
+    average('JS groupByK2', () => groupByK2(uniqueTokensLarge, 'familyName'));
     average('JS reduce imported', () =>
       groupBy(uniqueTokensLarge, 'familyName')
     );
@@ -488,6 +503,12 @@ export default function measurement() {
     average('JS uniqBy1', () =>
       uniqBy(assetsTestTwice, v => v.asset.asset_code)
     );
+    average('JS uniqBy0', () =>
+      uniqBy0(assetsTestTwice, v => v.asset.asset_code)
+    );
+    // average('JS uniqBy01', () =>
+    //   uniqBy01(assetsTestTwice, v => v.asset.asset_code)
+    // );
     average('JS uniqBy2', () =>
       uniqBy2(assetsTestTwice, v => v.asset.asset_code)
     );
@@ -499,6 +520,12 @@ export default function measurement() {
     );
     average('JS uniqBy5', () =>
       uniqBy(assetsTestTwice, ({ asset }) => asset.asset_code)
+    );
+    average('JS uniqBy6', () =>
+      uniqBy5(assetsTestTwice, v => v.asset.asset_code)
+    );
+    average('JS uniqBy7', () =>
+      uniqueArray(assetsTestTwice, ['asset.asset_code'])
     );
   });
 
