@@ -156,10 +156,18 @@ export default function useSwapCurrencyHandlers({
     } else if (inputFieldRef.current === currentlyFocusedInput()) {
       inputFieldRef.current?.clear();
       nativeFieldRef.current?.clear();
-      flipSwapCurrenciesWithTimeout(outputFieldRef, true, null);
+      flipSwapCurrenciesWithTimeout(
+        outputFieldRef,
+        true,
+        updatePrecisionToDisplay(derivedValues?.inputAmount)
+      );
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
       outputFieldRef.current?.clear();
-      flipSwapCurrenciesWithTimeout(inputFieldRef, false, null);
+      flipSwapCurrenciesWithTimeout(
+        inputFieldRef,
+        false,
+        updatePrecisionToDisplay(derivedValues?.outputAmount)
+      );
     }
   }, [
     currentNetwork,
