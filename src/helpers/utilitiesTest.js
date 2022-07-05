@@ -634,21 +634,6 @@ export const uniqBy0 = (arr, predicate) => {
       .values()
   );
 };
-
-export const uniqBy0 = (arr, predicate) => {
-  const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
-
-  const keys = 
-  return Array.from(
-    arr
-      .reduce((map, item) => {
-        const key = cb(item);
-        map.has(key) || map.set(key, item);
-        return map;
-      }, new Map())
-      .values()
-  );
-};
 export const uniqBy2 = (arr, predicate) => {
   const cb = typeof predicate === 'function' ? predicate : o => o[predicate];
   return Array.from(

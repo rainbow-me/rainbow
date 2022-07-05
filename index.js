@@ -506,9 +506,6 @@ export default function measurement() {
     average('JS uniqBy0', () =>
       uniqBy0(assetsTestTwice, v => v.asset.asset_code)
     );
-    // average('JS uniqBy01', () =>
-    //   uniqBy01(assetsTestTwice, v => v.asset.asset_code)
-    // );
     average('JS uniqBy2', () =>
       uniqBy2(assetsTestTwice, v => v.asset.asset_code)
     );
