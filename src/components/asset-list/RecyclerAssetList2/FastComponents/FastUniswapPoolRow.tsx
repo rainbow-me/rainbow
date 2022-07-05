@@ -89,7 +89,7 @@ const sx = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
-    marginLeft: 13,
+    marginLeft: 14,
     marginTop: 14,
   },
   nonEditMode: {
