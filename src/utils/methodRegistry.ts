@@ -1,5 +1,4 @@
 import { Contract } from '@ethersproject/contracts';
-import { isEmpty } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import namesOverrides from '../references/method-names-overrides.json';
 import methodRegistryABI from '../references/method-registry-abi.json';
@@ -24,7 +23,7 @@ export const methodRegistryLookupAndParse = async (
     800
   );
 
-  if (!isEmpty(response?.data?.contractFunction?.text)) {
+  if (response?.data?.contractFunction?.text) {
     signature = response.data.contractFunction.text;
   } else {
     const registry = new Contract(
