@@ -297,8 +297,8 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should show Swap Settings State on Settings Button press', async () => {
     await Helpers.waitAndTap('exchange-settings-button');
-    await Helpers.checkIfVisible('swap-settings-container');
-    await Helpers.swipe('swap-settings-container', 'down', 'slow');
+    await Helpers.checkIfVisible('swap-settings-header');
+    await Helpers.swipe('swap-settings-header', 'down', 'slow');
   });
 
   it('Should show Insufficient Funds on input greater than balance', async () => {

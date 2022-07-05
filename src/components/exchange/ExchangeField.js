@@ -7,7 +7,7 @@ import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { AssetType } from '@rainbow-me/entities';
-import { useColorForAsset } from '@rainbow-me/hooks';
+import { useColorForAsset, useTimeout } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 
@@ -78,11 +78,33 @@ const ExchangeField = (
   }, [ref]);
 
   const [value, setValue] = useState(amount);
+  const [editing, setEditing] = useState(false);
   const [debouncedValue] = useDebounce(value, 300);
+  const [startTimeout, stopTimeout] = useTimeout();
+
+  const handleBlur = useCallback(
+    event => {
+      onBlur?.(event);
+    },
+    [onBlur]
+  );
+  const handleFocus = useCallback(
+    event => {
+      setValue(amount);
+      onFocus?.(event);
+    },
+    [amount, onFocus]
+  );
 
   useEffect(() => {
     setAmount(debouncedValue);
   }, [debouncedValue, setAmount]);
+
+  useEffect(() => {
+    setEditing(true);
+    startTimeout(() => setEditing(false), 1000);
+    return () => stopTimeout();
+  }, [value, startTimeout, stopTimeout]);
 
   const placeholderTextColor = symbol
     ? colors.alpha(colors.blueGreyDark, 0.3)
@@ -117,16 +139,16 @@ const ExchangeField = (
               })}
             color={colorForAsset}
             editable={editable}
-            onBlur={onBlur}
+            onBlur={handleBlur}
             onChangeText={setValue}
-            onFocus={onFocus}
+            onFocus={handleFocus}
             placeholder={placeholderText}
             placeholderTextColor={placeholderTextColor}
             {...(onTapWhileDisabled && { pointerEvents: 'none' })}
             ref={ref}
             testID={testID}
             useCustomAndroidMask={useCustomAndroidMask}
-            value={amount}
+            value={editing ? value : amount}
           />
         </FieldRow>
       </TouchableWithoutFeedback>

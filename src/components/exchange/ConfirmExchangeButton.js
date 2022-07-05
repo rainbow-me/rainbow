@@ -7,12 +7,7 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { ExchangeModalTypes, NetworkTypes } from '@rainbow-me/helpers';
-import {
-  useColorForAsset,
-  useGas,
-  useSwapCurrencies,
-  useSwapIsSufficientBalance,
-} from '@rainbow-me/hooks';
+import { useColorForAsset, useGas, useSwapCurrencies } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -23,7 +18,6 @@ export default function ConfirmExchangeButton({
   currentNetwork,
   disabled,
   loading,
-  inputAmount,
   isHighPriceImpact,
   insufficientLiquidity,
   onPressViewDetails,
@@ -31,9 +25,9 @@ export default function ConfirmExchangeButton({
   testID,
   tradeDetails,
   type = ExchangeModalTypes.swap,
+  isSufficientBalance,
   ...props
 }) {
-  const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
   const { isSufficientGas, isValidGas } = useGas();

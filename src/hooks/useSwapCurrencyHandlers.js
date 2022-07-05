@@ -123,42 +123,51 @@ export default function useSwapCurrencyHandlers({
   ]);
 
   const flipSwapCurrenciesWithTimeout = useCallback(
-    (outputIndependentField = false, independentValue = null) =>
-      setTimeout(
-        () =>
-          dispatch(
-            flipSwapCurrencies(outputIndependentField, independentValue)
-          ),
-        50
-      ),
+    (focusToRef, outputIndependentField = false, independentValue = null) => {
+      InteractionManager.runAfterInteractions(() => {
+        dispatch(flipSwapCurrencies(outputIndependentField, independentValue));
+        setTimeout(() => {
+          focusTextInput(focusToRef.current);
+        }, 50);
+      });
+    },
     [dispatch]
   );
 
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
       outputFieldRef.current?.clear();
-      focusTextInput(inputFieldRef.current);
+      inputFieldRef.current?.clear();
       flipSwapCurrenciesWithTimeout(
+        nativeFieldRef.current === currentlyFocusedInput()
+          ? nativeFieldRef
+          : inputFieldRef,
         false,
         updatePrecisionToDisplay(derivedValues?.outputAmount)
       );
     } else if (nativeFieldRef.current === currentlyFocusedInput()) {
       inputFieldRef.current?.clear();
       nativeFieldRef.current?.clear();
-      focusTextInput(outputFieldRef.current);
       flipSwapCurrenciesWithTimeout(
+        outputFieldRef,
         true,
         updatePrecisionToDisplay(derivedValues?.inputAmount)
       );
     } else if (inputFieldRef.current === currentlyFocusedInput()) {
       inputFieldRef.current?.clear();
       nativeFieldRef.current?.clear();
-      focusTextInput(outputFieldRef.current);
-      flipSwapCurrenciesWithTimeout(true);
+      flipSwapCurrenciesWithTimeout(
+        outputFieldRef,
+        true,
+        updatePrecisionToDisplay(derivedValues?.inputAmount)
+      );
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
       outputFieldRef.current?.clear();
-      focusTextInput(inputFieldRef.current);
-      flipSwapCurrenciesWithTimeout();
+      flipSwapCurrenciesWithTimeout(
+        inputFieldRef,
+        false,
+        updatePrecisionToDisplay(derivedValues?.outputAmount)
+      );
     }
   }, [
     currentNetwork,

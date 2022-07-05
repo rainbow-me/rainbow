@@ -17,7 +17,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
 
 const { GAS_TRENDS } = gasUtils;
@@ -27,7 +27,7 @@ const getBodyTextPropsWithColor = colors =>
   colors
     ? {
         align: 'center',
-        color: colors.alpha(colors.blueGreyDark, 0.6),
+        color: colors.blueGreyDark60,
         lineHeight: 'looser',
         size: 'large',
         style: {
@@ -148,9 +148,17 @@ const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to 
 
 export const explainers = (params, colors) => ({
   output_disabled: {
-    extraHeight: -100,
-    title: lang.t('explain.output_disabled.title'),
-    text: lang.t('explain.output_disabled.text', { network: params?.network }),
+    extraHeight: -30,
+    title: params?.inputToken
+      ? lang.t('explain.output_disabled.title', {
+          inputToken: params?.inputToken,
+        })
+      : lang.t('explain.output_disabled.title_empty'),
+    text: lang.t('explain.output_disabled.text', {
+      network: networkInfo[params?.network]?.name,
+      inputToken: params?.inputToken,
+      outputToken: params?.outputToken,
+    }),
     logo: (
       <ChainBadge
         assetType={params?.network}
@@ -256,6 +264,38 @@ export const explainers = (params, colors) => ({
     emoji: '􀇻',
     text: VERIFIED_EXPLAINER,
     title: lang.t('explain.verified.title'),
+  },
+  unverified: {
+    extraHeight: 120,
+    emoji: '⚠️',
+    buttonText: lang.t('button.continue'),
+    buttonColor: colors?.blueGreyDark80,
+    secondaryButtonColor: colors?.clearBlue,
+    secondaryButtonTextColor: colors?.appleBlue,
+    secondaryButtonText: lang.t('button.go_back_lowercase'),
+    title: lang.t('explain.unverified.title', {
+      symbol: params?.asset?.symbol,
+    }),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.unverified.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            ethereumUtils.openTokenEtherscanURL(
+              params?.asset.address,
+              ethereumUtils.getNetworkFromType(params?.asset?.type)
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.unverified.fragment2')}
+        </Text>
+        {lang.t('explain.unverified.fragment3')}
+      </Text>
+    ),
   },
   optimism: {
     emoji: '⛽️',
@@ -425,9 +465,36 @@ export const explainers = (params, colors) => ({
     ),
   },
   obtainL2Assets: {
+    extraHeight: 40,
     buttonText: lang.t('explain.go_to_hop_with_icon.text'),
-    buttonColor: colors?.networkColors[params?.network],
-    secondaryButtonText: lang.t('explain.learn_more'),
+    buttonColor: colors?.blueGreyDark80,
+    secondaryButtonColor: colors?.clearBlue,
+    secondaryButtonTextColor: colors?.appleBlue,
+    secondaryButtonText: lang.t('button.go_back_lowercase'),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.obtain_l2_asset.fragment1', {
+          networkName: params?.networkName,
+          tokenName: params?.assetName,
+        })}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.obtain_l2_asset.fragment2', {
+            networkName: params?.networkName,
+          })}
+        </Text>
+        {lang.t('explain.obtain_l2_asset.fragment3')}
+      </Text>
+    ),
     logo: (
       <ChainBadge
         assetType={params?.network}
@@ -436,12 +503,6 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
-    text: lang.t('explain.obtain_l2_asset.text', {
-      tokenName: params?.assetName,
-      networkName: params?.networkName,
-    }),
     title: lang.t('explain.obtain_l2_asset.title', {
       networkName: params?.networkName,
     }),
@@ -454,7 +515,6 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.flashbots.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
-          lineHeight="loose"
           onPress={() =>
             Linking.openURL(
               'https://learn.rainbow.me/protecting-transactions-with-flashbots'
@@ -480,7 +540,6 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.swap_routing.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
-          lineHeight="loose"
           onPress={() =>
             Linking.openURL(
               'https://learn.rainbow.me/swap-with-confidence-with-rainbow'
@@ -506,7 +565,6 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.slippage.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
-          lineHeight="loose"
           onPress={() =>
             Linking.openURL(
               'https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges'
@@ -567,22 +625,27 @@ const ExplainSheet = () => {
     ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
 
   const buttons = useMemo(() => {
-    const missingL2Assets = type === 'obtainL2Assets';
-    const secondaryButton = explainSheetConfig.readMoreLink && (
+    const reverseButtons = type === 'obtainL2Assets' || type === 'unverified';
+    const secondaryButton = (explainSheetConfig?.readMoreLink ||
+      explainSheetConfig?.secondaryButtonText) && (
       <Column
         height={60}
-        style={android && missingL2Assets && { marginTop: 16 }}
+        style={android && reverseButtons && { marginTop: 16 }}
       >
         <SheetActionButton
-          color={colors.blueGreyDarkLight}
+          color={
+            explainSheetConfig?.secondaryButtonColor ?? colors.blueGreyDarkLight
+          }
           isTransparent
           label={
             explainSheetConfig.secondaryButtonText ||
             lang.t('explain.read_more')
           }
-          onPress={handleReadMore}
+          onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
           size="big"
-          textColor={missingL2Assets ? 'primary' : colors.blueGreyDark60}
+          textColor={
+            explainSheetConfig.secondaryButtonTextColor ?? colors.blueGreyDark80
+          }
           weight="heavy"
         />
       </Column>
@@ -602,7 +665,7 @@ const ExplainSheet = () => {
       />
     );
     const buttonArray = [secondaryButton, accentCta];
-    if (type === 'obtainL2Assets') {
+    if (reverseButtons) {
       buttonArray.reverse();
     }
     return buttonArray;
@@ -610,8 +673,11 @@ const ExplainSheet = () => {
     colors,
     explainSheetConfig.buttonColor,
     explainSheetConfig.buttonText,
-    explainSheetConfig.readMoreLink,
+    explainSheetConfig?.readMoreLink,
+    explainSheetConfig?.secondaryButtonColor,
     explainSheetConfig.secondaryButtonText,
+    explainSheetConfig.secondaryButtonTextColor,
+    goBack,
     handleClose,
     handleReadMore,
     type,
@@ -661,9 +727,11 @@ const ExplainSheet = () => {
             {/** base fee explainer */}
             {renderBaseFeeIndicator}
 
-            <Text {...getBodyTextPropsWithColor(colors)}>
-              {explainSheetConfig.text}
-            </Text>
+            {explainSheetConfig.text && (
+              <Text {...getBodyTextPropsWithColor(colors)}>
+                {explainSheetConfig.text}
+              </Text>
+            )}
             {explainSheetConfig?.stillCurious &&
               explainSheetConfig.stillCurious}
             {buttons}
