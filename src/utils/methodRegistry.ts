@@ -56,15 +56,21 @@ export const methodRegistryLookupAndParse = async (
     parsedName = '';
   }
 
-  const match = signature.match(
-    new RegExp(rawName[1] + '\\(+([a-z1-9,()]+)\\)')
-  );
+  let args: { type: any }[] = [];
 
-  let args = [];
-  if (match) {
-    args = match[1].match(/[A-z1-9]+/g).map((arg: any) => {
-      return { type: arg };
-    });
+  if (rawName) {
+    const match = signature.match(
+      new RegExp(rawName[1] + '\\(+([a-z1-9,()]+)\\)')
+    );
+
+    if (match?.[1]) {
+      const argsMatch = match[1].match(/[A-z1-9]+/g);
+      if (argsMatch) {
+        args = argsMatch.map((arg: any) => {
+          return { type: arg };
+        });
+      }
+    }
   }
 
   return {
