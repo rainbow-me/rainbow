@@ -8,7 +8,7 @@ import { PerformanceTagsType } from './types/PerformanceTags';
 This will be a version for all performnce tracking events.
 If we make breaking changes we will be able to take it into consideration when doing analytics
  */
-const performanceTrackingVersion = 1;
+const performanceTrackingVersion = 2;
 const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
 const shouldReportMeasurement =
   IS_TESTING === 'false' && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
