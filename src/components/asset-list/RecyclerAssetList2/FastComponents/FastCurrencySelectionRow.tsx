@@ -93,24 +93,22 @@ export default React.memo(function FastCurrencySelectionRow({
                 {item?.name || name}
               </RNText>
               {!showBalance && (
-                <>
-                  <RNText
-                    ellipsizeMode="tail"
-                    numberOfLines={1}
-                    style={[
-                      sx.symbol,
-                      {
-                        color: theme.colors.blueGreyDark50,
-                      },
-                    ]}
-                  >
-                    {item?.symbol || symbol}
-                  </RNText>
-                </>
+                <RNText
+                  ellipsizeMode="tail"
+                  numberOfLines={1}
+                  style={[
+                    sx.symbol,
+                    {
+                      color: theme.colors.blueGreyDark50,
+                    },
+                  ]}
+                >
+                  {item?.symbol || symbol}
+                </RNText>
               )}
             </View>
             {showBalance && (
-              <View style={[sx.column, { height: 34 }]}>
+              <View style={[sx.column, sx.balanceColumn]}>
                 <Text align="right" size="16px">
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
@@ -222,6 +220,9 @@ const sx = StyleSheet.create({
     height: 31,
     lineHeight: 30,
     width: '100%',
+  },
+  balanceColumn: {
+    height: 34,
   },
   bottom: {
     marginTop: 12,
