@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
@@ -132,6 +132,20 @@ export default function ConfirmExchangeButton({
     });
   }, [navigate]);
 
+  const onLongPress = useCallback(() => {
+    insufficientLiquidity
+      ? handleShowLiquidityExplainer
+      : shouldOpenSwapDetails
+      ? onPressViewDetails
+      : onSubmit;
+  }, [
+    handleShowLiquidityExplainer,
+    insufficientLiquidity,
+    onPressViewDetails,
+    onSubmit,
+    shouldOpenSwapDetails,
+  ]);
+
   const isDisabled =
     disabled ||
     !isSufficientBalance ||
@@ -152,13 +166,7 @@ export default function ConfirmExchangeButton({
             hideInnerBorder
             label={label}
             loading={loading}
-            onLongPress={
-              insufficientLiquidity
-                ? handleShowLiquidityExplainer
-                : shouldOpenSwapDetails
-                ? onPressViewDetails
-                : onSubmit
-            }
+            onLongPress={onLongPress}
             shadows={
               isSwapDetailsRoute
                 ? isDisabled || insufficientLiquidity
