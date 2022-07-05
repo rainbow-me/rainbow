@@ -111,7 +111,7 @@ const listData = [
 ];
 
 const renderUniswapPoolListRow = ({ item }) => (
-  <FastUniswapPoolRow assetType="uniswap" item={item} key={item.address} />
+  <FastUniswapPoolRow assetType="uniswap" item={item} />
 );
 
 export default function UniswapPools({
@@ -326,7 +326,7 @@ export default function UniswapPools({
             }}
             data={listDataFiltered}
             horizontal
-            keyExtractor={item => item?.id}
+            keyExtractor={item => item?.address}
             ref={listRef}
             renderItem={renderTypeItem}
             scrollsToTop={false}
