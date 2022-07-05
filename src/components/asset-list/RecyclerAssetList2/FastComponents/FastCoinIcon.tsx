@@ -104,7 +104,16 @@ export default React.memo(function FastCoinIcon({
   return (
     <View style={sx.container}>
       {eth ? (
-        <Image source={EthIcon} style={sx.coinIconFallback} />
+        <View
+          style={[
+            sx.coinIconFallback,
+            sx.reactCoinIconContainer,
+            sx.withShadow,
+            { shadowColor },
+          ]}
+        >
+          <Image source={EthIcon} style={sx.coinIconFallback} />
+        </View>
       ) : shouldRenderLocalCoinIconImage ? (
         <View
           style={[
