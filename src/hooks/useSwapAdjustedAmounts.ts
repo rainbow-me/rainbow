@@ -7,7 +7,7 @@ import {
 } from '@rainbow-me/handlers/uniswap';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
-import { WETH_ADDRESS } from '@rainbow-me/references';
+import { WETH_ADDRESS, WMATIC_ADDRESS } from '@rainbow-me/references';
 import { fromWei, updatePrecisionToDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -44,7 +44,11 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
     (tradeDetails.buyTokenAddress === ETH_ADDRESS &&
       tradeDetails.sellTokenAddress === WETH_ADDRESS) ||
     (tradeDetails.sellTokenAddress === ETH_ADDRESS &&
-      tradeDetails.buyTokenAddress === WETH_ADDRESS)
+      tradeDetails.buyTokenAddress === WETH_ADDRESS) ||
+    (tradeDetails.buyTokenAddress === ETH_ADDRESS &&
+      tradeDetails.sellTokenAddress === WMATIC_ADDRESS) ||
+    (tradeDetails.sellTokenAddress === ETH_ADDRESS &&
+      tradeDetails.buyTokenAddress === WMATIC_ADDRESS)
   ) {
     amountReceivedSold = fromWei(amountReceivedSold.toString());
   }
