@@ -1,6 +1,8 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
+import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
+import { Network } from '@rainbow-me/networkTypes';
 import {
   abbreviations,
   ethereumUtils,
@@ -8,7 +10,7 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
-const buildBlockExplorerAction = type => {
+const buildBlockExplorerAction = (type: Network) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
     blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
   });
@@ -38,8 +40,11 @@ const CoinRowActions = {
   },
 };
 
-export default function contextMenuProps(item, onCopySwapDetailsText) {
-  const handleCopyContractAddress = address => {
+export default function contextMenuProps(
+  item: any,
+  onCopySwapDetailsText: (address: string) => void
+) {
+  const handleCopyContractAddress = (address: string) => {
     haptics.selection();
     setClipboard(address);
     onCopySwapDetailsText(address);
@@ -62,7 +67,7 @@ export default function contextMenuProps(item, onCopySwapDetailsText) {
         showSeparators: true,
         title: `${item?.name} (${item?.symbol})`,
       },
-      idx => {
+      (idx: number) => {
         if (idx === 0) {
           handleCopyContractAddress(item?.address);
         }
@@ -87,7 +92,9 @@ export default function contextMenuProps(item, onCopySwapDetailsText) {
     menuTitle: `${item?.name} (${item?.symbol})`,
   };
 
-  const handlePressMenuItem = ({ nativeEvent: { actionKey } }) => {
+  const handlePressMenuItem = ({
+    nativeEvent: { actionKey },
+  }: NativeSyntheticEvent<{ actionKey: string }>) => {
     if (actionKey === CoinRowActionsEnum.copyAddress) {
       handleCopyContractAddress(item?.address);
     } else if (actionKey === CoinRowActionsEnum.blockExplorer) {

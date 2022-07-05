@@ -18,7 +18,6 @@ import {
   fonts,
   fontWithWidth,
   getFontSize,
-  padding,
 } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 
@@ -47,31 +46,34 @@ export default React.memo(function FastCurrencySelectionRow({
 }: {
   item: any;
 }) {
-  const { isDarkMode } = theme;
+  const { isDarkMode, colors } = theme;
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
 
   const rowTestID = testID + '-exchange-coin-row-' + (item?.symbol || symbol);
 
+  const isInfoButtonVisible =
+    (!item?.isNativeAsset || isETH(item?.address)) && !showBalance;
+
   return (
-    <View style={cx.row}>
+    <View style={sx.row}>
       <ButtonPressAnimation
         onPress={onPress}
-        style={cx.flex}
+        style={sx.flex}
         testID={rowTestID}
-        wrapperStyle={cx.flex}
+        wrapperStyle={sx.flex}
       >
-        <View style={cx.rootContainer}>
+        <View style={sx.rootContainer}>
           <FastCoinIcon
             address={item?.mainnet_address || item?.address || address}
             symbol={item?.symbol || symbol}
             theme={theme}
           />
-          <View style={cx.innerContainer}>
+          <View style={sx.innerContainer}>
             <View
               style={[
-                cx.column,
+                sx.column,
                 {
                   justifyContent: showBalance ? 'center' : 'space-between',
                 },
@@ -80,7 +82,11 @@ export default React.memo(function FastCurrencySelectionRow({
               <RNText
                 ellipsizeMode="tail"
                 numberOfLines={1}
-                style={[cx.name, showBalance && cx.nameWithBalances]}
+                style={[
+                  sx.name,
+                  { color: colors.dark },
+                  showBalance && sx.nameWithBalances,
+                ]}
               >
                 {item?.name || name}
               </RNText>
@@ -90,7 +96,7 @@ export default React.memo(function FastCurrencySelectionRow({
                     ellipsizeMode="tail"
                     numberOfLines={1}
                     style={[
-                      cx.symbol,
+                      sx.symbol,
                       {
                         color: theme.colors.blueGreyDark50,
                       },
@@ -102,7 +108,7 @@ export default React.memo(function FastCurrencySelectionRow({
               )}
             </View>
             {showBalance && (
-              <View style={[cx.column, { height: 34 }]}>
+              <View style={[sx.column, { height: 34 }]}>
                 <Text align="right" size="16px">
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
@@ -120,8 +126,8 @@ export default React.memo(function FastCurrencySelectionRow({
         </View>
       </ButtonPressAnimation>
       {!showBalance && (
-        <View style={[cx.fav]}>
-          {(!item?.isNativeAsset || isETH(item?.address)) && !showBalance && (
+        <View style={sx.fav}>
+          {isInfoButtonVisible && (
             <ContextMenuButton
               activeOpacity={0}
               isMenuPrimaryAction
@@ -133,7 +139,7 @@ export default React.memo(function FastCurrencySelectionRow({
                 <SafeRadialGradient
                   center={[0, 15]}
                   colors={colors.gradients.lightestGrey}
-                  style={[cx.gradient, cx.igradient]}
+                  style={[sx.gradient, sx.igradient]}
                 >
                   <Text
                     color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }}
@@ -157,12 +163,18 @@ export default React.memo(function FastCurrencySelectionRow({
                       ]
                     : colors.gradients.lightestGrey
                 }
-                style={[cx.gradient, cx.starGradient]}
+                style={[sx.gradient, sx.starGradient]}
               >
                 <RNText
                   ellipsizeMode="tail"
                   numberOfLines={1}
-                  style={[cx.star, favorite && cx.starFavorite]}
+                  style={[
+                    sx.star,
+                    {
+                      color: colors.alpha(colors.blueGreyDark, 0.2),
+                    },
+                    favorite && sx.starFavorite,
+                  ]}
                 >
                   􀋃
                 </RNText>
@@ -174,9 +186,18 @@ export default React.memo(function FastCurrencySelectionRow({
               <SafeRadialGradient
                 center={[0, 15]}
                 colors={colors.gradients.lightestGrey}
-                style={[cx.gradient, cx.addGradient]}
+                style={[sx.gradient, sx.addGradient]}
               >
-                <RNText style={cx.addText}>+</RNText>
+                <RNText
+                  style={[
+                    sx.addText,
+                    {
+                      color: colors.alpha(colors.blueGreyDark, 0.3),
+                    },
+                  ]}
+                >
+                  +
+                </RNText>
               </SafeRadialGradient>
             </ButtonPressAnimation>
           )}
@@ -186,13 +207,12 @@ export default React.memo(function FastCurrencySelectionRow({
   );
 });
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   addGradient: {
     paddingBottom: 3,
     paddingLeft: 1,
   },
   addText: {
-    color: colors.alpha(colors.blueGreyDark, 0.3),
     fontSize: 26,
     letterSpacing: 0,
     textAlign: 'center',
@@ -217,13 +237,6 @@ const cx = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     width: 51,
-  },
-  checkmarkBackground: {
-    ...borders.buildCircleAsObject(22),
-    ...padding.object(4.5),
-    backgroundColor: colors.appleBlue,
-    left: 19,
-    position: 'absolute',
   },
   circleOutline: {
     ...borders.buildCircleAsObject(22),
@@ -287,7 +300,6 @@ const cx = StyleSheet.create({
     width: '100%',
   },
   name: {
-    color: colors.dark,
     fontSize: getFontSize(fonts.size.lmedium),
     letterSpacing: 0.5,
     lineHeight: ios ? 16 : 17,
@@ -311,7 +323,6 @@ const cx = StyleSheet.create({
     flexDirection: 'row',
   },
   star: {
-    color: colors.alpha(colors.blueGreyDark, 0.2),
     fontSize: 13,
     ...fontWithWidth(fonts.weight.regular),
   },
