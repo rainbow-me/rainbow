@@ -25,6 +25,10 @@ const SafeRadialGradient = (IS_TESTING === 'true'
   ? View
   : RadialGradient) as typeof RadialGradient;
 
+interface FastCurrencySelectionRowProps {
+  item: any;
+}
+
 export default React.memo(function FastCurrencySelectionRow({
   item: {
     uniqueId,
@@ -43,9 +47,7 @@ export default React.memo(function FastCurrencySelectionRow({
     name,
     testID,
   },
-}: {
-  item: any;
-}) {
+}: FastCurrencySelectionRowProps) {
   const { isDarkMode, colors } = theme;
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
