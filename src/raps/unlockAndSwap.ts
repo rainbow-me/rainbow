@@ -39,7 +39,8 @@ export const estimateUnlockAndSwap = async (
   const isNativeAssetUnwrapping =
     toLower(inputCurrency.address) ===
       toLower(WRAPPED_ASSET[Number(chainId)]) &&
-    toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
+    (toLower(outputCurrency.address) === toLower(ETH_ADDRESS) ||
+      toLower(outputCurrency.address) === toLower(ETH_ADDRESS_AGGREGATOR));
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
