@@ -367,13 +367,35 @@ export const executeSwap = async ({
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
     buyTokenAddress === WRAPPED_ASSET[chainId]
   ) {
-    return wrapNativeAsset(tradeDetails.buyAmount, walletToUse, chainId);
+    logger.debug(
+      'wrapping native asset',
+      tradeDetails.buyAmount,
+      walletToUse.address,
+      chainId
+    );
+    return wrapNativeAsset(
+      tradeDetails.buyAmount,
+      walletToUse,
+      chainId,
+      transactionParams
+    );
     // Unwrap Weth
   } else if (
     sellTokenAddress === WRAPPED_ASSET[chainId] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS
   ) {
-    return unwrapNativeAsset(tradeDetails.sellAmount, walletToUse, chainId);
+    logger.debug(
+      'unwrapping native asset',
+      tradeDetails.sellAmount,
+      walletToUse.address,
+      chainId
+    );
+    return unwrapNativeAsset(
+      tradeDetails.sellAmount,
+      walletToUse,
+      chainId,
+      transactionParams
+    );
     // Swap
   } else {
     logger.debug(
