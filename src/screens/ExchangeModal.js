@@ -360,7 +360,8 @@ export default function ExchangeModal({
         ((type === ExchangeModalTypes.swap ||
           type === ExchangeModalTypes.deposit) &&
           !(inputCurrency && outputCurrency)) ||
-        type === ExchangeModalTypes.withdraw
+        type === ExchangeModalTypes.withdraw ||
+        loading
       ) {
         return;
       }
