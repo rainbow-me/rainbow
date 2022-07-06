@@ -50,7 +50,11 @@ export enum Field {
 const MAX_GAS_LIMIT = 460000;
 const GAS_LIMIT_INCREMENT = 50000;
 const EXTRA_GAS_PADDING = 1.5;
-
+const CHAIN_IDS_WITH_TRACE_SUPPORT = [
+  ChainId.mainnet,
+  ChainId.arbitrum,
+  ChainId.optimism,
+];
 export const getStateDiff = async (
   provider: StaticJsonRpcProvider,
   tradeDetails: Quote
@@ -81,18 +85,21 @@ export const getStateDiff = async (
   const trace = await provider.send('trace_call', callParams);
 
   if (trace.stateDiff) {
-    const slotAddress = Object.keys(trace.stateDiff[tokenAddress].storage)[0];
-    const formattedStateDiff = {
-      [tokenAddress]: {
-        stateDiff: {
-          [slotAddress]: ethers.constants.MaxUint256.toHexString(),
+    const slotAddress = Object.keys(
+      trace.stateDiff[tokenAddress]?.storage
+    )?.[0];
+    if (slotAddress) {
+      const formattedStateDiff = {
+        [tokenAddress]: {
+          stateDiff: {
+            [slotAddress]: ethers.constants.MaxUint256.toHexString(),
+          },
         },
-      },
-    };
-    return formattedStateDiff;
-  } else {
-    logger.log('Couldnt get stateDiff...', JSON.stringify(trace, null, 2));
+      };
+      return formattedStateDiff;
+    }
   }
+  logger.log('Couldnt get stateDiff...', JSON.stringify(trace, null, 2));
 };
 
 export const getSwapGasLimitWithFakeApproval = async (
@@ -245,7 +252,7 @@ export const estimateSwapGasLimit = async ({
         provider
       );
 
-      if (requiresApprove) {
+      if (requiresApprove && CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
         try {
           const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
             chainId,
