@@ -18,7 +18,7 @@ import {
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
-import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -29,10 +29,7 @@ export const estimateUnlockAndSwap = async (
   const { inputCurrency, outputCurrency } = store.getState().swap;
 
   if (!inputCurrency || !outputCurrency || !inputAmount) {
-    if (ChainId.arbitrum === chainId) {
-      return ethUnits.basic_swap_arbitrum;
-    }
-    return ethUnits.basic_swap;
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   const { accountAddress } = store.getState().settings;
 

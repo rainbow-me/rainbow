@@ -179,10 +179,7 @@ const getBasicSwapGasLimitForTrade = (
   if (allowsPermit) {
     return ethUnits.basic_swap_permit;
   } else {
-    if (ChainId.arbitrum === chainId) {
-      return ethUnits.basic_swap_arbitrum;
-    }
-    return ethUnits.basic_swap;
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
 };
 
@@ -198,10 +195,7 @@ export const estimateSwapGasLimit = async ({
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const provider = await getProviderForNetwork(network);
   if (!provider || !tradeDetails) {
-    if (ChainId.arbitrum === chainId) {
-      return ethUnits.basic_swap_arbitrum;
-    }
-    return ethUnits.basic_swap;
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;

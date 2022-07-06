@@ -1,4 +1,3 @@
-import { ChainId } from '@rainbow-me/swaps';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
@@ -262,10 +261,7 @@ export default function ExchangeModal({
     type,
   });
 
-  const basicSwap =
-    ChainId.arbitrum === chainId
-      ? ethUnits.basic_swap_arbitrum
-      : ethUnits.basic_swap;
+  const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
