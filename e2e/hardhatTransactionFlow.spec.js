@@ -147,7 +147,11 @@ describe('Hardhat Transaction Flow', () => {
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
+  });
+
+  it('Should navigate to the Wallet screen after swiping left', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
   });
 
   it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
