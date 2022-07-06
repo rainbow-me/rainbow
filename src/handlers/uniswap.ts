@@ -248,22 +248,24 @@ export const estimateSwapGasLimit = async ({
         provider
       );
 
-      if (requiresApprove && CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
-        try {
-          const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
-            chainId,
-            provider,
-            tradeDetails
-          );
-          logger.debug(
-            ' ✅ Got gasLimitWithFakeApproval!',
-            gasLimitWithFakeApproval
-          );
-          return gasLimitWithFakeApproval;
-        } catch (e) {
-          logger.debug('Error estimating swap gas limit with approval', e);
-          return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+      if (requiresApprove) {
+        if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
+          try {
+            const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
+              chainId,
+              provider,
+              tradeDetails
+            );
+            logger.debug(
+              ' ✅ Got gasLimitWithFakeApproval!',
+              gasLimitWithFakeApproval
+            );
+            return gasLimitWithFakeApproval;
+          } catch (e) {
+            logger.debug('Error estimating swap gas limit with approval', e);
+          }
         }
+        return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
       }
 
       const gasLimit = await estimateGasWithPadding(
