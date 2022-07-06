@@ -109,7 +109,7 @@ export default React.memo(function FastTransactionStatusBadge({
 }) {
   const isSwapping = status === TransactionStatusTypes.swapping;
 
-  let statusColor = colors.statusColor;
+  let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
     if (isSwapping) {
       statusColor = colors.swapPurple;
