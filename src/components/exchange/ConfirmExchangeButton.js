@@ -132,20 +132,6 @@ export default function ConfirmExchangeButton({
     });
   }, [navigate]);
 
-  const onLongPress = useCallback(() => {
-    insufficientLiquidity
-      ? handleShowLiquidityExplainer
-      : shouldOpenSwapDetails
-      ? onPressViewDetails
-      : onSubmit;
-  }, [
-    handleShowLiquidityExplainer,
-    insufficientLiquidity,
-    onPressViewDetails,
-    onSubmit,
-    shouldOpenSwapDetails,
-  ]);
-
   const isDisabled =
     disabled ||
     !isSufficientBalance ||
@@ -166,7 +152,13 @@ export default function ConfirmExchangeButton({
             hideInnerBorder
             label={label}
             loading={loading}
-            onLongPress={onLongPress}
+            onLongPress={
+              insufficientLiquidity
+                ? handleShowLiquidityExplainer
+                : shouldOpenSwapDetails
+                ? onPressViewDetails
+                : onSubmit
+            }
             shadows={
               isSwapDetailsRoute
                 ? isDisabled || insufficientLiquidity
