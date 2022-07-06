@@ -11,7 +11,11 @@ import {
   Network,
 } from '@rainbow-me/helpers';
 import { updatePrecisionToDisplay } from '@rainbow-me/helpers/utilities';
-import { useSwapCurrencies, useSwapDerivedValues } from '@rainbow-me/hooks';
+import {
+  useSwapCurrencies,
+  useSwapDerivedValues,
+  useSwapInputHandlers,
+} from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {
@@ -52,6 +56,12 @@ export default function useSwapCurrencyHandlers({
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const { derivedValues } = useSwapDerivedValues();
+
+  const {
+    updateInputAmount,
+    updateNativeAmount,
+    updateOutputAmount,
+  } = useSwapInputHandlers();
 
   const { defaultInputItemInWallet, defaultOutputItem } = useMemo(() => {
     if (type === ExchangeModalTypes.withdrawal) {
@@ -136,8 +146,7 @@ export default function useSwapCurrencyHandlers({
 
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
-      outputFieldRef.current?.clear();
-      inputFieldRef.current?.clear();
+      updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
           ? nativeFieldRef
@@ -146,23 +155,23 @@ export default function useSwapCurrencyHandlers({
         updatePrecisionToDisplay(derivedValues?.outputAmount)
       );
     } else if (nativeFieldRef.current === currentlyFocusedInput()) {
-      inputFieldRef.current?.clear();
-      nativeFieldRef.current?.clear();
+      updateOutputAmount(null);
+      updateNativeAmount(null);
       flipSwapCurrenciesWithTimeout(
         outputFieldRef,
         true,
         updatePrecisionToDisplay(derivedValues?.inputAmount)
       );
     } else if (inputFieldRef.current === currentlyFocusedInput()) {
-      inputFieldRef.current?.clear();
-      nativeFieldRef.current?.clear();
+      updateNativeAmount(null);
+      updateInputAmount(null);
       flipSwapCurrenciesWithTimeout(
         outputFieldRef,
         true,
         updatePrecisionToDisplay(derivedValues?.inputAmount)
       );
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
-      outputFieldRef.current?.clear();
+      updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
         inputFieldRef,
         false,
@@ -174,9 +183,12 @@ export default function useSwapCurrencyHandlers({
     nativeFieldRef,
     inputFieldRef,
     outputFieldRef,
+    updateOutputAmount,
+    updateInputAmount,
     flipSwapCurrenciesWithTimeout,
     derivedValues?.outputAmount,
     derivedValues?.inputAmount,
+    updateNativeAmount,
   ]);
 
   const updateInputCurrency = useCallback(
