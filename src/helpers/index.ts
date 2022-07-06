@@ -8,3 +8,4 @@ export { default as TokenSectionTypes } from './tokenSectionTypes';
 export { default as assetCharts } from './assetCharts.json';
 export { default as existingCharts } from './existingCharts.json';
 export { default as newAssetPricesTest } from './newAssetPricesTest.json';
+export { default as testTransactions } from './testTransactions';

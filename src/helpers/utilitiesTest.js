@@ -360,14 +360,16 @@ export const payloadForLoop = i => {
 };
 
 export const forOfArr = arr => {
+  const forEchObj = {};
   for (const element of arr) {
-    payloadForLoop(element);
+    forEchObj[element.asset.asset_code] = element;
   }
 };
 
 export const forLoop = arr => {
+  const forEchObj = {};
   for (let i = 0; i < arr.length; i++) {
-    payloadForLoop(arr[i]);
+    forEchObj[arr[i].asset.asset_code] = arr[i];
   }
 };
 
@@ -772,6 +774,23 @@ export function groupByK2(arr, key) {
     return accumulator;
   }, {});
 }
+
+export const sortByKeyHelper = key => {
+  return (a, b) => (a[key] > b[key] ? 1 : b[key] > a[key] ? -1 : 0);
+};
+
+export const partition = (arr, predicate) =>
+  arr.reduce(
+    (acc, val) => {
+      if (predicate(val)) {
+        acc[0].push(val);
+      } else {
+        acc[1].push(val);
+      }
+      return acc;
+    },
+    [[], []]
+  );
 
 export const assetsTest = [
   {

@@ -19,6 +19,7 @@ import {
   omit as _omit,
   omitBy as _omitBy,
   orderBy as _orderBy,
+  partition as _partition,
   pick as _pick,
   pickBy as _pickBy,
   reduce as _reduce,
@@ -32,10 +33,12 @@ import {
 // import { StartTime } from './src/performance/start-time';
 // import { PerformanceTracking } from './src/performance/tracking';
 // import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';
+
 import {
   assetCharts,
   existingCharts,
   newAssetPricesTest,
+  testTransactions,
 } from '@rainbow-me/helpers';
 import { testRows } from '@rainbow-me/helpers/testData';
 import {
@@ -69,6 +72,7 @@ import {
   omitForInWithSet,
   omitReduce,
   parseAssetTest,
+  partition,
   pathsArr,
   payloadForLoop,
   pickBy,
@@ -78,6 +82,7 @@ import {
   regex,
   smallArr,
   smallObj,
+  sortByKeyHelper,
   sortDESC,
   sorterByFamiliesName,
   sorterByFamiliesNameReverse,
@@ -143,7 +148,7 @@ function measure(title, count, func) {
 
     const len = 35 - i.title.length;
     const spaces = '-'.repeat(len > 0 ? len : 0);
-    return `${i.title} (${i.count}) -${spaces} ${i.average}ms${_average} (max: ${i.max}ms${_max}; min: ${i.min}ms${_min}) - average block value: ${i.blockAverage}
+    return `${i.title} (${i.count}) -${spaces} ${i.average}ms${_average} (max: ${i.max}ms${_max}; min: ${i.min}ms${_min}) - average(inkl garbage collector): ${i.blockAverage}
     `;
   });
 
@@ -208,10 +213,19 @@ export default function measurement() {
       assetsTestTwice.map(item => parseAssetTest(_get(item, 'asset')))
     );
   });
-
   measure('2: forEach', 200, () => {
-    average('lodash forEach', () => _forEach(assetsTestTwice, payloadForLoop));
-    average('JS forEach', () => assetsTestTwice.forEach(payloadForLoop));
+    average('lodash forEach', () => {
+      const forEchObj = {};
+      _forEach(assetsTestTwice, el => {
+        forEchObj[el.asset.asset_code] = el;
+      });
+    });
+    average('JS forEach', () => {
+      const forEchObj = {};
+      assetsTestTwice.forEach(el => {
+        forEchObj[el.asset.asset_code] = el;
+      });
+    });
     average('for..of', () => forOfArr(assetsTestTwice));
     average('for loop', () => forLoop(assetsTestTwice));
   });
@@ -478,7 +492,6 @@ export default function measurement() {
     average('JS groupByFunc 2', () =>
       groupByFunc(uniqueTokensLarge, v => v.familyName)
     );
-    // average('JS groupByK', () => groupByK(uniqueTokensLarge, 'familyName'));
     average('JS groupByK2', () => groupByK2(uniqueTokensLarge, 'familyName'));
     average('JS reduce imported', () =>
       groupBy(uniqueTokensLarge, 'familyName')
@@ -486,74 +499,27 @@ export default function measurement() {
   });
   measure('12: sortBy', 200, () => {
     average('lodash sortBy', () =>
-      _sortBy(testRows, row => row.familyName.replace(regex, '').toLowerCase())
+      _sortBy(testTransactions, row => row.minedAt)
     );
-    average('JS sort', () => testRows.sort(sorterByFamiliesName));
+    average('lodash sortBy with string prop', () =>
+      _sortBy(testTransactions, 'minedAt')
+    );
+    average('JS sort', () => testTransactions.sort(sortByKeyHelper('minedAt')));
   });
-  measure('13: uniqBy', 200, () => {
-    average('lodash uniqBy', () =>
-      _uniqBy(assetsTest, v => v.asset.asset_code)
+
+  measure('13: orderBy `desc`', 200, () => {
+    average('lodash orderBy `desc`', () =>
+      _orderBy(testTransactions, ['minedAt', 'nonce'], ['desc', 'desc'])
     );
-    average('lodash uniqBy2', () =>
-      _uniqBy(assetsTest, ({ asset }) => asset.asset_code)
-    );
-    average('lodash uniqBy3', () =>
-      _uniqBy(assetsTestTwice, 'asset.asset_code')
-    );
-    average('JS uniqBy1', () =>
-      uniqBy(assetsTestTwice, v => v.asset.asset_code)
-    );
-    average('JS uniqBy0', () =>
-      uniqBy0(assetsTestTwice, v => v.asset.asset_code)
-    );
-    average('JS uniqBy2', () =>
-      uniqBy2(assetsTestTwice, v => v.asset.asset_code)
-    );
-    average('JS uniqBy3', () =>
-      uniqBy3(assetsTestTwice, v => v.asset.asset_code)
-    );
-    average('JS uniqBy4', () =>
-      uniqBy4(assetsTestTwice, v => v.asset.asset_code)
-    );
-    average('JS uniqBy5', () =>
-      uniqBy(assetsTestTwice, ({ asset }) => asset.asset_code)
-    );
-    average('JS uniqBy6', () =>
-      uniqBy5(assetsTestTwice, v => v.asset.asset_code)
-    );
-    average('JS uniqBy7', () =>
-      uniqueArray(assetsTestTwice, ['asset.asset_code'])
+    average('JS orderBy `desc`', () =>
+      testRows.sort((a, b) => {
+        // Sort by `minedAt` in descending order and by `nonce` in descending order.
+        return b.minedAt - a.minedAt;
+      })
     );
   });
 
-  measure('14: uniqBy', 200, () => {
-    average('lodash uniqBy', () =>
-      _uniqBy(assetsTestTwice, token => token.asset.asset_code)
-    );
-    average('JS uniqBy', () =>
-      uniqBy(assetsTestTwice, token => token.asset.asset_code)
-    );
-  });
-  /////
-  measure('15: sortBy', 200, () => {
-    average('lodash sortBy', () =>
-      _sortBy(testRows, ({ familyName }) =>
-        familyName.replace(regex, '').toLowerCase()
-      )
-    );
-    average('JS sortBy', () => testRows.sort(sorterByFamiliesNameWithDestr));
-  });
-  measure('16: sortBy reverse', 200, () => {
-    average('lodash sortBy', () =>
-      _reverse(
-        _sortBy(testRows, row =>
-          row.familyName.replace(regex, '').toLowerCase()
-        )
-      )
-    );
-    average('JS sort', () => testRows.sort(sorterByFamiliesNameReverse));
-  });
-  measure('17: Filter ', 200, () => {
+  measure('14: Filter ', 200, () => {
     average('lodash filter destructing ', () =>
       _sortBy(testRows, ({ familyName }) =>
         familyName.replace(regex, '').toLowerCase()
@@ -563,7 +529,6 @@ export default function measurement() {
   });
 
   const newFamilies = testRows.map(i => i.familyName); //162 el
-  const arrWithNumbers = testRows.map(i => i.childrenAmount); //162 el
   const existingFamilies = [
     newFamilies[3],
     newFamilies[90],
@@ -573,7 +538,7 @@ export default function measurement() {
     newFamilies[87],
     newFamilies[1],
   ];
-  measure('17: without ', 200, () => {
+  measure('15: without ', 200, () => {
     average('lodash without ', () =>
       _without(newFamilies, ...existingFamilies)
     );
@@ -581,7 +546,7 @@ export default function measurement() {
       withoutSomeStrings(newFamilies, existingFamilies)
     );
   });
-  measure('18: difference ', 200, () => {
+  measure('16: difference ', 200, () => {
     average('lodash difference ', () =>
       _difference(newFamilies, ...existingFamilies)
     );
@@ -589,21 +554,12 @@ export default function measurement() {
       differenceStrings(newFamilies, existingFamilies)
     );
   });
-
-  measure('18: orderBy `desc`', 200, () => {
-    average('lodash orderBy `desc`', () =>
-      _orderBy(testRows, ({ childrenAmount }) => Number(childrenAmount), [
-        'desc',
-      ])
+  measure('17: partition ', 200, () => {
+    average('lodash partition ', () =>
+      _partition(testRows, ({ childrenAmount }) => childrenAmount > 15)
     );
-    average('JS orderBy `desc`', () =>
-      testRows.sort((a, b) => {
-        // 'desc'
-        return a.childrenAmount > b.childrenAmount ? -1 : 1;
-      })
-    );
-    average('JS orderBy `desc 2`', () =>
-      testRows.sort((a, b) => sortDESC(a.childrenAmount, b.childrenAmount))
+    average('JS partition', () =>
+      partition(testRows, ({ childrenAmount }) => childrenAmount > 15)
     );
   });
 
