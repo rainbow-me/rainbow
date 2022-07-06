@@ -8,6 +8,7 @@ export interface HoldToAuthorizeBaseProps {
   deviceDimensions: DeviceDimensions;
   disabled: boolean;
   disabledBackgroundColor: string;
+  disableShimmerAnimation?: boolean;
   enableLongPress?: boolean;
   hideInnerBorder: boolean;
   isAuthorizing: boolean;

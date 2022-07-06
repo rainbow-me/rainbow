@@ -147,22 +147,30 @@ describe('Hardhat Transaction Flow', () => {
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
+  });
+
+  it('Should navigate to the Wallet screen after swiping left', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
   });
 
   it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ETH-token'
+    );
     await Helpers.checkIfVisible('exchange-modal-input');
-    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText(
       'currency-select-search-input',
       '0xefa6903aa49cd539c079ac4b0a090db432615822',
       true
     );
-    await Helpers.tap('currency-select-list-exchange-coin-row-SWYF-token');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-SWYF-token'
+    );
     await Helpers.tapByText('Continue');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '0.001', true);

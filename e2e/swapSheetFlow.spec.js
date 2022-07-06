@@ -271,6 +271,41 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
+  it('Should update input & output after native input field change and output DAI', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.typeText('currency-select-search-input', 'DAI', false);
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkIfVisible('exchange-modal-output');
+    await Helpers.typeText('exchange-modal-input-native', '246', false);
+    await Helpers.checkIfVisible('exchange-modal-input-native-246');
+    await Helpers.checkIfNotVisible('exchange-modal-input');
+    await Helpers.checkIfNotVisible('exchange-modal-output');
+  });
+
+  it('Should show Hold to Swap Button & Swap Info Button on completion of all input fields', async () => {
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('exchange-settings-button');
+  });
+
+  it('Should show Swap Settings State on Settings Button press', async () => {
+    await Helpers.waitAndTap('exchange-settings-button');
+    await Helpers.checkIfVisible('swap-settings-header');
+    await Helpers.swipe('swap-settings-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    }
+  });
+
   it('Should update input & native input after output field change', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
@@ -288,17 +323,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('exchange-modal-output-0.246');
     await Helpers.checkIfNotVisible('exchange-modal-input');
     await Helpers.checkIfNotVisible('exchange-modal-input-native');
-  });
-
-  it('Should show Hold to Swap Button & Swap Info Button on completion of all input fields', async () => {
-    await Helpers.checkIfVisible('exchange-modal-confirm-button');
-    await Helpers.checkIfVisible('exchange-settings-button');
-  });
-
-  it('Should show Swap Settings State on Settings Button press', async () => {
-    await Helpers.waitAndTap('exchange-settings-button');
-    await Helpers.checkIfVisible('swap-settings-header');
-    await Helpers.swipe('swap-settings-header', 'down', 'slow');
   });
 
   it('Should show Insufficient Funds on input greater than balance', async () => {
