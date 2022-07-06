@@ -141,6 +141,7 @@ export const createUnlockAndSwapRap = async (
     flashbots,
     inputAmount,
     permit: swapAssetNeedsUnlocking && allowsPermit,
+    requiresApprove: swapAssetNeedsUnlocking && !allowsPermit,
     tradeDetails,
   });
   actions = concat(actions, swap);

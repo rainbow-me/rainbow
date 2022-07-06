@@ -38,6 +38,7 @@ const swap = async (
     tradeDetails,
     permit,
     chainId,
+    requiresApprove,
   } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
@@ -72,7 +73,7 @@ const swap = async (
   try {
     const newGasLimit = await estimateSwapGasLimit({
       chainId: Number(chainId),
-      requiresApprove: false,
+      requiresApprove,
       tradeDetails,
     });
     gasLimit = newGasLimit;
@@ -101,6 +102,12 @@ const swap = async (
       wallet,
     };
 
+    logger.debug('Swap requires approval?', requiresApprove);
+
+    logger.debug(
+      'about to execute swap with params',
+      JSON.stringify(swapParams, null, 2)
+    );
     // @ts-ignore
     swap = await executeSwap(swapParams);
 
