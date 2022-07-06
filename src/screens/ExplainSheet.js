@@ -384,6 +384,30 @@ export const explainers = (params, colors) => ({
         <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
       ),
   },
+  insufficientLiquidity: {
+    extraHeight: -20,
+    emoji: '🏦',
+    title: lang.t('explain.insufficient_liquidity.title'),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.insufficient_liquidity.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.insufficient_liquidity.fragment2')}
+        </Text>
+        {lang.t('explain.insufficient_liquidity.fragment3')}
+      </Text>
+    ),
+  },
   availableNetworks: {
     buttonText: `Go to Hop`,
     extraHeight: -90,
@@ -565,6 +589,7 @@ const ExplainSheet = () => {
   const insets = useSafeArea();
   const { params } = useRoute();
   const type = params.type;
+
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
@@ -584,7 +609,6 @@ const ExplainSheet = () => {
   const explainSheetConfig = useMemo(() => {
     return explainers(params, colors)[type];
   }, [colors, params, type]);
-
   const handleClose = useCallback(() => {
     goBack();
     params?.onClose?.();

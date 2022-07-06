@@ -19,7 +19,15 @@ import {
 import tokenSearch from '@rainbow-me/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
-import { erc20ABI, rainbowTokenList } from '@rainbow-me/references';
+import {
+  DAI_ADDRESS,
+  erc20ABI,
+  ETH_ADDRESS,
+  rainbowTokenList,
+  USDC_ADDRESS,
+  WBTC_ADDRESS,
+  WETH_ADDRESS,
+} from '@rainbow-me/references';
 import { ethereumUtils, filterList, logger } from '@rainbow-me/utils';
 
 const MAINNET_CHAINID = 1;
@@ -111,9 +119,42 @@ const useSwapCurrencyList = (
 
   const getCurated = useCallback(() => {
     const addresses = favoriteAddresses.map(a => a.toLowerCase());
-    return Object.values(curatedMap).filter(
-      ({ address }) => !addresses.includes(address.toLowerCase())
-    );
+    return Object.values(curatedMap)
+      .filter(({ address }) => !addresses.includes(address.toLowerCase()))
+      .sort((t1, t2) => {
+        const { address: address1, name: name1 } = t1;
+        const { address: address2, name: name2 } = t2;
+        const mainnetPriorityTokens = [
+          ETH_ADDRESS,
+          WETH_ADDRESS,
+          DAI_ADDRESS,
+          USDC_ADDRESS,
+          WBTC_ADDRESS,
+        ];
+        const rankA = mainnetPriorityTokens.findIndex(
+          address => address === address1.toLowerCase()
+        );
+        const rankB = mainnetPriorityTokens.findIndex(
+          address => address === address2.toLowerCase()
+        );
+        const aIsRanked = rankA > -1;
+        const bIsRanked = rankB > -1;
+        if (aIsRanked) {
+          return bIsRanked
+            ? // compare rank within list
+              rankA < rankB
+              ? -1
+              : 1
+            : // only t1 is ranked
+              -1;
+        } else {
+          return bIsRanked
+            ? // only t2 is ranked
+              1
+            : // sort unranked by abc
+              name1?.localeCompare(name2);
+        }
+      });
   }, [curatedMap, favoriteAddresses]);
 
   const getFavorites = useCallback(async () => {

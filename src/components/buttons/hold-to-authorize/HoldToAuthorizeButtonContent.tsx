@@ -14,6 +14,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -99,6 +100,7 @@ function HoldToAuthorizeButtonContent2({
   deviceDimensions,
   disabled = false,
   disabledBackgroundColor,
+  disableShimmerAnimation = false,
   enableLongPress,
   hideInnerBorder,
   label,
@@ -131,7 +133,7 @@ function HoldToAuthorizeButtonContent2({
         {
           duration: calculateReverseDuration(longPressProgress.value),
         },
-        () => setIsAuthorizing(false)
+        () => runOnJS(setIsAuthorizing)(false)
       );
     }
   }, [disabled, longPressProgress]);
@@ -172,7 +174,7 @@ function HoldToAuthorizeButtonContent2({
       buttonScale.value = withTiming(
         1,
         { duration: BUTTON_SCALE_DURATION_IN_MS },
-        () => setIsAuthorizing(true)
+        () => runOnJS(setIsAuthorizing)(true)
       );
 
       handlePress();
@@ -188,11 +190,12 @@ function HoldToAuthorizeButtonContent2({
           {
             duration: BUTTON_SCALE_DURATION_IN_MS,
           },
-          () => {
-            buttonScale.value = withTiming(1, {
-              duration: BUTTON_SCALE_DURATION_IN_MS,
-            });
-          }
+          () =>
+            runOnJS(() => {
+              buttonScale.value = withTiming(1, {
+                duration: BUTTON_SCALE_DURATION_IN_MS,
+              });
+            })()
         );
       }
     } else {
@@ -221,7 +224,6 @@ function HoldToAuthorizeButtonContent2({
       }
     }
   };
-
   return (
     <TapGestureHandler onHandlerStateChange={onTapChange}>
       <LongPressGestureHandler
@@ -273,7 +275,7 @@ function HoldToAuthorizeButtonContent2({
               )}
               <ShimmerAnimation
                 color={colors.whiteLabel}
-                enabled={!disabled}
+                enabled={!disableShimmerAnimation && !disabled}
                 width={width}
               />
               {!hideInnerBorder && <InnerBorder radius={height} />}
