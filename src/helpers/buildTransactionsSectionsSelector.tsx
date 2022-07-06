@@ -85,6 +85,7 @@ const buildTransactionsSections = (
       title: section,
     }));
     const pendingSectionIndex = sectionedTransactions.findIndex(
+      // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'title' implicitly has an 'any' ty... Remove this comment to see the full error message
       ({ title }) => title === 'Pending'
     );
     if (pendingSectionIndex > 0) {
