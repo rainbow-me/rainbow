@@ -12,3 +12,4 @@ Fixes RNBW-####
 - [ ] Added labels?
 - [ ] Added e2e tests? if not please specify why
 - [ ] If you added new files, did you update the CODEOWNERS file?
+- [ ] If your changes are visula, did you check both light and dark theme?
