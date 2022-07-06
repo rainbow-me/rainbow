@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
@@ -156,47 +155,30 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
-    console.log('😌 1');
     await Helpers.waitAndTap('exchange-fab');
-    console.log('😌 2');
     await Helpers.checkIfVisible('currency-select-list');
-    console.log('😌 3');
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-ETH-token'
     );
-    console.log('😌 4');
     await Helpers.checkIfVisible('exchange-modal-input');
-    console.log('😌 5');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
-    console.log('😌 6');
     await Helpers.checkIfVisible('currency-select-list');
-    console.log('😌 7');
     await Helpers.typeText(
       'currency-select-search-input',
       '0xefa6903aa49cd539c079ac4b0a090db432615822',
       true
     );
-    console.log('😌 8');
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-SWYF-token'
     );
-    console.log('😌 9');
     await Helpers.tapByText('Continue');
-    console.log('😌 10');
     await Helpers.checkIfVisible('exchange-modal-input');
-    console.log('😌 11');
     await Helpers.typeText('exchange-modal-input', '0.001', true);
-    console.log('😌 12');
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
-    console.log('😌 13');
     await Helpers.tapAndLongPress('swap-details-confirm-button');
-    console.log('😌 14');
     await acceptAlertIfGasPriceIsHigh();
-    console.log('😌 15');
     await checkIfSwapCompleted('Ethereum', '0.001 ETH');
-    console.log('😌 16');
     await Helpers.swipe('profile-screen', 'left', 'slow');
-    console.log('😌 17');
   });
 
   it('Should be able to wrap ETH -> WETH', async () => {
