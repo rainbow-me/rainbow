@@ -19,7 +19,15 @@ import {
 import tokenSearch from '@rainbow-me/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
-import { erc20ABI, rainbowTokenList } from '@rainbow-me/references';
+import {
+  DAI_ADDRESS,
+  erc20ABI,
+  ETH_ADDRESS,
+  rainbowTokenList,
+  USDC_ADDRESS,
+  WBTC_ADDRESS,
+  WETH_ADDRESS,
+} from '@rainbow-me/references';
 import { ethereumUtils, filterList, logger } from '@rainbow-me/utils';
 
 const MAINNET_CHAINID = 1;
@@ -117,10 +125,11 @@ const useSwapCurrencyList = (
         const { address: address1, name: name1 } = t1;
         const { address: address2, name: name2 } = t2;
         const mainnetPriorityTokens = [
-          'eth', // eth
-          '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
-          '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wbtc
+          ETH_ADDRESS,
+          WETH_ADDRESS,
+          DAI_ADDRESS,
+          USDC_ADDRESS,
+          WBTC_ADDRESS,
         ];
         const rankA = mainnetPriorityTokens.findIndex(
           address => address === address1.toLowerCase()
