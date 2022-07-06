@@ -62,27 +62,25 @@ export const estimateUnlockAndSwap = async (
     );
   }
 
+  let unlockGasLimit;
+  let swapGasLimit;
+
   if (swapAssetNeedsUnlocking) {
-    const unlockGasLimit = await estimateApprove(
+    unlockGasLimit = await estimateApprove(
       accountAddress,
       inputCurrency.address,
       RAINBOW_ROUTER_CONTRACT_ADDRESS,
       chainId
     );
-    gasLimits = concat(
-      gasLimits,
-      unlockGasLimit,
-      ethereumUtils.getBasicSwapGasLimit(Number(chainId))
-    );
-  } else {
-    const swapGasLimit = await estimateSwapGasLimit({
-      chainId: Number(chainId),
-      requiresApprove: swapAssetNeedsUnlocking,
-      tradeDetails,
-    });
-
-    gasLimits = concat(gasLimits, swapGasLimit);
+    gasLimits = concat(gasLimits, unlockGasLimit);
   }
+  swapGasLimit = await estimateSwapGasLimit({
+    chainId: Number(chainId),
+    requiresApprove: swapAssetNeedsUnlocking,
+    tradeDetails,
+  });
+
+  gasLimits = concat(gasLimits, swapGasLimit);
 
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
