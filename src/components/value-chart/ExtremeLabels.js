@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
@@ -56,7 +55,7 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
 
 const Labels = React.memo(function Labels({ color, width }) {
   const { nativeCurrency } = useAccountSettings();
-  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
   const { colors } = useTheme();
 

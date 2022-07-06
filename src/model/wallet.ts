@@ -17,7 +17,7 @@ import {
   default as LibWallet,
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
-import { findKey, forEach, get, isEmpty } from 'lodash';
+import { findKey, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
@@ -486,7 +486,7 @@ const loadPrivateKey = async (
       if (privateKeyData === -1) {
         return -1;
       }
-      privateKey = get(privateKeyData, 'privateKey', null);
+      privateKey = privateKeyData?.privateKey ?? null;
 
       let userPIN = null;
       if (android) {
@@ -588,7 +588,7 @@ export const createWallet = async (
     // Get all wallets
     const allWalletsResult = await getAllWallets();
     logger.sentry('[createWallet] - getAllWallets');
-    const allWallets: AllRainbowWallets = get(allWalletsResult, 'wallets', {});
+    const allWallets: AllRainbowWallets = allWalletsResult?.wallets ?? {};
 
     let existingWalletId = null;
     if (isImported) {
@@ -748,7 +748,8 @@ export const createWallet = async (
 
         let discoveredAccount: RainbowAccount | undefined;
         let discoveredWalletId: RainbowWallet['id'] | undefined;
-        forEach(allWallets, someWallet => {
+
+        Object.values(allWallets).forEach(someWallet => {
           const existingAccount = someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
@@ -1038,6 +1039,13 @@ export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => 
     return null;
   }
 };
+let callbackAfterSeeds: null | (() => void) = null;
+
+export function setCallbackAfterObtainingSeedsFromKeychainOrError(
+  callback: () => void
+) {
+  callbackAfterSeeds = callback;
+}
 
 export const generateAccount = async (
   id: RainbowWallet['id'],
@@ -1067,6 +1075,8 @@ export const generateAccount = async (
           userPIN = await authenticateWithPINAndCreateIfNeeded();
           dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
         } catch (e) {
+          callbackAfterSeeds?.();
+          callbackAfterSeeds = null;
           return null;
         }
       }
@@ -1074,6 +1084,8 @@ export const generateAccount = async (
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id);
+      callbackAfterSeeds?.();
+      callbackAfterSeeds = null;
       seedphrase = seedData?.seedphrase;
       if (userPIN) {
         try {
@@ -1083,6 +1095,8 @@ export const generateAccount = async (
         }
       }
     }
+
+    callbackAfterSeeds = null;
 
     if (!seedphrase) {
       throw new Error(`Can't access secret phrase to create new accounts`);
@@ -1276,7 +1290,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       // In that case we regenerate the existing private key to store it with the new format
       if (!isSeedPhraseMigrated) {
         const migratedSecrets = await migrateSecrets();
-        seedPhrase = get(migratedSecrets, 'seedphrase', null);
+        seedPhrase = migratedSecrets?.seedphrase ?? null;
       } else {
         logger.sentry('Migrated flag was set but there is no key!', id);
         captureMessage('Missing seed for wallet');
@@ -1284,7 +1298,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
     } else {
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
-      seedPhrase = get(seedData, 'seedphrase', null);
+      seedPhrase = seedData?.seedphrase ?? null;
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
