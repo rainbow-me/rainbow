@@ -2,10 +2,7 @@ import { format } from 'date-fns';
 import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import React from 'react';
 import { createSelector } from 'reselect';
-import {
-  FastRequestCoinRow,
-  FastTransactionCoinRow,
-} from '../components/coin-row';
+import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
 import {
   thisMonthTimestamp,
   thisYearTimestamp,
@@ -88,7 +85,6 @@ const buildTransactionsSections = (
       title: section,
     }));
     const pendingSectionIndex = sectionedTransactions.findIndex(
-      // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'title' implicitly has an 'any' ty... Remove this comment to see the full error message
       ({ title }) => title === 'Pending'
     );
     if (pendingSectionIndex > 0) {
@@ -106,7 +102,7 @@ const buildTransactionsSections = (
       {
         data: requests,
         renderItem: ({ item }: any) => (
-          <FastRequestCoinRow item={item} theme={theme} />
+          <RequestCoinRow item={item} theme={theme} />
         ),
         title: 'Requests',
       },
