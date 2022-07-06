@@ -137,6 +137,7 @@ export default React.memo(function FastCoinIcon({
           assetType={resolvedType}
           shadowColor={shadowColor}
           symbol={symbol}
+          theme={theme}
         >
           {() => (
             <CoinIconTextFallback
