@@ -251,6 +251,14 @@ export const toHex = (value: BigNumberish): string =>
   BigNumber.from(value).toHexString();
 
 /**
+ * Converts a number to a hex string without leading zeros.
+ * @param value The number.
+ * @return The hex string.
+ */
+export const toHexNoLeadingZeros = (value: BigNumberish): string =>
+  toHex(value).replace(/^0x0*/, '0x');
+
+/**
  * @desc Checks if a hex string, ignoring prefixes and suffixes.
  * @param value The string.
  * @return Whether or not the string is a hex string.
