@@ -8,6 +8,7 @@ import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
+import { useWallets } from './useWallets';
 import {
   buildBriefWalletSectionsSelector,
   buildWalletSectionsSelector,
@@ -22,6 +23,7 @@ export default function useWalletSectionsData() {
   const uniqueTokens = useSendableUniqueTokens();
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
+  const { isReadOnlyWallet } = useWallets();
 
   const {
     hiddenCoinsObj: hiddenCoins,
@@ -47,11 +49,16 @@ export default function useWalletSectionsData() {
       ...uniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
+      hiddenTokens: [],
       showcaseTokens,
     };
 
     const sectionsData = buildWalletSectionsSelector(accountInfo);
-    const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
+    const briefSectionsData = buildBriefWalletSectionsSelector(
+      accountInfo
+    ).filter(section =>
+      isReadOnlyWallet && section.uid.includes('hidden') ? false : true
+    );
 
     return {
       isWalletEthZero,
@@ -75,6 +82,7 @@ export default function useWalletSectionsData() {
     sortedAccountData,
     uniqueTokens,
     uniswap,
+    isReadOnlyWallet,
   ]);
   return walletSections;
 }
