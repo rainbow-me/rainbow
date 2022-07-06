@@ -7,7 +7,7 @@ import {
 } from '@rainbow-me/handlers/uniswap';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
-import { WETH_ADDRESS } from '@rainbow-me/references';
+import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS } from '@rainbow-me/references';
 import { fromWei, updatePrecisionToDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -40,11 +40,18 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
 
   const priceValue = ethereumUtils.getAssetPrice(address);
 
+  // ETH_ADDRESS is a misleading name– this address is used to represent any network's native asset
   if (
+    // eth <-> weth swap
     (tradeDetails.buyTokenAddress === ETH_ADDRESS &&
       tradeDetails.sellTokenAddress === WETH_ADDRESS) ||
     (tradeDetails.sellTokenAddress === ETH_ADDRESS &&
-      tradeDetails.buyTokenAddress === WETH_ADDRESS)
+      tradeDetails.buyTokenAddress === WETH_ADDRESS) ||
+    // matic <-> wmatic swap
+    (tradeDetails.buyTokenAddress === ETH_ADDRESS &&
+      tradeDetails.sellTokenAddress === WMATIC_POLYGON_ADDRESS) ||
+    (tradeDetails.sellTokenAddress === ETH_ADDRESS &&
+      tradeDetails.buyTokenAddress === WMATIC_POLYGON_ADDRESS)
   ) {
     amountReceivedSold = fromWei(amountReceivedSold.toString());
   }
