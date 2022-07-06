@@ -151,7 +151,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
