@@ -62,6 +62,7 @@ export default function useSwapCurrencyHandlers({
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputHandlers();
+
   const { defaultInputItemInWallet, defaultOutputItem } = useMemo(() => {
     if (type === ExchangeModalTypes.withdrawal) {
       return {
@@ -146,7 +147,6 @@ export default function useSwapCurrencyHandlers({
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
       updateOutputAmount(null);
-      updateInputAmount(null);
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
           ? nativeFieldRef
