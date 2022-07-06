@@ -111,9 +111,41 @@ const useSwapCurrencyList = (
 
   const getCurated = useCallback(() => {
     const addresses = favoriteAddresses.map(a => a.toLowerCase());
-    return Object.values(curatedMap).filter(
-      ({ address }) => !addresses.includes(address.toLowerCase())
-    );
+    return Object.values(curatedMap)
+      .filter(({ address }) => !addresses.includes(address.toLowerCase()))
+      .sort((t1, t2) => {
+        const { address: address1, name: name1 } = t1;
+        const { address: address2, name: name2 } = t2;
+        const mainnetPriorityTokens = [
+          'eth', // eth
+          '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
+          '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wbtc
+        ];
+        const rankA = mainnetPriorityTokens.findIndex(
+          address => address === address1.toLowerCase()
+        );
+        const rankB = mainnetPriorityTokens.findIndex(
+          address => address === address2.toLowerCase()
+        );
+        const aIsRanked = rankA > -1;
+        const bIsRanked = rankB > -1;
+        if (aIsRanked) {
+          return bIsRanked
+            ? // compare rank within list
+              rankA < rankB
+              ? -1
+              : 1
+            : // only t1 is ranked
+              -1;
+        } else {
+          return bIsRanked
+            ? // only t2 is ranked
+              1
+            : // sort unranked by abc
+              name1?.localeCompare(name2);
+        }
+      });
   }, [curatedMap, favoriteAddresses]);
 
   const getFavorites = useCallback(async () => {
