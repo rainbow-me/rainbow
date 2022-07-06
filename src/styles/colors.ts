@@ -288,7 +288,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
   };
 
   const statusColor = buildRgba(base.blueGreyDark, 0.7);
-  const balanceText = colors.alpha(colors.blueGreyDark, 0.5);
+  const balanceText = buildRgba(base.blueGreyDark, 0.5);
 
   if (darkMode) {
     base = {
