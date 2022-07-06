@@ -10,13 +10,13 @@ import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
-export default function SwapDetailsUniswapRow(tradeDetails) {
+export default function SwapDetailsUniswapRow({ tradeDetails, network }) {
   const { navigate } = useNavigation();
   const { nativeCurrency } = useAccountSettings();
-  const { rainbowFeeNative, rainbowFeePercentage } = useRainbowFee(
-    tradeDetails
-  );
-
+  const { rainbowFeeNative, rainbowFeePercentage } = useRainbowFee({
+    network,
+    tradeDetails,
+  });
   const rainbowFeeNativeDisplay =
     rainbowFeeNative &&
     convertAmountToNativeDisplay(rainbowFeeNative, nativeCurrency);
