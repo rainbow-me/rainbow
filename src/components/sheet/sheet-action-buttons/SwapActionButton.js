@@ -41,10 +41,10 @@ function SwapActionButton({
           params: {
             chainId: ethereumUtils.getChainIdFromType(asset.type),
             defaultOutputAsset: asset,
+            fromDiscover: true,
             onSelectCurrency: updateInputCurrency,
             params: {
               ...params,
-              fromDiscover: true,
               ignoreInitialTypeCheck: true,
               outputAsset: asset,
             },
@@ -64,7 +64,6 @@ function SwapActionButton({
             onSelectCurrency: updateOutputCurrency,
             params: {
               ...params,
-              fromDiscover: true,
               ignoreInitialTypeCheck: true,
             },
             title: lang.t('swap.modal_types.receive'),
