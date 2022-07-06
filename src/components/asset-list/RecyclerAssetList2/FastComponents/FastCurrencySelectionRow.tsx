@@ -1,4 +1,5 @@
 import React from 'react';
+import isEqual from 'react-fast-compare';
 import { Text as RNText, StyleSheet, View } from 'react-native';
 import {
   // @ts-ignore
@@ -9,17 +10,12 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../../../animations';
 import { CoinRowHeight } from '../../../coin-row';
+import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
 import { useAccountAsset } from '@rainbow-me/hooks';
-import {
-  borders,
-  colors,
-  fonts,
-  fontWithWidth,
-  getFontSize,
-} from '@rainbow-me/styles';
-import { isETH } from '@rainbow-me/utils';
+import { colors, fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
+import { deviceUtils, isETH } from '@rainbow-me/utils';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? View
@@ -28,6 +24,48 @@ const SafeRadialGradient = (IS_TESTING === 'true'
 interface FastCurrencySelectionRowProps {
   item: any;
 }
+
+interface FavStarProps {
+  theme: any;
+  favorite: boolean;
+  toggleFavorite: (onNewEmoji?: () => void) => void;
+}
+
+function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
+  const { isDarkMode } = theme;
+  return (
+    <ButtonPressAnimation onPress={toggleFavorite}>
+      <SafeRadialGradient
+        center={[0, 15]}
+        colors={
+          favorite
+            ? [
+                colors.alpha('#FFB200', isDarkMode ? 0.15 : 0),
+                colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2),
+              ]
+            : colors.gradients.lightestGrey
+        }
+        style={[sx.gradient, sx.starGradient]}
+      >
+        <RNText
+          ellipsizeMode="tail"
+          numberOfLines={1}
+          style={[
+            sx.star,
+            {
+              color: colors.alpha(colors.blueGreyDark, 0.2),
+            },
+            favorite && sx.starFavorite,
+          ]}
+        >
+          􀋃
+        </RNText>
+      </SafeRadialGradient>
+    </ButtonPressAnimation>
+  );
+}
+
+const deviceWidth = deviceUtils.dimensions.width;
 
 export default React.memo(function FastCurrencySelectionRow({
   item: {
@@ -48,7 +86,7 @@ export default React.memo(function FastCurrencySelectionRow({
     testID,
   },
 }: FastCurrencySelectionRowProps) {
-  const { isDarkMode, colors } = theme;
+  const { colors } = theme;
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
@@ -151,36 +189,39 @@ export default React.memo(function FastCurrencySelectionRow({
               </ButtonPressAnimation>
             </ContextMenuButton>
           )}
-          {showFavoriteButton && (
-            <ButtonPressAnimation onPress={toggleFavorite}>
-              <SafeRadialGradient
-                center={[0, 15]}
-                colors={
-                  favorite
-                    ? [
-                        colors.alpha('#FFB200', isDarkMode ? 0.15 : 0),
-                        colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2),
-                      ]
-                    : colors.gradients.lightestGrey
-                }
-                style={[sx.gradient, sx.starGradient]}
+          {showFavoriteButton &&
+            (ios ? (
+              // @ts-ignore
+              <FloatingEmojis
+                centerVertically
+                deviceWidth={deviceWidth}
+                disableHorizontalMovement
+                disableVerticalMovement
+                distance={70}
+                duration={400}
+                emojis={['glowing_star']}
+                fadeOut={false}
+                marginTop={-4}
+                range={[0, 0]}
+                scaleTo={0}
+                size={32}
+                wiggleFactor={0}
               >
-                <RNText
-                  ellipsizeMode="tail"
-                  numberOfLines={1}
-                  style={[
-                    sx.star,
-                    {
-                      color: colors.alpha(colors.blueGreyDark, 0.2),
-                    },
-                    favorite && sx.starFavorite,
-                  ]}
-                >
-                  􀋃
-                </RNText>
-              </SafeRadialGradient>
-            </ButtonPressAnimation>
-          )}
+                {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+                  <FavStar
+                    favorite={favorite}
+                    theme={theme}
+                    toggleFavorite={() => toggleFavorite(onNewEmoji)}
+                  />
+                )}
+              </FloatingEmojis>
+            ) : (
+              <FavStar
+                favorite={favorite}
+                theme={theme}
+                toggleFavorite={toggleFavorite}
+              />
+            ))}
           {showAddButton && (
             <ButtonPressAnimation onPress={toggleFavorite}>
               <SafeRadialGradient
@@ -205,7 +246,8 @@ export default React.memo(function FastCurrencySelectionRow({
       )}
     </View>
   );
-});
+},
+isEqual);
 
 const sx = StyleSheet.create({
   addGradient: {
@@ -224,49 +266,10 @@ const sx = StyleSheet.create({
   balanceColumn: {
     height: 34,
   },
-  bottom: {
-    marginTop: 12,
-  },
-  center: {
-    justifyContent: 'center',
-  },
-  checkboxContainer: {
-    width: 51,
-  },
-  checkboxInnerContainer: {
-    alignContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    height: 40,
-    justifyContent: 'center',
-    width: 51,
-  },
-  circleOutline: {
-    ...borders.buildCircleAsObject(22),
-    borderWidth: 1.5,
-    left: 19,
-    position: 'absolute',
-  },
-  coinIconFallback: {
-    backgroundColor: '#25292E',
-    borderRadius: 20,
-    height: 40,
-    width: 40,
-  },
-  coinIconIndicator: {
-    left: 19,
-    position: 'absolute',
-  },
   column: {
     flexDirection: 'column',
     height: 33,
     justifyContent: 'space-between',
-  },
-  container: {
-    flexDirection: 'row',
-    marginLeft: 2,
-    marginRight: 19,
-    marginVertical: 9.5,
   },
   fav: {
     alignItems: 'center',
@@ -286,9 +289,6 @@ const sx = StyleSheet.create({
     marginHorizontal: 2,
     overflow: 'hidden',
     width: 30,
-  },
-  hiddenRow: {
-    opacity: 0.4,
   },
   igradient: {
     paddingBottom: ios ? 0 : 2.5,
@@ -310,9 +310,6 @@ const sx = StyleSheet.create({
   },
   nameWithBalances: {
     lineHeight: 18.5,
-  },
-  nonEditMode: {
-    paddingHorizontal: 19,
   },
   rootContainer: {
     alignItems: 'center',

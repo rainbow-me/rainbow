@@ -29,7 +29,12 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
-import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
+import {
+  abbreviations,
+  deviceUtils,
+  haptics,
+  magicMemo,
+} from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -243,7 +248,6 @@ const ExchangeAssetList = (
             store.getState().data.genericAssets?.[rowData.address],
             onCopySwapDetailsText
           ),
-          favorite: !!localFavorite[rowData.address],
           nativeCurrency,
           nativeCurrencySymbol,
           onCopySwapDetailsText,
@@ -265,9 +269,17 @@ const ExchangeAssetList = (
           showFavoriteButton: itemProps.showFavoriteButton,
           testID,
           theme,
-          toggleFavorite: () => {
+          toggleFavorite: onNewEmoji => {
             setLocalFavorite(prev => {
               const newValue = !prev[rowData.address];
+
+              if (newValue) {
+                ios && onNewEmoji();
+                haptics.notificationSuccess();
+              } else {
+                haptics.selection();
+              }
+
               itemProps.onActionAsset(
                 store.getState().data.genericAssets?.[rowData.address] ||
                   rowData,
@@ -285,13 +297,25 @@ const ExchangeAssetList = (
       handleUnverifiedTokenPress,
       itemProps,
       items,
-      localFavorite,
       nativeCurrency,
       nativeCurrencySymbol,
       onCopySwapDetailsText,
       testID,
       theme,
     ]
+  );
+
+  // we don't wanna cause recreating of everything if only local fav is changing
+  const itemsWithFavorite = useMemo(
+    () =>
+      enrichedItems.map(({ data, ...item }) => ({
+        ...item,
+        data: data.map(rowData => ({
+          ...rowData,
+          favorite: !!localFavorite[rowData.address] || false,
+        })),
+      })),
+    [enrichedItems, localFavorite]
   );
 
   return (
@@ -305,7 +329,7 @@ const ExchangeAssetList = (
           renderItem={renderItem}
           renderSectionHeader={ExchangeAssetSectionListHeader}
           scrollsToTop={isFocused}
-          sections={enrichedItems}
+          sections={itemsWithFavorite}
         />
       </View>
 
