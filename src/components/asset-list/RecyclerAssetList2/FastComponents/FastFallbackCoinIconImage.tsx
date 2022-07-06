@@ -101,7 +101,7 @@ const sx = StyleSheet.create({
   coinIconFallback: {
     borderRadius: 20,
     height: 40,
-    overflow: 'visible',
+    overflow: 'hidden',
     width: 40,
   },
   container: {
