@@ -1,7 +1,7 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
-import AsyncStorage from '@react-native-community/async-storage';
 import ReactNative from 'react-native';
+import { MMKV } from 'react-native-mmkv';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
@@ -34,11 +34,38 @@ if (ReactNative.Keyboard.removeEventListener) {
 ReactNative.Platform.OS === 'ios' &&
   Animated.addWhitelistedNativeProps({ d: true });
 
+const mmkvLocalStorage = new MMKV({
+  id: 'local_storage',
+});
+
+const mmkvStorageBackend = {
+  clear() {
+    return new Promise(res => {
+      res(mmkvLocalStorage.clearAll());
+    });
+  },
+  getItem(key) {
+    return new Promise(res => {
+      res(mmkvLocalStorage.getString(key));
+    });
+  },
+  removeItem(key) {
+    return new Promise(res => {
+      res(mmkvLocalStorage.delete(key));
+    });
+  },
+  setItem(key, value) {
+    return new Promise(res => {
+      res(mmkvLocalStorage.set(key, value));
+    });
+  },
+};
+
 const storage = new Storage({
   defaultExpires: null,
-  enableCache: ReactNative.Platform.OS === 'ios',
+  // enableCache: true, //ReactNative.Platform.OS === 'ios',
   size: 10000,
-  storageBackend: AsyncStorage,
+  storageBackend: mmkvStorageBackend,
 });
 
 if (ReactNative.Platform.OS === 'android') {
