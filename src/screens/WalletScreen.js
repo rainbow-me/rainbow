@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, isEmpty, keys, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -207,7 +206,6 @@ export default function WalletScreen() {
 
   return (
     <WalletPage testID="wallet-screen">
-      {ios && <StatusBar barStyle="dark-content" />}
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />
