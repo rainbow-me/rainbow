@@ -105,22 +105,24 @@ const swap = async (
 
     // @ts-ignore
     swap = await executeSwap(swapParams);
-    // CBH note: entry point here
-    updateSwapL2BalancesToUpdate({
-      hash: swap?.hash || '',
-      inputCurrency: {
-        address: inputCurrency?.address,
-        decimals: inputCurrency?.decimals,
-        symbol: inputCurrency?.symbol,
-      },
-      network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-      outputCurrency: {
-        address: outputCurrency?.address,
-        decimals: outputCurrency?.decimals,
-        symbol: outputCurrency?.symbol,
-      },
-      userAddress: accountAddress,
-    });
+    logger.debug('SWAP TS ACTIONS: SWAP PARAMS --- ', swapParams);
+    dispatch(
+      updateSwapL2BalancesToUpdate({
+        hash: swap?.hash || '',
+        inputCurrency: {
+          address: inputCurrency?.address,
+          decimals: inputCurrency?.decimals,
+          symbol: inputCurrency?.symbol,
+        },
+        network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
+        outputCurrency: {
+          address: outputCurrency?.address,
+          decimals: outputCurrency?.decimals,
+          symbol: outputCurrency?.symbol,
+        },
+        userAddress: accountAddress,
+      })
+    );
 
     if (permit) {
       // Clear the allowance
@@ -134,6 +136,7 @@ const swap = async (
     logger.sentry('Error', e);
     const fakeError = new Error('Failed to execute swap');
     captureException(fakeError);
+    logger.debug('EXCEPTION: SWAP TS ACTIONS: ', e);
     throw e;
   }
 

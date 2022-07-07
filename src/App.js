@@ -61,6 +61,7 @@ import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
+import { updateSwapL2Balances } from './redux/swap';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
@@ -302,6 +303,8 @@ class App extends Component {
         logger.log('Reloading balances for network', network);
         if (isL2) {
           store.dispatch(explorerInitL2(network));
+          logger.debug('HANDLE TRANSACTION CONFIRMED: TX --- ', tx);
+          store.dispatch(updateSwapL2Balances(tx));
         } else {
           store.dispatch(
             fetchOnchainBalances({ keepPolling: false, withPrices: false })

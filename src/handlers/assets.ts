@@ -13,6 +13,7 @@ import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
 } from '@rainbow-me/utilities';
+import logger from 'logger';
 
 const nativeAssetsPerNetwork = {
   [networkTypes.arbitrum]: ARBITRUM_ETH_ADDRESS,
@@ -85,6 +86,7 @@ async function getOnchainTokenBalance(
       display: displayBalance,
     };
   } catch (e) {
+    logger.debug('get on chain token balance: ', e);
     return null;
   }
 }
@@ -110,6 +112,7 @@ async function getOnchainNativeAssetBalance(
       display: displayBalance,
     };
   } catch (e) {
+    logger.debug('get on chain native asset balance: ', e);
     return null;
   }
 }
