@@ -1,9 +1,12 @@
-import { Quote } from '@rainbow-me/swaps';
+import { EthereumAddress, Quote } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@rainbow-me/entities';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+// import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
+// import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import { ExchangeModalTypes, Network } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+// import { ethereumUtils } from '@rainbow-me/utils';
 
 export interface SwapAmount {
   display: string | null;
@@ -28,6 +31,23 @@ export interface TypeSpecificParameters {
 }
 
 interface SwapState {
+  balancesToUpdate: {
+    [id: string]: {
+      inputCurrency: {
+        address: EthereumAddress;
+        decimals: number;
+        symbol: string;
+      };
+      outputCurrency: {
+        address: EthereumAddress;
+        decimals: number;
+        symbol: string;
+      };
+      userAddress: string;
+      network: Network;
+      id: string;
+    };
+  };
   derivedValues: any;
   displayValues: any;
   depositCurrency: SwappableAsset | null;
@@ -48,6 +68,7 @@ const SWAP_UPDATE_DEPOSIT_CURRENCY = 'swap/SWAP_UPDATE_DEPOSIT_CURRENCY';
 const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
 const SWAP_UPDATE_SOURCE = 'swap/SWAP_UPDATE_SOURCE';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
+const SWAP_UPDATE_L2_BALANCE_UPDATES = 'swap/SWAP_UPDATE_L2_BALANCE_UPDATES';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
 const SWAP_UPDATE_INPUT_CURRENCY = 'swap/SWAP_UPDATE_INPUT_CURRENCY';
@@ -225,12 +246,59 @@ export const updateSwapQuote = (value: any) => (dispatch: AppDispatch) => {
   });
 };
 
+export const updateSwapL2BalancesToUpdate = (data: {
+  inputCurrency: { address: EthereumAddress; decimals: number; symbol: string };
+  outputCurrency: {
+    address: EthereumAddress;
+    decimals: number;
+    symbol: string;
+  };
+  userAddress: string;
+  network: Network;
+  hash: string;
+}) => (dispatch: AppDispatch) => {
+  dispatch({
+    payload: {
+      ...data,
+      id: `${data.hash}_${data.network}`,
+    },
+    type: SWAP_UPDATE_L2_BALANCE_UPDATES,
+  });
+};
+
+// export const updateSwapL2Balances = (tx: any) => async (
+//   dispatch: AppDispatch,
+//   getState: AppGetState
+// ) => {
+// const { accountAssetsData } = getState().data;
+// const { balancesToUpdate } = getState().swap;
+// const network = tx.chainId
+//   ? ethereumUtils.getNetworkFromChainId(tx.chainId)
+//   : tx.network || Network.mainnet;
+// const id = `${tx.hash}_${network}`;
+// const { inputCurrency, outputCurrency, userAddress } = balancesToUpdate[id];
+// const provider = getProviderForNetwork(network);
+// const inputAssetBalance = await getOnchainAssetBalance(
+//   inputCurrency,
+//   userAddress,
+//   network,
+//   provider
+// );
+// const outputAssetBalance = await getOnchainAssetBalance(
+//   outputCurrency,
+//   userAddress,
+//   network,
+//   provider
+// );
+// };
+
 export const swapClearState = () => (dispatch: AppDispatch) => {
   dispatch({ type: SWAP_CLEAR_STATE });
 };
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
+  balancesToUpdate: {},
   depositCurrency: null,
   derivedValues: null,
   displayValues: null,
@@ -313,6 +381,14 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
           action.payload.independentValue ?? state.independentValue,
         inputCurrency: action.payload.newInputCurrency,
         outputCurrency: action.payload.newOutputCurrency,
+      };
+    case SWAP_UPDATE_L2_BALANCE_UPDATES:
+      return {
+        ...state,
+        balancesToUpdate: {
+          ...state.balancesToUpdate,
+          [action.payload.id]: action.payload,
+        },
       };
     case SWAP_CLEAR_STATE:
       return {
