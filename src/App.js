@@ -58,7 +58,7 @@ import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
-import { explorerInitL2 } from './redux/explorer';
+// import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
@@ -294,6 +294,7 @@ class App extends Component {
   };
 
   handleTransactionConfirmed = tx => {
+    logger.debug('TX in handle transaction confirmed --- :', tx);
     const network = tx.chainId
       ? ethereumUtils.getNetworkFromChainId(tx.chainId)
       : tx.network || networkTypes.mainnet;
@@ -302,8 +303,7 @@ class App extends Component {
       setTimeout(() => {
         logger.log('Reloading balances for network', network);
         if (isL2) {
-          store.dispatch(explorerInitL2(network));
-          logger.debug('HANDLE TRANSACTION CONFIRMED: TX --- ', tx);
+          // store.dispatch(explorerInitL2(network));
           store.dispatch(additionalDataUpdateL2AssetBalance(tx));
         } else {
           store.dispatch(

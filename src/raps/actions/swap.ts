@@ -112,12 +112,14 @@ const swap = async (
         inputCurrency: {
           address: inputCurrency?.address,
           decimals: inputCurrency?.decimals,
+          mainnetAddress: inputCurrency?.mainnet_address,
           symbol: inputCurrency?.symbol,
         },
         network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
         outputCurrency: {
           address: outputCurrency?.address,
           decimals: outputCurrency?.decimals,
+          mainnetAddress: outputCurrency?.mainnet_address,
           symbol: outputCurrency?.symbol,
         },
         userAddress: accountAddress,
