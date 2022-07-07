@@ -1,0 +1,12 @@
+
+# The default match provisioning environment
+type "development"
+
+# Git Storage of code signing identities
+git_url "git@github.com:rainbow-me/rainbow-code-signing.git"
+
+# Automatically renew provisioning profiles to include new devices
+force_for_new_devices true
+
+# For more information about the Matchfile, see:
+#     https://docs.fastlane.tools/actions/match/#match

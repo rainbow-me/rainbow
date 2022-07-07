@@ -57,9 +57,7 @@ platform :ios do
 
     match(
       force: true,
-      type: "appstore",
-      app_identifier: ["me.rainbow", "me.rainbow.PriceWidget", "me.rainbow.SelectTokenIntent"],
-      git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
+      type: "appstore"
     )
     
     gym(
