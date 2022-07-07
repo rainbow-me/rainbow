@@ -94,7 +94,7 @@ export default function CurrencySelectModal() {
   const scrollPosition = usePagerPosition();
 
   const searchInputRef = useRef();
-  const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
+  const { handleFocus } = useMagicAutofocus(searchInputRef);
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -276,7 +276,7 @@ export default function CurrencySelectModal() {
             network && network?.toLowerCase() === currentL2Name?.toLowerCase()
         );
         if (currentL2WalletAssets?.length < 1) {
-          android && Keyboard.dismiss();
+          Keyboard.dismiss();
           InteractionManager.runAfterInteractions(() => {
             navigate(Routes.EXPLAIN_SHEET, {
               assetName: item?.symbol,
@@ -418,6 +418,7 @@ export default function CurrencySelectModal() {
               type={type}
             />
             <ExchangeSearch
+              clearTextOnFocus={false}
               isFetching={swapCurrencyListLoading}
               isSearching={swapCurrencyListLoading}
               onChangeText={setSearchQuery}
