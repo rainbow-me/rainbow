@@ -25,7 +25,7 @@ import {
   isValidWallet,
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
@@ -346,8 +346,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     setIsWalletLoading(
       isImporting
         ? showImportModal
-          ? walletLoadingStates.IMPORTING_WALLET
-          : walletLoadingStates.IMPORTING_WALLET_SILENTLY
+          ? WalletLoadingStates.IMPORTING_WALLET
+          : WalletLoadingStates.IMPORTING_WALLET_SILENTLY
         : null
     );
   }, [isImporting, setIsWalletLoading, showImportModal]);
