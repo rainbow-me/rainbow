@@ -294,7 +294,7 @@ const GasSpeedButton = ({
   }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
 
   const openGasHelper = useCallback(() => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     const network = currentNetwork ?? networkTypes.mainnet;
     const networkName = networkInfo[network].name;
     navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });

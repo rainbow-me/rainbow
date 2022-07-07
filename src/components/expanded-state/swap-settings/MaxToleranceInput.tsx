@@ -93,7 +93,7 @@ export const MaxToleranceInput = forwardRef(
     );
 
     const openExplainer = () => {
-      android && Keyboard.dismiss();
+      Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'slippage',
       });

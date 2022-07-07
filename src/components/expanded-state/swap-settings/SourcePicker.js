@@ -74,7 +74,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
   }, [onSelect]);
 
   const openExplainer = () => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       type: 'routeSwaps',
     });
