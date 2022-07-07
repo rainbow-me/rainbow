@@ -61,13 +61,12 @@ function SwapActionButton({
           params: {
             chainId: ethereumUtils.getChainIdFromType(asset.type),
             defaultInputAsset: asset,
-            fromDiscover: true,
             onSelectCurrency: updateOutputCurrency,
             params: {
               ...params,
               ignoreInitialTypeCheck: true,
             },
-            title: lang.t('swap.modal_types.swap'),
+            title: lang.t('swap.modal_types.receive'),
             type: CurrencySelectionTypes.output,
           },
           screen: Routes.CURRENCY_SELECT_SCREEN,
