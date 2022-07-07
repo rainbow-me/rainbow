@@ -17,9 +17,9 @@ import {
 } from '@rainbow-me/handlers/uniswap';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+import { additionalDataUpdateL2AssetToWatch } from '@rainbow-me/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
-import { updateSwapL2BalancesToUpdate } from '@rainbow-me/redux/swap';
 import { greaterThan } from '@rainbow-me/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -107,7 +107,7 @@ const swap = async (
     swap = await executeSwap(swapParams);
     logger.debug('SWAP TS ACTIONS: SWAP PARAMS --- ', swapParams);
     dispatch(
-      updateSwapL2BalancesToUpdate({
+      additionalDataUpdateL2AssetToWatch({
         hash: swap?.hash || '',
         inputCurrency: {
           address: inputCurrency?.address,
@@ -161,7 +161,7 @@ const swap = async (
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
-  await dispatch(
+  dispatch(
     dataAddNewTransaction(
       // @ts-ignore
       newTransaction,

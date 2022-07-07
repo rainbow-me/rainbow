@@ -57,11 +57,11 @@ import RoutesComponent from './navigation/Routes';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
+import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
-import { updateSwapL2Balances } from './redux/swap';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
@@ -304,7 +304,7 @@ class App extends Component {
         if (isL2) {
           store.dispatch(explorerInitL2(network));
           logger.debug('HANDLE TRANSACTION CONFIRMED: TX --- ', tx);
-          store.dispatch(updateSwapL2Balances(tx));
+          store.dispatch(additionalDataUpdateL2AssetBalance(tx));
         } else {
           store.dispatch(
             fetchOnchainBalances({ keepPolling: false, withPrices: false })

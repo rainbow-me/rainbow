@@ -67,7 +67,7 @@ import {
   getSwapRapEstimationByType,
   getSwapRapTypeByExchangeType,
 } from '@rainbow-me/raps';
-import { updateSwapTypeDetails } from '@rainbow-me/redux/swap';
+import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -340,7 +340,7 @@ export default function ExchangeModal({
 
   useEffect(() => {
     return () => {
-      // dispatch(swapClearState());
+      dispatch(swapClearState());
       resetSwapInputs();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

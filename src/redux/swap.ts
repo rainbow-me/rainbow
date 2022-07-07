@@ -1,14 +1,9 @@
-import { EthereumAddress, Quote } from '@rainbow-me/swaps';
+import { Quote } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
-import { dataUpdateAsset } from './data';
 import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@rainbow-me/entities';
-import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import { ExchangeModalTypes, Network } from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
 
 export interface SwapAmount {
   display: string | null;
@@ -33,23 +28,6 @@ export interface TypeSpecificParameters {
 }
 
 interface SwapState {
-  balancesToUpdate: {
-    [id: string]: {
-      inputCurrency: {
-        address: EthereumAddress;
-        decimals: number;
-        symbol: string;
-      };
-      outputCurrency: {
-        address: EthereumAddress;
-        decimals: number;
-        symbol: string;
-      };
-      userAddress: string;
-      network: Network;
-      id: string;
-    };
-  };
   derivedValues: any;
   displayValues: any;
   depositCurrency: SwappableAsset | null;
@@ -70,7 +48,6 @@ const SWAP_UPDATE_DEPOSIT_CURRENCY = 'swap/SWAP_UPDATE_DEPOSIT_CURRENCY';
 const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
 const SWAP_UPDATE_SOURCE = 'swap/SWAP_UPDATE_SOURCE';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
-const SWAP_UPDATE_L2_BALANCE_UPDATES = 'swap/SWAP_UPDATE_L2_BALANCE_UPDATES';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
 const SWAP_UPDATE_INPUT_CURRENCY = 'swap/SWAP_UPDATE_INPUT_CURRENCY';
@@ -248,116 +225,12 @@ export const updateSwapQuote = (value: any) => (dispatch: AppDispatch) => {
   });
 };
 
-export const updateSwapL2BalancesToUpdate = (data: {
-  inputCurrency: { address: EthereumAddress; decimals: number; symbol: string };
-  outputCurrency: {
-    address: EthereumAddress;
-    decimals: number;
-    symbol: string;
-  };
-  userAddress: string;
-  network: Network;
-  hash: string;
-}) => async (dispatch: AppDispatch) => {
-  logger.debug('update swap l2 balances to update: ', data);
-  try {
-    dispatch({
-      payload: {
-        ...data,
-        id: `${data.hash}_${data.network}`,
-      },
-      type: SWAP_UPDATE_L2_BALANCE_UPDATES,
-    });
-  } catch (e) {
-    logger.debug('EXCEPTION: UPDATE SWAP L2 BALANCES TO UPDATE: --- ', e);
-  }
-};
-
-export const updateSwapL2Balances = (tx: any) => async (
-  dispatch: AppDispatch,
-  getState: AppGetState
-) => {
-  logger.debug('THIS HAPPENS: ', tx);
-  try {
-    const { balancesToUpdate } = getState().swap;
-    const { genericAssets } = getState().data;
-    logger.debug('BALANCES TO UPDATE: ', balancesToUpdate);
-    const network = tx.chainId
-      ? ethereumUtils.getNetworkFromChainId(tx.chainId)
-      : tx.network || Network.mainnet;
-    const id = `${tx.hash}_${network}`;
-    const { inputCurrency, outputCurrency, userAddress } = balancesToUpdate?.[
-      id
-    ];
-    const provider = await getProviderForNetwork(network);
-    const inputAssetBalance = await getOnchainAssetBalance(
-      inputCurrency,
-      userAddress,
-      network,
-      provider
-    );
-    const inputFallback =
-      ethereumUtils.getAccountAsset(
-        `${inputCurrency.address?.toLowerCase()}_${network}`
-      ) || genericAssets[inputCurrency.address?.toLowerCase()];
-    if (inputAssetBalance && inputFallback) {
-      dispatch(
-        dataUpdateAsset({
-          ...inputFallback,
-          balance: {
-            ...(inputFallback?.balance || {}),
-            ...inputAssetBalance,
-          },
-        })
-      );
-      logger.debug('DATA UPDATE INPUT ASSET ::: ', {
-        ...inputFallback,
-        balance: {
-          ...(inputFallback?.balance || {}),
-          ...inputAssetBalance,
-        },
-      });
-    }
-    const outputAssetBalance = await getOnchainAssetBalance(
-      outputCurrency,
-      userAddress,
-      network,
-      provider
-    );
-    const outputFallback =
-      ethereumUtils.getAccountAsset(
-        `${outputCurrency.address?.toLowerCase()}_${network}`
-      ) || genericAssets[outputCurrency.address?.toLowerCase()];
-    if (outputAssetBalance && outputFallback) {
-      dispatch(
-        dataUpdateAsset({
-          ...outputFallback,
-          balance: {
-            ...(outputFallback?.balance || {}),
-            ...outputAssetBalance,
-          },
-        })
-      );
-      logger.debug('DATA UPDATE OUTPUT ASSET ::: ', {
-        ...outputFallback,
-        balance: {
-          ...(outputFallback?.balance || {}),
-          ...outputAssetBalance,
-        },
-      });
-    }
-  } catch (e) {
-    logger.debug('EXCEPTION IN UPDATE BALANCES: ', e);
-  }
-};
-
 export const swapClearState = () => (dispatch: AppDispatch) => {
   dispatch({ type: SWAP_CLEAR_STATE });
 };
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
-  balancesToUpdate: {},
   depositCurrency: null,
   derivedValues: null,
   displayValues: null,
@@ -441,21 +314,10 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         inputCurrency: action.payload.newInputCurrency,
         outputCurrency: action.payload.newOutputCurrency,
       };
-    case SWAP_UPDATE_L2_BALANCE_UPDATES:
-      logger.debug('ACTION PAYLOAD ID --- ', action.payload.id);
-      logger.debug('ACTION PAYLOAD: ', action.payload);
-      return {
-        ...state,
-        balancesToUpdate: {
-          ...state.balancesToUpdate,
-          [action.payload.id]: action.payload,
-        },
-      };
     case SWAP_CLEAR_STATE:
       return {
         ...state,
         ...INITIAL_STATE,
-        ...state.balancesToUpdate,
       };
     default:
       return state;
