@@ -61,14 +61,12 @@ export default React.memo(function UniswapCoinRow({
                 </Text>
               </View>
             </View>
-            <View style={sx.poolValue}>
-              <FastPoolValue
-                nativeCurrency={item.nativeCurrency}
-                theme={item.theme}
-                type={item.attribute}
-                value={item.value}
-              />
-            </View>
+            <FastPoolValue
+              nativeCurrency={item.nativeCurrency}
+              theme={item.theme}
+              type={item.attribute}
+              value={item.value}
+            />
           </View>
         </ButtonPressAnimation>
       </View>
@@ -78,9 +76,10 @@ export default React.memo(function UniswapCoinRow({
 
 const sx = StyleSheet.create({
   bottom: {
-    marginTop: 16,
+    marginTop: 10,
   },
   container: {
+    alignItems: 'center',
     flexDirection: 'row',
     marginRight: 19,
   },
@@ -89,19 +88,15 @@ const sx = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
-    marginLeft: 14,
-    marginTop: 14,
+    marginLeft: 10,
   },
   nonEditMode: {
     paddingLeft: 19,
   },
-  poolValue: {
-    marginTop: 9,
-  },
   reverseRow: {
     flexDirection: 'row-reverse',
     justifyContent: 'flex-end',
-    width: 66,
+    width: 70,
   },
   rootContainer: {
     flexDirection: 'row',
