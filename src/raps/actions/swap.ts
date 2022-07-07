@@ -38,6 +38,7 @@ const swap = async (
     tradeDetails,
     permit,
     chainId,
+    requiresApprove,
   } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
@@ -72,7 +73,7 @@ const swap = async (
   try {
     const newGasLimit = await estimateSwapGasLimit({
       chainId: Number(chainId),
-      requiresApprove: false,
+      requiresApprove,
       tradeDetails,
     });
     gasLimit = newGasLimit;

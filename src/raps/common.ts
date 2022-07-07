@@ -71,6 +71,7 @@ export interface RapExchangeActionParameters {
   permit?: boolean;
   flashbots?: boolean;
   chainId?: number;
+  requiresApprove?: boolean;
 }
 
 export interface RapENSActionParameters {
@@ -98,6 +99,7 @@ export interface SwapActionParameters {
   flashbots?: boolean;
   provider: Provider;
   chainId?: number;
+  requiresApprove?: boolean;
 }
 
 export interface ENSActionParameters {

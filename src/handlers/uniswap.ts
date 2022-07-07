@@ -1,4 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import {
   ALLOWS_PERMIT,
@@ -9,10 +10,12 @@ import {
   getWrappedAssetMethod,
   PermitSupportedTokenList,
   Quote,
+  RAINBOW_ROUTER_CONTRACT_ADDRESS,
   unwrapNativeAsset,
   wrapNativeAsset,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
+import { ethers } from 'ethers';
 import { mapKeys, mapValues, toLower } from 'lodash';
 import { Token } from '../entities/tokens';
 import { loadWallet } from '../model/wallet';
@@ -21,6 +24,7 @@ import {
   getFlashbotsProvider,
   getProviderForNetwork,
   toHex,
+  toHexNoLeadingZeros,
 } from './web3';
 import { Asset } from '@rainbow-me/entities';
 import {
@@ -31,13 +35,123 @@ import {
   subtract,
 } from '@rainbow-me/helpers/utilities';
 import { Network } from '@rainbow-me/networkTypes';
-import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
+import {
+  erc20ABI,
+  ethUnits,
+  UNISWAP_TESTNET_TOKEN_LIST,
+} from '@rainbow-me/references';
 import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 export enum Field {
   INPUT = 'INPUT',
   OUTPUT = 'OUTPUT',
 }
+
+const MAX_GAS_LIMIT = 460000;
+const GAS_LIMIT_INCREMENT = 50000;
+const EXTRA_GAS_PADDING = 1.5;
+const CHAIN_IDS_WITH_TRACE_SUPPORT = [ChainId.mainnet];
+export const getStateDiff = async (
+  provider: StaticJsonRpcProvider,
+  tradeDetails: Quote
+): Promise<any> => {
+  const tokenAddress = tradeDetails.sellTokenAddress;
+  const fromAddr = tradeDetails.from;
+  const toAddr = RAINBOW_ROUTER_CONTRACT_ADDRESS;
+  const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
+
+  // Get data
+  const { data } = await tokenContract.populateTransaction.approve(
+    toAddr,
+    ethers.constants.MaxUint256.toHexString()
+  );
+
+  // trace_call default params
+  const callParams = [
+    {
+      data,
+      from: fromAddr,
+      to: tokenAddress,
+      value: '0x0',
+    },
+    ['stateDiff'],
+    'latest',
+  ];
+
+  const trace = await provider.send('trace_call', callParams);
+
+  if (trace.stateDiff) {
+    const slotAddress = Object.keys(
+      trace.stateDiff[tokenAddress]?.storage
+    )?.[0];
+    if (slotAddress) {
+      const formattedStateDiff = {
+        [tokenAddress]: {
+          stateDiff: {
+            [slotAddress]: ethers.constants.MaxUint256.toHexString(),
+          },
+        },
+      };
+      return formattedStateDiff;
+    }
+  }
+  logger.log('Couldnt get stateDiff...', JSON.stringify(trace, null, 2));
+};
+
+export const getSwapGasLimitWithFakeApproval = async (
+  chainId: number,
+  provider: StaticJsonRpcProvider,
+  tradeDetails: Quote
+): Promise<number> => {
+  let stateDiff;
+
+  try {
+    stateDiff = await getStateDiff(provider, tradeDetails);
+    const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(
+      tradeDetails,
+      { from: tradeDetails.from },
+      provider
+    );
+
+    const { data } = await router.populateTransaction[methodName](
+      ...(methodArgs ?? []),
+      params
+    );
+
+    for (
+      let gas = ethUnits.basic_swap;
+      gas < MAX_GAS_LIMIT;
+      gas += GAS_LIMIT_INCREMENT
+    ) {
+      const callParams = [
+        {
+          data,
+          from: tradeDetails.from,
+          gas: toHexNoLeadingZeros(gas),
+          gasPrice: toHexNoLeadingZeros(`100000000000`),
+          to: RAINBOW_ROUTER_CONTRACT_ADDRESS,
+          value: '0x0', // 100 gwei
+        },
+        'latest',
+      ];
+
+      try {
+        await provider.send('eth_call', [...callParams, stateDiff]);
+        logger.log(`Estimate worked with gasLimit: `, gas);
+        return gas;
+      } catch (e) {
+        logger.log(
+          `Estimate failed with gasLimit ${gas}. Might retry with higher amounts...`
+        );
+      }
+    }
+  } catch (e) {
+    logger.log(`Blew up trying to get state diff. Falling back to defaults`, e);
+  }
+  return (
+    ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING
+  );
+};
 
 export const getTestnetUniswapPairs = (
   network: Network
@@ -65,10 +179,7 @@ const getBasicSwapGasLimitForTrade = (
   if (allowsPermit) {
     return ethUnits.basic_swap_permit;
   } else {
-    if (ChainId.arbitrum === chainId) {
-      return ethUnits.basic_swap_arbitrum;
-    }
-    return ethUnits.basic_swap;
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
 };
 
@@ -84,14 +195,7 @@ export const estimateSwapGasLimit = async ({
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const provider = await getProviderForNetwork(network);
   if (!provider || !tradeDetails) {
-    if (ChainId.arbitrum === chainId) {
-      return ethUnits.basic_swap_arbitrum;
-    }
-    return ethUnits.basic_swap;
-  }
-
-  if (requiresApprove) {
-    return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
@@ -137,6 +241,26 @@ export const estimateSwapGasLimit = async ({
         { from: tradeDetails.from },
         provider
       );
+
+      if (requiresApprove) {
+        if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
+          try {
+            const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
+              chainId,
+              provider,
+              tradeDetails
+            );
+            logger.debug(
+              ' ✅ Got gasLimitWithFakeApproval!',
+              gasLimitWithFakeApproval
+            );
+            return gasLimitWithFakeApproval;
+          } catch (e) {
+            logger.debug('Error estimating swap gas limit with approval', e);
+          }
+        }
+        return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+      }
 
       const gasLimit = await estimateGasWithPadding(
         params,
@@ -242,13 +366,35 @@ export const executeSwap = async ({
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
     buyTokenAddress === WRAPPED_ASSET[chainId]
   ) {
-    return wrapNativeAsset(tradeDetails.buyAmount, walletToUse, chainId);
+    logger.debug(
+      'wrapping native asset',
+      tradeDetails.buyAmount,
+      walletToUse.address,
+      chainId
+    );
+    return wrapNativeAsset(
+      tradeDetails.buyAmount,
+      walletToUse,
+      chainId,
+      transactionParams
+    );
     // Unwrap Weth
   } else if (
     sellTokenAddress === WRAPPED_ASSET[chainId] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS
   ) {
-    return unwrapNativeAsset(tradeDetails.sellAmount, walletToUse, chainId);
+    logger.debug(
+      'unwrapping native asset',
+      tradeDetails.sellAmount,
+      walletToUse.address,
+      chainId
+    );
+    return unwrapNativeAsset(
+      tradeDetails.sellAmount,
+      walletToUse,
+      chainId,
+      transactionParams
+    );
     // Swap
   } else {
     logger.debug(
