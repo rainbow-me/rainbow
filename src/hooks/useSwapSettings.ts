@@ -10,6 +10,9 @@ export default function useSwapSettings() {
   const dispatch = useDispatch();
 
   const slippage = useSelector((state: AppState) => state.swap.slippageInBips);
+  const maxInputUpdate = useSelector(
+    (state: AppState) => state.swap.maxInputUpdate
+  );
   const currentSource = useSelector((state: AppState) => state.swap.source);
 
   const updateSwapSlippage = useCallback(
@@ -26,6 +29,7 @@ export default function useSwapSettings() {
     [dispatch]
   );
   return {
+    maxInputUpdate,
     slippageInBips: slippage,
     source: currentSource,
     updateSwapSlippage,

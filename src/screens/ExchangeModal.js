@@ -124,7 +124,7 @@ export default function ExchangeModal({
 }) {
   const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
-  const { slippageInBips } = useSwapSettings();
+  const { slippageInBips, maxInputUpdate } = useSwapSettings();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute();
@@ -405,6 +405,7 @@ export default function ExchangeModal({
     defaultGasLimit,
     inputAmount,
     inputCurrency,
+    loading,
     outputAmount,
     outputCurrency,
     tradeDetails,
@@ -801,6 +802,7 @@ export default function ExchangeModal({
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
+              updateAmountOnFocus={!maxInputUpdate}
             />
             {showOutputField && (
               <ExchangeOutputField

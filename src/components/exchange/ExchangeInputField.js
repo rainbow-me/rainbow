@@ -38,6 +38,7 @@ export default function ExchangeInputField({
   setInputAmount,
   setNativeAmount,
   testID,
+  updateAmountOnFocus,
 }) {
   return (
     <Container>
@@ -55,6 +56,7 @@ export default function ExchangeInputField({
         symbol={inputCurrencySymbol}
         testID={testID}
         type={inputCurrencyAssetType}
+        updateOnFocus={updateAmountOnFocus}
         useCustomAndroidMask={android}
       />
       <NativeFieldRow>
