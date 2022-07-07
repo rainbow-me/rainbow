@@ -8,7 +8,7 @@ import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
-import { useWallets } from './useWallets';
+import useWallets from './useWallets';
 import {
   buildBriefWalletSectionsSelector,
   buildWalletSectionsSelector,
