@@ -81,6 +81,7 @@ const SecretTextArea = styled(Input).attrs({
   autoCapitalize: 'none',
   autoCorrect: false,
   autoComplete: 'off',
+  dataDetectorTypes: 'none',
   autoFocus: true,
   enablesReturnKeyAutomatically: true,
   keyboardType: android ? 'visible-password' : 'default',
@@ -92,6 +93,7 @@ const SecretTextArea = styled(Input).attrs({
   size: 'large',
   spellCheck: false,
   weight: 'semibold',
+  textContentType: 'none',
 })({
   marginBottom: android ? 55 : 0,
   minHeight: android ? 100 : 50,
