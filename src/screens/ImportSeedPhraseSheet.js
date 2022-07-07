@@ -80,6 +80,7 @@ const SecretTextArea = styled(Input).attrs({
   align: 'center',
   autoCapitalize: 'none',
   autoCorrect: false,
+  autoComplete: 'off',
   autoFocus: true,
   enablesReturnKeyAutomatically: true,
   keyboardType: android ? 'visible-password' : 'default',
