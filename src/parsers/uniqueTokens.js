@@ -120,6 +120,7 @@ export const parseAccountUniqueTokens = data => {
               : collection.name,
           id: token_id,
           image_original_url: asset.image_url,
+          image_thumbnail_url: lowResUrl,
           image_url: imageUrl,
           isSendable:
             asset_contract.nft_version === '1.0' ||
@@ -198,6 +199,7 @@ export const parseAccountUniqueTokensPolygon = data => {
             : collection.name,
         id: token_id,
         image_original_url: asset.image_url,
+        image_thumbnail_url: lowResUrl,
         image_url: imageUrl,
         isSendable: false,
         lastPrice: parseLastSalePrice(asset.last_sale),
@@ -239,6 +241,7 @@ export const applyENSMetadataFallbackToToken = async token => {
     return {
       ...token,
       image_preview_url: lowResUrl,
+      image_thumbnail_url: lowResUrl,
       image_url: imageUrl,
       lowResUrl,
       name,
