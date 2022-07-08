@@ -5,7 +5,7 @@ Figma link (if any):
 
 
 ## Screen recordings / screenshots
-<!-- Screen recordings can also be helpful for showing reviewers what to test for. */ -->
+<!-- Screen recordings can also be helpful for showing reviewers what to test for.  -->
 
 
 ## What to test
