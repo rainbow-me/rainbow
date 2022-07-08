@@ -62,6 +62,7 @@ const ExchangeField = (
     symbol,
     testID,
     useCustomAndroidMask = false,
+    updateOnFocus = true,
     ...props
   },
   ref
@@ -90,10 +91,12 @@ const ExchangeField = (
   );
   const handleFocus = useCallback(
     event => {
-      setValue(amount);
-      onFocus?.(event);
+      if (updateOnFocus) {
+        setValue(amount);
+        onFocus?.(event);
+      }
     },
-    [amount, onFocus]
+    [amount, onFocus, updateOnFocus]
   );
 
   useEffect(() => {
