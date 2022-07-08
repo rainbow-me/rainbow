@@ -114,7 +114,7 @@ export default function SwapSettingsState({ asset }) {
   }, [settingsChangeFlashbotsEnabled, updateSource]);
 
   const openExplainer = () => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       type: 'flashbots',
     });

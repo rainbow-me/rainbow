@@ -142,7 +142,7 @@ const ExchangeAssetList = (
 
   const handleUnverifiedTokenPress = useCallback(
     item => {
-      android && Keyboard.dismiss();
+      Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         asset: item,
         onClose: () => {
@@ -159,7 +159,7 @@ const ExchangeAssetList = (
   );
 
   const openVerifiedExplainer = useCallback(() => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
   }, [navigate]);
 
