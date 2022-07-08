@@ -1,4 +1,5 @@
 import { EthereumAddress } from '@rainbow-me/swaps';
+import { captureException } from '@sentry/react-native';
 import { dataUpdateAsset } from './data';
 import { ParsedAddressAsset } from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
@@ -106,7 +107,8 @@ export const additionalDataUpdateL2AssetToWatch = (data: {
       type: ADDITIONAL_ASSET_DATA_UPDATE_L2_ASSETS_TO_WATCH,
     });
   } catch (e) {
-    logger.debug('EXCEPTION: UPDATE SWAP L2 BALANCES TO UPDATE: --- ', e);
+    logger.sentry('Error watching L2 swap balances');
+    captureException(e);
   }
 };
 
@@ -198,7 +200,8 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
       type: ADDITIONAL_ASSET_DATA_DELETE_L2_ASSETS_TO_WATCH,
     });
   } catch (e) {
-    logger.debug('EXCEPTION IN UPDATE BALANCES: ', e);
+    logger.sentry('Error patching L2 balances');
+    captureException(e);
   }
 };
 

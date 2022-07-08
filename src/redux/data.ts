@@ -806,12 +806,10 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
 ) => {
   const { accountAddress, network } = getState().settings;
   const { accountAssetsData } = getState().data;
-  logger.debug('current: ', accountAssetsData[assetData.uniqueId]);
   const updatedAssetsData = {
     ...accountAssetsData,
     [assetData.uniqueId]: assetData,
   };
-  logger.debug('updated: ', updatedAssetsData[assetData.uniqueId]);
   dispatch({
     payload: updatedAssetsData,
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
