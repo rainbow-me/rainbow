@@ -125,7 +125,7 @@ const getUpdatedL2AssetBalance = async (
   network: Network,
   userAddress: EthereumAddress
 ) => {
-  const mainnet_address = asset.mainnetAddress.toLowerCase();
+  const mainnet_address = asset.mainnetAddress?.toLowerCase();
   const provider = await getProviderForNetwork(network);
   const assetBalance = await getOnchainAssetBalance(
     asset,
