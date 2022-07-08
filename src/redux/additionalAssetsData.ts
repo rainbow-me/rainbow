@@ -144,6 +144,8 @@ const getUpdatedL2AssetBalance = async (
       ...(fallbackAsset?.balance || {}),
       ...(assetBalance || {}),
     },
+    id: asset.address,
+    mainnet_address: asset.mainnetAddress.toLowerCase(),
     type: network,
     uniqueId,
   };

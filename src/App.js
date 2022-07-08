@@ -305,7 +305,8 @@ class App extends Component {
         if (isL2) {
           if (tx.internalType === TransactionType.trade) {
             store.dispatch(additionalDataUpdateL2AssetBalance(tx));
-          } else {
+          } else if (tx.internalType !== TransactionType.authorize) {
+            // for swaps, we don't want to trigger update balances on unlock txs
             store.dispatch(explorerInitL2(network));
           }
         } else {
