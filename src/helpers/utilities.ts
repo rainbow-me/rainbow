@@ -414,6 +414,9 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+export const times = (n: number, fn: (i: number) => unknown) =>
+  Array.from({ length: n }, (_, i) => fn(i));
+
 /**
  * Creates an object composed of the picked object properties.
  * @param obj The source object
