@@ -225,7 +225,7 @@ function HoldToAuthorizeButtonContent2({
     }
   };
   return (
-    <TapGestureHandler onHandlerStateChange={onTapChange}>
+    <TapGestureHandler enabled={!disabled} onHandlerStateChange={onTapChange}>
       <LongPressGestureHandler
         enabled={enableLongPress}
         minDurationMs={LONG_PRESS_DURATION_IN_MS}
