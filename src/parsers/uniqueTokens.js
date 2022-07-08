@@ -221,8 +221,8 @@ export const parseAccountUniqueTokensPolygon = data => {
   //filter out NFTs that are not on our allow list
   remove(
     erc721s,
-    NFT =>
-      !polygonAllowList.includes(NFT?.asset_contract?.address?.toLowerCase())
+    nft =>
+      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
   );
 
   return erc721s;
