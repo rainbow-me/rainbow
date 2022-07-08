@@ -191,7 +191,7 @@ export default async function runMigrations() {
         await store.dispatch(walletsUpdate(updatedWallets));
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
-        if (selected.id === primaryWalletKey) {
+        if (selected!.id === primaryWalletKey) {
           const updatedSelectedWallet = updatedWallets[primaryWalletKey];
           await store.dispatch(walletsSetSelected(updatedSelectedWallet));
         }
@@ -263,10 +263,9 @@ export default async function runMigrations() {
         logger.sentry('done updating all wallets');
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
-        if (selected.id === incorrectDamagedWalletId) {
+        if (selected!.id === incorrectDamagedWalletId) {
           logger.sentry('need to update the selected wallet');
           const updatedSelectedWallet =
-            // @ts-expect-error
             updatedWallets[incorrectDamagedWalletId];
           await store.dispatch(walletsSetSelected(updatedSelectedWallet));
           logger.sentry('selected wallet updated');
@@ -554,8 +553,8 @@ export default async function runMigrations() {
       // Add existing signatures
       // which look like'signature_0x...'
       const { wallets } = store.getState().wallets;
-      if (Object.keys(wallets).length > 0) {
-        for (let wallet of Object.values(wallets)) {
+      if (Object.keys(wallets!).length > 0) {
+        for (let wallet of Object.values(wallets!)) {
           for (let account of (wallet as RainbowWallet).addresses) {
             keysToMigrate.push(`signature_${account.address}`);
           }
