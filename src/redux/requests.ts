@@ -29,7 +29,7 @@ const EXPIRATION_THRESHOLD_IN_MS = 1000 * 60 * 60;
 /**
  * A request stored in state.
  */
-interface RequestData {
+export interface RequestData {
   /**
    * The WalletConnect client ID for the request.
    */
@@ -158,11 +158,12 @@ export const addRequestToApprove = (
   payload: any,
   peerMeta:
     | undefined
+    | null
     | {
         name?: string;
         url?: string;
         scheme?: string;
-        icons?: string;
+        icons?: string[];
       }
 ) => (
   dispatch: Dispatch<RequestsUpdateRequestsToApproveAction>,
@@ -172,6 +173,7 @@ export const addRequestToApprove = (
   const { walletConnectors } = getState().walletconnect;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const walletConnector = walletConnectors[peerId];
+  // @ts-expect-error "_chainId" is private.
   const chainId = walletConnector._chainId;
   const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
   const displayDetails = getRequestDisplayDetails(

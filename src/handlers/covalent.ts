@@ -9,11 +9,37 @@ import { rainbowFetch } from '../rainbow-fetch';
 import { EthereumAddress } from '@rainbow-me/entities';
 import Logger from 'logger';
 
+// A response from Covalent for the address balance API.
+// See https://www.covalenthq.com/docs/api/#/0/Get%20historical%20portfolio%20value%20over%20time/USD/1.
+interface CovalentAddressBalanceResponseData {
+  address: string;
+  updated_at: string;
+  next_update_at: string;
+  quote_currency: string;
+  items: {
+    contract_decimals: number;
+    contract_name: string;
+    contract_ticker_symbol: string;
+    contract_address: string;
+    supports_erc: string[] | null;
+    logo_url: string;
+    last_transferred_at: string | null;
+    type: string;
+    balance: string;
+    balance_24h: string;
+    quote_rate: number;
+    quote_rate_24h: number;
+    quote: number;
+    quote_24h: number;
+    nft_data: any[] | null;
+  }[];
+}
+
 export const getAssetsFromCovalent = async (
   chainId: Number,
   accountAddress: EthereumAddress,
   currency: string
-) => {
+): Promise<CovalentAddressBalanceResponseData | null> => {
   try {
     const url = `https://api.covalenthq.com/v1/${chainId}/address/${accountAddress}/balances_v2/`;
 
