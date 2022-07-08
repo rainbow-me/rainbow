@@ -300,7 +300,7 @@ export default function FeesPanel({
       if (greaterThan(0, newMaxPriorityFeePerGas.amount)) return;
 
       setCustomFees({
-        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+        customMaxBaseFee,
         customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei,
       });
 
@@ -315,6 +315,7 @@ export default function FeesPanel({
       selectedGasFee.gasFeeParams,
       setLastFocusedInputHandle,
       updateToCustomGasFee,
+      customMaxBaseFee,
     ]
   );
 
