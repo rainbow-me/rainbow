@@ -54,7 +54,7 @@ import {
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import { isEmpty } from '@rainbow-me/helpers/utilities';
-import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
@@ -129,7 +129,7 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
-  image: string | null;
+  image?: string | null;
 }
 
 export interface RainbowWallet {
@@ -140,10 +140,11 @@ export interface RainbowWallet {
   name: string;
   primary: boolean;
   type: EthereumWalletType;
-  backedUp: boolean;
-  backupFile?: string;
+  backedUp?: boolean;
+  backupFile?: string | null;
   backupDate?: string;
   backupType?: string;
+  damaged?: boolean;
 }
 
 export interface AllRainbowWallets {
@@ -621,8 +622,8 @@ export const createWallet = async (
         setTimeout(
           () =>
             Alert.alert(
-              'Oops!',
-              'Looks like you already imported this wallet!'
+              lang.t('wallet.new.alert.oops'),
+              lang.t('wallet.new.alert.looks_like_already_imported')
             ),
           1
         );
@@ -927,8 +928,10 @@ export const getPrivateKey = async (
 
     if (pkey === -2) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
+        lang.t('wallet.authenticate.alert.error'),
+        lang.t(
+          'wallet.authenticate.alert.current_authentication_not_secure_enough'
+        )
       );
       return null;
     }
@@ -967,8 +970,10 @@ export const getSeedPhrase = async (
 
     if (seedPhraseData === -2) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
+        lang.t('wallet.authenticate.alert.error'),
+        lang.t(
+          'wallet.authenticate.alert.current_authentication_not_secure_enough'
+        )
       );
       return null;
     }

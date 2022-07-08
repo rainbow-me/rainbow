@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -103,9 +104,7 @@ export default function useInitializeWallet() {
 
         if (isNil(walletAddress)) {
           logger.sentry('walletAddress is nil');
-          Alert.alert(
-            'Import failed due to an invalid private key. Please try again.'
-          );
+          Alert.alert(lang.t('wallet.import_failed_invalid_private_key'));
           if (!isImporting) {
             dispatch(appStateUpdate({ walletReady: true }));
           }
@@ -155,7 +154,7 @@ export default function useInitializeWallet() {
         }
         hideSplashScreen();
         captureException(error);
-        Alert.alert('Something went wrong while importing. Please try again!');
+        Alert.alert(lang.t('wallet.something_went_wrong_importing'));
         dispatch(appStateUpdate({ walletReady: true }));
         return null;
       }

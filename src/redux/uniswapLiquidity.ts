@@ -1,9 +1,8 @@
 import { concat, filter, uniqBy } from 'lodash';
-import { AppState } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
-import { AppGetState } from './store';
+import { AppGetState, AppState } from './store';
 import { ParsedAddressAsset } from '@rainbow-me/entities';
 import {
   getLiquidity,

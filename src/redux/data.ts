@@ -177,7 +177,7 @@ const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 /**
  * The state for the `data` reducer.
  */
-interface DataState {
+export interface DataState {
   /**
    * Parsed asset information for assets belonging to this account.
    */
@@ -468,11 +468,11 @@ interface ZerionPortfolio {
 /**
  * A message from the Zerion API indicating that assets were received.
  */
-interface AddressAssetsReceivedMessage {
+export interface AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
       [id: string]: {
-        asset: ZerionAsset;
+        asset: ZerionAsset | ZerionAssetFallback;
       };
     };
   };
@@ -482,7 +482,7 @@ interface AddressAssetsReceivedMessage {
 /**
  * A message from the Zerion API indicating that portfolio data was received.
  */
-interface PortfolioReceivedMessage {
+export interface PortfolioReceivedMessage {
   payload?: {
     portfolio?: ZerionPortfolio;
   };
@@ -492,7 +492,7 @@ interface PortfolioReceivedMessage {
 /**
  * A message from the Zerion API indicating that transaction data was received.
  */
-interface TransactionsReceivedMessage {
+export interface TransactionsReceivedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
   };
@@ -502,7 +502,7 @@ interface TransactionsReceivedMessage {
 /**
  * A message from the Zerion API indicating that transactions were removed.
  */
-interface TransactionsRemovedMessage {
+export interface TransactionsRemovedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
   };
@@ -515,7 +515,7 @@ interface TransactionsRemovedMessage {
  * as the value type in the `prices` map, but this message type is also used
  * when manually invoking `assetPricesReceived` with fallback values.
  */
-interface AssetPricesReceivedMessage {
+export interface AssetPricesReceivedMessage {
   payload?: {
     prices?: {
       [id: string]: ZerionAsset | ZerionAssetFallback;
@@ -527,7 +527,7 @@ interface AssetPricesReceivedMessage {
 /**
  * A message from the Zerion API indicating that asset prices were changed.
  */
-interface AssetPricesChangedMessage {
+export interface AssetPricesChangedMessage {
   payload?: {
     prices?: ZerionAsset[];
   };
@@ -537,7 +537,7 @@ interface AssetPricesChangedMessage {
 /**
  * Metadata for a message from the Zerion API.
  */
-interface MessageMeta {
+export interface MessageMeta {
   address?: string;
   currency?: string;
   status?: string;
@@ -554,6 +554,9 @@ type DataMessage =
   | TransactionsRemovedMessage
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
+
+// The success code used to determine if an incoming message is successful.
+export const DISPERSION_SUCCESS_CODE = 'ok';
 
 // Functions:
 
@@ -635,7 +638,7 @@ export const dataLoadState = () => async (
  * unsuccessful.
  */
 export const fetchAssetPricesWithCoingecko = async (
-  coingeckoIds: string[],
+  coingeckoIds: (string | undefined)[],
   nativeCurrency: string
 ): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
   try {
@@ -757,7 +760,7 @@ const genericAssetsFallback = () => async (
       {
         meta: {
           currency: 'usd',
-          status: 'ok',
+          status: DISPERSION_SUCCESS_CODE,
         },
         payload: { prices: allPrices },
       },
@@ -939,7 +942,7 @@ export const portfolioReceived = (
   dispatch: Dispatch<DataUpdatePortfoliosAction>,
   getState: AppGetState
 ) => {
-  if (message?.meta?.status !== 'ok') return;
+  if (message?.meta?.status !== DISPERSION_SUCCESS_CODE) return;
   if (!message?.payload?.portfolio) return;
 
   const { portfolios } = getState().data;

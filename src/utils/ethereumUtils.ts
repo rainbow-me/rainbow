@@ -14,6 +14,7 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
+import lang from 'i18n-js';
 import { replace, toLower } from 'lodash';
 import {
   Alert,
@@ -562,7 +563,7 @@ async function parseEthereumUrl(data: string) {
   try {
     ethUrl = parse(data);
   } catch (e) {
-    Alert.alert('Invalid ethereum url');
+    Alert.alert(lang.t('wallet.alerts.invalid_ethereum_url'));
     return;
   }
 
@@ -584,8 +585,8 @@ async function parseEthereumUrl(data: string) {
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
-        'Ooops!',
-        `Looks like you don't have that asset in your wallet...`
+        lang.t('wallet.alerts.ooops'),
+        lang.t('wallet.alerts.dont_have_asset_in_wallet')
       );
       return;
     }
@@ -598,8 +599,8 @@ async function parseEthereumUrl(data: string) {
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
-        'Ooops!',
-        `Looks like you don't have that asset in your wallet...`
+        lang.t('wallet.alerts.ooops'),
+        lang.t('wallet.alerts.dont_have_asset_in_wallet')
       );
       return;
     }
@@ -611,7 +612,7 @@ async function parseEthereumUrl(data: string) {
         asset.decimals
       );
   } else {
-    Alert.alert('This action is currently not supported :(');
+    Alert.alert(lang.t('wallet.alerts.this_action_not_supported'));
     return;
   }
 
