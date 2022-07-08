@@ -15,8 +15,8 @@ import {
 } from '../redux/settings';
 import { uniswapPairsInit } from '../redux/uniswap';
 import { walletsLoadState } from '../redux/wallets';
+import { hideSplashScreen } from '../utils/hideSplashScreen';
 import useAccountSettings from './useAccountSettings';
-import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
@@ -35,7 +35,6 @@ export default function useInitializeWallet() {
   const loadGlobalEarlyData = useLoadGlobalEarlyData();
   const initializeAccountData = useInitializeAccountData();
   const { network } = useAccountSettings();
-  const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -161,7 +160,6 @@ export default function useInitializeWallet() {
     },
     [
       dispatch,
-      hideSplashScreen,
       initializeAccountData,
       loadAccountData,
       loadGlobalEarlyData,

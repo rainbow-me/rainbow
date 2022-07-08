@@ -30,9 +30,9 @@ import {
   isCloudBackupAvailable,
   syncCloud,
 } from '../handlers/cloudBackup';
+import { hideSplashScreen } from '../utils/hideSplashScreen';
 import { cloudPlatform } from '../utils/platform';
 
-import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -191,7 +191,6 @@ export default function WelcomeScreen() {
   // @ts-expect-error Navigation types
   const { replace, navigate, dangerouslyGetState } = useNavigation();
   const [userData, setUserData] = useState(null);
-  const hideSplashScreen = useHideSplashScreen();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -283,7 +282,6 @@ export default function WelcomeScreen() {
     colorAnimation,
     contentAnimation,
     createWalletButtonAnimation,
-    hideSplashScreen,
     shouldAnimateRainbows,
   ]);
 

@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import RainbowContextWrapper from '../../helpers/RainbowContext';
-import useHideSplashScreen from '../../hooks/useHideSplashScreen';
+import { hideSplashScreen } from '../../utils/hideSplashScreen';
 import {
   Box,
   DesignSystemProvider,
@@ -156,7 +156,6 @@ const DocsRow = ({ meta, examples }: Docs) => {
 const colorModes: ColorMode[] = ['light', 'dark', 'darkTinted'];
 
 const HideSplashScreen = ({ children }: { children: ReactNode }) => {
-  const hideSplashScreen = useHideSplashScreen();
   useEffect(hideSplashScreen, [hideSplashScreen]);
 
   return <>{children}</>;
