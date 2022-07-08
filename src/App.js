@@ -42,6 +42,7 @@ import {
 } from './config/debug';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
+import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
@@ -302,10 +303,10 @@ class App extends Component {
       setTimeout(() => {
         logger.log('Reloading balances for network', network);
         if (isL2) {
-          if (tx.type === 'trade') {
-            store.dispatch(explorerInitL2(network));
-          } else {
+          if (tx.internalType === TransactionType.trade) {
             store.dispatch(additionalDataUpdateL2AssetBalance(tx));
+          } else {
+            store.dispatch(explorerInitL2(network));
           }
         } else {
           store.dispatch(
