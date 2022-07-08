@@ -105,7 +105,6 @@ const swap = async (
 
     // @ts-ignore
     swap = await executeSwap(swapParams);
-    logger.debug('SWAP TS ACTIONS: SWAP PARAMS --- ', swapParams);
     dispatch(
       additionalDataUpdateL2AssetToWatch({
         hash: swap?.hash || '',
@@ -138,7 +137,6 @@ const swap = async (
     logger.sentry('Error', e);
     const fakeError = new Error('Failed to execute swap');
     captureException(fakeError);
-    logger.debug('EXCEPTION: SWAP TS ACTIONS: ', e);
     throw e;
   }
 

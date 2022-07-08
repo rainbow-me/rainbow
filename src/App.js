@@ -294,7 +294,6 @@ class App extends Component {
   };
 
   handleTransactionConfirmed = tx => {
-    logger.debug('TX in handle transaction confirmed --- :', tx);
     const network = tx.chainId
       ? ethereumUtils.getNetworkFromChainId(tx.chainId)
       : tx.network || networkTypes.mainnet;

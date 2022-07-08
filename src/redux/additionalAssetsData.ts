@@ -1,5 +1,6 @@
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { dataUpdateAsset } from './data';
+import { ParsedAddressAsset } from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import { getCoingeckoIds } from '@rainbow-me/handlers/dispersion';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
@@ -109,71 +110,78 @@ export const additionalDataUpdateL2AssetToWatch = (data: {
   }
 };
 
+const getUpdatedL2AssetBalance = async (
+  asset: {
+    address: string;
+    decimals: number;
+    mainnetAddress: EthereumAddress;
+    symbol: string;
+  },
+  genericAssets: {
+    [assetAddress: string]: ParsedAddressAsset;
+  },
+  network: Network,
+  userAddress: EthereumAddress
+) => {
+  const mainnet_address = asset.mainnetAddress.toLowerCase();
+  const provider = getProviderForNetwork(network);
+  const assetBalance = await getOnchainAssetBalance(
+    asset,
+    userAddress,
+    network,
+    provider
+  );
+  const uniqueId = `${asset.address?.toLowerCase()}_${network}`;
+  const fallbackAsset =
+    ethereumUtils.getAccountAsset(mainnet_address) ||
+    genericAssets[mainnet_address];
+  return {
+    ...fallbackAsset,
+    address: asset.address,
+    balance: {
+      ...(fallbackAsset?.balance || {}),
+      ...(assetBalance || {}),
+    },
+    decimals: asset.decimals,
+    id: asset.address,
+    mainnet_address: asset.mainnetAddress.toLowerCase(),
+    type: network,
+    uniqueId,
+  };
+};
+
 export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
   try {
-    const { l2AssetsToWatch } = getState().additionalAssetsData;
     const { genericAssets } = getState().data;
+    const { l2AssetsToWatch } = getState().additionalAssetsData;
     const network = tx.chainId
       ? ethereumUtils.getNetworkFromChainId(tx.chainId)
       : tx.network || Network.mainnet;
     const id = `${tx.hash}_${network}`;
-    const assetToUpdate = l2AssetsToWatch?.[id];
-    if (!assetToUpdate) return;
-    const { inputCurrency, outputCurrency, userAddress } = assetToUpdate;
-    const provider = await getProviderForNetwork(network);
-    const inputAssetBalance = await getOnchainAssetBalance(
-      inputCurrency,
-      userAddress,
-      network,
-      provider
+    const assetsToUpdate = l2AssetsToWatch?.[id];
+    if (!assetsToUpdate) return;
+    const { inputCurrency, outputCurrency, userAddress } = assetsToUpdate;
+    const updatedAssets = [
+      await getUpdatedL2AssetBalance(
+        inputCurrency,
+        genericAssets,
+        network,
+        userAddress
+      ),
+      await getUpdatedL2AssetBalance(
+        outputCurrency,
+        genericAssets,
+        network,
+        userAddress
+      ),
+    ];
+
+    updatedAssets.forEach(
+      asset => asset && dispatch(dataUpdateAsset(asset as ParsedAddressAsset))
     );
-    const inputUniqueId = `${inputCurrency.address?.toLowerCase()}_${network}`;
-    const inputFallback =
-      ethereumUtils.getAccountAsset(
-        inputCurrency.mainnetAddress.toLowerCase()
-      ) || genericAssets[inputCurrency.mainnetAddress?.toLowerCase()];
-    if (inputAssetBalance && inputFallback) {
-      const updatedInputToken = {
-        ...inputFallback,
-        address: inputCurrency.address,
-        balance: {
-          ...(inputFallback?.balance || {}),
-          ...inputAssetBalance,
-        },
-        mainnet_address: inputCurrency.mainnetAddress.toLowerCase(),
-        type: network,
-        uniqueId: inputUniqueId,
-      };
-      dispatch(dataUpdateAsset(updatedInputToken));
-    }
-    const outputAssetBalance = await getOnchainAssetBalance(
-      outputCurrency,
-      userAddress,
-      network,
-      provider
-    );
-    const outputUniqueId = `${outputCurrency.address?.toLowerCase()}_${network}`;
-    const outputFallback =
-      ethereumUtils.getAccountAsset(
-        outputCurrency.mainnetAddress.toLowerCase()
-      ) || genericAssets[outputCurrency.mainnetAddress?.toLowerCase()];
-    if (outputAssetBalance && outputFallback) {
-      const updatedOutputToken = {
-        ...outputFallback,
-        address: outputCurrency.address,
-        balance: {
-          ...(outputFallback?.balance || {}),
-          ...outputAssetBalance,
-        },
-        mainnet_address: outputCurrency.mainnetAddress.toLowerCase(),
-        type: network,
-        uniqueId: outputUniqueId,
-      };
-      dispatch(dataUpdateAsset(updatedOutputToken));
-    }
 
     const newL2AssetsToWatch = Object.entries(l2AssetsToWatch).reduce(
       (newData, [key, asset]) => {
