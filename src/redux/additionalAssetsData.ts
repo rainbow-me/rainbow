@@ -126,7 +126,7 @@ const getUpdatedL2AssetBalance = async (
   userAddress: EthereumAddress
 ) => {
   const mainnet_address = asset.mainnetAddress.toLowerCase();
-  const provider = getProviderForNetwork(network);
+  const provider = await getProviderForNetwork(network);
   const assetBalance = await getOnchainAssetBalance(
     asset,
     userAddress,
@@ -139,14 +139,11 @@ const getUpdatedL2AssetBalance = async (
     genericAssets[mainnet_address];
   return {
     ...fallbackAsset,
-    address: asset.address,
+    ...asset,
     balance: {
       ...(fallbackAsset?.balance || {}),
       ...(assetBalance || {}),
     },
-    decimals: asset.decimals,
-    id: asset.address,
-    mainnet_address: asset.mainnetAddress.toLowerCase(),
     type: network,
     uniqueId,
   };
