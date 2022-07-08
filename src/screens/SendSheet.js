@@ -149,7 +149,8 @@ export default function SendSheet(props) {
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState();
-  const { colors, isDarkMode } = useTheme();
+  const theme = useTheme();
+  const { colors, isDarkMode } = theme;
 
   const {
     nativeCurrencyInputRef,
@@ -875,6 +876,7 @@ export default function SendSheet(props) {
             pinnedCoins={pinnedCoinsObj}
             savings={savings}
             sortedAssets={sortedAssets}
+            theme={theme}
             uniqueTokens={sendableUniqueTokens}
           />
         )}
