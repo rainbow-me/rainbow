@@ -1,3 +1,4 @@
+import WalletConnect from '@walletconnect/client';
 import { getGlobal, saveGlobal } from './common';
 import { omitFlatten, pickBy } from '@rainbow-me/helpers/utilities';
 
@@ -9,9 +10,7 @@ const WALLETCONNECT = 'walletconnect';
  */
 export const getAllValidWalletConnectSessions = async () => {
   const allSessions: {
-    [key: string]: {
-      connected?: boolean;
-    };
+    [key: string]: WalletConnect['session'];
   } = await getAllWalletConnectSessions();
 
   return pickBy(allSessions, value => value.connected);
