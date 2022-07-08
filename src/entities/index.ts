@@ -37,6 +37,7 @@ export type {
   SwappableAsset,
   ZerionAsset,
   ZerionAssetFallback,
+  ZerionAssetPrice,
 } from './tokens';
 export type {
   GasFeeType,

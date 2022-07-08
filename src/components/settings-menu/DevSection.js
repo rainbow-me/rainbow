@@ -93,11 +93,11 @@ const DevSection = () => {
   const syncCodepush = useCallback(async () => {
     const isUpdate = !!(await codePush.checkForUpdate());
     if (!isUpdate) {
-      Alert.alert('No update');
+      Alert.alert(lang.t('developer_settings.no_update'));
     } else {
       // dismissing not to fuck up native nav structure
       navigate(Routes.PROFILE_SCREEN);
-      Alert.alert('Installing update');
+      Alert.alert(lang.t('developer_settings.installing_update'));
 
       const result = await codePush.sync({
         installMode: codePush.InstallMode.IMMEDIATE,

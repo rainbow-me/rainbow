@@ -2,7 +2,7 @@ import { ChainId } from '@rainbow-me/swaps';
 import { AssetType } from './assetTypes';
 import { EthereumAddress } from '.';
 
-interface ZerionAssetPrice {
+export interface ZerionAssetPrice {
   value: number;
   relative_change_24h: number | null;
   changed_at: number;
