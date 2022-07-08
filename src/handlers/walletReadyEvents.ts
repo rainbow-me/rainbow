@@ -42,7 +42,7 @@ export const runWalletBackupStatusChecks = () => {
     );
     return (
       !wallet.imported &&
-      hasVisibleAccount &&
+      !!hasVisibleAccount &&
       wallet.type !== WalletTypes.readOnly &&
       !wallet.backedUp
     );
@@ -52,7 +52,7 @@ export const runWalletBackupStatusChecks = () => {
 
   logger.log('there is a rainbow wallet not backed up');
   const hasSelectedWallet = rainbowWalletsNotBackedUp.find(
-    notBackedUpWallet => notBackedUpWallet.id === selected?.id
+    notBackedUpWallet => notBackedUpWallet.id === selected!.id
   );
 
   logger.log(
