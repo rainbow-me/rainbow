@@ -1587,7 +1587,10 @@ export const dataWatchPendingTransactions = (
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
           if (!nonceAlreadyIncluded) {
-            appEvents.emit('transactionConfirmed', txObj);
+            appEvents.emit('transactionConfirmed', {
+              ...txObj,
+              internalType: tx.type,
+            });
           }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
