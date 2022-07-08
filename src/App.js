@@ -58,7 +58,7 @@ import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
-// import { explorerInitL2 } from './redux/explorer';
+import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
@@ -302,8 +302,11 @@ class App extends Component {
       setTimeout(() => {
         logger.log('Reloading balances for network', network);
         if (isL2) {
-          // store.dispatch(explorerInitL2(network));
-          store.dispatch(additionalDataUpdateL2AssetBalance(tx));
+          if (tx.type === 'trade') {
+            store.dispatch(explorerInitL2(network));
+          } else {
+            store.dispatch(additionalDataUpdateL2AssetBalance(tx));
+          }
         } else {
           store.dispatch(
             fetchOnchainBalances({ keepPolling: false, withPrices: false })
