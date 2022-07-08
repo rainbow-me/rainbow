@@ -131,8 +131,8 @@ export default () => {
       : [
           lang.t('profiles.profile_avatar.choose_from_library'),
           !accountImage
-            ? lang.t(`profiles.profile_avatar.pick_emoji`)
-            : lang.t(`profiles.profile_avatar.remove_photo`),
+            ? lang.t('profiles.profile_avatar.pick_emoji')
+            : lang.t('profiles.profile_avatar.remove_photo'),
           profilesEnabled &&
             (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
             lang.t('profiles.profile_avatar.create_profile'),

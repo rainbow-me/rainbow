@@ -111,7 +111,7 @@ interface ChartsUpdateUsdMonthAction {
 /**
  * A message received from a chart data provider.
  */
-interface ChartsReceivedMessage {
+export interface ChartsReceivedMessage {
   meta?: {
     charts_type?: ChartType;
     currency?: string;
