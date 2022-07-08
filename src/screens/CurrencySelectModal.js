@@ -42,7 +42,10 @@ import {
   getActiveRoute,
   useNavigation,
 } from '@rainbow-me/navigation/Navigation';
-import { emitChartsRequest } from '@rainbow-me/redux/explorer';
+import {
+  emitAssetRequest,
+  emitChartsRequest,
+} from '@rainbow-me/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -298,6 +301,7 @@ export default function CurrencySelectModal() {
     item => {
       if (checkForRequiredAssets(item)) return;
       dispatch(emitChartsRequest(item.mainnet_address || item.address));
+      dispatch(emitAssetRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
       setIsTransitioning(true); // continue to display list during transition
       callback?.();

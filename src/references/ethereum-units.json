@@ -4,7 +4,7 @@
   "basic_deposit_eth": 200000,
   "basic_swap": 200000,
   "basic_swap_arbitrum": 3500000,
-  "basic_swap_optimism": 900000,
+  "basic_swap_optimism": 1000000,
   "basic_swap_polygon": 600000,
   "basic_swap_permit": 300000,
   "ens_register_with_config": 280000,
