@@ -1,6 +1,6 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { sortBy, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
@@ -11,6 +11,7 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
+import { sortByKeyHelper } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -134,33 +135,27 @@ export default function SendContactList({
   );
 
   const filteredAddresses = useMemo(() => {
-    return sortBy(
-      filterList(
-        userAccounts.filter(
-          account =>
-            account.visible &&
-            toLower(account.address) !== toLower(accountAddress)
-        ),
-        currentInput,
-        ['label']
+    return filterList(
+      userAccounts.filter(
+        account =>
+          account.visible &&
+          toLower(account.address) !== toLower(accountAddress)
       ),
-      ['index']
-    );
+      currentInput,
+      ['label']
+    ).sort(sortByKeyHelper('index'));
   }, [accountAddress, currentInput, userAccounts]);
 
   const filteredWatchedAddresses = useMemo(() => {
-    return sortBy(
-      filterList(
-        watchedAccounts.filter(
-          account =>
-            account.visible &&
-            toLower(account.address) !== toLower(accountAddress)
-        ),
-        currentInput,
-        ['label']
+    return filterList(
+      watchedAccounts.filter(
+        account =>
+          account.visible &&
+          toLower(account.address) !== toLower(accountAddress)
       ),
-      ['index']
-    );
+      currentInput,
+      ['label']
+    ).sort(sortByKeyHelper('index'));
   }, [accountAddress, currentInput, watchedAccounts]);
 
   const filteredEnsSuggestions = useMemo(() => {

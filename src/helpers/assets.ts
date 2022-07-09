@@ -1,13 +1,14 @@
-import { concat, groupBy, reduce, slice, sortBy } from 'lodash';
-
+import { concat, reduce, slice } from 'lodash';
 import {
   add,
   chunk,
   convertAmountToNativeDisplay,
   greaterThan,
+  groupBy,
   isEmpty,
   notEmpty,
 } from './utilities';
+import { UniqueAsset } from '@rainbow-me/entities';
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,
@@ -241,15 +242,32 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
+const regex = RegExp(/\s*(the)\s/, 'i');
+const sorterByFamiliesName = (a: any, b: any) => {
+  if (
+    a.familyName.replace(regex, '').toLowerCase() <
+    b.familyName.replace(regex, '').toLowerCase()
+  ) {
+    return -1;
+  } else if (
+    a.familyName.replace(regex, '').toLowerCase() >
+    b.familyName.replace(regex, '').toLowerCase()
+  ) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
 export const buildUniqueTokenList = (
-  uniqueTokens: any[],
+  uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any[] = []
 ) => {
   let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
+  const grouped = groupBy(uniqueTokens, 'familyName');
 
-  const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
   for (let family of families) {
@@ -285,8 +303,7 @@ export const buildUniqueTokenList = (
       });
     });
   }
-  const regex = RegExp(/\s*(the)\s/, 'i');
-  rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
+  rows = rows.sort(sorterByFamiliesName);
 
   showcaseTokens.sort(function (a, b) {
     return (
@@ -325,20 +342,30 @@ export const buildUniqueTokenList = (
   return rows;
 };
 
-const regex = RegExp(/\s*(the)\s/, 'i');
+const groupedKeys = (a: any, b: any) => {
+  if (a.replace(regex, '').toLowerCase() < b.replace(regex, '').toLowerCase()) {
+    return -1;
+  } else if (
+    a.replace(regex, '').toLowerCase() > b.replace(regex, '').toLowerCase()
+  ) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
 
 export const buildBriefUniqueTokenList = (
-  uniqueTokens: any,
+  uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any,
   sellingTokens: any[] = []
 ) => {
   const uniqueTokensInShowcase = uniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-  const grouped2 = groupBy(uniqueTokens, token => token.familyName);
-  const families2 = sortBy(Object.keys(grouped2), row =>
-    row.replace(regex, '').toLowerCase()
-  );
+  const grouped2 = groupBy(uniqueTokens, 'familyName');
+
+  const families2 = Object.keys(grouped2).sort(groupedKeys);
+
   const result = [
     { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
