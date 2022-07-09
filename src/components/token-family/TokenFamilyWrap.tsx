@@ -1,9 +1,9 @@
-import { times } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
+import { times } from '@rainbow-me/helpers/utilities';
 import { useTimeout } from '@rainbow-me/hooks';
 import { ThemeContextProps } from '@rainbow-me/theme';
 

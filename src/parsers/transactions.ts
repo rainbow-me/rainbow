@@ -1,9 +1,7 @@
 import {
   compact,
   concat,
-  findIndex,
   flatten,
-  includes,
   isEmpty,
   orderBy,
   partition,
@@ -54,7 +52,7 @@ const dataFromLastTxHash = (
   );
   const lastTxHash = lastSuccessfulTxn?.hash;
   if (lastTxHash) {
-    const lastTxnHashIndex = findIndex(transactionData, txn =>
+    const lastTxnHashIndex = transactionData.findIndex(txn =>
       lastTxHash.startsWith(txn.hash)
     );
     if (lastTxnHashIndex > -1) {
@@ -357,7 +355,7 @@ const parseTransaction = async (
           nativeCurrency
         );
 
-        if (includes(purchaseTransactionsHashes, txn.hash.toLowerCase())) {
+        if (purchaseTransactionsHashes.includes(txn.hash.toLowerCase())) {
           txn.type = TransactionType.purchase;
         }
 
