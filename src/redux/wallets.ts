@@ -1,8 +1,11 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, isEmpty, keys, values } from 'lodash';
+// <<<<<<< HEAD:src/redux/wallets.js
+import { isEmpty, keys } from 'lodash';
+// =======
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
+// >>>>>>> cbbe0a35ee40fa90a6e8f5d0ea24fce7bc4ec878:src/redux/wallets.ts
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
@@ -470,8 +473,10 @@ export const fetchWalletNames = () => async (
 
   // Fetch ENS names
   await Promise.all(
-    flatMap(values(wallets), wallet => {
-      const visibleAccounts = filter(wallet.addresses, 'visible');
+    Object.values(wallets ?? {}).flatMap(wallet => {
+      const visibleAccounts = wallet.addresses?.filter(
+        address => address.visible
+      );
       return visibleAccounts.map(async account => {
         try {
           const ens = await fetchReverseRecordWithRetry(account.address);
