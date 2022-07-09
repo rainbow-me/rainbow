@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { toLower, uniqBy } from 'lodash';
+import { keyBy, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import {
   // @ts-ignore
