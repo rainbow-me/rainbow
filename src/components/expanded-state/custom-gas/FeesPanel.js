@@ -1,6 +1,5 @@
 import { useIsFocused, useNavigation } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
-import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   InteractionManager,
@@ -24,6 +23,7 @@ import {
   isZero,
   multiply,
   toFixedDecimals,
+  upperFirst,
 } from '@rainbow-me/helpers/utilities';
 import {
   useFeesPanelInputRefs,

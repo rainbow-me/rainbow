@@ -1,8 +1,9 @@
-import { debounce, upperFirst } from 'lodash';
+import { debounce } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
 import useClipboard from './useClipboard';
+import { upperFirst } from '@rainbow-me/helpers/utilities';
 
 export default function useEmailRainbow({
   emailAddress = 'support@rainbow.me',

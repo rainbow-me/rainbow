@@ -466,6 +466,49 @@ export const omitFlatten = <T extends object, K extends keyof T>(
 };
 
 /**
+
+ * @desc Converts the first character of string to upper case and the remaining to lower case
+ */
+export const capitalize = (string?: string | undefined) => {
+  if (!string) return '';
+  return string
+    ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+    : '';
+};
+
+/**
+ * @desc Converts the first character of string to upper case and the remaining to lower case
+ */
+export const startCase = (string?: string | undefined): string => {
+  if (!string) return '';
+  return string
+    ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+    : '';
+};
+
+export const notEmpty = <TValue>(
+  value: TValue | null | undefined
+): value is TValue => {
+  return value !== null && value !== undefined;
+};
+
+export const chunk = <T>(input: T[], size: number): T[][] => {
+  return input.reduce<T[][]>((arr, item, idx) => {
+    return idx % size === 0
+      ? [...arr, [item]]
+      : [...arr.slice(0, -1), [...arr.slice(-1)[0], item]];
+  }, []);
+};
+
+export const isObjectLike = (val: any) =>
+  val !== null && typeof val === 'object';
+
+export const upperFirst = (string?: string | undefined): string => {
+  if (!string) return '';
+  return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
+};
+
+/**
  * Creates an object composed of the picked object properties.
  * @param obj The source object
  * @param paths The property paths to pick

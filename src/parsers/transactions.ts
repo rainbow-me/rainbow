@@ -1,5 +1,4 @@
 import {
-  compact,
   concat,
   flatten,
   orderBy,
@@ -9,7 +8,6 @@ import {
   toLower,
   toUpper,
   uniqBy,
-  upperFirst,
 } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
@@ -38,6 +36,8 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   isEmpty,
+  notEmpty,
+  upperFirst,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
@@ -149,7 +149,7 @@ const transformTradeRefund = (
       value: txnOut.value - refund.value,
     };
   }
-  return compact([updatedOut, txnIn]);
+  return [updatedOut, txnIn].filter(notEmpty);
 };
 
 const overrideFailedCompound = (
