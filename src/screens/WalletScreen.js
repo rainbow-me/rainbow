@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, isEmpty, keys, toLower } from 'lodash';
+import { compact, keys, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -19,6 +19,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {
   useAccountEmptyState,
   useAccountSettings,

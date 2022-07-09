@@ -1,7 +1,7 @@
 import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
+import { findKey, keys, toLower, uniq } from 'lodash';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
@@ -60,6 +60,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
+import { isNumber } from '@rainbow-me/helpers/utilities';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';

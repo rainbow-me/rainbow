@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { isEmpty, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
 import React, { Fragment, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
@@ -13,6 +13,7 @@ import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {
   ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,

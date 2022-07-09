@@ -15,7 +15,7 @@ import {
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
 import lang from 'i18n-js';
-import { isEmpty, isString, replace, toLower } from 'lodash';
+import { replace, toLower } from 'lodash';
 import {
   Alert,
   InteractionManager,
@@ -50,6 +50,8 @@ import {
   delay,
   fromWei,
   greaterThan,
+  isEmpty,
+  isString,
   isZero,
   subtract,
 } from '@rainbow-me/helpers/utilities';

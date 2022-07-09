@@ -1,10 +1,10 @@
-import { isNil } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import useAccountSettings from './useAccountSettings';
 import useGenericAsset from './useGenericAsset';
 import { AssetType } from '@rainbow-me/entities';
+import { isNil } from '@rainbow-me/helpers/utilities';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
 

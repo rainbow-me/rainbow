@@ -2,16 +2,7 @@ import { ObservableQuery } from '@apollo/client';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
-import {
-  find,
-  isEmpty,
-  isNil,
-  keys,
-  partition,
-  toLower,
-  toUpper,
-  uniqBy,
-} from 'lodash';
+import { find, keys, partition, toLower, toUpper, uniqBy } from 'lodash';
 import debounce from 'lodash/debounce';
 import { MMKV } from 'react-native-mmkv';
 import { AnyAction, Dispatch } from 'redux';
@@ -79,7 +70,14 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, multiply, pickBy } from '@rainbow-me/utilities';
+import {
+  delay,
+  isEmpty,
+  isNil,
+  isZero,
+  multiply,
+  pickBy,
+} from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   getBlocksFromTimestamps,
