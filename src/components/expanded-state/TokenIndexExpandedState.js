@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { times, toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -29,6 +29,7 @@ import {
   handleSignificantDecimals,
   multiply,
   reversedSortByKeyHelper,
+  times,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
