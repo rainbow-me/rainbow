@@ -167,9 +167,9 @@ export default function FeesPanel({
   const { customMaxBaseFee, customMaxPriorityFee } = customFees;
   const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
 
-  const updatedCustomMaxBaseFee = Number(
-    gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei
-  ).toFixed(0);
+  const updatedCustomMaxBaseFee =
+    gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei;
+
   const updatedCustomMaxPriorityFee =
     gasFeeParamsBySpeed?.[CUSTOM]?.maxPriorityFeePerGas?.gwei;
 
@@ -300,7 +300,7 @@ export default function FeesPanel({
       if (greaterThan(0, newMaxPriorityFeePerGas.amount)) return;
 
       setCustomFees({
-        customMaxBaseFee,
+        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
         customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei,
       });
 
@@ -315,7 +315,6 @@ export default function FeesPanel({
       selectedGasFee.gasFeeParams,
       setLastFocusedInputHandle,
       updateToCustomGasFee,
-      customMaxBaseFee,
     ]
   );
 

@@ -393,7 +393,7 @@ export const numberGweiToWei = (gweiAmount: BigNumberish) => {
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {
-  return Number(
-    ethers.utils.formatUnits(weiAmount.toString(), 'gwei')
+  return Math.round(
+    Number(ethers.utils.formatUnits(weiAmount.toString(), 'gwei'))
   ).toString();
 };
