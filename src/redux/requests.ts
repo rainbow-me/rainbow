@@ -1,4 +1,3 @@
-import { filter, omit, values } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
@@ -11,6 +10,7 @@ import {
   dappLogoOverride,
   dappNameOverride,
 } from '@rainbow-me/helpers/dappNameHandler';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -229,7 +229,7 @@ export const requestsForTopic = (topic: string) => (
   getState: AppGetState
 ): RequestData[] => {
   const { requests } = getState().requests;
-  return filter(values(requests), { clientId: topic });
+  return Object.values(requests).filter(({ clientId }) => clientId === topic);
 };
 
 /**
@@ -250,7 +250,7 @@ export const removeRequest = (requestId: number) => (
 ) => {
   const { accountAddress, network } = getState().settings;
   const { requests } = getState().requests;
-  const updatedRequests = omit(requests, [requestId]);
+  const updatedRequests = omitFlatten(requests, [requestId]);
   removeLocalRequest(accountAddress, network, requestId);
   dispatch({
     payload: updatedRequests,

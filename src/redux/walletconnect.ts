@@ -3,7 +3,7 @@ import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
-import { clone, mapValues, omitBy, values } from 'lodash';
+import { clone, mapValues, values } from 'lodash';
 import { Alert, AppState, InteractionManager, Linking } from 'react-native';
 import {
   // @ts-ignore
@@ -33,6 +33,7 @@ import {
   convertHexToString,
   delay,
   isEmpty,
+  omitBy,
   pickBy,
 } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';

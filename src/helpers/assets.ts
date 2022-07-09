@@ -1,13 +1,4 @@
-import {
-  chunk,
-  compact,
-  concat,
-  groupBy,
-  includes,
-  reduce,
-  slice,
-  sortBy,
-} from 'lodash';
+import { chunk, compact, concat, groupBy, reduce, slice, sortBy } from 'lodash';
 import {
   add,
   convertAmountToNativeDisplay,
@@ -249,7 +240,7 @@ export const buildBriefCoinsList = (
 
 export const buildUniqueTokenList = (
   uniqueTokens: any,
-  selectedShowcaseTokens: any
+  selectedShowcaseTokens: any[] = []
 ) => {
   let rows: any = [];
   const showcaseTokens = [];
@@ -261,11 +252,11 @@ export const buildUniqueTokenList = (
   for (let family of families) {
     const tokensRow: any = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
-      if (includes(selectedShowcaseTokens, grouped[family][j].uniqueId)) {
+      if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
         showcaseTokens.push(grouped[family][j]);
       }
       if (grouped[family][j + 1]) {
-        if (includes(selectedShowcaseTokens, grouped[family][j + 1].uniqueId)) {
+        if (selectedShowcaseTokens.includes(grouped[family][j + 1].uniqueId)) {
           showcaseTokens.push(grouped[family][j + 1]);
         }
         tokensRow.push([grouped[family][j], grouped[family][j + 1]]);

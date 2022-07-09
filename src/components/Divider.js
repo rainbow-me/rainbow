@@ -1,4 +1,3 @@
-import { constant, times } from 'lodash';
 import React from 'react';
 import { magicMemo } from '../utils';
 import { isNil, isNumber } from '@rainbow-me/helpers/utilities';
@@ -8,8 +7,8 @@ import { borders, position } from '@rainbow-me/styles';
 export const DividerSize = 2;
 
 const buildInsetFromProps = inset => {
-  if (!inset) return times(4, constant(0));
-  if (isNumber(inset)) return times(4, inset);
+  if (!inset) return [0, 0, 0, 0];
+  if (isNumber(inset)) return [inset, inset, inset, inset];
 
   const rightInset = !isNil(inset[1]) ? inset[1] : inset[0];
 
