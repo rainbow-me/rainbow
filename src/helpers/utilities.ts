@@ -414,6 +414,9 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+export const times = (n: number, fn: (i: number) => unknown) =>
+  Array.from({ length: n }, (_, i) => fn(i));
+
 /**
  * @desc Creates an object composed of the omitted object properties by some predicate function.
  */

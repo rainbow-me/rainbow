@@ -3,9 +3,7 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
-  filter,
   find,
-  includes,
   isEmpty,
   isNil,
   keyBy,
@@ -1066,7 +1064,7 @@ export const transactionsRemoved = (
   logger.log('[data] - remove txn hashes', removeHashes);
   const [updatedTransactions, removedTransactions] = partition(
     transactions,
-    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
+    txn => !removeHashes.includes(ethereumUtils.getHash(txn) || '')
   );
 
   dispatch({
@@ -1133,8 +1131,7 @@ export const addressAssetsReceived = (
     [id: string]: ParsedAddressAsset;
   };
 
-  const liquidityTokens = filter(
-    parsedAssets,
+  const liquidityTokens = Object.values(parsedAssets).filter(
     asset => asset?.type === AssetTypes.uniswapV2
   );
 
@@ -1173,17 +1170,16 @@ export const addressAssetsReceived = (
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
   });
   if (!change) {
-    const missingPriceAssetAddresses: string[] = filter(parsedAssets, asset =>
-      isNil(asset?.price)
-    ).map(asset => asset.address);
+    const missingPriceAssetAddresses: string[] = Object.values(parsedAssets)
+      .filter(asset => isNil(asset?.price))
+      .map(asset => asset.address);
+
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
 
-  //Hide tokens with a url as their token name
-  const assetsWithScamURL: string[] = filter(
-    parsedAssets,
-    asset => isValidDomain(asset.name) && !asset.isVerified
-  ).map(asset => asset.uniqueId);
+  const assetsWithScamURL: string[] = Object.values(parsedAssets)
+    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .map(asset => asset.uniqueId);
 
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
 };
@@ -1712,7 +1708,7 @@ export const dataUpdateTransaction = (
 const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  const confirmedPurchases = filter(updatedTransactions, txn => {
+  const confirmedPurchases = updatedTransactions.filter(txn => {
     return (
       txn.type === TransactionTypes.purchase &&
       txn.status !== TransactionStatus.purchasing
