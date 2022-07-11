@@ -33,13 +33,18 @@ export function onHandleStatusBar() {
     StatusBarService.setLightContent();
     return;
   }
-
   switch (routeName) {
+    case Routes.EXPLAIN_SHEET:
+    case Routes.ADD_TOKEN_SHEET:
+    case Routes.EXPANDED_ASSET_SHEET:
+    case Routes.EXPANDED_ASSET_SHEET_POOLS:
+      break;
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
     case Routes.WYRE_WEBVIEW:
     case Routes.SAVINGS_SHEET:
     case Routes.WELCOME_SCREEN:
+    case Routes.CHANGE_WALLET_SHEET:
       StatusBarService.setDarkContent();
       break;
     case Routes.CURRENCY_SELECT_SCREEN:
