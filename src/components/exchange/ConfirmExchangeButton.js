@@ -34,8 +34,12 @@ export default function ConfirmExchangeButton({
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
 
+  const isSavings =
+    type === ExchangeModalTypes.withdrawal ||
+    type === ExchangeModalTypes.deposit;
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
-  const shouldOpenSwapDetails = tradeDetails && !isSwapDetailsRoute;
+  const shouldOpenSwapDetails =
+    tradeDetails && !isSwapDetailsRoute && !isSavings;
 
   const { colors, isDarkMode } = useTheme();
 
