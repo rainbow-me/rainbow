@@ -409,7 +409,7 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-      {networks && fromDiscover && (
+      {networks && !hasBalance && (
         <AvailableNetworks
           asset={assetWithPrice}
           colors={colors}
