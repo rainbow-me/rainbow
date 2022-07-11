@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
+import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
@@ -23,6 +24,7 @@ export default function useWalletSectionsData() {
   const uniqueTokens = useSendableUniqueTokens();
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
+  const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();
 
   const {
@@ -49,7 +51,7 @@ export default function useWalletSectionsData() {
       ...uniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
-      hiddenTokens: [],
+      hiddenTokens,
       showcaseTokens,
     };
 
@@ -79,6 +81,7 @@ export default function useWalletSectionsData() {
     savings,
     shouldRefetchSavings,
     showcaseTokens,
+    hiddenTokens,
     sortedAccountData,
     uniqueTokens,
     uniswap,
