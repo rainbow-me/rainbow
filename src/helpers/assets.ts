@@ -1,4 +1,5 @@
 import { chunk, compact, concat, isEmpty, reduce, slice } from 'lodash';
+import sortBy from 'lodash/sortBy';
 import {
   add,
   convertAmountToNativeDisplay,
@@ -240,21 +241,6 @@ export const buildBriefCoinsList = (
 };
 
 const regex = RegExp(/\s*(the)\s/, 'i');
-const sorterByFamiliesName = (a: any, b: any) => {
-  if (
-    a.familyName.replace(regex, '').toLowerCase() <
-    b.familyName.replace(regex, '').toLowerCase()
-  ) {
-    return -1;
-  } else if (
-    a.familyName.replace(regex, '').toLowerCase() >
-    b.familyName.replace(regex, '').toLowerCase()
-  ) {
-    return 1;
-  } else {
-    return 0;
-  }
-};
 
 export const buildUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
@@ -300,7 +286,10 @@ export const buildUniqueTokenList = (
       });
     });
   }
-  rows = rows.sort(sorterByFamiliesName);
+
+  //JS sort doing twice as much replace in each loop here
+  //so basically we have better stay with lodash one in this case
+  rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
     return (

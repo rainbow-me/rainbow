@@ -278,9 +278,9 @@ export const fetchSuggestions = async (
   }
 };
 const sorterByNicknameLengthASC = (a: any, b: any) => {
-  if (a.nickname.length < b.nickname.length) {
+  if (a?.nickname?.length < b?.nickname.length) {
     return -1;
-  } else if (a.nickname.length > b.nickname.length) {
+  } else if (a?.nickname?.length > b?.nickname?.length) {
     return 1;
   } else {
     return 0;

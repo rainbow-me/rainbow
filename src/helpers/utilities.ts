@@ -7,11 +7,9 @@ type BigNumberish = number | string | BigNumber;
 interface Dictionary<T> {
   [index: string]: T;
 }
-// <<<<<<< HEAD
-// =======
+
 type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
 type nativeCurrencyType = typeof supportedNativeCurrencies;
-// >>>>>>> a1d661b89369889d43d911ecc674c811e996afdf
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();

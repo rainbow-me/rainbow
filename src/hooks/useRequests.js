@@ -2,9 +2,11 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 const sorterByTimestampInMs = (a, b) => {
-  if (a.displayDetails.timestampInMs < b.displayDetails.timestampInMs) {
+  if (a?.displayDetails?.timestampInMs < b?.displayDetails?.timestampInMs) {
     return 1;
-  } else if (a.displayDetails.timestampInMs > b.displayDetails.timestampInMs) {
+  } else if (
+    a?.displayDetails?.timestampInMs > b?.displayDetails?.timestampInMs
+  ) {
     return -1;
   } else {
     return 0;
