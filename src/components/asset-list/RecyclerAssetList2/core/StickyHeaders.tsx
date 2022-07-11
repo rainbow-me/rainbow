@@ -105,7 +105,7 @@ export function StickyHeaderManager({ children }: { children: ReactElement }) {
     string,
     { range: number[]; last: boolean }
   > = useMemo(() => {
-    const sorted = Object.values(positions).sort(sortByKeyHelper('name'));
+    const sorted = Object.values(positions).sort(sortByKeyHelper('position'));
     const ranges: number[][] = [];
     const rangesKeyed: Record<string, { range: number[]; last: boolean }> = {};
 
