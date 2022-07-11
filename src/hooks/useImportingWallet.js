@@ -312,8 +312,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   });
                 });
               } else {
-                setIsWalletLoading(null);
-                android && handleSetImporting(false);
+                if (android) {
+                  setIsWalletLoading(null);
+                  handleSetImporting(false);
+                }
                 // Wait for error messages then refocus
                 setTimeout(() => {
                   inputRef.current?.focus();
