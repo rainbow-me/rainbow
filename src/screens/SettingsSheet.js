@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
-import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
@@ -21,10 +20,10 @@ import WalletSelectionView from '../components/settings-menu/BackupSection/Walle
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
+import { Box } from '@rainbow-me/design-system';
 import isTestFlight from '@rainbow-me/helpers/isTestFlight';
-import { useDimensions, useWallets } from '@rainbow-me/hooks';
+import { useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
 
 function cardStyleInterpolator({
   current,
@@ -98,18 +97,12 @@ const SettingsPages = {
   },
 };
 
-const Container = styled.View({
-  flex: 1,
-  overflow: 'hidden',
-});
-
 const Stack = createStackNavigator();
 
-export default function SettingsModal() {
+export default function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
-  const { height } = useDimensions();
   const { colors } = useTheme();
 
   const getRealRoute = useCallback(
@@ -169,91 +162,88 @@ export default function SettingsModal() {
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
-    <Modal
-      minHeight={height - 100}
-      onCloseModal={goBack}
-      radius={18}
-      showDoneButton={ios}
-      // skipStatusBar={android}
-      testID="settings-modal"
+    <Box
+      background="body"
+      flexGrow={1}
+      testID="settings-sheet"
+      {...(android && { borderTopRadius: 30 })}
     >
-      <Container>
-        <Stack.Navigator
-          screenOptions={{
-            ...memoSettingsOptions,
-            headerRight: renderHeaderRight,
+      <Stack.Navigator
+        screenOptions={{
+          ...memoSettingsOptions,
+          headerRight: renderHeaderRight,
+        }}
+      >
+        <Stack.Screen
+          name="SettingsSection"
+          options={{
+            cardStyleInterpolator,
+            title: lang.t('settings.label'),
           }}
         >
-          <Stack.Screen
-            name="SettingsSection"
-            options={{
-              title: lang.t('settings.label'),
-            }}
-          >
-            {() => (
-              <SettingsSection
-                onCloseModal={goBack}
-                onPressBackup={onPressSection(SettingsPages.backup)}
-                onPressCurrency={onPressSection(SettingsPages.currency)}
-                onPressDev={onPressSection(SettingsPages.dev)}
-                onPressLanguage={onPressSection(SettingsPages.language)}
-                onPressNetwork={onPressSection(SettingsPages.network)}
-                onPressPrivacy={onPressSection(SettingsPages.privacy)}
-              />
-            )}
-          </Stack.Screen>
-          {Object.values(SettingsPages).map(
-            ({ component, getTitle, key }) =>
-              component && (
-                <Stack.Screen
-                  component={component}
-                  key={key}
-                  name={key}
-                  options={{
-                    cardStyleInterpolator,
-                    title: getTitle(),
-                  }}
-                  title={getTitle()}
-                />
-              )
+          {() => (
+            <SettingsSection
+              onCloseModal={goBack}
+              onPressBackup={onPressSection(SettingsPages.backup)}
+              onPressCurrency={onPressSection(SettingsPages.currency)}
+              onPressDev={onPressSection(SettingsPages.dev)}
+              onPressLanguage={onPressSection(SettingsPages.language)}
+              onPressNetwork={onPressSection(SettingsPages.network)}
+              onPressPrivacy={onPressSection(SettingsPages.privacy)}
+            />
           )}
+        </Stack.Screen>
+        {Object.values(SettingsPages).map(
+          ({ component, getTitle, key }) =>
+            component && (
+              <Stack.Screen
+                component={component}
+                key={key}
+                name={key}
+                options={{
+                  cardStyleInterpolator,
+                  title: getTitle(),
+                }}
+                title={getTitle()}
+              />
+            )
+        )}
 
-          <Stack.Screen
-            component={WalletSelectionView}
-            name="WalletSelectionView"
-            options={{
-              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
-              cardStyleInterpolator,
-              title: lang.t('settings.backup'),
-            }}
-          />
-          <Stack.Screen
-            component={DevNotificationsSection}
-            name="DevNotificationsSection"
-            options={{
-              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
-              cardStyleInterpolator,
-              title: lang.t('developer_settings.notifications_debug'),
-            }}
-          />
-          <Stack.Screen
-            component={SettingsBackupView}
-            name="SettingsBackupView"
-            options={({ route }) => ({
-              cardStyleInterpolator,
-              title: route.params?.title || lang.t('settings.backup'),
-            })}
-          />
-          <Stack.Screen
-            component={ShowSecretView}
-            name="ShowSecretView"
-            options={({ route }) => ({
-              cardStyleInterpolator,
-              title: route.params?.title || lang.t('settings.backup'),
-            })}
-          />
-        </Stack.Navigator>
-      </Container>
-    </Modal>
+        <Stack.Screen
+          component={WalletSelectionView}
+          name="WalletSelectionView"
+          options={{
+            cardStyle: { backgroundColor: colors.white, marginTop: 6 },
+            cardStyleInterpolator,
+            title: lang.t('settings.backup'),
+          }}
+        />
+        <Stack.Screen
+          component={DevNotificationsSection}
+          name="DevNotificationsSection"
+          options={{
+            cardStyle: { backgroundColor: colors.white, marginTop: 6 },
+            cardStyleInterpolator,
+            title: lang.t('developer_settings.notifications_debug'),
+          }}
+        />
+        <Stack.Screen
+          component={SettingsBackupView}
+          name="SettingsBackupView"
+          options={({ route }) => ({
+            cardStyleInterpolator,
+            title: route.params?.title || lang.t('settings.backup'),
+          })}
+        />
+        <Stack.Screen
+          component={ShowSecretView}
+          name="ShowSecretView"
+          options={({ route }) => ({
+            cardStyleInterpolator,
+            title: route.params?.title || lang.t('settings.backup'),
+          })}
+        />
+      </Stack.Navigator>
+    </Box>
   );
 }

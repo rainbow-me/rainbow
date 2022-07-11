@@ -46,7 +46,7 @@ export default function BackupSheet() {
   } = useRoute();
 
   const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_MODAL
+    Routes.SETTINGS_SHEET
   );
 
   const handleNoLatestBackup = useCallback(() => {
@@ -133,7 +133,7 @@ export default function BackupSheet() {
   const onBackupNow = useCallback(async () => {
     goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.SETTINGS_MODAL, {
+      navigate(Routes.SETTINGS_SHEET, {
         initialRoute: 'BackupSection',
       });
     });

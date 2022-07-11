@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import qs from 'qs';
 import { Alert } from 'react-native';
@@ -93,7 +94,7 @@ export default async function handleDeeplink(
       case 'update-ios': {
         const code = urlObj.pathname.split('/')[2];
         if (android) {
-          Alert.alert('Tried to use iOS bundle');
+          Alert.alert(lang.t('deeplinks.tried_to_use_ios'));
         } else {
           setDeploymentKey(code);
         }
@@ -104,7 +105,7 @@ export default async function handleDeeplink(
       case 'update-android': {
         const code = urlObj.pathname.split('/')[2];
         if (ios) {
-          Alert.alert('Tried to use Android bundle');
+          Alert.alert(lang.t('deeplinks.tried_to_use_android'));
         } else {
           setDeploymentKey(code);
         }
@@ -127,7 +128,7 @@ export default async function handleDeeplink(
           } else {
             const error = new Error('Invalid deeplink: ' + url);
             captureException(error);
-            Alert.alert('Uh oh! We couldn’t recognize this URL!');
+            Alert.alert(lang.t('deeplinks.couldnt_recognize_url'));
           }
         }
       }
