@@ -1,4 +1,3 @@
-export { contains, runSpring } from './procs';
 export {
   default as ButtonPressAnimation,
   ScaleButtonZoomableAndroid,
