@@ -222,8 +222,6 @@ export default function CurrencySelectModal() {
     toggleGestureEnabled,
   ]);
 
-  // const isFocusedAndroid = useIsFocused() && android;
-
   const shouldUpdateFavoritesRef = useRef(false);
   useEffect(() => {
     if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
@@ -256,7 +254,6 @@ export default function CurrencySelectModal() {
           overflow="hidden"
           radius={30}
         >
-          {/* {isFocusedAndroid && <StatusBar barStyle="dark-content" />} */}
           <GestureBlocker type="top" />
           <Column flex={1}>
             <CurrencySelectModalHeader

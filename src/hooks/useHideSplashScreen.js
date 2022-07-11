@@ -24,8 +24,7 @@ export default function useHideSplashScreen() {
       }
     }
     StatusBar.setTranslucent(true);
-    onHandleStatusBar();
-    // // show the StatusBar
+
     onHandleStatusBar();
     (ios && StatusBarService.setHidden(false, 'fade')) ||
       InteractionManager.runAfterInteractions(() => {

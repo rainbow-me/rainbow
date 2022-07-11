@@ -36,21 +36,18 @@ export default function Modal({
   height,
   onCloseModal,
   radius = 12,
-  // statusBarStyle = 'light-content',
   fullScreenOnAndroid,
-  // skipStatusBar,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
-  //TODO:skipStatusBar
+
   return (
     <Container
       containerPadding={containerPadding}
       fixedToTop={fixedToTop}
       shadowColor={colors.shadowBlack}
     >
-      {/* {skipStatusBar || <StatusBar barStyle={statusBarStyle} />} */}
       {ios && <TouchableBackdrop onPress={onCloseModal} />}
       <Content
         fullScreenOnAndroid={fullScreenOnAndroid}
