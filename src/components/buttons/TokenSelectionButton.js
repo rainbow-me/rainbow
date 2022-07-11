@@ -62,6 +62,8 @@ export default function TokenSelectionButton({
     [colorForAsset, colors.shadow, isDarkMode]
   );
 
+  const displaySymbol = symbol?.length < 6 ? symbol : `${symbol?.slice(0, 6)}…`;
+
   return (
     <ButtonPressAnimation
       borderRadius={borderRadius}
@@ -89,7 +91,7 @@ export default function TokenSelectionButton({
           testID={testID + '-text'}
           weight="bold"
         >
-          {symbol || lang.t('swap.choose_token')}
+          {symbol ? displaySymbol : lang.t('swap.choose_token')}
         </Text>
         <CaretIcon />
       </Content>
