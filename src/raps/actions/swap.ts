@@ -17,6 +17,7 @@ import {
 } from '@rainbow-me/handlers/uniswap';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+import { additionalDataUpdateL2AssetToWatch } from '@rainbow-me/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
@@ -42,7 +43,7 @@ const swap = async (
   } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
-  const { inputCurrency } = store.getState().swap;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   let gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
@@ -104,6 +105,25 @@ const swap = async (
 
     // @ts-ignore
     swap = await executeSwap(swapParams);
+    dispatch(
+      additionalDataUpdateL2AssetToWatch({
+        hash: swap?.hash || '',
+        inputCurrency: {
+          address: inputCurrency?.address,
+          decimals: inputCurrency?.decimals,
+          mainnetAddress: inputCurrency?.mainnet_address,
+          symbol: inputCurrency?.symbol,
+        },
+        network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
+        outputCurrency: {
+          address: outputCurrency?.address,
+          decimals: outputCurrency?.decimals,
+          mainnetAddress: outputCurrency?.mainnet_address,
+          symbol: outputCurrency?.symbol,
+        },
+        userAddress: accountAddress,
+      })
+    );
 
     if (permit) {
       // Clear the allowance
@@ -141,7 +161,7 @@ const swap = async (
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
-  await dispatch(
+  dispatch(
     dataAddNewTransaction(
       // @ts-ignore
       newTransaction,

@@ -42,6 +42,7 @@ import {
 } from './config/debug';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
+import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
@@ -57,6 +58,7 @@ import RoutesComponent from './navigation/Routes';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
+import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
@@ -301,7 +303,12 @@ class App extends Component {
       setTimeout(() => {
         logger.log('Reloading balances for network', network);
         if (isL2) {
-          store.dispatch(explorerInitL2(network));
+          if (tx.internalType === TransactionType.trade) {
+            store.dispatch(additionalDataUpdateL2AssetBalance(tx));
+          } else if (tx.internalType !== TransactionType.authorize) {
+            // for swaps, we don't want to trigger update balances on unlock txs
+            store.dispatch(explorerInitL2(network));
+          }
         } else {
           store.dispatch(
             fetchOnchainBalances({ keepPolling: false, withPrices: false })
