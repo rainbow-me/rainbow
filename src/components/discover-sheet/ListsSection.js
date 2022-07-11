@@ -206,7 +206,6 @@ export default function ListSection() {
       });
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
-        fromDiscover: true,
         longFormHeight: initialChartExpandedStateSheetHeight,
         type: 'token',
       });

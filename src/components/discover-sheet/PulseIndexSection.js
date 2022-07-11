@@ -63,7 +63,6 @@ const PulseIndex = () => {
       asset,
       backgroundOpacity: 1,
       cornerRadius: 39,
-      fromDiscover: true,
       type: 'token_index',
     });
   }, [genericAssets, nativeCurrency, navigate]);

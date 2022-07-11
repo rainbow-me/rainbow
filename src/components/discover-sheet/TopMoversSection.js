@@ -37,7 +37,6 @@ export default function TopMoversSection() {
 
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: assetFormatted,
-        fromDiscover: true,
         longFormHeight: initialChartExpandedStateSheetHeight,
         type: 'token',
       });

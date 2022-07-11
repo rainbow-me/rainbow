@@ -74,7 +74,6 @@ export default async function handleDeeplink(
             const action = (asset: any) => {
               Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
                 asset,
-                fromDiscover: true,
                 longFormHeight: initialChartExpandedStateSheetHeight,
                 type: 'token',
               });
