@@ -66,6 +66,7 @@ import Routes from '@rainbow-me/routes';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
+const ExtraBottomPadding = 55;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<any>();
@@ -177,7 +178,7 @@ export default function ENSAssignRecordsSheet() {
         as={ScrollView}
         background="body"
         contentContainerStyle={{
-          paddingBottom: bottomActionHeight + 55,
+          paddingBottom: bottomActionHeight + ExtraBottomPadding,
         }}
         flexGrow={1}
         scrollEnabled={android}
