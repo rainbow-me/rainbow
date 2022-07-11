@@ -3,7 +3,13 @@ import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { isEmpty, isString, toLower } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import isEqual from 'react-fast-compare';
 import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -723,12 +729,12 @@ export default function SendSheet(props) {
   }, [sendUpdateSelected]);
 
   const onChangeInput = useCallback(
-    event => {
-      setCurrentInput(event);
-      setRecipient(event);
-      setNickname(event);
-      if (profilesEnabled && isENSAddressFormat(event)) {
-        prefetchENSProfileImages(event);
+    text => {
+      setCurrentInput(text);
+      setRecipient(text);
+      setNickname(text);
+      if (profilesEnabled && isENSAddressFormat(text)) {
+        prefetchENSProfileImages(text);
       }
     },
     [profilesEnabled]
@@ -755,12 +761,18 @@ export default function SendSheet(props) {
   }, []);
 
   const [ensSuggestions, setEnsSuggestions] = useState([]);
+  const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
   useEffect(() => {
-    if (network === Network.mainnet && !recipientOverride) {
+    if (
+      network === Network.mainnet &&
+      !recipientOverride &&
+      recipient?.length
+    ) {
+      setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(
         recipient,
         setEnsSuggestions,
-        undefined,
+        setLoadingEnsSuggestions,
         profilesEnabled
       );
     } else {
@@ -858,6 +870,7 @@ export default function SendSheet(props) {
             currentInput={currentInput}
             ensSuggestions={ensSuggestions}
             key={sendContactListDataKey}
+            loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient, nickname) => {
               setRecipient(recipient);
               setNickname(nickname);

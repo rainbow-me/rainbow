@@ -1,5 +1,7 @@
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { PropTypes } from 'prop-types';
-import React from 'react';
+import React, { useContext } from 'react';
 import { FlatList } from 'react-native';
 import ListItem from './ListItem';
 import ListItemDivider from './ListItemDivider';
@@ -10,17 +12,21 @@ const getListItemLayout = (data, index) => ({
   offset: ListItem.height * index,
 });
 
-const List = ({ getItemLayout, items, renderItem, ...props }) => (
-  <FlatList
-    ItemSeparatorComponent={ListItemDivider}
-    data={items}
-    getItemLayout={getItemLayout}
-    removeClippedSubviews
-    renderItem={renderItem}
-    scrollEventThrottle={16}
-    {...props}
-  />
-);
+const List = ({ getItemLayout, items, renderItem, ...props }) => {
+  const isInsideBottomSheet = !!useContext(BottomSheetContext);
+  const ListComponent = isInsideBottomSheet ? BottomSheetFlatList : FlatList;
+  return (
+    <ListComponent
+      ItemSeparatorComponent={ListItemDivider}
+      data={items}
+      getItemLayout={getItemLayout}
+      removeClippedSubviews
+      renderItem={renderItem}
+      scrollEventThrottle={16}
+      {...props}
+    />
+  );
+};
 
 List.propTypes = {
   getItemLayout: PropTypes.func.isRequired,
