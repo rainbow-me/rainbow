@@ -19,6 +19,9 @@ src/handlers/authentication.ts @brunobar79 @estebanmino
 src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera @estebanmino
 src/handlers/fedora.ts @osdnk @estebanmino @terrysahaidak
 
+# Service
+src/services @perunt
+
 # Model
 src/model/backup.ts @brunobar79 @estebanmino
 src/model/keychain.ts @brunobar79 @estebanmino
@@ -71,7 +74,7 @@ package.json @brunobar79 @estebanmino @nickbytes
 react-native.config.js @brunobar79 @estebanmino
 README.md @brunobar79 @estebanmino @nickbytes
 shim.js @brunobar79 @osdnk @estebanmino @nickbytes
-tsconfig.json @brunobar79 @osdnk @estebanmino @nickbytes
+tsconfig.json @brunobar79 @osdnk @estebanmino @nickbytes @perunt
 
 # SECURITY / APP INFRA
 yarn.lock @brunobar79 @estebanmino @nickbytes
