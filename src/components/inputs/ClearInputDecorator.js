@@ -1,11 +1,21 @@
-import React, { useEffect, useRef } from 'react';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import React, { useLayoutEffect, useState } from 'react';
+import Animated, {
+  Easing,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+
+const START_SCALE = 0.5;
+const FINISH_SCALE = 1;
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,
@@ -29,46 +39,53 @@ const TextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   marginBottom: 0.5,
 });
 
-const duration = 100;
-const transition = (
-  <Transition.Sequence>
-    <Transition.Together>
-      <Transition.Out
-        durationMs={duration * 0.666}
-        interpolation="easeIn"
-        type="fade"
-      />
-      <Transition.Out
-        durationMs={duration * 0.42}
-        interpolation="easeIn"
-        type="scale"
-      />
-    </Transition.Together>
-    <Transition.Change durationMs={duration} interpolation="easeInOut" />
-    <Transition.Together>
-      <Transition.In
-        durationMs={duration}
-        interpolation="easeOut"
-        type="fade"
-      />
-      <Transition.In
-        durationMs={duration * 0.5}
-        interpolation="easeOut"
-        type="scale"
-      />
-    </Transition.Together>
-  </Transition.Sequence>
-);
+const easingOut = Easing.out(Easing.ease);
+const easingIn = Easing.in(Easing.ease);
+const duration = 69;
 
 const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
-  const transitionRef = useRef();
+  const [isVisibleInternal, setIsVisibleInternal] = useState(isVisible);
+  const animation = useSharedValue(isVisible ? 1 : 0);
 
-  useEffect(() => transitionRef.current?.animateNextTransition(), [isVisible]);
+  useLayoutEffect(() => {
+    if (isVisible) {
+      setIsVisibleInternal(true);
+    } else if (!isVisible) {
+      animation.value = withTiming(
+        0,
+        { duration, easing: easingOut },
+        finished => {
+          if (finished) {
+            runOnJS(setIsVisibleInternal)(false);
+          }
+        }
+      );
+    }
+  }, [isVisible, animation]);
+
+  useLayoutEffect(() => {
+    if (isVisibleInternal && isVisible) {
+      animation.value = withTiming(1, { duration, easing: easingIn });
+    }
+  }, [isVisible, isVisibleInternal, animation]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const scale = interpolate(
+      animation.value,
+      [0, 1],
+      [START_SCALE, FINISH_SCALE],
+      'extend'
+    );
+    return {
+      opacity: animation.value,
+      transform: [{ scale }],
+    };
+  });
 
   return (
     <Container>
-      {isVisible && (
-        <Transitioning.View ref={transitionRef} transition={transition}>
+      {isVisibleInternal && (
+        <Animated.View style={animatedStyle}>
           <Button
             as={ButtonPressAnimation}
             onPress={onPress}
@@ -77,7 +94,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
           >
             <TextIcon>􀁡</TextIcon>
           </Button>
-        </Transitioning.View>
+        </Animated.View>
       )}
     </Container>
   );

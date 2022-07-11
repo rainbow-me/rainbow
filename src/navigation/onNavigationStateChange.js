@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { get } from 'lodash';
 import { StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
@@ -139,10 +138,9 @@ export function onNavigationStateChange(currentState) {
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
       const { asset, type } = Navigation.getActiveRoute().params;
       paramsToTrack = {
-        assetContractAddress:
-          asset.address || get(asset, 'asset_contract.address'),
+        assetContractAddress: asset.address || asset?.asset_contract?.address,
         assetName: asset.name,
-        assetSymbol: asset.symbol || get(asset, 'asset_contract.symbol'),
+        assetSymbol: asset.symbol || asset?.asset_contract?.symbol,
         assetType: type,
       };
     }

@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@rai... Remove this comment to see the full error message
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
-import { get, join, split, toLower, values } from 'lodash';
+import { join, split, toLower, values } from 'lodash';
 import {
   // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   RAINBOW_WYRE_MERCHANT_ID,
@@ -229,8 +229,8 @@ export const trackWyreOrder = async (
   try {
     const baseUrl = getBaseUrl(network);
     const response = await wyreApi.get(`${baseUrl}/v3/orders/${orderId}`);
-    const orderStatus = get(response, 'data.status');
-    const transferId = get(response, 'data.transferId');
+    const orderStatus = response?.data?.status;
+    const transferId = response?.data?.transferId;
     return { data: response.data, orderStatus, transferId };
   } catch (error) {
     throw error;
@@ -247,9 +247,9 @@ export const trackWyreTransfer = async (
     const response = await wyreApi.get(
       `${baseUrl}/v2/transfer/${transferId}/track`
     );
-    const transferHash = get(response, 'data.blockchainNetworkTx');
-    const destAmount = get(response, 'data.destAmount');
-    const destCurrency = get(response, 'data.destCurrency');
+    const transferHash = response?.data?.blockchainNetworkTx;
+    const destAmount = response?.data?.destAmount;
+    const destCurrency = response?.data?.destCurrency;
     return { destAmount, destCurrency, transferHash };
   } catch (error) {
     throw error;
@@ -281,7 +281,7 @@ export const getOrderId = async (
       data
     );
 
-    const orderId = get(response, 'data.id', null);
+    const orderId = response?.data?.id ?? null;
 
     return { orderId };
   } catch (error: any) {
