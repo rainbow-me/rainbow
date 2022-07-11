@@ -11,6 +11,7 @@ import ensRegistration from './ensRegistration';
 import explorer from './explorer';
 import fallbackExplorer from './fallbackExplorer';
 import gas from './gas';
+import hiddenTokens from './hiddenTokens';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import multicall from './multicall';
@@ -42,6 +43,7 @@ export default combineReducers({
   explorer,
   fallbackExplorer,
   gas,
+  hiddenTokens,
   imageMetadata,
   keyboardHeight,
   multicall,
