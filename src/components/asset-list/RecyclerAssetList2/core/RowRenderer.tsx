@@ -85,7 +85,12 @@ function rowRenderer(
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;
       return (
-        <WrappedTokenFamilyHeader image={image} name={name} total={total} />
+        <WrappedTokenFamilyHeader
+          image={image}
+          name={name}
+          theme={extendedState.theme}
+          total={total}
+        />
       );
     }
     case CellType.NFT: {
