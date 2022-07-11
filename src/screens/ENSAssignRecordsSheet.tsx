@@ -391,7 +391,7 @@ export function ENSAssignRecordsBottomActions({
                           onPress={() => goBack()}
                           testID="ens-assign-records-cancel"
                         >
-                          {lang.t(`profiles.create.cancel`)}
+                          {lang.t('profiles.create.cancel')}
                         </TintButton>
                       )}
                     </Box>

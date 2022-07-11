@@ -29,6 +29,7 @@ import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
 } from '@rainbow-me/config/experimentalHooks';
+import { Box } from '@rainbow-me/design-system';
 import {
   isCustomBuild,
   setOriginalDeploymentKey,
@@ -66,12 +67,6 @@ const CheckmarkIcon = styled(Icon).attrs({
     colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4),
   shadowOffset: { height: 4, width: 0 },
   shadowRadius: 6,
-});
-
-const Container = styled(Column).attrs({})({
-  ...position.coverAsObject,
-
-  backgroundColor: ({ backgroundColor }) => backgroundColor,
 });
 
 const ScrollContainer = styled(ScrollView).attrs({
@@ -214,7 +209,7 @@ export default function SettingsSection({
   }, [setTheme, colorScheme]);
 
   return (
-    <Container backgroundColor={colors.white}>
+    <Box background="body">
       <ScrollContainer>
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
@@ -384,6 +379,6 @@ export default function SettingsSection({
           <AppVersionStamp />
         </VersionStampContainer>
       </ScrollContainer>
-    </Container>
+    </Box>
   );
 }

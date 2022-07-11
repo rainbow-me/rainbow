@@ -37,6 +37,7 @@ export type {
   UniswapCurrency,
   ZerionAsset,
   ZerionAssetFallback,
+  ZerionAssetPrice,
 } from './tokens';
 export type {
   GasFeeType,
