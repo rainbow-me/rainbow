@@ -887,7 +887,9 @@ export const createWallet = async (
           ? (walletResult as Wallet)
           : new Wallet(pkey);
       setTimeout(() => {
-        ios && dispatch(setIsWalletLoading(null));
+        if (ios || !isImported) {
+          dispatch(setIsWalletLoading(null));
+        }
       }, 2000);
 
       return ethersWallet;
