@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
-import React, { useCallback, useLayoutEffect, useMemo } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import Animated, {
   interpolate,
@@ -13,6 +13,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { TruncatedAddress } from '../../text';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
+import { useTheme } from '@rainbow-me/theme';
 import {
   abbreviations,
   ethereumUtils,
@@ -91,7 +92,7 @@ function SwapDetailsContractRowContent({
 
   return (
     <Animated.View style={scaleStyle}>
-      <ButtonPressAnimation scaleTo={scaleTo} {...props}>
+      <ButtonPressAnimation scaleTo={1} {...props}>
         <SwapDetailsRow label={`${asset?.symbol} contract`}>
           <SwapDetailsValue
             address={asset?.address}
@@ -121,6 +122,7 @@ export default function SwapDetailsContractRow({
     },
     [onCopySwapDetailsText, setClipboard]
   );
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const menuConfig = useMemo(() => {
     const blockExplorerAction = buildBlockExplorerAction(asset?.type);
@@ -176,17 +178,22 @@ export default function SwapDetailsContractRow({
     );
   }, [asset, handleCopyContractAddress]);
 
+  const onShowMenu = () => setMenuVisible(true);
+  const onHideMenu = () => setMenuVisible(false);
+
   return (
     <ContextMenuButton
       activeOpacity={1}
       isMenuPrimaryAction
       menuConfig={menuConfig}
+      onMenuWillHide={onHideMenu}
+      onMenuWillShow={onShowMenu}
       {...(android ? { onPress: onPressAndroid } : {})}
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       {...props}
     >
-      <SwapDetailsContractRowContent asset={asset} />
+      <SwapDetailsContractRowContent asset={asset} menuVisible={menuVisible} />
     </ContextMenuButton>
   );
 }
