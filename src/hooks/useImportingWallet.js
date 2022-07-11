@@ -38,7 +38,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
 
-  const { goBack, navigate, replace, setParams } = useNavigation();
+  const {
+    goBack,
+    navigate,
+    replace,
+    setParams,
+    dispatch: dispatchNavigation,
+  } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
@@ -261,17 +267,27 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image
           )
             .then(success => {
-              handleSetImporting(false);
+              ios && handleSetImporting(false);
               if (success) {
                 goBack();
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
-                    replace(Routes.SWIPE_LAYOUT, {
+                    const action = ios ? replace : navigate;
+                    action(Routes.SWIPE_LAYOUT, {
                       params: { initialized: true },
                       screen: Routes.WALLET_SCREEN,
                     });
                   } else {
                     navigate(Routes.WALLET_SCREEN, { initialized: true });
+                  }
+                  if (android) {
+                    handleSetImporting(false);
+                    InteractionManager.runAfterInteractions(() =>
+                      setIsWalletLoading(null)
+                    );
+                    dispatchNavigation({
+                      type: '@RAINBOW/REMOVE_FIRST',
+                    });
                   }
 
                   setTimeout(() => {
@@ -296,6 +312,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   });
                 });
               } else {
+                setIsWalletLoading(null);
+                android && handleSetImporting(false);
                 // Wait for error messages then refocus
                 setTimeout(() => {
                   inputRef.current?.focus();
@@ -305,6 +323,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             })
             .catch(error => {
               handleSetImporting(false);
+              android && handleSetImporting(false);
               logger.error('error importing seed phrase: ', error);
               setTimeout(() => {
                 inputRef.current?.focus();

@@ -1,12 +1,12 @@
 diff --git a/node_modules/@react-navigation/routers/src/StackRouter.tsx b/node_modules/@react-navigation/routers/src/StackRouter.tsx
-index 0174491..39d8650 100644
+index 0174491..426cd2a 100644
 --- a/node_modules/@react-navigation/routers/src/StackRouter.tsx
 +++ b/node_modules/@react-navigation/routers/src/StackRouter.tsx
-@@ -281,6 +281,22 @@ export default function StackRouter(options: StackRouterOptions) {
+@@ -281,6 +281,33 @@ export default function StackRouter(options: StackRouterOptions) {
  
            return null;
  
-+        // @ts-ignore
++          // @ts-ignore
 +        case '@RAINBOW/REMOVE_NEXT_TO_LAST': {
 +          if (state.routes.length < 3) {
 +            return state;
@@ -18,6 +18,17 @@ index 0174491..39d8650 100644
 +            routes: [
 +              ...state.routes.slice(0, -2),
 +              state.routes[state.routes.length - 1],
++            ],
++          };
++        }
++
++          // @ts-ignore
++        case '@RAINBOW/REMOVE_FIRST': {
++          return {
++            ...state,
++            index: state.index - 1,
++            routes: [
++              ...state.routes.slice(1),
 +            ],
 +          };
 +        }
