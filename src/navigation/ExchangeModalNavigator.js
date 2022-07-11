@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useValue } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
@@ -33,6 +33,28 @@ const GestureBlocker = styled.View.attrs({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
   position: 'absolute',
 });
+
+function useStateCallback(initialState) {
+  const [state, setState] = useState(initialState);
+  const cbRef = useRef(null); // mutable ref to store current callback
+
+  const setStateCallback = (state, cb) => {
+    if (cb !== undefined) {
+      cbRef.current = cb; // store passed callback to ref
+    }
+    setState(state);
+  };
+
+  useEffect(() => {
+    // cb.current is `null` on initial render, so we only execute cb on state *updates*
+    if (cbRef.current) {
+      cbRef.current(state);
+      cbRef.current = null; // reset callback after execution
+    }
+  }, [state]);
+
+  return [state, setStateCallback];
+}
 
 export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   function MainExchangeNavigator() {
@@ -91,6 +113,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       }
     }, [addListener, removeListener, params]);
 
+    const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);
+
     const setPointerEvents = useCallback(pointerEventsVal => {
       pointerEvents.current = pointerEventsVal;
       ref.current?.setNativeProps?.({
@@ -106,13 +130,18 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       handle.current = () => {
         // this timeout helps to omit a visual glitch
         setTimeout(() => {
+          setSwipeEnabled(true);
           handle.current = null;
         }, 200);
       };
       // fallback if was already opened
       setTimeout(() => handle.current?.(), 300);
       handle.current && Keyboard.addListener('keyboardDidShow', handle.current);
-    }, []);
+    }, [setSwipeEnabled]);
+
+    const blockInteractions = useCallback(() => {
+      setSwipeEnabled(false);
+    }, [setSwipeEnabled]);
 
     const onMomentumScrollEnd = useCallback(
       position => {
@@ -120,12 +149,17 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           setPointerEvents(true);
           enableInteractionsAfterOpeningKeyboard();
         } else if (position === 0) {
-          setPointerEvents(true);
+          setSwipeEnabled(false, () => setPointerEvents(true));
           handle.current &&
             Keyboard.removeListener('keyboardDidShow', handle.current);
         }
       },
-      [enableInteractionsAfterOpeningKeyboard, setPointerEvents, width]
+      [
+        enableInteractionsAfterOpeningKeyboard,
+        setPointerEvents,
+        setSwipeEnabled,
+        width,
+      ]
     );
 
     const onSwipeEnd = useCallback(
@@ -140,16 +174,21 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         }
 
         if (position === 0) {
-          setPointerEvents(true);
+          setSwipeEnabled(false, () => setPointerEvents(true));
         }
 
         if (targetContentOffset === 0) {
           handle.current &&
             Keyboard.removeListener('keyboardDidShow', handle.current);
-          setPointerEvents(true);
+          setSwipeEnabled(false, () => setPointerEvents(true));
         }
       },
-      [enableInteractionsAfterOpeningKeyboard, setPointerEvents, width]
+      [
+        enableInteractionsAfterOpeningKeyboard,
+        setPointerEvents,
+        setSwipeEnabled,
+        width,
+      ]
     );
 
     const renderPager = useCallback(
@@ -183,12 +222,18 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const initialParams = useMemoOne(
       () => ({
+        blockInteractions,
         setPointerEvents,
         tabTransitionPosition,
         toggleGestureEnabled,
         ...params?.params,
       }),
-      [setPointerEvents, tabTransitionPosition, toggleGestureEnabled]
+      [
+        blockInteractions,
+        setPointerEvents,
+        tabTransitionPosition,
+        toggleGestureEnabled,
+      ]
     );
 
     return (
@@ -196,7 +241,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         <Tabs.Navigator
           pager={renderPager}
           position={tabTransitionPosition}
-          swipeEnabled={false}
+          swipeEnabled={swipeEnabled}
           {...exchangeTabNavigatorConfig}
         >
           <Tabs.Screen
