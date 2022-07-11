@@ -10,11 +10,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
-import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
 import { position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AnimatedCenter = Animated.createAnimatedComponent(Centered);
@@ -28,6 +28,16 @@ const ApplePayButtonDimensions = {
 
 const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
   const { isDarkMode: darkMode, colors } = useTheme();
+
+  const darkModeOutputColors = [
+    colors.alpha(darkModeThemeColors.grey20, 0.3),
+    darkModeThemeColors.darkModeDark,
+  ];
+
+  const lightModeOutputColors = [
+    lightModeThemeColors.blueGreyDark50,
+    lightModeThemeColors.dark,
+  ];
 
   const ApplePayButtonShadows = useMemo(() => {
     if (disabled) {
@@ -53,11 +63,8 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
 
   const animatedProps = useAnimatedProps(() => {
     const outputColors = darkMode
-      ? [
-          colors.alpha(darkModeThemeColors.grey20, 0.3),
-          darkModeThemeColors.darkModeDark,
-        ]
-      : [lightModeThemeColors.blueGreyDark50, lightModeThemeColors.dark];
+      ? darkModeOutputColors
+      : lightModeOutputColors;
     const backgroundColor = interpolateColor(
       disabledAnimation.value,
       [0, 1],
