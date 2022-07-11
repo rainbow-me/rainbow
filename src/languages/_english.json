@@ -61,8 +61,8 @@
         "request_test_eth": "Request test ETH through the %{testnetName} faucet",
         "send_test_eth_from_another_source": "Send test ETH from another %{testnetName} wallet—or ask a friend!"
       },
-      "to_get_started_ios": "To get started, buy some ETH with Apple Pay",
       "to_get_started_android": "To get started, buy some ETH",
+      "to_get_started_ios": "To get started, buy some ETH with Apple Pay",
       "weekly_limit_reached": "Weekly limit reached",
       "yearly_limit_reached": "Yearly limit reached"
     },
@@ -79,6 +79,7 @@
       }
     },
     "back_up": {
+      "backup_deleted_successfully": "Backups Deleted Successfully",
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "manage_platform_backups": "Manage %{cloudPlatformName} Backups",
@@ -257,6 +258,7 @@
         "balance_eth": "%{balanceEth} ETH"
       },
       "contacts_title": "Contacts",
+      "input_placeholder": "Name",
       "my_wallets": "My wallets",
       "options": {
         "add": "Add Contact",
@@ -268,21 +270,27 @@
       "send_header": "Send",
       "suggestions": "Suggestions",
       "to_header": "To",
-      "watching": "Watching",
-      "input_placeholder": "Name"
+      "watching": "Watching"
+    },
+    "deeplinks": {
+      "couldnt_recognize_url": "Uh oh! We couldn’t recognize this URL!",
+      "tried_to_use_android": "Tried to use Android bundle",
+      "tried_to_use_ios": "Tried to use iOS bundle"
     },
     "developer_settings": {
       "alert": "Alert",
-      "notifications_debug": "Notifications Debug",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups deleted successfully",
       "clear_async_storage": "Clear async storage",
-      "clear_mmkv_storage": "Clear MMKV storage",
-      "clear_image_metadata_cache": "Clear Image Metadata Cache",
       "clear_image_cache": "Clear Image Cache",
+      "clear_image_metadata_cache": "Clear Image Metadata Cache",
+      "clear_mmkv_storage": "Clear MMKV storage",
       "connect_to_hardhat": "Connect to hardhat",
       "crash_app_render_error": "Crash app (render error)",
+      "installing_update": "Installing update",
+      "no_update": "No update",
       "not_applied": "NOT APPLIED",
+      "notifications_debug": "Notifications Debug",
       "remove_all_backups": "Remove all backups",
       "reset_keychain": "Reset Keychain",
       "restart_app": "Restart app",
@@ -463,38 +471,40 @@
       "unique_expanded": {
         "about": "About %{assetFamilyName}",
         "attributes": "Attributes",
+        "collection_website": "Collection Website",
         "configuration": "Configuration",
         "copy": "Copy",
-        "edit": "Edit",
-        "manager": "Manager",
-        "owner": "Owner",
-        "set_primary_name": "Set as my ENS name",
-        "profile_info": "Profile Info",
-        "properties": "Properties",
-        "registrant": "Registrant",
-        "collection_website": "Collection Website",
+
         "copy_token_id": "Copy Token ID",
         "description": "Description",
         "discord": "Discord",
+        "edit": "Edit",
+        "expires_in": "Expires in",
+        "expires_on": "Expires on",
         "floor_price": "Floor price",
         "for_sale": "For sale",
         "in_showcase": "In Showcase",
         "last_sale_price": "Last sale price",
+        "manager": "Manager",
         "open_in_web_browser": "Open in Web Browser",
         "opensea": "OpenSea",
+        "owner": "Owner",
+        "profile_info": "Profile Info",
+        "properties": "Properties",
+        "registrant": "Registrant",
+        "resolver": "Resolver",
         "save_to_photos": "Save to Photos",
+        "set_primary_name": "Set as my ENS name",
         "share_token_info": "Share %{uniqueTokenName} Info",
         "showcase": "Showcase",
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
-        "view_on_opensea": "View on Opensea",
-        "view_on_platform": "View on %{platform}",
-        "expires_in": "Expires in",
-        "expires_on": "Expires on",
         "twitter": "Twitter",
         "view_all_with_property": "View All With Property",
         "view_collection": "View Collection",
         "view_on_block_explorer": "View on %{blockExplorerName}",
+        "view_on_opensea": "View on Opensea",
+        "view_on_platform": "View on %{platform}",
         "view_on_web": "View on Web"
       }
     },
@@ -551,6 +561,13 @@
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust.",
         "title": "Verified Tokens"
       }
+    },
+    "fedora": {
+      "cannot_verify_bundle": "Cannot verify the bundle! This might be a scam. Installation blocked.",
+      "error": "ERROR",
+      "fedora": "Fedora",
+      "this_will_override_bundle": "This will override your bundle. Be careful. Are you a Rainbow employee?",
+      "wait": "wait"
     },
     "fields": {
       "address": {
@@ -614,6 +631,12 @@
         "work_title": "How does Manager work?"
       }
     },
+    "image_picker": {
+      "cancel": "Cancel",
+      "confirm": "Enable library access",
+      "message": "This allows Rainbow to use your photos from your library",
+      "title": "Rainbow would like to access your photos"
+    },
     "input": {
       "asset_amount": "Amount",
       "donation_address": "Balance Manager Address",
@@ -625,12 +648,6 @@
       "password_placeholder": "••••••••••",
       "private_key": "Private Key",
       "recipient_address": "Recipient Address"
-    },
-    "image_picker": {
-      "title": "Rainbow would like to access your photos",
-      "message": "This allows Rainbow to use your photos from your library",
-      "confirm": "Enable library access",
-      "cancel": "Cancel"
     },
     "list": {
       "nothing_here": "Nothing here!",
@@ -762,15 +779,79 @@
     },
     "profiles": {
       "actions": {
-        "watching": "Watching",
-        "watch": "Watch",
+        "edit_profile": "Edit profile",
         "unwatch_ens": "Unwatch %{ensName}",
         "unwatch_ens_title": "Are you sure you want to unwatch %{ensName}?",
-        "edit_profile": "Edit profile"
+        "watch": "Watch",
+        "watching": "Watching"
       },
       "banner": {
         "register_name": "Create Your ENS Profile",
         "and_create_ens_profile": "Search available .eth names"
+      },
+      "select_ens_name": "My ENS Names",
+      "search": {
+        "header": "Find your name",
+        "description": "Search available ENS names",
+        "available": "🥳 Available",
+        "taken": "😭 Taken",
+        "registered_on": "This name was last registered on %{content}",
+        "price": "%{content} / Year",
+        "expiration": "Til %{content}",
+        "3_char_min": "Minimum 3 characters",
+        "already_registering_name": "You are already registering this name",
+        "estimated_total_cost_1": "Estimated total cost of",
+        "estimated_total_cost_2": "with current network fees",
+        "loading_fees": "Loading network fees…",
+        "clear": "􀅉 Clear",
+        "continue": "Continue 􀆊",
+        "finish": "Finish 􀆊"
+      },
+      "create": {
+        "add_cover": "Add Cover",
+        "back": "􀆉 Back",
+        "bio": "Bio",
+        "bio_placeholder": "Add a bio to your profile",
+        "btc": "Bitcoin",
+        "cancel": "Cancel",
+        "choose_nft": "Choose an NFT",
+        "content": "Content",
+        "content_placeholder": "Add a content hash",
+        "discord": "Discord",
+        "doge": "Dogecoin",
+        "email": "Email",
+        "email_message": "Please enter a valid email",
+        "email_placeholder": "Add your email",
+        "email_submit_message": "Please enter a valid email",
+        "eth": "Ethereum",
+        "github": "GitHub",
+        "instagram": "Instagram",
+        "invalid_asset": "Invalid %{coin} address",
+        "invalid_content_hash": "Invalid content hash",
+        "keywords": "Keywords",
+        "keywords_placeholder": "Add keywords",
+        "label": "Create your profile",
+        "ltc": "Litecoin",
+        "name": "Name",
+        "name_placeholder": "Add a display name",
+        "notice": "Notice",
+        "notice_placeholder": "Add a notice",
+        "pronouns": "Pronouns",
+        "pronouns_placeholder": "Add pronouns",
+        "reddit": "Reddit",
+        "remove": "Remove",
+        "review": "Review",
+        "skip": "Skip",
+        "snapchat": "Snapchat",
+        "telegram": "Telegram",
+        "twitter": "Twitter",
+        "upload_photo": "Upload a Photo",
+        "username_placeholder": "username",
+        "wallet_placeholder": "Add a %{coin} address",
+        "website": "Website",
+        "website_message": "Please enter a valid website URL",
+        "website_placeholder": "Add your website",
+        "website_submit_message": "Please enter a valid email"
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
@@ -779,6 +860,9 @@
         "remove_from_contacts": "Remove from Contacts",
         "share": "Share",
         "view_on_etherscan": "View on Etherscan"
+      },
+      "edit": {
+        "label": "Edit your profile"
       },
       "intro": {
         "create_your": "Create Your",
@@ -803,105 +887,13 @@
         "my_ens_names": "My ENS Names",
         "search_new_ens": "Find a New Name"
       },
-      "select_ens_name": "My ENS Names",
-      "search": {
-        "header": "Find your name",
-        "description": "Search available ENS names",
-        "available": "🥳 Available",
-        "taken": "😭 Taken",
-        "registered_on": "This name was last registered on %{content}",
-        "price": "%{content} / Year",
-        "expiration": "Til %{content}",
-        "3_char_min": "Minimum 3 characters",
-        "already_registering_name": "You are already registering this name",
-        "estimated_total_cost_1": "Estimated total cost of",
-        "estimated_total_cost_2": "with current network fees",
-        "loading_fees": "Loading network fees…",
-        "clear": "􀅉 Clear",
-        "continue": "Continue 􀆊",
-        "finish": "Finish 􀆊"
-      },
-      "create": {
-        "label": "Create your profile",
-        "add_cover": "Add Cover",
-        "name": "Name",
-        "bio": "Bio",
-        "website": "Website",
-        "back": "􀆉 Back",
-        "skip": "Skip",
-        "username_placeholder": "username",
-        "name_placeholder": "Add a display name",
-        "bio_placeholder": "Add a bio to your profile",
-        "website_placeholder": "Add your website",
-        "review": "Review",
-        "cancel": "Cancel",
-        "choose_nft": "Choose an NFT",
-        "upload_photo": "Upload a Photo",
-        "eth": "Ethereum",
-        "btc": "Bitcoin",
-        "ltc": "Litecoin",
-        "doge": "Dogecoin",
-        "wallet_placeholder": "Add a %{coin} address",
-        "content": "Content",
-        "content_placeholder": "Add a content hash",
-        "notice": "Notice",
-        "notice_placeholder": "Add a notice",
-        "keywords": "Keywords",
-        "keywords_placeholder": "Add keywords",
-        "reddit": "Reddit",
-        "twitter": "Twitter",
-        "telegram": "Telegram",
-        "pronouns": "Pronouns",
-        "pronouns_placeholder": "Add pronouns",
-        "email": "Email",
-        "github": "GitHub",
-        "instagram": "Instagram",
-        "snapchat": "Snapchat",
-        "discord": "Discord",
-        "email_placeholder": "Add your email",
-        "email_submit_message": "Please enter a valid email",
-        "website_submit_message": "Please enter a valid email",
-        "invalid_asset": "Invalid %{coin} address",
-        "invalid_content_hash": "Invalid content hash",
-        "remove": "Remove",
-        "email_message": "Please enter a valid email",
-        "website_message": "Please enter a valid website URL"
-      },
-      "confirm": {
-        "confirm_purchase": "Confirm purchase",
-        "registration_details": "Registration Details",
-        "requesting_register": "Requesting to Register",
-        "reserving_name": "Reserving Your Name",
-        "confirm_registration": "Confirm Registration",
-        "set_name_registration": "Set as Primary Name",
-        "confirm_set_name": "Confirm Set Primary Name",
-        "start_registration": "Start Registration",
-        "confirm_update": "Confirm Update",
-        "confirm_renew": "Hold to Extend",
-        "suggestion": "Buy more years now to save on fees",
-        "set_ens_name": "Set as my primary ENS name",
-        "registration_duration": "Register name for",
-        "new_expiration_date": "New expiration date",
-        "extend_by": "Extend by",
-        "registration_cost": "Registration cost",
-        "estimated_fees": "Estimated network fees",
-        "estimated_total_eth": "Estimated total in ETH",
-        "estimated_total": "Estimated total",
-        "duration_plural": "%{content} years",
-        "duration_singular": "1 year",
-        "commit_button": "Hold to Commit",
-        "insufficient_eth": "Insufficient ETH",
-        "speed_up": "Speed Up",
-        "extend_registration": "Extend Registration",
-        "last_step": "One last step",
-        "last_step_description": "Confirm below to register your name and configure your profile",
-        "transaction_pending": "Transaction pending",
-        "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain",
-        "wait_one_minute": "Wait for one minute",
-        "wait_one_minute_description": "This waiting period ensures that another person can’t register this name before you do"
-      },
-      "edit": {
-        "label": "Edit your profile"
+      "pending_registrations": {
+        "alert_cancel": "Cancel",
+        "alert_confirm": "Proceed Anyway",
+        "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`",
+        "alert_title": "Are you sure?",
+        "finish": "Finish",
+        "in_progress": "In progress"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",
@@ -911,16 +903,16 @@
         "remove_photo": "Remove Photo",
         "view_profile": "View Profile"
       },
-      "pending_registrations": {
-        "alert_title": "Are you sure?",
-        "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`",
-        "alert_confirm": "Proceed Anyway",
-        "alert_cancel": "Cancel",
-        "in_progress": "In progress",
-        "finish": "Finish"
-      },
       "records": {
         "since": "Since"
+      }
+    },
+    "review": {
+      "alert": {
+        "are_you_enjoying_rainbow": "Are you enjoying Rainbow? 🥰",
+        "leave_a_review": "Leave a review on the App Store!",
+        "no": "No",
+        "yes": "Yes"
       }
     },
     "savings": {
@@ -1132,10 +1124,26 @@
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
         "watching_mode_confirm_title": "You’re in Watching Mode"
       },
+      "alert": {
+        "finish_importing": "Finish Importing",
+        "looks_like_imported_public_address": "\nIt looks like you imported this wallet using only its public address. In order to control what's inside, you'll need to import the private key or secret phrase first.",
+        "nevermind": "Nevermind",
+        "this_wallet_in_watching_mode": "This wallet is currently in \"Watching\" mode!"
+      },
+      "alerts": {
+        "dont_have_asset_in_wallet": "Looks like you don't have that asset in your wallet...",
+        "invalid_ethereum_url": "Invalid ethereum url",
+        "ooops": "Ooops!",
+        "this_action_not_supported": "This action is currently not supported :("
+      },
       "assets": {
         "no_price": "Small Balances"
       },
       "authenticate": {
+        "alert": {
+          "current_authentication_not_secure_enough": "Your current authentication method (Face Recognition) is not secure enough, please go to \"Settings > Biometrics & Security\" and enable an alternative biometric method like Fingerprint or Iris.",
+          "error": "Error"
+        },
         "please": "Please authenticate",
         "please_seed_phrase": "Please authenticate to view private key"
       },
@@ -1185,12 +1193,15 @@
         "error": "Error launching email client",
         "send": "Send Feedback"
       },
+      "import_failed_invalid_private_key": "Import failed due to an invalid private key. Please try again.",
       "intro": {
         "create_wallet": "Create a Wallet",
         "instructions": "Please do not store more in your wallet than you are willing to lose.",
         "warning": "This is alpha software.",
         "welcome": "Welcome to Rainbow"
       },
+      "invalid_ens_name": "This is not a valid ENS name",
+      "invalid_unstoppable_name": "This is not a valid Unstoppable name",
       "label": "Wallets",
       "loading": {
         "error": "There has been an error loading the wallet. Please kill the app and retry.",
@@ -1205,6 +1216,10 @@
       "my_account_address": "My account address:",
       "network_title": "Network",
       "new": {
+        "alert": {
+          "looks_like_already_imported": "Looks like you already imported this wallet!",
+          "oops": "Oops!"
+        },
         "already_have_wallet": "I already have one",
         "create_wallet": "Create Wallet",
         "enter_seeds_placeholder": "Secret phrase, private key, Ethereum address, or ENS name",
@@ -1246,6 +1261,9 @@
         "hide_seed_phrase": "Hide Secret Phrase",
         "show_seed_phrase": "Show Secret Phrase"
       },
+      "something_went_wrong_importing": "Something went wrong while importing. Please try again!",
+      "sorry_cannot_add_ens": "Sorry, we cannot add this ENS name at this time. Please try again later!",
+      "sorry_cannot_add_unstoppable": "Sorry, we cannot add this Unstoppable name at this time. Please try again later!",
       "speed_up": {
         "problem_while_fetching_transaction_data": "There was a problem while fetching the transaction data. Please try again...",
         "unable_to_speed_up": "Unable to speed up transaction"
@@ -1306,8 +1324,8 @@
         "reject": "Connection canceled",
         "sign": "Message signed!",
         "sign_canceled": "Transaction canceled!",
-        "transaction_sent": "Transaction sent!",
-        "transaction_canceled": "Transaction canceled!"
+        "transaction_canceled": "Transaction canceled!",
+        "transaction_sent": "Transaction sent!"
       },
       "unknown_application": "Unknown Application"
     },

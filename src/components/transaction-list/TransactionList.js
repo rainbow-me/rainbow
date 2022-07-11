@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { pick, startCase, toLower } from 'lodash';
+import { startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -14,6 +14,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
@@ -296,15 +297,19 @@ export default function TransactionList({
   );
 
   const data = useMemo(() => {
-    const requestsNative = requests.map(request =>
-      pick(request, [
+    const requestsNative = requests.map(request => {
+      const { displayDetails: { timestampInMs } = {} } = request;
+      const pickProps = pickShallow(request, [
         'clientId',
         'dappName',
         'imageUrl',
         'payloadId',
-        'displayDetails.timestampInMs',
-      ])
-    );
+      ]);
+      if (timestampInMs) {
+        Object.assign(pickProps, { displayDetails: { timestampInMs } });
+      }
+      return pickProps;
+    });
     return {
       requests: requestsNative,
       transactions,

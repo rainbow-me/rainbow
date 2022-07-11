@@ -1,6 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import AddCashSheet from '../screens/AddCashSheet';
@@ -73,6 +72,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
@@ -207,7 +207,7 @@ function NativeStackFallbackNavigator() {
         component={SendSheet}
         name={Routes.SEND_SHEET}
         options={{
-          ...omit(sheetPreset, 'gestureResponseDistance'),
+          ...omitFlatten(sheetPreset, 'gestureResponseDistance'),
           onTransitionStart: () => {
             StatusBar.setBarStyle('light-content');
           },

@@ -450,6 +450,7 @@ const UniqueTokenExpandedState = ({
                 // @ts-expect-error JavaScript component
                 sheetRef={sheetRef}
                 textColor={textColor}
+                uniqueId={asset.uniqueId}
                 yPosition={yPosition}
               />
               <Animated.View style={opacityStyle}>
@@ -637,6 +638,7 @@ const UniqueTokenExpandedState = ({
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}
                               isPrimary={ensProfile?.isPrimaryName}
+                              isProfilesEnabled={profilesEnabled}
                               isReadOnlyWallet={isReadOnlyWallet}
                               isSetNameEnabled={ensProfile?.isSetNameEnabled}
                               name={cleanENSName}
