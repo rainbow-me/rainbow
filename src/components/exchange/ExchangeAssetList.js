@@ -320,7 +320,7 @@ const ExchangeAssetList = (
 
   return (
     <Fragment>
-      <View style={cx.wrapper}>
+      <View style={sx.wrapper}>
         <ExchangeAssetSectionList
           ListFooterComponent={FooterSpacer}
           keyboardDismissMode={keyboardDismissMode}
@@ -340,7 +340,7 @@ const ExchangeAssetList = (
   );
 };
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   wrapper: { height: '100%', width: '100%' },
 });
 
