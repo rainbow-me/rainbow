@@ -311,7 +311,7 @@ export default function ExchangeModal({
     currentNetwork,
     loading
   );
-  const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 500);
+  const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
   const swapSupportsFlashbots = currentNetwork === Network.mainnet;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
@@ -846,8 +846,7 @@ export default function ExchangeModal({
               isHighPriceImpact={
                 !confirmButtonProps.disabled &&
                 !confirmButtonProps.loading &&
-                debouncedIsHighPriceImpact &&
-                isSufficientBalance
+                debouncedIsHighPriceImpact
               }
               onFlipCurrencies={loading ? NOOP : flipCurrencies}
               onPressImpactWarning={navigateToSwapDetailsModal}
