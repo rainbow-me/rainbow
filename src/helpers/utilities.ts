@@ -436,6 +436,7 @@ export const toStartCaseStr = (string?: string | undefined): string => {
   if (!string) return '';
   return string
     .replace(/_/g, ' ')
+    .replace(/-/g, ' ')
     .replace(/([a-z])([A-Z])/g, (string, $1, $2) => $1 + ' ' + $2)
     .replace(/(\s|^)(\w)/g, (string, $1, $2) => $1 + $2.toUpperCase());
 };
