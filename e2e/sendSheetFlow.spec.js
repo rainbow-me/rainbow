@@ -66,9 +66,9 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-modal');
+    await Helpers.checkIfVisible('settings-sheet');
     await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-modal');
+    await Helpers.checkIfVisible('developer-settings-sheet');
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');

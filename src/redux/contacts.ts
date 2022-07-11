@@ -1,10 +1,10 @@
-import { omit, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import {
   getContacts,
   saveContacts,
 } from '@rainbow-me/handlers/localstorage/contacts';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import { AppGetState } from '@rainbow-me/redux/store';
 
 // -- Constants --------------------------------------- //
@@ -97,7 +97,7 @@ export const contactsAddOrUpdate = (
   network: Network,
   ens: string
 ) => (dispatch: Dispatch<ContactsUpdateAction>, getState: AppGetState) => {
-  const loweredAddress = toLower(address);
+  const loweredAddress = address.toLowerCase();
   const { contacts } = getState().contacts;
   const updatedContacts = {
     ...contacts,
@@ -121,7 +121,7 @@ export const removeContact = (address: string) => (
   getState: AppGetState
 ) => {
   const { contacts } = getState().contacts;
-  const updatedContacts = omit(contacts, toLower(address));
+  const updatedContacts = omitFlatten(contacts, address.toLowerCase());
   saveContacts(updatedContacts);
   dispatch({
     payload: updatedContacts,

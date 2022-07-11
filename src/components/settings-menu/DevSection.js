@@ -165,7 +165,7 @@ const DevSection = () => {
   const codePushVersion = useAppVersion()[1];
 
   return (
-    <ScrollView testID="developer-settings-modal">
+    <ScrollView testID="developer-settings-sheet">
       <ListItem
         label={`💥 ${lang.t('developer_settings.clear_async_storage')}`}
         onPress={AsyncStorage.clear}

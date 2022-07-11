@@ -122,9 +122,9 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('Should navigate to Settings Modal after tapping Settings Button', async () => {
+  it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
     await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-modal');
+    await Helpers.checkIfVisible('settings-sheet');
   });
 
   it('Should toggle Dark Mode on and off', async () => {
@@ -134,15 +134,17 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should navigate to Developer Settings after tapping Developer Section', async () => {
     await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-modal');
+    await Helpers.checkIfVisible('developer-settings-sheet');
   });
 
-  it('Should show Applied alert after pressing Alert', async () => {
-    await Helpers.tap('alert-section');
-    await Helpers.checkIfElementByTextIsVisible('APPLIED');
-    await Helpers.tapAlertWithButton('OK');
-    await Helpers.checkIfVisible('developer-settings-modal');
-  });
+  if (device.getPlatform() === 'ios') {
+    it('Should show Applied alert after pressing Alert', async () => {
+      await Helpers.waitAndTap('alert-section');
+      await Helpers.checkIfElementByTextIsVisible('APPLIED');
+      await Helpers.tapAlertWithButton('OK');
+      await Helpers.checkIfVisible('developer-settings-sheet');
+    });
+  }
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await Helpers.waitAndTap('hardhat-section');
