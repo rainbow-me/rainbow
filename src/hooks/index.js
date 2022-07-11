@@ -165,3 +165,4 @@ export {
 export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
 export { default as useWalletENSAvatar } from './useWalletENSAvatar';
 export { default as useImagePicker } from './useImagePicker';
+export { default as useLatestCallback } from './useLatestCallback';

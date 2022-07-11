@@ -59,7 +59,7 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
       ))}
     </Container>
   );
-}, 'item.uniqueId');
+}, 'uniqueId');
 
 UniqueTokenRow.propTypes = {
   item: PropTypes.array,
