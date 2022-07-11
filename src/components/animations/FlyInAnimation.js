@@ -1,5 +1,5 @@
 import React from 'react';
-import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
+import Animated, { Easing, FadeInDown, FadeOut } from 'react-native-reanimated';
 import styled from '@rainbow-me/styled-components';
 
 const AnimatedContainer = styled(Animated.View)({
@@ -7,17 +7,22 @@ const AnimatedContainer = styled(Animated.View)({
   width: '100%',
 });
 
+const easing = Easing.bezier(0.4, 0, 0.22, 1);
+
 export default function FlyInAnimation({
-  distance = 30,
-  duration = 175,
+  distance = 16,
+  duration = 100,
   ...props
 }) {
+  const exitDuration = duration / 3;
   return (
     <AnimatedContainer
       {...props}
       entering={FadeInDown.duration(duration)
-        .easing(Easing.bezier(0.165, 0.84, 0.44, 1))
-        .withInitialValues({ transform: [{ translateY: distance }] })}
+        .easing(easing)
+        .withInitialValues({ transform: [{ translateY: distance }] })
+        .delay(exitDuration)}
+      exiting={FadeOut.duration(exitDuration).easing(easing)}
     />
   );
 }

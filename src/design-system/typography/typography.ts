@@ -1,6 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { precomputeValues } from '@capsizecss/core';
-import { mapValues, pick } from 'lodash';
+import { mapValues } from 'lodash';
 import { PixelRatio, Platform } from 'react-native';
 import { ForegroundColor } from './../color/palettes';
 import { fontWeights } from './fontWeights';
@@ -64,7 +64,8 @@ export const fonts = {
   },
 } as const;
 
-export const headingWeights = pick(fonts.SFProRounded, ['heavy', 'bold']);
+const { heavy, bold } = fonts.SFProRounded;
+export const headingWeights = { heavy, bold };
 export const textWeights = fonts.SFProRounded;
 
 // Sourced from https://seek-oss.github.io/capsize

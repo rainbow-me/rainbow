@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { captureException } from '@sentry/react-native';
 import { keyBy } from 'lodash';
 // @ts-ignore
-import { RAINBOW_TOKEN_LIST_URL } from 'react-native-dotenv';
+import { RAINBOW_LEAN_TOKEN_LIST_URL } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import { rainbowFetch } from '../../rainbow-fetch';
 import { ETH_ADDRESS } from '../index';
@@ -15,8 +15,8 @@ export const rainbowListStorage = new MMKV({
   id: STORAGE_IDS.RAINBOW_TOKEN_LIST,
 });
 
-export const RB_TOKEN_LIST_CACHE = 'rb-token-list';
-export const RB_TOKEN_LIST_ETAG = 'rb-token-list-etag';
+export const RB_TOKEN_LIST_CACHE = 'lrb-token-list';
+export const RB_TOKEN_LIST_ETAG = 'lrb-token-list-etag';
 
 type TokenListData = typeof RAINBOW_TOKEN_LIST_DATA;
 type ETagData = { etag: string | null };
@@ -111,7 +111,7 @@ async function getTokenListUpdate(
 
   try {
     const { data, status, headers } = await rainbowFetch(
-      RAINBOW_TOKEN_LIST_URL,
+      RAINBOW_LEAN_TOKEN_LIST_URL,
       {
         headers: etag
           ? { ...commonHeaders, 'If-None-Match': etag }

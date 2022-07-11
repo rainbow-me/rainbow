@@ -1,9 +1,10 @@
-import { useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty, isNil, omit, toLower } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
 import React, {
   Fragment,
   useCallback,
@@ -87,6 +88,7 @@ import {
   greaterThan,
   greaterThanOrEqualTo,
   multiply,
+  omitFlatten,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
@@ -186,6 +188,7 @@ export default function TransactionConfirmationScreen() {
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
   const { goBack, navigate } = useNavigation();
+  const isFocused = useIsFocused();
 
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
@@ -266,8 +269,8 @@ export default function TransactionConfirmationScreen() {
 
   const {
     gasLimit,
-    isSufficientGas,
     isValidGas,
+    isSufficientGas,
     startPollingGasFees,
     stopPollingGasFees,
     updateGasFeeOption,
@@ -275,7 +278,7 @@ export default function TransactionConfirmationScreen() {
     selectedGasFee,
     selectedGasFeeOption,
     gasFeeParamsBySpeed,
-  } = useGas();
+  } = useGas({ nativeAsset });
 
   useEffect(() => {
     if (
@@ -441,7 +444,7 @@ export default function TransactionConfirmationScreen() {
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
-    if (!peerId || !walletConnector) {
+    if (isFocused && (!peerId || !walletConnector)) {
       Alert.alert(
         lang.t('wallet.transaction.alert.connection_expired'),
         lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
@@ -452,7 +455,7 @@ export default function TransactionConfirmationScreen() {
         ]
       );
     }
-  }, [goBack, onCancel, peerId, walletConnector]);
+  }, [isFocused, goBack, onCancel, peerId, walletConnector]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
@@ -542,7 +545,7 @@ export default function TransactionConfirmationScreen() {
     }
 
     const { gasFee } = selectedGasFee;
-    if (!gasFee.estimatedFee) {
+    if (!gasFee?.estimatedFee) {
       setIsBalanceEnough(false);
       return;
     }
@@ -608,7 +611,7 @@ export default function TransactionConfirmationScreen() {
       logger.log('⛽ error estimating gas', error);
     }
     // clean gas prices / fees sent from the dapp
-    const cleanTxPayload = omit(txPayload, [
+    const cleanTxPayload = omitFlatten(txPayload, [
       'gasPrice',
       'maxFeePerGas',
       'maxPriorityFeePerGas',
@@ -624,7 +627,12 @@ export default function TransactionConfirmationScreen() {
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
-    txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas']);
+    txPayloadUpdated = omitFlatten(txPayloadUpdated, [
+      'from',
+      'gas',
+      'chainId',
+    ]);
+
     let response = null;
 
     try {
@@ -675,13 +683,13 @@ export default function TransactionConfirmationScreen() {
           value: result.value.toString(),
           ...gasParams,
         };
-        if (toLower(accountAddress) === toLower(txDetails.from)) {
+        if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
           txSavedInCurrentWallet = true;
         }
       }
       analytics.track('Approved WalletConnect transaction request');
-      if (requestId) {
+      if (isFocused && requestId) {
         dispatch(removeRequest(requestId));
         await dispatch(
           walletConnectSendStatus(peerId, requestId, { result: result.hash })
@@ -729,6 +737,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     accountInfo.address,
     callback,
+    isFocused,
     requestId,
     closeScreen,
     displayDetails?.request?.value,
@@ -1065,10 +1074,11 @@ export default function TransactionConfirmationScreen() {
                   network={currentNetwork}
                 />
                 <Row marginBottom={android ? -6 : 5}>
-                  <Row marginBottom={android ? 16 : 8}>
+                  <Row marginBottom={android ? 16 : 8} marginHorizontal={32}>
                     <Text
                       align="center"
                       color="secondary80"
+                      numberOfLines={1}
                       size="18px"
                       weight="bold"
                     >

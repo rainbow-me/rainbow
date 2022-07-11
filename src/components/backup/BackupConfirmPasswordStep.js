@@ -86,7 +86,7 @@ export default function BackupConfirmPasswordStep() {
   const walletId = params?.walletId || selectedWallet.id;
 
   const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_MODAL
+    Routes.SETTINGS_SHEET
   );
 
   useEffect(() => {

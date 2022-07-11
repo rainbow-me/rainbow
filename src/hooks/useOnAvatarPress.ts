@@ -60,6 +60,9 @@ export default () => {
   const processPhoto = useCallback(
     (image: any) => {
       const stringIndex = image?.path.indexOf('/tmp');
+      const imagePath = ios
+        ? `~${image?.path.slice(stringIndex)}`
+        : image?.path;
       const newWallets = {
         ...wallets,
         [selectedWallet.id]: {
@@ -68,7 +71,7 @@ export default () => {
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             toLower(account.address) === toLower(accountAddress)
-              ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
+              ? { ...account, image: imagePath }
               : account
           ),
         },
@@ -92,6 +95,7 @@ export default () => {
       cropperCircleOverlay: true,
       cropping: true,
     });
+    if (!image) return;
     processPhoto(image);
   }, [openPicker, processPhoto]);
 
@@ -128,8 +132,8 @@ export default () => {
       : [
           lang.t('profiles.profile_avatar.choose_from_library'),
           !accountImage
-            ? lang.t(`profiles.profile_avatar.pick_emoji`)
-            : lang.t(`profiles.profile_avatar.remove_photo`),
+            ? lang.t('profiles.profile_avatar.pick_emoji')
+            : lang.t('profiles.profile_avatar.remove_photo'),
           profilesEnabled &&
             (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
             lang.t('profiles.profile_avatar.create_profile'),

@@ -116,7 +116,6 @@ export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
 export { default as usePendingTransactions } from './usePendingTransactions';
-export { default as useTransformOrigin } from './useTransformOrigin';
 export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
 export { default as useUniswapCalls } from './useUniswapCalls';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
@@ -151,3 +150,4 @@ export {
 export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
 export { default as useWalletENSAvatar } from './useWalletENSAvatar';
 export { default as useImagePicker } from './useImagePicker';
+export { default as useLatestCallback } from './useLatestCallback';

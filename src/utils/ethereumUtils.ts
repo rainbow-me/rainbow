@@ -14,6 +14,7 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
+import lang from 'i18n-js';
 import { isEmpty, isString, replace, toLower } from 'lodash';
 import {
   Alert,
@@ -78,6 +79,7 @@ import {
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
+  supportedNativeCurrencies,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
@@ -236,7 +238,7 @@ const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
 const formatGenericAsset = (
   asset: ParsedAddressAsset,
-  nativeCurrency: string
+  nativeCurrency: keyof typeof supportedNativeCurrencies
 ) => {
   return {
     ...asset,
@@ -362,6 +364,19 @@ const fetchTxWithAlwaysCache = async (address: EthereumAddress) => {
   const txTime = parsedResponse.result[0].timeStamp;
   AsyncStorage.setItem(`first-tx-${address}`, txTime);
   return txTime;
+};
+
+export const fetchContractABI = async (address: EthereumAddress) => {
+  const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`;
+  const cachedAbi = await AsyncStorage.getItem(`abi-${address}`);
+  if (cachedAbi) {
+    return cachedAbi;
+  }
+  const response = await fetch(url);
+  const parsedResponse = await response.json();
+  const abi = parsedResponse.result;
+  AsyncStorage.setItem(`abi-${address}`, abi);
+  return abi;
 };
 
 export const daysFromTheFirstTx = (address: EthereumAddress) => {
@@ -546,7 +561,7 @@ async function parseEthereumUrl(data: string) {
   try {
     ethUrl = parse(data);
   } catch (e) {
-    Alert.alert('Invalid ethereum url');
+    Alert.alert(lang.t('wallet.alerts.invalid_ethereum_url'));
     return;
   }
 
@@ -568,8 +583,8 @@ async function parseEthereumUrl(data: string) {
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
-        'Ooops!',
-        `Looks like you don't have that asset in your wallet...`
+        lang.t('wallet.alerts.ooops'),
+        lang.t('wallet.alerts.dont_have_asset_in_wallet')
       );
       return;
     }
@@ -582,8 +597,8 @@ async function parseEthereumUrl(data: string) {
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
-        'Ooops!',
-        `Looks like you don't have that asset in your wallet...`
+        lang.t('wallet.alerts.ooops'),
+        lang.t('wallet.alerts.dont_have_asset_in_wallet')
       );
       return;
     }
@@ -595,7 +610,7 @@ async function parseEthereumUrl(data: string) {
         asset.decimals
       );
   } else {
-    Alert.alert('This action is currently not supported :(');
+    Alert.alert(lang.t('wallet.alerts.this_action_not_supported'));
     return;
   }
 

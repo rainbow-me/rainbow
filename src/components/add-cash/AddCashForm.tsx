@@ -2,8 +2,14 @@ import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { Fragment, useCallback, useState } from 'react';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import Animated, {
+  Easing,
+  FadeOut,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { Alert } from '../alerts';
 import { Centered, ColumnWithMargins } from '../layout';
@@ -204,7 +210,10 @@ const AddCashForm = ({
   );
 
   return (
-    <Fragment>
+    <Animated.View
+      exiting={FadeOut.duration(150).easing(Easing.out(Easing.ease))}
+      style={sx.container}
+    >
       <Centered flex={1}>
         <ColumnWithMargins
           align="center"
@@ -237,8 +246,14 @@ const AddCashForm = ({
           onSubmit={onSubmit}
         />
       </ColumnWithMargins>
-    </Fragment>
+    </Animated.View>
   );
 };
 
 export default React.memo(AddCashForm);
+
+const sx = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
