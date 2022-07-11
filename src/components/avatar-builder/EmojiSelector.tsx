@@ -108,7 +108,7 @@ export const EmojiSelector = ({
           }
         }
       ),
-    [allEmojiList, columns]
+    [allEmojiList, cellSize, columns]
   );
 
   useEffect(() => {
@@ -118,6 +118,7 @@ export const EmojiSelector = ({
     setTimeout(() => {
       setIsReady(true);
     }, 300);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadEmojis = () => {
@@ -255,7 +256,7 @@ export const EmojiSelector = ({
         </ScrollView>
       );
     },
-    [allEmojiList, columns, isReady]
+    [allEmojiList, cellSize, columns, fontSize, isReady]
   );
 
   const renderItem = useCallback(
@@ -280,7 +281,7 @@ export const EmojiSelector = ({
         return ios ? (
           <View
             style={[
-              cx.header,
+              sx.header,
               {
                 backgroundColor: colors.white,
               },
@@ -299,15 +300,23 @@ export const EmojiSelector = ({
         />
       );
     },
-    [columns, handleEmojiSelect, colors, nextCategoryOffset, showSectionTitles]
+    [
+      cellSize,
+      columns,
+      fontSize,
+      handleEmojiSelect,
+      nextCategoryOffset,
+      showSectionTitles,
+      colors.white,
+    ]
   );
 
   return (
-    <View style={cx.frame} {...other}>
+    <View style={sx.frame} {...other}>
       <TapGestureHandler onHandlerStateChange={onTapChange}>
-        <View style={cx.outerContainer}>
+        <View style={sx.outerContainer}>
           {!isReady ? <EmojisLoader /> : null}
-          <View style={cx.container}>
+          <View style={sx.container}>
             <StickyContainer
               overrideRowRenderer={renderStickyItem}
               stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
@@ -327,7 +336,7 @@ export const EmojiSelector = ({
                 // @ts-expect-error
                 rowRenderer={renderItem}
                 scrollIndicatorInsets={[15, 0, 15, 0]}
-                style={cx.listStyle}
+                style={sx.listStyle}
               />
             </StickyContainer>
           </View>
@@ -340,7 +349,7 @@ export const EmojiSelector = ({
   );
 };
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   container: {
     alignItems: 'center',
     flex: 1,
