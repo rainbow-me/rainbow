@@ -262,18 +262,7 @@ const displayValues: { [key in DisplayValue]: string | null } = {
 
 export default function useSwapDerivedOutputs(chainId: number, type: string) {
   const dispatch = useDispatch();
-  // const [loading, setLoading] = useState(false);
-  // const [insufficientLiquidity, setInsufficientLiquidity] = useState(false);
-
-  // const isDeposit = type === ExchangeModalTypes.deposit;
-  // const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-  // const isSavings = isDeposit || isWithdrawal;
-
-  // const [result, setResult] = useState({
-  //   derivedValues,
-  //   displayValues,
-  //   tradeDetails: null,
-  // });
+  const { accountAddress } = useAccountSettings();
 
   const independentField = useSelector(
     (state: AppState) => state.swap.independentField
@@ -296,9 +285,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
 
   const source = useSelector((state: AppState) => state.swap.source);
 
-  const derivedValuesFromRedux = useSelector(
-    (state: AppState) => state.swap.derivedValues
-  );
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
   );
@@ -314,7 +300,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     genericAssets[outputCurrency?.mainnet_address || outputCurrency?.address]
       ?.price?.value;
 
-  const { accountAddress } = useAccountSettings();
   const resetSwapInputs = useCallback(() => {
     derivedValues[SwapModalField.input] = null;
     derivedValues[SwapModalField.output] = null;
@@ -411,15 +396,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
               inputCurrency.decimals
             )
           : null;
-
-      // The quote is the same
-      if (
-        derivedValuesFromRedux &&
-        independentValue === derivedValuesFromRedux[SwapModalField.native]
-      ) {
-        // setLoading(false);
-        return {};
-      }
 
       derivedValues[SwapModalField.native] = independentValue;
       displayValues[DisplayValue.native] = independentValue;
@@ -525,7 +501,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   }, [
     accountAddress,
     chainId,
-    derivedValuesFromRedux,
     dispatch,
     independentField,
     independentValue,
@@ -552,7 +527,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       slippageInBips,
       source,
     ],
-    () => getTradeDetails()
+    async () => await getTradeDetails()
   );
 
   return {
