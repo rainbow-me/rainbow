@@ -139,7 +139,7 @@ const SavingsSheet = () => {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         params: {
           params: {
-            defaultInputAsset: underlying,
+            inputAsset: underlying,
           },
           screen: Routes.MAIN_EXCHANGE_SCREEN,
         },
