@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { useCallback, useRef } from 'react';
-import { InteractionManager, NativeModules } from 'react-native';
+import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
@@ -23,6 +23,7 @@ export default function useHideSplashScreen() {
         SplashScreen.hide();
       }
     }
+    StatusBar.setTranslucent(true);
     onHandleStatusBar();
     // // show the StatusBar
     onHandleStatusBar();

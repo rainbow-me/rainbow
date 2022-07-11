@@ -9,14 +9,10 @@
         <item name="android:fitsSystemWindows">false</item>
         <!-- Set system bars background transparent -->
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
         <!-- Disable auto contrasted system bars background -->
         <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
-        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
 
-        <!-- Set status bar background transparent -->
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowTranslucentNavigation">true</item>
     </style>
   
     <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
@@ -31,6 +27,5 @@
         <item name="postSplashScreenTheme">@style/AppTheme</item>
         <!-- Bars initial styles: true = dark-content, false = light-content -->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
     </style>
 </resources>

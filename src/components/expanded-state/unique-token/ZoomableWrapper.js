@@ -147,6 +147,7 @@ export const ZoomableWrapper = ({
   const isZoomedValue = useSharedValue(false);
 
   useEffect(() => {
+    StatusBarService.setLightContent();
     if (hideStatusBar) {
       if (isZoomed) {
         StatusBarService.setHidden(true);

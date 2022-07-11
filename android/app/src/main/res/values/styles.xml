@@ -5,11 +5,8 @@
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
         <!-- Allow drawing under the system bars background -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:fitsSystemWindows">false</item>
         <!-- Set status bar background transparent -->
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <!-- Navigation bar will stay translucent on Android < 8.1 -->
-        <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimaryDark">@color/primary_dark</item>
@@ -21,7 +18,5 @@
         <item name="postSplashScreenTheme">@style/AppTheme</item>
         <!-- Status bar initial style: true = dark-content, false = light-content -->
         <item name="android:windowLightStatusBar">true</item>
-        <!-- Navigation bar will stay translucent on Android < 8.1 -->
-        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 </resources>
