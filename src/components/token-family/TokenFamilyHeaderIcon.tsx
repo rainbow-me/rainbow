@@ -61,7 +61,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
       style={style}
     >
       {familyImage ? (
-        <ImgixImage source={source} style={circleStyle} />
+        <ImgixImage size={30} source={source} style={circleStyle} />
       ) : (
         // @ts-expect-error FallbackIcon is not migrated to TS.
         <FallbackIcon {...circleStyle} symbol={symbol} />
