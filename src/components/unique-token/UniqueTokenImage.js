@@ -67,6 +67,7 @@ const UniqueTokenImage = ({
             onError={handleError}
             onLoad={onLoad}
             resizeMode={TransformationImage.resizeMode[resizeMode]}
+            retryOnError
             size={size}
             source={{ uri: imageUrl }}
             style={position.coverAsObject}
