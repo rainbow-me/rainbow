@@ -32,7 +32,7 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import Logger from '@rainbow-me/utils/logger';
 
-const SWAP_POLLING_INTERVAL = 20000;
+const SWAP_POLLING_INTERVAL = 10000;
 enum DisplayValue {
   input = 'inputAmountDisplay',
   output = 'outputAmountDisplay',
