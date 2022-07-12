@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.6.13-1",
+  "version": "1.6.14-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
@@ -358,7 +358,7 @@
     "**/@hapi/hoek": "8.5.1",
     "**/glob-parent": "6.0.0",
     "**/merge-deep": "3.0.3",
-    "**/moment": "2.29.2",
+    "**/moment": "2.29.4",
     "**/css-what": "5.0.1",
     "**/tar": "6.1.11",
     "**/path-parse": "1.0.7",

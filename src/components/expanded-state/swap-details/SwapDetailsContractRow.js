@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import Animated from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
@@ -160,17 +160,21 @@ export default function SwapDetailsContractRow({
     );
   }, [asset, handleCopyContractAddress]);
 
+  const [menuVisible, setMenuVisible] = useState(false);
+
   return (
     <ContextMenuButton
       activeOpacity={1}
       isMenuPrimaryAction
       menuConfig={menuConfig}
+      onMenuWillHide={() => setMenuVisible(false)}
+      onMenuWillShow={() => setMenuVisible(true)}
       {...(android ? { onPress: onPressAndroid } : {})}
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       {...props}
     >
-      <SwapDetailsContractRowContent asset={asset} />
+      <SwapDetailsContractRowContent asset={asset} menuVisible={menuVisible} />
     </ContextMenuButton>
   );
 }
