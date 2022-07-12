@@ -344,14 +344,14 @@ export default function useENSRegistrationActionHandler(
         transferControl,
       };
 
-      await executeRap(
+      const { nonce: newNonce } = await executeRap(
         wallet,
         RapActionTypes.transferENS,
         transferEnsParameters,
         callback
       );
 
-      return nonce;
+      return { nonce: newNonce };
     },
     [accountAddress, getNextNonce, registrationParameters]
   );

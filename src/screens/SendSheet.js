@@ -525,7 +525,7 @@ export default function SendSheet(props) {
         toAddress &&
         (clearRecords || setAddress || transferControl)
       ) {
-        const nonce = await transferENS(() => null, {
+        const { nonce } = await transferENS(() => null, {
           clearRecords,
           name: ensName,
           records: {
@@ -551,7 +551,7 @@ export default function SendSheet(props) {
         from: accountAddress,
         gasLimit: gasLimitToUse,
         network: currentNetwork,
-        nonce: nextNonce || (await getNextNonce()),
+        nonce: nextNonce ?? (await getNextNonce()),
         to: toAddress,
         ...gasParams,
       };

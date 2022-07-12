@@ -415,10 +415,11 @@ export const executeRap = async (
     label: rapName,
   });
 
+  let nonce = parameters?.nonce;
+
   logger.log('[common - executing rap]: actions', actions);
   if (actions.length) {
     const firstAction = actions[0];
-    const nonce = parameters?.nonce;
     const { baseNonce, errorMessage } = await executeAction(
       firstAction,
       wallet,
@@ -432,6 +433,7 @@ export const executeRap = async (
         const action = actions[index];
         await executeAction(action, wallet, rap, index, rapName, baseNonce);
       }
+      nonce = baseNonce + actions.length - 1;
       callback(true);
     } else {
       // Callback with failure state
@@ -444,6 +446,8 @@ export const executeRap = async (
     label: rapName,
   });
   logger.log('[common - executing rap] finished execute rap function');
+
+  return { nonce };
 };
 
 export const createNewRap = (actions: RapAction[]) => {
