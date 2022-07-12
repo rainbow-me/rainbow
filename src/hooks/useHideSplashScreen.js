@@ -2,6 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
+import { PerformanceContextMap } from '../performance/PerformanceContextMap';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
@@ -32,10 +33,17 @@ export default function useHideSplashScreen() {
       });
 
     if (!alreadyLoggedPerformance.current) {
-      PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive);
+      const initialRoute = PerformanceContextMap.get('initialRoute');
+      const additionalParams =
+        initialRoute !== undefined ? { initialRoute } : undefined;
+      PerformanceTracking.finishMeasuring(
+        PerformanceMetrics.timeToInteractive,
+        additionalParams
+      );
       PerformanceTracking.logDirectly(
         PerformanceMetrics.completeStartupTime,
-        Date.now() - StartTime.START_TIME
+        Date.now() - StartTime.START_TIME,
+        additionalParams
       );
       analytics.track('Application became interactive');
       alreadyLoggedPerformance.current = true;
