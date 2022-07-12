@@ -10,7 +10,7 @@ import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 const omitRecordKeys = [ENS_RECORDS.avatar];
 const topRecordKeys = [ENS_RECORDS.cover, ENS_RECORDS.description];
 
-type ImageSource = { imageUrl: string | null };
+type ImageSource = { imageUrl?: string | null };
 
 export default function ProfileInfoSection({
   allowEdit,
