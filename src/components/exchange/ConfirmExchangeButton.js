@@ -157,7 +157,9 @@ export default function ConfirmExchangeButton({
             label={label}
             loading={loading}
             onLongPress={
-              insufficientLiquidity
+              loading
+                ? () => null
+                : insufficientLiquidity
                 ? handleShowLiquidityExplainer
                 : shouldOpenSwapDetails
                 ? onPressViewDetails
