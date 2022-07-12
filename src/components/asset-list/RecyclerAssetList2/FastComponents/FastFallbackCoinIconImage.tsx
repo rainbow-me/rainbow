@@ -68,8 +68,8 @@ export const FastFallbackCoinIconImage = React.memo(
       <View
         style={[
           sx.coinIconContainer,
-          { shadowColor },
           isLoaded && sx.withShadow,
+          { shadowColor },
         ]}
       >
         {shouldShowImage && (
@@ -92,17 +92,16 @@ export const FastFallbackCoinIconImage = React.memo(
 const sx = StyleSheet.create({
   coinIconContainer: {
     alignItems: 'center',
-    backgroundColor: 'transparent',
     borderRadius: 20,
     height: 40,
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
     width: 40,
   },
   coinIconFallback: {
     borderRadius: 20,
     height: 40,
-    overflow: 'visible',
+    overflow: 'hidden',
     width: 40,
   },
   container: {
