@@ -390,6 +390,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       insufficientLiquidity = !!noLiquidity;
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
+      // @ts-ignore next-line
       displayValues[DisplayValue.output] = outputAmount
         ? outputAmountDisplay?.toString()
         : null;
