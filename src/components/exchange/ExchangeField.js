@@ -35,7 +35,7 @@ const FieldRow = styled(RowWithMargins).attrs({
   flex: 1,
   paddingLeft: ExchangeFieldPadding,
   paddingRight: ({ disableCurrencySelection }) =>
-    disableCurrencySelection ? ExchangeFieldPadding : 0,
+    disableCurrencySelection ? ExchangeFieldPadding : 6,
 });
 
 const Input = styled(ExchangeInput).attrs({
