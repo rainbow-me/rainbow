@@ -33,6 +33,7 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import Logger from '@rainbow-me/utils/logger';
 
+const SWAP_POLLING_INTERVAL = 20000;
 enum DisplayValue {
   input = 'inputAmountDisplay',
   output = 'outputAmountDisplay',
@@ -309,8 +310,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     displayValues[DisplayValue.native] = null;
     dispatch(
       updateSwapQuote({
-        derivedValues: derivedValues,
-        displayValues: displayValues,
+        derivedValues,
+        displayValues,
         tradeDetails: null,
       })
     );
@@ -356,6 +357,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
 
     if (independentField === SwapModalField.input) {
       derivedValues[SwapModalField.input] = independentValue;
+
       displayValues[DisplayValue.input] = maxInputUpdate
         ? updatePrecisionToDisplay(independentValue, null, true)
         : independentValue;
@@ -382,11 +384,17 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         accountAddress,
         chainId
       );
+      // if original value changed, ignore new quote
+      if (derivedValues[SwapModalField.input] !== independentValue) return;
+
       insufficientLiquidity = !!noLiquidity;
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
-      displayValues[DisplayValue.output] =
-        outputAmountDisplay?.toString() || null;
+      displayValues[DisplayValue.output] = outputAmount
+        ? outputAmountDisplay?.toString()
+        : null;
+
+      independentValue;
     } else if (independentField === SwapModalField.native) {
       const inputAmount =
         independentValue && inputPrice
@@ -421,6 +429,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         accountAddress,
         chainId
       );
+      // if original value changed, ignore new quote
+      if (derivedValues[SwapModalField.native] !== independentValue) return;
+
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
       displayValues[DisplayValue.output] =
@@ -454,6 +465,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         accountAddress,
         chainId
       );
+      // if original value changed, ignore new quote
+      if (derivedValues[SwapModalField.output] !== independentValue) return;
 
       insufficientLiquidity = !!noLiquidity;
       tradeDetails = newTradeDetails;
@@ -515,20 +528,22 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     type,
   ]);
 
-  const { data, isLoading } = useQuery(
-    [
+  const { data, isLoading } = useQuery({
+    queryFn: getTradeDetails,
+    queryKey: [
       'getTradeDetails',
       independentField,
       independentValue,
       inputCurrency,
       outputCurrency,
+      inputPrice,
       outputPrice,
       maxInputUpdate,
       slippageInBips,
       source,
     ],
-    async () => await getTradeDetails()
-  );
+    refetchInterval: SWAP_POLLING_INTERVAL,
+  });
 
   return {
     insufficientLiquidity: data?.insufficientLiquidity || false,
