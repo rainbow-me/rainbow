@@ -22,8 +22,8 @@ import {
 } from '@rainbow-me/design-system';
 import {
   add,
+  convertNumberToString,
   greaterThan,
-  toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
 import { useMagicAutofocus, useSwapSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -67,10 +67,10 @@ export const MaxToleranceInput = forwardRef(
     const updateSlippage = useCallback(
       increment => {
         const newSlippage = add(slippageValue, increment);
-        const newSlippageValue = toFixedDecimals(newSlippage, 2);
+        const newSlippageValue = convertNumberToString(newSlippage);
         if (greaterThan(0, newSlippageValue)) return;
 
-        updateSwapSlippage(convertPercentToBips(parseInt(newSlippageValue)));
+        updateSwapSlippage(convertPercentToBips(parseFloat(newSlippageValue)));
         setSlippageValue(newSlippageValue);
       },
       [slippageValue, updateSwapSlippage]
