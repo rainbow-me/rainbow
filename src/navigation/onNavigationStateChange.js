@@ -7,6 +7,7 @@ import { Navigation } from './index';
 import { StatusBarService } from '@rainbow-me/services';
 import { currentColors } from '@rainbow-me/theme';
 
+let memState;
 let memRouteName;
 let memPrevRouteName;
 
@@ -27,17 +28,38 @@ export function triggerOnSwipeLayout(newAction) {
   }
 }
 
-export function onHandleStatusBar() {
+export function onHandleStatusBar(currentState, prevState) {
   const routeName = Navigation.getActiveRouteName();
   if (currentColors.theme === 'dark') {
     StatusBarService.setLightContent();
     return;
   }
+  const isFromWalletScreen = Navigation.getActiveRoute().params
+    ?.isFromWalletScreen;
+
+  const isRoutesLengthDecrease =
+    prevState?.routes.length > currentState?.routes.length;
   switch (routeName) {
-    case Routes.EXPLAIN_SHEET:
-    case Routes.ADD_TOKEN_SHEET:
     case Routes.EXPANDED_ASSET_SHEET:
     case Routes.EXPANDED_ASSET_SHEET_POOLS:
+      //handles the status bar when opening nested modals
+      if (
+        isRoutesLengthDecrease &&
+        isFromWalletScreen &&
+        (routeName === Routes.EXPANDED_ASSET_SHEET_POOLS ||
+          routeName === Routes.EXPANDED_ASSET_SHEET)
+      ) {
+        StatusBarService.setDarkContent();
+        break;
+      } else if (
+        !android &&
+        isFromWalletScreen &&
+        routeName !== Routes.EXPANDED_ASSET_SHEET_POOLS &&
+        memRouteName !== Routes.WALLET_SCREEN
+      ) {
+        StatusBarService.setLightContent();
+        break;
+      }
       break;
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
@@ -59,15 +81,18 @@ export function onHandleStatusBar() {
   }
 }
 
-export function onNavigationStateChange() {
+export function onNavigationStateChange(currentState) {
   const routeName = Navigation.getActiveRouteName();
+
+  const prevState = memState;
+  memState = currentState;
 
   if (isOnSwipeScreen(routeName)) {
     action?.();
     action = undefined;
   }
 
-  onHandleStatusBar();
+  onHandleStatusBar(currentState, prevState);
 
   memPrevRouteName = memRouteName;
   memRouteName = routeName;

@@ -8,7 +8,7 @@ import { UnderlyingAssetCoinRow } from '../../coin-row';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -45,9 +45,11 @@ export default function UnderlyingAsset({
 
     // on iOS we handle this on native side
     android && removeNextToLastRoute();
-
+    const isFromWalletScreen = Navigation.getActiveRoute().params
+      ?.isFromWalletScreen;
     push(Routes.EXPANDED_ASSET_SHEET, {
       asset,
+      isFromWalletScreen,
       type: 'token',
     });
   }, [address, genericAssets, nativeCurrency, push, removeNextToLastRoute]);

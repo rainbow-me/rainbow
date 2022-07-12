@@ -111,6 +111,7 @@ const MemoizedBalanceCoinRow = React.memo(
       } else {
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: item,
+          isFromWalletScreen: true,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         });
