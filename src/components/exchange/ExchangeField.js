@@ -82,7 +82,6 @@ const ExchangeField = (
   const [editing, setEditing] = useState(false);
   const [debouncedValue] = useDebounce(value, 300);
   const [startTimeout, stopTimeout] = useTimeout();
-
   const handleBlur = useCallback(
     event => {
       onBlur?.(event);
@@ -92,11 +91,10 @@ const ExchangeField = (
   const handleFocus = useCallback(
     event => {
       if (updateOnFocus) {
-        setValue(amount);
         onFocus?.(event);
       }
     },
-    [amount, onFocus, updateOnFocus]
+    [onFocus, updateOnFocus]
   );
 
   useEffect(() => {
