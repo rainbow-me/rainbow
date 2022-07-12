@@ -70,7 +70,7 @@ export default function TokenSelectionButton({
         backgroundColor: colorForAsset,
         borderRadius,
       }}
-      maxWidth={TokenSelectionButtonMaxWidth}
+      {...(symbol && { maxWidth: TokenSelectionButtonMaxWidth })}
       onPress={onPress}
       radiusAndroid={borderRadius}
       testID={testID}
