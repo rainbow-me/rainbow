@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.14](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.14)
+
+### Changed
+* Audit deps
+* Opensea WC sign message issue
+* Send details row crash
+
 ## [1.6.13](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.13)
 
 ### Changed
