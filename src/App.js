@@ -2,7 +2,6 @@ import './languages';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
-import { get } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
@@ -55,6 +54,7 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
@@ -77,6 +77,7 @@ import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
@@ -132,6 +133,7 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
+
   initSentryAndCheckForFedoraMode();
 }
 
@@ -168,8 +170,7 @@ class App extends Component {
     this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
       async remoteMessage => {
         setTimeout(() => {
-          const topic = get(remoteMessage, 'data.topic');
-          this.onPushNotificationOpened(topic);
+          this.onPushNotificationOpened(remoteMessage?.data?.topic);
         }, WALLETCONNECT_SYNC_DELAY);
       }
     );
@@ -216,11 +217,9 @@ class App extends Component {
 
   identifyFlow = async () => {
     const address = await loadAddress();
-    if (address) {
-      this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-    } else {
-      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
-    }
+    const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
+    this.setState({ initialRoute });
+    PerformanceContextMap.set('initialRoute', initialRoute);
   };
 
   async handleTokenListUpdate() {
@@ -228,9 +227,8 @@ class App extends Component {
   }
 
   onRemoteNotification = notification => {
-    const topic = get(notification, 'data.topic');
     setTimeout(() => {
-      this.onPushNotificationOpened(topic);
+      this.onPushNotificationOpened(notification?.data?.topic);
     }, WALLETCONNECT_SYNC_DELAY);
   };
 

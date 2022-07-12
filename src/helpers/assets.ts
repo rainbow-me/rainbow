@@ -2,10 +2,7 @@ import {
   chunk,
   compact,
   concat,
-  forEach,
-  get,
   groupBy,
-  includes,
   isEmpty,
   reduce,
   slice,
@@ -23,15 +20,15 @@ import { ethereumUtils } from '@rainbow-me/utils';
 const COINS_TO_SHOW = 5;
 
 export const buildAssetUniqueIdentifier = (item: any) => {
-  const balance = get(item, 'balance.amount', '');
-  const nativePrice = get(item, 'native.price.display', '');
-  const uniqueId = get(item, 'uniqueId');
+  const balance = item?.balance?.amount ?? '';
+  const nativePrice = item?.native?.price?.display ?? '';
+  const uniqueId = item?.uniqueId;
 
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
 const addEthPlaceholder = (
-  assets: any,
+  assets: any[],
   includePlaceholder: any,
   pinnedCoins: any,
   nativeCurrency: any,
@@ -119,7 +116,7 @@ export const buildCoinsList = (
   );
 
   // separate into standard, pinned, small balances, hidden assets
-  forEach(assets, asset => {
+  assets?.forEach(asset => {
     if (!!hiddenCoins && hiddenCoins[asset.uniqueId]) {
       hiddenAssets.push({
         isCoin: true,
@@ -247,7 +244,7 @@ export const buildBriefCoinsList = (
 
 export const buildUniqueTokenList = (
   uniqueTokens: any,
-  selectedShowcaseTokens: any
+  selectedShowcaseTokens: any[] = []
 ) => {
   let rows: any = [];
   const showcaseTokens = [];
@@ -259,11 +256,11 @@ export const buildUniqueTokenList = (
   for (let family of families) {
     const tokensRow: any = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
-      if (includes(selectedShowcaseTokens, grouped[family][j].uniqueId)) {
+      if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
         showcaseTokens.push(grouped[family][j]);
       }
       if (grouped[family][j + 1]) {
-        if (includes(selectedShowcaseTokens, grouped[family][j + 1].uniqueId)) {
+        if (selectedShowcaseTokens.includes(grouped[family][j + 1].uniqueId)) {
           showcaseTokens.push(grouped[family][j + 1]);
         }
         tokensRow.push([grouped[family][j], grouped[family][j + 1]]);
@@ -280,7 +277,7 @@ export const buildUniqueTokenList = (
         .join(`__${index}`);
       rows.push({
         childrenAmount: grouped[family].length,
-        familyImage: get(tokensRow, '[0][0].familyImage', null),
+        familyImage: tokensRow?.[0]?.[0]?.familyImage ?? null,
         familyName: family,
         isHeader: index === 0,
         stableId: id,

@@ -5,7 +5,7 @@ import { deviceUtils } from '@rainbow-me/utils';
 
 const listeners = new Set();
 
-function setClipboard(content) {
+export function setClipboard(content) {
   Clipboard.setString(content);
   listeners.forEach(listener => listener(content));
 }
