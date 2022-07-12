@@ -14,7 +14,6 @@ import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
-// import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   Source,
