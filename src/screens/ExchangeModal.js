@@ -311,7 +311,7 @@ export default function ExchangeModal({
     currentNetwork,
     loading
   );
-  const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 500);
+  const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
   const swapSupportsFlashbots = currentNetwork === Network.mainnet;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
