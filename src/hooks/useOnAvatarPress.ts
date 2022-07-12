@@ -41,9 +41,12 @@ export default () => {
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets = {
       ...wallets,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
       [selectedWallet.id]: {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
         ...wallets[selectedWallet.id],
         addresses: wallets[
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
           selectedWallet.id
         ].addresses.map((account: RainbowAccount) =>
           toLower(account.address) === toLower(accountAddress)
@@ -53,6 +56,7 @@ export default () => {
       },
     };
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
     dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
     await dispatch(walletsUpdate(newWallets));
   }, [dispatch, selectedWallet, accountAddress, wallets]);
@@ -65,9 +69,12 @@ export default () => {
         : image?.path;
       const newWallets = {
         ...wallets,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
         [selectedWallet.id]: {
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
           ...wallets[selectedWallet.id],
           addresses: wallets[
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             toLower(account.address) === toLower(accountAddress)
@@ -77,9 +84,11 @@ export default () => {
         },
       };
 
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
       dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
       dispatch(walletsUpdate(newWallets));
     },
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
     [accountAddress, dispatch, selectedWallet.id, wallets]
   );
 
