@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Inline, Inset, Row, Rows, Text } from '@rainbow-me/design-system';
@@ -19,9 +19,9 @@ const EditContent = ({
   showReverseRecordSwitch?: boolean;
 }) => {
   const { navigate } = useNavigation();
-  const openPrimaryENSNameHelper = useCallback(() => {
+  const openPrimaryENSNameHelper = () => {
     navigate(Routes.EXPLAIN_SHEET, { type: 'ens_primary_name' });
-  }, [navigate]);
+  };
 
   if (!showReverseRecordSwitch) return null;
   return (

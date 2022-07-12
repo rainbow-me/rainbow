@@ -49,10 +49,7 @@ export default function MoreButton({
     return visibleWallet.address.toLowerCase() === address?.toLowerCase();
   }, [selectedWallet.addresses, address]);
 
-  const contact = useMemo(
-    () => (address ? contacts[address.toLowerCase()] : undefined),
-    [address, contacts]
-  );
+  const contact = address ? contacts[address.toLowerCase()] : undefined;
 
   const formattedAddress = useMemo(
     () => (address ? formatAddressForDisplay(address, 4, 4) : ''),

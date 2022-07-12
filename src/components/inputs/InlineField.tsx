@@ -122,6 +122,11 @@ export default function InlineField({
     [textStyle, inputHeight, inputProps?.multiline, startsWith, width]
   );
 
+  let keyboardType = inputProps?.keyboardType;
+  if (android) {
+    keyboardType = shouldFormatText ? 'default' : 'visible-password';
+  }
+
   return (
     <Columns>
       <Column width="1/3">
@@ -183,13 +188,7 @@ export default function InlineField({
             style={style}
             value={value}
             {...inputProps}
-            keyboardType={
-              android
-                ? shouldFormatText
-                  ? 'default'
-                  : 'visible-password'
-                : inputProps?.keyboardType
-            }
+            keyboardType={keyboardType}
             testID={testID}
           />
         </Inline>
