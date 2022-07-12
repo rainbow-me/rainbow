@@ -14,6 +14,8 @@ import Routes from '@rainbow-me/routes';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 
+const NOOP = () => null;
+
 export default function ConfirmExchangeButton({
   currentNetwork,
   disabled,
@@ -158,7 +160,7 @@ export default function ConfirmExchangeButton({
             loading={loading}
             onLongPress={
               loading
-                ? () => null
+                ? NOOP
                 : insufficientLiquidity
                 ? handleShowLiquidityExplainer
                 : shouldOpenSwapDetails
