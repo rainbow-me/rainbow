@@ -6,9 +6,17 @@ import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
 import RecyclerAssetList from './RecyclerAssetList';
 import RecyclerAssetList2 from './RecyclerAssetList2';
+import { atom } from 'recoil'
 
 const FabSizeWithPadding =
   FloatingActionButtonSize + FabWrapperBottomPosition * 2;
+
+const fontSizeState = atom({
+  key: 'fontSizeState',
+  default: 14,
+});
+
+console.log(fontSizeState.value)
 
 const AssetList = ({
   hideHeader,

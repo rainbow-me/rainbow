@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useQueryHiddenTokens } from './data/accountPreferences';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -24,6 +25,7 @@ export default function useWalletSectionsData() {
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
   const { isReadOnlyWallet } = useWallets();
+  const { data: hiddenTokens } = useQueryHiddenTokens();
 
   const {
     hiddenCoinsObj: hiddenCoins,
@@ -49,7 +51,7 @@ export default function useWalletSectionsData() {
       ...uniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
-      hiddenTokens: [],
+      hiddenTokens: hiddenTokens ?? [],
       showcaseTokens,
     };
 

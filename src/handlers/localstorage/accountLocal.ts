@@ -21,6 +21,7 @@ const PENDING_TRANSACTIONS = 'pendingTransactions';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
 const SAVINGS = 'savings';
 const SHOWCASE_TOKENS = 'showcaseTokens';
+const HIDDEN_TOKENS = 'hiddenTokens';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
@@ -41,6 +42,7 @@ export const accountLocalKeys = [
   PURCHASE_TRANSACTIONS,
   SAVINGS,
   SHOWCASE_TOKENS,
+  HIDDEN_TOKENS,
   TRANSACTIONS,
   UNIQUE_TOKENS,
   PINNED_COINS,
@@ -443,3 +445,18 @@ export const saveWebDataEnabled = (
   accountAddress: any,
   network: any
 ) => saveAccountLocal(WEB_DATA_ENABLED, preference, accountAddress, network);
+
+/**
+ * Get hidden tokens
+ */
+export const getHiddenTokens = (accountAddress: string, network: string) =>
+  getAccountLocal(HIDDEN_TOKENS, accountAddress, network, []);
+
+/**
+ * Save hidden tokens
+ */
+export const saveHiddenTokens = (
+  hiddenTokens: string[],
+  accountAddress: string,
+  network: string
+) => saveAccountLocal(HIDDEN_TOKENS, hiddenTokens, accountAddress, network);

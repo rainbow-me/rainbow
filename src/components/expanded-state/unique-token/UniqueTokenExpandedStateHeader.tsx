@@ -37,6 +37,7 @@ import {
 } from '@rainbow-me/utils';
 import { getFullResUrl } from '@rainbow-me/utils/getFullResUrl';
 import isSVGImage from '@rainbow-me/utils/isSVG';
+import { useMutationHiddenTokens } from '../../../hooks/data/accountPreferences';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -156,6 +157,7 @@ const UniqueTokenExpandedStateHeader = ({
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
+  const hideTokensMutation = useMutationHiddenTokens()
 
   const formattedCollectionUrl = useMemo(() => {
     // @ts-expect-error external_link could be null or undefined?
@@ -230,6 +232,14 @@ const UniqueTokenExpandedStateHeader = ({
         {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
+        {
+          actionKey: 'hide',
+          actionTitle: 'Hide',
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'link',
+          },
+        },
         ...(isPhotoDownloadAvailable
           ? [
               {
@@ -274,7 +284,9 @@ const UniqueTokenExpandedStateHeader = ({
 
   const handlePressAssetMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === AssetActionsEnum.etherscan) {
+      if (actionKey === 'hide') {
+        hideTokensMutation.mutate([asset.uniqueId])
+      } else if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer(
           // @ts-expect-error address could be undefined?
           asset.asset_contract.address,
