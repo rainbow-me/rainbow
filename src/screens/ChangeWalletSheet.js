@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -190,7 +189,7 @@ export default function ChangeWalletSheet() {
         [walletId]: {
           ...wallets[walletId],
           addresses: wallets[walletId].addresses.map(account =>
-            toLower(account.address) === toLower(address)
+            account.address.toLowerCase() === address.toLowerCase()
               ? { ...account, visible: false }
               : account
           ),
