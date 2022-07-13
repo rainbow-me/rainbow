@@ -170,6 +170,7 @@ export default React.memo(function FastCurrencySelectionRow({
             <ContextMenuButton
               activeOpacity={0}
               isMenuPrimaryAction
+              onPressMenuItem={contextMenuProps.handlePressMenuItem}
               useActionSheetFallback={false}
               wrapNativeComponent={false}
               {...contextMenuProps}
