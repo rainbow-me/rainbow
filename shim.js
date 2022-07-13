@@ -38,6 +38,7 @@ ReactNative.Platform.OS === 'ios' &&
 const storage = new Storage({
   defaultExpires: null,
   size: 10000,
+  // TODO (RNBW-3969): Migrate to mmkv on iOS too
   storageBackend:
     ReactNative.Platform.OS === 'ios' ? AsyncStorage : mmkvStorageBackend,
 });
