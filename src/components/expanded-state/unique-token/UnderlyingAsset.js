@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { useRemoveNextToLast } from '../../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../../animations';
-import { UnderlyingAssetCoinRow } from '../../coin-row';
+import UnderlyingAssetCoinRow from '../../coin-row/UnderlyingAssetCoinRow';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
