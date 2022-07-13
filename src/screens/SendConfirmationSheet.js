@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { capitalize, toLower } from 'lodash';
+import { capitalize } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -212,7 +212,7 @@ export default function SendConfirmationSheet() {
   const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
-      return toLower(account.address) === toLower(toAddress);
+      return account.address.toLowerCase() === toAddress?.toLowerCase();
     });
     return !!found;
   }, [toAddress, userAccounts]);
@@ -222,7 +222,7 @@ export default function SendConfirmationSheet() {
       let sends = 0;
       let sendsCurrentNetwork = 0;
       transactions.forEach(tx => {
-        if (toLower(tx.to) === toLower(toAddress)) {
+        if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
           sends++;
           if (tx.network === network) {
             sendsCurrentNetwork++;

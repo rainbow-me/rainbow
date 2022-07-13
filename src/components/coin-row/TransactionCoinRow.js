@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, startCase, toLower } from 'lodash';
+import { compact, startCase } from 'lodash';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';
@@ -105,7 +105,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       status === TransactionStatusTypes.sent;
     const showContactInfo = hasAddableContact(status, type);
 
-    const isOutgoing = toLower(from) === toLower(accountAddress);
+    const isOutgoing = from?.toLowerCase() === accountAddress.toLowerCase();
     const canBeResubmitted = isOutgoing && !minedAt;
     const canBeCancelled =
       canBeResubmitted && status !== TransactionStatusTypes.cancelling;
