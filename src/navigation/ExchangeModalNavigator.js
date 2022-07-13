@@ -1,8 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useValue } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
@@ -10,7 +9,7 @@ import { cancelNext, uncancelNext } from '../hooks/useMagicAutofocus';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
-import { useNavigation } from './Navigation';
+import { getActiveRoute, useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import {
@@ -19,7 +18,7 @@ import {
   swapSettingsPreset,
 } from './effects';
 import Routes from './routesNames';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useSwapCurrencies } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -33,28 +32,6 @@ const GestureBlocker = styled.View.attrs({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
   position: 'absolute',
 });
-
-function useStateCallback(initialState) {
-  const [state, setState] = useState(initialState);
-  const cbRef = useRef(null); // mutable ref to store current callback
-
-  const setStateCallback = (state, cb) => {
-    if (cb !== undefined) {
-      cbRef.current = cb; // store passed callback to ref
-    }
-    setState(state);
-  };
-
-  useEffect(() => {
-    // cb.current is `null` on initial render, so we only execute cb on state *updates*
-    if (cbRef.current) {
-      cbRef.current(state);
-      cbRef.current = null; // reset callback after execution
-    }
-  }, [state]);
-
-  return [state, setStateCallback];
-}
 
 export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   function MainExchangeNavigator() {
@@ -91,13 +68,12 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   }
 
   return function ExchangeModalNavigator() {
-    const { width } = useDimensions();
     const { setOptions, addListener, removeListener } = useNavigation();
-    const pointerEvents = useRef('auto');
     const ref = useRef();
     const { params } = useRoute();
 
     const tabTransitionPosition = useValue(0);
+    const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
     useEffect(() => {
       // Workaround to fix weird keyboard focus issues upon immediate screen focus then unfocus
@@ -113,104 +89,15 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       }
     }, [addListener, removeListener, params]);
 
-    const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);
-
-    const setPointerEvents = useCallback(pointerEventsVal => {
-      pointerEvents.current = pointerEventsVal;
-      ref.current?.setNativeProps?.({
-        pointerEvents: pointerEventsVal ? 'none' : 'auto',
-      });
-    }, []);
-
-    const handle = useRef();
-
-    const enableInteractionsAfterOpeningKeyboard = useCallback(() => {
-      handle.current &&
-        Keyboard.removeListener('keyboardDidShow', handle.current);
-      handle.current = () => {
-        // this timeout helps to omit a visual glitch
-        setTimeout(() => {
-          setSwipeEnabled(true);
-          handle.current = null;
-        }, 200);
-      };
-      // fallback if was already opened
-      setTimeout(() => handle.current?.(), 300);
-      handle.current && Keyboard.addListener('keyboardDidShow', handle.current);
-    }, [setSwipeEnabled]);
-
-    const blockInteractions = useCallback(() => {
-      setSwipeEnabled(false);
-    }, [setSwipeEnabled]);
-
-    const onMomentumScrollEnd = useCallback(
-      position => {
-        if (position === width) {
-          setPointerEvents(true);
-          enableInteractionsAfterOpeningKeyboard();
-        } else if (position === 0) {
-          setSwipeEnabled(false, () => setPointerEvents(true));
-          handle.current &&
-            Keyboard.removeListener('keyboardDidShow', handle.current);
-        }
-      },
-      [
-        enableInteractionsAfterOpeningKeyboard,
-        setPointerEvents,
-        setSwipeEnabled,
-        width,
-      ]
-    );
-
-    const onSwipeEnd = useCallback(
-      (position, targetContentOffset) => {
-        if (position !== width && position !== 0) {
-          setPointerEvents(false);
-        }
-
-        if (position === width) {
-          setPointerEvents(true);
-          enableInteractionsAfterOpeningKeyboard();
-        }
-
-        if (position === 0) {
-          setSwipeEnabled(false, () => setPointerEvents(true));
-        }
-
-        if (targetContentOffset === 0) {
-          handle.current &&
-            Keyboard.removeListener('keyboardDidShow', handle.current);
-          setSwipeEnabled(false, () => setPointerEvents(true));
-        }
-      },
-      [
-        enableInteractionsAfterOpeningKeyboard,
-        setPointerEvents,
-        setSwipeEnabled,
-        width,
-      ]
-    );
-
     const renderPager = useCallback(
       props => (
         <ScrollPagerWrapper
           {...props}
           id="exchange"
           initialScrollPosition={props.navigationState.index}
-          onMomentumScrollEnd={onMomentumScrollEnd}
-          onSwipeEnd={(...args) => {
-            onSwipeEnd(...args);
-            props.onSwipeEnd();
-          }}
-          onSwipeStart={position => {
-            if (position === width) {
-              setPointerEvents(false);
-            }
-            props.onSwipeStart();
-          }}
         />
       ),
-      [onMomentumScrollEnd, onSwipeEnd, setPointerEvents, width]
+      []
     );
 
     const toggleGestureEnabled = useCallback(
@@ -222,26 +109,25 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const initialParams = useMemoOne(
       () => ({
-        blockInteractions,
-        setPointerEvents,
         tabTransitionPosition,
         toggleGestureEnabled,
         ...params?.params,
       }),
-      [
-        blockInteractions,
-        setPointerEvents,
-        tabTransitionPosition,
-        toggleGestureEnabled,
-      ]
+      [tabTransitionPosition, toggleGestureEnabled]
     );
+
+    const routeName = getActiveRoute()?.name;
+
+    const enableSwipe =
+      routeName === Routes.CURRENCY_SELECT_SCREEN &&
+      (!!inputCurrency || !!outputCurrency);
 
     return (
       <FlexItem>
         <Tabs.Navigator
           pager={renderPager}
           position={tabTransitionPosition}
-          swipeEnabled={swipeEnabled}
+          swipeEnabled={enableSwipe}
           {...exchangeTabNavigatorConfig}
         >
           <Tabs.Screen
