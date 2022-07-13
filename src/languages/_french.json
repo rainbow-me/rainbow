@@ -532,7 +532,9 @@
         "view_on_block_explorer": "View on %{blockExplorerName} :)",
         "view_on_marketplace_name": "View on %{marketplaceName} :)",
         "view_on_platform": "View on %{platform} :)",
-        "view_on_web": "View on Web :)"
+        "view_on_web": "View on Web :)",
+        "hide": "Hide",
+        "unhide": "Unhide"
       }
     },
     "explain": {
