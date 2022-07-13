@@ -1,9 +1,9 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
 import { AppGetState, AppState } from './store';
+import { analytics } from '@rainbow-me/analytics';
 import {
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,

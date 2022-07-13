@@ -1,10 +1,10 @@
 import { useRoute } from '@react-navigation/core';
-import analytics from '@segment/analytics-react-native';
 import React, { createContext, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
+import { analytics } from '@rainbow-me/analytics';
 import {
   AccentColorProvider,
   Box,

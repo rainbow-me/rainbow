@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/core';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -26,6 +25,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {

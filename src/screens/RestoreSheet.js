@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Alert, InteractionManager, StatusBar } from 'react-native';
@@ -14,6 +13,7 @@ import {
   isCloudBackupAvailable,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
+import { analytics } from '@rainbow-me/analytics';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { useDimensions } from '@rainbow-me/hooks';

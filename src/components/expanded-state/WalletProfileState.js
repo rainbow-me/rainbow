@@ -1,8 +1,8 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
+import { analytics } from '@rainbow-me/analytics';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@rainbow-me/model/wallet';

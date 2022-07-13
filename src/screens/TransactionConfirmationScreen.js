@@ -1,5 +1,4 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
@@ -44,6 +43,7 @@ import {
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { lightModeThemeColors } from '../styles/colors';
+import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,

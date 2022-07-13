@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   forwardRef,
@@ -16,6 +15,7 @@ import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import { analytics } from '@rainbow-me/analytics';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 

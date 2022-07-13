@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback } from 'react';
@@ -14,6 +13,7 @@ import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
+import { analytics } from '@rainbow-me/analytics';
 import {
   useAccountSettings,
   useDimensions,

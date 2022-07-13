@@ -1,5 +1,4 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, StyleProp, StyleSheet, ViewStyle } from 'react-native';
@@ -31,6 +30,7 @@ import {
   syncCloud,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
+import { analytics } from '@rainbow-me/analytics';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';

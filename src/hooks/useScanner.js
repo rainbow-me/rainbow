@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import qs from 'qs';
@@ -9,6 +8,7 @@ import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
+import { analytics } from '@rainbow-me/analytics';
 import { handleQRScanner } from '@rainbow-me/handlers/fedora';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';

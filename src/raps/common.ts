@@ -1,6 +1,5 @@
 import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Trade } from '@uniswap/sdk';
 import join from 'lodash/join';
@@ -27,6 +26,7 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
+import { analytics } from '@rainbow-me/analytics';
 import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,

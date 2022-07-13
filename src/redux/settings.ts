@@ -1,7 +1,7 @@
-import analytics from '@segment/analytics-react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
+import { analytics } from '@rainbow-me/analytics';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import {
   getLanguage,
@@ -103,7 +103,7 @@ export const settingsLoadState = () => async (
   try {
     const nativeCurrency = await getNativeCurrency();
     const testnetsEnabled = await getTestnetsEnabled();
-    analytics.identify(null, {
+    analytics.identify(undefined, {
       currency: nativeCurrency,
       enabledTestnets: testnetsEnabled,
     });
@@ -193,7 +193,7 @@ export const settingsChangeLanguage = (language: string) => async (
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
     });
     saveLanguage(language);
-    analytics.identify(null, { language: language });
+    analytics.identify(undefined, { language: language });
   } catch (error) {
     logger.log('Error changing language', error);
   }
@@ -217,7 +217,7 @@ export const settingsChangeNativeCurrency = (
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
-    analytics.identify(null, { currency: nativeCurrency });
+    analytics.identify(undefined, { currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);
   }

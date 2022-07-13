@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
@@ -6,6 +5,7 @@ import { PerformanceContextMap } from '../performance/PerformanceContextMap';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
+import { analytics } from '@rainbow-me/analytics';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 

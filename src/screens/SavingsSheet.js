@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
@@ -22,6 +21,7 @@ import {
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
+import { analytics } from '@rainbow-me/analytics';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';

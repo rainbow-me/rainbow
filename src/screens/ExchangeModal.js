@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
@@ -33,6 +32,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { analytics } from '@rainbow-me/analytics';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {

@@ -1,5 +1,4 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
@@ -20,6 +19,7 @@ import {
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
+import { analytics } from '@rainbow-me/analytics';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import {
