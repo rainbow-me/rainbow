@@ -79,6 +79,7 @@ export default React.memo(function FastCurrencySelectionRow({
     nativeCurrencySymbol,
     favorite,
     toggleFavorite,
+    onAddPress,
     contextMenuProps,
     symbol,
     address,
@@ -223,7 +224,7 @@ export default React.memo(function FastCurrencySelectionRow({
               />
             ))}
           {showAddButton && (
-            <ButtonPressAnimation onPress={toggleFavorite}>
+            <ButtonPressAnimation onPress={onAddPress}>
               <SafeRadialGradient
                 center={[0, 15]}
                 colors={colors.gradients.lightestGrey}
