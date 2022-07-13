@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { times } from 'lodash';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -14,6 +13,7 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
+import { times } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useLatestCallback,

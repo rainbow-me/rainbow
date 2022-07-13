@@ -9,6 +9,7 @@ import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { borders, fonts } from '@rainbow-me/styles';
+import { ThemeContextProps } from '@rainbow-me/theme';
 import {
   FallbackIcon as CoinIconTextFallback,
   getTokenMetadata,
@@ -73,8 +74,10 @@ export default React.memo(function FastCoinIcon({
   mainnetAddress?: string;
   symbol: string;
   assetType?: AssetType;
-  theme: any;
+  theme: ThemeContextProps;
 }) {
+  const { colors } = theme;
+
   const { resolvedType, resolvedAddress } = resolveTypeAndAddress({
     address,
     assetType,
@@ -89,7 +92,7 @@ export default React.memo(function FastCoinIcon({
   });
 
   const shadowColor = theme.isDarkMode
-    ? theme.colors.shadow
+    ? colors.shadow
     : tokenMetadata?.shadowColor ?? fallbackIconColor;
 
   const eth = isETH(resolvedAddress);
