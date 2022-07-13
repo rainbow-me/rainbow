@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import { findKey, isObjectLike, isString, omitBy } from 'lodash';
+import { findKey, isObjectLike, isString } from 'lodash';
 import parseMilliseconds from 'parse-ms';
-import { convertStringToNumber } from './utilities';
+import { convertStringToNumber, omitBy } from './utilities';
 
 const buildLocalizedTimeUnitString = ({ plural, short, unit }: any) => {
   const length = short ? 'short' : 'long';

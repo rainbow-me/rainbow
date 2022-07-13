@@ -2,7 +2,8 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isEmpty, isNil, omit, toLower } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
 import React, {
   Fragment,
   useCallback,
@@ -87,6 +88,7 @@ import {
   greaterThan,
   greaterThanOrEqualTo,
   multiply,
+  omitFlatten,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
@@ -612,7 +614,7 @@ export default function TransactionConfirmationScreen() {
       logger.log('⛽ error estimating gas', error);
     }
     // clean gas prices / fees sent from the dapp
-    const cleanTxPayload = omit(txPayload, [
+    const cleanTxPayload = omitFlatten(txPayload, [
       'gasPrice',
       'maxFeePerGas',
       'maxPriorityFeePerGas',
@@ -628,7 +630,12 @@ export default function TransactionConfirmationScreen() {
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
-    txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas', 'chainId']);
+    txPayloadUpdated = omitFlatten(txPayloadUpdated, [
+      'from',
+      'gas',
+      'chainId',
+    ]);
+
     let response = null;
 
     try {
@@ -679,7 +686,7 @@ export default function TransactionConfirmationScreen() {
           value: result.value.toString(),
           ...gasParams,
         };
-        if (toLower(accountAddress) === toLower(txDetails.from)) {
+        if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
           txSavedInCurrentWallet = true;
         }

@@ -3,9 +3,7 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
-  filter,
   find,
-  includes,
   isEmpty,
   isNil,
   keyBy,
@@ -13,7 +11,6 @@ import {
   mapKeys,
   mapValues,
   partition,
-  toLower,
   toUpper,
   uniqBy,
 } from 'lodash';
@@ -172,7 +169,7 @@ const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 /**
  * The state for the `data` reducer.
  */
-interface DataState {
+export interface DataState {
   /**
    * Parsed asset information for assets belonging to this account.
    */
@@ -463,11 +460,11 @@ interface ZerionPortfolio {
 /**
  * A message from the Zerion API indicating that assets were received.
  */
-interface AddressAssetsReceivedMessage {
+export interface AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
       [id: string]: {
-        asset: ZerionAsset;
+        asset: ZerionAsset | ZerionAssetFallback;
       };
     };
   };
@@ -477,7 +474,7 @@ interface AddressAssetsReceivedMessage {
 /**
  * A message from the Zerion API indicating that portfolio data was received.
  */
-interface PortfolioReceivedMessage {
+export interface PortfolioReceivedMessage {
   payload?: {
     portfolio?: ZerionPortfolio;
   };
@@ -487,7 +484,7 @@ interface PortfolioReceivedMessage {
 /**
  * A message from the Zerion API indicating that transaction data was received.
  */
-interface TransactionsReceivedMessage {
+export interface TransactionsReceivedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
   };
@@ -497,7 +494,7 @@ interface TransactionsReceivedMessage {
 /**
  * A message from the Zerion API indicating that transactions were removed.
  */
-interface TransactionsRemovedMessage {
+export interface TransactionsRemovedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
   };
@@ -510,7 +507,7 @@ interface TransactionsRemovedMessage {
  * as the value type in the `prices` map, but this message type is also used
  * when manually invoking `assetPricesReceived` with fallback values.
  */
-interface AssetPricesReceivedMessage {
+export interface AssetPricesReceivedMessage {
   payload?: {
     prices?: {
       [id: string]: ZerionAsset | ZerionAssetFallback;
@@ -522,7 +519,7 @@ interface AssetPricesReceivedMessage {
 /**
  * A message from the Zerion API indicating that asset prices were changed.
  */
-interface AssetPricesChangedMessage {
+export interface AssetPricesChangedMessage {
   payload?: {
     prices?: ZerionAsset[];
   };
@@ -532,7 +529,7 @@ interface AssetPricesChangedMessage {
 /**
  * Metadata for a message from the Zerion API.
  */
-interface MessageMeta {
+export interface MessageMeta {
   address?: string;
   currency?: string;
   status?: string;
@@ -549,6 +546,9 @@ type DataMessage =
   | TransactionsRemovedMessage
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
+
+// The success code used to determine if an incoming message is successful.
+export const DISPERSION_SUCCESS_CODE = 'ok';
 
 // Functions:
 
@@ -630,7 +630,7 @@ export const dataLoadState = () => async (
  * unsuccessful.
  */
 export const fetchAssetPricesWithCoingecko = async (
-  coingeckoIds: string[],
+  coingeckoIds: (string | undefined)[],
   nativeCurrency: string
 ): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
   try {
@@ -657,7 +657,7 @@ const genericAssetsFallback = () => async (
 ) => {
   logger.log('ZERION IS DOWN! ENABLING GENERIC ASSETS FALLBACK');
   const { nativeCurrency } = getState().settings;
-  const formattedNativeCurrency = toLower(nativeCurrency);
+  const formattedNativeCurrency = nativeCurrency.toLowerCase();
   let ids: typeof coingeckoIdsFallback;
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
@@ -686,7 +686,7 @@ const genericAssetsFallback = () => async (
   keys(TokensListenedCache?.[nativeCurrency]).forEach(address => {
     const coingeckoAsset = ids.find(
       ({ platforms: { ethereum: tokenAddress } }) =>
-        toLower(tokenAddress) === address
+        tokenAddress.toLowerCase() === address
     );
 
     if (coingeckoAsset) {
@@ -726,7 +726,7 @@ const genericAssetsFallback = () => async (
   if (!isEmpty(prices)) {
     Object.keys(prices).forEach(key => {
       for (let uniqueAsset of allAssetsUnique) {
-        if (toLower(uniqueAsset.coingecko_id) === toLower(key)) {
+        if (uniqueAsset.coingecko_id.toLowerCase() === key.toLowerCase()) {
           uniqueAsset.price = {
             changed_at: prices[key].last_updated_at,
             relative_change_24h:
@@ -752,7 +752,7 @@ const genericAssetsFallback = () => async (
       {
         meta: {
           currency: 'usd',
-          status: 'ok',
+          status: DISPERSION_SUCCESS_CODE,
         },
         payload: { prices: allPrices },
       },
@@ -934,7 +934,7 @@ export const portfolioReceived = (
   dispatch: Dispatch<DataUpdatePortfoliosAction>,
   getState: AppGetState
 ) => {
-  if (message?.meta?.status !== 'ok') return;
+  if (message?.meta?.status !== DISPERSION_SUCCESS_CODE) return;
   if (!message?.payload?.portfolio) return;
 
   const { portfolios } = getState().data;
@@ -1063,7 +1063,7 @@ export const transactionsRemoved = (
   logger.log('[data] - remove txn hashes', removeHashes);
   const [updatedTransactions, removedTransactions] = partition(
     transactions,
-    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
+    txn => !removeHashes.includes(ethereumUtils.getHash(txn) || '')
   );
 
   dispatch({
@@ -1114,7 +1114,7 @@ export const addressAssetsReceived = (
     asset =>
       asset?.asset?.type !== AssetTypes.compound &&
       asset?.asset?.type !== AssetTypes.trash &&
-      !shitcoins.includes(toLower(asset?.asset?.asset_code))
+      !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
   );
 
   if (removed) {
@@ -1130,8 +1130,7 @@ export const addressAssetsReceived = (
     [id: string]: ParsedAddressAsset;
   };
 
-  const liquidityTokens = filter(
-    parsedAssets,
+  const liquidityTokens = Object.values(parsedAssets).filter(
     asset => asset?.type === AssetTypes.uniswapV2
   );
 
@@ -1171,17 +1170,16 @@ export const addressAssetsReceived = (
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
   });
   if (!change) {
-    const missingPriceAssetAddresses: string[] = filter(parsedAssets, asset =>
-      isNil(asset?.price)
-    ).map(asset => asset.address);
+    const missingPriceAssetAddresses: string[] = Object.values(parsedAssets)
+      .filter(asset => isNil(asset?.price))
+      .map(asset => asset.address);
+
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
 
-  //Hide tokens with a url as their token name
-  const assetsWithScamURL: string[] = filter(
-    parsedAssets,
-    asset => isValidDomain(asset.name) && !asset.isVerified
-  ).map(asset => asset.uniqueId);
+  const assetsWithScamURL: string[] = Object.values(parsedAssets)
+    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .map(asset => asset.uniqueId);
 
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
 };
@@ -1358,7 +1356,7 @@ export const assetPricesReceived = (
   const newAssetPrices = message?.payload?.prices ?? {};
   const { nativeCurrency } = getState().settings;
 
-  if (toLower(nativeCurrency) === message?.meta?.currency) {
+  if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
     if (isEmpty(newAssetPrices)) return;
     const parsedAssets = mapValues(newAssetPrices, asset =>
       parseAsset(asset)
@@ -1375,8 +1373,8 @@ export const assetPricesReceived = (
     const assetAddresses = Object.keys(parsedAssets);
 
     for (let address of assetAddresses) {
-      callbacksOnAssetReceived[toLower(address)]?.(parsedAssets[address]);
-      callbacksOnAssetReceived[toLower(address)] = undefined;
+      callbacksOnAssetReceived[address.toLowerCase()]?.(parsedAssets[address]);
+      callbacksOnAssetReceived[address.toLowerCase()] = undefined;
     }
 
     dispatch({
@@ -1472,7 +1470,7 @@ export const dataAddNewTransaction = (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   if (
     accountAddressToUpdate &&
-    toLower(accountAddressToUpdate) !== toLower(accountAddress)
+    accountAddressToUpdate.toLowerCase() !== accountAddress.toLowerCase()
   )
     return;
   try {
@@ -1588,7 +1586,7 @@ export const dataWatchPendingTransactions = (
           txStatusesDidChange = true;
           // @ts-expect-error `txObj` is not typed as having a `status` field.
           if (txObj && !isZero(txObj.status)) {
-            const isSelf = toLower(tx?.from!) === toLower(tx?.to!);
+            const isSelf = tx?.from!.toLowerCase() === tx?.to!.toLowerCase();
             const newStatus = getTransactionLabel({
               direction: isSelf
                 ? TransactionDirection.self
@@ -1708,7 +1706,7 @@ export const dataUpdateTransaction = (
 const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  const confirmedPurchases = filter(updatedTransactions, txn => {
+  const confirmedPurchases = updatedTransactions.filter(txn => {
     return (
       txn.type === TransactionTypes.purchase &&
       txn.status !== TransactionStatus.purchasing
