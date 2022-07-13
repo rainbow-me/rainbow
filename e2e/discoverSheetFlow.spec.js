@@ -201,18 +201,18 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('Should navigate to Settings Modal after tapping Settings Button', async () => {
+  it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
     await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-modal');
+    await Helpers.checkIfVisible('settings-sheet');
   });
 
   it('Should navigate to Developer Settings after tapping Developer Section', async () => {
     await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-modal');
+    await Helpers.checkIfVisible('developer-settings-sheet');
   });
 
   it('Should make ENS Profiles available', async () => {
-    await Helpers.swipe('developer-settings-modal', 'up', 'slow');
+    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
     await Helpers.tapByText('ENS Profiles');
     await Helpers.tapByText('Done');
   });

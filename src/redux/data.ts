@@ -3,9 +3,7 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
-  filter,
   find,
-  includes,
   isEmpty,
   isNil,
   keyBy,
@@ -13,7 +11,6 @@ import {
   mapKeys,
   mapValues,
   partition,
-  pickBy,
   toLower,
   toUpper,
   uniqBy,
@@ -85,7 +82,7 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, multiply } from '@rainbow-me/utilities';
+import { delay, isZero, multiply, pickBy } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   getBlocksFromTimestamps,
@@ -173,7 +170,7 @@ const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 /**
  * The state for the `data` reducer.
  */
-interface DataState {
+export interface DataState {
   /**
    * Parsed asset information for assets belonging to this account.
    */
@@ -464,11 +461,11 @@ interface ZerionPortfolio {
 /**
  * A message from the Zerion API indicating that assets were received.
  */
-interface AddressAssetsReceivedMessage {
+export interface AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
       [id: string]: {
-        asset: ZerionAsset;
+        asset: ZerionAsset | ZerionAssetFallback;
       };
     };
   };
@@ -478,7 +475,7 @@ interface AddressAssetsReceivedMessage {
 /**
  * A message from the Zerion API indicating that portfolio data was received.
  */
-interface PortfolioReceivedMessage {
+export interface PortfolioReceivedMessage {
   payload?: {
     portfolio?: ZerionPortfolio;
   };
@@ -488,7 +485,7 @@ interface PortfolioReceivedMessage {
 /**
  * A message from the Zerion API indicating that transaction data was received.
  */
-interface TransactionsReceivedMessage {
+export interface TransactionsReceivedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
   };
@@ -498,7 +495,7 @@ interface TransactionsReceivedMessage {
 /**
  * A message from the Zerion API indicating that transactions were removed.
  */
-interface TransactionsRemovedMessage {
+export interface TransactionsRemovedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
   };
@@ -511,7 +508,7 @@ interface TransactionsRemovedMessage {
  * as the value type in the `prices` map, but this message type is also used
  * when manually invoking `assetPricesReceived` with fallback values.
  */
-interface AssetPricesReceivedMessage {
+export interface AssetPricesReceivedMessage {
   payload?: {
     prices?: {
       [id: string]: ZerionAsset | ZerionAssetFallback;
@@ -523,7 +520,7 @@ interface AssetPricesReceivedMessage {
 /**
  * A message from the Zerion API indicating that asset prices were changed.
  */
-interface AssetPricesChangedMessage {
+export interface AssetPricesChangedMessage {
   payload?: {
     prices?: ZerionAsset[];
   };
@@ -533,7 +530,7 @@ interface AssetPricesChangedMessage {
 /**
  * Metadata for a message from the Zerion API.
  */
-interface MessageMeta {
+export interface MessageMeta {
   address?: string;
   currency?: string;
   status?: string;
@@ -550,6 +547,9 @@ type DataMessage =
   | TransactionsRemovedMessage
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
+
+// The success code used to determine if an incoming message is successful.
+export const DISPERSION_SUCCESS_CODE = 'ok';
 
 // Functions:
 
@@ -631,7 +631,7 @@ export const dataLoadState = () => async (
  * unsuccessful.
  */
 export const fetchAssetPricesWithCoingecko = async (
-  coingeckoIds: string[],
+  coingeckoIds: (string | undefined)[],
   nativeCurrency: string
 ): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
   try {
@@ -753,7 +753,7 @@ const genericAssetsFallback = () => async (
       {
         meta: {
           currency: 'usd',
-          status: 'ok',
+          status: DISPERSION_SUCCESS_CODE,
         },
         payload: { prices: allPrices },
       },
@@ -935,7 +935,7 @@ export const portfolioReceived = (
   dispatch: Dispatch<DataUpdatePortfoliosAction>,
   getState: AppGetState
 ) => {
-  if (message?.meta?.status !== 'ok') return;
+  if (message?.meta?.status !== DISPERSION_SUCCESS_CODE) return;
   if (!message?.payload?.portfolio) return;
 
   const { portfolios } = getState().data;
@@ -1064,7 +1064,7 @@ export const transactionsRemoved = (
   logger.log('[data] - remove txn hashes', removeHashes);
   const [updatedTransactions, removedTransactions] = partition(
     transactions,
-    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
+    txn => !removeHashes.includes(ethereumUtils.getHash(txn) || '')
   );
 
   dispatch({
@@ -1131,8 +1131,7 @@ export const addressAssetsReceived = (
     [id: string]: ParsedAddressAsset;
   };
 
-  const liquidityTokens = filter(
-    parsedAssets,
+  const liquidityTokens = Object.values(parsedAssets).filter(
     asset => asset?.type === AssetTypes.uniswapV2
   );
 
@@ -1171,17 +1170,16 @@ export const addressAssetsReceived = (
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
   });
   if (!change) {
-    const missingPriceAssetAddresses: string[] = filter(parsedAssets, asset =>
-      isNil(asset?.price)
-    ).map(asset => asset.address);
+    const missingPriceAssetAddresses: string[] = Object.values(parsedAssets)
+      .filter(asset => isNil(asset?.price))
+      .map(asset => asset.address);
+
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
 
-  //Hide tokens with a url as their token name
-  const assetsWithScamURL: string[] = filter(
-    parsedAssets,
-    asset => isValidDomain(asset.name) && !asset.isVerified
-  ).map(asset => asset.uniqueId);
+  const assetsWithScamURL: string[] = Object.values(parsedAssets)
+    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .map(asset => asset.uniqueId);
 
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
 };
@@ -1710,7 +1708,7 @@ export const dataUpdateTransaction = (
 const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  const confirmedPurchases = filter(updatedTransactions, txn => {
+  const confirmedPurchases = updatedTransactions.filter(txn => {
     return (
       txn.type === TransactionTypes.purchase &&
       txn.status !== TransactionStatus.purchasing

@@ -13,6 +13,7 @@ import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 
 async function fetchShowcaseForAddress(address) {
   const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {
@@ -43,6 +44,8 @@ export default function ShowcaseScreen() {
   const {
     params: { address: addressOrDomain, setIsSearchModeEnabled } = {},
   } = useRoute();
+
+  const theme = useTheme();
 
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
@@ -96,11 +99,11 @@ export default function ShowcaseScreen() {
         },
         name: 'collectibles',
         renderItem: item =>
-          tokenFamilyItem({ ...item, external: true, showcase: true }),
+          tokenFamilyItem({ ...item, external: true, showcase: true, theme }),
         type: 'big',
       },
     ],
-    [uniqueTokensShowcase, userData?.data?.showcase?.ids]
+    [uniqueTokensShowcase, userData?.data?.showcase?.ids, theme]
   );
 
   const contextValue = useMemo(
