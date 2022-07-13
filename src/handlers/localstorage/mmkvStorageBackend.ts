@@ -2,7 +2,7 @@ import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '../../model/mmkv';
 
 const mmkvLocalStorage = new MMKV({
-  id: STORAGE_IDS.LOCAL_STORAGE,
+  id: STORAGE_IDS.LOCAL_STORAGE_ADAPTER,
 });
 
 export const mmkvStorageBackend = {
