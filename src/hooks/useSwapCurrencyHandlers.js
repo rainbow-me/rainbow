@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager, Keyboard, TextInput } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
@@ -54,7 +53,6 @@ export default function useSwapCurrencyHandlers({
 } = {}) {
   const dispatch = useDispatch();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
-  const { params: { blockInteractions } = {} } = useRoute();
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const { derivedValues } = useSwapDerivedValues();
@@ -295,11 +293,9 @@ export default function useSwapCurrencyHandlers({
           title,
           type: CurrencySelectionTypes.input,
         });
-        blockInteractions();
       });
     },
     [
-      blockInteractions,
       dangerouslyGetParent,
       inputFieldRef,
       navigate,
@@ -321,16 +317,9 @@ export default function useSwapCurrencyHandlers({
           title: 'Receive',
           type: CurrencySelectionTypes.output,
         });
-        blockInteractions();
       });
     },
-    [
-      blockInteractions,
-      navigate,
-      outputFieldRef,
-      setParams,
-      updateOutputCurrency,
-    ]
+    [navigate, outputFieldRef, setParams, updateOutputCurrency]
   );
 
   return {
