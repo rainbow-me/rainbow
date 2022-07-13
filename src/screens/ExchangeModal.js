@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual } from 'lodash';
 import React, {
@@ -34,6 +33,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
+import { analytics } from '@rainbow-me/analytics';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
 import { Box, Row, Rows } from '@rainbow-me/design-system';

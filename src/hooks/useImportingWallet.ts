@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { keys } from 'lodash';
@@ -15,6 +14,7 @@ import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
+import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {

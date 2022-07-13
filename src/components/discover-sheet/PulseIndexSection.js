@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
@@ -9,6 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { Text } from '@rainbow-me/design-system';
+import { analytics } from '@rainbow-me/analytics';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { DPI_ADDRESS } from '@rainbow-me/references';
