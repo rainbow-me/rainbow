@@ -497,7 +497,9 @@
         "view_all_with_property": "View All With Property",
         "view_collection": "View Collection",
         "view_on_block_explorer": "View on %{blockExplorerName}",
-        "view_on_web": "View on Web"
+        "view_on_web": "View on Web",
+        "hide": "Hide",
+        "unhide": "Unhide"
       }
     },
     "explain": {

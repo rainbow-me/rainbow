@@ -24,6 +24,7 @@ import {
   useAccountProfile,
   useClipboard,
   useDimensions,
+  useHiddenTokens,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
@@ -42,6 +43,7 @@ const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
   download: 'download',
   etherscan: 'etherscan',
+  hide: 'hide',
   rainbowWeb: 'rainbowWeb',
 } as const;
 
@@ -82,6 +84,14 @@ const getAssetActions = (network: Network) =>
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'safari.fill',
+      },
+    },
+    [AssetActionsEnum.hide]: {
+      actionKey: AssetActionsEnum.hide,
+      actionTitle: lang.t('expanded_state.unique_expanded.hide'),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'eye',
       },
     },
   } as const);
@@ -156,6 +166,11 @@ const UniqueTokenExpandedStateHeader = ({
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
+  const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
+  const isHiddenAsset = useMemo(
+    () => hiddenTokens.includes(asset.uniqueId) as boolean,
+    [hiddenTokens, asset.uniqueId]
+  );
 
   const formattedCollectionUrl = useMemo(() => {
     // @ts-expect-error external_link could be null or undefined?
@@ -242,10 +257,16 @@ const UniqueTokenExpandedStateHeader = ({
           discoverabilityTitle:
             asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
         },
+        {
+          ...AssetActions[AssetActionsEnum.hide],
+          actionTitle: isHiddenAsset
+            ? lang.t('expanded_state.unique_expanded.unhide')
+            : lang.t('expanded_state.unique_expanded.hide'),
+        },
       ],
       menuTitle: '',
     };
-  }, [asset.id, asset?.network, isPhotoDownloadAvailable]);
+  }, [asset.id, asset?.network, isPhotoDownloadAvailable, isHiddenAsset]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -287,9 +308,23 @@ const UniqueTokenExpandedStateHeader = ({
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
         saveToCameraRoll(getFullResUrl(asset.image_original_url));
+      } else if (actionKey === AssetActionsEnum.hide) {
+        if (isHiddenAsset) {
+          removeHiddenToken(asset.uniqueId);
+        } else {
+          addHiddenToken(asset.uniqueId);
+        }
       }
     },
-    [accountAddress, accountENS, asset, setClipboard]
+    [
+      accountAddress,
+      accountENS,
+      asset,
+      setClipboard,
+      addHiddenToken,
+      removeHiddenToken,
+      isHiddenAsset,
+    ]
   );
 
   const onPressAndroidFamily = useCallback(() => {

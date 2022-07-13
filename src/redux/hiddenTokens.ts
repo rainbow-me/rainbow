@@ -38,7 +38,6 @@ interface HiddenTokensLoadSuccessAction {
   type: typeof HIDDEN_TOKENS_LOAD_SUCCESS;
   payload: {
     hiddenTokens: string[];
-    webDataEnabled: boolean;
   };
 }
 
@@ -90,7 +89,6 @@ export const hiddenTokensLoadState = () => async (
     dispatch({
       payload: {
         hiddenTokens,
-        webDataEnabled: !!pref,
       },
       type: HIDDEN_TOKENS_LOAD_SUCCESS,
     });
@@ -150,8 +148,10 @@ export default (
 ): HiddenTokensState => {
   switch (action.type) {
     case HIDDEN_TOKENS_LOAD_SUCCESS:
+      return action.payload;
+    case HIDDEN_TOKENS_UPDATE:
       return {
-        hiddenTokens: [],
+        hiddenTokens: action.payload,
       };
     default:
       return state;
