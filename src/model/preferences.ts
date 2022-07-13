@@ -19,7 +19,7 @@ export interface PreferencesResponse {
   data?: Object | undefined;
 }
 
-export const PREFS_ENDPOINT = 'http://localhost:5001/rainbow-me/us-central1';
+export const PREFS_ENDPOINT = 'https://api.rainbow.me';
 
 const preferencesAPI = new RainbowFetchClient({
   headers: {
