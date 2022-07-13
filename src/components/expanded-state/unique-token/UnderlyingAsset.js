@@ -38,7 +38,7 @@ export default function UnderlyingAsset({
     const asset =
       ethereumUtils.getAccountAsset(address) ||
       ethereumUtils.formatGenericAsset(
-        genericAssets[address.toLowerCase()],
+        genericAssets[address?.toLowerCase()],
         nativeCurrency
       );
 
