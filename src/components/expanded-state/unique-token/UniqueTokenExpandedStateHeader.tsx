@@ -240,6 +240,16 @@ const UniqueTokenExpandedStateHeader = ({
     return {
       menuItems: [
         {
+          ...AssetActions[AssetActionsEnum.hide],
+          actionTitle: isHiddenAsset
+            ? lang.t('expanded_state.unique_expanded.unhide')
+            : lang.t('expanded_state.unique_expanded.hide'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: isHiddenAsset ? 'eye.slash' : 'eye',
+          },
+        },
+        {
           ...AssetActions[AssetActionsEnum.rainbowWeb],
           discoverabilityTitle: 'rainbow.me',
         },
@@ -257,12 +267,6 @@ const UniqueTokenExpandedStateHeader = ({
           ...AssetActions[AssetActionsEnum.copyTokenID],
           discoverabilityTitle:
             asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
-        },
-        {
-          ...AssetActions[AssetActionsEnum.hide],
-          actionTitle: isHiddenAsset
-            ? lang.t('expanded_state.unique_expanded.unhide')
-            : lang.t('expanded_state.unique_expanded.hide'),
         },
       ],
       menuTitle: '',
