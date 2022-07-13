@@ -178,12 +178,14 @@ function getDefaultCheckboxes({
 export function getSheetHeight({
   asset,
   ensProfile,
+  profilesEnabled,
   shouldShowChecks,
   isL2,
   toAddress,
 }: {
   asset?: UniqueAsset;
   ensProfile?: ENSProfile;
+  profilesEnabled: boolean;
   shouldShowChecks: boolean;
   isL2: boolean;
   toAddress: string;
@@ -191,7 +193,7 @@ export function getSheetHeight({
   let height = android ? 440 : 377;
   if (shouldShowChecks) height = height + 104;
   if (isL2) height = height + 59;
-  if (asset && getUniqueTokenType(asset) === 'ENS') {
+  if (profilesEnabled && asset && getUniqueTokenType(asset) === 'ENS') {
     height = height + gasOffset;
     if (!hasClearProfileInfo(ensProfile) && ensProfile?.isOwner) {
       height = height + checkboxOffset;
@@ -328,7 +330,7 @@ export default function SendConfirmationSheet() {
   }, [contacts, toAddress]);
 
   const uniqueTokenType = getUniqueTokenType(asset);
-  const isENS = uniqueTokenType === 'ENS';
+  const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(
     getDefaultCheckboxes({ ensProfile, isENS, network, toAddress })
@@ -546,6 +548,7 @@ export default function SendConfirmationSheet() {
     getSheetHeight({
       ensProfile,
       isL2,
+      profilesEnabled,
       shouldShowChecks,
       toAddress,
     }) - 30;
