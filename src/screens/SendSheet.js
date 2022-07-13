@@ -63,7 +63,7 @@ import {
   useUpdateAssetOnchainBalance,
   useUserAccounts,
 } from '@rainbow-me/hooks';
-import { sendTransaction } from '@rainbow-me/model/wallet';
+import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
@@ -479,6 +479,9 @@ export default function SendSheet(props) {
     async ({
       ens: { setAddress, transferControl, clearRecords } = {},
     } = {}) => {
+      const wallet = await loadWallet(undefined, true, currentProvider);
+      if (!wallet) return;
+
       const validTransaction =
         isValidAddress &&
         amountDetails.isSufficientBalance &&
@@ -541,6 +544,7 @@ export default function SendSheet(props) {
           setAddress,
           toAddress,
           transferControl,
+          wallet,
         });
         nextNonce = nonce + 1;
       }
@@ -574,6 +578,7 @@ export default function SendSheet(props) {
           submitSuccess = false;
         } else {
           const { result: txResult } = await sendTransaction({
+            existingWallet: wallet,
             provider: currentProvider,
             transaction: signableTransaction,
           });
@@ -769,6 +774,7 @@ export default function SendSheet(props) {
       isL2,
       isNft,
       network: currentNetwork,
+      profilesEnabled,
       to: recipient,
       toAddress,
     });
@@ -782,6 +788,7 @@ export default function SendSheet(props) {
     isNft,
     nativeCurrencyInputRef,
     navigate,
+    profilesEnabled,
     recipient,
     selected,
     submitTransaction,

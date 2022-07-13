@@ -321,9 +321,17 @@ export default function useENSRegistrationActionHandler(
   const transferAction = useCallback(
     async (
       callback: () => void,
-      { clearRecords, records, name, setAddress, toAddress, transferControl }
+      {
+        clearRecords,
+        records,
+        name,
+        setAddress,
+        toAddress,
+        transferControl,
+        wallet: walletOverride,
+      }
     ) => {
-      const wallet = await loadWallet();
+      const wallet = walletOverride || (await loadWallet());
       if (!wallet) {
         return;
       }
