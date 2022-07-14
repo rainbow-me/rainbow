@@ -63,7 +63,6 @@ export interface ParsedAddressAsset
     Partial<RainbowTokenOwnFields> {
   balance?: {
     amount?: string;
-    amountNum?: number;
     display?: string;
   };
   color?: string;

@@ -1,6 +1,4 @@
 /* eslint-disable no-undef */
-// eslint-disable-next-line import/no-extraneous-dependencies
-import 'regenerator-runtime/runtime';
 // eslint-disable-next-line import/no-commonjs
 require('dotenv').config({ path: '.env' });
 

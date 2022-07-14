@@ -36,7 +36,8 @@ export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
   const priceValue = genericAssets[address]?.price?.value ?? 0;
   const amountReceivedSoldDisplay = updatePrecisionToDisplay(
     amountReceivedSold,
-    priceValue
+    priceValue,
+    !inputAsExact
   );
 
   return {

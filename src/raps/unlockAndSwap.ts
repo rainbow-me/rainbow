@@ -53,7 +53,7 @@ export const estimateUnlockAndSwap = async (
     gasLimits = concat(gasLimits, swapGasLimit);
   }
 
-  return reduce(gasLimits, (acc, limit) => add(acc, limit), 0);
+  return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
 
 export const createUnlockAndSwapRap = async (

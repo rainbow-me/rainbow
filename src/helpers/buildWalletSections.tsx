@@ -167,10 +167,10 @@ const withBriefUniswapSection = (
 };
 
 const withBalanceSavingsSection = (savings: any[], network: any) => {
-  let totalUnderlyingNativeValue = 0;
+  let totalUnderlyingNativeValue = '0';
   const savingsAssets = savings.map(asset => {
     const {
-      lifetimeSupplyInterestAccruedNum,
+      lifetimeSupplyInterestAccrued,
       underlyingBalanceNativeValue,
       underlyingPrice,
     } = asset;
@@ -178,8 +178,8 @@ const withBalanceSavingsSection = (savings: any[], network: any) => {
       totalUnderlyingNativeValue,
       underlyingBalanceNativeValue || 0
     );
-    const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccruedNum
-      ? multiply(lifetimeSupplyInterestAccruedNum, underlyingPrice)
+    const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
+      ? multiply(lifetimeSupplyInterestAccrued, underlyingPrice)
       : 0;
 
     if (network !== Network.mainnet) {
@@ -206,10 +206,13 @@ const withBriefBalanceSavingsSection = (
   isLoadingAssets: any,
   network: any
 ) => {
-  let totalUnderlyingNativeValue = 0;
+  let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
-    totalUnderlyingNativeValue = underlyingBalanceNativeValue ?? 0;
+    totalUnderlyingNativeValue = add(
+      totalUnderlyingNativeValue,
+      underlyingBalanceNativeValue || 0
+    );
   }
   const addresses = savings?.map((asset: any) => asset.cToken.address);
 

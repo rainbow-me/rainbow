@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
+  greaterThan,
   multiply,
   subtract,
   toFixedDecimals,
@@ -50,7 +51,7 @@ export default function useSwapInputHandlers() {
           6
         );
 
-        if (Number(newAmountMinusFee) > 0) {
+        if (greaterThan(newAmountMinusFee, 0)) {
           Alert({
             buttons: [
               {

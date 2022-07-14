@@ -80,8 +80,8 @@ const getUnderlyingPrice = (token, genericAssets) => {
     genericPrice || ethereumUtils.getAccountAsset(address)?.price?.value || 0;
 
   const underlyingBalanceNativeValue =
-    underlyingPrice && token.supplyBalanceUnderlyingNum
-      ? multiply(underlyingPrice, token.supplyBalanceUnderlyingNum)
+    underlyingPrice && token.supplyBalanceUnderlying
+      ? multiply(underlyingPrice, token.supplyBalanceUnderlying)
       : 0;
   return {
     ...token,
@@ -108,33 +108,14 @@ export default function useSavingsAccount(includeDefaultDai) {
     ({ data: { shouldRefetchSavings } }) => shouldRefetchSavings
   );
 
-  const {
-    data: resultData,
-    error,
-    loading,
-    refetch: refetchSavings,
-  } = useQuery(COMPOUND_ACCOUNT_AND_MARKET_QUERY, {
-    client: compoundClient,
-    pollInterval: COMPOUND_QUERY_INTERVAL,
-    skip: !hasAccountAddress,
-    variables: { id: accountAddress?.toLowerCase() },
-  });
-
-  const data = useMemo(
-    () => ({
-      ...resultData,
-      account: {
-        ...resultData?.account,
-        tokens: resultData?.account?.tokens.map(token => ({
-          ...token,
-          lifetimeSupplyInterestAccruedNum: parseFloat(
-            token.lifetimeSupplyInterestAccrued
-          ),
-          supplyBalanceUnderlyingNum: parseFloat(token.supplyBalanceUnderlying),
-        })),
-      },
-    }),
-    [resultData]
+  const { data, error, loading, refetch: refetchSavings } = useQuery(
+    COMPOUND_ACCOUNT_AND_MARKET_QUERY,
+    {
+      client: compoundClient,
+      pollInterval: COMPOUND_QUERY_INTERVAL,
+      skip: !hasAccountAddress,
+      variables: { id: accountAddress?.toLowerCase() },
+    }
   );
 
   const result = useMemo(() => {
@@ -158,9 +139,7 @@ export default function useSavingsAccount(includeDefaultDai) {
         const {
           cTokenBalance,
           lifetimeSupplyInterestAccrued,
-          lifetimeSupplyInterestAccruedNum,
           supplyBalanceUnderlying,
-          supplyBalanceUnderlyingNum,
         } = token;
 
         return {
@@ -168,9 +147,7 @@ export default function useSavingsAccount(includeDefaultDai) {
           cTokenBalance,
           exchangeRate,
           lifetimeSupplyInterestAccrued,
-          lifetimeSupplyInterestAccruedNum,
           supplyBalanceUnderlying,
-          supplyBalanceUnderlyingNum,
           supplyRate,
           type: AssetTypes.compound,
           underlying,

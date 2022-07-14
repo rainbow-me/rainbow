@@ -29,7 +29,6 @@ import {
 import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { numberWithoutScientificNotation } from '@rainbow-me/helpers/numbers';
 import {
   ETH_ADDRESS,
   savingsAssetsList,
@@ -348,10 +347,7 @@ const parseTransaction = async (
         };
         const priceUnit =
           internalTxn.price ?? internalTxn?.asset?.price?.value ?? 0;
-        const valueUnit = numberWithoutScientificNotation(
-          internalTxn.value || 0
-        );
-
+        const valueUnit = internalTxn.value || 0;
         const nativeDisplay = convertRawAmountToNativeDisplay(
           valueUnit,
           updatedAsset.decimals,
@@ -394,7 +390,7 @@ const parseTransaction = async (
           minedAt: txn.mined_at || txn.signed_at!,
           name: updatedAsset.name,
           native: isL2Network(network)
-            ? { amount: 0, display: '' }
+            ? { amount: '', display: '' }
             : nativeDisplay,
           network,
           nonce: txn.nonce,

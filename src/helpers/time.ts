@@ -22,7 +22,7 @@ const isZero = (number: any) => number === 0;
 
 /**
  * @desc get time string for minimal unit
- * @param {Number} [value=0]
+ * @param {String} [value='']
  * @param {Boolean} [short=true]
  * @param {Boolean} [plural=false]
  * @return {String}

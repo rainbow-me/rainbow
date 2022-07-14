@@ -419,7 +419,7 @@ interface UniswapPricesQueryVariables {
  * Data stored following a successful Uniswap query.
  */
 interface UniswapAssetPriceData {
-  price: number;
+  price: string;
   relativePriceChange: number;
   tokenAddress: string;
 }
@@ -1143,7 +1143,6 @@ export const addressAssetsReceived = (
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
     dispatch(
-      // @ts-ignore
       uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
     );
   }
@@ -1258,7 +1257,9 @@ const subscribeToMissingPrices = (addresses: string[]) => (
                 const tokenAddress: string = mappedPricingData?.[key]
                   ?.id as any;
                 const relativePriceChange = historicalPrice
-                  ? ((currentPrice - historicalPrice) / currentPrice) * 100
+                  ? // @ts-expect-error TypeScript disallows string arithmetic,
+                    // even though it works correctly.
+                    ((currentPrice - historicalPrice) / currentPrice) * 100
                   : 0;
                 return {
                   price: currentPrice,
