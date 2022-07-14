@@ -90,7 +90,6 @@ const sx = StyleSheet.create({
   row: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginRight: 8,
   },
 });
 
@@ -131,7 +130,9 @@ export default React.memo(function FastTransactionStatusBadge({
         />
       )}
       {showIcon && (
-        <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
+        <View style={{ marginTop: -2 }}>
+          <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
+        </View>
       )}
       <Text color={{ custom: statusColor }} size="14px" weight="semibold">
         {title}

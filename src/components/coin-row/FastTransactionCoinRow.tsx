@@ -12,31 +12,41 @@ const sx = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    paddingLeft: 8,
     paddingTop: 2,
   },
   bottomRow: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 3,
+    paddingBottom: 2,
   },
   column: {
     flex: 1,
     justifyContent: 'space-between',
-    marginLeft: 11,
+    marginLeft: 10,
+  },
+  description: {
+    flex: 1,
+    marginBottom: 0,
   },
   icon: {
     justifyContent: 'center',
   },
+  nativeBalance: {
+    marginBottom: 1,
+    marginLeft: 16,
+  },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingTop: 2,
   },
   wholeRow: {
     flexDirection: 'row',
-    height: 40,
+    height: 42,
     justifyContent: 'space-between',
-    marginVertical: 17,
+    marginVertical: 16, // This one determines gap between the rows.
     paddingHorizontal: 19,
   },
 });
@@ -81,17 +91,25 @@ const BottomRow = React.memo(function BottomRow({
 
   return (
     <View style={sx.bottomRow}>
-      <Text color={{ custom: coinNameColor || colors.dark }} size="16px">
-        {description}
-      </Text>
-      <Text
-        align="right"
-        color={{ custom: balanceTextColor ?? colors.dark }}
-        size="16px"
-        weight={isReceived ? 'medium' : undefined}
-      >
-        {balanceText}
-      </Text>
+      <View style={sx.description}>
+        <Text
+          color={{ custom: coinNameColor || colors.dark }}
+          numberOfLines={1}
+          size="16px"
+        >
+          {description}
+        </Text>
+      </View>
+      <View style={sx.nativeBalance}>
+        <Text
+          align="right"
+          color={{ custom: balanceTextColor ?? colors.dark }}
+          size="16px"
+          weight={isReceived ? 'medium' : undefined}
+        >
+          {balanceText}
+        </Text>
+      </View>
     </View>
   );
 });
