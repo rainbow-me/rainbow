@@ -10,74 +10,91 @@ import { ThemeContextProps } from '@rainbow-me/theme';
 const StatusProps = {
   [TransactionStatusTypes.approved]: {
     marginRight: 4,
+    marginTop: ios ? 1 : 0,
     name: 'dot',
   },
   [TransactionStatusTypes.cancelled]: {
     marginRight: 4,
+    marginTop: ios ? 1 : 0,
   },
   [TransactionStatusTypes.cancelling]: {
     marginRight: 4,
+    marginTop: ios ? 1 : 0,
   },
   [TransactionStatusTypes.deposited]: {
     name: 'sunflower',
-    style: { fontSize: 11, left: -1.3, marginRight: 1, marginTop: -5 },
+    style: {
+      fontSize: 11,
+      left: -1.3,
+      marginRight: 1,
+      marginTop: ios ? -3 : -5,
+    },
   },
   [TransactionStatusTypes.depositing]: {
     marginRight: 4,
+    marginTop: ios ? 1 : 0,
   },
   [TransactionStatusTypes.approving]: {
     marginRight: 4,
+    marginTop: ios ? 1 : 0,
   },
   [TransactionStatusTypes.swapping]: {
     marginRight: 4,
+    marginTop: ios ? 1 : 0,
   },
   [TransactionStatusTypes.speeding_up]: {
     marginRight: 4,
+    marginTop: ios ? 1 : 0,
   },
   [TransactionStatusTypes.failed]: {
     marginRight: 4,
-    marginTop: -2,
+    marginTop: ios ? -1 : -2,
     name: 'closeCircled',
     style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.purchased]: {
     marginRight: 2,
-    marginTop: -1,
+    marginTop: ios ? 0 : -1,
     name: 'arrow',
   },
   [TransactionStatusTypes.purchasing]: {
     marginRight: 4,
-    marginTop: -1,
+    marginTop: ios ? 0 : -1,
   },
   [TransactionStatusTypes.received]: {
     marginRight: 2,
-    marginTop: -1,
+    marginTop: ios ? 0 : -1,
     name: 'arrow',
   },
   [TransactionStatusTypes.self]: {
     marginRight: 4,
-    marginTop: -1,
+    marginTop: ios ? 0 : -1,
     name: 'dot',
   },
   [TransactionStatusTypes.sending]: {
     marginRight: 4,
-    marginTop: -1,
+    marginTop: ios ? 0 : -1,
   },
   [TransactionStatusTypes.sent]: {
     marginRight: 3,
-    marginTop: -1,
+    marginTop: ios ? 0 : -1,
     name: 'sendSmall',
   },
   [TransactionStatusTypes.swapped]: {
     marginRight: 3,
-    marginTop: -2,
+    marginTop: ios ? -1 : -2,
     name: 'swap',
     small: true,
     style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.contract_interaction]: {
     name: 'robot',
-    style: { fontSize: 11, left: -1.3, marginRight: 1, marginTop: -5 },
+    style: {
+      fontSize: 11,
+      left: -1.3,
+      marginRight: 1,
+      marginTop: ios ? -3 : -5,
+    },
   },
   [TransactionStatusTypes.swapping]: {
     marginRight: 4,
@@ -87,7 +104,12 @@ const StatusProps = {
   },
   [TransactionStatusTypes.withdrew]: {
     name: 'sunflower',
-    style: { fontSize: 11, left: -1.3, marginRight: 1, marginTop: -5 },
+    style: {
+      fontSize: 11,
+      left: -1.3,
+      marginRight: 1,
+      marginTop: ios ? -3 : -5,
+    },
   },
 };
 
