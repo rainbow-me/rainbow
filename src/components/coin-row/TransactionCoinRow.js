@@ -32,6 +32,14 @@ const containerStyles = {
   paddingLeft: 19,
 };
 
+export const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 7;
+
+const contentStyles = android
+  ? {
+      height: CoinIconSize + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
+    }
+  : {};
+
 const BottomRow = ({ description, native, status, type }) => {
   const { colors } = useTheme();
   const isFailed = status === TransactionStatusTypes.failed;
@@ -208,13 +216,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         address={mainnetAddress || item.address}
         bottomRowRender={BottomRow}
         containerStyles={containerStyles}
-        {...(android
-          ? {
-              contentStyles: {
-                height: CoinIconSize + 14,
-              },
-            }
-          : {})}
+        contentStyles={contentStyles}
         topRowRender={TopRow}
         type={item.network}
       />
