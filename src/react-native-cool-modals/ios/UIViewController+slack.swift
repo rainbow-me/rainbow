@@ -135,10 +135,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var isHapticFeedbackEnabled: Bool = false
 
   func findChildScrollViewDFS(view: UIView)-> UIScrollView? {
-    var foundScrollViews = 0
     if panScrollableCache != nil {
       return panScrollableCache
     }
+    var foundScrollViews = 0
     var viewsToTraverse = [view]
     while !viewsToTraverse.isEmpty {
       let last = viewsToTraverse.last!
