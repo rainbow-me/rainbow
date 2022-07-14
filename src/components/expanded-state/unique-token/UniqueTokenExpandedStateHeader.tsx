@@ -24,6 +24,7 @@ import {
   useClipboard,
   useDimensions,
   useHiddenTokens,
+  useShowcaseTokens,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
@@ -168,10 +169,15 @@ const UniqueTokenExpandedStateHeader = ({
 }: UniqueTokenExpandedStateHeaderProps) => {
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
+  const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
   const isHiddenAsset = useMemo(
     () => hiddenTokens.includes(asset.uniqueId) as boolean,
     [hiddenTokens, asset.uniqueId]
+  );
+  const isShowcaseAsset = useMemo(
+    () => showcaseTokens.includes(asset.uniqueId) as boolean,
+    [showcaseTokens, asset.uniqueId]
   );
 
   const formattedCollectionUrl = useMemo(() => {
@@ -325,6 +331,10 @@ const UniqueTokenExpandedStateHeader = ({
           removeHiddenToken(asset.uniqueId);
         } else {
           addHiddenToken(asset.uniqueId);
+
+          if (isShowcaseAsset) {
+            removeShowcaseToken(asset.uniqueId);
+          }
         }
       }
     },
@@ -335,7 +345,9 @@ const UniqueTokenExpandedStateHeader = ({
       setClipboard,
       addHiddenToken,
       removeHiddenToken,
+      removeShowcaseToken,
       isHiddenAsset,
+      isShowcaseAsset,
     ]
   );
 
