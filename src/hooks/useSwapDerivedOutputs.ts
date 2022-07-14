@@ -42,6 +42,11 @@ enum DisplayValue {
   native = 'nativeAmountDisplay',
 }
 
+const getSource = (source: Source | null) => {
+  if (source === Source.AggregatorRainbow) return null;
+  return source;
+};
+
 const getInputAmount = async (
   outputAmount: string | null,
   inputToken: Token,
@@ -73,7 +78,7 @@ const getInputAmount = async (
       convertNumberToString(outputAmount),
       outputToken.decimals
     );
-
+    const realSource = getSource(source);
     const quoteParams = {
       buyAmount,
       buyTokenAddress,
@@ -82,7 +87,7 @@ const getInputAmount = async (
       sellTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
-      source: source,
+      source: realSource,
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -179,7 +184,7 @@ const getOutputAmount = async (
       convertNumberToString(inputAmount),
       inputToken.decimals
     );
-
+    const realSource = getSource(source);
     const quoteParams = {
       buyAmount: null || '0',
       buyTokenAddress,
@@ -189,7 +194,7 @@ const getOutputAmount = async (
       sellTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
-      source,
+      source: realSource,
     };
 
     const rand = Math.floor(Math.random() * 100);
