@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish } from 'ethers';
+import { BigNumberish } from 'ethers';
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries } from 'react-query';
@@ -304,13 +304,7 @@ export default function useENSRegistrationCosts({
         // gas limit estimat for registerWithConfig fails if there's no commit tx sent first
         `${ethUnits.ens_register_with_config}`,
         !hasReverseRecord ? setNameGasLimit : '',
-      ].reduce(
-        (a, b) =>
-          BigNumber.from(a)
-            .add(b || '0')
-            .toString(),
-        '0'
-      );
+      ].reduce((a, b) => add(a || 0, b || 0));
     } else if (step === REGISTRATION_STEPS.RENEW) {
       estimatedGasLimit = renewGasLimit;
     } else if (step === REGISTRATION_STEPS.SET_NAME) {
@@ -318,14 +312,14 @@ export default function useENSRegistrationCosts({
     } else if (step === REGISTRATION_STEPS.EDIT) {
       estimatedGasLimit = setRecordsGasLimit;
     } else if (step === REGISTRATION_STEPS.REGISTER) {
-      estimatedGasLimit = registerRapGasLimit.toString();
+      estimatedGasLimit = registerRapGasLimit;
     }
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
       estimatedGasLimit,
-      currentBaseFee?.gwei || '0',
+      currentBaseFee?.gwei,
       gasFeeParamsBySpeed?.[selectedGasFeeOption || NORMAL]
-        ?.maxPriorityFeePerGas?.gwei || '0',
+        ?.maxPriorityFeePerGas?.gwei,
       nativeCurrency,
       nativeAssetPrice
     );
@@ -393,7 +387,7 @@ export default function useENSRegistrationCosts({
       !isEmpty(useGasGasFeeParamsBySpeed)
     ) {
       updateTxFee(stepGasLimit?.[step], null);
-      setCurrentStepGasLimit(stepGasLimit?.[step]?.toString() || '');
+      setCurrentStepGasLimit(stepGasLimit?.[step] || '');
     }
   }, [
     currentStepGasLimit,
@@ -419,16 +413,14 @@ export default function useENSRegistrationCosts({
         nativeCurrency,
         nativeAssetPrice
       );
-
       if (
         estimatedFee?.estimatedGasLimit &&
         estimatedFee?.estimatedNetworkFee?.amount
       ) {
-        const weiEstimatedTotalCost = BigNumber.from(
-          estimatedFee.estimatedNetworkFee.wei
-        )
-          .add(BigNumber.from(estimatedRentPrice.wei))
-          .toString();
+        const weiEstimatedTotalCost = add(
+          estimatedFee.estimatedNetworkFee.wei,
+          estimatedRentPrice.wei.toString()
+        );
         const displayEstimatedTotalCost = addDisplay(
           estimatedFee.estimatedNetworkFee.display,
           estimatedRentPrice.total.display

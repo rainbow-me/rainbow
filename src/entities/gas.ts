@@ -1,15 +1,12 @@
 type Numberish = number | string;
 
 export interface Fee {
-  native: { value: { amount: number; display: string } };
-  value: {
-    amount: string | number;
-    display: { amount: string; display: string };
-  };
+  native: { value: { amount: string; display: string } };
+  value: { amount: string; display: { amount: string; display: string } };
 }
 
 export interface GasFeeParam {
-  amount: number;
+  amount: string;
   display: string;
   gwei: string;
 }

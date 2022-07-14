@@ -10,6 +10,7 @@ import {
   convertAmountToPercentageDisplayWithThreshold,
   divide,
   greaterThanOrEqualTo,
+  isPositive,
   subtract,
 } from '@rainbow-me/utilities';
 
@@ -57,7 +58,7 @@ export default function usePriceImpactDetails(
         outputNativeAmount
       );
 
-      if (parseFloat(nativeAmountDifference.toString()) > 0) {
+      if (isPositive(nativeAmountDifference)) {
         impact = divide(nativeAmountDifference, inputNativeAmount);
         priceImpactPercentDisplay = convertAmountToPercentageDisplayWithThreshold(
           impact

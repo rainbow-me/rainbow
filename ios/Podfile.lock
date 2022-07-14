@@ -128,7 +128,6 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
-  - OpenSSL-Universal (1.1.1400)
   - PanModal (1.2.7)
   - Permission-Camera (3.0.5):
     - RNPermissions
@@ -364,11 +363,6 @@ PODS:
   - React-logger (0.68.1):
     - glog
   - react-native-aes-crypto (2.0.2):
-    - React-Core
-  - react-native-bignumber (0.1.5):
-    - OpenSSL-Universal (~> 1.1.180)
-    - React
-    - React-callinvoker
     - React-Core
   - react-native-blur (0.8.0):
     - React
@@ -663,7 +657,6 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-aes-crypto (from `../node_modules/react-native-aes-crypto`)
-  - react-native-bignumber (from `../node_modules/react-native-bignumber`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-camera (from `../node_modules/react-native-camera`)
@@ -768,7 +761,6 @@ SPEC REPOS:
     - MMKV
     - MMKVCore
     - nanopb
-    - OpenSSL-Universal
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
@@ -840,8 +832,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-aes-crypto:
     :path: "../node_modules/react-native-aes-crypto"
-  react-native-bignumber:
-    :path: "../node_modules/react-native-bignumber"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
   react-native-branch:
@@ -1030,7 +1020,6 @@ SPEC CHECKSUMS:
   MMKV: aac95d817a100479445633f2b3ed8961b4ac5043
   MMKVCore: 3388952ded307e41b3ed8a05892736a236ed1b8e
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  OpenSSL-Universal: cd40d7493c1e9696794f62e2a0e8c729115b7188
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
   Permission-Camera: ac603073e4128e51e6ca3c39129778f05b4082fa
   Permission-FaceID: 9b1f0d42ee7aa2c830844964e739676fe6b634bd
@@ -1052,7 +1041,6 @@ SPEC CHECKSUMS:
   React-jsinspector: 218a2503198ff28a085f8e16622a8d8f507c8019
   React-logger: f79dd3cc0f9b44f5611c6c7862badd891a862cf8
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
-  react-native-bignumber: 2c1562ab7eb12c1f8a998e8369a5f99c742ea133
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f

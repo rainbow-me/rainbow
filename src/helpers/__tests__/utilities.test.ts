@@ -1,6 +1,7 @@
 import {
   addDisplay,
   convertAmountFromNativeValue,
+  convertBipsToPercentage,
   handleSignificantDecimals,
   updatePrecisionToDisplay,
 } from '../utilities';
@@ -40,13 +41,43 @@ it('handleSignificantDecimals less than 1 and many decimals', () => {
   expect(result).toBe('0.00');
 });
 
+it('convertBipsToPercentage, 2 decimal places', () => {
+  const result = convertBipsToPercentage('1', 2);
+  expect(result).toBe('0.01');
+});
+
+it('convertBipsToPercentage, 1 decimal place', () => {
+  const result = convertBipsToPercentage('1', 1);
+  expect(result).toBe('0.0');
+});
+
+it('convertBipsToPercentage, 10 bips to 1 decimal', () => {
+  const result = convertBipsToPercentage('10', 1);
+  expect(result).toBe('0.1');
+});
+
+it('convertBipsToPercentage, returns 0 when given nullish value', () => {
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
+  const result = convertBipsToPercentage(null, 1);
+  expect(result).toBe('0');
+});
+
+it('convertBipsToPercentage', () => {
+  const result = convertBipsToPercentage('12.34567', 2);
+  expect(result).toBe('0.12');
+});
+
 it('updatePrecisionToDisplay1', () => {
   const result = updatePrecisionToDisplay('0.00000000123', '0.1234987234');
   expect(result).toBe('0.000000001');
 });
 
 it('updatePrecisionToDisplay1RoundUp', () => {
-  const result = updatePrecisionToDisplay('0.00000000123', '0.1234987234');
+  const result = updatePrecisionToDisplay(
+    '0.00000000123',
+    '0.1234987234',
+    true
+  );
   expect(result).toBe('0.000000002');
 });
 
@@ -61,7 +92,8 @@ it('updatePrecisionToDisplay2', () => {
 it('updatePrecisionToDisplay2RoundUp', () => {
   const result = updatePrecisionToDisplay(
     '0.17987196800000002',
-    '0.1234987234'
+    '0.1234987234',
+    true
   );
   expect(result).toBe('0.18');
 });
@@ -72,7 +104,7 @@ it('updatePrecisionToDisplay3', () => {
 });
 
 it('updatePrecisionToDisplay3RoundUp', () => {
-  const result = updatePrecisionToDisplay('0.123456789', '3.001');
+  const result = updatePrecisionToDisplay('0.123456789', '3.001', true);
   expect(result).toBe('0.124');
 });
 
@@ -82,7 +114,7 @@ it('updatePrecisionToDisplay4', () => {
 });
 
 it('updatePrecisionToDisplay4RoundUp', () => {
-  const result = updatePrecisionToDisplay('0.123456789', '32.0412');
+  const result = updatePrecisionToDisplay('0.123456789', '32.0412', true);
   expect(result).toBe('0.1235');
 });
 
@@ -92,7 +124,7 @@ it('updatePrecisionToDisplay5', () => {
 });
 
 it('updatePrecisionToDisplay5RoundUp', () => {
-  const result = updatePrecisionToDisplay('0.123456789', '132.0051');
+  const result = updatePrecisionToDisplay('0.123456789', '132.0051', true);
   expect(result).toBe('0.12346');
 });
 
@@ -102,7 +134,7 @@ it('updatePrecisionToDisplay6', () => {
 });
 
 it('updatePrecisionToDisplay6RoundUp', () => {
-  const result = updatePrecisionToDisplay('0.123456789', '1320.0112');
+  const result = updatePrecisionToDisplay('0.123456789', '1320.0112', true);
   expect(result).toBe('0.123457');
 });
 
