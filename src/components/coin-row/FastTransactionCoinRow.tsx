@@ -18,7 +18,7 @@ const sx = StyleSheet.create({
     alignItems: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: 10,
   },
   column: {
     flex: 1,
@@ -27,13 +27,11 @@ const sx = StyleSheet.create({
   },
   description: {
     flex: 1,
-    marginBottom: 0,
   },
   icon: {
     justifyContent: 'center',
   },
   nativeBalance: {
-    marginBottom: 1,
     marginLeft: 16,
   },
   topRow: {
@@ -43,7 +41,6 @@ const sx = StyleSheet.create({
   wholeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 7,
     paddingHorizontal: 19,
   },
 });
