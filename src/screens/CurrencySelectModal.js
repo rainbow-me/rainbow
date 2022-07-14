@@ -394,7 +394,7 @@ export default function CurrencySelectModal() {
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
   const style = useAnimatedStyle(() => ({
-    opacity: scrollPosition.value,
+    opacity: android ? 1 : scrollPosition.value,
     transform: [
       { scale: 0.9 + scrollPosition.value / 10 },
       { translateX: (1 - scrollPosition.value) * 8 },
