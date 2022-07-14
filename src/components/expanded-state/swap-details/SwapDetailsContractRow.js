@@ -1,14 +1,19 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import Animated from 'react-native-reanimated';
-import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
-import { useMemoOne } from 'use-memo-one';
-import { ButtonPressAnimation, interpolate } from '../../animations';
+import Animated, {
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { ButtonPressAnimation } from '../../animations';
 import { TruncatedAddress } from '../../text';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
+import { useTheme } from '@rainbow-me/theme';
 import {
   abbreviations,
   ethereumUtils,
@@ -57,31 +62,43 @@ function SwapDetailsContractRowContent({
 }) {
   const { colors } = useTheme();
   const colorForAsset = useColorForAsset(asset);
-  const animation = useTimingTransition(menuVisible, { duration: 150 });
-  const { addressColor, scale } = useMemoOne(
-    () => ({
-      addressColor: mixColor(
-        animation,
-        colors.alpha(colors.blueGreyDark, 0.8),
-        colorForAsset
-      ),
-      scale: interpolate(animation, {
-        inputRange: [0, 1],
-        outputRange: [1, scaleTo],
-      }),
-    }),
-    [animation, colorForAsset, scaleTo]
-  );
+  const animation = useSharedValue(menuVisible ? 1 : 0);
+  const startingColor = useMemo(() => colors.alpha(colors.blueGreyDark, 0.8), [
+    colors,
+  ]);
+
+  useLayoutEffect(() => {
+    animation.value = withTiming(menuVisible ? 1 : 0, { duration: 150 });
+  }, [menuVisible, animation]);
+
+  const colorStyle = useAnimatedStyle(() => {
+    const color = interpolateColor(
+      animation.value,
+      [0, 1],
+      [startingColor, colorForAsset]
+    );
+    return {
+      color,
+    };
+  }, [animation, colorForAsset]);
+
+  const scaleStyle = useAnimatedStyle(() => {
+    const scale = interpolate(animation.value, [0, 1], [1, scaleTo]);
+
+    return {
+      transform: [{ scale }],
+    };
+  });
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
-      <ButtonPressAnimation scaleTo={scaleTo} {...props}>
+    <Animated.View style={scaleStyle}>
+      <ButtonPressAnimation scaleTo={1} {...props}>
         <SwapDetailsRow label={`${asset?.symbol} contract`}>
           <SwapDetailsValue
             address={asset?.address}
             as={AnimatedTruncatedAddress}
-            color={addressColor}
             firstSectionLength={6}
+            style={colorStyle}
           />
           <SwapDetailsValue color={colors.alpha(colors.blueGreyDark, 0.5)}>
             {` 􀁰`}
@@ -105,6 +122,7 @@ export default function SwapDetailsContractRow({
     },
     [onCopySwapDetailsText, setClipboard]
   );
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const menuConfig = useMemo(() => {
     const blockExplorerAction = buildBlockExplorerAction(asset?.type);
@@ -160,17 +178,22 @@ export default function SwapDetailsContractRow({
     );
   }, [asset, handleCopyContractAddress]);
 
+  const onShowMenu = () => setMenuVisible(true);
+  const onHideMenu = () => setMenuVisible(false);
+
   return (
     <ContextMenuButton
       activeOpacity={1}
       isMenuPrimaryAction
       menuConfig={menuConfig}
+      onMenuWillHide={onHideMenu}
+      onMenuWillShow={onShowMenu}
       {...(android ? { onPress: onPressAndroid } : {})}
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       {...props}
     >
-      <SwapDetailsContractRowContent asset={asset} />
+      <SwapDetailsContractRowContent asset={asset} menuVisible={menuVisible} />
     </ContextMenuButton>
   );
 }
