@@ -52,17 +52,16 @@ export default function CurrencySelectModalHeader({
 }) {
   const { navigate, dangerouslyGetState } = useNavigation();
   const {
-    params: { defaultOutputAsset, setPointerEvents, title, showCoinIcon },
+    params: { defaultOutputAsset, title, showCoinIcon },
   } = useRoute<any>();
 
   const handlePressBack = useCallback(() => {
     // @ts-expect-error – updating read-only property
     dangerouslyGetState().index = 1;
-    setPointerEvents(false);
     delayNext();
     handleBackButton();
     navigate(Routes.MAIN_EXCHANGE_SCREEN);
-  }, [dangerouslyGetState, handleBackButton, navigate, setPointerEvents]);
+  }, [dangerouslyGetState, handleBackButton, navigate]);
 
   return (
     <HeaderContainer>
