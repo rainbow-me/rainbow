@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch as NativeSwitch } from 'react-native';
 import { Source } from 'react-native-fast-image';
-import Caret from '../../assets/family-dropdown-arrow.png';
-import { ButtonPressAnimation } from '../animations';
-import CheckmarkCircledIcon from '../icons/svg/CheckmarkCircledIcon';
-import WarningIcon from '../icons/svg/WarningIcon';
+import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
+import { ButtonPressAnimation } from '../../animations';
+import CheckmarkCircledIcon from '../../icons/svg/CheckmarkCircledIcon';
+import WarningIcon from '../../icons/svg/WarningIcon';
 import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '@rainbow-me/theme';
@@ -80,6 +80,7 @@ interface MenuItemProps {
   iconPadding?: 'small' | 'medium' | 'large';
   hasRightArrow?: boolean;
   onPress?: () => void;
+  warn?: boolean;
 }
 
 function MenuItem({
@@ -92,6 +93,7 @@ function MenuItem({
   isHeader,
   title,
   label,
+  warn,
 }: MenuItemProps) {
   const { colors } = useTheme();
   const space =
@@ -124,7 +126,11 @@ function MenuItem({
                 {`${title}`}
               </Text>
               {label && (
-                <Text color="secondary60" size="14px" weight="medium">
+                <Text
+                  color={warn ? { custom: colors.orangeLight } : 'secondary60'}
+                  size="14px"
+                  weight="medium"
+                >
                   {label}
                 </Text>
               )}

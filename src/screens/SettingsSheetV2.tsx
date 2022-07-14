@@ -18,7 +18,7 @@ import {
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
-import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
+import WalletSelectionViewV2 from '../components/settings-menu/BackupSection/WalletSelectionViewV2';
 import SettingsSectionV2 from '../components/settings-menu/SettingsSectionV2';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
@@ -217,10 +217,9 @@ export default function SettingsSheet() {
           )}
 
           <Stack.Screen
-            component={WalletSelectionView}
+            component={WalletSelectionViewV2}
             name="WalletSelectionView"
             options={{
-              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
               cardStyleInterpolator,
               title: lang.t('settings.backup'),
             }}
