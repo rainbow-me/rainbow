@@ -295,7 +295,7 @@ export const computeSlippageAdjustedAmounts = (
 
     input = convertRawAmountToDecimalFormat(
       add(input, result),
-      trade.outputTokenDecimals
+      trade.inputTokenDecimals
     );
   }
 

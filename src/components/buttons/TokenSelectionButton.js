@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
-import { Text } from '../text';
+import { TruncatedText } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
@@ -13,6 +13,7 @@ import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const TokenSelectionButtonHeight = 46;
+const TokenSelectionButtonMaxWidth = 130;
 const TokenSelectionButtonElevation = ios ? 0 : 8;
 
 const Content = styled(RowWithMargins).attrs({
@@ -69,6 +70,7 @@ export default function TokenSelectionButton({
         backgroundColor: colorForAsset,
         borderRadius,
       }}
+      {...(symbol && { maxWidth: TokenSelectionButtonMaxWidth })}
       onPress={onPress}
       radiusAndroid={borderRadius}
       testID={testID}
@@ -81,7 +83,7 @@ export default function TokenSelectionButton({
         shadows={shadowsForAsset}
       />
       <Content>
-        <Text
+        <TruncatedText
           align="center"
           color={colors.whiteLabel}
           {...(android && { lineHeight: 21 })}
@@ -89,8 +91,8 @@ export default function TokenSelectionButton({
           testID={testID + '-text'}
           weight="bold"
         >
-          {symbol || lang.t('swap.choose_token')}
-        </Text>
+          {symbol ?? lang.t('swap.choose_token')}
+        </TruncatedText>
         <CaretIcon />
       </Content>
       <InnerBorder radius={borderRadius} />
