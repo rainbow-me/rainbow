@@ -11,7 +11,6 @@ import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
-  convertNumberToString,
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
@@ -43,7 +42,7 @@ const getOutputAmount = (
     };
   }
   const rawInputAmount = convertAmountToRawAmount(
-    convertNumberToString(inputAmount),
+    inputAmount.toString(),
     inputToken.decimals
   );
   const amountIn = new TokenAmount(inputToken, rawInputAmount);
@@ -123,7 +122,7 @@ export default function useSwapDerivedOutputs() {
           ? convertAmountToNativeAmount(independentValue, inputPrice)
           : null;
 
-      derivedValues[SwapModalField.native] = nativeValue;
+      derivedValues[SwapModalField.native] = nativeValue?.toString() ?? '';
       const {
         outputAmount,
         outputAmountDisplay,
@@ -151,7 +150,7 @@ export default function useSwapDerivedOutputs() {
       derivedValues[SwapModalField.input] = inputAmount;
       const inputAmountDisplay =
         inputAmount && inputPrice
-          ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
+          ? updatePrecisionToDisplay(inputAmount, inputPrice)
           : inputAmount;
       displayValues[DisplayValue.input] = inputAmountDisplay;
       const {
@@ -182,7 +181,7 @@ export default function useSwapDerivedOutputs() {
 
       if (!isZero(independentValue)) {
         const outputRawAmount = convertAmountToRawAmount(
-          convertNumberToString(independentValue),
+          independentValue.toString(),
           outputToken.decimals
         );
         const amountOut = new TokenAmount(outputToken, outputRawAmount);
@@ -202,7 +201,7 @@ export default function useSwapDerivedOutputs() {
       derivedValues[SwapModalField.input] = inputAmount;
       const inputAmountDisplay =
         inputAmount && inputPrice
-          ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
+          ? updatePrecisionToDisplay(inputAmount, inputPrice)
           : inputAmount;
       displayValues[DisplayValue.input] = inputAmountDisplay;
 
@@ -211,7 +210,7 @@ export default function useSwapDerivedOutputs() {
           ? convertAmountToNativeAmount(inputAmountExact, inputPrice)
           : null;
 
-      derivedValues[SwapModalField.native] = nativeValue;
+      derivedValues[SwapModalField.native] = nativeValue?.toString() ?? '';
     }
     return { derivedValues, displayValues, doneLoadingReserves, tradeDetails };
   }, [

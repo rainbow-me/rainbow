@@ -1,6 +1,6 @@
-import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { ChainId } from '@uniswap/sdk';
+import { BigNumber } from 'ethers';
 import { chunk, keys } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';

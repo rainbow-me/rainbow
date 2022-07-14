@@ -169,6 +169,7 @@ export default function FeesPanel({
 
   const updatedCustomMaxBaseFee =
     gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei;
+
   const updatedCustomMaxPriorityFee =
     gasFeeParamsBySpeed?.[CUSTOM]?.maxPriorityFeePerGas?.gwei;
 

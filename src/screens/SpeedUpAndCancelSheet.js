@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from 'ethers';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
@@ -102,13 +102,10 @@ const text = {
 };
 
 const calcGasParamRetryValue = prevWeiValue => {
-  const prevWeiValueBN = new BigNumber(prevWeiValue);
+  const prevWeiValueBN = BigNumber.from(prevWeiValue ?? 0);
 
-  const newWeiValueBN = prevWeiValueBN
-    .times(new BigNumber('110'))
-    .dividedBy(new BigNumber('100'));
-
-  const newWeiValue = newWeiValueBN.toFixed(0);
+  const newWeiValueBN = prevWeiValueBN.mul('110').div('100');
+  const newWeiValue = newWeiValueBN.toNumber().toFixed(0);
   return Number(newWeiValue);
 };
 

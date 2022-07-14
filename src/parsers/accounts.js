@@ -116,7 +116,7 @@ export const parseAssetNative = (asset, nativeCurrency) => {
 
   const priceUnit = assetNativePrice?.value ?? 0;
   const nativeDisplay = convertAmountAndPriceToNativeDisplay(
-    asset?.balance?.amount ?? 0,
+    asset?.balance?.amountNum ?? asset?.balance?.amount ?? 0,
     priceUnit,
     nativeCurrency
   );

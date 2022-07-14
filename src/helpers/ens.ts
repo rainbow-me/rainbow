@@ -1,7 +1,7 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Wallet } from '@ethersproject/wallet';
-import { BigNumberish, Contract } from 'ethers';
+import { BigNumber, BigNumberish, Contract } from 'ethers';
 import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
@@ -625,10 +625,9 @@ const formatEstimatedNetworkFee = (
   nativeCurrency: any,
   nativeAssetPrice: any
 ) => {
-  const networkFeeInWei = multiply(
-    gweiToWei(add(maxBaseFee, maxPriorityFee)),
-    gasLimit
-  );
+  const networkFeeInWei = (
+    multiply(gweiToWei(add(maxBaseFee, maxPriorityFee)), gasLimit) || 0
+  ).toString();
   const networkFeeInEth = fromWei(networkFeeInWei);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
@@ -698,7 +697,9 @@ const formatRentPrice = (
 ) => {
   const rentPriceInETH = fromWei(rentPrice.toString());
   const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
-  const rentPricePerYearInWei = divide(rentPrice.toString(), duration);
+  const rentPricePerYearInWei = BigNumber.from(rentPrice.toString())
+    .div(duration)
+    .toString();
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     rentPriceInETH,
@@ -728,7 +729,7 @@ const formatRentPrice = (
       amount,
       display,
     },
-    wei: rentPrice,
+    wei: rentPrice.toString(),
   };
 };
 

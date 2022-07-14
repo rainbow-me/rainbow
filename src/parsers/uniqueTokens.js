@@ -13,12 +13,14 @@ import {
 import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
 import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
 import isSVGImage from '@rainbow-me/utils/isSVG';
+import { toMaximalPrecision } from '@rainbow-me/utils/numbers';
 
 const parseLastSalePrice = lastSale =>
   lastSale
-    ? Math.round(
-        (lastSale?.total_price / 1000000000000000000 + Number.EPSILON) * 1000
-      ) / 1000
+    ? toMaximalPrecision(
+        lastSale?.total_price / 1000000000000000000 + Number.EPSILON,
+        3
+      )
     : null;
 
 /**
