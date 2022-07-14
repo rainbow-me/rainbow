@@ -20,7 +20,7 @@ const StatusProps = {
   },
   [TransactionStatusTypes.deposited]: {
     name: 'sunflower',
-    style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
+    style: { fontSize: 11, left: -1.3, marginRight: 1, marginTop: -5 },
   },
   [TransactionStatusTypes.depositing]: {
     marginRight: 4,
@@ -36,40 +36,48 @@ const StatusProps = {
   },
   [TransactionStatusTypes.failed]: {
     marginRight: 4,
+    marginTop: -2,
     name: 'closeCircled',
     style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.purchased]: {
     marginRight: 2,
+    marginTop: -1,
     name: 'arrow',
   },
   [TransactionStatusTypes.purchasing]: {
     marginRight: 4,
+    marginTop: -1,
   },
   [TransactionStatusTypes.received]: {
     marginRight: 2,
+    marginTop: -1,
     name: 'arrow',
   },
   [TransactionStatusTypes.self]: {
     marginRight: 4,
+    marginTop: -1,
     name: 'dot',
   },
   [TransactionStatusTypes.sending]: {
     marginRight: 4,
+    marginTop: -1,
   },
   [TransactionStatusTypes.sent]: {
     marginRight: 3,
+    marginTop: -1,
     name: 'sendSmall',
   },
   [TransactionStatusTypes.swapped]: {
     marginRight: 3,
+    marginTop: -2,
     name: 'swap',
     small: true,
     style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.contract_interaction]: {
     name: 'robot',
-    style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
+    style: { fontSize: 11, left: -1.3, marginRight: 1, marginTop: -5 },
   },
   [TransactionStatusTypes.swapping]: {
     marginRight: 4,
@@ -79,7 +87,7 @@ const StatusProps = {
   },
   [TransactionStatusTypes.withdrew]: {
     name: 'sunflower',
-    style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
+    style: { fontSize: 11, left: -1.3, marginRight: 1, marginTop: -5 },
   },
 };
 
@@ -88,7 +96,7 @@ const sx = StyleSheet.create({
     ...position.maxSizeAsObject(10),
   },
   row: {
-    alignItems: 'center',
+    // alignItems: 'center',
     flexDirection: 'row',
   },
 });
@@ -130,9 +138,7 @@ export default React.memo(function FastTransactionStatusBadge({
         />
       )}
       {showIcon && (
-        <View style={{ marginTop: -2 }}>
-          <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
-        </View>
+        <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
       )}
       <Text color={{ custom: statusColor }} size="14px" weight="semibold">
         {title}

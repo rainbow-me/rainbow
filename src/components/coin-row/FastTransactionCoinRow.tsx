@@ -13,17 +13,16 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingLeft: 8,
-    paddingTop: 2,
   },
   bottomRow: {
     alignItems: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 2,
+    marginTop: 16,
   },
   column: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginLeft: 10,
   },
   description: {
@@ -40,13 +39,11 @@ const sx = StyleSheet.create({
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 2,
   },
   wholeRow: {
     flexDirection: 'row',
-    height: 42,
     justifyContent: 'space-between',
-    marginVertical: 16, // This one determines gap between the rows.
+    marginVertical: 7,
     paddingHorizontal: 19,
   },
 });

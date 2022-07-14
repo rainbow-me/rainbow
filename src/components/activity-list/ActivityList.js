@@ -14,7 +14,7 @@ import styled from '@rainbow-me/styled-components';
 
 const sx = StyleSheet.create({
   sectionHeader: {
-    marginVertical: 17,
+    marginVertical: 18,
   },
 });
 
