@@ -965,7 +965,7 @@
       "done": "Terminé",
       "feedback_and_reports": "Feedback & Bug Reports :)",
       "feedback_and_support": "Feedback & Support :)",
-      "follow_twitter": "Follow Us on Twitter :)",
+      "follow_twitter": "Follow us on Twitter :)",
       "follow_us_on_twitter": "Follow Us on Twitter :)",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️ :)",
       "label": "Réglages",
@@ -973,11 +973,13 @@
       "learn": "Learn about Rainbow and Ethereum :)",
       "learn_short": "Learn about Rainbow :)",
       "network": "Réseau",
+      "notifications": "Notifications :)",
       "privacy": "Privacy :)",
       "privacy_section": {
         "public_showcase": "Public Showcase :)",
         "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at :)"
       },
+      "restore": "Restore to original deployment :)",
       "review": "Review Rainbow :)",
       "share": "Share Rainbow:)",
       "share_rainbow": "Share Rainbow :)",

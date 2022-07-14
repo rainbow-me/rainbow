@@ -14,16 +14,16 @@ import {
   LanguageSection,
   NetworkSection,
   PrivacySection,
-  SettingsSection,
   UserDevSection,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
+import SettingsSectionV2 from '../components/settings-menu/SettingsSectionV2';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
-import { Box } from '@rainbow-me/design-system';
+import { AccentColorProvider, Box } from '@rainbow-me/design-system';
 import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import { useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -106,7 +106,7 @@ export default function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute<any>();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const getRealRoute = useCallback(
     key => {
@@ -165,93 +165,95 @@ export default function SettingsSheet() {
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
-    <Box
-      background="body"
-      flexGrow={1}
-      testID="settings-sheet"
-      {...(android && { borderTopRadius: 30 })}
-    >
-      <Stack.Navigator
-        // @ts-expect-error
-        screenOptions={{
-          ...memoSettingsOptions,
-          headerRight: renderHeaderRight,
-        }}
+    <AccentColorProvider color={isDarkMode ? '#E0E8FF0F' : '#F5F5F7'}>
+      <Box
+        background={isDarkMode ? 'body' : 'accent'}
+        flexGrow={1}
+        testID="settings-sheet"
+        {...(android && { borderTopRadius: 30 })}
       >
-        <Stack.Screen
-          name="SettingsSection"
-          options={{
-            cardStyleInterpolator,
-            title: lang.t('settings.label'),
+        <Stack.Navigator
+          // @ts-expect-error
+          screenOptions={{
+            ...memoSettingsOptions,
+            headerRight: renderHeaderRight,
           }}
         >
-          {() => (
-            /** @ts-expect-error – JS component */
-            <SettingsSection
-              onCloseModal={goBack}
-              onPressBackup={onPressSection(SettingsPages.backup)}
-              onPressCurrency={onPressSection(SettingsPages.currency)}
-              onPressDev={onPressSection(SettingsPages.dev)}
-              onPressLanguage={onPressSection(SettingsPages.language)}
-              onPressNetwork={onPressSection(SettingsPages.network)}
-              onPressPrivacy={onPressSection(SettingsPages.privacy)}
-            />
-          )}
-        </Stack.Screen>
-        {Object.values(SettingsPages).map(
-          ({ component, getTitle, key }) =>
-            component && (
-              <Stack.Screen
-                component={component}
-                key={key}
-                name={key}
-                options={{
-                  cardStyleInterpolator,
-                  title: getTitle(),
-                }}
-                // @ts-expect-error
-                title={getTitle()}
+          <Stack.Screen
+            name="SettingsSection"
+            options={{
+              cardStyleInterpolator,
+              title: lang.t('settings.label'),
+            }}
+          >
+            {() => (
+              /** @ts-expect-error – JS component */
+              <SettingsSectionV2
+                onCloseModal={goBack}
+                onPressBackup={onPressSection(SettingsPages.backup)}
+                onPressCurrency={onPressSection(SettingsPages.currency)}
+                onPressDev={onPressSection(SettingsPages.dev)}
+                onPressLanguage={onPressSection(SettingsPages.language)}
+                onPressNetwork={onPressSection(SettingsPages.network)}
+                onPressPrivacy={onPressSection(SettingsPages.privacy)}
               />
-            )
-        )}
+            )}
+          </Stack.Screen>
+          {Object.values(SettingsPages).map(
+            ({ component, getTitle, key }) =>
+              component && (
+                <Stack.Screen
+                  component={component}
+                  key={key}
+                  name={key}
+                  options={{
+                    cardStyleInterpolator,
+                    title: getTitle(),
+                  }}
+                  // @ts-expect-error
+                  title={getTitle()}
+                />
+              )
+          )}
 
-        <Stack.Screen
-          component={WalletSelectionView}
-          name="WalletSelectionView"
-          options={{
-            cardStyle: { backgroundColor: colors.white, marginTop: 6 },
-            cardStyleInterpolator,
-            title: lang.t('settings.backup'),
-          }}
-        />
-        <Stack.Screen
-          component={DevNotificationsSection}
-          name="DevNotificationsSection"
-          options={{
-            cardStyle: { backgroundColor: colors.white, marginTop: 6 },
-            cardStyleInterpolator,
-            title: lang.t('developer_settings.notifications_debug'),
-          }}
-        />
-        <Stack.Screen
-          component={SettingsBackupView}
-          name="SettingsBackupView"
-          options={({ route }) => ({
-            cardStyleInterpolator,
-            // @ts-expect-error
-            title: route.params?.title || lang.t('settings.backup'),
-          })}
-        />
-        <Stack.Screen
-          component={ShowSecretView}
-          name="ShowSecretView"
-          options={({ route }) => ({
-            cardStyleInterpolator,
-            // @ts-expect-error
-            title: route.params?.title || lang.t('settings.backup'),
-          })}
-        />
-      </Stack.Navigator>
-    </Box>
+          <Stack.Screen
+            component={WalletSelectionView}
+            name="WalletSelectionView"
+            options={{
+              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
+              cardStyleInterpolator,
+              title: lang.t('settings.backup'),
+            }}
+          />
+          <Stack.Screen
+            component={DevNotificationsSection}
+            name="DevNotificationsSection"
+            options={{
+              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
+              cardStyleInterpolator,
+              title: lang.t('developer_settings.notifications_debug'),
+            }}
+          />
+          <Stack.Screen
+            component={SettingsBackupView}
+            name="SettingsBackupView"
+            options={({ route }) => ({
+              cardStyleInterpolator,
+              // @ts-expect-error
+              title: route.params?.title || lang.t('settings.backup'),
+            })}
+          />
+          <Stack.Screen
+            component={ShowSecretView}
+            name="ShowSecretView"
+            options={({ route }) => ({
+              cardStyleInterpolator,
+              // @ts-expect-error
+              title: route.params?.title || lang.t('settings.backup'),
+            })}
+          />
+        </Stack.Navigator>
+      </Box>
+    </AccentColorProvider>
   );
 }

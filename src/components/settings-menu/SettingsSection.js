@@ -38,7 +38,6 @@ import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useAccountSettings,
-  useDimensions,
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -147,7 +146,6 @@ export default function SettingsSection({
     network,
     testnetsEnabled,
   } = useAccountSettings();
-  const { isNarrowPhone } = useDimensions();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
@@ -326,9 +324,7 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name="brain" />}
-            label={lang.t(
-              isNarrowPhone ? 'settings.learn_short' : 'settings.learn'
-            )}
+            label={lang.t('settings.learn')}
             onPress={onPressLearn}
             testID="learn-section"
             value={SettingsExternalURLs.rainbowLearn}
