@@ -440,6 +440,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
+                footerSpacer={android}
                 itemProps={itemProps}
                 listItems={currencyList}
                 loading={swapCurrencyListLoading}
