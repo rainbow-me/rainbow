@@ -114,7 +114,7 @@ export default function BackupCloudStep() {
   }, [goBack, isDamaged]);
 
   const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_MODAL
+    Routes.SETTINGS_SHEET
   );
 
   const walletId = params?.walletId || selectedWallet.id;

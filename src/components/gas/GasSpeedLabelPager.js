@@ -76,4 +76,9 @@ const GasSpeedLabelPager = ({
   );
 };
 
-export default magicMemo(GasSpeedLabelPager, 'label');
+export default magicMemo(GasSpeedLabelPager, [
+  'label',
+  'theme',
+  'onPress',
+  'colorForAsset',
+]);

@@ -1,4 +1,4 @@
-import { isEmpty, isNil, remove, toLower } from 'lodash';
+import { isEmpty, isNil, remove } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { AssetTypes } from '@rainbow-me/entities';
 import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
@@ -221,7 +221,8 @@ export const parseAccountUniqueTokensPolygon = data => {
   //filter out NFTs that are not on our allow list
   remove(
     erc721s,
-    NFT => !polygonAllowList.includes(toLower(NFT.asset_contract.address))
+    nft =>
+      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
   );
 
   return erc721s;
