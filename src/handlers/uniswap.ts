@@ -16,7 +16,7 @@ import {
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { ethers } from 'ethers';
-import { mapKeys, mapValues, toLower } from 'lodash';
+import { mapKeys, mapValues } from 'lodash';
 import { Token } from '../entities/tokens';
 import { loadWallet } from '../model/wallet';
 import {
@@ -159,10 +159,10 @@ export const getTestnetUniswapPairs = (
   const pairs: { [address: string]: Asset } =
     (UNISWAP_TESTNET_TOKEN_LIST as any)?.[network] ?? {};
 
-  const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
+  const loweredPairs = mapKeys(pairs, (_, key) => key.toLowerCase());
   return mapValues(loweredPairs, value => ({
     ...value,
-    address: toLower(value.address),
+    address: value.address.toLowerCase(),
   }));
 };
 
@@ -173,7 +173,7 @@ const getBasicSwapGasLimitForTrade = (
   const allowsPermit =
     chainId === ChainId.mainnet &&
     ALLOWS_PERMIT[
-      toLower(tradeDetails.sellTokenAddress) as keyof PermitSupportedTokenList
+      tradeDetails?.sellTokenAddress?.toLowerCase() as keyof PermitSupportedTokenList
     ];
 
   if (allowsPermit) {

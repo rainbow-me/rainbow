@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { ALLOWS_PERMIT, PermitSupportedTokenList } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
-import { isNull, toLower } from 'lodash';
+import { isNull } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import {
   Rap,
@@ -34,7 +34,9 @@ export const estimateApprove = async (
     const network = ethereumUtils.getNetworkFromChainId(chainId);
     const provider = await getProviderForNetwork(network);
     if (
-      ALLOWS_PERMIT[toLower(tokenAddress) as keyof PermitSupportedTokenList]
+      ALLOWS_PERMIT[
+        tokenAddress?.toLowerCase() as keyof PermitSupportedTokenList
+      ]
     ) {
       return '0';
     }
@@ -203,9 +205,7 @@ const unlock = async (
     }
   }
 
-  const cacheKey = toLower(
-    `${wallet.address}|${assetAddress}|${contractAddress}`
-  );
+  const cacheKey = `${wallet.address}|${assetAddress}|${contractAddress}`.toLowerCase();
 
   // Cache the approved value
   AllowancesCache.cache[cacheKey] = MaxUint256.toString();
@@ -246,7 +246,8 @@ export const assetNeedsUnlocking = async (
   const { address } = assetToUnlock;
   if (address === ETH_ADDRESS) return false;
   if (alwaysRequireApprove) return true;
-  const cacheKey = toLower(`${accountAddress}|${address}|${contractAddress}`);
+
+  const cacheKey = `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
 
   let allowance;
   // Check on cache first

@@ -1,5 +1,4 @@
 import chroma from 'chroma-js';
-import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
@@ -52,7 +51,7 @@ const darkModeColors = {
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = memoFn(
-  (color: string = '') => toLower(color).substring(0, 3) === 'rgb'
+  (color: string = '') => color.toLowerCase().substring(0, 3) === 'rgb'
 );
 
 const avatarBackgrounds = [
@@ -386,7 +385,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
  * @deprecated used for safely retrieving color values in JS not needed with TypeScript anymore
  */
 const getColorForString = (colorString = '', providedThemeColors = colors) => {
-  if (!colorString) return null;
+  //FIXME: sometimes receive non string value
+  if (!colorString || typeof colorString !== 'string') return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);
   return isValidColorString

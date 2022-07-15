@@ -6,11 +6,12 @@ import {
   multiply,
   subtract,
 } from '@rainbow-me/helpers/utilities';
-import { useSwapCurrencies } from '@rainbow-me/hooks';
+import { useAccountSettings, useSwapCurrencies } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useRainbowFee({ tradeDetails, network }) {
   const { inputCurrency } = useSwapCurrencies();
+  const { accountAddress } = useAccountSettings();
   const [nativeAsset, setNativeAsset] = useState(null);
 
   const rainbowFeePercentage = useMemo(() => {
@@ -62,11 +63,14 @@ export default function useRainbowFee({ tradeDetails, network }) {
 
   useEffect(() => {
     const getNativeAsset = async () => {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(network);
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
+        network,
+        accountAddress
+      );
       setNativeAsset(nativeAsset);
     };
     !nativeAsset && getNativeAsset();
-  }, [nativeAsset, network]);
+  }, [nativeAsset, network, accountAddress]);
 
   return { rainbowFeeNative, rainbowFeePercentage };
 }
