@@ -10,7 +10,7 @@ import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySectionV2,
   DevNotificationsSection,
-  DevSection,
+  DevSectionV2,
   LanguageSectionV2,
   NetworkSectionV2,
   PrivacySection,
@@ -79,7 +79,7 @@ const SettingsPages = {
     key: 'SettingsSection',
   },
   dev: {
-    component: IS_DEV || isTestFlight ? DevSection : UserDevSection,
+    component: IS_DEV || isTestFlight ? DevSectionV2 : UserDevSection,
     getTitle: () => lang.t('settings.dev'),
     key: 'DevSection',
   },

@@ -1,8 +1,13 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, ScrollView, Share } from 'react-native';
+import { Linking, Share, NativeModules } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
+import {
+  AppleReviewAddress,
+  REVIEW_DONE_KEY,
+} from '@rainbow-me/utils/reviewAlert';
 import MenuItem from './components/MenuItem';
 import Menu from './components/Menu';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
@@ -22,7 +27,7 @@ import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
 } from '@rainbow-me/config/experimentalHooks';
-import { Box, Divider, Stack } from '@rainbow-me/design-system';
+import { Box } from '@rainbow-me/design-system';
 import {
   isCustomBuild,
   setOriginalDeploymentKey,
@@ -115,19 +120,19 @@ export default function SettingsSectionV2({
 
   const onSendFeedback = useSendFeedback();
 
-  // const onPressReview = useCallback(async () => {
-  //   if (ios) {
-  //     onCloseModal();
-  //     RainbowRequestReview.requestReview((handled: boolean) => {
-  //       if (!handled) {
-  //         AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
-  //         Linking.openURL(AppleReviewAddress);
-  //       }
-  //     });
-  //   } else {
-  //     RNReview.show();
-  //   }
-  // }, [onCloseModal]);
+  const onPressReview = useCallback(async () => {
+    // if (ios) {
+    //   onCloseModal();
+    //   RainbowRequestReview.requestReview((handled: boolean) => {
+    //     if (!handled) {
+    //       AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
+    //       Linking.openURL(AppleReviewAddress);
+    //     }
+    //   });
+    // } else {
+    //   RNReview.show();
+    // }
+  }, [onCloseModal]);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -341,7 +346,7 @@ export default function SettingsSectionV2({
           <MenuItem
             iconPadding="large"
             leftComponent={<MenuItem.EmojiIcon>❤️</MenuItem.EmojiIcon>}
-            onPress={() => {}}
+            onPress={onPressReview}
             size="medium"
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
           />

@@ -7,9 +7,14 @@ interface MenuContainerProps {
 }
 const MenuContainer = ({ children }: MenuContainerProps) => {
   return (
-    <Box height="full" paddingTop="12px" width="full">
+    <Box
+      height="full"
+      paddingTop={{ custom: 9 }}
+      paddingBottom={{ custom: 31.5 }}
+      width="full"
+    >
       <ScrollView scrollEventThrottle={32}>
-        <Box paddingHorizontal="19px">
+        <Box paddingHorizontal="19px" paddingVertical="3px">
           <Stack space="36px">{children}</Stack>
         </Box>
       </ScrollView>
