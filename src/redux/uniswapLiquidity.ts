@@ -32,7 +32,7 @@ interface UniswapPoolToken {
 /**
  * Fully loaded details for a Uniswap pool from the dispersion API.
  */
-interface UniswapPoolAddressDetailsFull {
+export interface UniswapPoolAddressDetailsFull {
   address: string | undefined;
   annualized_fees: number;
   liquidity: number;
