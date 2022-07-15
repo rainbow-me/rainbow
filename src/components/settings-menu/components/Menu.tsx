@@ -11,6 +11,7 @@ export default function Menu({ children }: MenuProps) {
   return (
     <Box
       background={isDarkMode ? 'accent' : 'body'}
+      shadow="9px medium"
       borderRadius={18}
       width="full"
     >
