@@ -47,7 +47,13 @@ const Selection = ({ children }: SelectionProps) => (
   </Text>
 );
 
-const Switch = () => <NativeSwitch />;
+interface SwitchProps {
+  onValueChange: (value: boolean) => void;
+}
+
+const Switch = ({ onValueChange }: SwitchProps) => (
+  <NativeSwitch onValueChange={onValueChange} />
+);
 
 interface StatusIconProps {
   status: 'complete' | 'incomplete' | 'warning' | 'selected';

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, InteractionManager, Switch } from 'react-native';
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import {
@@ -14,10 +14,11 @@ import {
 } from 'react-native-dotenv';
 // @ts-ignore
 import Restart from 'react-native-restart';
+import { settingsUpdateNetwork } from '../../redux/settings';
 import { useDispatch } from 'react-redux';
 import { defaultConfig } from '../../config/experimental';
 import useAppVersion from '../../hooks/useAppVersion';
-import UserDevSection from './UserDevSection';
+import NetworkSection from './NetworkSection';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import {
   getProviderForNetwork,
@@ -27,6 +28,9 @@ import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountSettings,
+  useInitializeAccountData,
+  useLoadAccountData,
+  useResetAccountState,
   useUpdateAssetOnchainBalance,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -46,14 +50,22 @@ import logger from 'logger';
 import MenuContainer from './components/MenuContainer';
 import Menu from './components/Menu';
 import MenuItem from './components/MenuItem';
+import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 
 const DevSectionV2 = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
-  const { accountAddress } = useAccountSettings();
+  const {
+    accountAddress,
+    testnetsEnabled,
+    settingsChangeTestnetsEnabled,
+  } = useAccountSettings();
   const dispatch = useDispatch();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
+  const resetAccountState = useResetAccountState();
+  const loadAccountData = useLoadAccountData();
+  const initializeAccountData = useInitializeAccountData();
 
   const onExperimentalKeyChange = useCallback(
     value => {
@@ -157,7 +169,9 @@ const DevSectionV2 = () => {
 
   const clearImageCache = async () => {
     ImgixImage.clearDiskCache();
-    // ImgixImage.clearImageCache() doesn't exist on ImgixImage
+    // clearImageCache doesn't exist on ImgixImage
+    // @ts-ignore
+    ImgixImage.clearImageCache();
   };
 
   const [errorObj, setErrorObj] = useState(null as any);
@@ -168,171 +182,223 @@ const DevSectionV2 = () => {
 
   const codePushVersion = useAppVersion()[1];
 
+  const revertToMainnet = useCallback(async () => {
+    await resetAccountState();
+    await dispatch(settingsUpdateNetwork(Network.mainnet));
+    InteractionManager.runAfterInteractions(async () => {
+      await loadAccountData(Network.mainnet);
+      initializeAccountData();
+    });
+  }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
+
+  const toggleTestnetsEnabled = useCallback(async () => {
+    testnetsEnabled && revertToMainnet();
+    await dispatch(settingsChangeTestnetsEnabled(!testnetsEnabled));
+  }, [
+    dispatch,
+    revertToMainnet,
+    settingsChangeTestnetsEnabled,
+    testnetsEnabled,
+  ]);
+
+  const clearLocalStorage = useCallback(async () => {
+    await AsyncStorage.clear();
+    clearAllStorages();
+  }, []);
+
   return (
     <MenuContainer>
-      <Menu>
+      <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
         <MenuItem
-          onPress={AsyncStorage.clear}
+          titleComponent={<MenuItem.Title text="Enable Testnets" />}
+          leftComponent={<MenuItem.EmojiIcon>🕹️</MenuItem.EmojiIcon>}
+          rightComponent={
+            <Switch
+              onValueChange={toggleTestnetsEnabled}
+              value={testnetsEnabled}
+            />
+          }
+          size="medium"
+          iconPadding="large"
+        />
+        {testnetsEnabled && <NetworkSection />}
+        <MenuItem
+          titleComponent={<MenuItem.Title text="Clear local storage" />}
           leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.clear_async_storage')}
-            />
-          }
-          iconPadding="large"
           size="medium"
-        />
-        <MenuItem
-          onPress={clearAllStorages}
-          leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.clear_mmkv_storage')}
-            />
-          }
           iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={clearImageMetadataCache}
-          leftComponent={<MenuItem.EmojiIcon>📷️</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.clear_image_metadata_cache')}
-            />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={clearImageCache}
-          leftComponent={<MenuItem.EmojiIcon>📷️</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.clear_image_cache')}
-            />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={wipeKeychain}
-          leftComponent={<MenuItem.EmojiIcon>💣</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.reset_keychain')}
-            />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={() => Restart.Restart()}
-          leftComponent={<MenuItem.EmojiIcon>🔄</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title text={lang.t('developer_settings.restart_app')} />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={throwRenderError}
-          leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.crash_app_render_error')}
-            />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        {errorObj}
-        <MenuItem
-          onPress={removeBackups}
-          leftComponent={<MenuItem.EmojiIcon>🗑️</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.remove_all_backups')}
-            />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={() => AsyncStorage.removeItem('experimentalConfig')}
-          leftComponent={<MenuItem.EmojiIcon>🤷</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t(
-                'developer_settings.restore_default_experimental_config'
-              )}
-            />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={connectToHardhat}
-          leftComponent={<MenuItem.EmojiIcon>👷</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.connect_to_hardhat')}
-            />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={checkAlert}
-          leftComponent={<MenuItem.EmojiIcon>🏖️</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title text={lang.t('developer_settings.alert')} />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <MenuItem
-          onPress={navToDevNotifications}
-          leftComponent={<MenuItem.EmojiIcon>🔔</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.notifications_debug')}
-            />
-          }
-          iconPadding="large"
-          size="medium"
-        />
-        <UserDevSection scrollEnabled={false} />
-        <MenuItem
-          onPress={syncCodepush}
-          leftComponent={<MenuItem.EmojiIcon>⏩</MenuItem.EmojiIcon>}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.sync_codepush', {
-                codePushVersion: codePushVersion,
-              })}
-            />
-          }
-          iconPadding="large"
-          size="medium"
+          onPress={clearLocalStorage}
         />
       </Menu>
-      <Menu>
-        {Object.keys(config)
-          .sort()
-          .filter(key => (defaultConfig as any)[key]?.settings)
-          .map(key => (
+      {(IS_DEV || isTestFlight) && (
+        <>
+          <Menu header="Rainbow Developer Settings">
             <MenuItem
-              onPress={() => onExperimentalKeyChange(key)}
-              rightComponent={
-                !!config[key] && <MenuItem.StatusIcon status="selected" />
+              onPress={AsyncStorage.clear}
+              leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.clear_async_storage')}
+                />
               }
-              size="medium"
               iconPadding="large"
-              titleComponent={<MenuItem.Title text={key} />}
+              size="medium"
             />
-          ))}
-      </Menu>
+            <MenuItem
+              onPress={clearAllStorages}
+              leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.clear_mmkv_storage')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={clearImageMetadataCache}
+              leftComponent={<MenuItem.EmojiIcon>📷️</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.clear_image_metadata_cache')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={clearImageCache}
+              leftComponent={<MenuItem.EmojiIcon>📷️</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.clear_image_cache')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={wipeKeychain}
+              leftComponent={<MenuItem.EmojiIcon>💣</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.reset_keychain')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={() => Restart.Restart()}
+              leftComponent={<MenuItem.EmojiIcon>🔄</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.restart_app')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={throwRenderError}
+              leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.crash_app_render_error')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            {errorObj}
+            <MenuItem
+              onPress={removeBackups}
+              leftComponent={<MenuItem.EmojiIcon>🗑️</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.remove_all_backups')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={() => AsyncStorage.removeItem('experimentalConfig')}
+              leftComponent={<MenuItem.EmojiIcon>🤷</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t(
+                    'developer_settings.restore_default_experimental_config'
+                  )}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={connectToHardhat}
+              leftComponent={<MenuItem.EmojiIcon>👷</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.connect_to_hardhat')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={checkAlert}
+              leftComponent={<MenuItem.EmojiIcon>🏖️</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title text={lang.t('developer_settings.alert')} />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+            <MenuItem
+              onPress={navToDevNotifications}
+              leftComponent={<MenuItem.EmojiIcon>🔔</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.notifications_debug')}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+
+            <MenuItem
+              onPress={syncCodepush}
+              leftComponent={<MenuItem.EmojiIcon>⏩</MenuItem.EmojiIcon>}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.sync_codepush', {
+                    codePushVersion: codePushVersion,
+                  })}
+                />
+              }
+              iconPadding="large"
+              size="medium"
+            />
+          </Menu>
+          <Menu header="Feature Flags">
+            {Object.keys(config)
+              .sort()
+              .filter(key => (defaultConfig as any)[key]?.settings)
+              .map(key => (
+                <MenuItem
+                  onPress={() => onExperimentalKeyChange(key)}
+                  rightComponent={
+                    !!config[key] && <MenuItem.StatusIcon status="selected" />
+                  }
+                  size="medium"
+                  iconPadding="large"
+                  titleComponent={<MenuItem.Title text={key} />}
+                />
+              ))}
+          </Menu>
+        </>
+      )}
     </MenuContainer>
   );
 };

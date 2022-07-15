@@ -14,7 +14,6 @@ import {
   LanguageSectionV2,
   NetworkSectionV2,
   PrivacySection,
-  UserDevSection,
   SettingsSectionV2,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
@@ -24,7 +23,6 @@ import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
 import { AccentColorProvider, Box } from '@rainbow-me/design-system';
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import { useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 
@@ -79,7 +77,7 @@ const SettingsPages = {
     key: 'SettingsSection',
   },
   dev: {
-    component: IS_DEV || isTestFlight ? DevSectionV2 : UserDevSection,
+    component: DevSectionV2,
     getTitle: () => lang.t('settings.dev'),
     key: 'DevSection',
   },
