@@ -1,5 +1,5 @@
 import { ChainId, WETH } from '@uniswap/sdk';
-import { isEmpty, join, orderBy, toLower } from 'lodash';
+import { isEmpty, join, orderBy } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -57,7 +57,7 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
-  if (toLower(token.address) === toLower(WETH[chainId].address)) {
+  if (token.address.toLowerCase() === WETH[chainId].address.toLowerCase()) {
     return {
       ...token,
       address: ETH_ADDRESS,

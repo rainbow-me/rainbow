@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -173,7 +172,7 @@ export default function ListSection() {
           address =>
             ethereumUtils.getAccountAsset(address) ||
             ethereumUtils.formatGenericAsset(
-              genericAssets[toLower(address)],
+              genericAssets[address.toLowerCase()],
               nativeCurrency
             )
         )
@@ -189,7 +188,7 @@ export default function ListSection() {
         address =>
           ethereumUtils.getAccountAsset(address) ||
           ethereumUtils.formatGenericAsset(
-            genericAssets[toLower(address)],
+            genericAssets[address.toLowerCase()],
             nativeCurrency
           )
       );
