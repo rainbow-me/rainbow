@@ -19,6 +19,7 @@ const WithdrawModal = props => {
 
   return (
     <ExchangeModal
+      testID="withdraw-modal"
       type={ExchangeModalTypes.withdrawal}
       typeSpecificParams={typeSpecificParams}
       {...props}
