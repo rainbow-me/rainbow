@@ -973,7 +973,12 @@ export const transactionsReceived = (
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
-  if (transactionData.length) {
+  const { network } = getState().settings;
+  let currentNetwork = network;
+  if (currentNetwork === Network.mainnet && message?.meta?.chain_id) {
+    currentNetwork = message?.meta?.chain_id;
+  }
+  if (transactionData.length && currentNetwork === Network.mainnet) {
     dispatch(checkForUpdatedNonce(transactionData));
   }
 
@@ -982,10 +987,6 @@ export const transactionsReceived = (
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
 
-  let { network } = getState().settings;
-  if (network === Network.mainnet && message?.meta?.chain_id) {
-    network = message?.meta?.chain_id;
-  }
   const {
     parsedTransactions,
     potentialNftTransaction,
@@ -995,7 +996,7 @@ export const transactionsReceived = (
     nativeCurrency,
     transactions,
     purchaseTransactions,
-    network,
+    currentNetwork,
     appended
   );
   if (appended && potentialNftTransaction) {
@@ -1590,8 +1591,21 @@ export const dataWatchPendingTransactions = (
           }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          // @ts-expect-error `txObj` is not typed as having a `status` field.
-          if (txObj && !isZero(txObj.status)) {
+          let receipt;
+          try {
+            receipt = await txObj.wait();
+          } catch (e) {
+            updatedPending.status = TransactionStatus.failed;
+            const title = getTitle({
+              protocol: tx.protocol,
+              status: updatedPending.status,
+              type: tx.type,
+            });
+            updatedPending.title = title;
+            updatedPending.pending = false;
+            updatedPending.minedAt = minedAt;
+          }
+          if (txObj && !isZero(receipt?.status || 0)) {
             const isSelf = toLower(tx?.from!) === toLower(tx?.to!);
             const newStatus = getTransactionLabel({
               direction: isSelf
