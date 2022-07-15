@@ -68,7 +68,11 @@ const WalletSelectionViewV2 = () => {
             return (
               <MenuItem
                 onPress={() =>
-                  onPress(key, label || abbreviations.address(address, 4, 6))
+                  onPress(
+                    key,
+                    removeFirstEmojiFromString(labelOrName) ||
+                      abbreviations.address(address, 4, 6)
+                  )
                 }
                 leftComponent={
                   <ContactAvatar
@@ -128,15 +132,22 @@ const WalletSelectionViewV2 = () => {
           })}
       </Menu>
       {cloudBackedUpWallets > 0 && (
-        <Box alignItems="center" width="full">
-          <ButtonPressAnimation onPress={manageCloudBackups}>
-            <Text color="secondary60" size="16px" weight="semibold">
-              {`􀍢 ${lang.t('back_up.cloud.manage_platform_backups', {
-                cloudPlatformName: cloudPlatform,
-              })}`}
-            </Text>
-          </ButtonPressAnimation>
-        </Box>
+        <Menu>
+          <MenuItem
+            onPress={manageCloudBackups}
+            size="medium"
+            iconPadding="small"
+            titleComponent={
+              <MenuItem.Title
+                isLink
+                text={lang.t('back_up.cloud.manage_platform_backups', {
+                  cloudPlatformName: cloudPlatform,
+                })}
+              />
+            }
+            leftComponent={<MenuItem.Title text="􀡜" isLink />}
+          />
+        </Menu>
       )}
     </MenuContainer>
   );
