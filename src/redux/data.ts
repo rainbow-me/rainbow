@@ -972,7 +972,12 @@ export const transactionsReceived = (
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
-  if (transactionData.length) {
+
+  let { network } = getState().settings;
+  if (network === Network.mainnet && message?.meta?.chain_id) {
+    network = message?.meta?.chain_id;
+  }
+  if (transactionData.length && network === Network.mainnet) {
     dispatch(checkForUpdatedNonce(transactionData));
   }
 
@@ -981,10 +986,6 @@ export const transactionsReceived = (
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
 
-  let { network } = getState().settings;
-  if (network === Network.mainnet && message?.meta?.chain_id) {
-    network = message?.meta?.chain_id;
-  }
   const {
     parsedTransactions,
     potentialNftTransaction,
