@@ -30,7 +30,6 @@ const ImageIcon = ({ source }: ImageIconProps) => (
 
 interface EmojiIconProps {
   children: string;
-  isHeader?: boolean;
 }
 
 const EmojiIcon = ({ children }: EmojiIconProps) => (
@@ -70,17 +69,49 @@ const StatusIcon = ({ colors, status }: StatusIconProps) =>
     />
   );
 
+interface TitleProps {
+  text: string;
+  isHeader?: boolean;
+}
+
+const Title = ({ text, isHeader }: TitleProps) => (
+  <Text
+    color="primary"
+    containsEmoji
+    size="18px"
+    weight={isHeader ? 'bold' : 'semibold'}
+  >
+    {text}
+  </Text>
+);
+
+interface LabelProps {
+  text: string;
+  warn?: boolean;
+}
+
+function Label({ text, warn }: LabelProps) {
+  const { colors } = useTheme();
+  return (
+    <Text
+      color={warn ? { custom: colors.orangeLight } : 'secondary60'}
+      size="14px"
+      weight="medium"
+    >
+      {text}
+    </Text>
+  );
+}
+
 interface MenuItemProps {
   rightComponent?: React.ReactNode;
   leftComponent?: React.ReactNode;
-  isHeader?: boolean;
-  title: string;
-  label?: string;
   size: 'medium' | 'large';
   iconPadding?: 'small' | 'medium' | 'large';
   hasRightArrow?: boolean;
   onPress?: () => void;
-  warn?: boolean;
+  titleComponent: React.ReactNode;
+  labelComponent: React.ReactNode;
 }
 
 function MenuItem({
@@ -90,10 +121,8 @@ function MenuItem({
   rightComponent,
   size,
   iconPadding,
-  isHeader,
-  title,
-  label,
-  warn,
+  titleComponent,
+  labelComponent,
 }: MenuItemProps) {
   const { colors } = useTheme();
   const space =
@@ -117,23 +146,8 @@ function MenuItem({
           <Inline alignVertical="center" space={{ custom: space }}>
             {leftComponent}
             <Stack space="8px">
-              <Text
-                color="primary"
-                containsEmoji
-                size="18px"
-                weight={isHeader ? 'bold' : 'semibold'}
-              >
-                {`${title}`}
-              </Text>
-              {label && (
-                <Text
-                  color={warn ? { custom: colors.orangeLight } : 'secondary60'}
-                  size="14px"
-                  weight="medium"
-                >
-                  {label}
-                </Text>
-              )}
+              {titleComponent}
+              {labelComponent}
             </Stack>
           </Inline>
           <Inline alignVertical="center" space={{ custom: 9 }}>
@@ -154,6 +168,8 @@ function MenuItem({
   );
 }
 
+MenuItem.Title = Title;
+MenuItem.Label = Label;
 MenuItem.EmojiIcon = EmojiIcon;
 MenuItem.ImageIcon = ImageIcon;
 MenuItem.Selection = Selection;

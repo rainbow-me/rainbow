@@ -13,6 +13,7 @@ import Menu from '../components/Menu';
 import MenuItem from '../components/MenuItem';
 import { Box, Text } from '@rainbow-me/design-system';
 import MenuContainer from '../components/MenuContainer';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 
 const WalletSelectionViewV2 = () => {
   const { navigate } = useNavigation();
@@ -90,26 +91,38 @@ const WalletSelectionViewV2 = () => {
                     }
                   />
                 }
-                label={
-                  totalAccounts > 1
-                    ? totalAccounts > 2
-                      ? lang.t('wallet.back_ups.and_more_wallets', {
-                          moreWalletCount: totalAccounts - 1,
-                        })
-                      : lang.t('wallet.back_ups.and_1_more_wallet')
-                    : wallet.backedUp
-                    ? wallet.backupType === WalletBackupTypes.cloud
-                      ? lang.t('wallet.back_ups.backed_up')
-                      : lang.t('wallet.back_ups.backed_up_manually')
-                    : wallet.imported
-                    ? lang.t('wallet.back_ups.imported')
-                    : lang.t('back_up.needs_backup.not_backed_up')
-                }
-                warn={
-                  totalAccounts <= 1 && !wallet.backedUp && !wallet.imported
+                labelComponent={
+                  <MenuItem.Label
+                    text={
+                      totalAccounts > 1
+                        ? totalAccounts > 2
+                          ? lang.t('wallet.back_ups.and_more_wallets', {
+                              moreWalletCount: totalAccounts - 1,
+                            })
+                          : lang.t('wallet.back_ups.and_1_more_wallet')
+                        : wallet.backedUp
+                        ? wallet.backupType === WalletBackupTypes.cloud
+                          ? lang.t('wallet.back_ups.backed_up')
+                          : lang.t('wallet.back_ups.backed_up_manually')
+                        : wallet.imported
+                        ? lang.t('wallet.back_ups.imported')
+                        : lang.t('back_up.needs_backup.not_backed_up')
+                    }
+                    warn={
+                      totalAccounts <= 1 && !wallet.backedUp && !wallet.imported
+                    }
+                  />
                 }
                 hasRightArrow
-                title={labelOrName || abbreviations.address(address, 4, 6)}
+                titleComponent={
+                  <MenuItem.Title
+                    text={
+                      removeFirstEmojiFromString(labelOrName) ||
+                      abbreviations.address(address, 4, 6) ||
+                      ''
+                    }
+                  />
+                }
                 size="large"
               />
             );

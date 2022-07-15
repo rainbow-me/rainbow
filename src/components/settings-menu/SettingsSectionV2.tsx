@@ -190,7 +190,7 @@ export default function SettingsSectionV2({
               />
             }
             size="large"
-            title={lang.t('settings.backup')}
+            titleComponent={<MenuItem.Title text={lang.t('settings.backup')} />}
           />
         )}
         <MenuItem
@@ -202,7 +202,9 @@ export default function SettingsSectionV2({
             />
           }
           size="large"
-          title={lang.t('settings.notifications')}
+          titleComponent={
+            <MenuItem.Title text={lang.t('settings.notifications')} />
+          }
         />
         <MenuItem
           hasRightArrow
@@ -217,7 +219,7 @@ export default function SettingsSectionV2({
             <MenuItem.Selection>{nativeCurrency || ''}</MenuItem.Selection>
           }
           size="large"
-          title={lang.t('settings.currency')}
+          titleComponent={<MenuItem.Title text={lang.t('settings.currency')} />}
         />
         {(testnetsEnabled || IS_DEV) && (
           <MenuItem
@@ -235,7 +237,9 @@ export default function SettingsSectionV2({
               </MenuItem.Selection>
             }
             size="large"
-            title={lang.t('settings.network')}
+            titleComponent={
+              <MenuItem.Title text={lang.t('settings.network')} />
+            }
           />
         )}
         <MenuItem
@@ -253,7 +257,7 @@ export default function SettingsSectionV2({
             </MenuItem.Selection>
           }
           size="large"
-          title={lang.t('settings.theme')}
+          titleComponent={<MenuItem.Title text={lang.t('settings.theme')} />}
         />
         {!isReadOnlyWallet && (
           <MenuItem
@@ -266,7 +270,9 @@ export default function SettingsSectionV2({
             }
             onPress={onPressPrivacy}
             size="large"
-            title={lang.t('settings.privacy')}
+            titleComponent={
+              <MenuItem.Title text={lang.t('settings.privacy')} />
+            }
           />
         )}
         {isLanguageSelectionEnabled && (
@@ -285,7 +291,9 @@ export default function SettingsSectionV2({
               </MenuItem.Selection>
             }
             size="large"
-            title={lang.t('settings.language')}
+            titleComponent={
+              <MenuItem.Title text={lang.t('settings.language')} />
+            }
           />
         )}
       </Menu>
@@ -295,32 +303,40 @@ export default function SettingsSectionV2({
           leftComponent={<MenuItem.EmojiIcon>🌈</MenuItem.EmojiIcon>}
           onPress={onPressShare}
           size="medium"
-          title={lang.t('settings.share_rainbow')}
+          titleComponent={
+            <MenuItem.Title text={lang.t('settings.share_rainbow')} />
+          }
         />
         <MenuItem
           iconPadding="large"
           leftComponent={<MenuItem.EmojiIcon>🧠</MenuItem.EmojiIcon>}
           onPress={onPressLearn}
           size="medium"
-          title={lang.t('settings.learn')}
+          titleComponent={<MenuItem.Title text={lang.t('settings.learn')} />}
         />
         <MenuItem
           iconPadding="large"
           leftComponent={<MenuItem.EmojiIcon>🐦</MenuItem.EmojiIcon>}
           onPress={onPressTwitter}
           size="medium"
-          title={lang.t('settings.follow_us_on_twitter')}
+          titleComponent={
+            <MenuItem.Title text={lang.t('settings.follow_us_on_twitter')} />
+          }
         />
         <MenuItem
           iconPadding="large"
           leftComponent={<MenuItem.EmojiIcon>💬</MenuItem.EmojiIcon>}
           onPress={onSendFeedback}
           size="medium"
-          title={lang.t(
-            ios
-              ? 'settings.feedback_and_support'
-              : 'settings.feedback_and_reports'
-          )}
+          titleComponent={
+            <MenuItem.Title
+              text={lang.t(
+                ios
+                  ? 'settings.feedback_and_support'
+                  : 'settings.feedback_and_reports'
+              )}
+            />
+          }
         />
         {isReviewAvailable && (
           <MenuItem
@@ -328,7 +344,7 @@ export default function SettingsSectionV2({
             leftComponent={<MenuItem.EmojiIcon>❤️</MenuItem.EmojiIcon>}
             onPress={() => {}}
             size="medium"
-            title={lang.t('settings.review')}
+            titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
           />
         )}
         {isCustomBuild.value && (
@@ -337,7 +353,9 @@ export default function SettingsSectionV2({
             leftComponent={<MenuItem.EmojiIcon>🤯</MenuItem.EmojiIcon>}
             onPress={setOriginalDeploymentKey}
             size="medium"
-            title={lang.t('settings.restore')}
+            titleComponent={
+              <MenuItem.Title text={lang.t('settings.restore')} />
+            }
           />
         )}
         <MenuItem
@@ -347,7 +365,9 @@ export default function SettingsSectionV2({
           }
           onPress={onPressDev}
           size="medium"
-          title={lang.t('settings.developer')}
+          titleComponent={
+            <MenuItem.Title text={lang.t('settings.developer')} />
+          }
         />
       </Menu>
       <Box alignItems="center" width="full">
