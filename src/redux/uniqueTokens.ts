@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, uniqBy, without } from 'lodash';
+import { concat, get, isEmpty, uniqBy, without } from 'lodash';
+import { URLSearchParams } from 'react-native-url-polyfill';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -23,7 +24,11 @@ import {
 } from '@rainbow-me/handlers/opensea-api';
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
+import {
+  dedupeAssetsWithFamilies,
+  getFamilies,
+  parseAccountUniqueTokensV2,
+} from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -253,37 +258,39 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   let errorCheck = false;
 
   const fetchNetwork = async (network: Network) => {
-    let shouldStopFetching = false;
-    let page = 0;
-    while (!shouldStopFetching) {
-      shouldStopFetching = await fetchPage(page, network);
+    let nextPage: string | null = 'start';
+    while (nextPage !== null) {
+      nextPage = await fetchPage(network, nextPage);
+
       // check that the account address to fetch for has not changed while fetching
       const isCurrentAccountAddress =
         accountAddress ===
         (showcaseAddress || getState().settings.accountAddress);
       if (!isCurrentAccountAddress) {
-        shouldStopFetching = true;
+        nextPage = null;
       }
-
-      page++;
     }
   };
 
-  const fetchPage = async (page: number, network: Network) => {
-    let shouldStopFetching = false;
+  const fetchPage = async (network: Network, page: string) => {
+    let cursor = null;
     try {
-      let newPageResults = await apiGetAccountUniqueTokens(
+      const res = await apiGetAccountUniqueTokens(
         network,
         accountAddress,
         page
       );
+      let newPageResults = parseAccountUniqueTokensV2(res);
+
+      const nextPage = get(res, 'data.next', null);
+      cursor = new URLSearchParams(nextPage).get('cursor');
 
       // If there are any "unknown" ENS names, fallback to the ENS
       // metadata service.
       newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
 
       uniqueTokens = concat(uniqueTokens, newPageResults);
-      shouldStopFetching =
+      let shouldStopFetching =
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
 
@@ -301,7 +308,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
           });
         }
       }
-      if (shouldStopFetching) {
+      if (shouldStopFetching || cursor === null) {
         const existingFamilies = getFamilies(existingUniqueTokens);
         const newFamilies = getFamilies(uniqueTokens);
         const incomingFamilies = without(newFamilies, ...existingFamilies);
@@ -320,10 +327,10 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       });
       captureException(error);
       // stop fetching if there is an error & dont save results
-      shouldStopFetching = true;
+      cursor = null;
       errorCheck = true;
     }
-    return shouldStopFetching;
+    return cursor;
   };
 
   await fetchNetwork(currentNetwork);
