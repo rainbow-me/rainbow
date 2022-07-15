@@ -8,6 +8,7 @@ export { default as LanguageSectionV2 } from './LanguageSectionV2';
 export { default as NetworkSection } from './NetworkSection';
 export { default as NetworkSectionV2 } from './NetworkSectionV2';
 export { default as PrivacySection } from './PrivacySection';
+export { default as PrivacySectionV2 } from './PrivacySectionV2';
 export { default as SettingsSection } from './SettingsSection';
 export { default as SettingsSectionV2 } from './SettingsSectionV2';
 export { default as UserDevSection } from './UserDevSection';

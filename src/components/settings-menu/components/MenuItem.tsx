@@ -27,16 +27,6 @@ const ImageIcon = ({ source }: ImageIconProps) => (
   />
 );
 
-interface EmojiIconProps {
-  children: string;
-}
-
-const EmojiIcon = ({ children }: EmojiIconProps) => (
-  <Text containsEmoji size="18px">
-    {`${children}`}
-  </Text>
-);
-
 interface SelectionProps {
   children: React.ReactNode;
 }
@@ -87,11 +77,12 @@ interface TitleProps {
   text: string;
   weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
   disabled?: boolean;
+  isLink?: boolean;
 }
 
-const Title = ({ text, weight = 'semibold', disabled }: TitleProps) => (
+const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
   <Text
-    color={disabled ? 'secondary60' : 'primary'}
+    color={disabled ? 'secondary60' : isLink ? 'action' : 'primary'}
     containsEmoji
     size="18px"
     weight={weight}
@@ -151,43 +142,47 @@ function MenuItem({
       ? 17
       : 0;
 
-  return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9} disabled={disabled}>
-      <Box
-        height={{ custom: size === 'large' ? 60 : 52 }}
-        justifyContent="center"
-        paddingHorizontal={{ custom: 16 }}
-        width="full"
-      >
-        <Inline alignHorizontal="justify" alignVertical="center">
-          <Inline alignVertical="center" space={{ custom: space }}>
-            {leftComponent}
-            <Stack space="8px">
-              {titleComponent}
-              {labelComponent}
-            </Stack>
-          </Inline>
-          <Inline alignVertical="center" space={{ custom: 9 }}>
-            {rightComponent}
-            {hasRightArrow && (
-              <Box
-                as={ImgixImage}
-                height={{ custom: 15 }}
-                source={Caret as Source}
-                tintColor={colors.blueGreyDark60}
-                width={{ custom: 5.83 }}
-              />
-            )}
-          </Inline>
+  const Item = () => (
+    <Box
+      height={{ custom: size === 'large' ? 60 : 52 }}
+      justifyContent="center"
+      paddingHorizontal={{ custom: 16 }}
+      width="full"
+    >
+      <Inline alignHorizontal="justify" alignVertical="center">
+        <Inline alignVertical="center" space={{ custom: space }}>
+          {leftComponent}
+          <Stack space="8px">
+            {titleComponent}
+            {labelComponent}
+          </Stack>
         </Inline>
-      </Box>
+        <Inline alignVertical="center" space={{ custom: 9 }}>
+          {rightComponent}
+          {hasRightArrow && (
+            <Box
+              as={ImgixImage}
+              height={{ custom: 15 }}
+              source={Caret as Source}
+              tintColor={colors.blueGreyDark60}
+              width={{ custom: 5.83 }}
+            />
+          )}
+        </Inline>
+      </Inline>
+    </Box>
+  );
+  return disabled ? (
+    <Item />
+  ) : (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+      <Item />
     </ButtonPressAnimation>
   );
 }
 
 MenuItem.Title = Title;
 MenuItem.Label = Label;
-MenuItem.EmojiIcon = EmojiIcon;
 MenuItem.ImageIcon = ImageIcon;
 MenuItem.Selection = Selection;
 MenuItem.Switch = Switch;

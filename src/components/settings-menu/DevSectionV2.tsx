@@ -212,7 +212,8 @@ const DevSectionV2 = () => {
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
         <MenuItem
           titleComponent={<MenuItem.Title text="Enable Testnets" />}
-          leftComponent={<MenuItem.EmojiIcon>🕹️</MenuItem.EmojiIcon>}
+          disabled
+          leftComponent={<MenuItem.Title text="🕹️" />}
           rightComponent={
             <Switch
               onValueChange={toggleTestnetsEnabled}

@@ -13,7 +13,7 @@ import {
   DevSectionV2,
   LanguageSectionV2,
   NetworkSectionV2,
-  PrivacySection,
+  PrivacySectionV2,
   SettingsSectionV2,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
@@ -92,7 +92,7 @@ const SettingsPages = {
     key: 'NetworkSection',
   },
   privacy: {
-    component: PrivacySection,
+    component: PrivacySectionV2,
     getTitle: () => lang.t('settings.privacy'),
     key: 'PrivacySection',
   },

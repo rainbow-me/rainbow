@@ -977,7 +977,9 @@
       "privacy": "Privacy :)",
       "privacy_section": {
         "public_showcase": "Public Showcase :)",
-        "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at :)"
+        "when_public": "When public, your NFT Showcase will be visible on your Rainbow profile! :)",
+        "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at :)",
+        "view_profile": "View your profile :)"
       },
       "restore": "Restore to original deployment :)",
       "review": "Review Rainbow :)",

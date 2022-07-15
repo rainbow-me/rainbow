@@ -304,7 +304,7 @@ export default function SettingsSectionV2({
       <Menu>
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.EmojiIcon>🌈</MenuItem.EmojiIcon>}
+          leftComponent={<MenuItem.Title text="🌈" />}
           onPress={onPressShare}
           size="medium"
           titleComponent={
@@ -313,14 +313,14 @@ export default function SettingsSectionV2({
         />
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.EmojiIcon>🧠</MenuItem.EmojiIcon>}
+          leftComponent={<MenuItem.Title text="🧠" />}
           onPress={onPressLearn}
           size="medium"
           titleComponent={<MenuItem.Title text={lang.t('settings.learn')} />}
         />
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.EmojiIcon>🐦</MenuItem.EmojiIcon>}
+          leftComponent={<MenuItem.Title text="🐦" />}
           onPress={onPressTwitter}
           size="medium"
           titleComponent={
@@ -329,7 +329,7 @@ export default function SettingsSectionV2({
         />
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.EmojiIcon>💬</MenuItem.EmojiIcon>}
+          leftComponent={<MenuItem.Title text="💬" />}
           onPress={onSendFeedback}
           size="medium"
           titleComponent={
@@ -345,7 +345,7 @@ export default function SettingsSectionV2({
         {isReviewAvailable && (
           <MenuItem
             iconPadding="large"
-            leftComponent={<MenuItem.EmojiIcon>❤️</MenuItem.EmojiIcon>}
+            leftComponent={<MenuItem.Title text="❤️" />}
             onPress={onPressReview}
             size="medium"
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
@@ -354,7 +354,7 @@ export default function SettingsSectionV2({
         {isCustomBuild.value && (
           <MenuItem
             iconPadding="large"
-            leftComponent={<MenuItem.EmojiIcon>🤯</MenuItem.EmojiIcon>}
+            leftComponent={<MenuItem.Title text="🤯" />}
             onPress={setOriginalDeploymentKey}
             size="medium"
             titleComponent={
@@ -364,9 +364,7 @@ export default function SettingsSectionV2({
         )}
         <MenuItem
           iconPadding="large"
-          leftComponent={
-            <MenuItem.EmojiIcon>{ios ? '🚧' : '🐞'}</MenuItem.EmojiIcon>
-          }
+          leftComponent={<MenuItem.Title text={ios ? '🚧' : '🐞'} />}
           onPress={onPressDev}
           size="medium"
           titleComponent={

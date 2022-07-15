@@ -48,9 +48,9 @@ const CurrencySectionV2 = () => {
               onPress={() => onSelectCurrency(currency)}
               leftComponent={
                 emojiName ? (
-                  <MenuItem.EmojiIcon>
-                    {(emoji.get('flag_' + emojiName) as string) || ''}
-                  </MenuItem.EmojiIcon>
+                  <MenuItem.Title
+                    text={(emoji.get('flag_' + emojiName) as string) || ''}
+                  />
                 ) : (
                   // @ts-ignore missing props
                   <CoinIcon address={currency} size={23} symbol={currency} />
