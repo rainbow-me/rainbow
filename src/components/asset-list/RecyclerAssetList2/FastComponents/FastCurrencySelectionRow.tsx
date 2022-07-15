@@ -32,7 +32,7 @@ interface FavStarProps {
 }
 
 function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
-  const { isDarkMode } = theme;
+  const { isDarkMode, colors } = theme;
   return (
     <ButtonPressAnimation onPress={toggleFavorite}>
       <SafeRadialGradient
