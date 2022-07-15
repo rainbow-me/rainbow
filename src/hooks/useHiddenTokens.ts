@@ -22,7 +22,6 @@ export default function useHiddenTokens() {
   const addHiddenToken = useCallback(
     async asset => {
       dispatch(rawAddHiddenToken(asset));
-      updateOpenFamilies({ Hidden: true });
       !isReadOnlyWallet && updateWebHidden([...hiddenTokens, asset]);
     },
     [
