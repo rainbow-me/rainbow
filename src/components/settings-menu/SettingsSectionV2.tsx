@@ -179,7 +179,6 @@ export default function SettingsSectionV2({
             onPress={onPressBackup}
             rightComponent={
               <MenuItem.StatusIcon
-                colors={colors}
                 status={
                   allBackedUp
                     ? 'complete'

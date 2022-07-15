@@ -8,7 +8,7 @@ const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
   emoji,
 ]);
 
-const emoji = new Map(emojiData);
+export const emoji = new Map(emojiData);
 
 function normalizeName(name) {
   if (/:.+:/.test(name)) {

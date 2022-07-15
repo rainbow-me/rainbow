@@ -8,7 +8,6 @@ import WarningIcon from '../../icons/svg/WarningIcon';
 import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '@rainbow-me/theme';
-
 const ICON_SIZE = 60;
 
 interface ImageIconProps {
@@ -34,7 +33,7 @@ interface EmojiIconProps {
 
 const EmojiIcon = ({ children }: EmojiIconProps) => (
   <Text containsEmoji size="18px">
-    {children}
+    {`${children}`}
   </Text>
 );
 
@@ -51,23 +50,32 @@ const Selection = ({ children }: SelectionProps) => (
 const Switch = () => <NativeSwitch />;
 
 interface StatusIconProps {
-  colors: any;
-  status: 'complete' | 'incomplete' | 'warning';
+  status: 'complete' | 'incomplete' | 'warning' | 'selected';
 }
 
-const StatusIcon = ({ colors, status }: StatusIconProps) =>
-  status === 'warning' ? (
+function StatusIcon({ status }: StatusIconProps) {
+  const { colors, isDarkMode } = useTheme();
+  return status === 'warning' ? (
     <WarningIcon color={colors.orangeLight} colors={colors} />
   ) : (
     <CheckmarkCircledIcon
+      shadowColor={colors.alpha(
+        isDarkMode ? colors.shadow : colors.blueGreyDark50,
+        0.4
+      )}
+      shadowOffset={{ height: 4, width: 0 }}
+      shadowRadius={6}
       color={
         status === 'complete'
           ? colors.green
-          : colors.alpha(colors.blueGreyDark, 0.5)
+          : status === 'incomplete'
+          ? colors.alpha(colors.blueGreyDark, 0.5)
+          : colors.appleBlue
       }
       colors={colors}
     />
   );
+}
 
 interface TitleProps {
   text: string;
@@ -111,7 +119,7 @@ interface MenuItemProps {
   hasRightArrow?: boolean;
   onPress?: () => void;
   titleComponent: React.ReactNode;
-  labelComponent: React.ReactNode;
+  labelComponent?: React.ReactNode;
 }
 
 function MenuItem({

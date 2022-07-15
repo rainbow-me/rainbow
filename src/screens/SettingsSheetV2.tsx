@@ -8,18 +8,19 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
-  CurrencySection,
+  CurrencySectionV2,
   DevNotificationsSection,
   DevSection,
   LanguageSection,
   NetworkSection,
   PrivacySection,
   UserDevSection,
+  SettingsSectionV2,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionViewV2 from '../components/settings-menu/BackupSection/WalletSelectionViewV2';
-import SettingsSectionV2 from '../components/settings-menu/SettingsSectionV2';
+
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
@@ -69,9 +70,9 @@ const SettingsPages = {
     key: 'BackupSection',
   },
   currency: {
-    component: CurrencySection,
+    component: CurrencySectionV2,
     getTitle: () => lang.t('settings.currency'),
-    key: 'CurrencySection',
+    key: 'CurrencySectionV2',
   },
   default: {
     component: null,

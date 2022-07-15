@@ -81,7 +81,6 @@ const WalletSelectionViewV2 = () => {
                 }
                 rightComponent={
                   <MenuItem.StatusIcon
-                    colors={colors}
                     status={
                       wallet.backupType === WalletBackupTypes.cloud
                         ? 'complete'
