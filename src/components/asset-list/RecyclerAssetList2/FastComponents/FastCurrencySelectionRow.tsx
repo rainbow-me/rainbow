@@ -99,7 +99,7 @@ export default React.memo(function FastCurrencySelectionRow({
 
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
-    (isNativeAsset(address ?? item?.address, network) && !showBalance);
+    (!isNativeAsset(address ?? item?.address, network) && !showBalance);
 
   return (
     <View style={sx.row}>
@@ -180,6 +180,7 @@ export default React.memo(function FastCurrencySelectionRow({
               useActionSheetFallback={false}
               wrapNativeComponent={false}
               {...contextMenuProps}
+              {...((showFavoriteButton || showAddButton) && { style: sx.info })}
             >
               <ButtonPressAnimation>
                 <SafeRadialGradient
@@ -282,7 +283,7 @@ const sx = StyleSheet.create({
   fav: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingRight: 17.5,
     width: 92,
   },
@@ -302,6 +303,9 @@ const sx = StyleSheet.create({
     paddingBottom: ios ? 0 : 2.5,
     paddingLeft: 2.5,
     paddingTop: ios ? 1 : 0,
+  },
+  info: {
+    paddingRight: 4,
   },
   innerContainer: {
     flex: 1,
