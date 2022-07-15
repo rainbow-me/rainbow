@@ -13,6 +13,7 @@ import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
+import { AssetType } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { useAccountAsset } from '@rainbow-me/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
@@ -84,6 +85,7 @@ export default React.memo(function FastCurrencySelectionRow({
     contextMenuProps,
     symbol,
     address,
+    mainnet_address,
     name,
     testID,
     type,
@@ -94,11 +96,11 @@ export default React.memo(function FastCurrencySelectionRow({
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
   const network = ethereumUtils.getNetworkFromType(type);
-  const rowTestID = testID + '-exchange-coin-row-' + (item?.symbol || symbol);
+  const rowTestID = testID + '-exchange-coin-row-' + (symbol ?? item?.symbol);
 
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
-    (isNativeAsset(item?.address, network) && !showBalance);
+    (isNativeAsset(address ?? item?.address, network) && !showBalance);
 
   return (
     <View style={sx.row}>
@@ -110,9 +112,9 @@ export default React.memo(function FastCurrencySelectionRow({
       >
         <View style={sx.rootContainer}>
           <FastCoinIcon
-            address={item?.mainnet_address || item?.address || address}
-            assetType={item?.type ?? item?.network}
-            symbol={item?.symbol || symbol}
+            address={mainnet_address || address || item?.address}
+            assetType={mainnet_address ? AssetType.token : type ?? item?.type}
+            symbol={symbol ?? item?.symbol}
             theme={theme}
           />
           <View style={sx.innerContainer}>
@@ -133,7 +135,7 @@ export default React.memo(function FastCurrencySelectionRow({
                   showBalance && sx.nameWithBalances,
                 ]}
               >
-                {item?.name || name}
+                {name ?? item?.name}
               </RNText>
               {!showBalance && (
                 <RNText
