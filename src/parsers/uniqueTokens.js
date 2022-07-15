@@ -152,9 +152,9 @@ export const parseAccountUniqueTokensPolygon = data => {
   erc721s = erc721s
     .map(({ asset_contract, collection, token_id, metadata, ...asset }) => {
       const { imageUrl, lowResUrl } = handleAndSignImages(
-        asset.image_url,
-        asset.image_original_url,
-        asset.image_preview_url
+        metadata.image_url,
+        metadata.image_original_url,
+        metadata.image_preview_url
       );
       return {
         ...pickShallow(metadata, [
