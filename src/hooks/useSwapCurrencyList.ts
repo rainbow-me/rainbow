@@ -44,6 +44,12 @@ const uniswapFavoriteMetadataSelector = (state: AppState) =>
 const uniswapFavoritesSelector = (state: AppState): string[] =>
   state.uniswap.favorites;
 
+const abcSort = (list: any[], key?: string) => {
+  return list.sort((a, b) => {
+    return key ? a[key]?.localeCompare(b[key]) : a?.localeCompare(b);
+  });
+};
+
 const searchCurrencyList = async (
   searchList: RT[] | TokenSearchTokenListId,
   query: string,
@@ -361,7 +367,7 @@ const useSwapCurrencyList = (
       if (favoriteAssets?.length && chainId === MAINNET_CHAINID) {
         list.push({
           color: colors.yellowFavorite,
-          data: favoriteAssets,
+          data: abcSort(favoriteAssets, 'name'),
           key: 'favorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
@@ -392,7 +398,7 @@ const useSwapCurrencyList = (
       if (unfilteredFavorites?.length) {
         list.push({
           color: colors.yellowFavorite,
-          data: unfilteredFavorites,
+          data: abcSort(unfilteredFavorites, 'name'),
           key: 'unfilteredFavorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
