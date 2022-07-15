@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, toLower } from 'lodash';
+import { isEmpty, keyBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -155,7 +155,7 @@ export const optimismExplorerInit = () => async (
 ) => {
   if (networkInfo[Network.optimism]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
-  const formattedNativeCurrency = toLower(nativeCurrency);
+  const formattedNativeCurrency = nativeCurrency.toLowerCase();
 
   const fetchAssetsBalancesAndPrices = async () => {
     const assets = keyBy(
@@ -165,7 +165,7 @@ export const optimismExplorerInit = () => async (
 
     const tokenAddresses = Object.values(
       assets
-    ).map(({ asset: { asset_code } }) => toLower(asset_code));
+    ).map(({ asset: { asset_code } }) => asset_code.toLowerCase());
 
     const balances = await fetchAssetBalances(tokenAddresses, accountAddress);
 

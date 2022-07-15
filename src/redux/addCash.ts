@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
-import toLower from 'lodash/toLower';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
@@ -410,9 +409,8 @@ const addCashGetTransferHash = (
       const { accountAddress: currentAccountAddress } = getState().settings;
       if (currentAccountAddress !== accountAddress) return;
 
-      const destAssetAddress = toLower(
-        AddCashCurrencies[network]?.[destCurrency]
-      );
+      const destAssetAddress =
+        AddCashCurrencies[network]?.[destCurrency]?.toLowerCase() ?? '';
 
       if (transferHash) {
         logger.log('[add cash] - Wyre transfer hash', transferHash);

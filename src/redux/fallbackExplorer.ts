@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, toLower, uniqBy } from 'lodash';
+import { isEmpty, keyBy, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import {
   // @ts-ignore
@@ -350,13 +350,14 @@ const getMainnetAssetsFromCovalent = async (
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
-      let contractAddress = item.contract_address;
-      const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
+      let contractAddress = item.contract_address ?? '';
+      const isETH =
+        contractAddress.toLowerCase() === COVALENT_ETH_ADDRESS.toLowerCase();
       if (isETH) {
         contractAddress = ETH_ADDRESS;
       }
 
-      const coingeckoId = coingeckoIds[toLower(contractAddress)];
+      const coingeckoId = coingeckoIds[contractAddress.toLowerCase()];
 
       return {
         asset: {
@@ -440,7 +441,7 @@ const getTokenType = (
   if (tx.tokenSymbol === 'UNI-V1') return AssetType.uniswap;
   if (tx.tokenSymbol === 'UNI-V2') return AssetType.uniswapV2;
   if (
-    toLower(tx.tokenName).indexOf('compound') !== -1 &&
+    tx.tokenName.toLowerCase().indexOf('compound') !== -1 &&
     tx.tokenSymbol !== 'COMP'
   )
     return AssetType.compound;
@@ -644,7 +645,7 @@ export const fetchOnchainBalances = ({
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { accountAssetsData, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;
-  const formattedNativeCurrency = toLower(nativeCurrency);
+  const formattedNativeCurrency = nativeCurrency.toLowerCase();
   const { mainnetAssets } = getState().fallbackExplorer;
   const callback = async (
     covalentMainnetAssets: Parameters<AssetDiscoveryCallback>[0]
@@ -704,7 +705,7 @@ export const fetchOnchainBalances = ({
     ).map(({ asset: { asset_code } }) =>
       asset_code === ETH_ADDRESS
         ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-        : toLower(asset_code)
+        : asset_code.toLowerCase()
     );
 
     const balances = await fetchAssetBalances(
