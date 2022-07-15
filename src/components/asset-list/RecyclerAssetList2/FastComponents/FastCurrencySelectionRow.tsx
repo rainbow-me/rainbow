@@ -14,6 +14,7 @@ import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { Network } from '@rainbow-me/helpers';
 import { useAccountAsset } from '@rainbow-me/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
@@ -94,7 +95,7 @@ export default React.memo(function FastCurrencySelectionRow({
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
-  const network = ethereumUtils.getNetworkFromType(type);
+  const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
   const rowTestID = testID + '-exchange-coin-row-' + (symbol ?? item?.symbol);
 
   const isInfoButtonVisible =
