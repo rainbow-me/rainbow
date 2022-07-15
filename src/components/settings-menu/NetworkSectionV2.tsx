@@ -14,10 +14,15 @@ import {
 import MenuContainer from './components/MenuContainer';
 import Menu from './components/Menu';
 import MenuItem from './components/MenuItem';
+import { Divider, Stack } from '@rainbow-me/design-system';
 
 const networks = values(networkInfo).filter(network => !network.layer2);
 
-const NetworkSectionV2 = () => {
+interface NetworkSectionProps {
+  inDevSection?: boolean;
+}
+
+const NetworkSectionV2 = ({ inDevSection }: NetworkSectionProps) => {
   const { network, testnetsEnabled } = useAccountSettings();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
@@ -37,28 +42,39 @@ const NetworkSectionV2 = () => {
     [dispatch, initializeAccountData, loadAccountData, resetAccountState]
   );
 
-  return (
+  const NetworkList = () => (
+    <>
+      {networks.map(({ disabled, name, value, testnet }: any) => {
+        return (
+          <MenuItem
+            onPress={() => onNetworkChange(value)}
+            disabled={(!testnetsEnabled && testnet) || disabled}
+            rightComponent={
+              value === network && <MenuItem.StatusIcon status="selected" />
+            }
+            titleComponent={
+              <MenuItem.Title
+                text={name}
+                weight={inDevSection ? 'medium' : 'semibold'}
+                disabled={(!testnetsEnabled && testnet) || disabled}
+              />
+            }
+            iconPadding="large"
+            size="medium"
+          />
+        );
+      })}
+    </>
+  );
+
+  return inDevSection ? (
+    <Stack separator={<Divider color="divider60" />}>
+      <NetworkList />
+    </Stack>
+  ) : (
     <MenuContainer>
       <Menu>
-        {networks.map(({ disabled, name, value, testnet }: any) => {
-          return (
-            <MenuItem
-              onPress={() => onNetworkChange(value)}
-              disabled={(!testnetsEnabled && testnet) || disabled}
-              rightComponent={
-                value === network && <MenuItem.StatusIcon status="selected" />
-              }
-              titleComponent={
-                <MenuItem.Title
-                  text={name}
-                  disabled={(!testnetsEnabled && testnet) || disabled}
-                />
-              }
-              iconPadding="large"
-              size="medium"
-            />
-          );
-        })}
+        <NetworkList />
       </Menu>
     </MenuContainer>
   );

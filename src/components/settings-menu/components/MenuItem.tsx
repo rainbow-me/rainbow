@@ -85,16 +85,16 @@ function StatusIcon({ status }: StatusIconProps) {
 
 interface TitleProps {
   text: string;
-  isHeader?: boolean;
+  weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
   disabled?: boolean;
 }
 
-const Title = ({ text, isHeader, disabled }: TitleProps) => (
+const Title = ({ text, weight = 'semibold', disabled }: TitleProps) => (
   <Text
     color={disabled ? 'secondary60' : 'primary'}
     containsEmoji
     size="18px"
-    weight={isHeader ? 'bold' : 'semibold'}
+    weight={weight}
   >
     {text}
   </Text>

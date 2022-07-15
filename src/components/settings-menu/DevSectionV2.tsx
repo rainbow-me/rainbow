@@ -51,6 +51,7 @@ import MenuContainer from './components/MenuContainer';
 import Menu from './components/Menu';
 import MenuItem from './components/MenuItem';
 import isTestFlight from '@rainbow-me/helpers/isTestFlight';
+import NetworkSectionV2 from './NetworkSectionV2';
 
 const DevSectionV2 = () => {
   const { navigate } = useNavigation();
@@ -221,7 +222,7 @@ const DevSectionV2 = () => {
           size="medium"
           iconPadding="large"
         />
-        {testnetsEnabled && <NetworkSection />}
+        {testnetsEnabled && <NetworkSectionV2 inDevSection />}
         <MenuItem
           titleComponent={<MenuItem.Title text="Clear local storage" />}
           leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
