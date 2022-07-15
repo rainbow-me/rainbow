@@ -180,7 +180,7 @@ export default React.memo(function FastCurrencySelectionRow({
               useActionSheetFallback={false}
               wrapNativeComponent={false}
               {...contextMenuProps}
-              {...((showFavoriteButton || showAddButton) && { style: sx.info })}
+              style={(showFavoriteButton || showAddButton) && sx.info}
             >
               <ButtonPressAnimation>
                 <SafeRadialGradient
