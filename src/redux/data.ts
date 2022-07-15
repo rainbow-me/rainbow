@@ -1594,8 +1594,13 @@ export const dataWatchPendingTransactions = (
           let receipt;
           try {
             receipt = await txObj.wait();
-          } catch (e) {
-            updatedPending.status = TransactionStatus.failed;
+          } catch (e: any) {
+            // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
+            if (e.transaction) {
+              updatedPending.status = TransactionStatus.failed;
+            } else {
+              updatedPending.status = TransactionStatus.cancelled;
+            }
             const title = getTitle({
               protocol: tx.protocol,
               status: updatedPending.status,
