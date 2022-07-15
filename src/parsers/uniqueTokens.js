@@ -146,15 +146,15 @@ export const parseAccountUniqueTokens = data => {
     .filter(token => !!token.familyName);
 };
 
-export const parseAccountUniqueTokensPolygon = data => {
+export const parseAccountUniqueTokensV2 = data => {
   let erc721s = data?.data?.results;
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea Polygon');
   erc721s = erc721s
     .map(({ asset_contract, collection, token_id, metadata, ...asset }) => {
       const { imageUrl, lowResUrl } = handleAndSignImages(
-        asset.image_url,
-        asset.image_original_url,
-        asset.image_preview_url
+        metadata.image_url,
+        metadata.image_original_url,
+        metadata.image_preview_url
       );
       return {
         ...pickShallow(metadata, [
@@ -185,6 +185,7 @@ export const parseAccountUniqueTokensPolygon = data => {
           'twitter_username',
           'wiki_link',
         ]),
+        contractStandard: asset_contract?.contract_standard,
         currentPrice: asset.sell_orders
           ? `${
               Number(asset.sell_orders[0].current_price) / 1000000000000000000
@@ -209,22 +210,34 @@ export const parseAccountUniqueTokensPolygon = data => {
           ? asset.last_sale.payment_token?.symbol
           : null,
         lowResUrl,
-        network: Network.polygon,
+        network:
+          asset.chain_identifier === 'ethereum'
+            ? Network.mainnet
+            : Network.polygon,
         permalink: asset.permalink,
         type: AssetTypes.nft,
-        uniqueId: `${Network.polygon}_${asset_contract?.address}_${token_id}`,
+        uniqueId:
+          asset.chain_identifier === 'ethereum'
+            ? `${asset_contract?.address}_${token_id}`
+            : `${Network.polygon}_${asset_contract?.address}_${token_id}`,
         urlSuffixForAsset: `${asset_contract?.address}/${token_id}`,
       };
     })
-    .filter(token => !!token.familyName && token.familyName !== 'POAP');
+    .filter(
+      token =>
+        !!token.familyName &&
+        token.familyName !== 'POAP' &&
+        token.contractStandard !== 'ERC20'
+    );
 
   //filter out NFTs that are not on our allow list
-  remove(
-    erc721s,
-    nft =>
-      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
-  );
-
+  if (erc721s[0]?.network === Network.polygon) {
+    remove(
+      erc721s,
+      nft =>
+        !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
+    );
+  }
   return erc721s;
 };
 
