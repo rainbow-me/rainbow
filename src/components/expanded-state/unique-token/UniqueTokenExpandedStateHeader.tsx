@@ -328,9 +328,9 @@ const UniqueTokenExpandedStateHeader = ({
         saveToCameraRoll(getFullResUrl(asset.image_original_url));
       } else if (actionKey === AssetActionsEnum.hide) {
         if (isHiddenAsset) {
-          removeHiddenToken(asset.uniqueId);
+          removeHiddenToken(asset);
         } else {
-          addHiddenToken(asset.uniqueId);
+          addHiddenToken(asset);
 
           if (isShowcaseAsset) {
             removeShowcaseToken(asset.uniqueId);

@@ -364,12 +364,12 @@ const UniqueTokenExpandedState = ({
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
-      removeShowcaseToken(uniqueId);
+      removeShowcaseToken(asset.uniqueId);
     } else {
-      addShowcaseToken(uniqueId);
+      addShowcaseToken(asset.uniqueId);
 
       if (isHiddenAsset) {
-        removeHiddenToken(uniqueId);
+        removeHiddenToken(asset);
       }
     }
   }, [
@@ -378,7 +378,7 @@ const UniqueTokenExpandedState = ({
     isShowcaseAsset,
     removeHiddenToken,
     removeShowcaseToken,
-    uniqueId,
+    asset,
   ]);
 
   const handlePressShare = useCallback(() => {
