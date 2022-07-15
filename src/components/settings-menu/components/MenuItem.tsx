@@ -80,11 +80,12 @@ function StatusIcon({ status }: StatusIconProps) {
 interface TitleProps {
   text: string;
   isHeader?: boolean;
+  disabled?: boolean;
 }
 
-const Title = ({ text, isHeader }: TitleProps) => (
+const Title = ({ text, isHeader, disabled }: TitleProps) => (
   <Text
-    color="primary"
+    color={disabled ? 'secondary60' : 'primary'}
     containsEmoji
     size="18px"
     weight={isHeader ? 'bold' : 'semibold'}
@@ -120,6 +121,7 @@ interface MenuItemProps {
   onPress?: () => void;
   titleComponent: React.ReactNode;
   labelComponent?: React.ReactNode;
+  disabled?: boolean;
 }
 
 function MenuItem({
@@ -131,6 +133,7 @@ function MenuItem({
   iconPadding,
   titleComponent,
   labelComponent,
+  disabled,
 }: MenuItemProps) {
   const { colors } = useTheme();
   const space =
@@ -143,7 +146,7 @@ function MenuItem({
       : 0;
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.9} disabled={disabled}>
       <Box
         height={{ custom: size === 'large' ? 60 : 52 }}
         justifyContent="center"

@@ -12,7 +12,7 @@ import {
   DevNotificationsSection,
   DevSection,
   LanguageSection,
-  NetworkSection,
+  NetworkSectionV2,
   PrivacySection,
   UserDevSection,
   SettingsSectionV2,
@@ -20,7 +20,6 @@ import {
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionViewV2 from '../components/settings-menu/BackupSection/WalletSelectionViewV2';
-
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
@@ -72,7 +71,7 @@ const SettingsPages = {
   currency: {
     component: CurrencySectionV2,
     getTitle: () => lang.t('settings.currency'),
-    key: 'CurrencySectionV2',
+    key: 'CurrencySection',
   },
   default: {
     component: null,
@@ -90,7 +89,7 @@ const SettingsPages = {
     key: 'LanguageSection',
   },
   network: {
-    component: NetworkSection,
+    component: NetworkSectionV2,
     getTitle: () => lang.t('settings.network'),
     key: 'NetworkSection',
   },
