@@ -13,7 +13,6 @@ import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
-import { AssetType } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { useAccountAsset } from '@rainbow-me/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
@@ -112,8 +111,9 @@ export default React.memo(function FastCurrencySelectionRow({
       >
         <View style={sx.rootContainer}>
           <FastCoinIcon
-            address={mainnet_address || address || item?.address}
-            assetType={mainnet_address ? AssetType.token : type ?? item?.type}
+            address={address || item?.address}
+            assetType={type ?? item?.type}
+            mainnetAddress={mainnet_address ?? item?.mainnet_address}
             symbol={symbol ?? item?.symbol}
             theme={theme}
           />
