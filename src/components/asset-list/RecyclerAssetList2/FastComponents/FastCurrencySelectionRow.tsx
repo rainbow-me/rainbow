@@ -13,9 +13,10 @@ import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { useAccountAsset } from '@rainbow-me/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
-import { deviceUtils, isETH } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? View
@@ -85,17 +86,19 @@ export default React.memo(function FastCurrencySelectionRow({
     address,
     name,
     testID,
+    type,
   },
 }: FastCurrencySelectionRowProps) {
   const { colors } = theme;
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
-
+  const network = ethereumUtils.getNetworkFromType(type);
   const rowTestID = testID + '-exchange-coin-row-' + (item?.symbol || symbol);
 
   const isInfoButtonVisible =
-    (!item?.isNativeAsset || isETH(item?.address)) && !showBalance;
+    !item?.isNativeAsset ||
+    (isNativeAsset(item?.address, network) && !showBalance);
 
   return (
     <View style={sx.row}>
@@ -108,6 +111,7 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.rootContainer}>
           <FastCoinIcon
             address={item?.mainnet_address || item?.address || address}
+            assetType={item?.type ?? item?.network}
             symbol={item?.symbol || symbol}
             theme={theme}
           />
