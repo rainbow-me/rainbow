@@ -44,7 +44,7 @@ import MenuContainer from './components/MenuContainer';
 
 // const { RainbowRequestReview, RNReview } = NativeModules;
 
-export const SettingsExternalURLs = {
+const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
   rainbowLearn: 'https://learn.rainbow.me',
   review:
@@ -53,22 +53,9 @@ export const SettingsExternalURLs = {
   twitterWebUrl: 'https://twitter.com/rainbowdotme',
 };
 
-export interface SettingsSectionProps {
-  onCloseModal: () => void;
-  onPressBackup: () => void;
-  onPressCurrency: () => void;
-  onPressDev: () => void;
-  onPressIcloudBackup: () => void;
-  onPressLanguage: () => void;
-  onPressNetwork: () => void;
-  onPressPrivacy: () => void;
-  onPressShowSecret: () => void;
-  onPressTwitter: () => void;
-}
-
-function capitalizeFirstLetter(str: string) {
+const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
-}
+};
 
 const checkAllWallets = (wallets: any) => {
   if (!wallets)
@@ -95,7 +82,21 @@ const checkAllWallets = (wallets: any) => {
   return { allBackedUp, areBackedUp, canBeBackedUp };
 };
 
-export default function SettingsSectionV2({
+interface SettingsSectionProps {
+  onCloseModal: () => void;
+  onPressBackup: () => void;
+  onPressCurrency: () => void;
+  onPressDev: () => void;
+  onPressIcloudBackup: () => void;
+  onPressLanguage: () => void;
+  onPressNetwork: () => void;
+  onPressPrivacy: () => void;
+  onPressShowSecret: () => void;
+  onPressTwitter: () => void;
+  onPressNotifications: () => void;
+}
+
+const SettingsSectionV2 = ({
   onCloseModal,
   onPressBackup,
   onPressCurrency,
@@ -105,7 +106,8 @@ export default function SettingsSectionV2({
   onPressNetwork,
   onPressPrivacy,
   onPressShowSecret,
-}: SettingsSectionProps) {
+  onPressNotifications,
+}: SettingsSectionProps) => {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
   const {
@@ -198,6 +200,7 @@ export default function SettingsSectionV2({
           />
         )}
         <MenuItem
+          onPress={onPressNotifications}
           hasRightArrow
           iconPadding="medium"
           leftComponent={
@@ -377,4 +380,6 @@ export default function SettingsSectionV2({
       </Box>
     </MenuContainer>
   );
-}
+};
+
+export default SettingsSectionV2;

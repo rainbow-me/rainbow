@@ -226,7 +226,7 @@ const DevSectionV2 = () => {
         {testnetsEnabled && <NetworkSectionV2 inDevSection />}
         <MenuItem
           titleComponent={<MenuItem.Title text="Clear local storage" />}
-          leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
+          leftComponent={<MenuItem.Title text="💥" />}
           size="medium"
           iconPadding="large"
           onPress={clearLocalStorage}
@@ -237,7 +237,7 @@ const DevSectionV2 = () => {
           <Menu header="Rainbow Developer Settings">
             <MenuItem
               onPress={AsyncStorage.clear}
-              leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="💥" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_async_storage')}
@@ -248,7 +248,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={clearAllStorages}
-              leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="💥" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_mmkv_storage')}
@@ -259,7 +259,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={clearImageMetadataCache}
-              leftComponent={<MenuItem.EmojiIcon>📷️</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="📷️" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_image_metadata_cache')}
@@ -270,7 +270,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={clearImageCache}
-              leftComponent={<MenuItem.EmojiIcon>📷️</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="📷️" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_image_cache')}
@@ -281,7 +281,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={wipeKeychain}
-              leftComponent={<MenuItem.EmojiIcon>💣</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="💣" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.reset_keychain')}
@@ -292,7 +292,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={() => Restart.Restart()}
-              leftComponent={<MenuItem.EmojiIcon>🔄</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="🔄" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.restart_app')}
@@ -303,7 +303,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={throwRenderError}
-              leftComponent={<MenuItem.EmojiIcon>💥</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="💥" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.crash_app_render_error')}
@@ -315,7 +315,7 @@ const DevSectionV2 = () => {
             {errorObj}
             <MenuItem
               onPress={removeBackups}
-              leftComponent={<MenuItem.EmojiIcon>🗑️</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="🗑️" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.remove_all_backups')}
@@ -326,7 +326,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={() => AsyncStorage.removeItem('experimentalConfig')}
-              leftComponent={<MenuItem.EmojiIcon>🤷</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="🤷" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t(
@@ -339,7 +339,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={connectToHardhat}
-              leftComponent={<MenuItem.EmojiIcon>👷</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="👷" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.connect_to_hardhat')}
@@ -350,7 +350,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={checkAlert}
-              leftComponent={<MenuItem.EmojiIcon>🏖️</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="🏖️" />}
               titleComponent={
                 <MenuItem.Title text={lang.t('developer_settings.alert')} />
               }
@@ -359,7 +359,7 @@ const DevSectionV2 = () => {
             />
             <MenuItem
               onPress={navToDevNotifications}
-              leftComponent={<MenuItem.EmojiIcon>🔔</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="🔔" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.notifications_debug')}
@@ -371,7 +371,7 @@ const DevSectionV2 = () => {
 
             <MenuItem
               onPress={syncCodepush}
-              leftComponent={<MenuItem.EmojiIcon>⏩</MenuItem.EmojiIcon>}
+              leftComponent={<MenuItem.Title text="⏩" />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.sync_codepush', {

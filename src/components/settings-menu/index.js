@@ -12,3 +12,4 @@ export { default as PrivacySectionV2 } from './PrivacySectionV2';
 export { default as SettingsSection } from './SettingsSection';
 export { default as SettingsSectionV2 } from './SettingsSectionV2';
 export { default as UserDevSection } from './UserDevSection';
+export { default as NotificationsSection } from './NotificationsSection';

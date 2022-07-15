@@ -15,6 +15,7 @@ import {
   NetworkSectionV2,
   PrivacySectionV2,
   SettingsSectionV2,
+  NotificationsSection,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
@@ -90,6 +91,11 @@ const SettingsPages = {
     component: NetworkSectionV2,
     getTitle: () => lang.t('settings.network'),
     key: 'NetworkSection',
+  },
+  notifications: {
+    component: NotificationsSection,
+    getTitle: () => lang.t('settings.notifications'),
+    key: 'NotificationsSection',
   },
   privacy: {
     component: PrivacySectionV2,
@@ -194,6 +200,9 @@ export default function SettingsSheet() {
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
                 onPressPrivacy={onPressSection(SettingsPages.privacy)}
+                onPressNotifications={onPressSection(
+                  SettingsPages.notifications
+                )}
               />
             )}
           </Stack.Screen>

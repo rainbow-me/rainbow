@@ -8,7 +8,7 @@ interface MenuProps {
   description?: string;
 }
 
-export default function Menu({ children, description, header }: MenuProps) {
+const Menu = ({ children, description, header }: MenuProps) => {
   const { isDarkMode } = useTheme();
   return (
     <Stack space="12px">
@@ -36,4 +36,6 @@ export default function Menu({ children, description, header }: MenuProps) {
       )}
     </Stack>
   );
-}
+};
+
+export default Menu;

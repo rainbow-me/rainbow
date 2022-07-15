@@ -1,8 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { useTheme } from '../../../theme/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
-import { ButtonPressAnimation } from '../../animations';
 import { ContactAvatar } from '../../contacts';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -11,13 +9,11 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { abbreviations } from '@rainbow-me/utils';
 import Menu from '../components/Menu';
 import MenuItem from '../components/MenuItem';
-import { Box, Text } from '@rainbow-me/design-system';
 import MenuContainer from '../components/MenuContainer';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 
 const WalletSelectionViewV2 = () => {
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
   const { walletNames, wallets } = useWallets();
   const { manageCloudBackups } = useManageCloudBackups();
 

@@ -49,7 +49,7 @@ interface StatusIconProps {
   status: 'complete' | 'incomplete' | 'warning' | 'selected';
 }
 
-function StatusIcon({ status }: StatusIconProps) {
+const StatusIcon = ({ status }: StatusIconProps) => {
   const { colors, isDarkMode } = useTheme();
   return status === 'warning' ? (
     <WarningIcon color={colors.orangeLight} colors={colors} />
@@ -71,7 +71,7 @@ function StatusIcon({ status }: StatusIconProps) {
       colors={colors}
     />
   );
-}
+};
 
 interface TitleProps {
   text: string;
@@ -96,7 +96,7 @@ interface LabelProps {
   warn?: boolean;
 }
 
-function Label({ text, warn }: LabelProps) {
+const Label = ({ text, warn }: LabelProps) => {
   const { colors } = useTheme();
   return (
     <Text
@@ -107,7 +107,7 @@ function Label({ text, warn }: LabelProps) {
       {text}
     </Text>
   );
-}
+};
 
 interface MenuItemProps {
   rightComponent?: React.ReactNode;
@@ -121,7 +121,7 @@ interface MenuItemProps {
   disabled?: boolean;
 }
 
-function MenuItem({
+const MenuItem = ({
   hasRightArrow,
   onPress,
   leftComponent,
@@ -131,7 +131,7 @@ function MenuItem({
   titleComponent,
   labelComponent,
   disabled,
-}: MenuItemProps) {
+}: MenuItemProps) => {
   const { colors } = useTheme();
   const space =
     iconPadding === 'small'
@@ -179,7 +179,7 @@ function MenuItem({
       <Item />
     </ButtonPressAnimation>
   );
-}
+};
 
 MenuItem.Title = Title;
 MenuItem.Label = Label;
