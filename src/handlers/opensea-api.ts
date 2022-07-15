@@ -7,10 +7,7 @@ import {
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes, { Network } from '@rainbow-me/networkTypes';
-import {
-  parseAccountUniqueTokens,
-  parseAccountUniqueTokensPolygon,
-} from '@rainbow-me/parsers';
+import { parseAccountUniqueTokensV2 } from '@rainbow-me/parsers';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 
@@ -20,39 +17,33 @@ export const UNIQUE_TOKENS_LIMIT_TOTAL: number = 2000;
 export const apiGetAccountUniqueTokens = async (
   network: Network,
   address: string,
-  page: number
+  cursor: string
 ) => {
   try {
     const isPolygon = network === NetworkTypes.polygon;
-    const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
-    const offset = page * UNIQUE_TOKENS_LIMIT_PER_PAGE;
-    const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/assets`;
     const urlV2 = `https://${NFT_API_URL}/api/v2/beta/assets`;
-    const data = await rainbowFetch(isPolygon ? urlV2 : url, {
+    const data = await rainbowFetch(urlV2, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': NFT_API_KEY,
       },
       method: 'get',
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
       params: {
-        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
+        ...(cursor !== 'start' && { cursor }),
         limit: UNIQUE_TOKENS_LIMIT_PER_PAGE,
-        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
-        offset: offset,
+        owner_address: address,
         ...(isPolygon
           ? {
               chain_identifier: 'matic',
-              owner_address: address,
             }
           : {
-              owner: address,
+              chain_identifier: 'ethereum',
             }),
       },
       timeout: 10000, // 10 secs
     });
-    return isPolygon
-      ? parseAccountUniqueTokensPolygon(data)
-      : parseAccountUniqueTokens(data);
+    return data;
   } catch (error: any) {
     //opensea gives us an error if the account has no tokens on the network, we want to ignore this error
     if (
@@ -75,15 +66,10 @@ export const apiGetAccountUniqueToken = async (
   { forceUpdate = false }: { forceUpdate?: boolean } = {}
 ) => {
   try {
-    const isPolygon = network === NetworkTypes.polygon;
-    const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
-    const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/asset/${contractAddress}/${tokenId}${
-      forceUpdate ? '?force_update=true' : ''
-    }`;
     const urlV2 = `https://${NFT_API_URL}/api/v2/beta/asset/${contractAddress}/${tokenId}${
       forceUpdate ? '?force_update=true' : ''
     }`;
-    const { data } = await rainbowFetch(isPolygon ? urlV2 : url, {
+    const { data } = await rainbowFetch(urlV2, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': NFT_API_KEY,
@@ -91,11 +77,9 @@ export const apiGetAccountUniqueToken = async (
       method: 'get',
       timeout: 10000, // 10 secs
     });
-    return isPolygon
-      ? parseAccountUniqueTokensPolygon({
-          data: { results: [data] },
-        })?.[0]
-      : parseAccountUniqueTokens({ data: { assets: [data] } })?.[0];
+    return parseAccountUniqueTokensV2({
+      data: { results: [data] },
+    })?.[0];
   } catch (error) {
     logger.sentry('Error getting unique token', error);
     captureException(new Error('Opensea: Error getting unique token'));
