@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 import networkTypes from '../../helpers/networkTypes';
@@ -17,7 +17,6 @@ import styled from '@rainbow-me/styled-components';
 
 const sx = StyleSheet.create({
   sectionHeader: {
-    backgroundColor: '#fff',
     paddingVertical: 18,
   },
 });
@@ -32,11 +31,13 @@ const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
   hash ||
   (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
 
-const renderSectionHeader = ({ section }) => (
-  <View style={sx.sectionHeader}>
-    <ActivityListHeader {...section} />
-  </View>
-);
+const renderSectionHeader = ({ section, colors }) => {
+  return (
+    <View style={[sx.sectionHeader, { backgroundColor: colors.white }]}>
+      <ActivityListHeader {...section} />
+    </View>
+  );
+};
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
@@ -101,6 +102,13 @@ const ActivityList = ({
     }
     return currentPendingTransactionsCount;
   }, [sections, requests]);
+
+  const { colors } = useTheme();
+  const renderSectionHeaderWithTheme = useCallback(
+    ({ section }) => renderSectionHeader({ colors, section }),
+    [colors]
+  );
+
   return network === networkTypes.mainnet || sections.length ? (
     isEmpty ? (
       <ActivityListEmptyState>{header}</ActivityListEmptyState>
@@ -126,7 +134,7 @@ const ActivityList = ({
         initialNumToRender={12}
         keyExtractor={keyExtractor}
         removeClippedSubviews
-        renderSectionHeader={renderSectionHeader}
+        renderSectionHeader={renderSectionHeaderWithTheme}
         sections={sections}
       />
     )

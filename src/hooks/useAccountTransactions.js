@@ -36,7 +36,11 @@ export default function useAccountTransactions(initialized, isFocused) {
     })
   );
 
-  const allTransactions = pendingTransactions.concat(transactions);
+  const allTransactions = useMemo(
+    () => pendingTransactions.concat(transactions),
+    [pendingTransactions, transactions]
+  );
+
   const [page, setPage] = useState(1);
   const nextPage = useCallback(() => setPage(page => page + 1), []);
 
@@ -44,10 +48,6 @@ export default function useAccountTransactions(initialized, isFocused) {
     () => allTransactions.slice(0, page * NOE_PAGE),
     [allTransactions, page]
   );
-
-  const transactionsCount = useMemo(() => {
-    return slicedTransaction.length;
-  }, [slicedTransaction]);
 
   const { contacts } = useContacts();
   const { requests } = useRequests();
@@ -90,6 +90,6 @@ export default function useAccountTransactions(initialized, isFocused) {
     remainingItemsLabel,
     sections,
     transactions: ios ? allTransactions : slicedTransaction,
-    transactionsCount,
+    transactionsCount: slicedTransaction.length,
   };
 }

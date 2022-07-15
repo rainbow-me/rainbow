@@ -118,7 +118,6 @@ const sx = StyleSheet.create({
     ...position.maxSizeAsObject(10),
   },
   row: {
-    // alignItems: 'center',
     flexDirection: 'row',
   },
 });
