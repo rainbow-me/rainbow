@@ -1,13 +1,16 @@
 import analytics from '@segment/analytics-react-native';
+import { changeIcon } from 'react-native-change-icon';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import {
+  getAppIcon,
   getLanguage,
   getNativeCurrency,
   getNetwork,
   getTestnetsEnabled,
+  saveAppIcon,
   saveLanguage,
   saveNativeCurrency,
   saveNetwork,
@@ -27,6 +30,8 @@ const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
   'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
+const SETTINGS_UPDATE_APP_ICON_SUCCESS =
+  'settings/SETTINGS_UPDATE_APP_ICON_SUCCESS';
 const SETTINGS_UPDATE_LANGUAGE_SUCCESS =
   'settings/SETTINGS_UPDATE_LANGUAGE_SUCCESS';
 const SETTINGS_UPDATE_NETWORK_SUCCESS =
@@ -42,6 +47,7 @@ const SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS =
  * The current `settings` state.
  */
 interface SettingsState {
+  appIcon: string;
   accountAddress: string;
   chainId: number;
   language: string;
@@ -55,7 +61,9 @@ interface SettingsState {
  */
 type SettingsStateUpdateAction =
   | SettingsStateUpdateSettingsAddressAction
+  | SettingsStateUpdateAppIconAction
   | SettingsStateUpdateNativeCurrencySuccessAction
+  | SettingsStateUpdateAppIconSuccessAction
   | SettingsStateUpdateNetworkSuccessAction
   | SettingsStateUpdateTestnetPrefAction
   | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
@@ -70,6 +78,10 @@ interface SettingsStateUpdateNativeCurrencySuccessAction {
   type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS;
   payload: SettingsState['nativeCurrency'];
 }
+interface SettingsStateUpdateAppIconSuccessAction {
+  type: typeof SETTINGS_UPDATE_APP_ICON_SUCCESS;
+  payload: SettingsState['appIcon'];
+}
 
 interface SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction {
   type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS;
@@ -79,6 +91,10 @@ interface SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction {
   };
 }
 
+interface SettingsStateUpdateAppIconAction {
+  type: typeof SETTINGS_UPDATE_APP_ICON_SUCCESS;
+  payload: SettingsState['appIcon'];
+}
 interface SettingsStateUpdateTestnetPrefAction {
   type: typeof SETTINGS_UPDATE_TESTNET_PREF_SUCCESS;
   payload: SettingsState['testnetsEnabled'];
@@ -103,6 +119,7 @@ export const settingsLoadState = () => async (
   try {
     const nativeCurrency = await getNativeCurrency();
     const testnetsEnabled = await getTestnetsEnabled();
+    settingsLoadAppIcon();
     analytics.identify(null, {
       currency: nativeCurrency,
       enabledTestnets: testnetsEnabled,
@@ -114,6 +131,20 @@ export const settingsLoadState = () => async (
     });
   } catch (error) {
     logger.log('Error loading native currency and testnets pref', error);
+  }
+};
+
+export const settingsLoadAppIcon = () => async (
+  dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>
+) => {
+  try {
+    const appIcon = (await getAppIcon()) as string;
+    dispatch({
+      payload: appIcon,
+      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error loading app icon', error);
   }
 };
 
@@ -158,6 +189,22 @@ export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
   saveTestnetsEnabled(testnetsEnabled);
 };
 
+export const settingsChangeAppIcon = (appIcon: string) => async (
+  dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>
+) => {
+  logger.log('changing app icon to', appIcon);
+  try {
+    await changeIcon(appIcon);
+    logger.log('icon changed to ', appIcon);
+    saveAppIcon(appIcon);
+    dispatch({
+      payload: appIcon,
+      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error changing app icon', error);
+  }
+};
 export const settingsUpdateAccountAddress = (accountAddress: string) => async (
   dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>
 ) => {
@@ -226,6 +273,7 @@ export const settingsChangeNativeCurrency = (
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE: SettingsState = {
   accountAddress: '',
+  appIcon: 'og',
   chainId: 1,
   language: 'en',
   nativeCurrency: NativeCurrencyKeys.USD,
@@ -239,6 +287,11 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         accountAddress: action.payload,
+      };
+    case SETTINGS_UPDATE_APP_ICON_SUCCESS:
+      return {
+        ...state,
+        appIcon: action.payload,
       };
     case SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS:
       return {
