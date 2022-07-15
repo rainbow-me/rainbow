@@ -27,6 +27,7 @@ import {
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -283,6 +284,7 @@ export default function SendConfirmationSheet() {
 
   let color = useColorForAsset({
     address: asset.mainnet_address || asset.address,
+    type: asset?.mainnet_address ? AssetTypes.token : asset?.type,
   });
 
   if (isNft) {
