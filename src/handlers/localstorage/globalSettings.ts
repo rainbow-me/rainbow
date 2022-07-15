@@ -4,6 +4,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
+const APP_ICON = 'appIcon';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
@@ -45,6 +46,8 @@ export const setKeyboardHeight = (height: any) =>
 
 export const getNativeCurrency = () =>
   getGlobal(NATIVE_CURRENCY, NativeCurrencyKeys.USD);
+
+export const getAppIcon = () => getGlobal(APP_ICON, 'og');
 
 export const saveNativeCurrency = (nativeCurrency: any) =>
   saveGlobal(NATIVE_CURRENCY, nativeCurrency);
@@ -91,4 +94,12 @@ export const getFlashbotsEnabled = () => getGlobal(FLASHBOTS_ENABLED, false);
  */
 export const saveFlashbotsEnabled = (preference: boolean) => {
   saveGlobal(FLASHBOTS_ENABLED, preference);
+};
+
+/**
+ * @desc save app icon  preference
+ * @param  {string}  [value]
+ */
+export const saveAppIcon = (appIcon: string) => {
+  saveGlobal(APP_ICON, appIcon);
 };
