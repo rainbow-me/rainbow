@@ -11,7 +11,7 @@ import {
 } from './transactions';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 
-const accountAssetsDataSelector = (state: any) => state.accountAssetsData;
+const mainnetAddressesSelector = (state: any) => state.mainnetAddresses;
 const accountAddressSelector = (state: any) => state.accountAddress;
 const contactsSelector = (state: any) => state.contacts;
 const requestsSelector = (state: any) => state.requests;
@@ -46,7 +46,7 @@ const addContactInfo = (contacts: any) => (txn: any) => {
 
 const buildTransactionsSections = (
   accountAddress: any,
-  accountAssetsData: any,
+  mainnetAddresses: any,
   contacts: any,
   requests: any,
   theme: any,
@@ -72,8 +72,7 @@ const buildTransactionsSections = (
       data: transactionsByDate[section].map(txn => ({
         ...txn,
         accountAddress,
-        mainnetAddress:
-          accountAssetsData[`${txn.address}_${txn.network}`]?.mainnet_address,
+        mainnetAddress: mainnetAddresses[`${txn.address}_${txn.network}`],
       })),
       renderItem: ({ item }: any) => (
         <FastTransactionCoinRow
@@ -117,7 +116,7 @@ const buildTransactionsSections = (
 export const buildTransactionsSectionsSelector = createSelector(
   [
     accountAddressSelector,
-    accountAssetsDataSelector,
+    mainnetAddressesSelector,
     contactsSelector,
     requestsSelector,
     themeSelector,

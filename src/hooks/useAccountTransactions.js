@@ -49,6 +49,21 @@ export default function useAccountTransactions(initialized, isFocused) {
     [allTransactions, page]
   );
 
+  const mainnetAddresses = useMemo(
+    () =>
+      accountAssetsData
+        ? slicedTransaction.reduce((acc, txn) => {
+            acc[`${txn.address}_${txn.network}`] =
+              accountAssetsData[
+                `${txn.address}_${txn.network}`
+              ]?.mainnet_address;
+
+            return acc;
+          }, {})
+        : [],
+    [accountAssetsData, slicedTransaction]
+  );
+
   const { contacts } = useContacts();
   const { requests } = useRequests();
   const { accountAddress } = useAccountSettings();
@@ -60,10 +75,10 @@ export default function useAccountTransactions(initialized, isFocused) {
 
   const accountState = {
     accountAddress,
-    accountAssetsData,
     contacts,
     initialized,
     isFocused,
+    mainnetAddresses,
     onTransactionPress,
     requests,
     theme,
