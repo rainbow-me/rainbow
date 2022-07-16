@@ -10,7 +10,13 @@ const DepositModal = props => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   android && useStatusBarManaging();
 
-  return <ExchangeModal type={ExchangeModalTypes.deposit} {...props} />;
+  return (
+    <ExchangeModal
+      testID="deposit-modal"
+      type={ExchangeModalTypes.deposit}
+      {...props}
+    />
+  );
 };
 
 export default ExchangeNavigatorFactory(DepositModal);

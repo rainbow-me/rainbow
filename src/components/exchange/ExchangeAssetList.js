@@ -248,14 +248,14 @@ const ExchangeAssetList = (
         data: data.map(rowData => ({
           ...rowData,
           contextMenuProps: contextMenuProps(
-            store.getState().data.genericAssets?.[rowData.address],
+            rowData ?? store.getState().data.genericAssets?.[rowData.uniqueId],
             onCopySwapDetailsText
           ),
           nativeCurrency,
           nativeCurrencySymbol,
           onAddPress: () => {
             itemProps.onActionAsset(
-              store.getState().data.genericAssets?.[rowData.address] || rowData
+              rowData ?? store.getState().data.genericAssets?.[rowData.uniqueId]
             );
           },
           onCopySwapDetailsText,
@@ -264,12 +264,12 @@ const ExchangeAssetList = (
               return itemProps.onPress(givenItem);
             }
             const asset = store.getState().data.genericAssets?.[
-              rowData.address
+              rowData.uniqueId
             ];
             if (rowData.isVerified || itemProps.showBalance) {
-              itemProps.onPress(asset || rowData);
+              itemProps.onPress(rowData ?? asset);
             } else {
-              handleUnverifiedTokenPress(asset || rowData);
+              handleUnverifiedTokenPress(rowData || asset);
             }
           },
           showAddButton: itemProps.showAddButton,
