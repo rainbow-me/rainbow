@@ -24,6 +24,7 @@ import { Box } from '@rainbow-me/design-system';
 import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import { useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import WalletNotificationsSettings from '../components/settings-menu/WalletNotificationsSettings';
 
 function cardStyleInterpolator({
   current,

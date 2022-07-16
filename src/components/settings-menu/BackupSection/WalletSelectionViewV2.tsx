@@ -75,7 +75,7 @@ const WalletSelectionViewV2 = () => {
                     alignSelf="center"
                     color={color}
                     marginRight={10}
-                    size="smedium"
+                    size="small"
                     value={labelOrName || `${index + 1}`}
                   />
                 }

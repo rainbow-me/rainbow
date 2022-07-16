@@ -16,6 +16,7 @@ import {
   PrivacySectionV2,
   SettingsSectionV2,
   NotificationsSection,
+  WalletNotificationsSettings,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
@@ -235,10 +236,18 @@ export default function SettingsSheet() {
             component={DevNotificationsSection}
             name="DevNotificationsSection"
             options={{
-              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
               cardStyleInterpolator,
               title: lang.t('developer_settings.notifications_debug'),
             }}
+          />
+          <Stack.Screen
+            component={WalletNotificationsSettings}
+            name="WalletNotificationsSettings"
+            options={({ route }) => ({
+              cardStyleInterpolator,
+              // @ts-expect-error
+              title: route.params?.title,
+            })}
           />
           <Stack.Screen
             component={SettingsBackupView}

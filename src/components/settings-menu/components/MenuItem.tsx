@@ -78,11 +78,26 @@ interface TitleProps {
   weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
   disabled?: boolean;
   isLink?: boolean;
+  colorOverride?: string;
 }
 
-const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
+const Title = ({
+  text,
+  weight = 'semibold',
+  disabled,
+  isLink,
+  colorOverride,
+}: TitleProps) => (
   <Text
-    color={disabled ? 'secondary60' : isLink ? 'action' : 'primary'}
+    color={
+      colorOverride
+        ? { custom: colorOverride }
+        : disabled
+        ? 'secondary60'
+        : isLink
+        ? 'action'
+        : 'primary'
+    }
     containsEmoji
     size="18px"
     weight={weight}

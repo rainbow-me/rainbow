@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Switch } from 'react-native';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { ContactAvatar } from '../contacts';
 import { useTheme } from '@rainbow-me/theme';
+import { useNavigation } from '@rainbow-me/navigation';
 
 const NotificationsSection = () => {
   const { colors } = useTheme();
+  const { navigate } = useNavigation();
+
+  const onPress = useCallback(
+    name => {
+      navigate('WalletNotificationsSettings', {
+        title: name,
+      });
+    },
+    [navigate]
+  );
+
   return (
     <MenuContainer>
       <Menu>
@@ -17,13 +29,14 @@ const NotificationsSection = () => {
           titleComponent={<MenuItem.Title text="My Wallets" weight="bold" />}
         />
         <MenuItem
+          onPress={() => onPress('notben.eth')}
           size="medium"
           leftComponent={
             <ContactAvatar
               alignSelf="center"
               color={colors.appleBlue}
               marginRight={10}
-              size="smedium"
+              size="small"
               value={'notben.eth'}
             />
           }
@@ -32,13 +45,14 @@ const NotificationsSection = () => {
           hasRightArrow
         />
         <MenuItem
+          onPress={() => onPress('pugson.eth')}
           size="medium"
           leftComponent={
             <ContactAvatar
               alignSelf="center"
               color={colors.red}
               marginRight={10}
-              size="smedium"
+              size="small"
               value={'pugson.eth'}
             />
           }
@@ -58,13 +72,14 @@ const NotificationsSection = () => {
           }
         />
         <MenuItem
+          onPress={() => onPress('moxey.eth')}
           size="medium"
           leftComponent={
             <ContactAvatar
               alignSelf="center"
               color={colors.red}
               marginRight={10}
-              size="smedium"
+              size="small"
               value={'moxey.eth'}
             />
           }
