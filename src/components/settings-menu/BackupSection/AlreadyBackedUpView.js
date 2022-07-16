@@ -9,7 +9,8 @@ import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
-import { Text } from '../../text';
+import { Text as NativeText } from '../../text';
+import { Box, Text } from '@rainbow-me/design-system';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -40,7 +41,7 @@ const CheckmarkIconContainer = styled(View)(
   })
 );
 
-const CheckmarkIconText = styled(Text).attrs(({ theme: { colors } }) => ({
+const CheckmarkIconText = styled(NativeText).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.whiteLabel,
   size: 'larger',
@@ -60,7 +61,7 @@ const Content = styled(Centered).attrs({
   flex: 1,
 });
 
-const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
+const DescriptionText = styled(NativeText).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'loosest',
@@ -74,7 +75,7 @@ const Footer = styled(Centered)({
   ...padding.object(0, 15, 42),
 });
 
-const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
+const Subtitle = styled(NativeText).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   size: fonts.size.smedium,
@@ -83,7 +84,7 @@ const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   marginTop: -10,
 });
 
-const Title = styled(Text).attrs({
+const Title = styled(NativeText).attrs({
   align: 'center',
   size: 'larger',
   weight: 'bold',
@@ -200,22 +201,31 @@ export default function AlreadyBackedUpView() {
   const { isDarkMode } = useTheme();
 
   return (
-    <Fragment>
-      <Subtitle>
-        {(walletStatus === WalletBackupStatus.CLOUD_BACKUP && `Backed up`) ||
-          (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
-            `Backed up manually`) ||
-          (walletStatus === WalletBackupStatus.IMPORTED && `Imported`)}
-      </Subtitle>
-      <Content>
-        <Centered direction="column">
-          <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
-          <Title>
-            {(walletStatus === WalletBackupStatus.IMPORTED &&
-              `Your wallet was imported`) ||
-              `Your wallet is backed up`}
-          </Title>
-          <DescriptionText>
+    <Box
+      alignItems="center"
+      justifyContent="space-between"
+      width="full"
+      height="full"
+    >
+      <Box marginTop="-10px">
+        <Text color="secondary50" size="14px" weight="medium">
+          {(walletStatus === WalletBackupStatus.CLOUD_BACKUP && `Backed up`) ||
+            (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
+              `Backed up manually`) ||
+            (walletStatus === WalletBackupStatus.IMPORTED && `Imported`)}
+        </Text>
+      </Box>
+
+      <Box alignItems="center" marginTop="-42px">
+        <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
+
+        <Text size="20px" weight="bold">
+          {(walletStatus === WalletBackupStatus.IMPORTED &&
+            `Your wallet was imported`) ||
+            `Your wallet is backed up`}
+        </Text>
+        <Box paddingHorizontal="60px" paddingTop="24px">
+          <Text size="18px" color="secondary50" align="center">
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
               lang.t('back_up.explainers.if_lose_cloud', {
                 cloudPlatformName: cloudPlatform,
@@ -224,56 +234,48 @@ export default function AlreadyBackedUpView() {
                 lang.t('back_up.explainers.if_lose_manual')) ||
               (walletStatus === WalletBackupStatus.IMPORTED &&
                 lang.t('back_up.explainers.if_lose_imported'))}
-          </DescriptionText>
-        </Centered>
-        <Column>
-          <SheetActionButton
-            color={colors.white}
-            label={`🗝 ${
-              isSecretPhrase
-                ? lang.t('back_up.secret.view_secret_phrase')
-                : lang.t('back_up.secret.view_private_key')
-            }`}
-            onPress={handleViewRecoveryPhrase}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-          />
-        </Column>
-      </Content>
-      {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
-        <Footer>
+          </Text>
+        </Box>
+        <Box paddingTop="42px">
+          <ButtonPressAnimation onPress={handleViewRecoveryPhrase}>
+            <Box
+              background="body"
+              paddingHorizontal="19px"
+              height={{ custom: 48 }}
+              borderRadius={56}
+              justifyContent="center"
+              shadow="15px light"
+            >
+              <Text color="secondary80" size="18px" weight="semibold">
+                {`🗝 ${
+                  isSecretPhrase
+                    ? lang.t('back_up.secret.view_secret_phrase')
+                    : lang.t('back_up.secret.view_private_key')
+                }`}
+              </Text>
+            </Box>
+          </ButtonPressAnimation>
+        </Box>
+      </Box>
+      <Box paddingBottom="42px">
+        {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
           <ButtonPressAnimation onPress={handleIcloudBackup}>
-            <Text
-              align="center"
-              color={colors.appleBlue}
-              letterSpacing="roundedMedium"
-              size="large"
-              weight="semibold"
-            >
-              􀙶{' '}
-              {lang.t('back_up.cloud.back_up_to_platform', {
+            <Text color="action" size="18px" weight="semibold">
+              {`􀙶 ${lang.t('back_up.cloud.back_up_to_platform', {
                 cloudPlatformName: cloudPlatform,
-              })}
+              })}`}
             </Text>
           </ButtonPressAnimation>
-        </Footer>
-      ) : !hasMultipleWallets ? (
-        <Footer>
+        ) : !hasMultipleWallets ? (
           <ButtonPressAnimation onPress={manageCloudBackups}>
-            <Text
-              align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              letterSpacing="roundedMedium"
-              size="lmedium"
-              weight="semibold"
-            >
-              􀍢{' '}
-              {lang.t('back_up.cloud.manage_platform_backups', {
+            <Text color="secondary60" size="18px" weight="semibold">
+              {`􀍢 ${lang.t('back_up.cloud.manage_platform_backups', {
                 cloudPlatformName: cloudPlatform,
-              })}
+              })}`}
             </Text>
           </ButtonPressAnimation>
-        </Footer>
-      ) : null}
-    </Fragment>
+        ) : null}
+      </Box>
+    </Box>
   );
 }
