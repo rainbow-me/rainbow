@@ -974,6 +974,22 @@
       "learn_short": "Learn about Rainbow :)",
       "network": "Réseau",
       "notifications": "Notifications :)",
+      "notifications_section": {
+        "my_wallets": "My Wallets :)",
+        "watched_wallets": "Watched Wallets :)",
+        "allow_notifications": "Allow Notifications :)",
+        "sent": "Sent :)",
+        "received": "Received :)",
+        "purchased": "Purchased :)",
+        "sold": "Sold :)",
+        "minted": "Minted :)",
+        "swapped": "Swapped :)",
+        "approvals": "Approvals :)",
+        "contracts_and_more": "Contracts & More :)",
+        "all": "All :)",
+        "off": "Off :)",
+        "plus_n_more": "+ %{n} more :)"
+      },
       "privacy": "Privacy :)",
       "privacy_section": {
         "public_showcase": "Public Showcase :)",

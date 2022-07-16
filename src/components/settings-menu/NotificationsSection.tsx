@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import lang from 'i18n-js';
 import { Switch } from 'react-native';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
@@ -26,7 +27,12 @@ const NotificationsSection = () => {
         <MenuItem
           size="medium"
           rightComponent={<Switch />}
-          titleComponent={<MenuItem.Title text="My Wallets" weight="bold" />}
+          titleComponent={
+            <MenuItem.Title
+              text={lang.t('settings.notifications_section.my_wallets')}
+              weight="bold"
+            />
+          }
         />
         <MenuItem
           onPress={() => onPress('notben.eth')}
@@ -40,7 +46,11 @@ const NotificationsSection = () => {
               value={'notben.eth'}
             />
           }
-          labelComponent={<MenuItem.Label text="All" />}
+          labelComponent={
+            <MenuItem.Label
+              text={lang.t('settings.notifications_section.all')}
+            />
+          }
           titleComponent={<MenuItem.Title text="notben.eth" />}
           hasRightArrow
         />
@@ -57,7 +67,15 @@ const NotificationsSection = () => {
             />
           }
           labelComponent={
-            <MenuItem.Label text="Received, Sold, Minted + 4 more" />
+            <MenuItem.Label
+              text={`${lang.t(
+                'settings.notifications_section.received'
+              )}, ${lang.t('settings.notifications_section.sold')}, ${lang.t(
+                'settings.notifications_section.minted'
+              )}, ${lang.t('settings.notifications_section.plus_n_more', {
+                n: 4,
+              })}`}
+            />
           }
           titleComponent={<MenuItem.Title text="pugson.eth" />}
           hasRightArrow
@@ -68,7 +86,10 @@ const NotificationsSection = () => {
           size="medium"
           rightComponent={<Switch />}
           titleComponent={
-            <MenuItem.Title text="Watched Wallets" weight="bold" />
+            <MenuItem.Title
+              text={lang.t('settings.notifications_section.watched_wallets')}
+              weight="bold"
+            />
           }
         />
         <MenuItem
@@ -83,7 +104,11 @@ const NotificationsSection = () => {
               value={'moxey.eth'}
             />
           }
-          labelComponent={<MenuItem.Label text="Off" />}
+          labelComponent={
+            <MenuItem.Label
+              text={lang.t('settings.notifications_section.off')}
+            />
+          }
           titleComponent={<MenuItem.Title text="moxey.eth" />}
           hasRightArrow
         />

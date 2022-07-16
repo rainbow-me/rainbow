@@ -4,6 +4,7 @@ import { Switch } from 'react-native';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import lang from 'i18n-js';
 
 const WalletNotificationsSettings = () => {
   const { colors } = useTheme();
@@ -18,7 +19,12 @@ const WalletNotificationsSettings = () => {
       <Menu>
         <MenuItem
           titleComponent={
-            <MenuItem.Title weight="bold" text="Allow Notifications" />
+            <MenuItem.Title
+              weight="bold"
+              text={lang.t(
+                'settings.notifications_section.allow_notifications'
+              )}
+            />
           }
           rightComponent={
             <Switch
@@ -32,7 +38,11 @@ const WalletNotificationsSettings = () => {
       {notificationsAllowed && (
         <Menu>
           <MenuItem
-            titleComponent={<MenuItem.Title text="Sent" />}
+            titleComponent={
+              <MenuItem.Title
+                text={lang.t('settings.notifications_section.sent')}
+              />
+            }
             leftComponent={
               <MenuItem.Title colorOverride={colors.appleBlue} text="􀈟" />
             }
@@ -41,7 +51,11 @@ const WalletNotificationsSettings = () => {
             size="medium"
           />
           <MenuItem
-            titleComponent={<MenuItem.Title text="Received" />}
+            titleComponent={
+              <MenuItem.Title
+                text={lang.t('settings.notifications_section.received')}
+              />
+            }
             leftComponent={
               <MenuItem.Title colorOverride={colors.green} text="􀅀" />
             }
@@ -50,7 +64,11 @@ const WalletNotificationsSettings = () => {
             size="medium"
           />
           <MenuItem
-            titleComponent={<MenuItem.Title text="Purchased" />}
+            titleComponent={
+              <MenuItem.Title
+                text={lang.t('settings.notifications_section.purchased')}
+              />
+            }
             leftComponent={
               <MenuItem.Title colorOverride={colors.pink} text="􀑉" />
             }
@@ -59,7 +77,11 @@ const WalletNotificationsSettings = () => {
             size="medium"
           />
           <MenuItem
-            titleComponent={<MenuItem.Title text="Sold" />}
+            titleComponent={
+              <MenuItem.Title
+                text={lang.t('settings.notifications_section.sold')}
+              />
+            }
             leftComponent={
               <MenuItem.Title colorOverride={colors.orange} text="􀋡" />
             }
@@ -68,7 +90,11 @@ const WalletNotificationsSettings = () => {
             size="medium"
           />
           <MenuItem
-            titleComponent={<MenuItem.Title text="Minted" />}
+            titleComponent={
+              <MenuItem.Title
+                text={lang.t('settings.notifications_section.minted')}
+              />
+            }
             leftComponent={
               <MenuItem.Title colorOverride={colors.yellowOrange} text="􀆿" />
             }
@@ -77,7 +103,11 @@ const WalletNotificationsSettings = () => {
             size="medium"
           />
           <MenuItem
-            titleComponent={<MenuItem.Title text="Swapped" />}
+            titleComponent={
+              <MenuItem.Title
+                text={lang.t('settings.notifications_section.swapped')}
+              />
+            }
             leftComponent={
               <MenuItem.Title colorOverride={colors.swapPurple} text="􀖅" />
             }
@@ -86,7 +116,11 @@ const WalletNotificationsSettings = () => {
             size="medium"
           />
           <MenuItem
-            titleComponent={<MenuItem.Title text="Approvals" />}
+            titleComponent={
+              <MenuItem.Title
+                text={lang.t('settings.notifications_section.approvals')}
+              />
+            }
             leftComponent={
               <MenuItem.Title colorOverride={colors.green} text="􀁢" />
             }
@@ -95,7 +129,13 @@ const WalletNotificationsSettings = () => {
             size="medium"
           />
           <MenuItem
-            titleComponent={<MenuItem.Title text="Contracts & More" />}
+            titleComponent={
+              <MenuItem.Title
+                text={lang.t(
+                  'settings.notifications_section.contracts_and_more'
+                )}
+              />
+            }
             leftComponent={
               <MenuItem.Title colorOverride={colors.blueGreyDark60} text="􀍡" />
             }
