@@ -138,7 +138,7 @@ export default function SwapDetailsState({
     contentScroll.value = withSpring(0, springConfig);
     setParams({
       longFormHeight: sheetHeightWithoutKeyboard,
-      springDamping: 0.7,
+      transitionDuration: 0.7,
     });
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
 
