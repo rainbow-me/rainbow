@@ -22,6 +22,7 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
+import { getNftsByWalletAddress } from '@rainbow-me/handlers/simplehash';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
@@ -327,6 +328,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   };
 
   await fetchNetwork(currentNetwork);
+
   // Only include poaps and L2 nft's on mainnet
   if (currentNetwork === Network.mainnet) {
     const poaps = (await fetchPoaps(accountAddress)) ?? [];
@@ -335,6 +337,14 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       uniqueTokens = concat(uniqueTokens, poaps);
     }
     await fetchNetwork(Network.polygon);
+
+    // Fetch Optimism and Arbitrum NFTs
+    const optimismArbitrumNFTs = await getNftsByWalletAddress(accountAddress);
+
+    if (optimismArbitrumNFTs.length > 0) {
+      uniqueTokens = concat(uniqueTokens, optimismArbitrumNFTs);
+    }
+
     //we only care about analytics for mainnet + L2's
     analytics.identify(null, { NFTs: uniqueTokens.length });
   }
