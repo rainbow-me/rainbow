@@ -284,3 +284,58 @@ export const dedupeAssetsWithFamilies = (accountAssets, families) =>
     accountAssets,
     asset => !families?.find(family => family === asset?.address)
   );
+
+export const parseSimplehashNfts = nftData => {
+  const results = nftData?.map(simplehashNft => {
+    const collection = simplehashNft.collection;
+
+    const { imageUrl, lowResUrl } = handleAndSignImages(
+      simplehashNft.image_url,
+      simplehashNft.extra_metadata?.image_original_url,
+      simplehashNft.previews.image_small_url
+    );
+
+    const parsedNft = {
+      animation_url: simplehashNft.extra_metadata?.animation_original_url,
+      asset_contract: {
+        address: simplehashNft.contract_address,
+        name: simplehashNft.contract.name,
+        schema_name: simplehashNft.contract.type,
+        symbol: simplehashNft.contract.symbol,
+      },
+      background: simplehashNft.background_color,
+      collection: {
+        description: collection.description,
+        discord_url: collection.discord_url,
+        external_url: collection.external_url,
+        image_url: collection.image_url,
+        name: collection.name,
+        slug: collection.collection_id,
+        twitter_username: collection.twitter_username,
+      },
+      description: simplehashNft.description,
+      external_link: simplehashNft.external_url,
+      familyImage: collection.image_url,
+      familyName: collection.name,
+      id: simplehashNft.token_id,
+      image_original_url: simplehashNft.extra_metadata?.image_original_url,
+      image_preview_url: lowResUrl,
+      image_thumbnail_url: lowResUrl,
+      image_url: imageUrl,
+      isPoap: false,
+      isSendable: false,
+      lastPrice: parseLastSalePrice(simplehashNft.last_sale?.unit_price),
+      lastSalePaymentToken: simplehashNft.last_sale?.payment_token?.symbol,
+      lowResUrl,
+      name: simplehashNft.name,
+      network: simplehashNft.chain,
+      permalink: null, // TODO - simplehashNft.collection.marketplace_pages / token_id
+      traits: simplehashNft.extra_metadata?.attributes ?? [],
+      type: AssetTypes.nft,
+      uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
+      urlSuffixForAsset: `${simplehashNft.contract_address}/${simplehashNft.token_id}`,
+    };
+    return parsedNft;
+  });
+  return results;
+};

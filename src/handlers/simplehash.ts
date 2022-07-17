@@ -2,6 +2,7 @@ import { captureException } from '@sentry/react-native';
 // @ts-expect-error
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient } from '../rainbow-fetch';
+import { parseSimplehashNfts } from '@rainbow-me/parsers';
 import { logger } from '@rainbow-me/utils';
 
 const chains = {
@@ -57,7 +58,7 @@ export async function getNftsByWalletAddress(walletAddress: string) {
         wallet_addresses: walletAddress,
       },
     });
-    return response.data;
+    return parseSimplehashNfts(response.data.nfts);
   } catch (error) {
     logger.sentry(
       `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
