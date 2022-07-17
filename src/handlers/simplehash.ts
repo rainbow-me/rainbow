@@ -5,9 +5,12 @@ import { RainbowFetchClient } from '../rainbow-fetch';
 import { logger } from '@rainbow-me/utils';
 
 const chains = {
+  arbitrum: 'arbitrum',
   ethereum: 'ethereum',
+  optimism: 'optimism',
+  polygon: 'polygon',
 } as const;
-type Chain = keyof typeof chains;
+type SimpleHashChain = keyof typeof chains;
 
 const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
@@ -18,7 +21,7 @@ export async function getNFTByTokenId({
   contractAddress,
   tokenId,
 }: {
-  chain?: Chain;
+  chain?: SimpleHashChain;
   contractAddress: string;
   tokenId: string;
 }) {
@@ -36,6 +39,29 @@ export async function getNFTByTokenId({
     return response.data;
   } catch (error) {
     logger.sentry(`Error fetching simplehash NFT: ${error}`);
+    captureException(error);
+  }
+}
+
+export async function getNftsByWalletAddress(walletAddress: string) {
+  try {
+    const chainParam: string = `${chains.arbitrum},${chains.optimism}`;
+    const response = await simplehashApi.get(`/v0/nfts/owners`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'x-api-key': SIMPLEHASH_API_KEY,
+      },
+      params: {
+        chains: chainParam,
+        wallet_addresses: walletAddress,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    logger.sentry(
+      `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
+    );
     captureException(error);
   }
 }
