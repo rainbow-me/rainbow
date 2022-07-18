@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import toLower from 'lodash/toLower';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -70,12 +69,12 @@ export default function TokenIndexExpandedState({ asset }) {
   const underlying = useMemo(() => {
     if (!dpi) return [];
     const baseAsset = ethereumUtils.formatGenericAsset(
-      genericAssets[toLower(dpi?.base?.address)],
+      genericAssets[dpi?.base?.address?.toLowerCase()],
       nativeCurrency
     );
 
     const underlyingAssets = dpi?.underlying.map(asset => {
-      const genericAsset = genericAssets[toLower(asset?.address)];
+      const genericAsset = genericAssets[asset?.address?.toLowerCase()];
       if (!genericAsset) return null;
       const assetWithPrice = ethereumUtils.formatGenericAsset(
         genericAsset,

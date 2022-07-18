@@ -1,10 +1,10 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import LinearGradient from 'react-native-linear-gradient';
+import { useDeepCompareMemo } from 'use-deep-compare';
 import { FlyInAnimation } from '../animations';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
@@ -16,6 +16,7 @@ import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 import { filterList } from '@rainbow-me/utils';
 
 const KeyboardArea = styled.View({
@@ -68,6 +69,7 @@ export default function SendContactList({
   contacts,
   currentInput,
   ensSuggestions,
+  loadingEnsSuggestions,
   onPressContact,
   removeContact,
   userAccounts,
@@ -90,7 +92,7 @@ export default function SendContactList({
     if (touchedContact.current && contactRefs.current[touchedContact.current]) {
       contactRefs.current[touchedContact.current].close?.();
     }
-    touchedContact.current = toLower(address);
+    touchedContact.current = address.toLowerCase();
   }, []);
 
   const handleEditContact = useCallback(
@@ -119,7 +121,7 @@ export default function SendContactList({
           onSelectEdit={handleEditContact}
           onTouch={handleCloseAllDifferentContacts}
           ref={component => {
-            contactRefs.current[toLower(item.address)] = component;
+            contactRefs.current[item.address.toLowerCase()] = component;
           }}
           removeContact={removeContact}
           {...item}
@@ -139,7 +141,7 @@ export default function SendContactList({
       userAccounts.filter(
         account =>
           account.visible &&
-          toLower(account.address) !== toLower(accountAddress)
+          account.address.toLowerCase() !== accountAddress.toLowerCase()
       ),
       currentInput,
       ['label']
@@ -151,7 +153,7 @@ export default function SendContactList({
       watchedAccounts.filter(
         account =>
           account.visible &&
-          toLower(account.address) !== toLower(accountAddress)
+          account.address.toLowerCase() !== accountAddress.toLowerCase()
       ),
       currentInput,
       ['label']
@@ -206,11 +208,17 @@ export default function SendContactList({
     isDarkMode,
   ]);
 
+  const flyInKey = useDeepCompareMemo(() => String(Date.now()), [sections]);
+
+  const shouldShowEmptyState =
+    filteredContacts.length === 0 &&
+    filteredAddresses.length === 0 &&
+    ensSuggestions.length === 0 &&
+    !loadingEnsSuggestions;
+
   return (
-    <FlyInAnimation>
-      {filteredContacts.length === 0 &&
-      filteredAddresses.length === 0 &&
-      ensSuggestions.length === 0 ? (
+    <FlyInAnimation key={flyInKey}>
+      {shouldShowEmptyState ? (
         <SendEmptyState />
       ) : (
         <SendContactFlatList

@@ -24,7 +24,7 @@ const sx = StyleSheet.create({
   },
 });
 
-const circleStyle = borders.buildCircleAsObject(40);
+const circleStyle = borders.buildCircleAsObject(30);
 
 export default React.memo(function TokenFamilyHeaderIcon({
   familyImage,
@@ -61,7 +61,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
       style={style}
     >
       {familyImage ? (
-        <ImgixImage size={40} source={source} style={circleStyle} />
+        <ImgixImage size={30} source={source} style={circleStyle} />
       ) : (
         // @ts-expect-error FallbackIcon is not migrated to TS.
         <FallbackIcon {...circleStyle} symbol={symbol} />
