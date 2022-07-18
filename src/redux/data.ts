@@ -1639,6 +1639,8 @@ export const dataWatchPendingTransactions = (
               });
               updatedPending.title = title;
               updatedPending.pending = false;
+              // decrement the nonce since it was dropped
+              dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
             }
           }
         }
