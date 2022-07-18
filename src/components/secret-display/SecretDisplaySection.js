@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { upperFirst } from 'lodash';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   createdWithBiometricError,
   identifyWalletType,
@@ -13,43 +13,13 @@ import Spinner from '../Spinner';
 import { BiometricButtonContent, Button } from '../buttons';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
-import { Column, ColumnWithMargins, RowWithMargins } from '../layout';
-import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
-import { margin, padding, position, shadow } from '@rainbow-me/styles';
+import { margin, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
-
-const Title = styled(Text).attrs({
-  align: 'center',
-  size: 'lmedium',
-  weight: 'bold',
-})({
-  paddingTop: isSmallPhone => (isSmallPhone ? 0 : 20),
-});
-
-const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  lineHeight: 'loose',
-  size: 'lmedium',
-  weight: 'semibold',
-}))({
-  marginBottom: 42,
-  marginTop: 5,
-  paddingHorizontal: 3,
-});
-
-const AuthenticationText = styled(Text).attrs({
-  align: 'center',
-  color: 'blueGreyDark',
-  size: 'large',
-  weight: 'normal',
-})({
-  ...padding.object(0, 60),
-});
+import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 
 const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -59,42 +29,15 @@ const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   marginTop: 0.5,
 });
 
-const CopyButtonRow = styled(RowWithMargins).attrs({
-  align: 'center',
-  justify: 'start',
-  margin: 6,
-})({
-  backgroundColor: ({ theme: { colors } }) => colors.transparent,
-  height: 34,
-});
-
-const CopyButtonText = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.appleBlue,
-  letterSpacing: 'roundedMedium',
-  lineHeight: 19,
-  size: 'lmedium',
-  weight: 'bold',
-}))({});
-
 const ToggleSecretButton = styled(Button)(({ theme: { colors } }) => ({
   ...margin.object(0, 20),
   ...shadow.buildAsObject(0, 5, 15, colors.purple, 0.3),
   backgroundColor: colors.appleBlue,
 }));
 
-const BiometryWarningText = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  lineHeight: 'looser',
-  size: 'lmedium',
-}))({
-  ...padding.object(0, 35),
-});
-
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
 export default function SecretDisplaySection({
-  isSmallPhone,
   onSecretLoaded,
   onWalletTypeIdentified,
 }) {
@@ -148,68 +91,79 @@ export default function SecretDisplaySection({
   const renderStepNoSeeds = useCallback(() => {
     if (isRecoveryPhraseVisible) {
       return (
-        <ColumnWithMargins align="center" justify="center">
-          <AuthenticationText>
-            {lang.t('back_up.secret.you_need_to_authenticate', {
-              typeName: typeLabel,
-            })}
-          </AuthenticationText>
-          <ToggleSecretButton onPress={loadSeed}>
-            <BiometricButtonContent
-              color={colors.white}
-              label={lang.t('back_up.secret.show_recovery', {
-                typeName: upperFirst(typeLabel),
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          paddingHorizontal="60px"
+        >
+          <Stack space="10px">
+            <Text color="secondary" weight="regular" size="18px" align="center">
+              {lang.t('back_up.secret.you_need_to_authenticate', {
+                typeName: typeLabel,
               })}
-              showIcon={!seed}
-            />
-          </ToggleSecretButton>
-        </ColumnWithMargins>
+            </Text>
+            <ToggleSecretButton onPress={loadSeed}>
+              <BiometricButtonContent
+                color={colors.white}
+                label={lang.t('back_up.secret.show_recovery', {
+                  typeName: upperFirst(typeLabel),
+                })}
+                showIcon={!seed}
+              />
+            </ToggleSecretButton>
+          </Stack>
+        </Box>
       );
     } else {
       return (
-        <BiometryWarningText>
+        <Text size="16px" color="secondary60" align="center">
           Your account has been secured with biometric data, like fingerprint or
           face identification. To see your recovery phrase, turn on biometrics
           in your phone’s settings.
-        </BiometryWarningText>
+        </Text>
       );
     }
   }, [isRecoveryPhraseVisible, typeLabel, loadSeed, colors.white, seed]);
   return (
     <>
       {visible ? (
-        <ColumnWithMargins
-          align="center"
-          justify="center"
-          margin={16}
-          paddingHorizontal={30}
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          marginHorizontal="16px"
+          paddingHorizontal="30px"
         >
           {seed ? (
-            <Fragment>
-              <CopyFloatingEmojis textToCopy={seed}>
-                <CopyButtonRow>
-                  <CopyButtonIcon />
-                  <CopyButtonText>
-                    {lang.t('back_up.secret.copy_to_clipboard')}
-                  </CopyButtonText>
-                </CopyButtonRow>
-              </CopyFloatingEmojis>
-              <Column>
+            <>
+              <Box paddingBottom="19px">
+                <CopyFloatingEmojis textToCopy={seed}>
+                  <Inline alignVertical="center" space="6px">
+                    <CopyButtonIcon />
+                    <Text color="action" size="16px" weight="bold">
+                      {lang.t('back_up.secret.copy_to_clipboard')}
+                    </Text>
+                  </Inline>
+                </CopyFloatingEmojis>
+              </Box>
+              <Stack alignHorizontal="center" space="12px">
                 <SecretDisplayCard seed={seed} type={type} />
-              </Column>
-              <Column>
-                <Title isSmallPhone={isSmallPhone}>
+                <Text weight="bold" size="16px" containsEmoji>
                   👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
-                </Title>
-                <DescriptionText>
+                </Text>
+                <Text
+                  align="center"
+                  weight="semibold"
+                  size="16px"
+                  color="secondary60"
+                >
                   {lang.t('back_up.secret.anyone_who_has_these')}
-                </DescriptionText>
-              </Column>
-            </Fragment>
+                </Text>
+              </Stack>
+            </>
           ) : (
             <LoadingSpinner color={colors.blueGreyDark50} />
           )}
-        </ColumnWithMargins>
+        </Box>
       ) : (
         renderStepNoSeeds()
       )}
