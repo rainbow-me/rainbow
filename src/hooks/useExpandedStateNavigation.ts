@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import useAsset from './useAsset';
 import useWallets from './useWallets';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import { watchingAlert } from '@rainbow-me/utils';
@@ -30,7 +31,7 @@ export default function useExpandedStateNavigation(inputType: any) {
 
   return useCallback(
     (routeName, traverseParams) => {
-      if (isReadOnlyWallet) {
+      if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         watchingAlert();
         return;
       }

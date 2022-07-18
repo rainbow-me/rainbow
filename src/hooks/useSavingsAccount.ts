@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { concat, isEmpty, isNil, keyBy, orderBy, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keyBy, orderBy } from 'lodash';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
@@ -115,7 +115,7 @@ export default function useSavingsAccount(includeDefaultDai: any) {
       client: compoundClient,
       pollInterval: COMPOUND_QUERY_INTERVAL,
       skip: !hasAccountAddress,
-      variables: { id: toLower(accountAddress) },
+      variables: { id: accountAddress?.toLowerCase() },
     }
   );
 

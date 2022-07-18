@@ -1,4 +1,4 @@
-import { sortBy, toLower } from 'lodash';
+import sortBy from 'lodash/sortBy';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
@@ -250,10 +250,10 @@ export default function useUniswapPools(
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
       // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      const token0 = (toLower(pair.token0?.id) === WETH_ADDRESS
+      const token0 = (pair.token0?.id?.toLowerCase() === WETH_ADDRESS
         ? genericAssets['eth']
         : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-          genericAssets[toLower(pair.token0?.id)]) || {
+          genericAssets[pair.token0?.id?.toLowerCase()]) || {
         // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         ...pair.token0,
         // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
@@ -261,10 +261,10 @@ export default function useUniswapPools(
       };
       const token1 =
         // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-        toLower(pair.token1?.id) === WETH_ADDRESS
+        pair.token1?.id?.toLowerCase() === WETH_ADDRESS
           ? genericAssets['eth']
           : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-            genericAssets[toLower(pair.token1?.id)] || {
+            genericAssets[pair.token1?.id?.toLowerCase()] || {
               // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
               ...pair.token1,
               // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
@@ -273,9 +273,9 @@ export default function useUniswapPools(
       // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       pair.tokens = [token0, token1];
       // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      tmpAllTokens.push(toLower(pair.tokens[0]?.id));
+      tmpAllTokens.push(pair.tokens[0]?.id?.toLowerCase());
       // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      tmpAllTokens.push(toLower(pair.tokens[1]?.id));
+      tmpAllTokens.push(pair.tokens[1]?.id?.toLowerCase());
       const pairAdjustedForCurrency = {
         // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
         ...pair,

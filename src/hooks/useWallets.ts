@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -61,7 +60,8 @@ export default function useWallets() {
     const walletKey = Object.keys(wallets).find(key => {
       // Addresses
       return wallets[key].addresses.find(
-        (account: any) => toLower(account.address) === toLower(address)
+        (account: any) =>
+          account.address.toLowerCase() === address.toLowerCase()
       );
     });
 
