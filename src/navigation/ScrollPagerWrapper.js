@@ -14,6 +14,7 @@ export default forwardRef(function ScrollPagerWrapper(
       {useViewPagerAdaptor ? (
         <ViewPagerAdapter
           {...rest}
+          initialScrollPosition={initialScrollPosition}
           keyboardDismissMode="none"
           overScrollMode="never"
         />
