@@ -11,7 +11,6 @@ import {
   InteractionManager,
   Linking,
   LogBox,
-  StatusBar,
   View,
 } from 'react-native';
 // eslint-disable-next-line import/default
@@ -54,6 +53,7 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
@@ -76,11 +76,10 @@ import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
-
-StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 // We need to disable React Navigation instrumentation for E2E tests
 // because detox doesn't like setTimeout calls that are used inside
@@ -131,6 +130,7 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
+
   initSentryAndCheckForFedoraMode();
 }
 
@@ -214,11 +214,9 @@ class App extends Component {
 
   identifyFlow = async () => {
     const address = await loadAddress();
-    if (address) {
-      this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-    } else {
-      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
-    }
+    const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
+    this.setState({ initialRoute });
+    PerformanceContextMap.set('initialRoute', initialRoute);
   };
 
   async handleTokenListUpdate() {

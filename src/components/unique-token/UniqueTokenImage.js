@@ -68,6 +68,7 @@ const UniqueTokenImage = ({
             onError={handleError}
             onLoad={onLoad}
             resizeMode={ImgixImage.resizeMode[resizeMode]}
+            retryOnError
             size={size}
             source={{ uri: imageUrl }}
             style={position.coverAsObject}

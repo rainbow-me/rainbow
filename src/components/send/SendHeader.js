@@ -101,6 +101,7 @@ export default function SendHeader({
     } else {
       setHexAddress('');
     }
+
     async function resolveAndStoreAddress() {
       const hex = await resolveNameOrAddress(recipient);
       if (!hex) {
@@ -220,6 +221,14 @@ export default function SendHeader({
     onChangeAddressInput,
   ]);
 
+  const onChange = useCallback(
+    text => {
+      onChangeAddressInput(text);
+      setHexAddress('');
+    },
+    [onChangeAddressInput]
+  );
+
   return (
     <Fragment>
       <SheetHandleFixedToTop />
@@ -236,10 +245,7 @@ export default function SendHeader({
           autoFocus={!showAssetList}
           editable={!fromProfile}
           name={name}
-          onChange={e => {
-            onChangeAddressInput(e);
-            setHexAddress('');
-          }}
+          onChangeText={onChange}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"

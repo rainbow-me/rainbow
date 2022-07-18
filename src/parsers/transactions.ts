@@ -1,9 +1,7 @@
 import {
   compact,
   concat,
-  findIndex,
   flatten,
-  includes,
   isEmpty,
   reverse,
   slice,
@@ -12,7 +10,6 @@ import {
   uniqBy,
   upperFirst,
 } from 'lodash';
-import orderBy from 'lodash/orderBy';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -55,7 +52,7 @@ const dataFromLastTxHash = (
   );
   const lastTxHash = lastSuccessfulTxn?.hash;
   if (lastTxHash) {
-    const lastTxnHashIndex = findIndex(transactionData, txn =>
+    const lastTxnHashIndex = transactionData.findIndex(txn =>
       lastTxHash.startsWith(txn.hash)
     );
     if (lastTxnHashIndex > -1) {
@@ -114,11 +111,10 @@ export const parseTransactions = async (
 
   const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
 
-  const orderedDedupedResults = orderBy(
-    dedupedResults,
-    ['minedAt', 'nonce'],
-    ['desc', 'desc']
-  );
+  const orderedDedupedResults = dedupedResults.sort((a, b) => {
+    // Sort by `minedAt` in descending order and by `nonce` in descending order.
+    return b.minedAt! - a.minedAt!;
+  });
 
   return {
     parsedTransactions: orderedDedupedResults,
@@ -357,7 +353,7 @@ const parseTransaction = async (
           nativeCurrency
         );
 
-        if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
+        if (purchaseTransactionsHashes.includes(toLower(txn.hash))) {
           txn.type = TransactionType.purchase;
         }
 
