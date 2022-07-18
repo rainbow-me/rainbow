@@ -1308,6 +1308,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D27EF6EE827EBB232B58D381 /* Pods-ImageNotification.debug.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -1355,6 +1356,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 007CE6DCBAA02D5A863A0262 /* Pods-ImageNotification.release.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -1401,6 +1403,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F86A02210FA54E9B38B47D7F /* Pods-ImageNotification.localrelease.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -1447,6 +1450,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D8909E2A38ABC783CA26C3EE /* Pods-ImageNotification.staging.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
