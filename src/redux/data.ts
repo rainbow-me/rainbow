@@ -1599,7 +1599,7 @@ export const dataWatchPendingTransactions = (
           txStatusesDidChange = true;
           let receipt;
           try {
-            if (!nonceAlreadyIncluded) {
+            if (txObj) {
               receipt = await txObj.wait();
             }
           } catch (e: any) {
