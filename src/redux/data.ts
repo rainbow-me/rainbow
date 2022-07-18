@@ -1597,8 +1597,28 @@ export const dataWatchPendingTransactions = (
           }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          // @ts-expect-error `txObj` is not typed as having a `status` field.
-          if (txObj && !isZero(txObj.status)) {
+          let receipt;
+          try {
+            receipt = await txObj.wait();
+          } catch (e: any) {
+            // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
+            if (e.transaction) {
+              // if a transaction field exists, it was confirmed but failed
+              updatedPending.status = TransactionStatus.failed;
+            } else {
+              // cancelled or replaced
+              updatedPending.status = TransactionStatus.cancelled;
+            }
+            const title = getTitle({
+              protocol: tx.protocol,
+              status: updatedPending.status,
+              type: tx.type,
+            });
+            updatedPending.title = title;
+            updatedPending.pending = false;
+            updatedPending.minedAt = minedAt;
+          }
+          if (txObj && !isZero(receipt?.status || 0)) {
             const isSelf = tx?.from!.toLowerCase() === tx?.to!.toLowerCase();
             const newStatus = getTransactionLabel({
               direction: isSelf
