@@ -226,7 +226,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
 
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
-    let sortedPairs = pairs.sort(sortByKeyHelper(sortField));
+    let sortedPairs = pairs.slice().sort(sortByKeyHelper(sortField));
     if (sortDirection === SORT_DIRECTION.DESC) {
       sortedPairs = sortedPairs.reverse();
     }

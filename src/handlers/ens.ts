@@ -269,7 +269,7 @@ export const fetchSuggestions = async (
           uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
         .filter((domain: any) => !domain?.nickname?.includes?.('['));
-      suggestions = ensSuggestions.sort(sorterByNicknameLengthASC);
+      suggestions = ensSuggestions.slice().sort(sorterByNicknameLengthASC);
     }
     setSuggestions(suggestions);
     setIsFetching(false);

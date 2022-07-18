@@ -164,9 +164,9 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
       throw error;
     }
   } else {
-    const sortedBackups = backups.files.sort(
-      reversedSortByKeyHelper('lastModified')
-    );
+    const sortedBackups = backups.files
+      .slice()
+      .sort(reversedSortByKeyHelper('lastModified'));
     document = sortedBackups[0];
   }
   const encryptedData = ios
