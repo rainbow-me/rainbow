@@ -111,7 +111,7 @@ const ExchangeIconStack = magicMemo(
             >
               <ExchangeIcon
                 icon={icon}
-                protocol={protocols?.name || protocols.names[index]}
+                protocol={protocols?.name ?? protocols.names[index]}
               />
             </Box>
           );
