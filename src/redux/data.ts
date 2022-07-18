@@ -1609,16 +1609,9 @@ export const dataWatchPendingTransactions = (
               // cancelled or replaced
               updatedPending.status = TransactionStatus.cancelled;
             }
-            const title = getTitle({
-              protocol: tx.protocol,
-              status: updatedPending.status,
-              type: tx.type,
-            });
-            updatedPending.title = title;
-            updatedPending.pending = false;
-            updatedPending.minedAt = minedAt;
           }
-          if (txObj && !isZero(receipt?.status || 0)) {
+          const status = receipt?.status || 0;
+          if (!isZero(status)) {
             const isSelf = tx?.from!.toLowerCase() === tx?.to!.toLowerCase();
             const newStatus = getTransactionLabel({
               direction: isSelf
