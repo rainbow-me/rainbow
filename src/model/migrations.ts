@@ -2,6 +2,7 @@ import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys } from 'lodash';
+import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
@@ -518,16 +519,8 @@ export default async function runMigrations() {
         logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));
         logger.log(JSON.stringify({ hiddenCoinsMigrated }, null, 2));
 
-        await savePinnedCoins(
-          [...new Set(pinnedCoinsMigrated)],
-          address,
-          network
-        );
-        await saveHiddenCoins(
-          [...new Set(hiddenCoinsMigrated)],
-          address,
-          network
-        );
+        await savePinnedCoins(uniq(pinnedCoinsMigrated), address, network);
+        await saveHiddenCoins(uniq(hiddenCoinsMigrated), address, network);
       }
     }
   };

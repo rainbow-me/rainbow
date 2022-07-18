@@ -1,5 +1,6 @@
 import produce from 'immer';
 import { isArray, without } from 'lodash';
+import uniq from 'lodash/uniq';
 import { InteractionManager } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -194,12 +195,8 @@ export const userListsUpdateList = (
 
     // add or remove
     if (listIndex !== null) {
-      const uniqAllNewLists = [
-        ...new Set([...allNewLists[listIndex].tokens, assetAddress]),
-      ];
-
       const updatedListTokens = add
-        ? uniqAllNewLists
+        ? uniq(allNewLists[listIndex].tokens.concat(assetAddress))
         : isArray(assetAddress)
         ? without(allNewLists[listIndex].tokens, ...assetAddress)
         : without(allNewLists[listIndex].tokens, assetAddress);
