@@ -17,7 +17,7 @@ import {
   toUpper,
   uniqBy,
 } from 'lodash';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
 import { MMKV } from 'react-native-mmkv';
 import { AnyAction, Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';

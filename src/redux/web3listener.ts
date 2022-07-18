@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
 import { ThunkDispatch } from 'redux-thunk';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import { multicallUpdateOutdatedListeners } from '@rainbow-me/redux/multicall';
