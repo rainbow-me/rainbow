@@ -3983,10 +3983,6 @@
   version "5.9.7"
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-5.9.7.tgz#769c6b306ea6bbaa1c4a3fffdd183d0cfc30ed7e"
 
-"@react-native-community/viewpager@5.0.5":
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-5.0.5.tgz#e9455535b4aaa77924fb7055be9c6d1c1cb3313a"
-
 "@react-native-firebase/app@14.7.0":
   version "14.7.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-14.7.0.tgz#a12f120c2c6a437284a30391cb16670422d48a7e"
@@ -10276,11 +10272,12 @@ gifwrap@^0.9.2:
     image-q "^1.1.1"
     omggif "^1.0.10"
 
-glob-parent@6.0.0, glob-parent@^5.1.2, glob-parent@~5.1.0, glob-parent@~5.1.2:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-6.0.0.tgz#f851b59b388e788f3a44d63fab50382b2859c33c"
+glob-parent@6.0.2, glob-parent@^5.1.2, glob-parent@~5.1.0, glob-parent@~5.1.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-6.0.2.tgz#6d237d99083950c79290f24c7642a3de9a28f9e3"
+  integrity sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==
   dependencies:
-    is-glob "^4.0.1"
+    is-glob "^4.0.3"
 
 glob@5.0.15:
   version "5.0.15"
@@ -15573,6 +15570,11 @@ react-native-mmkv@2.3.3:
 react-native-os@brunobar79/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c:
   version "1.2.8"
   resolved "https://codeload.github.com/brunobar79/react-native-os/tar.gz/41a08e45260b8c1c53c77ad00e13ae954cb9337c"
+
+react-native-pager-view@5.4.24:
+  version "5.4.24"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-5.4.24.tgz#8626e757ddc55e41eca66d2f8a8a75aec54591ee"
+  integrity sha512-dRMB7i3B+mu4NCeIN6gqbR/kC/rr2wzqO0gisXDdJwJr78G24sWoTNpLEDFo3G8TFHY9nTMutVl5CUvkN2dp6g==
 
 react-native-palette-full@1.2.0:
   version "1.2.0"
