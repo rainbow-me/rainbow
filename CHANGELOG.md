@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.16](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.16)
+### Changed
+* Main release
+* Bug fixes
+* Performance improvements
+
+## [1.6.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.15)
+
+### Changed
+* Fix for WC dapp contract signature metadata
+
 ## [1.6.14](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.14)
 
 ### Changed

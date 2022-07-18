@@ -1,5 +1,3 @@
-import { toLower } from 'lodash';
-
-export default function isETH(address: string): boolean {
-  return toLower(address) === 'eth';
+export default function isETH(address: string | undefined): boolean {
+  return address?.toLowerCase() === 'eth';
 }

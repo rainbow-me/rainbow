@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -60,7 +59,7 @@ export default () => {
         addresses: wallets[
           selectedWallet.id
         ].addresses.map((account: RainbowAccount) =>
-          toLower(account.address) === toLower(accountAddress)
+          account.address.toLowerCase() === accountAddress?.toLowerCase()
             ? { ...account, image: null }
             : account
         ),
@@ -84,7 +83,7 @@ export default () => {
           addresses: wallets[
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
-            toLower(account.address) === toLower(accountAddress)
+            account.address.toLowerCase() === accountAddress?.toLowerCase()
               ? { ...account, image: imagePath }
               : account
           ),
