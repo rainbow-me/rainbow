@@ -340,22 +340,23 @@ export default function CurrencySelectModal() {
   const handleSelectAsset = useCallback(
     item => {
       if (checkForRequiredAssets(item)) return;
+
+      const isMainnet = currentChainId === 1;
+      const assetWithType =
+        isMainnet && type === CurrencySelectionTypes.output
+          ? { ...item, type: 'token' }
+          : item;
+
       const selectAsset = () => {
         dispatch(emitChartsRequest(item.mainnet_address || item.address));
         dispatch(emitAssetRequest(item.mainnet_address || item.address));
-        const isMainnet = currentChainId === 1;
         setIsTransitioning(true); // continue to display list during transition
         callback?.();
-        onSelectCurrency(
-          isMainnet && type === CurrencySelectionTypes.output
-            ? { ...item, type: 'token' }
-            : item,
-          handleNavigate
-        );
+        onSelectCurrency(assetWithType, handleNavigate);
       };
       if (
         checkForSameNetwork(
-          item,
+          assetWithType,
           selectAsset,
           type === CurrencySelectionTypes.output
             ? CurrencySelectionTypes.output
