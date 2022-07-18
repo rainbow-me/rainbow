@@ -15,7 +15,7 @@ import logger from 'logger';
 const walletSelector = createSelector(
   ({ wallets: { isWalletLoading, selected = {}, walletNames, wallets } }) => ({
     isWalletLoading,
-    selectedWallet: selected,
+    selectedWallet: selected as any,
     walletNames,
     wallets,
   }),
@@ -46,7 +46,6 @@ export default function useWallets() {
   );
 
   const isDamaged = useMemo(() => {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'damaged' does not exist on type '{}'.
     const bool = selectedWallet?.damaged;
     if (bool) {
       logger.sentry('Wallet is damaged. Check values below:');
@@ -76,7 +75,6 @@ export default function useWallets() {
 
   return {
     isDamaged,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isWalletLoading,
     latestBackup,

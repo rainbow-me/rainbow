@@ -341,9 +341,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     replace,
     resolvedAddress,
     seedPhrase,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
     selectedWallet.id,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
     selectedWallet.type,
     startAnalyticsTimeout,
     wallets,

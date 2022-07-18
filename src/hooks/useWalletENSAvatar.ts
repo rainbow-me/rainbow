@@ -13,7 +13,6 @@ export default function useWalletENSAvatar() {
   const updateWalletENSAvatars = useCallback(async () => {
     if (!profilesEnabled) return;
     await getWalletENSAvatars(
-      // @ts-expect-error ts-migrate FIXME: Missing properties.
       { selected: selectedWallet, walletNames, wallets },
       dispatch
     );
