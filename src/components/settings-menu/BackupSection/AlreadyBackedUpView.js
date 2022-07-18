@@ -198,7 +198,12 @@ export default function AlreadyBackedUpView() {
               justifyContent="center"
               shadow="15px light"
             >
-              <Text color="secondary80" size="18px" weight="semibold">
+              <Text
+                color="secondary80"
+                size="18px"
+                weight="semibold"
+                containsEmoji
+              >
                 {`🗝 ${
                   isSecretPhrase
                     ? lang.t('back_up.secret.view_secret_phrase')
