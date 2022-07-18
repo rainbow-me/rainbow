@@ -358,7 +358,7 @@
     "**/y18n": "5.0.5",
     "**/yargs-parser": "20.2.5",
     "**/@hapi/hoek": "8.5.1",
-    "**/glob-parent": "6.0.0",
+    "**/glob-parent": "6.0.2",
     "**/merge-deep": "3.0.3",
     "**/moment": "2.29.4",
     "**/css-what": "5.0.1",
