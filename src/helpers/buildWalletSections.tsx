@@ -20,7 +20,7 @@ import {
   add,
   convertAmountToNativeDisplay,
   multiply,
-  notEmpty,
+  toBoolean,
 } from './utilities';
 import { Network } from '.';
 import { ImgixImage } from '@rainbow-me/images';
@@ -443,7 +443,7 @@ const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
 };
 
 const sortImagesToPreload = (images: any) => {
-  const filtered = flattenDeep(images).filter(notEmpty);
+  const filtered = flattenDeep(images).filter(toBoolean);
   const grouped = groupBy(filtered, property('priority'));
   return [
     ...(grouped?.high ?? []),

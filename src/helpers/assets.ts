@@ -4,7 +4,7 @@ import {
   chunk,
   convertAmountToNativeDisplay,
   greaterThan,
-  notEmpty,
+  toBoolean,
 } from './utilities';
 import store from '@rainbow-me/redux/store';
 import {
@@ -21,7 +21,7 @@ export const buildAssetUniqueIdentifier = (item: any) => {
   const nativePrice = item?.native?.price?.display ?? '';
   const uniqueId = item?.uniqueId;
 
-  return [balance, nativePrice, uniqueId].filter(notEmpty).join('_');
+  return [balance, nativePrice, uniqueId].filter(toBoolean).join('_');
 };
 
 const addEthPlaceholder = (
@@ -265,7 +265,7 @@ export const buildUniqueTokenList = (
         tokensRow.push([grouped[family][j]]);
       }
     }
-    let tokens = tokensRow.filter(notEmpty);
+    let tokens = tokensRow.filter(toBoolean);
     tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {

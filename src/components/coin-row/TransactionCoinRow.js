@@ -18,7 +18,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
-import { notEmpty } from '@rainbow-me/helpers/utilities';
+import { toBoolean } from '@rainbow-me/helpers/utilities';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -66,7 +66,7 @@ const BottomRow = ({ description, native, status, type }) => {
   const nativeDisplay = native?.display;
   const balanceText = nativeDisplay
     ? [isFailed || isSent ? '-' : null, nativeDisplay]
-        .filter(notEmpty)
+        .filter(toBoolean)
         .join(' ')
     : '';
 

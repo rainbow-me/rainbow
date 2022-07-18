@@ -15,7 +15,7 @@ import {
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
-  notEmpty,
+  toBoolean,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';
 
@@ -155,7 +155,7 @@ const buildUniswapCards = (
       );
       return transformPool(liquidityToken, position, nativeCurrency, chainId);
     })
-    .filter(notEmpty);
+    .filter(toBoolean);
 
   const orderedUniswapPools = orderBy(
     uniswapPools,
@@ -173,7 +173,7 @@ const buildUniswapCards = (
   }
 
   return {
-    uniswap: orderedUniswapPools.filter(notEmpty),
+    uniswap: orderedUniswapPools.filter(toBoolean) as UniswapPool[],
     uniswapTotal,
   };
 };

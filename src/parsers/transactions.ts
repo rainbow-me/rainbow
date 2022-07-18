@@ -35,7 +35,7 @@ import {
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
-  notEmpty,
+  toBoolean,
   upperFirst,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
@@ -148,7 +148,7 @@ const transformTradeRefund = (
       value: txnOut.value - refund.value,
     };
   }
-  return [updatedOut, txnIn].filter(notEmpty);
+  return [updatedOut, txnIn].filter(toBoolean);
 };
 
 const overrideFailedCompound = (

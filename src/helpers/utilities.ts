@@ -452,7 +452,6 @@ export const omitFlatten = <T extends object, K extends keyof T>(
 };
 
 /**
-
  * @desc Converts the first character of string to upper case and the remaining to lower case
  */
 export const capitalize = (string?: string | undefined) => {
@@ -462,10 +461,15 @@ export const capitalize = (string?: string | undefined) => {
     : '';
 };
 
-export const notEmpty = <TValue>(
-  value: TValue | null | undefined
-): value is TValue => {
-  return value !== null && value !== undefined;
+/**
+ * @desc The passed value is converted to a boolean value, if necessary.
+ * If the value is omitted or is 0, -0, null, false, NaN, undefined, or the empty string (""),
+ * the object has an initial value of false. All other values,
+ * including any object, an empty array ([]), or the string "false",
+ * create an object with an initial value of true.
+ */
+export const toBoolean = <T>(argument: T | undefined): argument is T => {
+  return Boolean(argument);
 };
 
 export const chunk = <T>(input: T[], size: number): T[][] => {
