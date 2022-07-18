@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { InteractionManager, Keyboard, TextInput } from 'react-native';
-import { MMKV } from 'react-native-mmkv';
+import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { STORAGE_IDS } from '../model/mmkv';
 import { delayNext } from './useMagicAutofocus';
 import { AssetType } from '@rainbow-me/entities';
 import {
@@ -11,12 +9,8 @@ import {
   Network,
 } from '@rainbow-me/helpers';
 import { updatePrecisionToDisplay } from '@rainbow-me/helpers/utilities';
-import {
-  useSwapCurrencies,
-  useSwapDerivedValues,
-  useSwapInputHandlers,
-} from '@rainbow-me/hooks';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { useSwapDerivedValues, useSwapInputHandlers } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {
   flipSwapCurrencies,
@@ -27,13 +21,6 @@ import {
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
-
-const storage = new MMKV();
-const hasShownWarning = storage.getBoolean(
-  STORAGE_IDS.SHOWN_SWAP_RESET_WARNING
-);
-const setHasShownWarning = () =>
-  storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
@@ -54,7 +41,6 @@ export default function useSwapCurrencyHandlers({
   const dispatch = useDispatch();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
 
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const { derivedValues } = useSwapDerivedValues();
 
   const {
@@ -200,40 +186,12 @@ export default function useSwapCurrencyHandlers({
           }
         : null;
 
-      const updateCurrency = () => {
-        dispatch(emitAssetRequest(newInputCurrency.mainnet_address));
-        dispatch(updateSwapInputCurrency(newInputCurrency));
-        setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate?.(newInputCurrency);
-      };
-
-      if (
-        outputCurrency &&
-        newInputCurrency?.type !== outputCurrency?.type &&
-        !hasShownWarning
-      ) {
-        android && Keyboard.dismiss();
-        InteractionManager.runAfterInteractions(() => {
-          Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-            network: newInputCurrency?.type
-              ? ethereumUtils.getNetworkFromType(newInputCurrency?.type)
-              : Network.mainnet,
-            onClose: () => {
-              InteractionManager.runAfterInteractions(() => {
-                setTimeout(() => {
-                  setHasShownWarning();
-                  updateCurrency();
-                }, 250);
-              });
-            },
-            type: 'swapResetInputs',
-          });
-        });
-      } else {
-        updateCurrency();
-      }
+      dispatch(emitAssetRequest(newInputCurrency.mainnet_address));
+      dispatch(updateSwapInputCurrency(newInputCurrency));
+      setLastFocusedInputHandle?.(inputFieldRef);
+      handleNavigate?.(newInputCurrency);
     },
-    [dispatch, inputFieldRef, outputCurrency, setLastFocusedInputHandle]
+    [dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const updateOutputCurrency = useCallback(
@@ -244,55 +202,27 @@ export default function useSwapCurrencyHandlers({
             type: outputCurrency?.type ?? AssetType.token,
           }
         : null;
-      const updateCurrency = () => {
-        dispatch(emitAssetRequest(newOutputCurrency.mainnet_address));
-        dispatch(updateSwapOutputCurrency(newOutputCurrency));
-        setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate?.(newOutputCurrency);
-      };
-      if (
-        inputCurrency &&
-        newOutputCurrency?.type !== inputCurrency?.type &&
-        !hasShownWarning
-      ) {
-        android && Keyboard.dismiss();
-        InteractionManager.runAfterInteractions(() => {
-          Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-            network: newOutputCurrency?.type
-              ? ethereumUtils.getNetworkFromType(newOutputCurrency?.type)
-              : Network.mainnet,
-            onClose: () => {
-              InteractionManager.runAfterInteractions(() => {
-                setTimeout(() => {
-                  setHasShownWarning();
-                  updateCurrency();
-                }, 250);
-              });
-            },
-            type: 'swapResetInputs',
-          });
-        });
-      } else {
-        updateCurrency();
-      }
+
+      dispatch(emitAssetRequest(newOutputCurrency.mainnet_address));
+      dispatch(updateSwapOutputCurrency(newOutputCurrency));
+      setLastFocusedInputHandle?.(inputFieldRef);
+      handleNavigate?.(newOutputCurrency);
     },
-    [dispatch, inputCurrency, inputFieldRef, setLastFocusedInputHandle]
+    [dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const navigateToSelectInputCurrency = useCallback(
     chainId => {
-      InteractionManager.runAfterInteractions(() => {
-        dangerouslyGetParent().dangerouslyGetState().index = 0;
-        setParams({ focused: false });
-        delayNext();
-        navigate(Routes.CURRENCY_SELECT_SCREEN, {
-          callback: inputFieldRef?.current?.clear,
-          chainId,
-          onSelectCurrency: updateInputCurrency,
-          restoreFocusOnSwapModal: () => setParams({ focused: true }),
-          title,
-          type: CurrencySelectionTypes.input,
-        });
+      dangerouslyGetParent().dangerouslyGetState().index = 0;
+      setParams({ focused: false });
+      delayNext();
+      navigate(Routes.CURRENCY_SELECT_SCREEN, {
+        callback: inputFieldRef?.current?.clear,
+        chainId,
+        onSelectCurrency: updateInputCurrency,
+        restoreFocusOnSwapModal: () => setParams({ focused: true }),
+        title,
+        type: CurrencySelectionTypes.input,
       });
     },
     [
@@ -307,16 +237,14 @@ export default function useSwapCurrencyHandlers({
 
   const navigateToSelectOutputCurrency = useCallback(
     chainId => {
-      InteractionManager.runAfterInteractions(() => {
-        setParams({ focused: false });
-        navigate(Routes.CURRENCY_SELECT_SCREEN, {
-          callback: outputFieldRef?.current?.clear,
-          chainId,
-          onSelectCurrency: updateOutputCurrency,
-          restoreFocusOnSwapModal: () => setParams({ focused: true }),
-          title: 'Receive',
-          type: CurrencySelectionTypes.output,
-        });
+      setParams({ focused: false });
+      navigate(Routes.CURRENCY_SELECT_SCREEN, {
+        callback: outputFieldRef?.current?.clear,
+        chainId,
+        onSelectCurrency: updateOutputCurrency,
+        restoreFocusOnSwapModal: () => setParams({ focused: true }),
+        title: 'Receive',
+        type: CurrencySelectionTypes.output,
       });
     },
     [navigate, outputFieldRef, setParams, updateOutputCurrency]
