@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
@@ -40,7 +39,8 @@ const UniqueTokenImage = ({
   transformSvgs = true,
 }) => {
   const isENS =
-    toLower(item.asset_contract?.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+    item.asset_contract?.address?.toLowerCase() ===
+    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
   const isSVG = isSVGImage(imageUrl);
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);

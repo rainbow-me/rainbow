@@ -250,6 +250,11 @@ const ExchangeAssetList = (
           ),
           nativeCurrency,
           nativeCurrencySymbol,
+          onAddPress: () => {
+            itemProps.onActionAsset(
+              store.getState().data.genericAssets?.[rowData.address] || rowData
+            );
+          },
           onCopySwapDetailsText,
           onPress: givenItem => {
             if (rowData.ens) {
@@ -280,11 +285,6 @@ const ExchangeAssetList = (
                 haptics.selection();
               }
 
-              itemProps.onActionAsset(
-                store.getState().data.genericAssets?.[rowData.address] ||
-                  rowData,
-                newValue
-              );
               return {
                 ...prev,
                 [rowData.address]: newValue,
