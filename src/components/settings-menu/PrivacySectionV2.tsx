@@ -11,12 +11,20 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import { Box } from '@rainbow-me/design-system';
-import { useShowcaseTokens, useWebData } from '@rainbow-me/hooks';
+import {
+  useAccountProfile,
+  useShowcaseTokens,
+  useWebData,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 const PrivacySectionV2 = () => {
   const { showcaseTokens } = useShowcaseTokens();
   const { webDataEnabled, initWebData, wipeWebData } = useWebData();
+  const { navigate } = useNavigation();
+  const { accountENS } = useAccountProfile();
 
   const [publicShowCase, setPublicShowCase] = useState();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -26,6 +34,13 @@ const PrivacySectionV2 = () => {
       setPublicShowCase(webDataEnabled);
     }
   }, [publicShowCase, webDataEnabled]);
+
+  const viewProfile = useCallback(() => {
+    navigate(Routes.PROFILE_SHEET, {
+      address: accountENS,
+      fromRoute: 'PrivacySettings',
+    });
+  }, [accountENS, navigate]);
 
   const toggleWebData = useCallback(() => {
     setPublicShowCase(!webDataEnabled as any);
@@ -68,11 +83,12 @@ const PrivacySectionV2 = () => {
           }
         />
       </Menu>
-      {profilesEnabled && (
+      {profilesEnabled && accountENS && (
         <Menu>
           <MenuItem
             iconPadding="medium"
             leftComponent={<MenuItem.Title isLink text="􀉭" />}
+            onPress={viewProfile}
             size="medium"
             titleComponent={
               <MenuItem.Title
