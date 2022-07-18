@@ -14,6 +14,10 @@ target 'SelectTokenIntent' do
   pod 'swift-vibrant'
 end
 
+target 'ImageNotification' do
+  pod 'Firebase/Messaging', '~> 8.14.0'
+end
+
 target 'Rainbow' do
   # Pods for Rainbow
   config = use_native_modules!
