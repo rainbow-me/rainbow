@@ -1599,7 +1599,9 @@ export const dataWatchPendingTransactions = (
           txStatusesDidChange = true;
           let receipt;
           try {
-            receipt = await txObj.wait();
+            if (!nonceAlreadyIncluded) {
+              receipt = await txObj.wait();
+            }
           } catch (e: any) {
             // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
             if (e.transaction) {
