@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { AssetType } from '@rainbow-me/entities';
 import { useForceUpdate } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
+import { ThemeContextProps } from '@rainbow-me/theme';
 import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
 
 const ImageState = {
@@ -19,14 +20,17 @@ export const FastFallbackCoinIconImage = React.memo(
     assetType,
     symbol,
     shadowColor,
+    theme,
     children,
   }: {
+    theme: ThemeContextProps;
     address: string;
     assetType?: AssetType;
     symbol: string;
     shadowColor: string;
     children: () => React.ReactNode;
   }) {
+    const { colors } = theme;
     const imageUrl = getUrlForTrustIconFallback(address, assetType)!;
 
     const key = `${symbol}-${imageUrl}`;
@@ -79,7 +83,10 @@ export const FastFallbackCoinIconImage = React.memo(
             onError={onError}
             onLoad={onLoad}
             size={40}
-            style={[sx.coinIconFallback, isLoaded && sx.withBackground]}
+            style={[
+              sx.coinIconFallback,
+              isLoaded && { backgroundColor: colors.white },
+            ]}
           />
         )}
 
@@ -127,10 +134,6 @@ const sx = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  withBackground: {
-    backgroundColor: 'white',
-  },
-
   withShadow: {
     elevation: 6,
     shadowOffset: {
