@@ -12,6 +12,7 @@
     "target": "esnext",
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./src/*"],
       "@rainbow-me/apollo": ["./src/apollo"],
       "@rainbow-me/apollo/*": ["./src/apollo/*"],
       "@rainbow-me/assets": ["./src/assets"],
