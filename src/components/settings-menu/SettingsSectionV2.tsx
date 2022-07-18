@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
+import { Linking, NativeModules, Share } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
 } from 'react-native-ios-context-menu';
-import { Linking, NativeModules, Share } from 'react-native';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import Menu from './components/Menu';
@@ -25,11 +25,10 @@ import NotificationsIcon from '@rainbow-me/assets/settingsNotifications.png';
 import NotificationsIconDark from '@rainbow-me/assets/settingsNotificationsDark.png';
 import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
 } from '@rainbow-me/config/experimentalHooks';
-import { Box, DebugLayout } from '@rainbow-me/design-system';
+import { Box } from '@rainbow-me/design-system';
 import {
   isCustomBuild,
   setOriginalDeploymentKey,
@@ -42,6 +41,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { Themes, useTheme } from '@rainbow-me/theme';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
@@ -126,19 +126,20 @@ const SettingsSectionV2 = ({
 
   const onSendFeedback = useSendFeedback();
 
-  const onPressReview = useCallback(async () => {
-    // if (ios) {
-    //   onCloseModal();
-    //   RainbowRequestReview.requestReview((handled: boolean) => {
-    //     if (!handled) {
-    //       AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
-    //       Linking.openURL(AppleReviewAddress);
-    //     }
-    //   });
-    // } else {
-    //   RNReview.show();
-    // }
-  }, [onCloseModal]);
+  const onPressReview = null;
+  // const onPressReview = useCallback(async () => {
+  //   if (ios) {
+  //     onCloseModal();
+  //     RainbowRequestReview.requestReview((handled: boolean) => {
+  //       if (!handled) {
+  //         AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
+  //         Linking.openURL(AppleReviewAddress);
+  //       }
+  //     });
+  //   } else {
+  //     RNReview.show();
+  //   }
+  // }, [onCloseModal]);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -174,7 +175,7 @@ const SettingsSectionV2 = ({
           actionTitle: lang.t('settings.theme_section.system'),
           icon: {
             iconType: 'SYSTEM',
-            iconValue: 'rectangle.stack.badge.person.crop',
+            iconValue: 'gear',
           },
           menuState: colorScheme === Themes.SYSTEM ? 'on' : 'off',
         },
@@ -183,7 +184,7 @@ const SettingsSectionV2 = ({
           actionTitle: lang.t('settings.theme_section.light'),
           icon: {
             iconType: 'SYSTEM',
-            iconValue: 'magnifyingglass',
+            iconValue: 'sun.max',
           },
           menuState: colorScheme === Themes.LIGHT ? 'on' : 'off',
         },
@@ -192,7 +193,7 @@ const SettingsSectionV2 = ({
           actionTitle: lang.t('settings.theme_section.dark'),
           icon: {
             iconType: 'SYSTEM',
-            iconValue: 'magnifyingglass',
+            iconValue: 'moon',
           },
           menuState: colorScheme === Themes.DARK ? 'on' : 'off',
         },
@@ -414,7 +415,7 @@ const SettingsSectionV2 = ({
             />
           }
         />
-        {isReviewAvailable && (
+        {isReviewAvailable && onPressReview && (
           <MenuItem
             iconPadding="large"
             leftComponent={<MenuItem.Title text="❤️" />}
