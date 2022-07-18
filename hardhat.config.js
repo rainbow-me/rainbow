@@ -10,7 +10,7 @@ module.exports = {
   networks: {
     hardhat: {
       chainId: 1,
-      initialBaseFeePerGas: 30000000000,
+      initialBaseFeePerGas: 3000000000,
     },
   },
   solidity: '0.8.4',
