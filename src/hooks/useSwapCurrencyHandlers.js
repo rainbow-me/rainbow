@@ -213,16 +213,18 @@ export default function useSwapCurrencyHandlers({
 
   const navigateToSelectInputCurrency = useCallback(
     chainId => {
-      dangerouslyGetParent().dangerouslyGetState().index = 0;
-      setParams({ focused: false });
-      delayNext();
-      navigate(Routes.CURRENCY_SELECT_SCREEN, {
-        callback: inputFieldRef?.current?.clear,
-        chainId,
-        onSelectCurrency: updateInputCurrency,
-        restoreFocusOnSwapModal: () => setParams({ focused: true }),
-        title,
-        type: CurrencySelectionTypes.input,
+      InteractionManager.runAfterInteractions(() => {
+        dangerouslyGetParent().dangerouslyGetState().index = 0;
+        setParams({ focused: false });
+        delayNext();
+        navigate(Routes.CURRENCY_SELECT_SCREEN, {
+          callback: inputFieldRef?.current?.clear,
+          chainId,
+          onSelectCurrency: updateInputCurrency,
+          restoreFocusOnSwapModal: () => setParams({ focused: true }),
+          title,
+          type: CurrencySelectionTypes.input,
+        });
       });
     },
     [
@@ -237,14 +239,16 @@ export default function useSwapCurrencyHandlers({
 
   const navigateToSelectOutputCurrency = useCallback(
     chainId => {
-      setParams({ focused: false });
-      navigate(Routes.CURRENCY_SELECT_SCREEN, {
-        callback: outputFieldRef?.current?.clear,
-        chainId,
-        onSelectCurrency: updateOutputCurrency,
-        restoreFocusOnSwapModal: () => setParams({ focused: true }),
-        title: 'Receive',
-        type: CurrencySelectionTypes.output,
+      InteractionManager.runAfterInteractions(() => {
+        setParams({ focused: false });
+        navigate(Routes.CURRENCY_SELECT_SCREEN, {
+          callback: outputFieldRef?.current?.clear,
+          chainId,
+          onSelectCurrency: updateOutputCurrency,
+          restoreFocusOnSwapModal: () => setParams({ focused: true }),
+          title: 'Receive',
+          type: CurrencySelectionTypes.output,
+        });
       });
     },
     [navigate, outputFieldRef, setParams, updateOutputCurrency]
