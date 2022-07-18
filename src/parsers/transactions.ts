@@ -9,6 +9,7 @@ import {
   uniqBy,
   upperFirst,
 } from 'lodash';
+import orderBy from 'lodash/orderBy';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -110,10 +111,11 @@ export const parseTransactions = async (
 
   const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
 
-  const orderedDedupedResults = dedupedResults.sort((a, b) => {
-    // Sort by `minedAt` in descending order and by `nonce` in descending order.
-    return b.minedAt! - a.minedAt!;
-  });
+  const orderedDedupedResults = orderBy(
+    dedupedResults,
+    ['minedAt', 'nonce'],
+    ['desc', 'desc']
+  );
 
   return {
     parsedTransactions: orderedDedupedResults,
