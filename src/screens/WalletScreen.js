@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, isEmpty, keys, toLower } from 'lodash';
+import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -130,7 +130,7 @@ export default function WalletScreen() {
         for (let i = 0; i < userAccounts.length; i++) {
           const account = userAccounts[i];
           // Passing usd for consistency in tracking
-          dispatch(emitPortfolioRequest(toLower(account.address), 'usd'));
+          dispatch(emitPortfolioRequest(account.address.toLowerCase(), 'usd'));
         }
       };
       fetchPortfolios();

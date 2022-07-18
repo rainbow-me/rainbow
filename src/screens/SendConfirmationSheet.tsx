@@ -2,7 +2,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { capitalize, isEmpty, toLower } from 'lodash';
+import { capitalize, isEmpty } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -40,7 +40,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
@@ -296,7 +296,7 @@ export default function SendConfirmationSheet() {
   const isSendingToUserAccount = useMemo(() => {
     // @ts-expect-error From JavaScript hook
     const found = userAccounts?.find(account => {
-      return toLower(account.address) === toLower(toAddress);
+      return account.address.toLowerCase() === toAddress?.toLowerCase();
     });
     return !!found;
   }, [toAddress, userAccounts]);
@@ -309,7 +309,7 @@ export default function SendConfirmationSheet() {
       let sendsCurrentNetwork = 0;
       // @ts-expect-error From JavaScript hook
       transactions.forEach(tx => {
-        if (toLower(tx.to) === toLower(toAddress)) {
+        if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
           sends++;
           if (tx.network === network) {
             sendsCurrentNetwork++;
@@ -447,6 +447,7 @@ export default function SendConfirmationSheet() {
 
   let color = useColorForAsset({
     address: asset.mainnet_address || asset.address,
+    type: asset?.mainnet_address ? AssetTypes.token : asset?.type,
   });
 
   if (isNft) {

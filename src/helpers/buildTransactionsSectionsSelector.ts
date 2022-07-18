@@ -93,7 +93,7 @@ const buildTransactionsSections = (
     ];
   }
   return {
-    sections: [...requestsToApprove, ...sectionedTransactions],
+    sections: requestsToApprove.concat(sectionedTransactions),
   };
 };
 
