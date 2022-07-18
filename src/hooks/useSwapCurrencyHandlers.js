@@ -146,36 +146,42 @@ export default function useSwapCurrencyHandlers({
 
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
+      const outputAmount = derivedValues?.outputAmount;
       updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
           ? nativeFieldRef
           : inputFieldRef,
         false,
-        updatePrecisionToDisplay(derivedValues?.outputAmount)
+        outputAmount ? updatePrecisionToDisplay(outputAmount) : null
       );
     } else if (nativeFieldRef.current === currentlyFocusedInput()) {
+      const inputAmount = derivedValues?.inputAmount;
       updateOutputAmount(null);
       updateNativeAmount(null);
       flipSwapCurrenciesWithTimeout(
         outputFieldRef,
         true,
-        updatePrecisionToDisplay(derivedValues?.inputAmount)
+        inputAmount ? updatePrecisionToDisplay(inputAmount) : null
       );
     } else if (inputFieldRef.current === currentlyFocusedInput()) {
+      const inputAmount = derivedValues?.inputAmount;
       updateNativeAmount(null);
       updateInputAmount(null);
       flipSwapCurrenciesWithTimeout(
         outputFieldRef,
         true,
-        updatePrecisionToDisplay(derivedValues?.inputAmount)
+        inputAmount ? updatePrecisionToDisplay(inputAmount) : null
       );
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
+      const outputAmount = derivedValues?.outputAmount;
       updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
         inputFieldRef,
         false,
-        updatePrecisionToDisplay(derivedValues?.outputAmount)
+        outputAmount
+          ? updatePrecisionToDisplay(derivedValues?.outputAmount)
+          : null
       );
     }
   }, [
