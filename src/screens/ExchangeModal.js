@@ -655,7 +655,6 @@ export default function ExchangeModal({
   );
 
   const navigateToSwapSettingsSheet = useCallback(() => {
-    android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
     android && (lastFocusedInputHandle.current = null);
     inputFieldRef?.current?.blur();
@@ -692,7 +691,6 @@ export default function ExchangeModal({
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {
-    android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
     android && (lastFocusedInputHandle.current = null);
     inputFieldRef?.current?.blur();

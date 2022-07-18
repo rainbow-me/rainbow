@@ -212,7 +212,7 @@ export default function useSwapCurrencyHandlers({
         newInputCurrency?.type !== outputCurrency?.type &&
         !hasShownWarning
       ) {
-        android && Keyboard.dismiss();
+        Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction(Routes.EXPLAIN_SHEET, {
             network: newInputCurrency?.type
@@ -255,7 +255,7 @@ export default function useSwapCurrencyHandlers({
         newOutputCurrency?.type !== inputCurrency?.type &&
         !hasShownWarning
       ) {
-        android && Keyboard.dismiss();
+        Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction(Routes.EXPLAIN_SHEET, {
             network: newOutputCurrency?.type
