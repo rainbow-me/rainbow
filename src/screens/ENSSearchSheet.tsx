@@ -95,6 +95,11 @@ export default function ENSSearchSheet() {
     }, [debouncedSearchQuery, startRegistration])
   );
 
+  const showSearchSection = !isPending && (isAvailable || isRegistered);
+  const showFinishButton = isPending && !isRegistered;
+  const showContinueButton = isAvailable;
+  const showClearButton = isRegistered || isInvalid;
+
   return (
     <Box
       background="body"
@@ -189,7 +194,7 @@ export default function ENSSearchSheet() {
               </Stack>
             </Inset>
           )}
-          {!isPending && (isAvailable || isRegistered) && (
+          {showSearchSection && (
             <Inset horizontal="19px">
               <Stack
                 separator={
@@ -258,7 +263,7 @@ export default function ENSSearchSheet() {
           )}
         </Box>
         <SheetActionButtonRow>
-          {isPending && !isRegistered && (
+          {showFinishButton && (
             <SheetActionButton
               // @ts-expect-error JavaScript component
               label={lang.t('profiles.search.finish')}
@@ -270,7 +275,7 @@ export default function ENSSearchSheet() {
               weight="heavy"
             />
           )}
-          {isAvailable && (
+          {showContinueButton && (
             <SheetActionButton
               color={colors.green}
               // @ts-expect-error JavaScript component
@@ -283,7 +288,7 @@ export default function ENSSearchSheet() {
               weight="heavy"
             />
           )}
-          {(isRegistered || isInvalid) && (
+          {showClearButton && (
             <TintButton
               onPress={() => {
                 setSearchQuery('');

@@ -113,6 +113,7 @@ const buildEnsToken = ({
     familyName: 'ENS',
     id: tokenId,
     image_original_url: imageUrl,
+    image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
     isSendable: true,
     last_sale: null,
@@ -163,11 +164,11 @@ export const fetchMetadata = async ({
           labelhash,
         },
       });
-      name = data.domains[0].labelName;
+      name = `${data.domains[0].labelName}.eth`;
     }
 
     const image_url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`;
-    return { image_url, name: `${name}.eth` };
+    return { image_url, name };
   } catch (error) {
     logger.sentry('ENS: Error getting ENS metadata', error);
     captureException(new Error('ENS: Error getting ENS metadata'));

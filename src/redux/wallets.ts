@@ -1,6 +1,11 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, isEmpty, keys, values } from 'lodash';
+// <<<<<<< HEAD:src/redux/wallets.js
+import { isEmpty, keys } from 'lodash';
+// =======
+import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+// >>>>>>> cbbe0a35ee40fa90a6e8f5d0ea24fce7bc4ec878:src/redux/wallets.ts
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
@@ -17,15 +22,16 @@ import {
   getAllWallets,
   getSelectedWallet,
   loadAddress,
-  oldSeedPhraseMigratedKey,
+  RainbowAccount,
+  RainbowWallet,
   saveAddress,
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
-import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
 import {
   addressKey,
+  oldSeedPhraseMigratedKey,
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
@@ -34,9 +40,98 @@ import {
   addressHashedEmoji,
   fetchReverseRecordWithRetry,
 } from '../utils/profileUtils';
+import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
+import { AppGetState, AppState } from './store';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { WalletLoadingState } from '@rainbow-me/helpers/walletLoadingStates';
 import { lightModeThemeColors } from '@rainbow-me/styles';
+
+// -- Types ---------------------------------------- //
+
+/**
+ * The current state of the `wallets` reducer.
+ */
+interface WalletsState {
+  /**
+   * The current loading state of the wallet.
+   */
+  isWalletLoading: WalletLoadingState | null;
+
+  /**
+   * The currently selected wallet.
+   */
+  selected: RainbowWallet | undefined;
+
+  /**
+   * An object mapping addresses to wallet names.
+   */
+  walletNames: { [address: string]: string };
+
+  /**
+   * An object mapping addresses to wallet objects.
+   */
+  wallets: { [id: string]: RainbowWallet } | null;
+}
+
+/**
+ * An action for the `wallets` reducer.
+ */
+type WalletsAction =
+  | WalletsSetIsLoadingAction
+  | WalletsSetSelectedAction
+  | WalletsUpdateAction
+  | WalletsUpdateNamesAction
+  | WalletsLoadAction
+  | WalletsAddedAccountAction;
+
+/**
+ * An action that sets the wallet loading state.
+ */
+interface WalletsSetIsLoadingAction {
+  type: typeof WALLETS_SET_IS_LOADING;
+  payload: WalletsState['isWalletLoading'];
+}
+
+/**
+ * An action that sets the selected wallet.
+ */
+interface WalletsSetSelectedAction {
+  type: typeof WALLETS_SET_SELECTED;
+  payload: WalletsState['selected'];
+}
+
+/**
+ * An acion that updates the `wallets` in state.
+ */
+interface WalletsUpdateAction {
+  type: typeof WALLETS_UPDATE;
+  payload: WalletsState['wallets'];
+}
+
+/**
+ * An action that updates `walletNames` in state.
+ */
+interface WalletsUpdateNamesAction {
+  type: typeof WALLETS_UPDATE_NAMES;
+  payload: WalletsState['walletNames'];
+}
+
+/**
+ * An action that loads new wallet information.
+ */
+interface WalletsLoadAction {
+  type: typeof WALLETS_LOAD;
+  payload: Pick<WalletsState, 'selected' | 'walletNames' | 'wallets'>;
+}
+
+/**
+ * An action for adding a new account to the `wallets` reducer's state.
+ */
+interface WalletsAddedAccountAction {
+  type: typeof WALLETS_ADDED_ACCOUNT;
+  payload: Pick<WalletsState, 'selected' | 'wallets'>;
+}
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -47,13 +142,17 @@ const WALLETS_SET_IS_LOADING = 'wallets/WALLETS_SET_IS_LOADING';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //
-export const walletsLoadState = (profilesEnabled = false) => async (
-  dispatch,
-  getState
+
+/**
+ * Loads wallet information from storage and updates state accordingly.
+ */
+export const walletsLoadState = (profilesEnabled: boolean = false) => async (
+  dispatch: ThunkDispatch<AppState, unknown, WalletsLoadAction>,
+  getState: AppGetState
 ) => {
   try {
     const { accountAddress } = getState().settings;
-    let addressFromKeychain = accountAddress;
+    let addressFromKeychain: string | null = accountAddress;
     const allWalletsResult = await getAllWallets();
     const wallets = allWalletsResult?.wallets || {};
     if (isEmpty(wallets)) return;
@@ -74,7 +173,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
         const someWallet = wallets[key];
         const found = someWallet.addresses.some(account => {
           return (
-            toChecksumAddress(account.address) === toChecksumAddress(address)
+            toChecksumAddress(account.address) === toChecksumAddress(address!)
           );
         });
         if (found) {
@@ -93,12 +192,12 @@ export const walletsLoadState = (profilesEnabled = false) => async (
       );
     }
 
-    const selectedAddress = selectedWallet.addresses.find(a => {
+    const selectedAddress = selectedWallet!.addresses.find(a => {
       return a.visible && a.address === addressFromKeychain;
     });
 
     if (!selectedAddress) {
-      const account = selectedWallet.addresses.find(a => a.visible);
+      const account = selectedWallet!.addresses.find(a => a.visible)!;
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
       logger.sentry(
@@ -125,7 +224,14 @@ export const walletsLoadState = (profilesEnabled = false) => async (
   }
 };
 
-export const walletsUpdate = wallets => async dispatch => {
+/**
+ * Saves new wallets to storage and updates state accordingly.
+ *
+ * @param wallets The new wallets.
+ */
+export const walletsUpdate = (wallets: {
+  [key: string]: RainbowWallet;
+}) => async (dispatch: Dispatch<WalletsUpdateAction>) => {
   await saveAllWallets(wallets);
   dispatch({
     payload: wallets,
@@ -133,7 +239,14 @@ export const walletsUpdate = wallets => async dispatch => {
   });
 };
 
-export const walletsSetSelected = wallet => async dispatch => {
+/**
+ * Sets the selected wallet in storage and updates state accordingly.
+ *
+ * @param wallet The wallet to mark as selected.
+ */
+export const walletsSetSelected = (wallet: RainbowWallet) => async (
+  dispatch: Dispatch<WalletsSetSelectedAction>
+) => {
   await setSelectedWallet(wallet);
   dispatch({
     payload: wallet,
@@ -141,30 +254,49 @@ export const walletsSetSelected = wallet => async dispatch => {
   });
 };
 
-export const setIsWalletLoading = val => dispatch => {
+/**
+ * Updates the wallet loading state.
+ *
+ * @param val The new loading state.
+ */
+export const setIsWalletLoading = (val: WalletsState['isWalletLoading']) => (
+  dispatch: Dispatch<WalletsSetIsLoadingAction>
+) => {
   dispatch({
     payload: val,
     type: WALLETS_SET_IS_LOADING,
   });
 };
 
+/**
+ * Marks a wallet as backed-up using a specified method and file in storage
+ * and updates state accordingly.
+ *
+ * @param walletId The ID of the wallet to modify.
+ * @param method The backup type used.
+ * @param backupFile The backup file, if present.
+ */
 export const setWalletBackedUp = (
-  walletId,
-  method,
-  backupFile = null
-) => async (dispatch, getState) => {
+  walletId: RainbowWallet['id'],
+  method: RainbowWallet['backupType'],
+  backupFile: RainbowWallet['backupFile'] = null
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
   const { wallets, selected } = getState().wallets;
   const newWallets = { ...wallets };
   newWallets[walletId] = {
     ...newWallets[walletId],
     backedUp: true,
+    // @ts-expect-error "Date" is not "string."
     backupDate: Date.now(),
     backupFile,
     backupType: method,
   };
 
   await dispatch(walletsUpdate(newWallets));
-  if (selected.id === walletId) {
+  if (selected!.id === walletId) {
     await dispatch(walletsSetSelected(newWallets[walletId]));
   }
 
@@ -184,11 +316,28 @@ export const setWalletBackedUp = (
   }
 };
 
-export const addressSetSelected = address => () => saveAddress(address);
+/**
+ * Updates the selected address in state.
+ * @param address The new selected address.
+ */
+export const addressSetSelected = (address: string) => () =>
+  saveAddress(address);
 
-export const createAccountForWallet = (id, color, name) => async (
-  dispatch,
-  getState
+/**
+ * Adds a new address to an existing wallet in storage and state.
+ *
+ * @param id The wallet ID to update.
+ * @param color The color for the new address.
+ * @param name The name for the new address.
+ * @returns Within a dispatch, a new mapping from wallet IDs to wallet objects.
+ */
+export const createAccountForWallet = (
+  id: RainbowWallet['id'],
+  color: RainbowWallet['color'],
+  name: RainbowWallet['name']
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, WalletsAddedAccountAction>,
+  getState: AppGetState
 ) => {
   const { wallets } = getState().wallets;
   const newWallets = { ...wallets };
@@ -197,9 +346,9 @@ export const createAccountForWallet = (id, color, name) => async (
     account => (index = Math.max(index, account.index))
   );
   const newIndex = index + 1;
-  const account = await generateAccount(id, newIndex);
+  const account = (await generateAccount(id, newIndex))!;
   const walletColorIndex =
-    color !== null ? color : addressHashedColorIndex(account.address);
+    color !== null ? color : addressHashedColorIndex(account!.address)!;
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
@@ -231,13 +380,31 @@ export const createAccountForWallet = (id, color, name) => async (
   return newWallets;
 };
 
-export const getWalletENSAvatars = async (walletsState, dispatch) => {
+/**
+ * Fetches ENS avatars for the given `walletsState` and updates state
+ * accordingly.
+ *
+ * @param walletsState The wallets to use for fetching avatars.
+ * @param dispatch The dispatch.
+ */
+export const getWalletENSAvatars = async (
+  walletsState: Pick<WalletsState, 'wallets' | 'walletNames' | 'selected'>,
+  dispatch: ThunkDispatch<AppState, unknown, never>
+) => {
   const { wallets, walletNames, selected } = walletsState;
-  const walletKeys = Object.keys(wallets);
-  let updatedWallets;
-  let promises = [];
+  const walletKeys = Object.keys(wallets!);
+  let updatedWallets:
+    | {
+        [key: string]: RainbowWallet;
+      }
+    | undefined;
+  let promises: Promise<{
+    account: RainbowAccount;
+    avatarChanged: boolean;
+    key: string;
+  }>[] = [];
   walletKeys.forEach(key => {
-    const wallet = wallets[key];
+    const wallet = wallets![key];
     const innerPromises = wallet?.addresses?.map(async account => {
       const ens =
         (await fetchReverseRecord(account.address)) ||
@@ -271,32 +438,46 @@ export const getWalletENSAvatars = async (walletsState, dispatch) => {
     const index = addresses?.findIndex(
       ({ address }) => address === account.address
     );
-    addresses.splice(index, 1, account);
+    addresses!.splice(index!, 1, account);
     updatedWallets = {
       ...(updatedWallets ?? wallets),
       [key]: {
-        ...wallets[key],
-        addresses,
+        ...wallets![key],
+        addresses: addresses!,
       },
     };
   });
   if (updatedWallets) {
-    dispatch(walletsSetSelected(updatedWallets[selected.id]));
+    dispatch(walletsSetSelected(updatedWallets[selected!.id]));
     dispatch(walletsUpdate(updatedWallets));
   }
 };
 
-export const fetchWalletENSAvatars = () => async (dispatch, getState) =>
-  getWalletENSAvatars(getState().wallets, dispatch);
+/**
+ * Fetches wallet ENS avatars using `getWalletENSAvatars` with the current
+ * wallets in state.
+ */
+export const fetchWalletENSAvatars = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => getWalletENSAvatars(getState().wallets, dispatch);
 
-export const fetchWalletNames = () => async (dispatch, getState) => {
+/**
+ * Fetches wallet names and updates storage and state.
+ */
+export const fetchWalletNames = () => async (
+  dispatch: Dispatch<WalletsUpdateNamesAction>,
+  getState: AppGetState
+) => {
   const { wallets } = getState().wallets;
-  const updatedWalletNames = {};
+  const updatedWalletNames: { [address: string]: string } = {};
 
   // Fetch ENS names
   await Promise.all(
-    flatMap(values(wallets), wallet => {
-      const visibleAccounts = filter(wallet.addresses, 'visible');
+    Object.values(wallets ?? {}).flatMap(wallet => {
+      const visibleAccounts = wallet.addresses?.filter(
+        address => address.visible
+      );
       return visibleAccounts.map(async account => {
         try {
           const ens = await fetchReverseRecordWithRetry(account.address);
@@ -317,7 +498,14 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
   saveWalletNames(updatedWalletNames);
 };
 
-export const checkKeychainIntegrity = () => async (dispatch, getState) => {
+/**
+ * Checks the validity of the keychain and updates storage and state
+ * accordingly if the keychain is unhealthy.
+ */
+export const checkKeychainIntegrity = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
   try {
     let healthyKeychain = true;
     logger.sentry('[KeychainIntegrityCheck]: starting checks');
@@ -366,13 +554,13 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
     }
 
     const nonReadOnlyWalletKeys = keys(wallets).filter(
-      key => wallets[key].type !== WalletTypes.readOnly
+      key => wallets![key].type !== WalletTypes.readOnly
     );
 
     for (const key of nonReadOnlyWalletKeys) {
       let healthyWallet = true;
       logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
-      const wallet = wallets[key];
+      const wallet = wallets![key];
       logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
       const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
       if (!seedKeyFound) {
@@ -415,13 +603,13 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
         );
         healthyKeychain = false;
         wallet.damaged = true;
-        await dispatch(walletsUpdate(wallets));
+        await dispatch(walletsUpdate(wallets!));
         // Update selected wallet if needed
-        if (wallet.id === selected.id) {
+        if (wallet.id === selected!.id) {
           logger.sentry(
             '[KeychainIntegrityCheck]: declaring selected wallet unhealthy...'
           );
-          await dispatch(walletsSetSelected(wallets[wallet.id]));
+          await dispatch(walletsSetSelected(wallets![wallet.id]));
         }
         logger.sentry('[KeychainIntegrityCheck]: done updating wallets');
       }
@@ -438,14 +626,14 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
 };
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE = {
+const INITIAL_STATE: WalletsState = {
   isWalletLoading: null,
   selected: undefined,
   walletNames: {},
   wallets: null,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: WalletsAction): WalletsState => {
   switch (action.type) {
     case WALLETS_SET_IS_LOADING:
       return { ...state, isWalletLoading: action.payload };

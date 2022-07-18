@@ -1,4 +1,4 @@
-import { isEmpty, omit } from 'lodash';
+import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
@@ -161,7 +161,9 @@ export default function useENSRegistrationForm({
     (fieldToRemove, selectedFields = undefined) => {
       if (!isEmpty(errors)) {
         setErrors(errors => {
-          const newErrors = omit(errors, fieldToRemove.key);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { [fieldToRemove.key]: _, ...newErrors } = errors;
+
           return newErrors;
         });
       }
@@ -169,10 +171,16 @@ export default function useENSRegistrationForm({
         setSelectedFields(selectedFields);
       }
       removeRecordByKey(fieldToRemove.key);
-      setValuesMap(values => ({
-        ...values,
-        [name]: omit(values?.[name] || {}, fieldToRemove.key) as Records,
-      }));
+
+      setValuesMap(values => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [fieldToRemove.key as ENS_RECORDS]: _, ...restRecords } =
+          values?.[name] || {};
+        return {
+          ...values,
+          [name]: restRecords as Records,
+        };
+      });
     },
     [
       errors,
@@ -203,7 +211,13 @@ export default function useENSRegistrationForm({
         const { message, validator } = validation;
         const isValid = !value || validator(value);
         isValid
-          ? key in errors && setErrors(omit(errors, key))
+          ? key in errors &&
+            setErrors(errors => {
+              // omit key from errors
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const { [key]: _, ...newErrors } = errors;
+              return newErrors;
+            })
           : setErrors({ ...errors, [key]: message });
       }
       setIsValidating(false);

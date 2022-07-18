@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { toLower } from 'lodash';
+import lang from 'i18n-js';
 import qs from 'qs';
 import { Alert } from 'react-native';
 import URL from 'url-parse';
@@ -51,17 +51,17 @@ export default async function handleDeeplink(
         const { dispatch } = store;
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { addr } = qs.parse(urlObj.query?.substring(1));
-        const address = toLower(addr as string);
+        const address = (addr as string)?.toLowerCase() ?? '';
         if (address && address.length > 0) {
           // @ts-expect-error FIXME: Property 'assets' does not exist on type...
           const { assets: allAssets, genericAssets } = store.getState().data;
           const asset =
             Object.values(genericAssets).find(
-              (asset: any) => address === toLower(asset.address)
+              (asset: any) => address === asset.address.toLowerCase()
             ) ||
             (address !== ETH_ADDRESS &&
               allAssets.find(
-                (asset: any) => address === toLower(asset.address)
+                (asset: any) => address === asset.address.toLowerCase()
               ));
 
           // First go back to home to dismiss any open shit
@@ -94,7 +94,7 @@ export default async function handleDeeplink(
       case 'update-ios': {
         const code = urlObj.pathname.split('/')[2];
         if (android) {
-          Alert.alert('Tried to use iOS bundle');
+          Alert.alert(lang.t('deeplinks.tried_to_use_ios'));
         } else {
           setDeploymentKey(code);
         }
@@ -105,7 +105,7 @@ export default async function handleDeeplink(
       case 'update-android': {
         const code = urlObj.pathname.split('/')[2];
         if (ios) {
-          Alert.alert('Tried to use Android bundle');
+          Alert.alert(lang.t('deeplinks.tried_to_use_android'));
         } else {
           setDeploymentKey(code);
         }
@@ -128,7 +128,7 @@ export default async function handleDeeplink(
           } else {
             const error = new Error('Invalid deeplink: ' + url);
             captureException(error);
-            Alert.alert('Uh oh! We couldn’t recognize this URL!');
+            Alert.alert(lang.t('deeplinks.couldnt_recognize_url'));
           }
         }
       }

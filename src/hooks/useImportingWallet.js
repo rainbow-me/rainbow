@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
+import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
@@ -26,7 +27,7 @@ import {
   isValidWallet,
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
@@ -139,7 +140,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
-            Alert.alert('This is not a valid ENS name');
+            Alert.alert(lang.t('wallet.invalid_ens_name'));
             return;
           }
           setResolvedAddress(address);
@@ -151,9 +152,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             input,
           });
         } catch (e) {
-          Alert.alert(
-            'Sorry, we cannot add this ENS name at this time. Please try again later!'
-          );
+          Alert.alert(lang.t('wallet.sorry_cannot_add_ens'));
           return;
         }
         // Look up ENS for 0x address
@@ -161,7 +160,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           const address = await resolveUnstoppableDomain(input);
           if (!address) {
-            Alert.alert('This is not a valid Unstoppable name');
+            Alert.alert(lang.t('wallet.invalid_unstoppable_name'));
             return;
           }
           setResolvedAddress(address);
@@ -172,9 +171,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             input,
           });
         } catch (e) {
-          Alert.alert(
-            'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
-          );
+          Alert.alert(lang.t('wallet.sorry_cannot_add_unstoppable'));
           return;
         }
       } else if (isValidAddress(input)) {
@@ -351,8 +348,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     setIsWalletLoading(
       isImporting
         ? showImportModal
-          ? walletLoadingStates.IMPORTING_WALLET
-          : walletLoadingStates.IMPORTING_WALLET_SILENTLY
+          ? WalletLoadingStates.IMPORTING_WALLET
+          : WalletLoadingStates.IMPORTING_WALLET_SILENTLY
         : null
     );
   }, [isImporting, setIsWalletLoading, showImportModal]);

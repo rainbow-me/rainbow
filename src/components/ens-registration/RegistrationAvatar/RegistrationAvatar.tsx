@@ -70,7 +70,7 @@ const RegistrationAvatar = ({
           ? initialAvatarUrl
           : values?.avatar;
       setAvatarUrl(avatarUrl);
-      onChangeAvatarUrl(avatarUrl || '');
+      onChangeAvatarUrl(avatarUrl ?? '');
     }
   }, [initialAvatarUrl, avatarUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 

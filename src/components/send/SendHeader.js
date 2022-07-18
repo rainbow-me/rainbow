@@ -1,12 +1,7 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
-// <<<<<<< HEAD
-// import { isEmpty, toLower } from 'lodash';
-// import React, { Fragment, useCallback, useMemo } from 'react';
-// =======
-import { isEmpty, toLower } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-// >>>>>>> aa3a3bcdb0e0ce1f3d96800f79c3ccbdd88e23b0
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
@@ -106,6 +101,7 @@ export default function SendHeader({
     } else {
       setHexAddress('');
     }
+
     async function resolveAndStoreAddress() {
       const hex = await resolveNameOrAddress(recipient);
       if (!hex) {
@@ -121,7 +117,9 @@ export default function SendHeader({
 
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
-      account => toLower(account.address) === toLower(hexAddress || recipient)
+      account =>
+        account.address.toLowerCase() ===
+        (hexAddress || recipient)?.toLowerCase()
     );
   }, [recipient, userAccounts, watchedAccounts, hexAddress]);
 
@@ -225,6 +223,14 @@ export default function SendHeader({
     onChangeAddressInput,
   ]);
 
+  const onChange = useCallback(
+    text => {
+      onChangeAddressInput(text);
+      setHexAddress('');
+    },
+    [onChangeAddressInput]
+  );
+
   return (
     <Fragment>
       <SheetHandleFixedToTop />
@@ -241,10 +247,7 @@ export default function SendHeader({
           autoFocus={!showAssetList}
           editable={!fromProfile}
           name={name}
-          onChange={e => {
-            onChangeAddressInput(e);
-            setHexAddress('');
-          }}
+          onChangeText={onChange}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
