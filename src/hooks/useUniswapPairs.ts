@@ -39,7 +39,7 @@ export default function useUniswapPairs() {
     });
 
     return {
-      allPairs: viablePairs.filter(toBoolean),
+      allPairs: viablePairs.filter(toBoolean) as Pair[],
       doneLoadingReserves,
     };
   }, [allPairCombinations, multicallResults]);
