@@ -1,15 +1,12 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
-import { Centered, Column } from '../../layout';
-import { SheetActionButton } from '../../sheet';
-import { Text as NativeText } from '../../text';
 import { Box, Text } from '@rainbow-me/design-system';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
@@ -22,7 +19,7 @@ import {
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { fonts, padding, position, shadow } from '@rainbow-me/styles';
+import { colors, position, shadow } from '@rainbow-me/styles';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,
@@ -37,61 +34,18 @@ const CheckmarkIconContainer = styled(View)(
     backgroundColor: color,
     borderRadius: 25,
     marginBottom: 19,
-    paddingTop: ios ? 13 : 7,
   })
 );
 
-const CheckmarkIconText = styled(NativeText).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.whiteLabel,
-  size: 'larger',
-  weight: 'bold',
-}))({});
-
 const CheckmarkIcon = ({ color, isDarkMode }) => (
   <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
-    <CheckmarkIconText>􀆅</CheckmarkIconText>
+    <Box alignItems="center" justifyContent="center" height="full" width="full">
+      <Text weight="bold" size="20px" color={{ custom: colors.whiteLabel }}>
+        􀆅
+      </Text>
+    </Box>
   </CheckmarkIconContainer>
 );
-
-const Content = styled(Centered).attrs({
-  direction: 'column',
-})({
-  ...padding.object(0, 19, 30),
-  flex: 1,
-});
-
-const DescriptionText = styled(NativeText).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'loosest',
-  size: 'large',
-}))({
-  marginBottom: 42,
-  paddingHorizontal: 23,
-});
-
-const Footer = styled(Centered)({
-  ...padding.object(0, 15, 42),
-});
-
-const Subtitle = styled(NativeText).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  size: fonts.size.smedium,
-  weight: fonts.weight.medium,
-}))({
-  marginTop: -10,
-});
-
-const Title = styled(NativeText).attrs({
-  align: 'center',
-  size: 'larger',
-  weight: 'bold',
-})({
-  marginBottom: 8,
-  paddingHorizontal: 11,
-});
 
 const onError = error => DelayedAlert({ title: error }, 500);
 
@@ -215,10 +169,8 @@ export default function AlreadyBackedUpView() {
             (walletStatus === WalletBackupStatus.IMPORTED && `Imported`)}
         </Text>
       </Box>
-
       <Box alignItems="center" marginTop="-42px">
         <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
-
         <Text size="20px" weight="bold">
           {(walletStatus === WalletBackupStatus.IMPORTED &&
             `Your wallet was imported`) ||

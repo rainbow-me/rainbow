@@ -1,12 +1,11 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { Fragment, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
-import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
-import { Text } from '../../text';
+import { Stack, Text } from '@rainbow-me/design-system';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -15,49 +14,12 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { fonts, padding } from '@rainbow-me/styles';
+import { Box } from '@rainbow-me/design-system';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
   width: ios ? 221 : 270,
-})({
-  marginBottom: 19,
-});
-
-const Content = styled(Centered).attrs({
-  direction: 'column',
-})({
-  ...padding.object(0, 19, 42),
-  flex: 1,
-});
-
-const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'loosest',
-  size: 'large',
-}))({
-  marginBottom: 42,
-  paddingHorizontal: 23,
-});
-
-const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.orangeLight,
-  size: fonts.size.smedium,
-  weight: fonts.weight.medium,
-}))({
-  marginTop: -10,
-});
-
-const Title = styled(Text).attrs({
-  align: 'center',
-  size: 'larger',
-  weight: 'bold',
-})({
-  marginBottom: 8,
-  paddingHorizontal: 11,
-});
+})({});
 
 const TopIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
@@ -109,17 +71,33 @@ export default function NeedsBackupView() {
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <Fragment>
-      <Subtitle>{lang.t('back_up.needs_backup.not_backed_up')}</Subtitle>
-      <Content>
-        <Column align="center">
-          <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
-          <Title>{lang.t('back_up.needs_backup.back_up_your_wallet')} </Title>
-          <DescriptionText>
-            {lang.t('back_up.needs_backup.dont_risk')}
-          </DescriptionText>
-        </Column>
-        <Column align="center">
+    <Box alignItems="center" width="full" height="full">
+      <Box marginTop="-10px">
+        <Text
+          color={{ custom: colors.orangeLight }}
+          size="14px"
+          weight="medium"
+        >
+          {lang.t('back_up.needs_backup.not_backed_up')}
+        </Text>
+      </Box>
+      <Box
+        alignItems="center"
+        justifyContent="center"
+        width="full"
+        height="full"
+        marginTop="-36px"
+      >
+        <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
+        <Stack space="19px" alignHorizontal="center">
+          <Text weight="bold" size="20px">
+            {lang.t('back_up.needs_backup.back_up_your_wallet')}{' '}
+          </Text>
+          <Box paddingHorizontal="42px" paddingBottom="24px">
+            <Text color="secondary50" size="18px" align="center">
+              {lang.t('back_up.needs_backup.dont_risk')}
+            </Text>
+          </Box>
           <BackupButton
             label={`􀙶 ${lang.t('modal.back_up.default.button.cloud_platform', {
               cloudPlatformName: cloudPlatform,
@@ -132,8 +110,8 @@ export default function NeedsBackupView() {
             onPress={onManualBackup}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
-        </Column>
-      </Content>
-    </Fragment>
+        </Stack>
+      </Box>
+    </Box>
   );
 }
