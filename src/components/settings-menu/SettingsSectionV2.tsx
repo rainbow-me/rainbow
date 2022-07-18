@@ -1,15 +1,16 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, Share, NativeModules } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import {
+  ContextMenuButton,
+  MenuActionConfig,
+} from 'react-native-ios-context-menu';
+import { Linking, NativeModules, Share } from 'react-native';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
-import {
-  AppleReviewAddress,
-  REVIEW_DONE_KEY,
-} from '@rainbow-me/utils/reviewAlert';
-import MenuItem from './components/MenuItem';
 import Menu from './components/Menu';
+import MenuContainer from './components/MenuContainer';
+import MenuItem from './components/MenuItem';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
@@ -24,10 +25,11 @@ import NotificationsIcon from '@rainbow-me/assets/settingsNotifications.png';
 import NotificationsIconDark from '@rainbow-me/assets/settingsNotificationsDark.png';
 import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
 } from '@rainbow-me/config/experimentalHooks';
-import { Box } from '@rainbow-me/design-system';
+import { Box, DebugLayout } from '@rainbow-me/design-system';
 import {
   isCustomBuild,
   setOriginalDeploymentKey,
@@ -40,7 +42,10 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { Themes, useTheme } from '@rainbow-me/theme';
-import MenuContainer from './components/MenuContainer';
+import {
+  AppleReviewAddress,
+  REVIEW_DONE_KEY,
+} from '@rainbow-me/utils/reviewAlert';
 
 // const { RainbowRequestReview, RNReview } = NativeModules;
 
@@ -92,7 +97,6 @@ interface SettingsSectionProps {
   onPressNetwork: () => void;
   onPressPrivacy: () => void;
   onPressShowSecret: () => void;
-  onPressTwitter: () => void;
   onPressNotifications: () => void;
 }
 
@@ -118,7 +122,7 @@ const SettingsSectionV2 = ({
   } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
-  const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
+  const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
 
@@ -162,15 +166,73 @@ const SettingsSectionV2 = ({
     [wallets]
   );
 
-  const toggleTheme = useCallback(() => {
-    if (colorScheme === Themes.SYSTEM) {
-      setTheme(Themes.LIGHT);
-    } else if (colorScheme === Themes.LIGHT) {
-      setTheme(Themes.DARK);
-    } else {
-      setTheme(Themes.SYSTEM);
-    }
-  }, [setTheme, colorScheme]);
+  const themeMenuConfig = useMemo(() => {
+    return {
+      menuItems: [
+        {
+          actionKey: Themes.SYSTEM,
+          actionTitle: lang.t('settings.theme_section.system'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'rectangle.stack.badge.person.crop',
+          },
+          menuState: colorScheme === Themes.SYSTEM ? 'on' : 'off',
+        },
+        {
+          actionKey: Themes.LIGHT,
+          actionTitle: lang.t('settings.theme_section.light'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'magnifyingglass',
+          },
+          menuState: colorScheme === Themes.LIGHT ? 'on' : 'off',
+        },
+        {
+          actionKey: Themes.DARK,
+          actionTitle: lang.t('settings.theme_section.dark'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'magnifyingglass',
+          },
+          menuState: colorScheme === Themes.DARK ? 'on' : 'off',
+        },
+      ] as MenuActionConfig[],
+      menuTitle: '',
+    };
+  }, [colorScheme]);
+
+  const onPressThemeAndroidActions = useCallback(() => {
+    const androidActions = [
+      lang.t('settings.theme_section.system'),
+      lang.t('settings.theme_section.light'),
+      lang.t('settings.theme_section.dark'),
+    ] as const;
+
+    showActionSheetWithOptions(
+      {
+        options: androidActions,
+        showSeparators: true,
+        title: '',
+      },
+      (idx: number) => {
+        if (idx === 0) {
+          setTheme(Themes.SYSTEM);
+        } else if (idx === 1) {
+          setTheme(Themes.LIGHT);
+        } else if (idx === 2) {
+          setTheme(Themes.DARK);
+        }
+      }
+    );
+  }, [setTheme]);
+
+  const handleSelectTheme = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      setTheme(actionKey);
+    },
+    [setTheme]
+  );
+
   return (
     <MenuContainer>
       <Menu>
@@ -200,7 +262,6 @@ const SettingsSectionV2 = ({
           />
         )}
         <MenuItem
-          onPress={onPressNotifications}
           hasRightArrow
           iconPadding="medium"
           leftComponent={
@@ -208,6 +269,7 @@ const SettingsSectionV2 = ({
               source={isDarkMode ? NotificationsIconDark : NotificationsIcon}
             />
           }
+          onPress={onPressNotifications}
           size="large"
           titleComponent={
             <MenuItem.Title text={lang.t('settings.notifications')} />
@@ -249,23 +311,30 @@ const SettingsSectionV2 = ({
             }
           />
         )}
-        <MenuItem
-          hasRightArrow
-          iconPadding="medium"
-          leftComponent={
-            <MenuItem.ImageIcon
-              source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
-            />
-          }
-          onPress={toggleTheme}
-          rightComponent={
-            <MenuItem.Selection>
-              {colorScheme ? capitalizeFirstLetter(colorScheme) : ''}
-            </MenuItem.Selection>
-          }
-          size="large"
-          titleComponent={<MenuItem.Title text={lang.t('settings.theme')} />}
-        />
+        <ContextMenuButton
+          menuConfig={themeMenuConfig}
+          {...(android ? { onPress: onPressThemeAndroidActions } : {})}
+          isMenuPrimaryAction
+          onPressMenuItem={handleSelectTheme}
+          useActionSheetFallback={false}
+        >
+          <MenuItem
+            hasChevron
+            iconPadding="medium"
+            leftComponent={
+              <MenuItem.ImageIcon
+                source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
+              />
+            }
+            rightComponent={
+              <MenuItem.Selection>
+                {colorScheme ? capitalizeFirstLetter(colorScheme) : ''}
+              </MenuItem.Selection>
+            }
+            size="large"
+            titleComponent={<MenuItem.Title text={lang.t('settings.theme')} />}
+          />
+        </ContextMenuButton>
         {!isReadOnlyWallet && (
           <MenuItem
             hasRightArrow

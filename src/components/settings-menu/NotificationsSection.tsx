@@ -1,12 +1,12 @@
-import React, { useCallback } from 'react';
 import lang from 'i18n-js';
+import React, { useCallback } from 'react';
 import { Switch } from 'react-native';
+import { ContactAvatar } from '../contacts';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { ContactAvatar } from '../contacts';
-import { useTheme } from '@rainbow-me/theme';
 import { useNavigation } from '@rainbow-me/navigation';
+import { useTheme } from '@rainbow-me/theme';
 
 const NotificationsSection = () => {
   const { colors } = useTheme();
@@ -25,8 +25,8 @@ const NotificationsSection = () => {
     <MenuContainer>
       <Menu>
         <MenuItem
-          size="medium"
           rightComponent={<Switch />}
+          size="medium"
           titleComponent={
             <MenuItem.Title
               text={lang.t('settings.notifications_section.my_wallets')}
@@ -35,37 +35,27 @@ const NotificationsSection = () => {
           }
         />
         <MenuItem
-          onPress={() => onPress('notben.eth')}
-          size="medium"
+          hasRightArrow
+          labelComponent={
+            <MenuItem.Label
+              text={lang.t('settings.notifications_section.all')}
+            />
+          }
           leftComponent={
             <ContactAvatar
               alignSelf="center"
               color={colors.appleBlue}
               marginRight={10}
               size="small"
-              value={'notben.eth'}
+              value="notben.eth"
             />
           }
-          labelComponent={
-            <MenuItem.Label
-              text={lang.t('settings.notifications_section.all')}
-            />
-          }
+          onPress={() => onPress('notben.eth')}
+          size="medium"
           titleComponent={<MenuItem.Title text="notben.eth" />}
-          hasRightArrow
         />
         <MenuItem
-          onPress={() => onPress('pugson.eth')}
-          size="medium"
-          leftComponent={
-            <ContactAvatar
-              alignSelf="center"
-              color={colors.red}
-              marginRight={10}
-              size="small"
-              value={'pugson.eth'}
-            />
-          }
+          hasRightArrow
           labelComponent={
             <MenuItem.Label
               text={`${lang.t(
@@ -77,14 +67,24 @@ const NotificationsSection = () => {
               })}`}
             />
           }
+          leftComponent={
+            <ContactAvatar
+              alignSelf="center"
+              color={colors.red}
+              marginRight={10}
+              size="small"
+              value="pugson.eth"
+            />
+          }
+          onPress={() => onPress('pugson.eth')}
+          size="medium"
           titleComponent={<MenuItem.Title text="pugson.eth" />}
-          hasRightArrow
         />
       </Menu>
       <Menu>
         <MenuItem
-          size="medium"
           rightComponent={<Switch />}
+          size="medium"
           titleComponent={
             <MenuItem.Title
               text={lang.t('settings.notifications_section.watched_wallets')}
@@ -93,24 +93,24 @@ const NotificationsSection = () => {
           }
         />
         <MenuItem
-          onPress={() => onPress('moxey.eth')}
-          size="medium"
+          hasRightArrow
+          labelComponent={
+            <MenuItem.Label
+              text={lang.t('settings.notifications_section.off')}
+            />
+          }
           leftComponent={
             <ContactAvatar
               alignSelf="center"
               color={colors.red}
               marginRight={10}
               size="small"
-              value={'moxey.eth'}
+              value="moxey.eth"
             />
           }
-          labelComponent={
-            <MenuItem.Label
-              text={lang.t('settings.notifications_section.off')}
-            />
-          }
+          onPress={() => onPress('moxey.eth')}
+          size="medium"
           titleComponent={<MenuItem.Title text="moxey.eth" />}
-          hasRightArrow
         />
       </Menu>
     </MenuContainer>

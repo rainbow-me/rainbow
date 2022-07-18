@@ -5,16 +5,16 @@ import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import networkInfo from '../../helpers/networkInfo';
 import { settingsUpdateNetwork } from '../../redux/settings';
+import Menu from './components/Menu';
+import MenuContainer from './components/MenuContainer';
+import MenuItem from './components/MenuItem';
+import { Divider, Stack } from '@rainbow-me/design-system';
 import {
   useAccountSettings,
   useInitializeAccountData,
   useLoadAccountData,
   useResetAccountState,
 } from '@rainbow-me/hooks';
-import MenuContainer from './components/MenuContainer';
-import Menu from './components/Menu';
-import MenuItem from './components/MenuItem';
-import { Divider, Stack } from '@rainbow-me/design-system';
 
 const networks = values(networkInfo).filter(network => !network.layer2);
 
@@ -47,20 +47,21 @@ const NetworkSectionV2 = ({ inDevSection }: NetworkSectionProps) => {
       {networks.map(({ disabled, name, value, testnet }: any) => {
         return (
           <MenuItem
-            onPress={() => onNetworkChange(value)}
             disabled={(!testnetsEnabled && testnet) || disabled}
+            iconPadding="large"
+            key={value}
+            onPress={() => onNetworkChange(value)}
             rightComponent={
               value === network && <MenuItem.StatusIcon status="selected" />
             }
+            size="medium"
             titleComponent={
               <MenuItem.Title
+                disabled={(!testnetsEnabled && testnet) || disabled}
                 text={name}
                 weight={inDevSection ? 'medium' : 'semibold'}
-                disabled={(!testnetsEnabled && testnet) || disabled}
               />
             }
-            iconPadding="large"
-            size="medium"
           />
         );
       })}

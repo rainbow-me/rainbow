@@ -1,11 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
 import { resources, supportedLanguages } from '../../languages';
+import Menu from './components/Menu';
+import MenuContainer from './components/MenuContainer';
+import MenuItem from './components/MenuItem';
 import { pickBy } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import MenuContainer from './components/MenuContainer';
-import Menu from './components/Menu';
-import MenuItem from './components/MenuItem';
 
 const languagesWithWalletTranslations = Object.keys(
   pickBy(resources, language => language?.translation?.wallet) // Only show languages that have 'wallet' translations available.
@@ -33,13 +33,14 @@ const LanguageSection = () => {
         {languageListItems.map(({ name, code }: any) => {
           return (
             <MenuItem
+              iconPadding="large"
+              key={code}
               onPress={() => onSelectLanguage(code)}
               rightComponent={
                 code === language && <MenuItem.StatusIcon status="selected" />
               }
-              titleComponent={<MenuItem.Title text={name} />}
-              iconPadding="large"
               size="medium"
+              titleComponent={<MenuItem.Title text={name} />}
             />
           );
         })}

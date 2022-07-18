@@ -13,9 +13,9 @@ import {
   DevSectionV2,
   LanguageSectionV2,
   NetworkSectionV2,
+  NotificationsSection,
   PrivacySectionV2,
   SettingsSectionV2,
-  NotificationsSection,
   WalletNotificationsSettings,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
@@ -170,9 +170,9 @@ export default function SettingsSheet() {
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
-    <AccentColorProvider color={isDarkMode ? '#E0E8FF0F' : '#F5F5F7'}>
+    <AccentColorProvider color={colors.settings.background}>
       <Box
-        background={isDarkMode ? 'body' : 'accent'}
+        background="accent"
         flexGrow={1}
         testID="settings-sheet"
         {...(android && { borderTopRadius: 30 })}
@@ -200,10 +200,10 @@ export default function SettingsSheet() {
                 onPressDev={onPressSection(SettingsPages.dev)}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
-                onPressPrivacy={onPressSection(SettingsPages.privacy)}
                 onPressNotifications={onPressSection(
                   SettingsPages.notifications
                 )}
+                onPressPrivacy={onPressSection(SettingsPages.privacy)}
               />
             )}
           </Stack.Screen>

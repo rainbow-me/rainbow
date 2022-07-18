@@ -14,12 +14,12 @@ import { BiometricButtonContent, Button } from '../buttons';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import SecretDisplayCard from './SecretDisplayCard';
+import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
-import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 
 const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -97,7 +97,7 @@ export default function SecretDisplaySection({
           paddingHorizontal="60px"
         >
           <Stack space="10px">
-            <Text color="secondary" weight="regular" size="18px" align="center">
+            <Text align="center" color="secondary" size="18px" weight="regular">
               {lang.t('back_up.secret.you_need_to_authenticate', {
                 typeName: typeLabel,
               })}
@@ -116,7 +116,7 @@ export default function SecretDisplaySection({
       );
     } else {
       return (
-        <Text size="16px" color="secondary60" align="center">
+        <Text align="center" color="secondary60" size="16px">
           Your account has been secured with biometric data, like fingerprint or
           face identification. To see your recovery phrase, turn on biometrics
           in your phone’s settings.
@@ -145,16 +145,16 @@ export default function SecretDisplaySection({
                   </Inline>
                 </CopyFloatingEmojis>
               </Box>
-              <Stack alignHorizontal="center" space="12px">
+              <Stack alignHorizontal="center" space="19px">
                 <SecretDisplayCard seed={seed} type={type} />
-                <Text weight="bold" size="16px" containsEmoji>
+                <Text containsEmoji size="16px" weight="bold">
                   👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
                 </Text>
                 <Text
                   align="center"
-                  weight="semibold"
-                  size="16px"
                   color="secondary60"
+                  size="16px"
+                  weight="semibold"
                 >
                   {lang.t('back_up.secret.anyone_who_has_these')}
                 </Text>

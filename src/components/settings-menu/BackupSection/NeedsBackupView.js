@@ -5,16 +5,15 @@ import React, { useCallback, useEffect } from 'react';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { SheetActionButton } from '../../sheet';
-import { Stack, Text } from '@rainbow-me/design-system';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
+import { Box, Stack, Text } from '@rainbow-me/design-system';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { Box } from '@rainbow-me/design-system';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -71,7 +70,7 @@ export default function NeedsBackupView() {
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <Box alignItems="center" width="full" height="full">
+    <Box alignItems="center" height="full" width="full">
       <Box marginTop="-10px">
         <Text
           color={{ custom: colors.orangeLight }}
@@ -83,18 +82,18 @@ export default function NeedsBackupView() {
       </Box>
       <Box
         alignItems="center"
-        justifyContent="center"
-        width="full"
         height="full"
+        justifyContent="center"
         marginTop="-36px"
+        width="full"
       >
         <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
-        <Stack space="19px" alignHorizontal="center">
-          <Text weight="bold" size="20px">
+        <Stack alignHorizontal="center" space="19px">
+          <Text size="20px" weight="bold">
             {lang.t('back_up.needs_backup.back_up_your_wallet')}{' '}
           </Text>
-          <Box paddingHorizontal="42px" paddingBottom="24px">
-            <Text color="secondary50" size="18px" align="center">
+          <Box paddingBottom="24px" paddingHorizontal="42px">
+            <Text align="center" color="secondary50" size="18px">
               {lang.t('back_up.needs_backup.dont_risk')}
             </Text>
           </Box>

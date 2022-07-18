@@ -2,15 +2,15 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { cloudPlatform } from '../../../utils/platform';
 import { ContactAvatar } from '../../contacts';
+import Menu from '../components/Menu';
+import MenuContainer from '../components/MenuContainer';
+import MenuItem from '../components/MenuItem';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { abbreviations } from '@rainbow-me/utils';
-import Menu from '../components/Menu';
-import MenuItem from '../components/MenuItem';
-import MenuContainer from '../components/MenuContainer';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 
 const WalletSelectionViewV2 = () => {
   const { navigate } = useNavigation();
@@ -63,33 +63,7 @@ const WalletSelectionViewV2 = () => {
 
             return (
               <MenuItem
-                onPress={() =>
-                  onPress(
-                    key,
-                    removeFirstEmojiFromString(labelOrName) ||
-                      abbreviations.address(address, 4, 6)
-                  )
-                }
-                leftComponent={
-                  <ContactAvatar
-                    alignSelf="center"
-                    color={color}
-                    marginRight={10}
-                    size="small"
-                    value={labelOrName || `${index + 1}`}
-                  />
-                }
-                rightComponent={
-                  <MenuItem.StatusIcon
-                    status={
-                      wallet.backupType === WalletBackupTypes.cloud
-                        ? 'complete'
-                        : wallet.backedUp || wallet.imported
-                        ? 'incomplete'
-                        : 'warning'
-                    }
-                  />
-                }
+                hasRightArrow
                 labelComponent={
                   <MenuItem.Label
                     text={
@@ -112,7 +86,34 @@ const WalletSelectionViewV2 = () => {
                     }
                   />
                 }
-                hasRightArrow
+                leftComponent={
+                  <ContactAvatar
+                    alignSelf="center"
+                    color={color}
+                    marginRight={10}
+                    size="small"
+                    value={labelOrName || `${index + 1}`}
+                  />
+                }
+                onPress={() =>
+                  onPress(
+                    key,
+                    removeFirstEmojiFromString(labelOrName) ||
+                      abbreviations.address(address, 4, 6)
+                  )
+                }
+                rightComponent={
+                  <MenuItem.StatusIcon
+                    status={
+                      wallet.backupType === WalletBackupTypes.cloud
+                        ? 'complete'
+                        : wallet.backedUp || wallet.imported
+                        ? 'incomplete'
+                        : 'warning'
+                    }
+                  />
+                }
+                size="large"
                 titleComponent={
                   <MenuItem.Title
                     text={
@@ -122,7 +123,6 @@ const WalletSelectionViewV2 = () => {
                     }
                   />
                 }
-                size="large"
               />
             );
           })}
@@ -130,9 +130,10 @@ const WalletSelectionViewV2 = () => {
       {cloudBackedUpWallets > 0 && (
         <Menu>
           <MenuItem
+            iconPadding="small"
+            leftComponent={<MenuItem.Title isLink text="􀡜" />}
             onPress={manageCloudBackups}
             size="medium"
-            iconPadding="small"
             titleComponent={
               <MenuItem.Title
                 isLink
@@ -141,7 +142,6 @@ const WalletSelectionViewV2 = () => {
                 })}
               />
             }
-            leftComponent={<MenuItem.Title text="􀡜" isLink />}
           />
         </Menu>
       )}

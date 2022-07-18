@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch as NativeSwitch } from 'react-native';
 import { Source } from 'react-native-fast-image';
-import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation } from '../../animations';
 import CheckmarkCircledIcon from '../../icons/svg/CheckmarkCircledIcon';
 import WarningIcon from '../../icons/svg/WarningIcon';
+import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '@rainbow-me/theme';
@@ -55,12 +55,6 @@ const StatusIcon = ({ status }: StatusIconProps) => {
     <WarningIcon color={colors.orangeLight} colors={colors} />
   ) : (
     <CheckmarkCircledIcon
-      shadowColor={colors.alpha(
-        isDarkMode ? colors.shadow : colors.blueGreyDark50,
-        0.4
-      )}
-      shadowOffset={{ height: 4, width: 0 }}
-      shadowRadius={6}
       color={
         status === 'complete'
           ? colors.green
@@ -69,6 +63,12 @@ const StatusIcon = ({ status }: StatusIconProps) => {
           : colors.appleBlue
       }
       colors={colors}
+      shadowColor={colors.alpha(
+        isDarkMode ? colors.shadow : colors.blueGreyDark50,
+        0.4
+      )}
+      shadowOffset={{ height: 4, width: 0 }}
+      shadowRadius={6}
     />
   );
 };
@@ -134,6 +134,7 @@ interface MenuItemProps {
   titleComponent: React.ReactNode;
   labelComponent?: React.ReactNode;
   disabled?: boolean;
+  hasChevron?: boolean;
 }
 
 const MenuItem = ({
@@ -146,6 +147,7 @@ const MenuItem = ({
   titleComponent,
   labelComponent,
   disabled,
+  hasChevron,
 }: MenuItemProps) => {
   const { colors } = useTheme();
   const space =
@@ -182,6 +184,11 @@ const MenuItem = ({
               tintColor={colors.blueGreyDark60}
               width={{ custom: 5.83 }}
             />
+          )}
+          {hasChevron && (
+            <Text color="secondary60" size="18px" weight="medium">
+              􀆏
+            </Text>
           )}
         </Inline>
       </Inline>

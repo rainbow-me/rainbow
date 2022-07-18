@@ -185,6 +185,11 @@ const getColorsByTheme = (darkMode?: boolean) => {
     ropsten: '#ff4a8d',
   };
 
+  let settings = {
+    background: '#F5F5F7',
+    foreground: base.white,
+  };
+
   let gradients = {
     appleBlueTintToAppleBlue: ['#15B1FE', base.appleBlue],
     blueToGreen: ['#4764F7', '#23D67F'],
@@ -340,6 +345,11 @@ const getColorsByTheme = (darkMode?: boolean) => {
       whiteButton: ['#404656', buildRgba('#404656', 0.8)],
     };
 
+    settings = {
+      background: darkModeColors.lighterGrey,
+      foreground: '#1E2028',
+    };
+
     listHeaders = {
       firstGradient: '#12131Aff',
       secondGradient: '#12131A80',
@@ -372,6 +382,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     listHeaders,
     networkColors,
     sendScreen,
+    settings,
     ...base,
     ...transparent,
     ...light,

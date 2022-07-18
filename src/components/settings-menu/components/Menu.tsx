@@ -1,5 +1,11 @@
 import React from 'react';
-import { Box, Divider, Stack, Text } from '@rainbow-me/design-system';
+import {
+  AccentColorProvider,
+  Box,
+  Divider,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
 import { useTheme } from '@rainbow-me/theme';
 
 interface MenuProps {
@@ -9,32 +15,34 @@ interface MenuProps {
 }
 
 const Menu = ({ children, description, header }: MenuProps) => {
-  const { isDarkMode } = useTheme();
+  const { colors } = useTheme();
   return (
-    <Stack space="12px">
-      {!!header && (
-        <Box paddingHorizontal={{ custom: 16 }}>
-          <Text color="secondary60" size="16px" weight="regular">
-            {header}
-          </Text>
+    <AccentColorProvider color={colors.settings.foreground}>
+      <Stack space="12px">
+        {!!header && (
+          <Box paddingHorizontal={{ custom: 16 }}>
+            <Text color="secondary60" size="16px" weight="regular">
+              {header}
+            </Text>
+          </Box>
+        )}
+        <Box
+          background="accent"
+          borderRadius={18}
+          shadow="9px medium"
+          width="full"
+        >
+          <Stack separator={<Divider color="divider60" />}>{children}</Stack>
         </Box>
-      )}
-      <Box
-        background={isDarkMode ? 'accent' : 'body'}
-        shadow="9px medium"
-        borderRadius={18}
-        width="full"
-      >
-        <Stack separator={<Divider color="divider60" />}>{children}</Stack>
-      </Box>
-      {!!description && (
-        <Box paddingHorizontal={{ custom: 16 }} paddingTop="5px">
-          <Text color="secondary60" size="14px" weight="regular">
-            {description}
-          </Text>
-        </Box>
-      )}
-    </Stack>
+        {!!description && (
+          <Box paddingHorizontal={{ custom: 16 }} paddingTop="5px">
+            <Text color="secondary60" size="14px" weight="regular">
+              {description}
+            </Text>
+          </Box>
+        )}
+      </Stack>
+    </AccentColorProvider>
   );
 };
 

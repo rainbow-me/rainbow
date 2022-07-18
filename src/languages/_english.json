@@ -1015,7 +1015,12 @@
       "restore": "Restore to original deployment",
       "review": "Review Rainbow",
       "share_rainbow": "Share Rainbow",
-      "theme": "Theme"
+      "theme": "Theme",
+      "theme_section": {
+        "system": "System",
+        "dark": "Dark",
+        "light": "Light"
+      }
     },
     "subscribe_form": {
       "email_already_subscribed": "Sorry, you've already signed up with this email",

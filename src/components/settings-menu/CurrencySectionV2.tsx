@@ -1,14 +1,13 @@
+import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
+import { reloadTimelines } from 'react-native-widgetkit';
+import { CoinIcon } from '../coin-icon';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { CoinIcon } from '../coin-icon';
-import { emojis } from '@rainbow-me/references';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import { Platform } from 'react-native';
-import { reloadTimelines } from 'react-native-widgetkit';
-import analytics from '@segment/analytics-react-native';
+import { emojis, supportedNativeCurrencies } from '@rainbow-me/references';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
   name,
@@ -45,7 +44,8 @@ const CurrencySectionV2 = () => {
         {currencyListItems.map(({ label, emojiName, currency }: any) => {
           return (
             <MenuItem
-              onPress={() => onSelectCurrency(currency)}
+              iconPadding="large"
+              key={currency}
               leftComponent={
                 emojiName ? (
                   <MenuItem.Title
@@ -56,14 +56,14 @@ const CurrencySectionV2 = () => {
                   <CoinIcon address={currency} size={23} symbol={currency} />
                 )
               }
+              onPress={() => onSelectCurrency(currency)}
               rightComponent={
                 currency === nativeCurrency && (
                   <MenuItem.StatusIcon status="selected" />
                 )
               }
-              titleComponent={<MenuItem.Title text={label} />}
-              iconPadding="large"
               size="medium"
+              titleComponent={<MenuItem.Title text={label} />}
             />
           );
         })}

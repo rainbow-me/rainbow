@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
 import { Alert, InteractionManager, Switch } from 'react-native';
-// eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import {
   // @ts-ignore
@@ -14,17 +13,21 @@ import {
 } from 'react-native-dotenv';
 // @ts-ignore
 import Restart from 'react-native-restart';
-import { settingsUpdateNetwork } from '../../redux/settings';
 import { useDispatch } from 'react-redux';
 import { defaultConfig } from '../../config/experimental';
 import useAppVersion from '../../hooks/useAppVersion';
-import NetworkSection from './NetworkSection';
+import { settingsUpdateNetwork } from '../../redux/settings';
+import NetworkSectionV2 from './NetworkSectionV2';
+import Menu from './components/Menu';
+import MenuContainer from './components/MenuContainer';
+import MenuItem from './components/MenuItem';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import {
   getProviderForNetwork,
   web3SetHttpProvider,
 } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
+import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountSettings,
@@ -47,11 +50,6 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import MenuContainer from './components/MenuContainer';
-import Menu from './components/Menu';
-import MenuItem from './components/MenuItem';
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
-import NetworkSectionV2 from './NetworkSectionV2';
 
 const DevSectionV2 = () => {
   const { navigate } = useNavigation();
@@ -211,8 +209,8 @@ const DevSectionV2 = () => {
     <MenuContainer>
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
         <MenuItem
-          titleComponent={<MenuItem.Title text="Enable Testnets" />}
           disabled
+          iconPadding="large"
           leftComponent={<MenuItem.Title text="🕹️" />}
           rightComponent={
             <Switch
@@ -221,112 +219,114 @@ const DevSectionV2 = () => {
             />
           }
           size="medium"
-          iconPadding="large"
+          titleComponent={<MenuItem.Title text="Enable Testnets" />}
         />
         {testnetsEnabled && <NetworkSectionV2 inDevSection />}
         <MenuItem
-          titleComponent={<MenuItem.Title text="Clear local storage" />}
-          leftComponent={<MenuItem.Title text="💥" />}
-          size="medium"
           iconPadding="large"
+          leftComponent={<MenuItem.Title text="💥" />}
           onPress={clearLocalStorage}
+          size="medium"
+          titleComponent={<MenuItem.Title text="Clear local storage" />}
         />
       </Menu>
       {(IS_DEV || isTestFlight) && (
         <>
           <Menu header="Rainbow Developer Settings">
             <MenuItem
-              onPress={AsyncStorage.clear}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="💥" />}
+              onPress={AsyncStorage.clear}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_async_storage')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={clearAllStorages}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="💥" />}
+              onPress={clearAllStorages}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_mmkv_storage')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={clearImageMetadataCache}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="📷️" />}
+              onPress={clearImageMetadataCache}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_image_metadata_cache')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={clearImageCache}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="📷️" />}
+              onPress={clearImageCache}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_image_cache')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={wipeKeychain}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="💣" />}
+              onPress={wipeKeychain}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.reset_keychain')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={() => Restart.Restart()}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="🔄" />}
+              onPress={() => Restart.Restart()}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.restart_app')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={throwRenderError}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="💥" />}
+              onPress={throwRenderError}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.crash_app_render_error')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             {errorObj}
             <MenuItem
-              onPress={removeBackups}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="🗑️" />}
+              onPress={removeBackups}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.remove_all_backups')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={() => AsyncStorage.removeItem('experimentalConfig')}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="🤷" />}
+              onPress={() => AsyncStorage.removeItem('experimentalConfig')}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t(
@@ -334,44 +334,44 @@ const DevSectionV2 = () => {
                   )}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={connectToHardhat}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="👷" />}
+              onPress={connectToHardhat}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.connect_to_hardhat')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={checkAlert}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="🏖️" />}
+              onPress={checkAlert}
+              size="medium"
               titleComponent={
                 <MenuItem.Title text={lang.t('developer_settings.alert')} />
               }
-              iconPadding="large"
-              size="medium"
             />
             <MenuItem
-              onPress={navToDevNotifications}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="🔔" />}
+              onPress={navToDevNotifications}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.notifications_debug')}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
 
             <MenuItem
-              onPress={syncCodepush}
+              iconPadding="large"
               leftComponent={<MenuItem.Title text="⏩" />}
+              onPress={syncCodepush}
+              size="medium"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.sync_codepush', {
@@ -379,8 +379,6 @@ const DevSectionV2 = () => {
                   })}
                 />
               }
-              iconPadding="large"
-              size="medium"
             />
           </Menu>
           <Menu header="Feature Flags">
@@ -389,12 +387,13 @@ const DevSectionV2 = () => {
               .filter(key => (defaultConfig as any)[key]?.settings)
               .map(key => (
                 <MenuItem
+                  iconPadding="large"
+                  key={key}
                   onPress={() => onExperimentalKeyChange(key)}
                   rightComponent={
                     !!config[key] && <MenuItem.StatusIcon status="selected" />
                   }
                   size="medium"
-                  iconPadding="large"
                   titleComponent={<MenuItem.Title text={key} />}
                 />
               ))}

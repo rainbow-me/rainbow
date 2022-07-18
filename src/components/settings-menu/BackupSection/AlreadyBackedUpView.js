@@ -7,7 +7,7 @@ import { useTheme } from '../../../theme/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
-import { Box, Text } from '@rainbow-me/design-system';
+import { AccentColorProvider, Box, Text } from '@rainbow-me/design-system';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -39,8 +39,8 @@ const CheckmarkIconContainer = styled(View)(
 
 const CheckmarkIcon = ({ color, isDarkMode }) => (
   <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
-    <Box alignItems="center" justifyContent="center" height="full" width="full">
-      <Text weight="bold" size="20px" color={{ custom: colors.whiteLabel }}>
+    <Box alignItems="center" height="full" justifyContent="center" width="full">
+      <Text color={{ custom: colors.whiteLabel }} size="20px" weight="bold">
         􀆅
       </Text>
     </Box>
@@ -127,6 +127,8 @@ export default function AlreadyBackedUpView() {
     walletStatus,
   ]);
 
+  const { colors, isDarkMode } = useTheme();
+
   const isSecretPhrase = WalletTypes.mnemonic === wallets[walletId].type;
 
   const handleViewRecoveryPhrase = useCallback(() => {
@@ -140,8 +142,6 @@ export default function AlreadyBackedUpView() {
     });
   }, [isSecretPhrase, navigate, walletId]);
 
-  const { colors } = useTheme();
-
   const checkmarkColor =
     walletStatus === WalletBackupStatus.CLOUD_BACKUP
       ? colors.green
@@ -152,14 +152,12 @@ export default function AlreadyBackedUpView() {
       key => wallets[key].type !== WalletTypes.readOnly
     ).length > 1;
 
-  const { isDarkMode } = useTheme();
-
   return (
     <Box
       alignItems="center"
+      height="full"
       justifyContent="space-between"
       width="full"
-      height="full"
     >
       <Box marginTop="-10px">
         <Text color="secondary50" size="14px" weight="medium">
@@ -177,7 +175,7 @@ export default function AlreadyBackedUpView() {
             `Your wallet is backed up`}
         </Text>
         <Box paddingHorizontal="60px" paddingTop="24px">
-          <Text size="18px" color="secondary50" align="center">
+          <Text align="center" color="secondary50" size="18px">
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
               lang.t('back_up.explainers.if_lose_cloud', {
                 cloudPlatformName: cloudPlatform,
@@ -189,29 +187,31 @@ export default function AlreadyBackedUpView() {
           </Text>
         </Box>
         <Box paddingTop="42px">
-          <ButtonPressAnimation onPress={handleViewRecoveryPhrase}>
-            <Box
-              background="body"
-              paddingHorizontal="19px"
-              height={{ custom: 48 }}
-              borderRadius={56}
-              justifyContent="center"
-              shadow="15px light"
-            >
-              <Text
-                color="secondary80"
-                size="18px"
-                weight="semibold"
-                containsEmoji
+          <AccentColorProvider color={colors.whiteLabel}>
+            <ButtonPressAnimation onPress={handleViewRecoveryPhrase}>
+              <Box
+                background="accent"
+                borderRadius={56}
+                height={{ custom: 48 }}
+                justifyContent="center"
+                paddingHorizontal="19px"
+                shadow="15px light"
               >
-                {`🗝 ${
-                  isSecretPhrase
-                    ? lang.t('back_up.secret.view_secret_phrase')
-                    : lang.t('back_up.secret.view_private_key')
-                }`}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
+                <Text
+                  color="secondary"
+                  containsEmoji
+                  size="18px"
+                  weight="semibold"
+                >
+                  {`🗝 ${
+                    isSecretPhrase
+                      ? lang.t('back_up.secret.view_secret_phrase')
+                      : lang.t('back_up.secret.view_private_key')
+                  }`}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          </AccentColorProvider>
         </Box>
       </Box>
       <Box paddingBottom="42px">
