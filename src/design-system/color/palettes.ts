@@ -271,7 +271,7 @@ function createPalette(colorMode: ColorMode): Palette {
       }
 
       if (colorMode === 'lightTinted') {
-        acc[key as BackgroundColor] = value.darkTinted ?? value.dark;
+        acc[key as BackgroundColor] = value.lightTinted ?? value.light;
         return acc;
       }
 
