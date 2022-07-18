@@ -155,9 +155,9 @@ const buildUniswapCards = (
       return transformPool(liquidityToken, position, nativeCurrency, chainId);
     })
   );
-  const orderedUniswapPools = uniswapPools.sort((a, b) =>
-    a.totalBalancePrice > b.totalBalancePrice ? -1 : 1
-  );
+  const orderedUniswapPools = uniswapPools
+    .slice()
+    .sort((a, b) => (a.totalBalancePrice > b.totalBalancePrice ? -1 : 1));
 
   let uniswapTotal = 0;
 

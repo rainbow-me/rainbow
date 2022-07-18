@@ -195,9 +195,11 @@ export default function useSavingsAccount(includeDefaultDai) {
       getUnderlyingPrice(token, genericAssets)
     );
 
-    const orderedAccountTokens = accountTokensWithPrices.sort((a, b) =>
-      a.underlyingBalanceNativeValue > b.underlyingBalanceNativeValue ? -1 : 1
-    );
+    const orderedAccountTokens = accountTokensWithPrices
+      .slice()
+      .sort((a, b) =>
+        a.underlyingBalanceNativeValue > b.underlyingBalanceNativeValue ? -1 : 1
+      );
 
     const accountHasCDAI = orderedAccountTokens.find(
       token => token.underlying.address === DAI_ADDRESS
