@@ -223,6 +223,11 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('ens-register-name-banner');
   });
 
+  it('Should see the gas card', async () => {
+    await Helpers.checkIfVisible('gas-button');
+    await Helpers.tap('gas-button');
+  });
+
   it('Should search and open Profile for rainbowwallet.eth', async () => {
     await Helpers.typeText(
       'discover-search-input',
