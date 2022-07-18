@@ -107,10 +107,13 @@ const swap = async (
       methodName,
     });
     const nonce = baseNonce ? baseNonce + index : undefined;
+    if (typeof gasLimit === 'string') {
+      gasLimit = parseFloat(gasLimit);
+    }
     swap = await executeSwap({
       accountAddress,
       chainId,
-      gasLimit,
+      gasLimit: gasLimit / 2,
       inputCurrency,
       maxFeePerGas,
       maxPriorityFeePerGas,
@@ -135,7 +138,7 @@ const swap = async (
     asset: inputCurrency,
     data: swap.data,
     from: accountAddress,
-    gasLimit,
+    gasLimit: gasLimit / 2,
     hash: swap?.hash,
     maxFeePerGas,
     maxPriorityFeePerGas,
@@ -148,7 +151,7 @@ const swap = async (
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
-  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
+  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, false));
   return swap?.nonce;
 };
 
