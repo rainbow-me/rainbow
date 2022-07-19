@@ -3,7 +3,8 @@ import { ButtonPressAnimation } from '../animations';
 import { RadioList, RadioListItem } from '../radio-list';
 import AppIconJoy from '@rainbow-me/assets/app-icon-joy.png';
 import AppIconOg from '@rainbow-me/assets/app-icon-og.png';
-import { Stack, Text } from '@rainbow-me/design-system';
+import RainbowIcon from '@rainbow-me/assets/rainbowIcon.png';
+import { Box, Stack, Text } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -12,15 +13,13 @@ import Logger from '@rainbow-me/utils/logger';
 
 const supportedAppIcons = {
   joy: {
-    icon: 'joy',
     name: 'Joy Inspired',
-    source: AppIconOg,
+    source: RainbowIcon,
     value: 'joy',
   },
   og: {
-    icon: 'og',
     name: 'The OG',
-    source: AppIconJoy,
+    source: RainbowIcon,
     value: 'og',
   },
 };
@@ -31,17 +30,18 @@ const appIconListItems = Object.values(supportedAppIcons).map(
   })
 );
 
-const renderAppIcon = appIcon => {
-  if (!appIcon) return null;
-  const { source } = supportedAppIcons[appIcon].source;
-  return <ImgixImage height="128" source={source} width="128" />;
-};
-
-const AppIconListItem = ({ icon, name, value, ...item }) => (
+const AppIconListItem = ({ name, value, source, ...item }) => (
   <RadioListItem
     {...item}
-    icon={renderAppIcon(icon)}
-    label={`${name}`}
+    icon={
+      <Box
+        as={ImgixImage}
+        height={{ custom: 36 }}
+        source={source}
+        width={{ custom: 36 }}
+      />
+    }
+    label={name}
     value={value}
   />
 );
