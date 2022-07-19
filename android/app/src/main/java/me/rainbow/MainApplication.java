@@ -23,6 +23,7 @@ import me.rainbow.NativeModules.Haptics.RNRainbowHapticsModule;
 import me.rainbow.NativeModules.Internals.InternalPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
+import me.rainbow.NativeModules.RNFrameRateMonitor.RNFrameRateMonitorPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
 import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage;
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
@@ -67,6 +68,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new KeychainPackage(new KeychainModuleBuilder().withoutWarmUp()));
           packages.add(new RNStartTimePackage(MainApplication.START_MARK));
           packages.add(new RNHapticsPackage());
+          packages.add(new RNFrameRateMonitorPackage());
 
             return packages;
         }

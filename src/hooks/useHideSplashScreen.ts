@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { PerformanceContextMap } from '../performance/PerformanceContextMap';
+import { FrameRateMonitor } from '../performance/frame-rate-monitor';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
@@ -26,6 +27,7 @@ export default function useHideSplashScreen() {
       StatusBar.setBackgroundColor('transparent', false);
       StatusBar.setTranslucent(true);
       StatusBar.setBarStyle('dark-content', true);
+      FrameRateMonitor.startMonitoring();
     }
     // show the StatusBar
     (ios && StatusBar.setHidden(false, 'fade')) ||
