@@ -32,7 +32,7 @@ export default function ConfirmExchangeButton({
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
-  const { isSufficientGas, isValidGas } = useGas();
+  const { isSufficientGas, isValidGas, isGasReady } = useGas();
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
 
@@ -100,6 +100,8 @@ export default function ConfirmExchangeButton({
   ]);
 
   let label = '';
+  const loadingQuote = loading || (!loading && !isGasReady);
+
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
   } else if (type === ExchangeModalTypes.swap) {
@@ -107,12 +109,11 @@ export default function ConfirmExchangeButton({
   } else if (type === ExchangeModalTypes.withdrawal) {
     label = lang.t('button.confirm_exchange.withdraw');
   }
-
-  if (loading) {
+  if (loadingQuote) {
     label = lang.t('button.confirm_exchange.fetching_quote');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
-  } else if (isSufficientGas != null && !isSufficientGas) {
+  } else if (isValidGas && isSufficientGas !== null && !isSufficientGas) {
     label =
       currentNetwork === NetworkTypes.polygon
         ? lang.t('button.confirm_exchange.insufficient_matic')
@@ -157,7 +158,7 @@ export default function ConfirmExchangeButton({
             disabledBackgroundColor={disabledButtonColor}
             hideInnerBorder
             label={label}
-            loading={loading}
+            loading={loadingQuote}
             onLongPress={
               loading
                 ? NOOP
