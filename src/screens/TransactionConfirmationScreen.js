@@ -43,7 +43,7 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { FLASHBOTS } from '../config/experimental';
+import { FLASHBOTS_WC } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
 import { Text } from '@rainbow-me/design-system';
@@ -245,7 +245,7 @@ export default function TransactionConfirmationScreen() {
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
-  const flashbotsEnabled = useExperimentalFlag(FLASHBOTS);
+  const flashbotsEnabled = useExperimentalFlag(FLASHBOTS_WC);
 
   useEffect(() => {
     setCurrentNetwork(
