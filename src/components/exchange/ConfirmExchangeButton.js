@@ -157,7 +157,9 @@ export default function ConfirmExchangeButton({
         <Row height="content">
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
-            disableLongPress={shouldOpenSwapDetails && !insufficientLiquidity}
+            disableLongPress={
+              (shouldOpenSwapDetails && !insufficientLiquidity) || loading
+            }
             disableShimmerAnimation={insufficientLiquidity}
             disabled={isDisabled && !insufficientLiquidity}
             disabledBackgroundColor={disabledButtonColor}
