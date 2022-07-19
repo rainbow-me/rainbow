@@ -1,4 +1,4 @@
-import { isEmpty, isNil, remove, toLower, uniq } from 'lodash';
+import { isEmpty, isNil, remove, uniq } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { AssetTypes } from '@rainbow-me/entities';
 import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
@@ -152,9 +152,9 @@ export const parseAccountUniqueTokensPolygon = data => {
   erc721s = erc721s
     .map(({ asset_contract, collection, token_id, metadata, ...asset }) => {
       const { imageUrl, lowResUrl } = handleAndSignImages(
-        asset.image_url,
-        asset.image_original_url,
-        asset.image_preview_url
+        metadata.image_url,
+        metadata.image_original_url,
+        metadata.image_preview_url
       );
       return {
         ...pickShallow(metadata, [
@@ -221,7 +221,8 @@ export const parseAccountUniqueTokensPolygon = data => {
   //filter out NFTs that are not on our allow list
   remove(
     erc721s,
-    NFT => !polygonAllowList.includes(toLower(NFT.asset_contract.address))
+    nft =>
+      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
   );
 
   return erc721s;

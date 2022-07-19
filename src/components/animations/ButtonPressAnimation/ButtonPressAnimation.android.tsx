@@ -146,15 +146,15 @@ const ScaleButton = ({
   );
 
   return (
-    <View style={[cx.overflow, wrapperStyle]} testID={testID}>
+    <View style={[sx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
           hitSlop={-overflowMargin}
           onGestureEvent={gestureHandler}
           rippleColor={transparentColor}
-          style={cx.overflow}
+          style={sx.overflow}
         >
-          <View style={cx.transparentBackground}>
+          <View style={sx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>
                 {children}
@@ -232,10 +232,10 @@ const SimpleScaleButton = ({
           rippleColor={transparentColor}
           scaleTo={scaleTo}
           shouldLongPressHoldPress={shouldLongPressHoldPress}
-          style={cx.overflow}
+          style={sx.overflow}
           transformOrigin={transformOrigin}
         >
-          <View style={cx.transparentBackground}>
+          <View style={sx.transparentBackground}>
             <View
               style={{
                 padding: overflowMargin,
@@ -280,7 +280,7 @@ export default function ButtonPressAnimation({
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
-    <View onLayout={onLayout} style={[cx.overflow, style]}>
+    <View onLayout={onLayout} style={[sx.overflow, style]}>
       {children}
     </View>
   ) : (
@@ -303,14 +303,14 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
-      <View pointerEvents="box-only" style={[cx.overflow, style]}>
+      <View pointerEvents="box-only" style={[sx.overflow, style]}>
         {children}
       </View>
     </ButtonElement>
   );
 }
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   overflow: {
     overflow: 'visible',
   },

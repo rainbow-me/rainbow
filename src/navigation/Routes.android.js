@@ -24,7 +24,7 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsModal from '../screens/SettingsModal';
+import SettingsSheet from '../screens/SettingsSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
@@ -64,6 +64,7 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, {
+  NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 
@@ -298,6 +299,8 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
+  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
+
   return (
     <BSStack.Navigator>
       <BSStack.Screen
@@ -367,7 +370,18 @@ function BSNavigator() {
         name={Routes.WALLET_DIAGNOSTICS_SHEET}
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
-      <BSStack.Screen component={SettingsModal} name={Routes.SETTINGS_MODAL} />
+      <BSStack.Screen
+        component={SettingsSheet}
+        name={Routes.SETTINGS_SHEET}
+        options={{ ...bottomSheetPreset, height: '97%' }}
+      />
+      {notificationsEnabled && (
+        <BSStack.Screen
+          component={SettingsSheet}
+          name={Routes.SETTINGS_SHEET_V2}
+          options={{ ...bottomSheetPreset, height: '97%' }}
+        />
+      )}
     </BSStack.Navigator>
   );
 }
