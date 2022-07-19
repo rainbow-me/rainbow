@@ -122,6 +122,7 @@ class ViewPagerBackend extends React.Component {
       pageMargin,
       overdrag = true,
       overScrollMode,
+      initialScrollPosition,
     } = this.props;
 
     return children({
@@ -130,6 +131,7 @@ class ViewPagerBackend extends React.Component {
       removeListener: this.removeListener,
       render: children => (
         <ViewPagerWrapper
+          initialPage={initialScrollPosition}
           keyboardDismissMode={
             // ViewPager does not accept auto mode
             keyboardDismissMode === 'auto' ? 'on-drag' : keyboardDismissMode

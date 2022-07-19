@@ -106,7 +106,12 @@ export default function AddTokenSheet() {
       >
         <Centered direction="column" testID="add-token-sheet">
           <Column marginTop={16}>
-            <CoinIcon address={item.address} size={50} symbol={item.symbol} />
+            <CoinIcon
+              address={item.address}
+              size={50}
+              symbol={item.symbol}
+              type={item.type}
+            />
           </Column>
           <Column marginBottom={4} marginTop={12}>
             <Text
