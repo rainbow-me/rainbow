@@ -1,4 +1,5 @@
 import { getGlobal, saveGlobal } from './common';
+import config from '@/model/config';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 
@@ -83,7 +84,8 @@ export const saveTestnetsEnabled = (preference: boolean) => {
 /**
  * @desc get flashbots preference
  */
-export const getFlashbotsEnabled = () => getGlobal(FLASHBOTS_ENABLED, false);
+export const getFlashbotsEnabled = () =>
+  getGlobal(FLASHBOTS_ENABLED, config.flashbots_enabled);
 
 /**
  * @desc save flashbots preference

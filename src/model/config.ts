@@ -58,6 +58,7 @@ export interface RainbowConfig extends Record<string, any> {
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
   default_slippage_bips?: number;
+  flashbots_enabled?: boolean;
 }
 
 const DEFAULT_CONFIG = {
@@ -77,6 +78,7 @@ const DEFAULT_CONFIG = {
   ethereum_ropsten_rpc: __DEV__
     ? ETHEREUM_ROPSTEN_RPC_DEV
     : ETHEREUM_ROPSTEN_RPC,
+  flashbots_enabled: false,
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
 };
