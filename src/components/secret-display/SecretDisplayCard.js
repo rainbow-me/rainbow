@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { times } from 'lodash';
+import times from 'lodash/times';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import CopyTooltip from '../copy-tooltip';

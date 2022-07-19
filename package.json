@@ -99,7 +99,6 @@
     "@tradle/react-native-http": "2.0.1",
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
-    "@types/lodash.debounce": "4.0.7",
     "@types/react-redux": "7.1.9",
     "@types/url-join": "4.0.1",
     "@uniswap/sdk": "3.0.3",

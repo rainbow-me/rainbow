@@ -1,4 +1,4 @@
-import { times } from 'lodash';
+import times from 'lodash/times';
 import React from 'react';
 import { AssetListItemSkeleton } from '../asset-list';
 import { Column } from '../layout';

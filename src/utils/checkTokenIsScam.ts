@@ -1,4 +1,4 @@
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { rainbowTokenList } from '@rainbow-me/references';
 
 export default function checkTokenIsScam(

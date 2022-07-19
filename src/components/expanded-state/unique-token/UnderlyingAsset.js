@@ -1,4 +1,4 @@
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';

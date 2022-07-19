@@ -1,4 +1,5 @@
-import { filter, groupBy } from 'lodash';
+import filter from 'lodash/filter';
+import groupBy from 'lodash/groupBy';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 

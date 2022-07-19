@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
-import { isNil, keys } from 'lodash';
+import isNil from 'lodash/isNil';
+import keys from 'lodash/keys';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import logger from 'logger';

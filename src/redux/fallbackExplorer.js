@@ -1,6 +1,10 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, mapValues, toLower, uniqBy } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
+import mapValues from 'lodash/mapValues';
+import toLower from 'lodash/toLower';
+import uniqBy from 'lodash/uniqBy';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';

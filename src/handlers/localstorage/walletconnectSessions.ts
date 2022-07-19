@@ -1,4 +1,4 @@
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 import { getGlobal, saveGlobal } from './common';
 import { pickBy } from '@rainbow-me/helpers/utilities';
 

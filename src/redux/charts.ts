@@ -1,4 +1,6 @@
-import { mapValues, reverse, toLower } from 'lodash';
+import mapValues from 'lodash/mapValues';
+import reverse from 'lodash/reverse';
+import toLower from 'lodash/toLower';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import ChartTypes, { ChartType } from '@rainbow-me/helpers/chartTypes';

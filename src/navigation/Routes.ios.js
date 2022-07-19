@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import AddCashSheet from '../screens/AddCashSheet';

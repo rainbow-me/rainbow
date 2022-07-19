@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { invert } from 'lodash';
+import invert from 'lodash/invert';
 import React, { useMemo } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';

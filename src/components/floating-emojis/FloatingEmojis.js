@@ -1,4 +1,4 @@
-import { castArray } from 'lodash';
+import castArray from 'lodash/castArray';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, View } from 'react-native';

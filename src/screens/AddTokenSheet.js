@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';

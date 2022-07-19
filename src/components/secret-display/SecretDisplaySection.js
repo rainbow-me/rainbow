@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { upperFirst } from 'lodash';
+import upperFirst from 'lodash/upperFirst';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
   createdWithBiometricError,

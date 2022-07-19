@@ -1,4 +1,4 @@
-import { includes } from 'lodash';
+import includes from 'lodash/includes';
 import React from 'react';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';

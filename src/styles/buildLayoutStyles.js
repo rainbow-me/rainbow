@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { css } from '@rainbow-me/styled-components';
 
 export default function buildLayoutStyles(values, type, shouldReturnCss) {

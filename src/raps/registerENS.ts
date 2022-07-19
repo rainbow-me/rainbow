@@ -1,4 +1,4 @@
-import { concat } from 'lodash';
+import concat from 'lodash/concat';
 import {
   createNewENSAction,
   createNewRap,

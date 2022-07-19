@@ -1,5 +1,5 @@
 import { subDays } from 'date-fns';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 import { Dispatch } from 'react';
 import { AppDispatch, AppGetState } from './store';
 import {

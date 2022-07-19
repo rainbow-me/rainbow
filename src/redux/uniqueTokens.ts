@@ -1,6 +1,9 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, uniqBy, without } from 'lodash';
+import concat from 'lodash/concat';
+import isEmpty from 'lodash/isEmpty';
+import uniqBy from 'lodash/uniqBy';
+import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {

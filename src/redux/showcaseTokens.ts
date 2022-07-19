@@ -1,5 +1,7 @@
 import produce from 'immer';
-import { concat, toLower, without } from 'lodash';
+import concat from 'lodash/concat';
+import toLower from 'lodash/toLower';
+import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';

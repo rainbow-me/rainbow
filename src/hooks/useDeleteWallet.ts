@@ -1,4 +1,4 @@
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';

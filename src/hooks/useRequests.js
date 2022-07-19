@@ -1,4 +1,6 @@
-import { reverse, sortBy, values } from 'lodash';
+import reverse from 'lodash/reverse';
+import sortBy from 'lodash/sortBy';
+import values from 'lodash/values';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 

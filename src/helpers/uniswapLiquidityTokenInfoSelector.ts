@@ -1,5 +1,10 @@
 import { ChainId, WETH } from '@uniswap/sdk';
-import { compact, isEmpty, join, orderBy, sumBy, toLower } from 'lodash';
+import compact from 'lodash/compact';
+import isEmpty from 'lodash/isEmpty';
+import join from 'lodash/join';
+import orderBy from 'lodash/orderBy';
+import sumBy from 'lodash/sumBy';
+import toLower from 'lodash/toLower';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';

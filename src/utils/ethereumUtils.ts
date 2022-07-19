@@ -14,7 +14,10 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
-import { isEmpty, isString, replace, toLower } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isString from 'lodash/isString';
+import replace from 'lodash/replace';
+import toLower from 'lodash/toLower';
 import {
   Alert,
   InteractionManager,

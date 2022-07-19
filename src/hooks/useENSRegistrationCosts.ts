@@ -1,5 +1,5 @@
 import { BigNumberish } from 'ethers';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries } from 'react-query';
 import useENSRegistration from './useENSRegistration';

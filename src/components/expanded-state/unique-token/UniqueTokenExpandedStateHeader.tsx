@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';

@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
-import { constant, times } from 'lodash';
+import constant from 'lodash/constant';
+import times from 'lodash/times';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import Animated from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';

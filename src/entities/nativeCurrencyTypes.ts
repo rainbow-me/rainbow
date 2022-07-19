@@ -1,4 +1,4 @@
-import { mapValues } from 'lodash';
+import mapValues from 'lodash/mapValues';
 import nativeCurrencyReference from '../references/native-currencies.json';
 
 type NativeCurrencyKey = keyof typeof nativeCurrencyReference;

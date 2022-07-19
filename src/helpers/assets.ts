@@ -1,14 +1,12 @@
-import {
-  chunk,
-  compact,
-  concat,
-  groupBy,
-  includes,
-  isEmpty,
-  reduce,
-  slice,
-  sortBy,
-} from 'lodash';
+import chunk from 'lodash/chunk';
+import compact from 'lodash/compact';
+import concat from 'lodash/concat';
+import groupBy from 'lodash/groupBy';
+import includes from 'lodash/includes';
+import isEmpty from 'lodash/isEmpty';
+import reduce from 'lodash/reduce';
+import slice from 'lodash/slice';
+import sortBy from 'lodash/sortBy';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import store from '@rainbow-me/redux/store';
 import {

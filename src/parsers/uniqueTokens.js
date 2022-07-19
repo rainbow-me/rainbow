@@ -1,4 +1,8 @@
-import { isEmpty, isNil, remove, toLower, uniq } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
+import remove from 'lodash/remove';
+import toLower from 'lodash/toLower';
+import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
 import { AssetTypes } from '@rainbow-me/entities';
 import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';

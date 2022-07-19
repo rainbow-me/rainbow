@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';

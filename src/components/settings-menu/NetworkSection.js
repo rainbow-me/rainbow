@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
-import { toLower, values } from 'lodash';
+import toLower from 'lodash/toLower';
+import values from 'lodash/values';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';

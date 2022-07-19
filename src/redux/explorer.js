@@ -1,4 +1,9 @@
-import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
+import concat from 'lodash/concat';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
+import keyBy from 'lodash/keyBy';
+import keys from 'lodash/keys';
+import toLower from 'lodash/toLower';
 import io from 'socket.io-client';
 import { getExperimetalFlag, L2_TXS } from '../config/experimental';
 import config from '../model/config';

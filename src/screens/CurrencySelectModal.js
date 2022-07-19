@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,

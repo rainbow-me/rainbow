@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { AppDispatch, AppGetState } from './store';
 import { EthereumAddress, NonceManager } from '@rainbow-me/entities';
 import {

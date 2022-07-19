@@ -1,4 +1,5 @@
-import { sortBy, toLower } from 'lodash';
+import sortBy from 'lodash/sortBy';
+import toLower from 'lodash/toLower';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';

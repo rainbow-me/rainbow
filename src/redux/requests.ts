@@ -1,4 +1,6 @@
-import { filter, omit, values } from 'lodash';
+import filter from 'lodash/filter';
+import omit from 'lodash/omit';
+import values from 'lodash/values';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';

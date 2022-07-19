@@ -1,4 +1,4 @@
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 import React, { Fragment, useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import { Icon } from '../icons';

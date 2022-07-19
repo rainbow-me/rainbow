@@ -1,4 +1,4 @@
-import { upperFirst } from 'lodash';
+import upperFirst from 'lodash/upperFirst';
 import colors from './colors';
 import position from './position';
 import { css } from '@rainbow-me/styled-components';

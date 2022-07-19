@@ -1,4 +1,4 @@
-import { partition } from 'lodash';
+import partition from 'lodash/partition';
 import React, { useMemo } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';

@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { times, toLower } from 'lodash';
+import times from 'lodash/times';
+import toLower from 'lodash/toLower';
 import React, {
   Fragment,
   useCallback,

@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
-import { groupBy, isEmpty } from 'lodash';
+import groupBy from 'lodash/groupBy';
+import isEmpty from 'lodash/isEmpty';
 import { createElement } from 'react';
 import { createSelector } from 'reselect';
 import { RequestCoinRow, TransactionCoinRow } from '../components/coin-row';

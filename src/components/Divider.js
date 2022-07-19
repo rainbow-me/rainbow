@@ -1,4 +1,7 @@
-import { constant, isNil, isNumber, times } from 'lodash';
+import constant from 'lodash/constant';
+import isNil from 'lodash/isNil';
+import isNumber from 'lodash/isNumber';
+import times from 'lodash/times';
 import React from 'react';
 import { magicMemo } from '../utils';
 import styled from '@rainbow-me/styled-components';

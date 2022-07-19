@@ -1,5 +1,5 @@
 /*global storage*/
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import logger from 'logger';
 
 const defaultVersion = '0.1.0';

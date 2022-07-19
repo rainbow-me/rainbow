@@ -2,7 +2,8 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { isNull, toLower } from 'lodash';
+import isNull from 'lodash/isNull';
+import toLower from 'lodash/toLower';
 import { alwaysRequireApprove } from '../../config/debug';
 import {
   Rap,

@@ -1,4 +1,5 @@
-import { mapKeys, mapValues } from 'lodash';
+import mapKeys from 'lodash/mapKeys';
+import mapValues from 'lodash/mapValues';
 import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists.json';
 import {

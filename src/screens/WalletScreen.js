@@ -1,5 +1,8 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, isEmpty, keys, toLower } from 'lodash';
+import compact from 'lodash/compact';
+import isEmpty from 'lodash/isEmpty';
+import keys from 'lodash/keys';
+import toLower from 'lodash/toLower';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';

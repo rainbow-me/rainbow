@@ -1,4 +1,4 @@
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';

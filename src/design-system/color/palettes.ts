@@ -1,4 +1,4 @@
-import { mapValues } from 'lodash';
+import mapValues from 'lodash/mapValues';
 
 export const colors = {
   appleBlue: '#0E76FD',

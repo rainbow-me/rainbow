@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
-import { keys } from 'lodash';
+import keys from 'lodash/keys';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';

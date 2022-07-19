@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { values } from 'lodash';
+import values from 'lodash/values';
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';

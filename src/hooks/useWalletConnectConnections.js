@@ -1,4 +1,6 @@
-import { groupBy, mapValues, values } from 'lodash';
+import groupBy from 'lodash/groupBy';
+import mapValues from 'lodash/mapValues';
+import values from 'lodash/values';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';

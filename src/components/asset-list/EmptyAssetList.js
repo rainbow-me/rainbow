@@ -1,5 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
-import { times } from 'lodash';
+import times from 'lodash/times';
 import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';

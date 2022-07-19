@@ -1,6 +1,6 @@
 import * as NetInfo from '@react-native-community/netinfo';
 import analytics from '@segment/analytics-react-native';
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { useCallback, useEffect, useState } from 'react';
 import useRefreshAccountData from './useRefreshAccountData';
 

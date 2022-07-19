@@ -1,6 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, mapValues, toLower } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
+import mapValues from 'lodash/mapValues';
+import toLower from 'lodash/toLower';
 import isEqual from 'react-fast-compare';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle

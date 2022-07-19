@@ -1,19 +1,18 @@
-import {
-  compact,
-  concat,
-  findIndex,
-  flatten,
-  includes,
-  isEmpty,
-  orderBy,
-  partition,
-  reverse,
-  slice,
-  toLower,
-  toUpper,
-  uniqBy,
-  upperFirst,
-} from 'lodash';
+import compact from 'lodash/compact';
+import concat from 'lodash/concat';
+import findIndex from 'lodash/findIndex';
+import flatten from 'lodash/flatten';
+import includes from 'lodash/includes';
+import isEmpty from 'lodash/isEmpty';
+import orderBy from 'lodash/orderBy';
+import partition from 'lodash/partition';
+import reverse from 'lodash/reverse';
+import slice from 'lodash/slice';
+import toLower from 'lodash/toLower';
+import toUpper from 'lodash/toUpper';
+import uniqBy from 'lodash/uniqBy';
+import upperFirst from 'lodash/upperFirst';
+
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,

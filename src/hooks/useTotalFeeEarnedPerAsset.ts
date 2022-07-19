@@ -1,4 +1,4 @@
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';

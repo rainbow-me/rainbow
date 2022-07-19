@@ -1,6 +1,10 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, isEmpty, keys, values } from 'lodash';
+import filter from 'lodash/filter';
+import flatMap from 'lodash/flatMap';
+import isEmpty from 'lodash/isEmpty';
+import keys from 'lodash/keys';
+import values from 'lodash/values';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {

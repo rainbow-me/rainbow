@@ -1,4 +1,5 @@
-import { isEmpty, omit } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import omit from 'lodash/omit';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';

@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import ContractInteraction from '../../assets/contractInteraction.png';

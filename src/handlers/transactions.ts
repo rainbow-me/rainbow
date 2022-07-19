@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { web3Provider } from './web3';
 import { metadataClient } from '@rainbow-me/apollo/client';
 import { CONTRACT_FUNCTION } from '@rainbow-me/apollo/queries';

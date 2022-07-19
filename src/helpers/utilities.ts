@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;

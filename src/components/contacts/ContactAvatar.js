@@ -1,4 +1,4 @@
-import { toUpper } from 'lodash';
+import toUpper from 'lodash/toUpper';
 import React, { useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';

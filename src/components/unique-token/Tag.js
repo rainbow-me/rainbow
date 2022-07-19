@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
-import { upperCase, upperFirst } from 'lodash';
+import upperCase from 'lodash/upperCase';
+import upperFirst from 'lodash/upperFirst';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';

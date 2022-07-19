@@ -1,4 +1,4 @@
-import { upperFirst } from 'lodash';
+import upperFirst from 'lodash/upperFirst';
 import { StyleSheet } from 'react-native';
 import buildLayoutStyles from './buildLayoutStyles';
 import { memoFn } from '@rainbow-me/utils/memoFn';

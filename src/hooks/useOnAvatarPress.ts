@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';

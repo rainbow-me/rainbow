@@ -1,6 +1,7 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { sortBy, toLower } from 'lodash';
+import sortBy from 'lodash/sortBy';
+import toLower from 'lodash/toLower';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';

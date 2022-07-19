@@ -1,5 +1,7 @@
 import { differenceInDays, differenceInYears } from 'date-fns';
-import { findIndex, sumBy, take } from 'lodash';
+import findIndex from 'lodash/findIndex';
+import sumBy from 'lodash/sumBy';
+import take from 'lodash/take';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { TransactionStatusTypes } from '@rainbow-me/entities';

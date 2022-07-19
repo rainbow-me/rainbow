@@ -1,5 +1,5 @@
-import { isEmpty } from 'lodash';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
+import isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';

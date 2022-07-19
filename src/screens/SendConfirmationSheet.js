@@ -1,7 +1,8 @@
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { capitalize, toLower } from 'lodash';
+import capitalize from 'lodash/capitalize';
+import toLower from 'lodash/toLower';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';

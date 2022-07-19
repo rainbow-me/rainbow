@@ -1,4 +1,4 @@
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { RainbowToken } from '@rainbow-me/entities';
 import { rainbowTokenList } from '@rainbow-me/references';
 

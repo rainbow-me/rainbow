@@ -1,5 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
-import { isEmpty, keys } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import keys from 'lodash/keys';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';

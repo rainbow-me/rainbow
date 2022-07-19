@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React, {
   Fragment,
   useCallback,

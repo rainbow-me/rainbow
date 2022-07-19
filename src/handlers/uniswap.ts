@@ -12,7 +12,9 @@ import {
   TradeType,
   WETH,
 } from '@uniswap/sdk';
-import { mapKeys, mapValues, toLower } from 'lodash';
+import mapKeys from 'lodash/mapKeys';
+import mapValues from 'lodash/mapValues';
+import toLower from 'lodash/toLower';
 import { loadWallet } from '../model/wallet';
 import { estimateGasWithPadding, toHex, web3Provider } from './web3';
 import { Asset } from '@rainbow-me/entities';

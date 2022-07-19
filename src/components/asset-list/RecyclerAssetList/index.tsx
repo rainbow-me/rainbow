@@ -1,6 +1,6 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { findIndex } from 'lodash';
+import findIndex from 'lodash/findIndex';
 import React, {
   useCallback,
   useContext,

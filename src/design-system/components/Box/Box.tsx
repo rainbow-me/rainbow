@@ -1,4 +1,4 @@
-import { flatten } from 'lodash';
+import flatten from 'lodash/flatten';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
 import {

@@ -1,5 +1,5 @@
 import { Pair, Token, TokenAmount, Trade } from '@uniswap/sdk';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';

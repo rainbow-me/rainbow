@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { upperFirst } from 'lodash';
+import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@rainbow-me/design-system';

@@ -1,5 +1,5 @@
 import chroma from 'chroma-js';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import PropTypes from 'prop-types';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';

@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { times } from 'lodash';
+import times from 'lodash/times';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';

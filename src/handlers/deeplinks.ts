@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import qs from 'qs';
 import { Alert } from 'react-native';
 import URL from 'url-parse';

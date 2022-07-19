@@ -1,7 +1,11 @@
 import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
+import findKey from 'lodash/findKey';
+import isNumber from 'lodash/isNumber';
+import keys from 'lodash/keys';
+import toLower from 'lodash/toLower';
+import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';

@@ -1,4 +1,4 @@
-import { keys } from 'lodash';
+import keys from 'lodash/keys';
 
 export default (params: any) =>
   keys(params)

@@ -1,4 +1,4 @@
-import { times } from 'lodash';
+import times from 'lodash/times';
 import React, { useCallback, useEffect, useState } from 'react';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,

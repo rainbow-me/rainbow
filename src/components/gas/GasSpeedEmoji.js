@@ -1,4 +1,4 @@
-import { has } from 'lodash';
+import has from 'lodash/has';
 import React from 'react';
 import { Emoji } from '../text';
 import styled from '@rainbow-me/styled-components';

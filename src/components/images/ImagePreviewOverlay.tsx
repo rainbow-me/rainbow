@@ -1,5 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
-import { uniqueId } from 'lodash';
+import uniqueId from 'lodash/uniqueId';
 import React, {
   createContext,
   useCallback,

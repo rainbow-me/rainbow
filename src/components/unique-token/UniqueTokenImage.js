@@ -1,4 +1,4 @@
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import React, { Fragment, useCallback, useState } from 'react';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';

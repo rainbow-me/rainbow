@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { AssetTypes } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {

@@ -1,6 +1,6 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, {

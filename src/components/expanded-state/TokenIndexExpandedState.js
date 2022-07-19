@@ -1,5 +1,7 @@
 import lang from 'i18n-js';
-import { sortBy, times, toLower } from 'lodash';
+import sortBy from 'lodash/sortBy';
+import times from 'lodash/times';
+import toLower from 'lodash/toLower';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetListItemSkeleton } from '../asset-list';

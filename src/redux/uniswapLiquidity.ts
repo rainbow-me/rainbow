@@ -1,4 +1,7 @@
-import { concat, filter, isEmpty, uniqBy } from 'lodash';
+import concat from 'lodash/concat';
+import filter from 'lodash/filter';
+import isEmpty from 'lodash/isEmpty';
+import uniqBy from 'lodash/uniqBy';
 import { AppState } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';

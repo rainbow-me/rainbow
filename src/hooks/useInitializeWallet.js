@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';

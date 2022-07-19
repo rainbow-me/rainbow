@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';

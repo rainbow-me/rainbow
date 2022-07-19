@@ -1,4 +1,5 @@
-import { concat, includes } from 'lodash';
+import concat from 'lodash/concat';
+import includes from 'lodash/includes';
 
 export const PERSONAL_SIGN = 'personal_sign';
 export const SEND_TRANSACTION = 'eth_sendTransaction';

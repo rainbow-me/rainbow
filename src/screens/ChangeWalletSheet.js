@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';

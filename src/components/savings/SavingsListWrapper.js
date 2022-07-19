@@ -1,4 +1,4 @@
-import { map } from 'lodash';
+import map from 'lodash/map';
 import React, { Fragment } from 'react';
 import { OpacityToggler } from '../animations';
 import SavingsListHeader from './SavingsListHeader';

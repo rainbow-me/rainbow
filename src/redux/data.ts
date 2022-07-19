@@ -2,22 +2,20 @@ import { ObservableQuery } from '@apollo/client';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
-import {
-  filter,
-  find,
-  includes,
-  isEmpty,
-  isNil,
-  keyBy,
-  keys,
-  mapKeys,
-  mapValues,
-  partition,
-  toLower,
-  toUpper,
-  uniqBy,
-} from 'lodash';
 import debounce from 'lodash/debounce';
+import filter from 'lodash/filter';
+import find from 'lodash/find';
+import includes from 'lodash/includes';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
+import keyBy from 'lodash/keyBy';
+import keys from 'lodash/keys';
+import mapKeys from 'lodash/mapKeys';
+import mapValues from 'lodash/mapValues';
+import partition from 'lodash/partition';
+import toLower from 'lodash/toLower';
+import toUpper from 'lodash/toUpper';
+import uniqBy from 'lodash/uniqBy';
 import { MMKV } from 'react-native-mmkv';
 import { AnyAction, Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';

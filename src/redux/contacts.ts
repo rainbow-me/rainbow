@@ -1,4 +1,5 @@
-import { omit, toLower } from 'lodash';
+import omit from 'lodash/omit';
+import toLower from 'lodash/toLower';
 import { Dispatch } from 'redux';
 import {
   getContacts,

@@ -1,4 +1,5 @@
-import { sortBy, values } from 'lodash';
+import sortBy from 'lodash/sortBy';
+import values from 'lodash/values';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';

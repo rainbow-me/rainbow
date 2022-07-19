@@ -1,5 +1,8 @@
 import { ChainId, Pair, Token } from '@uniswap/sdk';
-import { filter, flatMap, toLower, uniqBy } from 'lodash';
+import filter from 'lodash/filter';
+import flatMap from 'lodash/flatMap';
+import toLower from 'lodash/toLower';
+import uniqBy from 'lodash/uniqBy';
 import { useMemo } from 'react';
 import { getTokenForCurrency } from '../handlers/uniswap';
 import useAccountSettings from './useAccountSettings';

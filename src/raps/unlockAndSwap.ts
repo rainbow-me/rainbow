@@ -1,4 +1,5 @@
-import { concat, reduce } from 'lodash';
+import concat from 'lodash/concat';
+import reduce from 'lodash/reduce';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
   createNewAction,

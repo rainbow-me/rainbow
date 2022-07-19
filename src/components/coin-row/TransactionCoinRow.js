@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
-import { compact, toLower } from 'lodash';
+import compact from 'lodash/compact';
+import toLower from 'lodash/toLower';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';

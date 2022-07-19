@@ -3,7 +3,10 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty, isNil, omit, toLower } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
+import omit from 'lodash/omit';
+import toLower from 'lodash/toLower';
 import React, {
   Fragment,
   useCallback,

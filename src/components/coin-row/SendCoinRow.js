@@ -1,4 +1,4 @@
-import { concat } from 'lodash';
+import concat from 'lodash/concat';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
