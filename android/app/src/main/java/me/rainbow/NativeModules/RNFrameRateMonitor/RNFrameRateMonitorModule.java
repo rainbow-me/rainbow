@@ -1,5 +1,7 @@
 package me.rainbow.NativeModules.RNFrameRateMonitor;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -10,6 +12,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 public class RNFrameRateMonitorModule extends ReactContextBaseJavaModule {
+  private final String TAG = "FrameRateMonitorModule";
   private final ReactContext reactContext;
   private RNFrameRateMonitorFrameCallback frameCallback;
 
@@ -26,13 +29,17 @@ public class RNFrameRateMonitorModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void startMonitoring() {
-    frameCallback = new RNFrameRateMonitorFrameCallback(reactContext);
+    Log.d(TAG, "started monitoring frame rate");
+    if (frameCallback == null) {
+      frameCallback = new RNFrameRateMonitorFrameCallback(reactContext);
+    }
     frameCallback.start();
   }
 
   @ReactMethod
   public void stopMonitoring() {
-//    frameCallback.stop();
+    Log.d(TAG, "stopped monitoring frame rate");
+    frameCallback.stop();
   }
 
   @ReactMethod

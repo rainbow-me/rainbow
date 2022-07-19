@@ -56,6 +56,7 @@ import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
 import { PerformanceContextMap } from './performance/PerformanceContextMap';
+import { FrameRateMonitor } from './performance/frame-rate-monitor';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
@@ -198,6 +199,7 @@ class App extends Component {
       PerformanceMetrics.loadRootAppComponent
     );
     analytics.track('React component tree finished initial mounting');
+    FrameRateMonitor.registerAppStateChangeListener();
   }
 
   componentDidUpdate(prevProps) {
@@ -220,6 +222,7 @@ class App extends Component {
     this.foregroundNotificationListener?.();
     this.backgroundNotificationListener?.();
     this.branchListener?.();
+    FrameRateMonitor.removeAppStateChangeListener();
   }
 
   identifyFlow = async () => {

@@ -58,11 +58,14 @@ public class RNFrameRateMonitorFrameCallback extends ChoreographerCompat.FrameCa
   @Override
   public void doFrame(long frameTimeNanos) {
     if (shouldStop) {
+      // Stops posting new frame callbacks
       return;
     }
 
+    // Executed on each Native frame
     Log.d("FRAME MONITOR", "do Frame fren");
 
+    // schedules new frame callbacks for continuous calls post each frame
     if (choreographer != null) {
       choreographer.postFrameCallback(this);
     }
