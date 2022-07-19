@@ -163,10 +163,15 @@ class TransactionListViewCell: TransactionListBaseCell {
     }
     
     // Failed and Dropped Overrides
-    if transaction.status == "failed"  || transaction.status == "dropped" {
+    if (transaction.status == "failed" || transaction.status == "dropped") {
+      transactionIcon.image = UIImage.init(named: "failed")
       statusFrame = CGRect(x: 85, y: 9, width: 206, height: 16)
     }
-    
+    if transaction.status == "dropped" {
+      iconFrame = CGRect(x: 69, y: 10, width: 13, height: 14)
+      statusFrame = CGRect(x: 85, y: 9, width: 206, height: 16)
+    }
+
     // Savings Overrides
     if (transaction.status ==  "deposited" || transaction.status == "withdrew") {
       transactionIcon.image = UIImage.init(named: "sunflower")
