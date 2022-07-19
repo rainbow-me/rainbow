@@ -982,6 +982,9 @@
       "backup": "Backup",
       "currency": "Currency",
       "app_icon": "App Icon",
+      "app_icon_section": {
+        "explainer": "Explainer Placeholder"
+      },
       "dev": "Dev",
       "developer": "Developer Settings",
       "done": "Done",

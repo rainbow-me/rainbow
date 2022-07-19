@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { RadioList, RadioListItem } from '../radio-list';
@@ -12,15 +13,16 @@ import Routes from '@rainbow-me/routes';
 import Logger from '@rainbow-me/utils/logger';
 
 const supportedAppIcons = {
-  joy: {
-    name: 'Joy Inspired',
-    source: RainbowIcon,
-    value: 'joy',
-  },
   og: {
     name: 'The OG',
     source: RainbowIcon,
     value: 'og',
+  },
+  // eslint-disable-next-line sort-keys-fix/sort-keys-fix
+  joy: {
+    name: 'Joy Inspired',
+    source: RainbowIcon,
+    value: 'joy',
   },
 };
 const appIconListItems = Object.values(supportedAppIcons).map(
@@ -75,7 +77,7 @@ const AppIconSection = () => {
       />
       <ButtonPressAnimation onPress={onPressExplainer} scale={0.96}>
         <Text align="center" color="secondary60" weight="semibold">
-          􀅵 Explainer
+          {`􀅵 ${lang.t('settings.app_icon_section.explainer')}`}
         </Text>
       </ButtonPressAnimation>
     </Stack>
