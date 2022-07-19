@@ -1,14 +1,14 @@
 import React, { useCallback } from 'react';
+import { ButtonPressAnimation } from '../animations';
 import { RadioList, RadioListItem } from '../radio-list';
 import AppIconJoy from '@rainbow-me/assets/app-icon-joy.png';
 import AppIconOg from '@rainbow-me/assets/app-icon-og.png';
+import { Stack, Text } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import Logger from '@rainbow-me/utils/logger';
-import { Box, Stack, Text } from '@rainbow-me/design-system';
-import { ButtonPressAnimation } from '../animations';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import Logger from '@rainbow-me/utils/logger';
 
 const supportedAppIcons = {
   joy: {
@@ -74,7 +74,7 @@ const AppIconSection = () => {
         value={appIcon}
       />
       <ButtonPressAnimation onPress={onPressExplainer} scale={0.96}>
-        <Text color="secondary60" weight="semibold" align="center">
+        <Text align="center" color="secondary60" weight="semibold">
           􀅵 Explainer
         </Text>
       </ButtonPressAnimation>
