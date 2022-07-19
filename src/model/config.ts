@@ -57,6 +57,7 @@ export interface RainbowConfig extends Record<string, any> {
   ethereum_ropsten_rpc?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
+  default_slippage_bips?: number;
 }
 
 const DEFAULT_CONFIG = {
@@ -64,6 +65,7 @@ const DEFAULT_CONFIG = {
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
   data_origin: DATA_ORIGIN,
+  default_slippage_bips: 100,
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_kovan_rpc: __DEV__ ? ETHEREUM_KOVAN_RPC_DEV : ETHEREUM_KOVAN_RPC,
   ethereum_mainnet_rpc: __DEV__
