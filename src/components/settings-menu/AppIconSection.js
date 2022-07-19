@@ -5,6 +5,10 @@ import AppIconOg from '@rainbow-me/assets/app-icon-og.png';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Logger from '@rainbow-me/utils/logger';
+import { Box, Stack, Text } from '@rainbow-me/design-system';
+import { ButtonPressAnimation } from '../animations';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 const supportedAppIcons = {
   joy: {
@@ -44,6 +48,7 @@ const AppIconListItem = ({ icon, name, value, ...item }) => (
 
 const AppIconSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();
+  const { navigate } = useNavigation();
 
   const onSelectIcon = useCallback(
     icon => {
@@ -53,14 +58,27 @@ const AppIconSection = () => {
     [settingsChangeAppIcon]
   );
 
+  const onPressExplainer = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'app_icon',
+    });
+  }, [navigate]);
+
   return (
-    <RadioList
-      items={appIconListItems}
-      marginTop={7}
-      onChange={onSelectIcon}
-      renderItem={AppIconListItem}
-      value={appIcon}
-    />
+    <Stack space="10px">
+      <RadioList
+        items={appIconListItems}
+        marginTop={7}
+        onChange={onSelectIcon}
+        renderItem={AppIconListItem}
+        value={appIcon}
+      />
+      <ButtonPressAnimation onPress={onPressExplainer} scale={0.96}>
+        <Text color="secondary60" weight="semibold" align="center">
+          􀅵 Explainer
+        </Text>
+      </ButtonPressAnimation>
+    </Stack>
   );
 };
 

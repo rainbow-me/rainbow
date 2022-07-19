@@ -115,6 +115,12 @@ const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
 const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
 
 export const explainers = network => ({
+  app_icon: {
+    emoji: '⛏',
+    extraHeight: -31,
+    text: MINER_TIP_EXPLAINER,
+    title: lang.t('explain.miner_tip.title'),
+  },
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
