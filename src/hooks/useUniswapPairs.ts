@@ -2,7 +2,6 @@ import { Pair, TokenAmount } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import useMulticall from './useMulticall';
 import useUniswapCalls from './useUniswapCalls';
-import { toBoolean } from '@rainbow-me/helpers/utilities';
 import {
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
@@ -39,7 +38,7 @@ export default function useUniswapPairs() {
     });
 
     return {
-      allPairs: viablePairs.filter(toBoolean) as Pair[],
+      allPairs: viablePairs.filter(Boolean) as Pair[],
       doneLoadingReserves,
     };
   }, [allPairCombinations, multicallResults]);

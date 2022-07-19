@@ -18,7 +18,6 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { toBoolean } from '@rainbow-me/helpers/utilities';
 import {
   useAccountEmptyState,
   useAccountSettings,
@@ -165,7 +164,7 @@ export default function WalletScreen() {
       const balancesSection = sections.find(({ name }) => name === 'balances');
       const assetCodes = balancesSection?.data
         .map(({ address }) => address)
-        .filter(toBoolean);
+        .filter(Boolean);
 
       if (!isEmpty(assetCodes)) {
         dispatch(emitChartsRequest(assetCodes));

@@ -16,12 +16,7 @@ import {
   buildUniqueTokenList,
 } from './assets';
 import networkTypes from './networkTypes';
-import {
-  add,
-  convertAmountToNativeDisplay,
-  multiply,
-  toBoolean,
-} from './utilities';
+import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
@@ -443,7 +438,7 @@ const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
 };
 
 const sortImagesToPreload = (images: any) => {
-  const filtered = flattenDeep(images).filter(toBoolean);
+  const filtered = flattenDeep(images).filter(Boolean);
   const grouped = groupBy(filtered, property('priority'));
   return [
     ...(grouped?.high ?? []),
