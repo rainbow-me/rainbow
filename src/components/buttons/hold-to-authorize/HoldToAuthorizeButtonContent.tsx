@@ -167,7 +167,7 @@ function HoldToAuthorizeButtonContent2({
   const onLongPressChange = ({
     nativeEvent: { state },
   }: HandlerStateChangeEvent) => {
-    if (state === ACTIVE && !disabled && !loading) {
+    if (state === ACTIVE && !disabled) {
       haptics.notificationSuccess();
       Keyboard.dismiss();
 
@@ -182,7 +182,7 @@ function HoldToAuthorizeButtonContent2({
   };
 
   const onTapChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
-    if (disabled || loading) {
+    if (disabled) {
       if (state === END) {
         haptics.notificationWarning();
         buttonScale.value = withTiming(
