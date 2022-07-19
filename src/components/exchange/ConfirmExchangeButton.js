@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useReducer } from 'react';
 import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
@@ -35,6 +35,7 @@ export default function ConfirmExchangeButton({
   const { isSufficientGas, isValidGas } = useGas();
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
+  const [swapSubmitted, submitSwap] = useReducer(() => true, false);
 
   const isSavings =
     type === ExchangeModalTypes.withdrawal ||
@@ -159,13 +160,16 @@ export default function ConfirmExchangeButton({
             label={label}
             loading={loading}
             onLongPress={
-              loading
+              loading || swapSubmitted
                 ? NOOP
                 : insufficientLiquidity
                 ? handleShowLiquidityExplainer
                 : shouldOpenSwapDetails
                 ? onPressViewDetails
-                : onSubmit
+                : () => {
+                    onSubmit();
+                    submitSwap();
+                  }
             }
             shadows={
               isSwapDetailsRoute
