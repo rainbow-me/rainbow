@@ -111,7 +111,7 @@ export default function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute<any>();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
 
   const getRealRoute = useCallback(
     key => {
@@ -192,9 +192,7 @@ export default function SettingsSheet() {
             }}
           >
             {() => (
-              /** @ts-expect-error – JS component */
               <SettingsSectionV2
-                onCloseModal={goBack}
                 onPressBackup={onPressSection(SettingsPages.backup)}
                 onPressCurrency={onPressSection(SettingsPages.currency)}
                 onPressDev={onPressSection(SettingsPages.dev)}

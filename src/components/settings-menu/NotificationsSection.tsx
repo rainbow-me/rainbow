@@ -6,6 +6,7 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 
 const NotificationsSection = () => {
@@ -14,7 +15,7 @@ const NotificationsSection = () => {
 
   const onPress = useCallback(
     name => {
-      navigate('WalletNotificationsSettings', {
+      navigate(Routes.WALLET_NOTIFICATIONS_SETTINGS, {
         title: name,
       });
     },

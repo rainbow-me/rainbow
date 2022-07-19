@@ -1,7 +1,6 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, NativeModules, Share } from 'react-native';
+import { Linking, Share } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
@@ -42,12 +41,6 @@ import {
 } from '@rainbow-me/hooks';
 import { Themes, useTheme } from '@rainbow-me/theme';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
-import {
-  AppleReviewAddress,
-  REVIEW_DONE_KEY,
-} from '@rainbow-me/utils/reviewAlert';
-
-// const { RainbowRequestReview, RNReview } = NativeModules;
 
 const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
@@ -88,28 +81,22 @@ const checkAllWallets = (wallets: any) => {
 };
 
 interface SettingsSectionProps {
-  onCloseModal: () => void;
   onPressBackup: () => void;
   onPressCurrency: () => void;
   onPressDev: () => void;
-  onPressIcloudBackup: () => void;
   onPressLanguage: () => void;
   onPressNetwork: () => void;
   onPressPrivacy: () => void;
-  onPressShowSecret: () => void;
   onPressNotifications: () => void;
 }
 
 const SettingsSectionV2 = ({
-  onCloseModal,
   onPressBackup,
   onPressCurrency,
   onPressDev,
-  onPressIcloudBackup,
   onPressLanguage,
   onPressNetwork,
   onPressPrivacy,
-  onPressShowSecret,
   onPressNotifications,
 }: SettingsSectionProps) => {
   const isReviewAvailable = false;
@@ -125,21 +112,6 @@ const SettingsSectionV2 = ({
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
-
-  const onPressReview = null;
-  // const onPressReview = useCallback(async () => {
-  //   if (ios) {
-  //     onCloseModal();
-  //     RainbowRequestReview.requestReview((handled: boolean) => {
-  //       if (!handled) {
-  //         AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
-  //         Linking.openURL(AppleReviewAddress);
-  //       }
-  //     });
-  //   } else {
-  //     RNReview.show();
-  //   }
-  // }, [onCloseModal]);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -416,11 +388,11 @@ const SettingsSectionV2 = ({
             />
           }
         />
-        {isReviewAvailable && onPressReview && (
+        {isReviewAvailable && (
           <MenuItem
             iconPadding="large"
             leftComponent={<MenuItem.Title text="❤️" />}
-            onPress={onPressReview}
+            onPress={() => {}}
             size="medium"
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
           />
