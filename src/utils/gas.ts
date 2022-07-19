@@ -30,7 +30,7 @@ const GAS_TRENDS = {
   [SURGING]: { color: colors.red, label: '􀇿 Surging' },
 };
 
-const FLASHBOTS_MIN_TIP = 5;
+const FLASHBOTS_MIN_TIP = 6;
 
 export default {
   CUSTOM,

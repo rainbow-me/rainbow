@@ -437,7 +437,7 @@ export const gasPricesStartPolling = (
                           maxPriorityFeePerGas: {
                             amount: `${FLASHBOTS_MIN_TIP}000000000`,
                             display: `${FLASHBOTS_MIN_TIP} gwei`,
-                            gwei: `${FLASHBOTS_MIN_TIP}}`,
+                            gwei: `${FLASHBOTS_MIN_TIP}`,
                           },
                         };
                       }
