@@ -889,6 +889,7 @@ export const createWallet = async (
       setTimeout(() => {
         // on android we need to call this logic in more specific places
         if (ios || !isImported) {
+          // !imported = new wallet - then we use this logic for dismissing the loading state
           dispatch(setIsWalletLoading(null));
         }
       }, 2000);
