@@ -18,6 +18,8 @@
 #import <mach/mach.h>
 #import <CodePush/CodePush.h>
 
+@import segment_analytics_react_native;
+
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
