@@ -1656,6 +1656,10 @@ export const dataWatchPendingTransactions = (
               });
               updatedPending.title = title;
               updatedPending.pending = false;
+              const minedAt = Math.floor(Date.now() / 1000);
+              updatedPending.minedAt = minedAt;
+              // decrement the nonce since it was dropped
+              dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
             }
           }
         }
