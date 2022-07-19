@@ -35,6 +35,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
+import config from '@/model/config';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
@@ -67,7 +68,11 @@ import {
   getSwapRapEstimationByType,
   getSwapRapTypeByExchangeType,
 } from '@rainbow-me/raps';
-import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
+import {
+  swapClearState,
+  updateSwapSlippage,
+  updateSwapTypeDetails,
+} from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -339,6 +344,7 @@ export default function ExchangeModal({
   }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
 
   useEffect(() => {
+    dispatch(updateSwapSlippage(config.default_slippage_bips));
     return () => {
       dispatch(swapClearState());
       resetSwapInputs();
