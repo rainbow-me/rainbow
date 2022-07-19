@@ -172,7 +172,7 @@ const MenuItem = ({
       : 0;
 
   return (
-    <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={0.9}>
+    <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={0.96}>
       <Box
         height={{ custom: size === 'large' ? 60 : 52 }}
         justifyContent="center"
