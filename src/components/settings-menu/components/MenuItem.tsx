@@ -199,7 +199,7 @@ const MenuItem = ({
               />
             )}
             {hasChevron && (
-              <Text color="secondary60" size="18px" weight="medium">
+              <Text color="secondary60" size="18px" weight="regular">
                 􀆏
               </Text>
             )}
