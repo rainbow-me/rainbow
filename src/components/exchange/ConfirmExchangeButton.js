@@ -113,7 +113,7 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.fetching_quote');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
-  } else if (isValidGas && isSufficientGas !== null && !isSufficientGas) {
+  } else if (isSufficientGas != null && !isSufficientGas) {
     label =
       currentNetwork === NetworkTypes.polygon
         ? lang.t('button.confirm_exchange.insufficient_matic')
