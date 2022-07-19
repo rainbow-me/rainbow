@@ -1,7 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import times from 'lodash/times';
-import toLower from 'lodash/toLower';
 import React, {
   Fragment,
   useCallback,
@@ -23,6 +21,7 @@ import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
 import { getTrendingAddresses } from '@rainbow-me/handlers/dispersion';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { times } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -173,7 +172,7 @@ export default function ListSection() {
           address =>
             ethereumUtils.getAccountAsset(address) ||
             ethereumUtils.formatGenericAsset(
-              genericAssets[toLower(address)],
+              genericAssets[address.toLowerCase()],
               nativeCurrency
             )
         )
@@ -189,7 +188,7 @@ export default function ListSection() {
         address =>
           ethereumUtils.getAccountAsset(address) ||
           ethereumUtils.formatGenericAsset(
-            genericAssets[toLower(address)],
+            genericAssets[address.toLowerCase()],
             nativeCurrency
           )
       );

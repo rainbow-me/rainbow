@@ -5,8 +5,13 @@ import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import isString from 'lodash/isString';
-import toLower from 'lodash/toLower';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
@@ -152,7 +157,8 @@ export default function SendSheet(props) {
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState();
-  const { colors, isDarkMode } = useTheme();
+  const theme = useTheme();
+  const { colors, isDarkMode } = theme;
 
   const {
     nativeCurrencyInputRef,
@@ -580,7 +586,7 @@ export default function SendSheet(props) {
     analytics.track('Sent transaction', {
       assetName: selected?.name || '',
       assetType: selected?.type || '',
-      isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
+      isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
     });
 
     if (submitSuccessful) {
@@ -603,7 +609,7 @@ export default function SendSheet(props) {
   const validateRecipient = useCallback(
     async toAddress => {
       // Don't allow send to known ERC20 contracts on mainnet
-      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
+      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
         return false;
       }
 
@@ -613,7 +619,8 @@ export default function SendSheet(props) {
         const found =
           currentChainAssets &&
           currentChainAssets.find(
-            item => toLower(item.asset?.asset_code) === toLower(toAddress)
+            item =>
+              item.asset?.asset_code?.toLowerCase() === toAddress.toLowerCase()
           );
         if (found) {
           return false;
@@ -724,12 +731,12 @@ export default function SendSheet(props) {
   }, [sendUpdateSelected]);
 
   const onChangeInput = useCallback(
-    event => {
-      setCurrentInput(event);
-      setRecipient(event);
-      setNickname(event);
-      if (profilesEnabled && isENSAddressFormat(event)) {
-        prefetchENSProfileImages(event);
+    text => {
+      setCurrentInput(text);
+      setRecipient(text);
+      setNickname(text);
+      if (profilesEnabled && isENSAddressFormat(text)) {
+        prefetchENSProfileImages(text);
       }
     },
     [profilesEnabled]
@@ -756,12 +763,18 @@ export default function SendSheet(props) {
   }, []);
 
   const [ensSuggestions, setEnsSuggestions] = useState([]);
+  const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
   useEffect(() => {
-    if (network === Network.mainnet && !recipientOverride) {
+    if (
+      network === Network.mainnet &&
+      !recipientOverride &&
+      recipient?.length
+    ) {
+      setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(
         recipient,
         setEnsSuggestions,
-        undefined,
+        setLoadingEnsSuggestions,
         profilesEnabled
       );
     } else {
@@ -859,6 +872,7 @@ export default function SendSheet(props) {
             currentInput={currentInput}
             ensSuggestions={ensSuggestions}
             key={sendContactListDataKey}
+            loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient, nickname) => {
               setRecipient(recipient);
               setNickname(nickname);
@@ -877,6 +891,7 @@ export default function SendSheet(props) {
             pinnedCoins={pinnedCoinsObj}
             savings={savings}
             sortedAssets={sortedAssets}
+            theme={theme}
             uniqueTokens={sendableUniqueTokens}
           />
         )}

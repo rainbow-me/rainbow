@@ -1,6 +1,5 @@
 import mapValues from 'lodash/mapValues';
 import reverse from 'lodash/reverse';
-import toLower from 'lodash/toLower';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import ChartTypes, { ChartType } from '@rainbow-me/helpers/chartTypes';
@@ -113,7 +112,7 @@ interface ChartsUpdateUsdMonthAction {
 /**
  * A message received from a chart data provider.
  */
-interface ChartsReceivedMessage {
+export interface ChartsReceivedMessage {
   meta?: {
     charts_type?: ChartType;
     currency?: string;
@@ -157,7 +156,8 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
   const { charts: existingCharts } = getState().charts;
   const assetCharts = message?.payload?.charts ?? {};
   const { nativeCurrency } = getState().settings;
-  if (toLower(nativeCurrency) === message?.meta?.currency) {
+
+  if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
     const newChartData = mapValues(assetCharts, (chartData, address) => {
       if (chartType) {
         return {

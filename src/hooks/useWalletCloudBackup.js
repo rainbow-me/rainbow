@@ -19,7 +19,7 @@ import {
 } from '@rainbow-me/handlers/cloudBackup';
 import { delay } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import logger from 'logger';
 
 function getUserError(e) {
@@ -96,7 +96,7 @@ export default function useWalletCloudBackup() {
       let wasPasswordFetched = false;
       if (latestBackup && !password) {
         // We have a backup but don't have the password, try fetching password
-        setIsWalletLoading(walletLoadingStates.FETCHING_PASSWORD);
+        setIsWalletLoading(WalletLoadingStates.FETCHING_PASSWORD);
         // We want to make it clear why are we requesting faceID twice
         // So we delayed it to make sure the user can read before seeing the auth prompt
         await delay(1500);
@@ -112,7 +112,7 @@ export default function useWalletCloudBackup() {
         return;
       }
 
-      setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET);
+      setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET);
       // We want to make it clear why are we requesting faceID twice
       // So we delayed it to make sure the user can read before seeing the auth prompt
       if (wasPasswordFetched) {

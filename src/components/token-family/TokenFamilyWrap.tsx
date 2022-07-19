@@ -1,41 +1,47 @@
-import times from 'lodash/times';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
+import { times } from '@rainbow-me/helpers/utilities';
 import { useTimeout } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
+import { ThemeContextProps } from '@rainbow-me/theme';
+
+type Props = {
+  childrenAmount: number;
+  isFirst?: boolean;
+  isHeader?: boolean;
+  isOpen?: boolean;
+  item: any;
+  familyImage: string;
+  onToggle: () => void;
+  renderItem: (i: number) => JSX.Element;
+  theme: ThemeContextProps;
+  title: string;
+};
 
 export const TokenFamilyWrapPaddingTop = 6;
 
-const Container = styled.View({
-  backgroundColor: ({ theme: { colors } }) => colors.white,
-  overflow: 'hidden',
-  paddingTop: ({ isFirst }) => (isFirst ? TokenFamilyWrapPaddingTop : 0),
-});
-
-const Content = styled.View({
-  paddingTop: ({ areChildrenVisible }) =>
-    areChildrenVisible ? TokenFamilyWrapPaddingTop : 0,
-});
-
-export default function TokenFamilyWrap({
+export default React.memo(function TokenFamilyWrap({
   childrenAmount,
   isFirst,
   isHeader,
   isOpen,
   item,
   onToggle,
+  familyImage,
   renderItem,
+  theme,
   title,
-  ...props
-}) {
+}: Props) {
   const [areChildrenVisible, setAreChildrenVisible] = useState(false);
   const [startTimeout, stopTimeout] = useTimeout();
+  const transitionRef = useRef<any | null>(null);
 
   const showChildren = useCallback(() => {
     if (!areChildrenVisible) {
       setAreChildrenVisible(true);
+      transitionRef.current?.animateNextTransition();
     }
   }, [areChildrenVisible]);
 
@@ -49,19 +55,30 @@ export default function TokenFamilyWrap({
   }, [areChildrenVisible, isOpen, showChildren, startTimeout, stopTimeout]);
 
   return (
-    <Container isFirst={isFirst}>
+    <View
+      style={{
+        backgroundColor: theme.colors.white,
+        overflow: 'hidden',
+        paddingTop: isFirst ? TokenFamilyWrapPaddingTop : 0,
+      }}
+    >
       {isHeader ? (
         <TokenFamilyHeader
-          {...props}
           childrenAmount={childrenAmount}
+          familyImage={familyImage}
           isOpen={isOpen}
           onPress={onToggle}
+          theme={theme}
           title={title}
         />
       ) : null}
-      <Content areChildrenVisible={areChildrenVisible}>
+      <View
+        style={{
+          paddingTop: areChildrenVisible ? TokenFamilyWrapPaddingTop : 0,
+        }}
+      >
         {areChildrenVisible ? times(item.length, renderItem) : null}
-      </Content>
-    </Container>
+      </View>
+    </View>
   );
-}
+});

@@ -2,9 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import compact from 'lodash/compact';
 import isEmpty from 'lodash/isEmpty';
 import keys from 'lodash/keys';
-import toLower from 'lodash/toLower';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -133,7 +131,7 @@ export default function WalletScreen() {
         for (let i = 0; i < userAccounts.length; i++) {
           const account = userAccounts[i];
           // Passing usd for consistency in tracking
-          dispatch(emitPortfolioRequest(toLower(account.address), 'usd'));
+          dispatch(emitPortfolioRequest(account.address.toLowerCase(), 'usd'));
         }
       };
       fetchPortfolios();
@@ -210,7 +208,6 @@ export default function WalletScreen() {
 
   return (
     <WalletPage testID="wallet-screen">
-      {ios && <StatusBar barStyle="dark-content" />}
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />

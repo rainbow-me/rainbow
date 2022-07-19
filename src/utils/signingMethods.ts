@@ -1,5 +1,4 @@
 import concat from 'lodash/concat';
-import includes from 'lodash/includes';
 
 export const PERSONAL_SIGN = 'personal_sign';
 export const SEND_TRANSACTION = 'eth_sendTransaction';
@@ -17,19 +16,19 @@ const secondParamSigning = [SIGN, SIGN_TYPED_DATA, SIGN_TYPED_DATA_V4];
 
 const allTypes = concat(displayTypes.message, ...displayTypes.transaction);
 
-export const isSigningMethod = (method: string) => includes(allTypes, method);
+export const isSigningMethod = (method: string) => allTypes.includes(method);
 
 export const isMessageDisplayType = (method: string) =>
-  includes(displayTypes.message, method);
+  displayTypes.message.includes(method);
 
 export const isTransactionDisplayType = (method: string) =>
-  includes(displayTypes.transaction, method);
+  displayTypes.transaction.includes(method);
 
 export const isSignSecondParamType = (method: string) =>
-  includes(secondParamSigning, method);
+  secondParamSigning.includes(method);
 
 export const isSignFirstParamType = (method: string) =>
-  includes(firstParamSigning, method);
+  firstParamSigning.includes(method);
 
 export const isSignTypedData = (method: string) =>
   method.startsWith(SIGN_TYPED_DATA);

@@ -1,18 +1,14 @@
 import compact from 'lodash/compact';
 import concat from 'lodash/concat';
-import findIndex from 'lodash/findIndex';
 import flatten from 'lodash/flatten';
-import includes from 'lodash/includes';
 import isEmpty from 'lodash/isEmpty';
 import orderBy from 'lodash/orderBy';
 import partition from 'lodash/partition';
 import reverse from 'lodash/reverse';
 import slice from 'lodash/slice';
-import toLower from 'lodash/toLower';
 import toUpper from 'lodash/toUpper';
 import uniqBy from 'lodash/uniqBy';
 import upperFirst from 'lodash/upperFirst';
-
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -54,7 +50,7 @@ const dataFromLastTxHash = (
   );
   const lastTxHash = lastSuccessfulTxn?.hash;
   if (lastTxHash) {
-    const lastTxnHashIndex = findIndex(transactionData, txn =>
+    const lastTxnHashIndex = transactionData.findIndex(txn =>
       lastTxHash.startsWith(txn.hash)
     );
     if (lastTxnHashIndex > -1) {
@@ -170,7 +166,8 @@ const overrideFailedCompound = (
     ...txn,
   };
   newTxn.status = ZerionTransactionStatus.failed;
-  const asset = savingsAssetsList[network][toLower(txn?.address_to ?? '')];
+  const asset =
+    savingsAssetsList[network][txn?.address_to?.toLowerCase() ?? ''];
 
   const assetInternalTransaction = {
     address_from: txn.address_from,
@@ -337,7 +334,7 @@ const parseTransaction = async (
   if (txn.changes.length) {
     const internalTransactions = txn.changes.map(
       (internalTxn, index): RainbowTransaction => {
-        const address = toLower(internalTxn?.asset?.asset_code);
+        const address = internalTxn?.asset?.asset_code?.toLowerCase() ?? '';
         const metadata = getTokenMetadata(address);
         const updatedAsset = {
           address,
@@ -356,7 +353,7 @@ const parseTransaction = async (
           nativeCurrency
         );
 
-        if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
+        if (purchaseTransactionsHashes.includes(txn.hash.toLowerCase())) {
           txn.type = TransactionType.purchase;
         }
 
@@ -381,7 +378,7 @@ const parseTransaction = async (
         });
         return {
           address:
-            toLower(updatedAsset.address) === ETH_ADDRESS
+            updatedAsset.address.toLowerCase() === ETH_ADDRESS
               ? ETH_ADDRESS
               : updatedAsset.address,
           balance: convertRawAmountToBalance(valueUnit, updatedAsset),

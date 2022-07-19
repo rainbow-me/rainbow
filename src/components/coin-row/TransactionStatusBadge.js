@@ -1,4 +1,3 @@
-import includes from 'lodash/includes';
 import React from 'react';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
@@ -107,7 +106,7 @@ const TransactionStatusBadge = ({ pending, status, style, title }) => {
           size={12}
         />
       )}
-      {status && includes(Object.keys(StatusProps), status) && (
+      {status && Object.keys(StatusProps).includes(status) && (
         <Icon
           color={statusColor}
           style={position.maxSizeAsObject(10)}

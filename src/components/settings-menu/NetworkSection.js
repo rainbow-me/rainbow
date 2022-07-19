@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import toLower from 'lodash/toLower';
 import values from 'lodash/values';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
@@ -43,7 +42,7 @@ const NetworkSection = props => {
         disabled: (!testnetsEnabled && testnet) || disabled,
         key: value,
         label: name,
-        selected: toLower(network) === toLower(value),
+        selected: network.toLowerCase() === value.toLowerCase(),
         testID: `${value}-network`,
         value,
       }))}

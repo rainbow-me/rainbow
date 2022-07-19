@@ -1,7 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import toLower from 'lodash/toLower';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -162,7 +161,7 @@ export default function TransactionList({
         contactColor = getRandomColor();
       }
 
-      const isOutgoing = toLower(from) === toLower(accountAddress);
+      const isOutgoing = from.toLowerCase() === accountAddress?.toLowerCase();
       const canBeResubmitted = isOutgoing && !minedAt;
       const canBeCancelled =
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;

@@ -1,12 +1,11 @@
 import lang from 'i18n-js';
-import constant from 'lodash/constant';
-import times from 'lodash/times';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import Animated from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { FloatingEmojisTapper } from '../../floating-emojis';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
+import { times } from '@rainbow-me/helpers/utilities';
 import { useBooleanState, usePrevious, useStepper } from '@rainbow-me/hooks';
 
 const AnimatedSwapDetailsValue = Animated.createAnimatedComponent(
@@ -18,13 +17,13 @@ const animationColorsFactory = colors => [
   colors.uniswapPink,
 ];
 const labels = [
-  ...times(8, constant(lang.t('expanded_state.swap.uniswap_v2'))),
+  ...times(8, () => lang.t('expanded_state.swap.uniswap_v2')),
   lang.t('expanded_state.swap.unicorn_one'),
 ];
 const emojis = [
-  ...times(5, constant('unicorn')),
+  ...times(5, () => 'unicorn'),
   'socks',
-  ...times(2, constant('unicorn')),
+  ...times(2, () => 'unicorn'),
   'rainbow',
 ];
 

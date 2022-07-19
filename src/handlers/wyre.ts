@@ -3,7 +3,6 @@ import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
 import join from 'lodash/join';
 import split from 'lodash/split';
-import toLower from 'lodash/toLower';
 import values from 'lodash/values';
 import {
   // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
@@ -68,7 +67,7 @@ class WyreException extends Error {
 }
 
 export const getReferenceId = (accountAddress: any) => {
-  const lowered = toLower(accountAddress);
+  const lowered = accountAddress.toLowerCase();
   return lowered.substr(-12);
 };
 

@@ -4,7 +4,6 @@ import isEmpty from 'lodash/isEmpty';
 import join from 'lodash/join';
 import orderBy from 'lodash/orderBy';
 import sumBy from 'lodash/sumBy';
-import toLower from 'lodash/toLower';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -61,7 +60,7 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
-  if (toLower(token.address) === toLower(WETH[chainId].address)) {
+  if (token.address.toLowerCase() === WETH[chainId].address.toLowerCase()) {
     return {
       ...token,
       address: ETH_ADDRESS,

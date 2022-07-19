@@ -1,7 +1,5 @@
 import lang from 'i18n-js';
 import sortBy from 'lodash/sortBy';
-import times from 'lodash/times';
-import toLower from 'lodash/toLower';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -30,6 +28,7 @@ import {
   divide,
   handleSignificantDecimals,
   multiply,
+  times,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -70,12 +69,12 @@ export default function TokenIndexExpandedState({ asset }) {
   const underlying = useMemo(() => {
     if (!dpi) return [];
     const baseAsset = ethereumUtils.formatGenericAsset(
-      genericAssets[toLower(dpi?.base?.address)],
+      genericAssets[dpi?.base?.address?.toLowerCase()],
       nativeCurrency
     );
 
     const underlyingAssets = dpi?.underlying.map(asset => {
-      const genericAsset = genericAssets[toLower(asset?.address)];
+      const genericAsset = genericAssets[asset?.address?.toLowerCase()];
       if (!genericAsset) return null;
       const assetWithPrice = ethereumUtils.formatGenericAsset(
         genericAsset,

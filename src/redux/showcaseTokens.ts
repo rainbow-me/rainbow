@@ -1,6 +1,5 @@
 import produce from 'immer';
 import concat from 'lodash/concat';
-import toLower from 'lodash/toLower';
 import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
@@ -183,7 +182,7 @@ export const updateWebDataEnabled = (
     payload: enabled,
     type: UPDATE_WEB_DATA_ENABLED,
   });
-  await saveWebDataEnabled(enabled, toLower(address), network);
+  await saveWebDataEnabled(enabled, address.toLowerCase(), network);
 };
 
 // -- Reducer ----------------------------------------- //

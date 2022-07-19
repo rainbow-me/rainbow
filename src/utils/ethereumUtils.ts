@@ -14,10 +14,10 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
+import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
 import isString from 'lodash/isString';
 import replace from 'lodash/replace';
-import toLower from 'lodash/toLower';
 import {
   Alert,
   InteractionManager,
@@ -114,7 +114,7 @@ const getNativeAssetForNetwork = async (
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
-  let differentWallet = toLower(address) !== toLower(accountAddress);
+  let differentWallet = address.toLowerCase() !== accountAddress.toLowerCase();
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
@@ -152,14 +152,14 @@ const getAsset = (
   accountAssets: Record<string, ParsedAddressAsset>,
   uniqueId: EthereumAddress = ETH_ADDRESS
 ) => {
-  const loweredUniqueId = toLower(uniqueId);
+  const loweredUniqueId = uniqueId.toLowerCase();
   return accountAssets[loweredUniqueId];
 };
 
 const getAccountAsset = (
-  uniqueId: EthereumAddress
+  uniqueId: EthereumAddress | undefined
 ): ParsedAddressAsset | undefined => {
-  const loweredUniqueId = toLower(uniqueId);
+  const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
   const accountAsset = store.getState().data?.accountAssetsData?.[
     loweredUniqueId
   ];
@@ -270,7 +270,7 @@ export const checkWalletEthZero = () => {
  * @param  {String} hex
  * @return {String}
  */
-const removeHexPrefix = (hex: string) => replace(toLower(hex), '0x', '');
+const removeHexPrefix = (hex: string) => replace(hex.toLowerCase(), '0x', '');
 
 /**
  * @desc pad string to specific width and padding
@@ -441,13 +441,13 @@ const checkIfUrlIsAScam = async (url: string) => {
   try {
     const { hostname } = new URL(url);
     const exceptions = ['twitter.com'];
-    if (exceptions.includes(toLower(hostname))) {
+    if (exceptions.includes(hostname?.toLowerCase())) {
       return false;
     }
     const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
     const { result } = await request.json();
     const found = result.find(
-      (s: any) => toLower(s.name) === toLower(hostname)
+      (s: any) => s?.name?.toLowerCase() === hostname?.toLowerCase()
     );
     if (found) {
       return true;
@@ -563,7 +563,7 @@ async function parseEthereumUrl(data: string) {
   try {
     ethUrl = parse(data);
   } catch (e) {
-    Alert.alert('Invalid ethereum url');
+    Alert.alert(lang.t('wallet.alerts.invalid_ethereum_url'));
     return;
   }
 
@@ -585,8 +585,8 @@ async function parseEthereumUrl(data: string) {
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
-        'Ooops!',
-        `Looks like you don't have that asset in your wallet...`
+        lang.t('wallet.alerts.ooops'),
+        lang.t('wallet.alerts.dont_have_asset_in_wallet')
       );
       return;
     }
@@ -599,8 +599,8 @@ async function parseEthereumUrl(data: string) {
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
-        'Ooops!',
-        `Looks like you don't have that asset in your wallet...`
+        lang.t('wallet.alerts.ooops'),
+        lang.t('wallet.alerts.dont_have_asset_in_wallet')
       );
       return;
     }
@@ -612,7 +612,7 @@ async function parseEthereumUrl(data: string) {
         asset.decimals
       );
   } else {
-    Alert.alert('This action is currently not supported :(');
+    Alert.alert(lang.t('wallet.alerts.this_action_not_supported'));
     return;
   }
 

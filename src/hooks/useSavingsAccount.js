@@ -4,7 +4,6 @@ import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
 import keyBy from 'lodash/keyBy';
 import orderBy from 'lodash/orderBy';
-import toLower from 'lodash/toLower';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
@@ -119,7 +118,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       client: compoundClient,
       pollInterval: COMPOUND_QUERY_INTERVAL,
       skip: !hasAccountAddress,
-      variables: { id: toLower(accountAddress) },
+      variables: { id: accountAddress?.toLowerCase() },
     }
   );
 

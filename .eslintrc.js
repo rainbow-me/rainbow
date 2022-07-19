@@ -50,7 +50,8 @@ module.exports = {
         paths: [
           {
             name: 'lodash',
-            message: 'Please do not use use lodash instead.',
+            message:
+              'Please avoid using Lodash in favor of using JS methods. If you need it, then add the rule to eslint',
           },
         ],
         patterns: [
@@ -127,6 +128,7 @@ module.exports = {
           '!lodash/replace',
           '!lodash/merge',
           '!lodash/zipObject',
+          '!lodash/startCase',
         ],
       },
     ],
