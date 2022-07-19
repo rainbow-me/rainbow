@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { concat, get, isEmpty, uniqBy, without } from 'lodash';
-import { URLSearchParams } from 'react-native-url-polyfill';
+import qs from 'qs';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -260,6 +260,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const fetchNetwork = async (network: Network) => {
     let nextPage: string | null = 'start';
     while (nextPage !== null) {
+      // @ts-ignore
       nextPage = await fetchPage(network, nextPage);
 
       // check that the account address to fetch for has not changed while fetching
@@ -283,7 +284,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       let newPageResults = parseAccountUniqueTokensV2(res);
 
       const nextPage = get(res, 'data.next', null);
-      cursor = new URLSearchParams(nextPage).get('cursor');
+      cursor = qs.parse(nextPage)?.cursor || null;
 
       // If there are any "unknown" ENS names, fallback to the ENS
       // metadata service.
