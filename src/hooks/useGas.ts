@@ -51,7 +51,8 @@ const checkValidGas = (
   const gasValue = isL2
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
     : (selectedGasParams as GasFeeParams)?.maxFeePerGas;
-  const isValidGas = gasValue?.amount && greaterThan(gasValue?.amount, 0);
+  const isValidGas =
+    Boolean(gasValue?.amount) && greaterThan(gasValue?.amount, 0);
   return isValidGas;
 };
 
