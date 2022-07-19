@@ -1,8 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
@@ -21,21 +17,7 @@ export default React.memo(function WrappedNFT({
   placement: 'left' | 'right';
   externalAddress?: string;
 }) {
-  const assetCollectible = useCollectible(
-    { uniqueId },
-    undefined,
-    externalAddress
-  );
-
-  const asset = useMemo(
-    () => ({
-      ...assetCollectible,
-      ...(IS_TESTING === 'true'
-        ? { image_original_url: null, image_preview_url: null, image_url: null }
-        : {}),
-    }),
-    [assetCollectible]
-  );
+  const asset = useCollectible({ uniqueId }, undefined, externalAddress);
 
   const { navigate } = useNavigation();
 
@@ -45,13 +27,13 @@ export default React.memo(function WrappedNFT({
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
-        external: assetCollectible?.isExternal || false,
+        external: asset?.isExternal || false,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,
         type: 'unique_token',
       }),
-    [assetCollectible?.isExternal, navigate]
+    [navigate]
   );
 
   const placementProps: BoxProps =
