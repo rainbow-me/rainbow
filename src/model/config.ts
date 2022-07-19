@@ -57,7 +57,7 @@ export interface RainbowConfig extends Record<string, any> {
   ethereum_ropsten_rpc?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
-  default_slippage_bips?: number;
+  default_slippage_bips?: string;
 }
 
 const DEFAULT_CONFIG = {
@@ -65,7 +65,12 @@ const DEFAULT_CONFIG = {
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
   data_origin: DATA_ORIGIN,
-  default_slippage_bips: 100,
+  default_slippage_bips: JSON.stringify({
+    arbitrum: 200,
+    mainnet: 100,
+    optimism: 200,
+    polygon: 200,
+  }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_kovan_rpc: __DEV__ ? ETHEREUM_KOVAN_RPC_DEV : ETHEREUM_KOVAN_RPC,
   ethereum_mainnet_rpc: __DEV__
@@ -105,7 +110,11 @@ const init = async () => {
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
-      config[key] = entry.asString();
+      if (key === 'default_slippage_bips') {
+        config[key] = JSON.parse(entry.asString());
+      } else {
+        config[key] = entry.asString();
+      }
     });
   } catch (e) {
     Logger.sentry('error getting remote config', e);
