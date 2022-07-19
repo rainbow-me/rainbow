@@ -47,7 +47,9 @@ const WalletSelectionViewV2 = () => {
           .filter(key => wallets[key].type !== WalletTypes.readOnly)
           .map(key => {
             const wallet = wallets[key];
-            const visibleAccounts = wallet.addresses.filter(a => a.visible);
+            const visibleAccounts = wallet.addresses.filter(
+              (a: any) => a.visible
+            );
             const account = visibleAccounts[0];
             const totalAccounts = visibleAccounts.length;
             const { color, label, index, address } = account;
