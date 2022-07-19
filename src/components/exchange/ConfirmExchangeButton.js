@@ -35,7 +35,7 @@ export default function ConfirmExchangeButton({
   const { isSufficientGas, isValidGas } = useGas();
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
-  const [swapSubmitted, submitSwap] = useReducer(() => true, false);
+  const [swapSubmitted, setSwapSubmitted] = useReducer(() => true, false);
 
   const isSavings =
     type === ExchangeModalTypes.withdrawal ||
@@ -146,6 +146,11 @@ export default function ConfirmExchangeButton({
     !isValidGas ||
     !isSufficientGas;
 
+  const onSwap = useCallback(() => {
+    onSubmit();
+    setSwapSubmitted();
+  }, [onSubmit, setSwapSubmitted]);
+
   return (
     <Box>
       <Rows alignHorizontal="center" alignVertical="bottom" space="8px">
@@ -166,10 +171,7 @@ export default function ConfirmExchangeButton({
                 ? handleShowLiquidityExplainer
                 : shouldOpenSwapDetails
                 ? onPressViewDetails
-                : () => {
-                    onSubmit();
-                    submitSwap();
-                  }
+                : onSwap
             }
             shadows={
               isSwapDetailsRoute
