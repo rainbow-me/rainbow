@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
 import { Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
-import { useDispatch } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
 import { ExchangeHeader } from '../../exchange';
 import { FloatingPanel } from '../../floating-panels';
@@ -11,6 +10,7 @@ import { SlackSheet } from '../../sheet';
 import { MaxToleranceInput } from './MaxToleranceInput';
 import SourcePicker from './SourcePicker';
 
+import config from '@/model/config';
 import {
   Box,
   ColorModeProvider,
@@ -50,7 +50,6 @@ export default function SwapSettingsState({ asset }) {
   } = useRoute();
   const { colors } = useTheme();
   const { setParams, goBack } = useNavigation();
-  const dispatch = useDispatch();
   const keyboardHeight = useKeyboardHeight();
   const slippageRef = useRef(null);
   const { updateSwapSource, source } = useSwapSettings();
@@ -69,9 +68,10 @@ export default function SwapSettingsState({ asset }) {
       Keyboard.dismiss();
     }
   }, [isFocused]);
+
   const toggleFlashbotsEnabled = useCallback(async () => {
-    await dispatch(settingsChangeFlashbotsEnabled(!flashbotsEnabled));
-  }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
+    settingsChangeFlashbotsEnabled(!flashbotsEnabled);
+  }, [flashbotsEnabled, settingsChangeFlashbotsEnabled]);
 
   useEffect(() => {
     if (android) {
@@ -109,7 +109,7 @@ export default function SwapSettingsState({ asset }) {
 
   const resetToDefaults = useCallback(() => {
     slippageRef?.current?.reset();
-    settingsChangeFlashbotsEnabled(false);
+    settingsChangeFlashbotsEnabled(config.flashbots_enabled);
     updateSource(Source.AggregatorRainbow);
   }, [settingsChangeFlashbotsEnabled, updateSource]);
 
