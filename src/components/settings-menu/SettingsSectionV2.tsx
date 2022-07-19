@@ -10,7 +10,7 @@ import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import MenuItem, { StatusType } from './components/MenuItem';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
@@ -251,10 +251,10 @@ const SettingsSectionV2 = ({
               <MenuItem.StatusIcon
                 status={
                   allBackedUp
-                    ? 'complete'
+                    ? StatusType.Complete
                     : areBackedUp
-                    ? 'incomplete'
-                    : 'warning'
+                    ? StatusType.Incomplete
+                    : StatusType.Warning
                 }
               />
             }
@@ -336,6 +336,7 @@ const SettingsSectionV2 = ({
             titleComponent={<MenuItem.Title text={lang.t('settings.theme')} />}
           />
         </ContextMenuButton>
+
         {!isReadOnlyWallet && (
           <MenuItem
             hasRightArrow

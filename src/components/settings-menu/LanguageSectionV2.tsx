@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { resources, supportedLanguages } from '../../languages';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import MenuItem, { StatusType } from './components/MenuItem';
 import { pickBy } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 
@@ -37,7 +37,9 @@ const LanguageSection = () => {
               key={code}
               onPress={() => onSelectLanguage(code)}
               rightComponent={
-                code === language && <MenuItem.StatusIcon status="selected" />
+                code === language && (
+                  <MenuItem.StatusIcon status={StatusType.Selected} />
+                )
               }
               size="medium"
               titleComponent={<MenuItem.Title text={name} />}

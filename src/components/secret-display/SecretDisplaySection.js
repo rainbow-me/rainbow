@@ -131,6 +131,7 @@ export default function SecretDisplaySection({
           alignItems="center"
           justifyContent="center"
           marginHorizontal="16px"
+          paddingBottom="30px"
           paddingHorizontal="30px"
         >
           {seed ? (

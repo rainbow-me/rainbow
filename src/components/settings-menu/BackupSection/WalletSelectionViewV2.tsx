@@ -4,7 +4,7 @@ import { cloudPlatform } from '../../../utils/platform';
 import { ContactAvatar } from '../../contacts';
 import Menu from '../components/Menu';
 import MenuContainer from '../components/MenuContainer';
-import MenuItem from '../components/MenuItem';
+import MenuItem, { StatusType } from '../components/MenuItem';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -64,6 +64,7 @@ const WalletSelectionViewV2 = () => {
             return (
               <MenuItem
                 hasRightArrow
+                key={key}
                 labelComponent={
                   <MenuItem.Label
                     text={
@@ -106,10 +107,10 @@ const WalletSelectionViewV2 = () => {
                   <MenuItem.StatusIcon
                     status={
                       wallet.backupType === WalletBackupTypes.cloud
-                        ? 'complete'
+                        ? StatusType.Complete
                         : wallet.backedUp || wallet.imported
-                        ? 'incomplete'
-                        : 'warning'
+                        ? StatusType.Incomplete
+                        : StatusType.Warning
                     }
                   />
                 }

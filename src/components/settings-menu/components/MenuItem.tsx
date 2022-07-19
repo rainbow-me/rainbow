@@ -1,5 +1,4 @@
 import React from 'react';
-import { Switch as NativeSwitch } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import { ButtonPressAnimation } from '../../animations';
 import CheckmarkCircledIcon from '../../icons/svg/CheckmarkCircledIcon';
@@ -8,6 +7,7 @@ import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '@rainbow-me/theme';
+
 const ICON_SIZE = 60;
 
 interface ImageIconProps {
@@ -37,37 +37,49 @@ const Selection = ({ children }: SelectionProps) => (
   </Text>
 );
 
-interface SwitchProps {
-  onValueChange: (value: boolean) => void;
+export enum StatusType {
+  Complete = 'complete',
+  Incomplete = 'incomplete',
+  Warning = 'warning',
+  Selected = 'selected',
 }
 
-const Switch = ({ onValueChange }: SwitchProps) => (
-  <NativeSwitch onValueChange={onValueChange} />
-);
-
 interface StatusIconProps {
-  status: 'complete' | 'incomplete' | 'warning' | 'selected';
+  status: StatusType;
 }
 
 const StatusIcon = ({ status }: StatusIconProps) => {
   const { colors, isDarkMode } = useTheme();
-  return status === 'warning' ? (
-    <WarningIcon color={colors.orangeLight} colors={colors} />
-  ) : (
-    <CheckmarkCircledIcon
-      color={
-        status === 'complete'
-          ? colors.green
-          : status === 'incomplete'
-          ? colors.alpha(colors.blueGreyDark, 0.5)
-          : colors.appleBlue
-      }
+  let color;
+  switch (status) {
+    case StatusType.Complete:
+      color = colors.green;
+      break;
+    case StatusType.Incomplete:
+      color = colors.alpha(colors.blueGreyDark, 0.5);
+      break;
+    case StatusType.Warning:
+      color = colors.orangeLight;
+      break;
+    case StatusType.Selected:
+      color = colors.appleBlue;
+      break;
+    default:
+      break;
+  }
+  return (
+    <Box
+      as={status === StatusType.Warning ? WarningIcon : CheckmarkCircledIcon}
+      backgroundColor={color}
+      color={color}
       colors={colors}
-      shadowColor={colors.alpha(
-        isDarkMode ? colors.shadow : colors.blueGreyDark50,
-        0.4
-      )}
-      shadowOffset={{ height: 4, width: 0 }}
+      fillColor={colors.white}
+      shadowColor={isDarkMode ? colors.shadow : color}
+      shadowOffset={{
+        height: 4,
+        width: 0,
+      }}
+      shadowOpacity={0.4}
       shadowRadius={6}
     />
   );
@@ -159,46 +171,41 @@ const MenuItem = ({
       ? 17
       : 0;
 
-  const Item = () => (
-    <Box
-      height={{ custom: size === 'large' ? 60 : 52 }}
-      justifyContent="center"
-      paddingHorizontal={{ custom: 16 }}
-      width="full"
-    >
-      <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline alignVertical="center" space={{ custom: space }}>
-          {leftComponent}
-          <Stack space="8px">
-            {titleComponent}
-            {labelComponent}
-          </Stack>
+  return (
+    <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={0.9}>
+      <Box
+        height={{ custom: size === 'large' ? 60 : 52 }}
+        justifyContent="center"
+        paddingHorizontal={{ custom: 16 }}
+        width="full"
+      >
+        <Inline alignHorizontal="justify" alignVertical="center">
+          <Inline alignVertical="center" space={{ custom: space }}>
+            {leftComponent}
+            <Stack space="8px">
+              {titleComponent}
+              {labelComponent}
+            </Stack>
+          </Inline>
+          <Inline alignVertical="center" space={{ custom: 9 }}>
+            {rightComponent}
+            {hasRightArrow && (
+              <Box
+                as={ImgixImage}
+                height={{ custom: 15 }}
+                source={Caret as Source}
+                tintColor={colors.blueGreyDark60}
+                width={{ custom: 5.83 }}
+              />
+            )}
+            {hasChevron && (
+              <Text color="secondary60" size="18px" weight="medium">
+                􀆏
+              </Text>
+            )}
+          </Inline>
         </Inline>
-        <Inline alignVertical="center" space={{ custom: 9 }}>
-          {rightComponent}
-          {hasRightArrow && (
-            <Box
-              as={ImgixImage}
-              height={{ custom: 15 }}
-              source={Caret as Source}
-              tintColor={colors.blueGreyDark60}
-              width={{ custom: 5.83 }}
-            />
-          )}
-          {hasChevron && (
-            <Text color="secondary60" size="18px" weight="medium">
-              􀆏
-            </Text>
-          )}
-        </Inline>
-      </Inline>
-    </Box>
-  );
-  return disabled ? (
-    <Item />
-  ) : (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-      <Item />
+      </Box>
     </ButtonPressAnimation>
   );
 };
@@ -207,7 +214,6 @@ MenuItem.Title = Title;
 MenuItem.Label = Label;
 MenuItem.ImageIcon = ImageIcon;
 MenuItem.Selection = Selection;
-MenuItem.Switch = Switch;
 MenuItem.StatusIcon = StatusIcon;
 
 export default MenuItem;

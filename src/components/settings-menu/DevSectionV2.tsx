@@ -20,7 +20,7 @@ import { settingsUpdateNetwork } from '../../redux/settings';
 import NetworkSectionV2 from './NetworkSectionV2';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import MenuItem, { StatusType } from './components/MenuItem';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import {
   getProviderForNetwork,
@@ -391,7 +391,9 @@ const DevSectionV2 = () => {
                   key={key}
                   onPress={() => onExperimentalKeyChange(key)}
                   rightComponent={
-                    !!config[key] && <MenuItem.StatusIcon status="selected" />
+                    !!config[key] && (
+                      <MenuItem.StatusIcon status={StatusType.Selected} />
+                    )
                   }
                   size="medium"
                   titleComponent={<MenuItem.Title text={key} />}
