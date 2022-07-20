@@ -1,4 +1,5 @@
-import { uniqBy } from 'lodash';
+import { get, uniqBy } from 'lodash';
+import qs from 'qs';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
@@ -10,10 +11,10 @@ import {
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueTokens,
-  UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { parseAccountUniqueTokensV2 } from '@rainbow-me/parsers';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',
@@ -21,6 +22,7 @@ export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
 ];
 
 const STALE_TIME = 10000;
+let cursor: string | null = 'start';
 
 export default function useFetchUniqueTokens({
   address,
@@ -59,7 +61,10 @@ export default function useFetchUniqueTokens({
 
       let uniqueTokens = storedTokens;
       if (!hasStoredTokens) {
-        uniqueTokens = await apiGetAccountUniqueTokens(network, address, 0);
+        const res = await apiGetAccountUniqueTokens(network, address, 'start');
+        const nextPage = get(res, 'data.next', null);
+        cursor = (qs.parse(nextPage)?.cursor as string) || null;
+        uniqueTokens = await parseAccountUniqueTokensV2(res);
       }
 
       setShouldFetchMore(true);
@@ -80,21 +85,24 @@ export default function useFetchUniqueTokens({
     async function fetchMore({
       network,
       uniqueTokens = [],
-      page = 0,
+      cursor = 'start',
     }: {
       network: Network;
       uniqueTokens?: UniqueAsset[];
-      page?: number;
+      cursor?: any;
     }): Promise<UniqueAsset[]> {
-      if (
-        uniqueTokens?.length >= page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
-        uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL
-      ) {
-        const moreUniqueTokens = await apiGetAccountUniqueTokens(
+      if (uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL && cursor !== null) {
+        const res = await apiGetAccountUniqueTokens(
           network,
           address as string,
-          page
+          cursor
         );
+        const moreUniqueTokens: UniqueAsset[] = await parseAccountUniqueTokensV2(
+          res
+        );
+        const nextPage = get(res, 'data.next', null);
+        cursor = qs.parse(nextPage)?.cursor || null;
+
         if (!hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),
@@ -103,8 +111,8 @@ export default function useFetchUniqueTokens({
           );
         }
         return fetchMore({
+          cursor,
           network,
-          page: page + 1,
           uniqueTokens: [...uniqueTokens, ...moreUniqueTokens],
         });
       }
@@ -112,15 +120,14 @@ export default function useFetchUniqueTokens({
     }
 
     // We have already fetched the first page of results – so let's fetch more!
-    if (shouldFetchMore && uniqueTokens && uniqueTokens.length > 0) {
-      setShouldFetchMore(false);
-      (async () => {
+    (async () => {
+      if (shouldFetchMore) {
         // Fetch more Ethereum tokens until all have fetched
         let tokens = await fetchMore({
-          network,
           // If there are stored tokens in storage, then we want
           // to do a background refresh.
-          page: hasStoredTokens ? 0 : 1,
+          cursor: hasStoredTokens ? 'start' : cursor,
+          network,
           uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
         });
 
@@ -137,7 +144,7 @@ export default function useFetchUniqueTokens({
         if (ensTokens.length > 0) {
           tokens = uniqBy([...tokens, ...ensTokens], 'id');
         }
-
+        setShouldFetchMore(false);
         if (hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),
@@ -146,8 +153,8 @@ export default function useFetchUniqueTokens({
         }
 
         await saveUniqueTokens(tokens, address, network);
-      })();
-    }
+      }
+    })();
   }, [
     address,
     shouldFetchMore,
