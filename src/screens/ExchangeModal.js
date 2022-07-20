@@ -351,11 +351,9 @@ export default function ExchangeModal({
   }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
 
   useEffect(() => {
-    let slippage = 100;
+    let slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
     if (config.default_slippage_bips?.[currentNetwork]) {
       slippage = config.default_slippage_bips?.[currentNetwork];
-    } else {
-      slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
     }
     dispatch(updateSwapSlippage(slippage));
   }, [currentNetwork, dispatch]);
