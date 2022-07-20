@@ -344,7 +344,10 @@ export default function ExchangeModal({
   }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
 
   useEffect(() => {
-    dispatch(updateSwapSlippage(config.default_slippage_bips[currentNetwork]));
+    config.default_slippage_bips?.[currentNetwork] &&
+      dispatch(
+        updateSwapSlippage(config.default_slippage_bips[currentNetwork])
+      );
   }, [currentNetwork, dispatch]);
 
   useEffect(() => {
