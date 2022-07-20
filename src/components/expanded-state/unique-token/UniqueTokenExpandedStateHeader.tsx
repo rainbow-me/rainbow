@@ -479,6 +479,7 @@ const UniqueTokenExpandedStateHeader = ({
               {...(android ? { onPress: onPressAndroidAsset } : {})}
               isMenuPrimaryAction
               onPressMenuItem={handlePressAssetMenuItem}
+              testID="unique_token_expanded_state_context_menu_button"
               useActionSheetFallback={false}
             >
               <ButtonPressAnimation scaleTo={0.75}>
