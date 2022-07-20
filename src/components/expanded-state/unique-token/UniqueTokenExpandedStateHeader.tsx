@@ -255,7 +255,7 @@ const UniqueTokenExpandedStateHeader = ({
             ? lang.t('expanded_state.unique_expanded.unhide')
             : lang.t('expanded_state.unique_expanded.hide'),
           icon: {
-            iconType: 'SYSTEM',
+            ...AssetActions[AssetActionsEnum.hide].icon,
             iconValue: isHiddenAsset ? 'eye.slash' : 'eye',
           },
         },
