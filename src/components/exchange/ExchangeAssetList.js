@@ -16,7 +16,10 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import { TokenSectionTypes } from '@rainbow-me/helpers';
-import { usePrevious } from '@rainbow-me/hooks';
+import {
+  useAndroidScrollViewGestureHandler,
+  usePrevious,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -122,7 +125,7 @@ const ExchangeAssetList = (
   const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
   useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
-  const { navigate } = useNavigation();
+  const { dangerouslyGetParent, navigate } = useNavigation();
   const {
     copiedText,
     copyCount,
@@ -157,6 +160,10 @@ const ExchangeAssetList = (
     },
     [itemProps, navigate]
   );
+
+  const { onScroll } = useAndroidScrollViewGestureHandler({
+    navigation: dangerouslyGetParent(),
+  });
 
   const openVerifiedExplainer = useCallback(() => {
     Keyboard.dismiss();
@@ -238,6 +245,7 @@ const ExchangeAssetList = (
         ListFooterComponent={FooterSpacer}
         keyboardDismissMode={keyboardDismissMode}
         onLayout={onLayout}
+        onScroll={android ? onScroll : undefined}
         ref={sectionListRef}
         renderItem={renderItemCallback}
         renderSectionHeader={ExchangeAssetSectionListHeader}

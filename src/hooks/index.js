@@ -12,6 +12,7 @@ export {
   default as useAccountENSDomains,
   prefetchAccountENSDomains,
 } from './useAccountENSDomains';
+export { default as useAndroidScrollViewGestureHandler } from './useAndroidScrollViewGestureHandler';
 export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAccountTransactions } from './useAccountTransactions';
