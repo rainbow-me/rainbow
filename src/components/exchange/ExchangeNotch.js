@@ -30,7 +30,7 @@ const NotchMiddle = styled(FastImage).attrs(({ isDarkMode }) => ({
 }))({
   height: notchHeight,
   left: android ? -ANDROID_NOTCH_OFFSET : 0,
-  width: ({ deviceWidth }) => deviceWidth - notchSideWidth * 2,
+  width: ({ deviceWidth }) => deviceWidth - notchSideWidth * 2.11,
 });
 
 const NotchSide = styled(FastImage)({
