@@ -123,6 +123,7 @@ export default function useFetchUniqueTokens({
     (async () => {
       if (shouldFetchMore) {
         // Fetch more Ethereum tokens until all have fetched
+        setShouldFetchMore(false);
         let tokens = await fetchMore({
           // If there are stored tokens in storage, then we want
           // to do a background refresh.
@@ -144,7 +145,7 @@ export default function useFetchUniqueTokens({
         if (ensTokens.length > 0) {
           tokens = uniqBy([...tokens, ...ensTokens], 'id');
         }
-        setShouldFetchMore(false);
+
         if (hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),
