@@ -335,11 +335,17 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       switch (independentField) {
         case SwapModalField.input:
           displayValues[DisplayValue.input] = independentValue;
+          displayValues[DisplayValue.output] = null;
+          displayValues[DisplayValue.native] = null;
           break;
         case SwapModalField.output:
+          displayValues[DisplayValue.input] = null;
           displayValues[DisplayValue.output] = independentValue;
+          displayValues[DisplayValue.native] = null;
           break;
         case SwapModalField.native:
+          displayValues[DisplayValue.input] = null;
+          displayValues[DisplayValue.output] = null;
           displayValues[DisplayValue.native] = independentValue;
           break;
       }
