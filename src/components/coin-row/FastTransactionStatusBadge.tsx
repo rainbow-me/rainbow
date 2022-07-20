@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
@@ -148,7 +148,7 @@ export default React.memo(function FastTransactionStatusBadge({
     statusColor = colors.swapPurple;
   }
 
-  const showIcon = useMemo(() => !!StatusProps[status], [status]);
+  const showIcon = !!StatusProps[status];
 
   return (
     <View style={[sx.row, style]}>
