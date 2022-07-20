@@ -355,7 +355,7 @@ export default function ExchangeModal({
     if (config.default_slippage_bips?.[currentNetwork]) {
       slippage = config.default_slippage_bips?.[currentNetwork];
     }
-    dispatch(updateSwapSlippage(slippage));
+    slippage && dispatch(updateSwapSlippage(slippage));
   }, [currentNetwork, dispatch]);
 
   useEffect(() => {
