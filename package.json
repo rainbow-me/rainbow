@@ -79,7 +79,7 @@
     "@metamask/eth-sig-util": "4.0.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/react-native-payments": "1.1.5",
-    "@rainbow-me/swaps": "0.1.8",
+    "@rainbow-me/swaps": "0.1.9",
     "@react-native-community/async-storage": "1.12.1",
     "@react-native-community/blur": "3.6.0",
     "@react-native-community/cameraroll": "4.1.2",
