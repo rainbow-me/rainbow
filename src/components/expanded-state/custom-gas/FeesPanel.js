@@ -38,7 +38,7 @@ import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)({});
-const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
+const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
 const PanelRow = styled(Row).attrs({
   alignItems: 'center',
@@ -298,7 +298,10 @@ export default function FeesPanel({
         gweiToWei(newGweiMaxPriorityFeePerGas)
       );
 
-      if (flashbotTransaction && greaterThan(6, newMaxPriorityFeePerGas.gwei))
+      if (
+        flashbotTransaction &&
+        greaterThan(FLASHBOTS_MIN_TIP, newMaxPriorityFeePerGas.gwei)
+      )
         return;
 
       if (greaterThan(0, newMaxPriorityFeePerGas.amount)) return;
