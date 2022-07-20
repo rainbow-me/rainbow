@@ -310,6 +310,17 @@ export default function ChangeWalletSheet() {
     [renameWallet]
   );
 
+  const onPressNotifications = useCallback(
+    walletName => {
+      analytics.track('Tapped "Notification Settings"');
+      navigate(Routes.SETTINGS_SHEET_V2, {
+        params: { title: walletName },
+        screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
+      });
+    },
+    [navigate]
+  );
+
   const onPressRemove = useCallback(
     (walletId, address) => {
       analytics.track('Tapped "Delete Wallet"');
@@ -557,7 +568,11 @@ export default function ChangeWalletSheet() {
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
-        contextMenuActions={{ edit: onPressEdit, remove: onPressRemove }}
+        contextMenuActions={{
+          edit: onPressEdit,
+          notifications: onPressNotifications,
+          remove: onPressRemove,
+        }}
         currentWallet={currentSelectedWallet}
         editMode={editMode}
         height={listHeight}

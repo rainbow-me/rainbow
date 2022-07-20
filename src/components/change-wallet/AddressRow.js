@@ -146,6 +146,11 @@ export default function AddressRow({
     cleanedUpLabel = removeFirstEmojiFromString(label);
   }
 
+  const walletLabel =
+    cleanedUpLabel ||
+    ens ||
+    abbreviations.formatAddressForDisplay(toChecksumAddress(address), 4, 6);
+
   const onOptionsPress = useCallback(() => {
     onEditWallet(walletId, address, cleanedUpLabel);
   }, [address, cleanedUpLabel, onEditWallet, walletId]);
@@ -192,12 +197,9 @@ export default function AddressRow({
           },
         },
       ],
-      menuTitle:
-        cleanedUpLabel ||
-        ens ||
-        abbreviations.formatAddressForDisplay(toChecksumAddress(address), 4, 6),
+      menuTitle: walletLabel,
     };
-  }, [address, cleanedUpLabel, ens]);
+  }, [walletLabel]);
 
   const onPressAndroidActions = useCallback(() => {
     const androidActions = [
@@ -210,14 +212,7 @@ export default function AddressRow({
       {
         options: androidActions,
         showSeparators: true,
-        title:
-          cleanedUpLabel ||
-          ens ||
-          abbreviations.formatAddressForDisplay(
-            toChecksumAddress(address),
-            4,
-            6
-          ),
+        title: walletLabel,
       },
       idx => {
         if (idx === 0) {
@@ -229,19 +224,19 @@ export default function AddressRow({
         }
       }
     );
-  }, []);
+  }, [walletLabel]);
 
   const handleSelectMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'remove') {
         contextMenuActions?.remove(walletId, address);
       } else if (actionKey === 'notifications') {
-        console.log('TEST');
+        contextMenuActions?.notifications(walletLabel);
       } else if (actionKey === 'edit') {
         contextMenuActions?.edit(walletId, address);
       }
     },
-    [address, contextMenuActions, walletId]
+    [address, contextMenuActions, walletId, walletLabel]
   );
 
   const RowItem = () => (
