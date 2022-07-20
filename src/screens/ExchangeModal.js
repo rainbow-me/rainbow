@@ -788,6 +788,11 @@ export default function ExchangeModal({
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
             radius={39}
+            style={
+              android && {
+                left: -1,
+              }
+            }
             testID={testID}
           >
             {showOutputField && <ExchangeNotch testID={testID} />}
