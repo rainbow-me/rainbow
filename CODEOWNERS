@@ -30,9 +30,6 @@ src/redux/gas.ts @brunobar79 @estebanmino
 src/redux/nonceManager.ts @derHowie @brunobar79 @estebanmino
 src/redux/hiddenTokens.ts @estrattonbailey
 
-# Hooks
-src/hooks/useHiddenTokens.ts @estrattonbailey
-
 # APP INFRA
 .eslintignore @brunobar79 @osdnk @estebanmino
 .eslintrc.js @brunobar79 @osdnk @estebanmino
