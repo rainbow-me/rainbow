@@ -131,6 +131,7 @@ const GasSpeedButton = ({
   theme = 'dark',
   canGoBack = true,
   validateGasParams,
+  flashbotTransaction = false,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -208,6 +209,7 @@ const GasSpeedButton = ({
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
+      flashbotTransaction,
       focusTo: shouldOpenCustomGasSheet.focusTo,
       openCustomOptions: focusTo => openCustomOptionsRef.current(focusTo),
       speeds: speeds ?? GasSpeedOrder,
@@ -218,6 +220,7 @@ const GasSpeedButton = ({
     navigate,
     asset,
     shouldOpenCustomGasSheet.focusTo,
+    flashbotTransaction,
     speeds,
   ]);
 

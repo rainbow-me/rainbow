@@ -904,6 +904,7 @@ export default function ExchangeModal({
                 asset={outputCurrency}
                 currentNetwork={currentNetwork}
                 dontBlur
+                flashbotTransaction={flashbots}
                 marginBottom={0}
                 marginTop={0}
                 onCustomGasBlur={handleCustomGasBlur}
