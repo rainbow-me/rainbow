@@ -99,6 +99,10 @@ function InputPill(
           style={{ color: colors.dark }}
           testID={testID}
           value={value}
+          {...(android &&
+            color && {
+              selectionColor: colors.alpha(color, 0.4),
+            })}
         />
         <Label>{label}</Label>
       </Row>
