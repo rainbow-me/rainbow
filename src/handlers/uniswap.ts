@@ -51,6 +51,12 @@ const MAX_GAS_LIMIT = 460000;
 const GAS_LIMIT_INCREMENT = 50000;
 const EXTRA_GAS_PADDING = 1.5;
 const CHAIN_IDS_WITH_TRACE_SUPPORT = [ChainId.mainnet];
+const TOKENS_WITH_FIXED_GAS_LIMIT_AFTER_APPROVAL: any = {
+  [ChainId.mainnet]: {
+    // AAVE
+    '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9': 550000,
+  },
+};
 export const getStateDiff = async (
   provider: StaticJsonRpcProvider,
   tradeDetails: Quote
@@ -243,6 +249,13 @@ export const estimateSwapGasLimit = async ({
       );
 
       if (requiresApprove) {
+        const fixedGasLimitAfterApproval =
+          TOKENS_WITH_FIXED_GAS_LIMIT_AFTER_APPROVAL?.[chainId]?.[
+            tradeDetails.sellTokenAddress.toLowerCase()
+          ];
+        if (fixedGasLimitAfterApproval) {
+          return fixedGasLimitAfterApproval;
+        }
         if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
           try {
             const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
