@@ -7,44 +7,6 @@ import { Text } from '@rainbow-me/design-system';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
-const sx = StyleSheet.create({
-  balance: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingLeft: 8,
-  },
-  bottomRow: {
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  column: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 10,
-  },
-  description: {
-    flex: 1,
-  },
-  icon: {
-    justifyContent: 'center',
-  },
-  nativeBalance: {
-    marginLeft: 16,
-  },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  wholeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 19,
-  },
-});
-
 const BottomRow = React.memo(function BottomRow({
   description,
   nativeDisplay,
@@ -164,4 +126,42 @@ export default React.memo(function TransactionCoinRow({
       </View>
     </ButtonPressAnimation>
   );
+});
+
+const sx = StyleSheet.create({
+  balance: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingLeft: 8,
+  },
+  bottomRow: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  column: {
+    flex: 1,
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  description: {
+    flex: 1,
+  },
+  icon: {
+    justifyContent: 'center',
+  },
+  nativeBalance: {
+    marginLeft: 16,
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  wholeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 19,
+  },
 });
