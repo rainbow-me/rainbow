@@ -81,6 +81,13 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
+const DEFAULT_SLIPPAGE_BIPS = {
+  [Network.mainnet]: 100,
+  [Network.polygon]: 200,
+  [Network.optimism]: 200,
+  [Network.arbitrum]: 200,
+};
+
 const NOOP = () => null;
 
 const FloatingPanels = AnimatedExchangeFloatingPanels;
@@ -344,10 +351,13 @@ export default function ExchangeModal({
   }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
 
   useEffect(() => {
-    config.default_slippage_bips?.[currentNetwork] &&
-      dispatch(
-        updateSwapSlippage(config.default_slippage_bips[currentNetwork])
-      );
+    let slippage = 100;
+    if (config.default_slippage_bips?.[currentNetwork]) {
+      slippage = config.default_slippage_bips?.[currentNetwork];
+    } else {
+      slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
+    }
+    dispatch(updateSwapSlippage(slippage));
   }, [currentNetwork, dispatch]);
 
   useEffect(() => {
