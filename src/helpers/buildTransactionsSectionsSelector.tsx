@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { get, groupBy, isEmpty, map, toLower } from 'lodash';
+import { groupBy, isEmpty } from 'lodash';
 import React from 'react';
 import { createSelector } from 'reselect';
 import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
@@ -37,7 +37,7 @@ const addContactInfo = (contacts: any) => (txn: any) => {
   const { from, to, status } = txn;
   const isSent = status === TransactionStatusTypes.sent;
   const contactAddress = isSent ? to : from;
-  const contact = get(contacts, `${[toLower(contactAddress)]}`, null);
+  const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
   return {
     ...txn,
     contact,
@@ -61,7 +61,7 @@ const buildTransactionsSections = (
 
   let sectionedTransactions: any = [];
 
-  const transactionsWithContacts = map(transactions, addContactInfo(contacts));
+  const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
 
   if (!isEmpty(transactionsWithContacts)) {
     const transactionsByDate = groupBy(
