@@ -94,6 +94,7 @@ const WalletListFooter = styled(Column)({
 export default function WalletList({
   accountAddress,
   allWallets,
+  contextMenuActions,
   currentWallet,
   editMode,
   height,
@@ -204,6 +205,7 @@ export default function WalletList({
           return (
             <Column height={item.height}>
               <AddressRow
+                contextMenuActions={contextMenuActions}
                 data={item}
                 editMode={editMode}
                 onEditWallet={onEditWallet}
@@ -216,7 +218,7 @@ export default function WalletList({
           return null;
       }
     },
-    [editMode, onEditWallet, watchOnly]
+    [contextMenuActions, editMode, onEditWallet, watchOnly]
   );
 
   return (

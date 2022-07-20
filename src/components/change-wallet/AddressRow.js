@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
@@ -11,13 +12,22 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
+import useExperimentalFlag, {
+  NOTIFICATIONS,
+} from '@rainbow-me/config/experimentalHooks';
+import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
-import { deviceUtils, profileUtils } from '@rainbow-me/utils';
+import {
+  abbreviations,
+  deviceUtils,
+  profileUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -104,6 +114,7 @@ const OptionsIcon = ({ onPress }) => {
 };
 
 export default function AddressRow({
+  contextMenuActions,
   data,
   editMode,
   onPress,
@@ -123,6 +134,7 @@ export default function AddressRow({
   } = data;
 
   const { colors, isDarkMode } = useTheme();
+  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -151,76 +163,167 @@ export default function AddressRow({
     [colors, isDarkMode]
   );
 
+  const menuConfig = useMemo(() => {
+    return {
+      menuItems: [
+        {
+          actionKey: 'remove',
+          actionTitle: lang.t('wallet.action.remove'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'trash.fill',
+          },
+          menuAttributes: ['destructive'],
+        },
+        {
+          actionKey: 'notifications',
+          actionTitle: lang.t('wallet.action.notifications'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'bell.fill',
+          },
+        },
+        {
+          actionKey: 'edit',
+          actionTitle: lang.t('wallet.action.edit'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'pencil',
+          },
+        },
+      ],
+      menuTitle:
+        cleanedUpLabel ||
+        ens ||
+        abbreviations.formatAddressForDisplay(toChecksumAddress(address), 4, 6),
+    };
+  }, [address, cleanedUpLabel, ens]);
+
+  const onPressAndroidActions = useCallback(() => {
+    const androidActions = [
+      lang.t('settings.theme_section.system'),
+      lang.t('settings.theme_section.light'),
+      lang.t('settings.theme_section.dark'),
+    ];
+
+    showActionSheetWithOptions(
+      {
+        options: androidActions,
+        showSeparators: true,
+        title:
+          cleanedUpLabel ||
+          ens ||
+          abbreviations.formatAddressForDisplay(
+            toChecksumAddress(address),
+            4,
+            6
+          ),
+      },
+      idx => {
+        if (idx === 0) {
+          console.log('hi1');
+        } else if (idx === 1) {
+          console.log('hi2');
+        } else if (idx === 2) {
+          console.log('hi3');
+        }
+      }
+    );
+  }, []);
+
+  const handleSelectMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === 'remove') {
+        contextMenuActions?.remove(walletId, address);
+      } else if (actionKey === 'notifications') {
+        console.log('TEST');
+      } else if (actionKey === 'edit') {
+        contextMenuActions?.edit(walletId, address);
+      }
+    },
+    [address, contextMenuActions, walletId]
+  );
+
+  const RowItem = () => (
+    <ButtonPressAnimation
+      enableHapticFeedback={!editMode}
+      onLongPress={!watchOnly ? onOptionsPress : onPress}
+      onPress={editMode ? onOptionsPress : onPress}
+      scaleTo={editMode ? 1 : 0.98}
+    >
+      <Row align="center">
+        <Row align="center" flex={1} height={59}>
+          {accountImage ? (
+            <ImageAvatar image={accountImage} marginRight={10} size="medium" />
+          ) : (
+            <ContactAvatar
+              color={accountColor}
+              marginRight={10}
+              size="medium"
+              value={
+                returnStringFirstEmoji(label) ||
+                profileUtils.addressHashedEmoji(address) ||
+                label ||
+                ens
+              }
+            />
+          )}
+          <ColumnWithMargins margin={android ? -6 : 3}>
+            {cleanedUpLabel || ens ? (
+              <StyledTruncatedText color={colors.dark}>
+                {cleanedUpLabel || ens}
+              </StyledTruncatedText>
+            ) : (
+              <TruncatedAddress
+                address={address}
+                color={colors.dark}
+                firstSectionLength={6}
+                size="smaller"
+                style={sx.accountLabel}
+                truncationLength={4}
+                weight="medium"
+              />
+            )}
+            <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+              {cleanedUpBalance || 0} ETH
+            </StyledBottomRowText>
+          </ColumnWithMargins>
+        </Row>
+        <Column style={sx.rightContent}>
+          {isReadOnly && (
+            <LinearGradient
+              {...linearGradientProps}
+              marginRight={editMode || isSelected ? -9 : 19}
+            >
+              <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+                {lang.t('wallet.change_wallet.watching')}
+              </ReadOnlyText>
+            </LinearGradient>
+          )}
+          {!editMode && isSelected && (
+            <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
+          )}
+          {editMode && <OptionsIcon onPress={NOOP} />}
+        </Column>
+      </Row>
+    </ButtonPressAnimation>
+  );
+
   return (
     <View style={sx.accountRow}>
-      <ButtonPressAnimation
-        enableHapticFeedback={!editMode}
-        onLongPress={!watchOnly ? onOptionsPress : onPress}
-        onPress={editMode ? onOptionsPress : onPress}
-        scaleTo={editMode ? 1 : 0.98}
-      >
-        <Row align="center">
-          <Row align="center" flex={1} height={59}>
-            {accountImage ? (
-              <ImageAvatar
-                image={accountImage}
-                marginRight={10}
-                size="medium"
-              />
-            ) : (
-              <ContactAvatar
-                color={accountColor}
-                marginRight={10}
-                size="medium"
-                value={
-                  returnStringFirstEmoji(label) ||
-                  profileUtils.addressHashedEmoji(address) ||
-                  label ||
-                  ens
-                }
-              />
-            )}
-            <ColumnWithMargins margin={android ? -6 : 3}>
-              {cleanedUpLabel || ens ? (
-                <StyledTruncatedText color={colors.dark}>
-                  {cleanedUpLabel || ens}
-                </StyledTruncatedText>
-              ) : (
-                <TruncatedAddress
-                  address={address}
-                  color={colors.dark}
-                  firstSectionLength={6}
-                  size="smaller"
-                  style={sx.accountLabel}
-                  truncationLength={4}
-                  weight="medium"
-                />
-              )}
-              <StyledBottomRowText
-                color={colors.alpha(colors.blueGreyDark, 0.5)}
-              >
-                {cleanedUpBalance || 0} ETH
-              </StyledBottomRowText>
-            </ColumnWithMargins>
-          </Row>
-          <Column style={sx.rightContent}>
-            {isReadOnly && (
-              <LinearGradient
-                {...linearGradientProps}
-                marginRight={editMode || isSelected ? -9 : 19}
-              >
-                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                  {lang.t('wallet.change_wallet.watching')}
-                </ReadOnlyText>
-              </LinearGradient>
-            )}
-            {!editMode && isSelected && (
-              <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
-            )}
-            {editMode && <OptionsIcon onPress={NOOP} />}
-          </Column>
-        </Row>
-      </ButtonPressAnimation>
+      {notificationsEnabled && editMode ? (
+        <ContextMenuButton
+          menuConfig={menuConfig}
+          {...(android ? { onPress: onPressAndroidActions } : {})}
+          isMenuPrimaryAction
+          onPressMenuItem={handleSelectMenuItem}
+          useActionSheetFallback={false}
+        >
+          <RowItem />
+        </ContextMenuButton>
+      ) : (
+        <RowItem />
+      )}
     </View>
   );
 }

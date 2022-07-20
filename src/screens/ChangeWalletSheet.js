@@ -26,7 +26,11 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import {
+  NOTIFICATIONS,
+  PROFILES,
+  useExperimentalFlag,
+} from '@rainbow-me/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -106,6 +110,7 @@ const getWalletRowCount = wallets => {
 export default function ChangeWalletSheet() {
   const { params = {} } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
+  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
   const {
     isDamaged,
     selectedWallet,
@@ -297,8 +302,17 @@ export default function ChangeWalletSheet() {
     ]
   );
 
-  const onEditWallet = useCallback(
-    (walletId, address, label) => {
+  const onPressEdit = useCallback(
+    (walletId, address) => {
+      analytics.track('Tapped "Edit Wallet"');
+      renameWallet(walletId, address);
+    },
+    [renameWallet]
+  );
+
+  const onPressRemove = useCallback(
+    (walletId, address) => {
+      analytics.track('Tapped "Delete Wallet"');
       // If there's more than 1 account
       // it's deletable
       let isLastAvailableWallet = false;
@@ -313,7 +327,53 @@ export default function ChangeWalletSheet() {
           break;
         }
       }
+      // Delete wallet with confirmation
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: 1,
+          destructiveButtonIndex: 0,
+          message: notificationsEnabled
+            ? lang.t('wallet.action.remove_confirm')
+            : lang.t('wallet.action.delete_confirm'),
+          options: [
+            notificationsEnabled
+              ? lang.t('wallet.action.remove')
+              : lang.t('wallet.action.delete'),
+            lang.t('button.cancel'),
+          ],
+        },
+        async buttonIndex => {
+          if (buttonIndex === 0) {
+            analytics.track('Tapped "Delete Wallet" (final confirm)');
+            await deleteWallet(walletId, address);
+            ReactNativeHapticFeedback.trigger('notificationSuccess');
+            if (!isLastAvailableWallet) {
+              await cleanUpWalletKeys();
+              goBack();
+              navigate(Routes.WELCOME_SCREEN);
+            } else {
+              // If we're deleting the selected wallet
+              // we need to switch to another one
+              if (address === currentAddress) {
+                const { wallet: foundWallet, key } =
+                  doesWalletsContainAddress({
+                    address: address,
+                    wallets,
+                  }) || {};
+                if (foundWallet) {
+                  await onChangeAccount(key, foundWallet.address, true);
+                }
+              }
+            }
+          }
+        }
+      );
+    },
+    [currentAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
+  );
 
+  const onEditWallet = useCallback(
+    (walletId, address, label) => {
       const buttons = [lang.t('wallet.action.edit')];
       buttons.push(lang.t('wallet.action.delete'));
       buttons.push(lang.t('button.cancel'));
@@ -328,60 +388,15 @@ export default function ChangeWalletSheet() {
         buttonIndex => {
           if (buttonIndex === 0) {
             // Edit wallet
-            analytics.track('Tapped "Edit Wallet"');
-            renameWallet(walletId, address);
+            onPressEdit(walletId, address);
           } else if (buttonIndex === 1) {
-            analytics.track('Tapped "Delete Wallet"');
-            // Delete wallet with confirmation
-            showActionSheetWithOptions(
-              {
-                cancelButtonIndex: 1,
-                destructiveButtonIndex: 0,
-                message: lang.t('wallet.action.delete_confirm'),
-                options: [
-                  lang.t('wallet.action.delete'),
-                  lang.t('button.cancel'),
-                ],
-              },
-              async buttonIndex => {
-                if (buttonIndex === 0) {
-                  analytics.track('Tapped "Delete Wallet" (final confirm)');
-                  await deleteWallet(walletId, address);
-                  ReactNativeHapticFeedback.trigger('notificationSuccess');
-                  if (!isLastAvailableWallet) {
-                    await cleanUpWalletKeys();
-                    goBack();
-                    navigate(Routes.WELCOME_SCREEN);
-                  } else {
-                    // If we're deleting the selected wallet
-                    // we need to switch to another one
-                    if (address === currentAddress) {
-                      const { wallet: foundWallet, key } =
-                        doesWalletsContainAddress({
-                          address: address,
-                          wallets,
-                        }) || {};
-                      if (foundWallet) {
-                        await onChangeAccount(key, foundWallet.address, true);
-                      }
-                    }
-                  }
-                }
-              }
-            );
+            // Remove wallet
+            onPressRemove(walletId, address);
           }
         }
       );
     },
-    [
-      currentAddress,
-      deleteWallet,
-      goBack,
-      onChangeAccount,
-      renameWallet,
-      navigate,
-      wallets,
-    ]
+    [onPressEdit, onPressRemove]
   );
 
   const onPressAddAccount = useCallback(async () => {
@@ -542,6 +557,7 @@ export default function ChangeWalletSheet() {
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
+        contextMenuActions={{ edit: onPressEdit, remove: onPressRemove }}
         currentWallet={currentSelectedWallet}
         editMode={editMode}
         height={listHeight}
