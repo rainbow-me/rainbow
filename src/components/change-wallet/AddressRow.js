@@ -113,6 +113,12 @@ const OptionsIcon = ({ onPress }) => {
   );
 };
 
+const ContextMenuKeys = {
+  Edit: 'edit',
+  Notifications: 'notifications',
+  Remove: 'remove',
+};
+
 export default function AddressRow({
   contextMenuActions,
   data,
@@ -172,7 +178,7 @@ export default function AddressRow({
     return {
       menuItems: [
         {
-          actionKey: 'remove',
+          actionKey: ContextMenuKeys.Remove,
           actionTitle: lang.t('wallet.action.remove'),
           icon: {
             iconType: 'SYSTEM',
@@ -181,7 +187,7 @@ export default function AddressRow({
           menuAttributes: ['destructive'],
         },
         {
-          actionKey: 'notifications',
+          actionKey: ContextMenuKeys.Notifications,
           actionTitle: lang.t('wallet.action.notifications'),
           icon: {
             iconType: 'SYSTEM',
@@ -189,7 +195,7 @@ export default function AddressRow({
           },
         },
         {
-          actionKey: 'edit',
+          actionKey: ContextMenuKeys.Edit,
           actionTitle: lang.t('wallet.action.edit'),
           icon: {
             iconType: 'SYSTEM',
@@ -203,37 +209,46 @@ export default function AddressRow({
 
   const onPressAndroidActions = useCallback(() => {
     const androidActions = [
-      lang.t('settings.theme_section.system'),
-      lang.t('settings.theme_section.light'),
-      lang.t('settings.theme_section.dark'),
+      lang.t('wallet.action.edit'),
+      lang.t('wallet.action.notifications'),
+      lang.t('wallet.action.remove'),
+      lang.t('wallet.action.cancel'),
     ];
 
     showActionSheetWithOptions(
       {
+        cancelButtonIndex: 3,
+        destructiveButtonIndex: 2,
         options: androidActions,
         showSeparators: true,
         title: walletLabel,
       },
       idx => {
         if (idx === 0) {
-          console.log('hi1');
+          contextMenuActions?.edit(walletId, address);
         } else if (idx === 1) {
-          console.log('hi2');
+          contextMenuActions?.notifications(walletLabel);
         } else if (idx === 2) {
-          console.log('hi3');
+          contextMenuActions?.remove(walletId, address);
         }
       }
     );
-  }, [walletLabel]);
+  }, [address, contextMenuActions, walletId, walletLabel]);
 
   const handleSelectMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === 'remove') {
-        contextMenuActions?.remove(walletId, address);
-      } else if (actionKey === 'notifications') {
-        contextMenuActions?.notifications(walletLabel);
-      } else if (actionKey === 'edit') {
-        contextMenuActions?.edit(walletId, address);
+      switch (actionKey) {
+        case ContextMenuKeys.Remove:
+          contextMenuActions?.remove(walletId, address);
+          break;
+        case ContextMenuKeys.Notifications:
+          contextMenuActions?.notifications(walletLabel);
+          break;
+        case ContextMenuKeys.Edit:
+          contextMenuActions?.edit(walletId, address);
+          break;
+        default:
+          break;
       }
     },
     [address, contextMenuActions, walletId, walletLabel]

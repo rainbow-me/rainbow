@@ -380,7 +380,15 @@ export default function ChangeWalletSheet() {
         }
       );
     },
-    [currentAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
+    [
+      currentAddress,
+      deleteWallet,
+      goBack,
+      navigate,
+      notificationsEnabled,
+      onChangeAccount,
+      wallets,
+    ]
   );
 
   const onEditWallet = useCallback(
