@@ -1,9 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import { delay } from '@rainbow-me/helpers/utilities';
 import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -50,7 +52,7 @@ export default function WalletProfileState({
     }
   }, [actionType, goBack, navigate]);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     onCloseModal({
       color:
@@ -60,12 +62,13 @@ export default function WalletProfileState({
       image: profileImage,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
-    const callback = () => {
+    const callback = async () => {
       goBack();
       if (actionType === 'Create' && isNewProfile) {
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
     };
+    IS_TESTING && (await delay(2000));
     if (ios || actionType !== 'Create') {
       callback();
     } else {
