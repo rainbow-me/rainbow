@@ -289,7 +289,7 @@ const portfolioSubscription = (
  * @param action The API action.
  * @returns Arguments for an `emit` function call.
  */
-const mainnetAssetDisovery = (
+const mainnetAssetDiscovery = (
   address: string,
   currency: string,
   action = 'get'
@@ -653,7 +653,7 @@ export const emitMainnetAssetDiscoveryRequest = (
 ) => {
   const { addressSocket } = getState().explorer;
   const { accountAddress, nativeCurrency } = getState().settings;
-  addressSocket!.emit(...mainnetAssetDisovery(accountAddress, nativeCurrency));
+  addressSocket!.emit(...mainnetAssetDiscovery(accountAddress, nativeCurrency));
 };
 
 /**

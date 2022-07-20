@@ -14,6 +14,7 @@ import { sanitizeSeedPhrase } from '@rainbow-me/utils';
 const supportedUnstoppableDomains = [
   '888',
   'bitcoin',
+  'blockchain',
   'coin',
   'crypto',
   'dao',

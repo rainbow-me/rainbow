@@ -185,6 +185,7 @@ const SavingsSheet = () => {
                 label={`􀁏 ${lang.t('savings.withdraw')}`}
                 onPress={onWithdraw}
                 radiusAndroid={24}
+                testID="withdraw"
                 weight="heavy"
               />
               <SheetActionButton
@@ -192,6 +193,7 @@ const SavingsSheet = () => {
                 label={`􀁍 ${lang.t('savings.deposit')}`}
                 onPress={onDeposit}
                 radiusAndroid={24}
+                testID="deposit"
                 weight="heavy"
               />
             </SheetActionButtonRow>

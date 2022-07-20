@@ -1,14 +1,17 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import Animated from 'react-native-reanimated';
-import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
-import { useMemoOne } from 'use-memo-one';
-import { ButtonPressAnimation, interpolate } from '../../animations';
+import Animated, {
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { ButtonPressAnimation } from '../../animations';
 import { Text, TruncatedAddress } from '../../text';
 import SwapDetailsRow from './SwapDetailsRow';
-import { useForegroundColor } from '@rainbow-me/design-system';
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
@@ -69,24 +72,39 @@ function SwapDetailsContractRowContent({
   scaleTo = 1.06,
   ...props
 }) {
-  const defaultColor = useForegroundColor('secondary80');
+  const { colors } = useTheme();
   const colorForAsset = useColorForAsset(asset);
-  const animation = useTimingTransition(menuVisible, { duration: 80 });
-  const animationColor = useTimingTransition(menuVisible, { duration: 250 });
-  const { addressColor, scale } = useMemoOne(
-    () => ({
-      addressColor: mixColor(animationColor, defaultColor, colorForAsset),
-      scale: interpolate(animation, {
-        inputRange: [0, 1],
-        outputRange: [1, scaleTo],
-      }),
-    }),
-    [animation, colorForAsset, scaleTo]
-  );
+  const animation = useSharedValue(menuVisible ? 1 : 0);
+  const startingColor = useMemo(() => colors.alpha(colors.blueGreyDark, 0.8), [
+    colors,
+  ]);
+
+  useLayoutEffect(() => {
+    animation.value = withTiming(menuVisible ? 1 : 0, { duration: 150 });
+  }, [menuVisible, animation]);
+
+  const colorStyle = useAnimatedStyle(() => {
+    const color = interpolateColor(
+      animation.value,
+      [0, 1],
+      [startingColor, colorForAsset]
+    );
+    return {
+      color,
+    };
+  }, [animation, colorForAsset]);
+
+  const scaleStyle = useAnimatedStyle(() => {
+    const scale = interpolate(animation.value, [0, 1], [1, scaleTo]);
+
+    return {
+      transform: [{ scale }],
+    };
+  });
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
-      <ButtonPressAnimation scaleTo={scaleTo} {...props}>
+    <Animated.View style={scaleStyle}>
+      <ButtonPressAnimation scaleTo={1} {...props}>
         <SwapDetailsRow
           label={lang.t('expanded_state.swap_details.token_contract', {
             token: asset?.symbol,
@@ -95,12 +113,12 @@ function SwapDetailsContractRowContent({
           <SwapDetailsValue
             address={asset?.address}
             as={AnimatedTruncatedAddress}
-            color={addressColor}
             firstSectionLength={6}
+            style={colorStyle}
           />
           <SwapDetailsValue
             as={AnimatedText}
-            color={addressColor}
+            style={colorStyle}
           >{` 􀍡`}</SwapDetailsValue>
         </SwapDetailsRow>
       </ButtonPressAnimation>
@@ -121,6 +139,7 @@ export default function SwapDetailsContractRow({
     },
     [onCopySwapDetailsText, setClipboard]
   );
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const menuConfig = useMemo(() => {
     const blockExplorerAction = buildBlockExplorerAction(asset?.type);
@@ -176,15 +195,16 @@ export default function SwapDetailsContractRow({
     );
   }, [asset, handleCopyContractAddress]);
 
-  const [menuVisible, setMenuVisible] = useState(false);
+  const onShowMenu = () => setMenuVisible(true);
+  const onHideMenu = () => setMenuVisible(false);
 
   return (
     <ContextMenuButton
       activeOpacity={1}
       isMenuPrimaryAction
       menuConfig={menuConfig}
-      onMenuWillHide={() => setMenuVisible(false)}
-      onMenuWillShow={() => setMenuVisible(true)}
+      onMenuWillHide={onHideMenu}
+      onMenuWillShow={onShowMenu}
       {...(android ? { onPress: onPressAndroid } : {})}
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}

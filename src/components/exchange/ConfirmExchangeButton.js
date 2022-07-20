@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useReducer } from 'react';
 import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
@@ -32,9 +32,10 @@ export default function ConfirmExchangeButton({
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
-  const { isSufficientGas, isValidGas } = useGas();
+  const { isSufficientGas, isValidGas, isGasReady } = useGas();
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
+  const [swapSubmitted, setSwapSubmitted] = useReducer(() => true, false);
 
   const isSavings =
     type === ExchangeModalTypes.withdrawal ||
@@ -100,6 +101,8 @@ export default function ConfirmExchangeButton({
   ]);
 
   let label = '';
+  const loadingQuote = loading || (!loading && !isGasReady);
+
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
   } else if (type === ExchangeModalTypes.swap) {
@@ -107,8 +110,7 @@ export default function ConfirmExchangeButton({
   } else if (type === ExchangeModalTypes.withdrawal) {
     label = lang.t('button.confirm_exchange.withdraw');
   }
-
-  if (loading) {
+  if (loadingQuote) {
     label = lang.t('button.confirm_exchange.fetching_quote');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
@@ -145,27 +147,34 @@ export default function ConfirmExchangeButton({
     !isValidGas ||
     !isSufficientGas;
 
+  const onSwap = useCallback(() => {
+    onSubmit();
+    setSwapSubmitted();
+  }, [onSubmit, setSwapSubmitted]);
+
   return (
     <Box>
       <Rows alignHorizontal="center" alignVertical="bottom" space="8px">
         <Row height="content">
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
-            disableLongPress={shouldOpenSwapDetails && !insufficientLiquidity}
+            disableLongPress={
+              (shouldOpenSwapDetails && !insufficientLiquidity) || loading
+            }
             disableShimmerAnimation={insufficientLiquidity}
             disabled={isDisabled && !insufficientLiquidity}
             disabledBackgroundColor={disabledButtonColor}
             hideInnerBorder
             label={label}
-            loading={loading}
+            loading={loadingQuote}
             onLongPress={
-              loading
+              loading || swapSubmitted
                 ? NOOP
                 : insufficientLiquidity
                 ? handleShowLiquidityExplainer
                 : shouldOpenSwapDetails
                 ? onPressViewDetails
-                : onSubmit
+                : onSwap
             }
             shadows={
               isSwapDetailsRoute

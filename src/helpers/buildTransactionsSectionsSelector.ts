@@ -29,8 +29,11 @@ const groupTransactionByDate = ({ pending, minedAt }: any) => {
   if (ts > todayTimestamp) return 'Today';
   if (ts > yesterdayTimestamp) return 'Yesterday';
   if (ts > thisMonthTimestamp) return 'This Month';
-
-  return format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`);
+  try {
+    return format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`);
+  } catch (e) {
+    return 'Dropped';
+  }
 };
 
 const addContactInfo = (contacts: any) => (txn: any) => {
@@ -64,11 +67,13 @@ const buildTransactionsSections = (
       transactionsWithContacts,
       groupTransactionByDate
     );
-    sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
-      data: transactionsByDate[section],
-      renderItem: renderItemElement(TransactionCoinRow),
-      title: section,
-    }));
+    sectionedTransactions = Object.keys(transactionsByDate)
+      .filter(section => section !== 'Dropped')
+      .map(section => ({
+        data: transactionsByDate[section],
+        renderItem: renderItemElement(TransactionCoinRow),
+        title: section,
+      }));
     const pendingSectionIndex = sectionedTransactions.findIndex(
       // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'title' implicitly has an 'any' ty... Remove this comment to see the full error message
       ({ title }) => title === 'Pending'
@@ -93,7 +98,7 @@ const buildTransactionsSections = (
     ];
   }
   return {
-    sections: [...requestsToApprove, ...sectionedTransactions],
+    sections: requestsToApprove.concat(sectionedTransactions),
   };
 };
 

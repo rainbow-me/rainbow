@@ -1,7 +1,7 @@
 import { ChainId } from '@rainbow-me/swaps';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { toLower, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
@@ -13,6 +13,7 @@ import React, {
 } from 'react';
 import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
+import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import { useTheme } from 'styled-components';
@@ -26,15 +27,17 @@ import {
 import NetworkSwitcher from '../components/exchange/NetworkSwitcher';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
+import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import { CurrencySelectionTypes } from '@rainbow-me/helpers';
+import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
+  useSwapCurrencies,
   useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
@@ -51,6 +54,12 @@ import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils, filterList } from '@rainbow-me/utils';
 
+const storage = new MMKV();
+const getHasShownWarning = () =>
+  storage.getBoolean(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING);
+const setHasShownWarning = () =>
+  storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
+
 const TabTransitionAnimation = styled(Animated.View)(
   position.sizeAsObject('100%')
 );
@@ -62,7 +71,7 @@ const searchWalletCurrencyList = (searchList, query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
 
   if (isAddress) {
-    const formattedQuery = toLower(addHexPrefix(query));
+    const formattedQuery = addHexPrefix(query).toLowerCase();
     return filterList(searchList, formattedQuery, ['address'], {
       threshold: matchSorter.rankings.CASE_SENSITIVE_EQUAL,
     });
@@ -128,6 +137,37 @@ export default function CurrencySelectModal() {
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
 
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
+  const checkForSameNetwork = useCallback(
+    (newAsset, selectAsset, type) => {
+      const otherAsset = type === 'input' ? outputCurrency : inputCurrency;
+      const hasShownWarning = getHasShownWarning();
+      if (
+        otherAsset &&
+        newAsset?.type !== otherAsset?.type &&
+        !hasShownWarning
+      ) {
+        Keyboard.dismiss();
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.EXPLAIN_SHEET, {
+            network: newAsset?.type
+              ? ethereumUtils.getNetworkFromType(newAsset?.type)
+              : Network.mainnet,
+            onClose: () => {
+              setHasShownWarning();
+              selectAsset();
+            },
+            type: 'swapResetInputs',
+          });
+        });
+
+        return true;
+      }
+      return false;
+    },
+    [inputCurrency, navigate, outputCurrency]
+  );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const routeName = getActiveRoute()?.name;
   const showList = useMemo(() => {
@@ -300,26 +340,42 @@ export default function CurrencySelectModal() {
   const handleSelectAsset = useCallback(
     item => {
       if (checkForRequiredAssets(item)) return;
-      dispatch(emitChartsRequest(item.mainnet_address || item.address));
-      dispatch(emitAssetRequest(item.mainnet_address || item.address));
+
       const isMainnet = currentChainId === 1;
-      setIsTransitioning(true); // continue to display list during transition
-      callback?.();
-      onSelectCurrency(
+      const assetWithType =
         isMainnet && type === CurrencySelectionTypes.output
           ? { ...item, type: 'token' }
-          : item,
-        handleNavigate
-      );
+          : item;
+
+      const selectAsset = () => {
+        dispatch(emitChartsRequest(item.mainnet_address || item.address));
+        dispatch(emitAssetRequest(item.mainnet_address || item.address));
+        setIsTransitioning(true); // continue to display list during transition
+        callback?.();
+        onSelectCurrency(assetWithType, handleNavigate);
+      };
+      if (
+        checkForSameNetwork(
+          assetWithType,
+          selectAsset,
+          type === CurrencySelectionTypes.output
+            ? CurrencySelectionTypes.output
+            : CurrencySelectionTypes.input
+        )
+      )
+        return;
+
+      selectAsset();
     },
     [
-      dispatch,
       checkForRequiredAssets,
+      checkForSameNetwork,
+      dispatch,
       currentChainId,
+      callback,
       onSelectCurrency,
       type,
       handleNavigate,
-      callback,
     ]
   );
 
@@ -394,7 +450,7 @@ export default function CurrencySelectModal() {
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
   const style = useAnimatedStyle(() => ({
-    opacity: scrollPosition.value,
+    opacity: android ? 1 : scrollPosition.value,
     transform: [
       { scale: 0.9 + scrollPosition.value / 10 },
       { translateX: (1 - scrollPosition.value) * 8 },
@@ -440,6 +496,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
+                footerSpacer={android}
                 itemProps={itemProps}
                 listItems={currencyList}
                 loading={swapCurrencyListLoading}

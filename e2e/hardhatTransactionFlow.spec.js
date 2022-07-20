@@ -156,6 +156,35 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
+  it('Should deposit DAI (via Compound)', async () => {
+    await Helpers.tap('Savings-list-header');
+    await Helpers.waitAndTap('savings-list-row-DAI');
+    await Helpers.waitAndTap('deposit-action-button');
+    await Helpers.typeText('deposit-modal-input', '5', true);
+    await Helpers.tapAndLongPress('deposit-modal-confirm-button');
+    await acceptAlertIfGasPriceIsHigh();
+    try {
+      await Helpers.checkIfVisible('Deposited-Dai-5.00 DAI');
+    } catch (e) {
+      await Helpers.checkIfVisible('Depositing-Dai-5.00 DAI');
+    }
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should withdraw DAI (via Compound)', async () => {
+    await Helpers.waitAndTap('savings-list-row-DAI');
+    await Helpers.waitAndTap('withdraw-action-button');
+    await Helpers.typeText('withdraw-modal-input', '1', true);
+    await Helpers.tapAndLongPress('withdraw-modal-confirm-button');
+    await acceptAlertIfGasPriceIsHigh();
+    try {
+      await Helpers.checkIfVisible('Withdrew-Dai-1.00 DAI');
+    } catch (e) {
+      await Helpers.checkIfVisible('Withdrawing-Dai-1.00 DAI');
+    }
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
   it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');

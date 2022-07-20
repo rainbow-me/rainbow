@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.6.14-1",
+  "version": "1.6.17-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
@@ -79,7 +79,7 @@
     "@metamask/eth-sig-util": "4.0.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/react-native-payments": "1.1.5",
-    "@rainbow-me/swaps": "0.1.8",
+    "@rainbow-me/swaps": "0.1.9",
     "@react-native-community/async-storage": "1.12.1",
     "@react-native-community/blur": "3.6.0",
     "@react-native-community/cameraroll": "4.1.2",
@@ -220,6 +220,7 @@
     "react-native-safe-area-context": "0.5.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
     "react-native-screens": "2.9.0",
+    "react-native-section-list-get-item-layout": "2.2.3",
     "react-native-splash-screen": "3.2.0",
     "react-native-storage": "1.0.1",
     "react-native-store-review": "0.1.5",
@@ -356,7 +357,7 @@
     "**/y18n": "5.0.5",
     "**/yargs-parser": "20.2.5",
     "**/@hapi/hoek": "8.5.1",
-    "**/glob-parent": "6.0.0",
+    "**/glob-parent": "6.0.2",
     "**/merge-deep": "3.0.3",
     "**/moment": "2.29.4",
     "**/css-what": "5.0.1",
