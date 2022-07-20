@@ -13,6 +13,7 @@ import { ListHeaderHeight } from '../list/ListHeader';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
+import RecyclerActivityList from './RecyclerActivityList';
 import styled from '@rainbow-me/styled-components';
 
 const sx = StyleSheet.create({
@@ -88,8 +89,12 @@ const ActivityList = ({
   sections,
   requests,
   transactionsCount,
+  addCashAvailable,
   isEmpty,
+  isLoading,
+  navigation,
   network,
+  recyclerListView,
   nextPage,
   remainingItemsLabel,
 }) => {
@@ -110,7 +115,16 @@ const ActivityList = ({
   );
 
   return network === networkTypes.mainnet || sections.length ? (
-    isEmpty ? (
+    recyclerListView ? (
+      <RecyclerActivityList
+        addCashAvailable={addCashAvailable}
+        header={header}
+        isEmpty={isEmpty}
+        isLoading={isLoading}
+        navigation={navigation}
+        sections={sections}
+      />
+    ) : isEmpty ? (
       <ActivityListEmptyState>{header}</ActivityListEmptyState>
     ) : (
       <SectionList

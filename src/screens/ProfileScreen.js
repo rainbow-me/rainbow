@@ -28,7 +28,7 @@ const ProfileScreenPage = styled(Page)({
   flex: 1,
 });
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const { colors } = useTheme();
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
@@ -116,6 +116,7 @@ export default function ProfileScreen() {
         />
       ) : (
         <ActivityList
+          addCashAvailable={addCashAvailable}
           header={
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
@@ -123,7 +124,10 @@ export default function ProfileScreen() {
             />
           }
           isEmpty={isEmpty}
+          isLoading={isLoading}
+          navigation={navigation}
           network={network}
+          recyclerListView={ios}
           sections={sections}
           {...accountTransactions}
         />
