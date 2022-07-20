@@ -903,6 +903,7 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
     const [latestTx] = txSortedByDescendingNonce;
     const { address_from, nonce } = latestTx;
     if (nonce) {
+      // @ts-ignore-next-line
       dispatch(incrementNonce(address_from!, nonce, network));
     }
   }
@@ -925,6 +926,7 @@ const checkForRemovedNonce = (removedTransactions: RainbowTransaction[]) => (
       .sort(({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0));
     const [lowestNonceTx] = txSortedByAscendingNonce;
     const { nonce } = lowestNonceTx;
+    // @ts-ignore-next-line
     dispatch(decrementNonce(accountAddress, nonce!, network));
   }
 };
@@ -1505,6 +1507,7 @@ export const dataAddNewTransaction = (
     saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
     if (parsedTransaction.from && parsedTransaction.nonce) {
       dispatch(
+        // @ts-ignore-next-line
         incrementNonce(
           parsedTransaction.from,
           parsedTransaction.nonce,
@@ -1660,7 +1663,7 @@ export const dataWatchPendingTransactions = (
             // Make sure it wasn't dropped after 25 blocks or never made it
             if (
               fbResponse.status === 'FAILED' ||
-              fbResponse.status === 'UNKNOWN'
+              fbResponse.status === 'CANCELLED'
             ) {
               txStatusesDidChange = true;
               updatedPending.status = TransactionStatus.dropped;
@@ -1674,6 +1677,7 @@ export const dataWatchPendingTransactions = (
               const minedAt = Math.floor(Date.now() / 1000);
               updatedPending.minedAt = minedAt;
               // decrement the nonce since it was dropped
+              // @ts-ignore-next-line
               dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
             }
           }

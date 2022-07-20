@@ -289,9 +289,11 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentNetwork);
       const updateProvider = async () => {
         let provider;
-        if (currentNetwork.type === Network.mainnet && tx.flashbots) {
+        if (tx.network === Network.mainnet && tx.flashbots) {
+          logger.debug('using flashbots provider');
           provider = await getFlashbotsProvider();
         } else {
+          logger.debug('using normal provider');
           provider = await getProviderForNetwork(currentNetwork);
         }
         setCurrentProvider(provider);
@@ -303,7 +305,13 @@ export default function SpeedUpAndCancelSheet() {
         stopPollingGasFees();
       };
     }
-  }, [currentNetwork, startPollingGasFees, stopPollingGasFees, tx.flashbots]);
+  }, [
+    currentNetwork,
+    startPollingGasFees,
+    stopPollingGasFees,
+    tx.flashbots,
+    tx.network,
+  ]);
 
   // Update gas limit
   useEffect(() => {
