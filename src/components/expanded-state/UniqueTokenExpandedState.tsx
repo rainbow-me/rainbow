@@ -242,6 +242,7 @@ const UniqueTokenExpandedState = ({
     isSendable,
     lastPrice,
     lastSalePaymentToken,
+    marketplaceName,
     traits,
     uniqueId,
     urlSuffixForAsset,
@@ -484,11 +485,12 @@ const UniqueTokenExpandedState = ({
                             // @ts-expect-error JavaScript component
                             label={
                               hasSendButton
-                                ? `􀮶 ${lang.t(
-                                    'expanded_state.unique_expanded.opensea'
-                                  )}`
+                                ? `􀮶 ${marketplaceName}`
                                 : `􀮶 ${lang.t(
-                                    'expanded_state.unique_expanded.view_on_opensea'
+                                    'expanded_state.unique_expanded.view_on_marketplace_name',
+                                    {
+                                      marketplaceName,
+                                    }
                                   )}`
                             }
                             nftShadows

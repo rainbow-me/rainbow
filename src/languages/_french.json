@@ -468,8 +468,7 @@
           "image_download_permission": "Image Download Permission :)",
           "nft_image": "NFT image :)",
           "your_permission_is_required": "Your permission is required to save images to your device :)"
-        },
-        "view_on_opensea": "View on OpenSea :)"
+        }
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName} :)",
@@ -506,7 +505,7 @@
         "view_all_with_property": "View All with Property :)",
         "view_collection": "View Collection :)",
         "view_on_block_explorer": "View on %{blockExplorerName} :)",
-        "view_on_opensea": "View on Opensea :)",
+        "view_on_marketplace_name": "View on %{marketplaceName} :)",
         "view_on_platform": "View on %{platform} :)",
         "view_on_web": "View on Web :)"
       }
