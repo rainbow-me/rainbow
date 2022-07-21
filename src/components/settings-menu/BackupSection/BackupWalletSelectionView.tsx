@@ -12,7 +12,7 @@ import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { abbreviations } from '@rainbow-me/utils';
 
-const WalletSelectionViewV2 = () => {
+const BackupWalletSelectionView = () => {
   const { navigate } = useNavigation();
   const { walletNames, wallets } = useWallets();
   const { manageCloudBackups } = useManageCloudBackups();
@@ -152,4 +152,4 @@ const WalletSelectionViewV2 = () => {
   );
 };
 
-export default WalletSelectionViewV2;
+export default BackupWalletSelectionView;

@@ -18,9 +18,9 @@ import {
   SettingsSection,
   WalletNotificationsSettings,
 } from '../components/settings-menu';
+import BackupWalletSelectionView from '../components/settings-menu/BackupSection/BackupWalletSelectionView';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
-import WalletSelectionViewV2 from '../components/settings-menu/BackupSection/WalletSelectionViewV2';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
@@ -125,7 +125,7 @@ export default function SettingsSheet() {
             key => wallets[key].type !== WalletTypes.readOnly
           ).length > 1
         ) {
-          route = 'WalletSelectionView';
+          route = 'BackupWalletSelectionView';
         } else {
           if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
             paramsToPass.imported = true;
@@ -224,8 +224,8 @@ export default function SettingsSheet() {
           )}
 
           <Stack.Screen
-            component={WalletSelectionViewV2}
-            name="WalletSelectionView"
+            component={BackupWalletSelectionView}
+            name="BackupWalletSelectionView"
             options={{
               cardStyleInterpolator,
               title: lang.t('settings.backup'),
