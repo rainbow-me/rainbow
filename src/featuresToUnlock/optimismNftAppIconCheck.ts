@@ -19,6 +19,8 @@ const OP_WRAPPER_ADDRESS = {
 
 const CURRENT_NETWORK = 'op-kovan';
 
+export const UNLOCK_KEY_OPTIMISM_NFT_APP_ICON = 'optimism_nft_app_icon';
+
 // This is a temp fix while we still use kovan optimism for testing.
 // Will be removed before release
 

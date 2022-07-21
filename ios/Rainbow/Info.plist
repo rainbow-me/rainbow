@@ -14,13 +14,22 @@
 	<dict>
 		<key>CFBundleAlternateIcons</key>
 		<dict>
-			<key>joy</key>
+			<key>pixel</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>
 				<false/>
 				<key>CFBundleIconFiles</key>
 				<array>
-					<string>joy</string>
+					<string>pixel</string>
+				</array>
+			</dict>
+			<key>optimism</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>optimism</string>
 				</array>
 			</dict>
 			<key>og</key>

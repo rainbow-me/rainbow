@@ -1,44 +1,46 @@
 import React, { useCallback } from 'react';
+import { MMKV } from 'react-native-mmkv';
 import { RadioList, RadioListItem } from '../radio-list';
-import AppIconJoy from '@rainbow-me/assets/app-icon-joy.png';
+import { UNLOCK_KEY_OPTIMISM_NFT_APP_ICON } from '@/featuresToUnlock';
 import AppIconOg from '@rainbow-me/assets/app-icon-og.png';
-import RainbowIcon from '@rainbow-me/assets/rainbowIcon.png';
-import { Box } from '@rainbow-me/design-system';
+import AppIconOptimism from '@rainbow-me/assets/app-icon-optimism.png';
+import AppIconPixel from '@rainbow-me/assets/app-icon-pixel.png';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Logger from '@rainbow-me/utils/logger';
 
 const supportedAppIcons = {
   og: {
+    icon: 'og',
+    key: 'og',
     name: 'The OG',
-    source: RainbowIcon,
+    source: AppIconOg,
     value: 'og',
   },
-  // eslint-disable-next-line sort-keys-fix/sort-keys-fix
-  joy: {
-    name: 'Joy Inspired',
-    source: RainbowIcon,
-    value: 'joy',
+  pixel: {
+    icon: 'pixel',
+    key: 'pixel',
+    name: 'Pixel',
+    source: AppIconPixel,
+    value: 'pixel',
   },
 };
-const appIconListItems = Object.values(supportedAppIcons).map(
-  ({ icon, ...item }) => ({
-    ...item,
-    key: icon,
-  })
-);
+
+const tokenGatedIcons = {
+  optimism: {
+    icon: 'optimism',
+    key: 'optimism',
+    name: 'Optimism x Rainbow',
+    source: AppIconOptimism,
+    unlock_key: UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
+    value: 'optimism',
+  },
+};
 
 const AppIconListItem = ({ name, value, source, ...item }) => (
   <RadioListItem
     {...item}
-    icon={
-      <Box
-        as={ImgixImage}
-        height={{ custom: 36 }}
-        source={source}
-        width={{ custom: 36 }}
-      />
-    }
+    icon={<ImgixImage source={source} style={{ height: 36, width: 36 }} />}
     label={name}
     value={value}
   />
@@ -55,9 +57,22 @@ const AppIconSection = () => {
     [settingsChangeAppIcon]
   );
 
+  const appIconListItemsWithUnlocked = useMemo(() => {
+    // Here we gotta check if each additional icon is unlocked and add it to the list
+    const list = supportedAppIcons;
+    const mmkv = new MMKV();
+    Object.keys(tokenGatedIcons).forEach(key => {
+      const icon = tokenGatedIcons[key];
+      if (mmkv.getBoolean(icon.unlock_key)) {
+        list[key] = icon;
+      }
+    });
+    return Object.values(list);
+  }, []);
+
   return (
     <RadioList
-      items={appIconListItems}
+      items={appIconListItemsWithUnlocked}
       marginTop={7}
       onChange={onSelectIcon}
       renderItem={AppIconListItem}
