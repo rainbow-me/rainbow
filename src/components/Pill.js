@@ -16,14 +16,14 @@ const Gradient = styled(RadialGradient).attrs(
   overflow: 'hidden',
 }));
 
-export default function Pill({ children, ...props }) {
+export default function Pill({ children, textColor, ...props }) {
   const { colors } = useTheme();
 
   return (
     <Gradient {...props}>
       <TruncatedText
         align="center"
-        color={colors.alpha(colors.blueGreyDark, 0.5)}
+        color={textColor || colors.alpha(colors.blueGreyDark, 0.5)}
         letterSpacing="uppercase"
         size="smedium"
         weight="semibold"

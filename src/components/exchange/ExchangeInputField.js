@@ -6,7 +6,7 @@ import ExchangeNativeField from './ExchangeNativeField';
 import styled from '@rainbow-me/styled-components';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
-  paddingTop: 6,
+  paddingTop: android ? 0 : 6,
   width: '100%',
   zIndex: 1,
 });
@@ -24,17 +24,21 @@ export default function ExchangeInputField({
   editable,
   inputAmount,
   inputCurrencyAddress,
+  inputCurrencyMainnetAddress,
   inputCurrencySymbol,
   inputFieldRef,
   nativeAmount,
   nativeCurrency,
   nativeFieldRef,
+  network,
+  inputCurrencyAssetType,
   onFocus,
   onPressMaxBalance,
   onPressSelectInputCurrency,
   setInputAmount,
   setNativeAmount,
   testID,
+  updateAmountOnFocus,
 }) {
   return (
     <Container>
@@ -43,18 +47,22 @@ export default function ExchangeInputField({
         amount={inputAmount}
         disableCurrencySelection={disableInputCurrencySelection}
         editable={editable}
+        mainnetAddress={inputCurrencyMainnetAddress}
+        network={network}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectInputCurrency}
         ref={inputFieldRef}
         setAmount={setInputAmount}
         symbol={inputCurrencySymbol}
         testID={testID}
+        type={inputCurrencyAssetType}
+        updateOnFocus={updateAmountOnFocus}
         useCustomAndroidMask={android}
       />
       <NativeFieldRow>
         <ExchangeNativeField
           address={inputCurrencyAddress}
-          editable
+          editable={editable}
           height={64}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
@@ -66,8 +74,10 @@ export default function ExchangeInputField({
         <ExchangeMaxButton
           address={inputCurrencyAddress}
           disabled={!inputCurrencySymbol}
+          mainnetAddress={inputCurrencyMainnetAddress}
           onPress={onPressMaxBalance}
           testID={testID + '-max'}
+          type={inputCurrencyAssetType}
         />
       </NativeFieldRow>
     </Container>
