@@ -11,6 +11,8 @@ import { Keyboard } from 'react-native';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import StepButtonInput from './StepButtonInput';
+import { Network } from '@/helpers';
+import { getDefaultSlippageFromConfig } from '@/screens/ExchangeModal';
 import {
   AccentColorProvider,
   Box,
@@ -37,7 +39,13 @@ const SLIPPAGE_INCREMENT = 0.1;
 
 // eslint-disable-next-line react/display-name
 export const MaxToleranceInput = forwardRef(
-  ({ colorForAsset }: { colorForAsset: string }, ref) => {
+  (
+    {
+      colorForAsset,
+      currentNetwork,
+    }: { colorForAsset: string; currentNetwork: Network },
+    ref
+  ) => {
     const { slippageInBips, updateSwapSlippage } = useSwapSettings();
     const { navigate } = useNavigation();
 
@@ -60,7 +68,8 @@ export const MaxToleranceInput = forwardRef(
         slippageRef?.current?.blur();
       },
       reset: () => {
-        onSlippageChange(1);
+        let slippage = getDefaultSlippageFromConfig(currentNetwork);
+        onSlippageChange(slippage);
       },
     }));
 
