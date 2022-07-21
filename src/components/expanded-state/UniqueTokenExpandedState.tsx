@@ -326,7 +326,7 @@ const UniqueTokenExpandedState = ({
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressOpensea = useCallback(
+  const handlePressMarketplaceName = useCallback(
     () => Linking.openURL(asset.permalink),
     [asset.permalink]
   );
@@ -492,7 +492,7 @@ const UniqueTokenExpandedState = ({
                                   )}`
                             }
                             nftShadows
-                            onPress={handlePressOpensea}
+                            onPress={handlePressMarketplaceName}
                             textColor={textColor}
                             weight="heavy"
                           />
