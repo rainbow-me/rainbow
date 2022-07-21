@@ -11,7 +11,7 @@ import {
   CurrencySection,
   DevNotificationsSection,
   DevSection,
-  LanguageSectionV2,
+  LanguageSection,
   NetworkSectionV2,
   NotificationsSection,
   PrivacySectionV2,
@@ -84,7 +84,7 @@ const SettingsPages = {
     key: 'DevSection',
   },
   language: {
-    component: LanguageSectionV2,
+    component: LanguageSection,
     getTitle: () => lang.t('settings.language'),
     key: 'LanguageSection',
   },

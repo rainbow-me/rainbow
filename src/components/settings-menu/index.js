@@ -2,7 +2,6 @@ export { default as CurrencySection } from './CurrencySection';
 export { default as DevSection } from './DevSection';
 export { default as DevNotificationsSection } from './DevNotificationsSection';
 export { default as LanguageSection } from './LanguageSection';
-export { default as LanguageSectionV2 } from './LanguageSectionV2';
 export { default as NetworkSection } from './NetworkSection';
 export { default as NetworkSectionV2 } from './NetworkSectionV2';
 export { default as PrivacySection } from './PrivacySection';
