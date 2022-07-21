@@ -1,6 +1,5 @@
 export { default as CurrencySection } from './CurrencySection';
 export { default as DevSection } from './DevSection';
-export { default as DevSectionV2 } from './DevSectionV2';
 export { default as DevNotificationsSection } from './DevNotificationsSection';
 export { default as LanguageSection } from './LanguageSection';
 export { default as LanguageSectionV2 } from './LanguageSectionV2';

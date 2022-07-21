@@ -51,7 +51,7 @@ import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const DevSectionV2 = () => {
+const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
@@ -406,4 +406,4 @@ const DevSectionV2 = () => {
   );
 };
 
-export default DevSectionV2;
+export default DevSection;
