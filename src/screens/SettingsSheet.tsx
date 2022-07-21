@@ -12,7 +12,7 @@ import {
   DevNotificationsSection,
   DevSection,
   LanguageSection,
-  NetworkSectionV2,
+  NetworkSection,
   NotificationsSection,
   PrivacySectionV2,
   SettingsSection,
@@ -89,7 +89,7 @@ const SettingsPages = {
     key: 'LanguageSection',
   },
   network: {
-    component: NetworkSectionV2,
+    component: NetworkSection,
     getTitle: () => lang.t('settings.network'),
     key: 'NetworkSection',
   },

@@ -22,7 +22,7 @@ interface NetworkSectionProps {
   inDevSection?: boolean;
 }
 
-const NetworkSectionV2 = ({ inDevSection }: NetworkSectionProps) => {
+const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const { network, testnetsEnabled } = useAccountSettings();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
@@ -83,4 +83,4 @@ const NetworkSectionV2 = ({ inDevSection }: NetworkSectionProps) => {
   );
 };
 
-export default NetworkSectionV2;
+export default NetworkSection;

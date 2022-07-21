@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux';
 import { defaultConfig } from '../../config/experimental';
 import useAppVersion from '../../hooks/useAppVersion';
 import { settingsUpdateNetwork } from '../../redux/settings';
-import NetworkSectionV2 from './NetworkSectionV2';
+import NetworkSection from './NetworkSection';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem, { StatusType } from './components/MenuItem';
@@ -221,7 +221,7 @@ const DevSection = () => {
           size="medium"
           titleComponent={<MenuItem.Title text="Enable Testnets" />}
         />
-        {testnetsEnabled && <NetworkSectionV2 inDevSection />}
+        {testnetsEnabled && <NetworkSection inDevSection />}
         <MenuItem
           iconPadding="large"
           leftComponent={<MenuItem.Title text="💥" />}
