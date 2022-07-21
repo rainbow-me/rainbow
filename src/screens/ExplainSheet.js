@@ -9,7 +9,7 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import OptimismAppIcon from '@rainbow-me/assets/optimismAppIcon.png';
+import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
@@ -19,6 +19,7 @@ import { gasUtils } from '@rainbow-me/utils';
 import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
+import { Box } from '@/design-system';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -51,6 +52,29 @@ const Gradient = styled(GradientText).attrs({
   steps: [0, 0.5, 1],
   weight: 'heavy',
 })({});
+
+const OptimismAppIcon = () => {
+  const { colors, isDarkMode } = useTheme();
+  return (
+    <Box
+      style={{
+        shadowColor: isDarkMode ? colors.shadowBlack : colors.optimismRed,
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={AppIconOptimism}
+        style={{
+          width: 64,
+          height: 64,
+        }}
+      />
+    </Box>
+  );
+};
 
 const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
@@ -121,19 +145,14 @@ const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
 
 export const explainers = network => ({
   optimism_app_icon: {
-    logo: (
-      <ImgixImage
-        source={OptimismAppIcon}
-        style={{ marginBottom: -10, width: 90, height: 90 }}
-      />
-    ),
+    logo: <OptimismAppIcon />,
     extraHeight: -25,
     text: OPTIMISM_APP_ICON_EXPLAINER,
     title: lang.t('explain.optimism_app_icon.title'),
     button: {
       label: lang.t('explain.optimism_app_icon.button'),
-      textColor: colors => colors?.optimismRed,
-      bgColor: colors => colors?.optimismRed06,
+      textColor: 'optimismRed',
+      bgColor: 'optimismRed06',
       onPress: navigate => () => {
         navigate(Routes.SETTINGS_SHEET, {
           screen: 'AppIconSection',
@@ -324,8 +343,8 @@ const ExplainSheet = () => {
   }, [params, type]);
 
   const explainSheetConfig = useMemo(() => {
-    return explainers(colors, network)[type];
-  }, [colors, network, type]);
+    return explainers(network)[type];
+  }, [network, type]);
 
   const handleClose = useCallback(() => {
     goBack();
@@ -415,9 +434,8 @@ const ExplainSheet = () => {
             )}
             <SheetActionButton
               color={
-                explainSheetConfig.button?.bgColor
-                  ? explainSheetConfig.button.bgColor(colors)
-                  : colors.alpha(colors.appleBlue, 0.04)
+                colors[explainSheetConfig.button?.bgColor] ||
+                colors.alpha(colors.appleBlue, 0.04)
               }
               isTransparent
               label={
@@ -430,9 +448,7 @@ const ExplainSheet = () => {
               }
               size="big"
               textColor={
-                explainSheetConfig.button?.textColor
-                  ? explainSheetConfig.button?.textColor(colors)
-                  : colors.appleBlue
+                colors[explainSheetConfig.button?.textColor] || colors.appleBlue
               }
               weight="heavy"
             />

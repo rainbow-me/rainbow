@@ -2,22 +2,25 @@ import React, { useCallback } from 'react';
 import { MMKV } from 'react-native-mmkv';
 import { RadioList, RadioListItem } from '../radio-list';
 import { UNLOCK_KEY_OPTIMISM_NFT_APP_ICON } from '@/featuresToUnlock';
-import AppIconOg from '@rainbow-me/assets/app-icon-og.png';
-import AppIconOptimism from '@rainbow-me/assets/app-icon-optimism.png';
-import AppIconPixel from '@rainbow-me/assets/app-icon-pixel.png';
+import AppIconOg from '@rainbow-me/assets/appIconOg.png';
+import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
+import AppIconPixel from '@rainbow-me/assets/appIconPixel.png';
+import { Box } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Logger from '@rainbow-me/utils/logger';
 
 const supportedAppIcons = {
   og: {
+    color: 'rainbowBlue',
     icon: 'og',
     key: 'og',
-    name: 'The OG',
+    name: 'OG',
     source: AppIconOg,
     value: 'og',
   },
   pixel: {
+    color: 'rainbowBlue',
     icon: 'pixel',
     key: 'pixel',
     name: 'Pixel',
@@ -28,23 +31,46 @@ const supportedAppIcons = {
 
 const tokenGatedIcons = {
   optimism: {
+    color: 'optimismRed',
     icon: 'optimism',
     key: 'optimism',
-    name: 'Optimism x Rainbow',
+    name: 'Optimism',
     source: AppIconOptimism,
     unlock_key: UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
     value: 'optimism',
   },
 };
 
-const AppIconListItem = ({ name, value, source, ...item }) => (
-  <RadioListItem
-    {...item}
-    icon={<ImgixImage source={source} style={{ height: 36, width: 36 }} />}
-    label={name}
-    value={value}
-  />
-);
+const AppIconListItem = ({ name, value, source, color, ...item }) => {
+  const { colors, isDarkMode } = useTheme();
+  return (
+    <RadioListItem
+      {...item}
+      icon={
+        <Box
+          style={{
+            shadowColor: isDarkMode
+              ? colors.shadowBlack
+              : colors[color] || colors.shadowBlack,
+            shadowOffset: { height: 4, width: 0 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+          }}
+        >
+          <ImgixImage
+            source={source}
+            style={{
+              height: 36,
+              width: 36,
+            }}
+          />
+        </Box>
+      }
+      label={name}
+      value={value}
+    />
+  );
+};
 
 const AppIconSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();

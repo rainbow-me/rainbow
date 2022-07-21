@@ -124,7 +124,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     purple: '#735CFF', // '115, 92, 255'
     purpleDark: '#6F00A3', // '111, 0, 163'
     purpleLight: '#FFD9FE', // '255, 217, 254'
-    purpleUniswap: '#FF007A', // '255,0,122'
+    purpleUniswap: '#FF007A', // '255,0,122',
+    rainbowBlue: '#001E59', // '0, 30, 89',
     red: '#FF494A', // '255, 73, 74'
     rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
     rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
