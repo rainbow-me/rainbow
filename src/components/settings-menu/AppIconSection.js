@@ -1,23 +1,30 @@
 import React, { useCallback } from 'react';
 import { RadioList, RadioListItem } from '../radio-list';
-import AppIconJoy from '@rainbow-me/assets/app-icon-joy.png';
 import AppIconOg from '@rainbow-me/assets/app-icon-og.png';
+import AppIconOptimism from '@rainbow-me/assets/app-icon-optimism.png';
+import AppIconPixel from '@rainbow-me/assets/app-icon-pixel.png';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Logger from '@rainbow-me/utils/logger';
 
 const supportedAppIcons = {
-  joy: {
-    icon: 'joy',
-    name: 'Joy Inspired',
-    source: AppIconOg,
-    value: 'joy',
-  },
   og: {
     icon: 'og',
     name: 'The OG',
-    source: AppIconJoy,
+    source: AppIconOg,
     value: 'og',
+  },
+  optimism: {
+    icon: 'optimism',
+    name: 'Optimism x Rainbow',
+    source: AppIconOptimism,
+    value: 'optimism',
+  },
+  pixel: {
+    icon: 'pixel',
+    name: 'Pixel',
+    source: AppIconPixel,
+    value: 'pixel',
   },
 };
 const appIconListItems = Object.values(supportedAppIcons).map(
