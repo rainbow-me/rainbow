@@ -134,6 +134,7 @@ export const parseAccountUniqueTokens = data => {
             ? asset.last_sale.payment_token?.symbol
             : null,
           lowResUrl,
+          marketplaceName: 'OpenSea',
           type: AssetTypes.nft,
           uniqueId:
             asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
@@ -209,6 +210,7 @@ export const parseAccountUniqueTokensPolygon = data => {
           ? asset.last_sale.payment_token?.symbol
           : null,
         lowResUrl,
+        marketplaceName: 'OpenSea',
         network: Network.polygon,
         permalink: asset.permalink,
         type: AssetTypes.nft,
