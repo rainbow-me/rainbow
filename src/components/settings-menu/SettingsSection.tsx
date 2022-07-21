@@ -27,6 +27,7 @@ import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
+  NOTIFICATIONS,
 } from '@rainbow-me/config/experimentalHooks';
 import { Box } from '@rainbow-me/design-system';
 import {
@@ -117,6 +118,7 @@ const SettingsSection = ({
     testnetsEnabled,
   } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
+  const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
@@ -257,20 +259,22 @@ const SettingsSection = ({
             titleComponent={<MenuItem.Title text={lang.t('settings.backup')} />}
           />
         )}
-        <MenuItem
-          hasRightArrow
-          iconPadding="medium"
-          leftComponent={
-            <MenuItem.ImageIcon
-              source={isDarkMode ? NotificationsIconDark : NotificationsIcon}
-            />
-          }
-          onPress={onPressNotifications}
-          size="large"
-          titleComponent={
-            <MenuItem.Title text={lang.t('settings.notifications')} />
-          }
-        />
+        {isNotificationsEnabled && (
+          <MenuItem
+            hasRightArrow
+            iconPadding="medium"
+            leftComponent={
+              <MenuItem.ImageIcon
+                source={isDarkMode ? NotificationsIconDark : NotificationsIcon}
+              />
+            }
+            onPress={onPressNotifications}
+            size="large"
+            titleComponent={
+              <MenuItem.Title text={lang.t('settings.notifications')} />
+            }
+          />
+        )}
         <MenuItem
           hasRightArrow
           iconPadding="medium"
