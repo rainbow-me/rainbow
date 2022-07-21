@@ -102,7 +102,7 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
 }))({});
 
 const TextContainer = styled(Column).attrs(() => ({
-  marginBottom: 11,
+  marginBottom: ios ? 0 : 11,
 }))({});
 
 const TransactionTimeLabel = ({ formatter, theme }) => {
