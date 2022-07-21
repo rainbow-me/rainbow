@@ -1,6 +1,7 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, Share } from 'react-native';
+import { Linking, NativeModules, Share } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
@@ -41,6 +42,12 @@ import {
 } from '@rainbow-me/hooks';
 import { Themes, useTheme } from '@rainbow-me/theme';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import {
+  AppleReviewAddress,
+  REVIEW_DONE_KEY,
+} from '@rainbow-me/utils/reviewAlert';
+
+// const { RainbowRequestReview, RNReview } = NativeModules;
 
 const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
@@ -81,6 +88,7 @@ const checkAllWallets = (wallets: any) => {
 };
 
 interface SettingsSectionProps {
+  onCloseModal: () => void;
   onPressBackup: () => void;
   onPressCurrency: () => void;
   onPressDev: () => void;
@@ -90,7 +98,8 @@ interface SettingsSectionProps {
   onPressNotifications: () => void;
 }
 
-const SettingsSectionV2 = ({
+const SettingsSection = ({
+  onCloseModal,
   onPressBackup,
   onPressCurrency,
   onPressDev,
@@ -112,6 +121,20 @@ const SettingsSectionV2 = ({
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
+
+  // const onPressReview = useCallback(async () => {
+  //   if (ios) {
+  //     onCloseModal();
+  //     RainbowRequestReview.requestReview((handled: boolean) => {
+  //       if (!handled) {
+  //         AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
+  //         Linking.openURL(AppleReviewAddress);
+  //       }
+  //     });
+  //   } else {
+  //     RNReview.show();
+  //   }
+  // }, [onCloseModal]);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -425,4 +448,4 @@ const SettingsSectionV2 = ({
   );
 };
 
-export default SettingsSectionV2;
+export default SettingsSection;

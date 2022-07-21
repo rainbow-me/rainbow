@@ -15,7 +15,7 @@ import {
   NetworkSectionV2,
   NotificationsSection,
   PrivacySectionV2,
-  SettingsSectionV2,
+  SettingsSection,
   WalletNotificationsSettings,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
@@ -192,7 +192,8 @@ export default function SettingsSheet() {
             }}
           >
             {() => (
-              <SettingsSectionV2
+              <SettingsSection
+                onCloseModal={goBack}
                 onPressBackup={onPressSection(SettingsPages.backup)}
                 onPressCurrency={onPressSection(SettingsPages.currency)}
                 onPressDev={onPressSection(SettingsPages.dev)}
