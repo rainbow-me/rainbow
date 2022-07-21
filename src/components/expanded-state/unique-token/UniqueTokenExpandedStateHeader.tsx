@@ -423,6 +423,9 @@ const UniqueTokenExpandedStateHeader = ({
         ? ([lang.t('expanded_state.unique_expanded.save_to_photos')] as const)
         : []),
       lang.t('expanded_state.unique_expanded.copy_token_id'),
+      isHiddenAsset
+        ? lang.t('expanded_state.unique_expanded.unhide')
+        : lang.t('expanded_state.unique_expanded.hide'),
     ] as const;
 
     const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
@@ -431,6 +434,7 @@ const UniqueTokenExpandedStateHeader = ({
       ? blockExplorerIndex + 1
       : blockExplorerIndex;
     const copyTokenIndex = photoDownloadIndex + 1;
+    const hideTokenIndex = copyTokenIndex + 1;
 
     showActionSheetWithOptions(
       {
@@ -452,6 +456,16 @@ const UniqueTokenExpandedStateHeader = ({
           saveToCameraRoll(getFullResUrl(asset.image_original_url));
         } else if (idx === copyTokenIndex) {
           setClipboard(asset.id);
+        } else if (idx === hideTokenIndex) {
+          if (isHiddenAsset) {
+            removeHiddenToken(asset);
+          } else {
+            addHiddenToken(asset);
+
+            if (isShowcaseAsset) {
+              removeShowcaseToken(asset.uniqueId);
+            }
+          }
         }
       }
     );
@@ -461,6 +475,11 @@ const UniqueTokenExpandedStateHeader = ({
     isSupportedOnRainbowWeb,
     rainbowWebUrl,
     setClipboard,
+    isHiddenAsset,
+    isShowcaseAsset,
+    addHiddenToken,
+    removeHiddenToken,
+    removeShowcaseToken,
   ]);
 
   const overflowMenuHitSlop: Space = '15px';
