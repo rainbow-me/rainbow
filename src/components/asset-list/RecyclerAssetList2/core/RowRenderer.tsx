@@ -88,7 +88,7 @@ function rowRenderer(
         <WrappedTokenFamilyHeader
           image={image}
           name={name}
-          testID={`token_family_header.${name}`}
+          testID={`token-family-header-${name}`}
           theme={extendedState.theme}
           total={total}
         />
