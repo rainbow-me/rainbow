@@ -230,7 +230,11 @@ const UniqueTokenExpandedState = ({
   const { isReadOnlyWallet } = useWallets();
 
   const {
-    collection: { description: familyDescription, external_url: familyLink },
+    collection: {
+      description: familyDescription,
+      external_url: familyLink,
+      slug,
+    },
     currentPrice,
     description,
     familyImage,
@@ -571,8 +575,8 @@ const UniqueTokenExpandedState = ({
                               <UniqueTokenAttributes
                                 {...asset}
                                 color={imageColor}
-                                hideNftMarketplaceAction={isPoap}
-                                slug={asset.collection.slug}
+                                hideNftMarketplaceAction={isPoap || !slug}
+                                slug={slug}
                               />
                             </Section>
                           ) : null}
