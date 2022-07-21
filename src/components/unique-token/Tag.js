@@ -83,7 +83,7 @@ const Tag = ({
   maxValue,
   originalValue,
   lowercase,
-  hideOpenSeaAction,
+  hideNftMarketplaceAction,
   ...props
 }) => {
   const { colors } = useTheme();
@@ -112,7 +112,7 @@ const Tag = ({
   const onPressAndroid = useCallback(() => {
     const androidContractActions = [];
 
-    if (!hideOpenSeaAction) {
+    if (!hideNftMarketplaceAction) {
       androidContractActions.push(viewTraitOnOpenseaAction.actionTitle);
     }
 
@@ -146,12 +146,12 @@ const Tag = ({
         }
       }
     );
-  }, [hideOpenSeaAction, isURL, slug, title, originalValue]);
+  }, [hideNftMarketplaceAction, isURL, slug, title, originalValue]);
 
   const menuConfig = useMemo(() => {
     const menuItems = [];
 
-    if (!hideOpenSeaAction) {
+    if (!hideNftMarketplaceAction) {
       menuItems.push(viewTraitOnOpenseaAction);
     }
 
@@ -163,7 +163,7 @@ const Tag = ({
       menuItems,
       menuTitle: '',
     };
-  }, [hideOpenSeaAction, isURL]);
+  }, [hideNftMarketplaceAction, isURL]);
 
   const textWithUpdatedCase = lowercase ? text : upperFirst(text);
 
@@ -221,5 +221,5 @@ export default magicMemo(Tag, [
   'title',
   'maxValue',
   'originalValue',
-  'hideOpenSeaAction',
+  'hideNftMarketplaceAction',
 ]);

@@ -11,14 +11,14 @@ import uniqueAssetTraitDisplayTypeCompareFunction from '@rainbow-me/helpers/uniq
 interface UniqueTokenAttributesProps {
   color: string;
   slug: string;
-  hideOpenSeaAction?: boolean;
+  hideNftMarketplaceAction?: boolean;
   traits: UniqueAsset['traits'];
 }
 
 const UniqueTokenAttributes = ({
   color,
   slug,
-  hideOpenSeaAction,
+  hideNftMarketplaceAction,
   traits,
 }: UniqueTokenAttributesProps) => {
   const sortedTraits = useMemo(
@@ -57,7 +57,7 @@ const UniqueTokenAttributes = ({
           <Tag
             color={color}
             disableMenu={disableMenu}
-            hideOpenSeaAction={hideOpenSeaAction}
+            hideNftMarketplaceAction={hideNftMarketplaceAction}
             key={`${type}${originalValue}`}
             lowercase={lowercase}
             maxValue={maxValue}

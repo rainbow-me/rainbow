@@ -571,7 +571,7 @@ const UniqueTokenExpandedState = ({
                               <UniqueTokenAttributes
                                 {...asset}
                                 color={imageColor}
-                                hideOpenSeaAction={isPoap}
+                                hideNftMarketplaceAction={isPoap}
                                 slug={asset.collection.slug}
                               />
                             </Section>
