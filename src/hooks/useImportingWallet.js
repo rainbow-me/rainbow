@@ -29,6 +29,7 @@ import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { useRemoveFirst } from '@rainbow-me/navigation/useRemoveFirst';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
@@ -38,13 +39,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
 
-  const {
-    goBack,
-    navigate,
-    replace,
-    setParams,
-    dispatch: dispatchNavigation,
-  } = useNavigation();
+  const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
@@ -233,6 +228,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const dispatch = useDispatch();
+  const removeFirst = useRemoveFirst();
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
@@ -272,6 +268,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                 goBack();
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
+                    // on Android replacing is not working well, so we navigate and then remove the screen below
                     const action = ios ? replace : navigate;
                     action(Routes.SWIPE_LAYOUT, {
                       params: { initialized: true },
@@ -285,9 +282,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                     InteractionManager.runAfterInteractions(() =>
                       setIsWalletLoading(null)
                     );
-                    dispatchNavigation({
-                      type: '@RAINBOW/REMOVE_FIRST',
-                    });
+                    removeFirst();
                   }
 
                   setTimeout(() => {
@@ -358,6 +353,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     dispatch,
     showImportModal,
     profilesEnabled,
+    removeFirst,
+    setIsWalletLoading,
   ]);
 
   useEffect(() => {
