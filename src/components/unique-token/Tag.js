@@ -19,7 +19,7 @@ const PropertyActionsEnum = {
   viewTraitOnOpensea: 'viewTraitOnOpensea',
 };
 
-const viewTraitOnOpenseaAction = {
+const viewTraitOnNftMarketplaceAction = {
   actionKey: PropertyActionsEnum.viewTraitOnOpensea,
   actionTitle: lang.t('expanded_state.unique_expanded.view_all_with_property'),
   discoverabilityTitle: 'OpenSea',
@@ -113,7 +113,7 @@ const Tag = ({
     const androidContractActions = [];
 
     if (!hideNftMarketplaceAction) {
-      androidContractActions.push(viewTraitOnOpenseaAction.actionTitle);
+      androidContractActions.push(viewTraitOnNftMarketplaceAction.actionTitle);
     }
 
     if (isURL) {
@@ -128,7 +128,8 @@ const Tag = ({
       },
       idx => {
         if (
-          androidContractActions[idx] === viewTraitOnOpenseaAction.actionTitle
+          androidContractActions[idx] ===
+          viewTraitOnNftMarketplaceAction.actionTitle
         ) {
           Linking.openURL(
             'https://opensea.io/collection/' +
@@ -152,7 +153,7 @@ const Tag = ({
     const menuItems = [];
 
     if (!hideNftMarketplaceAction) {
-      menuItems.push(viewTraitOnOpenseaAction);
+      menuItems.push(viewTraitOnNftMarketplaceAction);
     }
 
     if (isURL) {
