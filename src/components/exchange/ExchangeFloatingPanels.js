@@ -1,12 +1,16 @@
-import { FloatingPanels } from '../floating-panels';
-import styled from '@rainbow-me/styled-components';
+import React from 'react';
+import { Column } from '../layout';
 
-const ExchangeFloatingPanels = styled(FloatingPanels).attrs({
-  margin: 0,
-  translateY: ios ? 0 : -16,
-})({
-  paddingTop: 24,
-  ...(android && { height: '85%' }),
-});
+const ExchangeFloatingPanels = React.forwardRef(({ ...props }, ref) => (
+  <Column
+    {...props}
+    justify="center"
+    pointerEvents="box-none"
+    ref={ref}
+    style={props.style}
+  />
+));
+
+ExchangeFloatingPanels.displayName = 'ExchangeFloatingPanels';
 
 export default ExchangeFloatingPanels;

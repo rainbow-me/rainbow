@@ -13,9 +13,11 @@ import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { Network } from '@rainbow-me/helpers';
 import { useAccountAsset } from '@rainbow-me/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
-import { deviceUtils, isETH } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? View
@@ -83,19 +85,24 @@ export default React.memo(function FastCurrencySelectionRow({
     contextMenuProps,
     symbol,
     address,
+    mainnet_address,
     name,
     testID,
+    type,
   },
 }: FastCurrencySelectionRowProps) {
   const { colors } = theme;
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
-
-  const rowTestID = testID + '-exchange-coin-row-' + (item?.symbol || symbol);
+  const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
+  const rowTestID = `${testID}-exchange-coin-row-${
+    symbol ?? item?.symbol ?? ''
+  }-${type || 'token'}`;
 
   const isInfoButtonVisible =
-    (!item?.isNativeAsset || isETH(item?.address)) && !showBalance;
+    !item?.isNativeAsset ||
+    (!isNativeAsset(address ?? item?.address, network) && !showBalance);
 
   return (
     <View style={sx.row}>
@@ -107,8 +114,10 @@ export default React.memo(function FastCurrencySelectionRow({
       >
         <View style={sx.rootContainer}>
           <FastCoinIcon
-            address={item?.mainnet_address || item?.address || address}
-            symbol={item?.symbol || symbol}
+            address={address || item?.address}
+            assetType={type ?? item?.type}
+            mainnetAddress={mainnet_address ?? item?.mainnet_address}
+            symbol={symbol ?? item?.symbol}
             theme={theme}
           />
           <View style={sx.innerContainer}>
@@ -129,7 +138,7 @@ export default React.memo(function FastCurrencySelectionRow({
                   showBalance && sx.nameWithBalances,
                 ]}
               >
-                {item?.name || name}
+                {name ?? item?.name}
               </RNText>
               {!showBalance && (
                 <RNText
@@ -174,6 +183,7 @@ export default React.memo(function FastCurrencySelectionRow({
               useActionSheetFallback={false}
               wrapNativeComponent={false}
               {...contextMenuProps}
+              style={(showFavoriteButton || showAddButton) && sx.info}
             >
               <ButtonPressAnimation>
                 <SafeRadialGradient
@@ -276,7 +286,7 @@ const sx = StyleSheet.create({
   fav: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingRight: 17.5,
     width: 92,
   },
@@ -296,6 +306,9 @@ const sx = StyleSheet.create({
     paddingBottom: ios ? 0 : 2.5,
     paddingLeft: 2.5,
     paddingTop: ios ? 1 : 0,
+  },
+  info: {
+    paddingRight: 4,
   },
   innerContainer: {
     flex: 1,

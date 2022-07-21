@@ -1,28 +1,46 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { ChainBadge } from '../components/coin-icon';
-import { Centered, Column, ColumnWithMargins } from '../components/layout';
+import { ChainBadge, CoinIcon } from '../components/coin-icon';
+import { Centered, Column, ColumnWithMargins, Row } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { Box } from '@/design-system';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
+
+const getBodyTextPropsWithColor = colors =>
+  colors
+    ? {
+        align: 'center',
+        color: colors.blueGreyDark60,
+        lineHeight: 'looser',
+        size: 'large',
+        style: {
+          alignSelf: 'center',
+          maxWidth: 376,
+          paddingBottom: 15,
+          paddingHorizontal: 23,
+        },
+      }
+    : {};
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   align: 'center',
@@ -83,6 +101,17 @@ const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 const gasExplainer = network =>
   lang.t('explain.gas.text', { networkName: network });
 
+const availableNetworksExplainer = (tokenSymbol, networks) => {
+  const readableNetworks = networks
+    ?.map(network => networkInfo[network].name)
+    ?.join(', ');
+
+  return lang.t('explain.available_networks.text', {
+    tokenSymbol: tokenSymbol,
+    networks: readableNetworks,
+  });
+};
+
 const CURRENT_BASE_FEE_TITLE = lang.t('explain.base_fee.title');
 
 const BASE_CURRENT_BASE_FEE_EXPLAINER = lang.t('explain.base_fee.text_prefix');
@@ -115,6 +144,8 @@ const ARBITRUM_EXPLAINER = lang.t('explain.arbitrum.text');
 
 const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 
+const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
+
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
 });
@@ -143,7 +174,7 @@ const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to 
 
 const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
 
-export const explainers = network => ({
+export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
     extraHeight: -25,
@@ -167,6 +198,27 @@ export const explainers = network => ({
       },
     },
   },
+  output_disabled: {
+    extraHeight: -30,
+    title: params?.inputToken
+      ? lang.t('explain.output_disabled.title', {
+          inputToken: params?.inputToken,
+        })
+      : lang.t('explain.output_disabled.title_empty'),
+    text: lang.t('explain.output_disabled.text', {
+      network: networkInfo[params?.network]?.name,
+      inputToken: params?.inputToken,
+      outputToken: params?.outputToken,
+    }),
+    logo: (
+      <ChainBadge
+        assetType={params?.network}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+  },
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
@@ -176,9 +228,9 @@ export const explainers = network => ({
   gas: {
     emoji: '⛽️',
     extraHeight: 2,
-    text: gasExplainer(network),
+    text: gasExplainer(params?.network),
     title: lang.t('explain.gas.title', {
-      networkName: network,
+      networkName: params?.network,
     }),
   },
   ens_primary_name: {
@@ -264,6 +316,42 @@ export const explainers = network => ({
     text: VERIFIED_EXPLAINER,
     title: lang.t('explain.verified.title'),
   },
+  unverified: {
+    extraHeight: 120,
+    emoji: '⚠️',
+    button: {
+      label: lang.t('button.continue'),
+      bgColor: colors?.blueGreyDark80,
+    },
+    secondaryButton: {
+      label: lang.t('button.go_back_lowercase'),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.clearBlue,
+    },
+    title: lang.t('explain.unverified.title', {
+      symbol: params?.asset?.symbol,
+    }),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.unverified.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            ethereumUtils.openTokenEtherscanURL(
+              params?.asset.address,
+              ethereumUtils.getNetworkFromType(params?.asset?.type)
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.unverified.fragment2')}
+        </Text>
+        {lang.t('explain.unverified.fragment3')}
+      </Text>
+    ),
+  },
   optimism: {
     emoji: '⛽️',
     extraHeight: 150,
@@ -324,15 +412,245 @@ export const explainers = network => ({
     text: BACKUP_EXPLAINER,
     title: lang.t('explain.backup.title'),
   },
+  rainbow_fee: {
+    emoji: '🌈',
+    extraHeight: -100,
+    text: lang.t('explain.rainbow_fee.text', {
+      feePercentage: params?.feePercentage,
+    }),
+    title: 'Rainbow Fee',
+  },
+  swapResetInputs: {
+    button: {
+      label: `Continue with ${networkInfo[params?.network]?.name}`,
+      bgColor: colors?.networkColors[params?.network],
+    },
+    emoji: '🔐',
+    extraHeight: -90,
+    text: SWAP_RESET_EXPLAINER,
+    title: `Switching to ${networkInfo[params?.network]?.name}`,
+    logo:
+      params?.network !== 'mainnet' ? (
+        <ChainBadge
+          assetType={networkTypes[params?.network]}
+          marginBottom={8}
+          position="relative"
+          size="large"
+        />
+      ) : (
+        <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
+      ),
+  },
+  insufficientLiquidity: {
+    extraHeight: -20,
+    emoji: '🏦',
+    title: lang.t('explain.insufficient_liquidity.title'),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.insufficient_liquidity.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.insufficient_liquidity.fragment2')}
+        </Text>
+        {lang.t('explain.insufficient_liquidity.fragment3')}
+      </Text>
+    ),
+  },
+  availableNetworks: {
+    buttonText: `Go to Hop`,
+    extraHeight: -90,
+    text: availableNetworksExplainer(params?.tokenSymbol, params?.networks),
+    title:
+      params?.networks?.length > 1
+        ? lang.t('explain.available_networks.title_plural', {
+            length: params?.networks?.length,
+          })
+        : lang.t('explain.available_networks.title_singular', {
+            network: params?.networks?.[0],
+          }),
+    logo: (
+      <Row justify="center" marginBottom={10}>
+        {params?.networks?.map((network, index) => {
+          return (
+            <Box
+              height={{ custom: 40 }}
+              key={`networks-${network}`}
+              marginLeft={{
+                custom:
+                  index > 0
+                    ? -12
+                    : params?.networks?.length % 2 === 0
+                    ? -2
+                    : -30,
+              }}
+              style={{
+                borderColor: colors.transparent,
+                borderRadius: 0,
+                borderWidth: 1,
+                zIndex: index,
+              }}
+              width={{ custom: 40 }}
+              zIndex={params?.networks?.length - index}
+            >
+              {network !== 'mainnet' ? (
+                <ChainBadge
+                  assetType={network}
+                  position="relative"
+                  size="large"
+                />
+              ) : (
+                <CoinIcon
+                  address={ETH_ADDRESS}
+                  size={40}
+                  style={{ marginTop: 4 }}
+                  symbol={ETH_SYMBOL}
+                />
+              )}
+            </Box>
+          );
+        })}
+      </Row>
+    ),
+  },
+  obtainL2Assets: {
+    extraHeight: 40,
+    button: {
+      label: lang.t('explain.go_to_hop_with_icon.text'),
+      bgColor: colors?.blueGreyDark80,
+    },
+    secondaryButton: {
+      label: lang.t('button.go_back_lowercase'),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.clearBlue,
+    },
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.obtain_l2_asset.fragment1', {
+          networkName: params?.networkName,
+          tokenName: params?.assetName,
+        })}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.obtain_l2_asset.fragment2', {
+            networkName: params?.networkName,
+          })}
+        </Text>
+        {lang.t('explain.obtain_l2_asset.fragment3')}
+      </Text>
+    ),
+    logo: (
+      <ChainBadge
+        assetType={params?.network}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+    title: lang.t('explain.obtain_l2_asset.title', {
+      networkName: params?.networkName,
+    }),
+  },
+  flashbots: {
+    extraHeight: android ? 20 : 0,
+    emoji: '🤖',
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.flashbots.still_curious.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/protecting-transactions-with-flashbots'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.flashbots.still_curious.fragment2')}
+        </Text>
+        {lang.t('explain.flashbots.still_curious.fragment3')}
+      </Text>
+    ),
+    text: lang.t('explain.flashbots.text'),
+    title: lang.t('explain.flashbots.title'),
+  },
+  routeSwaps: {
+    extraHeight: android ? 20 : 0,
+    emoji: '🔀',
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.swap_routing.still_curious.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/swap-with-confidence-with-rainbow'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.swap_routing.still_curious.fragment2')}
+        </Text>
+        {lang.t('explain.swap_routing.still_curious.fragment3')}
+      </Text>
+    ),
+    text: lang.t('explain.swap_routing.text'),
+    title: lang.t('explain.swap_routing.title'),
+  },
+  slippage: {
+    extraHeight: 126,
+    emoji: '🌊',
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.slippage.still_curious.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.slippage.still_curious.fragment2')}
+        </Text>
+        {lang.t('explain.slippage.still_curious.fragment3')}
+      </Text>
+    ),
+    text: lang.t('explain.slippage.text'),
+    title: lang.t('explain.slippage.title'),
+  },
 });
 
 const ExplainSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
-  const {
-    params: { type = 'gas', network = networkTypes.mainnet, onClose } = {},
-    params = {},
-  } = useRoute();
+  const { params } = useRoute();
+  const type = params.type;
+
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
@@ -350,13 +668,12 @@ const ExplainSheet = () => {
   }, [params, type]);
 
   const explainSheetConfig = useMemo(() => {
-    return explainers(network)[type];
-  }, [network, type]);
-
+    return explainers(params, colors)[type];
+  }, [colors, params, type]);
   const handleClose = useCallback(() => {
     goBack();
-    onClose?.();
-  }, [onClose, goBack]);
+    params?.onClose?.();
+  }, [goBack, params]);
 
   const handleReadMore = useCallback(() => {
     Linking.openURL(explainSheetConfig.readMoreLink);
@@ -367,6 +684,73 @@ const ExplainSheet = () => {
 
   const sheetHeight =
     ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
+
+  const buttons = useMemo(() => {
+    const reverseButtons = type === 'obtainL2Assets' || type === 'unverified';
+    const secondaryButton = (explainSheetConfig?.readMoreLink ||
+      explainSheetConfig?.secondaryButton?.label) && (
+      <Column
+        height={60}
+        style={android && reverseButtons && { marginTop: 16 }}
+      >
+        <SheetActionButton
+          color={
+            explainSheetConfig?.secondaryButton?.bgColor ??
+            colors.blueGreyDarkLight
+          }
+          isTransparent
+          label={
+            explainSheetConfig.secondaryButton?.label ||
+            lang.t('explain.read_more')
+          }
+          onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
+          size="big"
+          textColor={
+            explainSheetConfig.secondaryButton?.textColor ??
+            colors.blueGreyDark80
+          }
+          weight="heavy"
+        />
+      </Column>
+    );
+    const accentCta = (
+      <SheetActionButton
+        color={
+          colors[explainSheetConfig.button?.bgColor] ||
+          colors.alpha(colors.appleBlue, 0.04)
+        }
+        isTransparent
+        label={explainSheetConfig.button?.label || lang.t('button.got_it')}
+        onPress={
+          explainSheetConfig.button?.onPress
+            ? explainSheetConfig.button.onPress(navigate, goBack, handleClose)
+            : handleClose
+        }
+        size="big"
+        textColor={
+          colors[explainSheetConfig.button?.textColor] || colors.appleBlue
+        }
+        weight="heavy"
+      />
+    );
+    const buttonArray = [secondaryButton, accentCta];
+    if (reverseButtons) {
+      buttonArray.reverse();
+    }
+    return buttonArray;
+  }, [
+    colors,
+    explainSheetConfig.button,
+    explainSheetConfig?.readMoreLink,
+    explainSheetConfig.secondaryButton?.bgColor,
+    explainSheetConfig.secondaryButton?.label,
+    explainSheetConfig.secondaryButton?.textColor,
+    goBack,
+    handleClose,
+    handleReadMore,
+    navigate,
+    type,
+  ]);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -412,57 +796,15 @@ const ExplainSheet = () => {
             {/** base fee explainer */}
             {renderBaseFeeIndicator}
 
-            <Text
-              align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              lineHeight="looser"
-              size="large"
-              style={{
-                alignSelf: 'center',
-                maxWidth: 376,
-                paddingBottom: 15,
-                paddingHorizontal: 23,
-              }}
-            >
-              {explainSheetConfig.text}
-            </Text>
-            {explainSheetConfig.readMoreLink && (
-              <Column height={60}>
-                <SheetActionButton
-                  color={colors.blueGreyDarkLight}
-                  isTransparent
-                  label={lang.t('explain.read_more')}
-                  onPress={handleReadMore}
-                  size="big"
-                  textColor={colors.blueGreyDark60}
-                  weight="heavy"
-                />
-              </Column>
+            {explainSheetConfig.text && (
+              <Text {...getBodyTextPropsWithColor(colors)}>
+                {explainSheetConfig.text}
+              </Text>
             )}
-            <SheetActionButton
-              color={
-                colors[explainSheetConfig.button?.bgColor] ||
-                colors.alpha(colors.appleBlue, 0.04)
-              }
-              isTransparent
-              label={
-                explainSheetConfig.button?.label || lang.t('button.got_it')
-              }
-              onPress={
-                explainSheetConfig.button?.onPress
-                  ? explainSheetConfig.button.onPress(
-                      navigate,
-                      goBack,
-                      handleClose
-                    )
-                  : handleClose
-              }
-              size="big"
-              textColor={
-                colors[explainSheetConfig.button?.textColor] || colors.appleBlue
-              }
-              weight="heavy"
-            />
+
+            {explainSheetConfig?.stillCurious &&
+              explainSheetConfig.stillCurious}
+            {buttons}
           </ColumnWithMargins>
         </Centered>
       </SlackSheet>
@@ -471,4 +813,3 @@ const ExplainSheet = () => {
 };
 
 export default React.memo(ExplainSheet);
-2;

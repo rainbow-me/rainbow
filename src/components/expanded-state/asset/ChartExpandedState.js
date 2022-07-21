@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -10,6 +11,7 @@ import React, {
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
+import AvailableNetworks from '../../AvailableNetworks';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
@@ -37,7 +39,6 @@ import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountSettings,
   useAdditionalAssetData,
@@ -45,7 +46,6 @@ import {
   useDelayedValueWithLayoutAnimation,
   useDimensions,
   useGenericAsset,
-  useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
@@ -182,9 +182,12 @@ function Description({ text = '' }) {
 
 export default function ChartExpandedState({ asset }) {
   const genericAsset = useGenericAsset(asset?.address);
+  const {
+    params: { fromDiscover = false },
+  } = useRoute();
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
-  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
   // If we don't have a balance for this asset
@@ -224,6 +227,7 @@ export default function ChartExpandedState({ asset }) {
     totalVolume,
     loading: additionalAssetDataLoading,
     links,
+    networks,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
@@ -269,17 +273,6 @@ export default function ChartExpandedState({ asset }) {
       screenHeight
     ),
   });
-
-  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
-  const showSwapButton = useMemo(
-    () =>
-      !!networkInfo[currentNetwork]?.exchange_enabled &&
-      !isL2 &&
-      uniswapAssetsInWallet.find(
-        assetInWallet => assetInWallet.address === assetWithPrice.address
-      ),
-    [assetWithPrice.address, currentNetwork, isL2, uniswapAssetsInWallet]
-  );
 
   const needsEth =
     asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
@@ -379,14 +372,24 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          {showSwapButton && (
-            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+          {hasBalance && (
+            <SwapActionButton
+              asset={ogAsset}
+              color={color}
+              inputType={AssetInputTypes.in}
+            />
           )}
           {hasBalance ? (
-            <SendActionButton asset={ogAsset} color={color} />
+            <SendActionButton
+              asset={ogAsset}
+              color={color}
+              fromDiscover={fromDiscover}
+            />
           ) : (
             <SwapActionButton
+              asset={ogAsset}
               color={color}
+              fromDiscover={fromDiscover}
               inputType={AssetInputTypes.out}
               label={`􀖅 ${lang.t('expanded_state.asset.get_asset', {
                 assetSymbol: asset?.symbol,
@@ -406,7 +409,13 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-
+      {networks && !hasBalance && (
+        <AvailableNetworks
+          asset={assetWithPrice}
+          colors={colors}
+          networks={networks}
+        />
+      )}
       {!isL2 && (
         <CarouselWrapper
           isAnyItemLoading={additionalAssetDataLoading}

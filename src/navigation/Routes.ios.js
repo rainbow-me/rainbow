@@ -266,7 +266,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
-        options={{ ...nativeStackDefaultConfig, interactWithScrollView: false }}
+        options={{ ...nativeStackDefaultConfig, relevantScrollViewDepth: 2 }}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
@@ -409,6 +409,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.SWAP_DETAILS_SHEET}
         {...expandedAssetSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.SWAP_SETTINGS_SHEET}
+        {...customGasSheetConfig}
       />
 
       {profilesEnabled && (
