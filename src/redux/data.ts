@@ -49,7 +49,6 @@ import {
 import appEvents from '@rainbow-me/handlers/appEvents';
 import {
   getAccountAssetsData,
-  getAssetPricesFromUniswap,
   getLocalPendingTransactions,
   getLocalTransactions,
   saveAccountAssetsData,
@@ -575,14 +574,14 @@ export const dataLoadState = () => async (
 ) => {
   const { accountAddress, network } = getState().settings;
   try {
-    const assetPricesFromUniswap = await getAssetPricesFromUniswap(
-      accountAddress,
-      network
-    );
-    dispatch({
-      payload: assetPricesFromUniswap,
-      type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
-    });
+    // const assetPricesFromUniswap = await getAssetPricesFromUniswap(
+    //   accountAddress,
+    //   network
+    // );
+    // dispatch({
+    //   payload: assetPricesFromUniswap,
+    //   type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
+    // });
     // eslint-disable-next-line no-empty
   } catch (error) {}
   try {
@@ -1177,13 +1176,13 @@ export const addressAssetsReceived = (
     payload: parsedAssets,
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
   });
-  if (!change) {
-    const missingPriceAssetAddresses: string[] = Object.values(parsedAssets)
-      .filter(asset => isNil(asset?.price))
-      .map(asset => asset.address);
+  // if (!change) {
+  //   const missingPriceAssetAddresses: string[] = Object.values(parsedAssets)
+  //     .filter(asset => isNil(asset?.price))
+  //     .map(asset => asset.address);
 
-    dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
-  }
+  //   dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
+  // }
 
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
     .filter(
@@ -1203,7 +1202,7 @@ export const addressAssetsReceived = (
  *
  * @param addresses The asset addresses to subscribe to.
  */
-const subscribeToMissingPrices = (addresses: string[]) => (
+export const subscribeToMissingPrices = (addresses: string[]) => (
   dispatch: Dispatch<
     | DataLoadAssetPricesFromUniswapSuccessAction
     | DataUpdateUniswapPricesSubscriptionAction
