@@ -285,6 +285,24 @@ export const dedupeAssetsWithFamilies = (accountAssets, families) =>
     asset => !families?.find(family => family === asset?.address)
   );
 
+const createSimplehashPermalink = simplehashNft => {
+  const marketplace = simplehashNft.collection.marketplace_pages?.[0];
+  if (!marketplace) return null;
+
+  const marketplaceName = marketplace.marketplace_name;
+  const collectionId = marketplace.marketplace_collection_id;
+  const tokenId = simplehashNft.token_id;
+  switch (marketplaceName) {
+    case 'Quixotic':
+      return `https://quixotic.io/asset/${collectionId}/${tokenId}`;
+    case 'Stratos':
+      return `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
+    default: {
+      return null;
+    }
+  }
+};
+
 export const parseSimplehashNfts = nftData => {
   const results = nftData?.map(simplehashNft => {
     const collection = simplehashNft.collection;
@@ -329,7 +347,7 @@ export const parseSimplehashNfts = nftData => {
       lowResUrl,
       name: simplehashNft.name,
       network: simplehashNft.chain,
-      permalink: null, // TODO - simplehashNft.collection.marketplace_pages / token_id
+      permalink: createSimplehashPermalink(simplehashNft),
       traits: simplehashNft.extra_metadata?.attributes ?? [],
       type: AssetTypes.nft,
       uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
