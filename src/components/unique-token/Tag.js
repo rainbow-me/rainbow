@@ -16,11 +16,11 @@ const HairlineSpace = '\u200a';
 
 const PropertyActionsEnum = {
   openURL: 'openURL',
-  viewTraitOnOpensea: 'viewTraitOnOpensea',
+  viewTraitOnNftMarketplace: 'viewTraitOnNftMarketplace',
 };
 
 const viewTraitOnNftMarketplaceAction = {
-  actionKey: PropertyActionsEnum.viewTraitOnOpensea,
+  actionKey: PropertyActionsEnum.viewTraitOnNftMarketplace,
   actionTitle: lang.t('expanded_state.unique_expanded.view_all_with_property'),
   discoverabilityTitle: 'OpenSea',
   icon: {
@@ -93,7 +93,7 @@ const Tag = ({
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === PropertyActionsEnum.viewTraitOnOpensea) {
+      if (actionKey === PropertyActionsEnum.viewTraitOnNftMarketplace) {
         Linking.openURL(
           'https://opensea.io/collection/' +
             slug +
