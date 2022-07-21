@@ -50,6 +50,9 @@ import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
+import { ButtonPressAnimation } from '../animations';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
@@ -156,6 +159,13 @@ export default function SettingsSection({
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
+
+  const { navigate } = useNavigation();
+  const onPressExplainer = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'optimism_app_icon',
+    });
+  }, [navigate]);
 
   const onPressReview = useCallback(async () => {
     if (ios) {
@@ -381,6 +391,11 @@ export default function SettingsSection({
             />
           )}
         </ColumnWithDividers>
+        <ButtonPressAnimation onPress={onPressExplainer} scale={0.96}>
+          <Text align="center">
+            {`􀅵 ${lang.t('settings.app_icon_section.explainer')}`}
+          </Text>
+        </ButtonPressAnimation>
         <Fragment>
           <ListFooter height={10} />
           <ListItem

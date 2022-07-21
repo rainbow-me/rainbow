@@ -9,6 +9,7 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import OptimismAppIcon from '@rainbow-me/assets/optimismAppIcon.png';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
@@ -16,6 +17,8 @@ import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
+import { ImgixImage } from '@rainbow-me/images';
+import Routes from '@rainbow-me/routes';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -114,14 +117,29 @@ const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
 
 const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
 
-const APP_ICON_EXPLAINER = lang.t('explain.app_icon.text');
+const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
 
 export const explainers = network => ({
-  app_icon: {
-    emoji: '🌈',
-    extraHeight: -31,
-    text: APP_ICON_EXPLAINER,
-    title: lang.t('explain.app_icon.title'),
+  optimism_app_icon: {
+    logo: (
+      <ImgixImage
+        source={OptimismAppIcon}
+        style={{ marginBottom: -10, width: 90, height: 90 }}
+      />
+    ),
+    extraHeight: -25,
+    text: OPTIMISM_APP_ICON_EXPLAINER,
+    title: lang.t('explain.optimism_app_icon.title'),
+    button: {
+      label: lang.t('explain.optimism_app_icon.button'),
+      textColor: colors => colors?.optimismRed,
+      bgColor: colors => colors?.optimismRed06,
+      onPress: navigate => () => {
+        navigate(Routes.SETTINGS_SHEET, {
+          screen: 'AppIconSection',
+        });
+      },
+    },
   },
   floor_price: {
     emoji: '📊',
@@ -290,7 +308,7 @@ const ExplainSheet = () => {
     params = {},
   } = useRoute();
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
@@ -306,8 +324,8 @@ const ExplainSheet = () => {
   }, [params, type]);
 
   const explainSheetConfig = useMemo(() => {
-    return explainers(network)[type];
-  }, [network, type]);
+    return explainers(colors, network)[type];
+  }, [colors, network, type]);
 
   const handleClose = useCallback(() => {
     goBack();
@@ -396,12 +414,26 @@ const ExplainSheet = () => {
               </Column>
             )}
             <SheetActionButton
-              color={colors.alpha(colors.appleBlue, 0.04)}
+              color={
+                explainSheetConfig.button?.bgColor
+                  ? explainSheetConfig.button.bgColor(colors)
+                  : colors.alpha(colors.appleBlue, 0.04)
+              }
               isTransparent
-              label={lang.t('button.got_it')}
-              onPress={handleClose}
+              label={
+                explainSheetConfig.button?.label || lang.t('button.got_it')
+              }
+              onPress={
+                explainSheetConfig.button?.onPress
+                  ? explainSheetConfig.button.onPress(navigate)
+                  : handleClose
+              }
               size="big"
-              textColor={colors.appleBlue}
+              textColor={
+                explainSheetConfig.button?.textColor
+                  ? explainSheetConfig.button?.textColor(colors)
+                  : colors.appleBlue
+              }
               weight="heavy"
             />
           </ColumnWithMargins>
@@ -412,3 +444,4 @@ const ExplainSheet = () => {
 };
 
 export default React.memo(ExplainSheet);
+2;

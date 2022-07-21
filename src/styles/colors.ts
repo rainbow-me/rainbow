@@ -114,6 +114,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     neonSkyblue: '#34FFFF', // '52, 255, 255'
     offWhite: '#F8F9FA', // '248, 249, 250'
     offWhite80: '#1C1F27',
+    optimismRed: '#FF0420', // '255, 4, 32',
+    optimismRed06: 'rgba(255, 4, 32, 0.06)', // '255, 4, 32, 0.06'
     orange: '#F46E38', // '244, 110, 56'
     orangeLight: '#FEBE44', // '254, 190, 68'
     paleBlue: '#579DFF', // 87, 157, 255
