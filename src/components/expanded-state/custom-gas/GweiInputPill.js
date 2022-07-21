@@ -78,6 +78,7 @@ function GweiInputPill(
     onBlur,
     testID,
     color,
+    editable = true,
   },
   ref
 ) {
@@ -98,6 +99,7 @@ function GweiInputPill(
           <GweiNumberInput
             allowFontScaling={false}
             contextMenuHidden
+            editable={editable}
             mask="[9999]{.}[999]"
             onBlur={onBlur}
             onChangeText={onChangeText}
