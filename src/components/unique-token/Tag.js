@@ -19,14 +19,18 @@ const PropertyActionsEnum = {
   viewTraitOnNftMarketplace: 'viewTraitOnNftMarketplace',
 };
 
-const viewTraitOnNftMarketplaceAction = {
-  actionKey: PropertyActionsEnum.viewTraitOnNftMarketplace,
-  actionTitle: lang.t('expanded_state.unique_expanded.view_all_with_property'),
-  discoverabilityTitle: 'OpenSea',
-  icon: {
-    iconType: 'SYSTEM',
-    iconValue: 'magnifyingglass.circle.fill',
-  },
+const getViewTraitOnNftMarketplaceAction = (marketplaceName = 'OpenSea') => {
+  return {
+    actionKey: PropertyActionsEnum.viewTraitOnNftMarketplace,
+    actionTitle: lang.t(
+      'expanded_state.unique_expanded.view_all_with_property'
+    ),
+    discoverabilityTitle: marketplaceName,
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'magnifyingglass.circle.fill',
+    },
+  };
 };
 
 const openTraitURLInBrowserAction = {
@@ -74,12 +78,29 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   marginBottom: 1,
 });
 
+const getNftTraitUrl = (
+  marketplaceName,
+  collectionId,
+  traitTitle,
+  traitValue
+) => {
+  switch (marketplaceName) {
+    case 'Stratos':
+      return `https://stratosnft.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
+    case 'Quixotic':
+      return `https://quixotic.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
+    default:
+      return `https://opensea.io/collection/${collectionId}?search[stringTraits][0][name]=${traitTitle}&search[stringTraits][0][values][0]=${traitValue}`;
+  }
+};
+
 const Tag = ({
   color,
   disableMenu,
   slug,
   text,
   title,
+  marketplaceName,
   maxValue,
   originalValue,
   lowercase,
@@ -91,22 +112,25 @@ const Tag = ({
     typeof originalValue === 'string' &&
     originalValue.toLowerCase().startsWith('https://');
 
+  const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(
+    marketplaceName
+  );
+
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnNftMarketplace) {
-        Linking.openURL(
-          'https://opensea.io/collection/' +
-            slug +
-            '?search[stringTraits][0][name]=' +
-            title +
-            '&search[stringTraits][0][values][0]=' +
-            originalValue
+        const nftTraitUrl = getNftTraitUrl(
+          marketplaceName,
+          slug,
+          title,
+          originalValue
         );
+        Linking.openURL(nftTraitUrl);
       } else if (actionKey === PropertyActionsEnum.openURL) {
         Linking.openURL(originalValue);
       }
     },
-    [slug, originalValue, title]
+    [slug, originalValue, marketplaceName, title]
   );
 
   const onPressAndroid = useCallback(() => {
@@ -131,14 +155,13 @@ const Tag = ({
           androidContractActions[idx] ===
           viewTraitOnNftMarketplaceAction.actionTitle
         ) {
-          Linking.openURL(
-            'https://opensea.io/collection/' +
-              slug +
-              '?search[stringTraits][0][name]=' +
-              title +
-              '&search[stringTraits][0][values][0]=' +
-              originalValue
+          const nftTraitUrl = getNftTraitUrl(
+            marketplaceName,
+            slug,
+            title,
+            originalValue
           );
+          Linking.openURL(nftTraitUrl);
         } else if (
           androidContractActions[idx] ===
           openTraitURLInBrowserAction.actionTitle
@@ -147,7 +170,15 @@ const Tag = ({
         }
       }
     );
-  }, [hideNftMarketplaceAction, isURL, slug, title, originalValue]);
+  }, [
+    hideNftMarketplaceAction,
+    isURL,
+    slug,
+    title,
+    originalValue,
+    marketplaceName,
+    viewTraitOnNftMarketplaceAction.actionTitle,
+  ]);
 
   const menuConfig = useMemo(() => {
     const menuItems = [];
@@ -164,7 +195,7 @@ const Tag = ({
       menuItems,
       menuTitle: '',
     };
-  }, [hideNftMarketplaceAction, isURL]);
+  }, [hideNftMarketplaceAction, isURL, viewTraitOnNftMarketplaceAction]);
 
   const textWithUpdatedCase = lowercase ? text : upperFirst(text);
 
@@ -220,6 +251,7 @@ export default magicMemo(Tag, [
   'slug',
   'text',
   'title',
+  'marketplaceName',
   'maxValue',
   'originalValue',
   'hideNftMarketplaceAction',

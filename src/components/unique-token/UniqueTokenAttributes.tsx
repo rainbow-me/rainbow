@@ -10,15 +10,17 @@ import uniqueAssetTraitDisplayTypeCompareFunction from '@rainbow-me/helpers/uniq
 
 interface UniqueTokenAttributesProps {
   color: string;
-  slug: string;
   hideNftMarketplaceAction?: boolean;
+  marketplaceName?: string;
+  slug: string;
   traits: UniqueAsset['traits'];
 }
 
 const UniqueTokenAttributes = ({
   color,
-  slug,
   hideNftMarketplaceAction,
+  marketplaceName,
+  slug,
   traits,
 }: UniqueTokenAttributesProps) => {
   const sortedTraits = useMemo(
@@ -60,6 +62,7 @@ const UniqueTokenAttributes = ({
             hideNftMarketplaceAction={hideNftMarketplaceAction}
             key={`${type}${originalValue}`}
             lowercase={lowercase}
+            marketplaceName={marketplaceName}
             maxValue={maxValue}
             originalValue={originalValue}
             slug={slug}
@@ -72,4 +75,9 @@ const UniqueTokenAttributes = ({
   );
 };
 
-export default magicMemo(UniqueTokenAttributes, ['color', 'slug', 'traits']);
+export default magicMemo(UniqueTokenAttributes, [
+  'color',
+  'slug',
+  'marketplaceName',
+  'traits',
+]);
