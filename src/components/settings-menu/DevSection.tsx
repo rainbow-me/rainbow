@@ -329,9 +329,7 @@ const DevSection = () => {
               size="medium"
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t(
-                    'developer_settings.restore_default_experimental_config'
-                  )}
+                  text={lang.t('developer_settings.reset_experimental_config')}
                 />
               }
             />

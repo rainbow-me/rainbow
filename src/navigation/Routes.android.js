@@ -64,7 +64,6 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, {
-  NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 
@@ -299,8 +298,6 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
-  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
-
   return (
     <BSStack.Navigator>
       <BSStack.Screen

@@ -48,7 +48,7 @@ import {
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
 
-// const { RainbowRequestReview, RNReview } = NativeModules;
+const { RainbowRequestReview, RNReview } = NativeModules;
 
 const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
@@ -124,19 +124,19 @@ const SettingsSection = ({
 
   const onSendFeedback = useSendFeedback();
 
-  // const onPressReview = useCallback(async () => {
-  //   if (ios) {
-  //     onCloseModal();
-  //     RainbowRequestReview.requestReview((handled: boolean) => {
-  //       if (!handled) {
-  //         AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
-  //         Linking.openURL(AppleReviewAddress);
-  //       }
-  //     });
-  //   } else {
-  //     RNReview.show();
-  //   }
-  // }, [onCloseModal]);
+  const onPressReview = useCallback(async () => {
+    if (ios) {
+      onCloseModal();
+      RainbowRequestReview.requestReview((handled: boolean) => {
+        if (!handled) {
+          AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
+          Linking.openURL(AppleReviewAddress);
+        }
+      });
+    } else {
+      RNReview.show();
+    }
+  }, [onCloseModal]);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -419,7 +419,7 @@ const SettingsSection = ({
           <MenuItem
             iconPadding="large"
             leftComponent={<MenuItem.Title text="❤️" />}
-            onPress={() => {}}
+            onPress={onPressReview}
             size="medium"
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
           />

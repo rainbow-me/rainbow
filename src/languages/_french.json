@@ -295,7 +295,7 @@
       "remove_all_backups": "Remove all backups :)",
       "reset_keychain": "Reset Keychain :)",
       "restart_app": "Restart app :)",
-      "restore_default_experimental_config": "Restore default experimental config :)",
+      "reset_experimental_config": "Reset experimental config :)",
       "status": "Status :)",
       "sync_codepush": "Sync codepush, current: %{codePushVersion} :)"
     },
