@@ -984,7 +984,13 @@ export const transactionsReceived = (
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
-  if (transactionData.length) {
+
+  const { network } = getState().settings;
+  let currentNetwork = network;
+  if (currentNetwork === Network.mainnet && message?.meta?.chain_id) {
+    currentNetwork = message?.meta?.chain_id;
+  }
+  if (transactionData.length && currentNetwork === Network.mainnet) {
     dispatch(checkForUpdatedNonce(transactionData));
   }
 
@@ -993,10 +999,6 @@ export const transactionsReceived = (
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
 
-  let { network } = getState().settings;
-  if (network === Network.mainnet && message?.meta?.chain_id) {
-    network = message?.meta?.chain_id;
-  }
   const {
     parsedTransactions,
     potentialNftTransaction,
@@ -1006,7 +1008,7 @@ export const transactionsReceived = (
     nativeCurrency,
     transactions,
     purchaseTransactions,
-    network,
+    currentNetwork,
     appended
   );
   if (appended && potentialNftTransaction) {
@@ -1189,7 +1191,12 @@ export const addressAssetsReceived = (
   }
 
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
-    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .filter(
+      asset =>
+        (isValidDomain(asset.name.replaceAll(' ', '')) ||
+          isValidDomain(asset.symbol)) &&
+        !asset.isVerified
+    )
     .map(asset => asset.uniqueId);
 
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
