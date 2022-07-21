@@ -285,22 +285,29 @@ export const dedupeAssetsWithFamilies = (accountAssets, families) =>
     asset => !families?.find(family => family === asset?.address)
   );
 
-const createSimplehashPermalink = simplehashNft => {
+const getSimplehashMarketplaceInfo = simplehashNft => {
   const marketplace = simplehashNft.collection.marketplace_pages?.[0];
   if (!marketplace) return null;
 
   const marketplaceName = marketplace.marketplace_name;
   const collectionId = marketplace.marketplace_collection_id;
   const tokenId = simplehashNft.token_id;
+  let permalink = null;
   switch (marketplaceName) {
     case 'Quixotic':
-      return `https://quixotic.io/asset/${collectionId}/${tokenId}`;
+      permalink = `https://quixotic.io/asset/${collectionId}/${tokenId}`;
+      break;
     case 'Stratos':
-      return `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
-    default: {
-      return null;
-    }
+      permalink = `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
+      break;
+    default:
+      permalink = null;
   }
+  return {
+    collectionId,
+    marketplaceName,
+    permalink,
+  };
 };
 
 export const parseSimplehashNfts = nftData => {
@@ -312,6 +319,8 @@ export const parseSimplehashNfts = nftData => {
       simplehashNft.extra_metadata?.image_original_url,
       simplehashNft.previews.image_small_url
     );
+
+    const marketplaceInfo = getSimplehashMarketplaceInfo(simplehashNft);
 
     const parsedNft = {
       animation_url: simplehashNft.extra_metadata?.animation_original_url,
@@ -328,7 +337,7 @@ export const parseSimplehashNfts = nftData => {
         external_url: collection.external_url,
         image_url: collection.image_url,
         name: collection.name,
-        slug: collection.collection_id,
+        slug: marketplaceInfo?.collectionId,
         twitter_username: collection.twitter_username,
       },
       description: simplehashNft.description,
@@ -345,9 +354,10 @@ export const parseSimplehashNfts = nftData => {
       lastPrice: parseLastSalePrice(simplehashNft.last_sale?.unit_price),
       lastSalePaymentToken: simplehashNft.last_sale?.payment_token?.symbol,
       lowResUrl,
+      marketplaceName: marketplaceInfo?.marketplaceName,
       name: simplehashNft.name,
       network: simplehashNft.chain,
-      permalink: createSimplehashPermalink(simplehashNft),
+      permalink: marketplaceInfo?.permalink,
       traits: simplehashNft.extra_metadata?.attributes ?? [],
       type: AssetTypes.nft,
       uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
