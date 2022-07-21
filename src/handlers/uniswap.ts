@@ -155,6 +155,7 @@ export const getSwapGasLimitWithFakeApproval = async (
     logger.log(`Blew up trying to get state diff. Falling back to defaults`, e);
   }
   return (
+    Number(tradeDetails?.defaultGasLimit ?? 0) ??
     ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING
   );
 };
@@ -235,9 +236,9 @@ export const estimateSwapGasLimit = async ({
         1.002
       );
 
-      return gasLimit || default_estimate;
+      return gasLimit ?? tradeDetails?.defaultGasLimit ?? default_estimate;
     } catch (e) {
-      return default_estimate;
+      return tradeDetails?.defaultGasLimit ?? default_estimate;
     }
     // Swap
   } else {
@@ -272,7 +273,10 @@ export const estimateSwapGasLimit = async ({
             logger.debug('Error estimating swap gas limit with approval', e);
           }
         }
-        return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+        return (
+          tradeDetails?.defaultGasLimit ??
+          getBasicSwapGasLimitForTrade(tradeDetails, chainId)
+        );
       }
 
       const gasLimit = await estimateGasWithPadding(
@@ -282,9 +286,16 @@ export const estimateSwapGasLimit = async ({
         provider,
         1.01
       );
-      return gasLimit || getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+      return (
+        gasLimit ??
+        tradeDetails?.defaultGasLimit ??
+        getBasicSwapGasLimitForTrade(tradeDetails, chainId)
+      );
     } catch (error) {
-      return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+      return (
+        tradeDetails?.defaultGasLimit ??
+        getBasicSwapGasLimitForTrade(tradeDetails, chainId)
+      );
     }
   }
 };
