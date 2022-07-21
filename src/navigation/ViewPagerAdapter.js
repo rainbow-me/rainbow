@@ -1,6 +1,6 @@
-import ViewPager from '@react-native-community/viewpager';
 import React, { forwardRef, useEffect } from 'react';
 import { Keyboard } from 'react-native';
+import ViewPager from 'react-native-pager-view';
 import Animated from 'react-native-reanimated';
 import { useAnimatedPageScrollHandler } from '../hooks/useAnimatedPageScrollHandler';
 import { usePagerPosition } from './ScrollPositionContext';
@@ -120,8 +120,9 @@ class ViewPagerBackend extends React.Component {
       transition,
       showPageIndicator,
       pageMargin,
-      overdrag,
+      overdrag = true,
       overScrollMode,
+      initialScrollPosition,
     } = this.props;
 
     return children({
@@ -130,6 +131,7 @@ class ViewPagerBackend extends React.Component {
       removeListener: this.removeListener,
       render: children => (
         <ViewPagerWrapper
+          initialPage={initialScrollPosition}
           keyboardDismissMode={
             // ViewPager does not accept auto mode
             keyboardDismissMode === 'auto' ? 'on-drag' : keyboardDismissMode
