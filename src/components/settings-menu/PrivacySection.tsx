@@ -20,7 +20,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
-const PrivacySectionV2 = () => {
+const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();
   const { webDataEnabled, initWebData, wipeWebData } = useWebData();
   const { navigate } = useNavigation();
@@ -103,4 +103,4 @@ const PrivacySectionV2 = () => {
   );
 };
 
-export default PrivacySectionV2;
+export default PrivacySection;

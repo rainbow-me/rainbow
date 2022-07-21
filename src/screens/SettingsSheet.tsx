@@ -14,7 +14,7 @@ import {
   LanguageSection,
   NetworkSection,
   NotificationsSection,
-  PrivacySectionV2,
+  PrivacySection,
   SettingsSection,
   WalletNotificationsSettings,
 } from '../components/settings-menu';
@@ -99,7 +99,7 @@ const SettingsPages = {
     key: 'NotificationsSection',
   },
   privacy: {
-    component: PrivacySectionV2,
+    component: PrivacySection,
     getTitle: () => lang.t('settings.privacy'),
     key: 'PrivacySection',
   },

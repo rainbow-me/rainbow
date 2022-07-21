@@ -171,41 +171,47 @@ const MenuItem = ({
       ? 17
       : 0;
 
-  return (
-    <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={0.96}>
-      <Box
-        height={{ custom: size === 'large' ? 60 : 52 }}
-        justifyContent="center"
-        paddingHorizontal={{ custom: 16 }}
-        width="full"
-      >
-        <Inline alignHorizontal="justify" alignVertical="center">
-          <Inline alignVertical="center" space={{ custom: space }}>
-            {leftComponent}
-            <Stack space="8px">
-              {titleComponent}
-              {labelComponent}
-            </Stack>
-          </Inline>
-          <Inline alignVertical="center" space={{ custom: 9 }}>
-            {rightComponent}
-            {hasRightArrow && (
-              <Box
-                as={ImgixImage}
-                height={{ custom: 15 }}
-                source={Caret as Source}
-                tintColor={colors.blueGreyDark60}
-                width={{ custom: 5.83 }}
-              />
-            )}
-            {hasChevron && (
-              <Text color="secondary60" size="18px" weight="regular">
-                􀆏
-              </Text>
-            )}
-          </Inline>
+  const Item = () => (
+    <Box
+      height={{ custom: size === 'large' ? 60 : 52 }}
+      justifyContent="center"
+      paddingHorizontal={{ custom: 16 }}
+      width="full"
+    >
+      <Inline alignHorizontal="justify" alignVertical="center">
+        <Inline alignVertical="center" space={{ custom: space }}>
+          {leftComponent}
+          <Stack space="8px">
+            {titleComponent}
+            {labelComponent}
+          </Stack>
         </Inline>
-      </Box>
+        <Inline alignVertical="center" space={{ custom: 9 }}>
+          {rightComponent}
+          {hasRightArrow && (
+            <Box
+              as={ImgixImage}
+              height={{ custom: 15 }}
+              source={Caret as Source}
+              tintColor={colors.blueGreyDark60}
+              width={{ custom: 5.83 }}
+            />
+          )}
+          {hasChevron && (
+            <Text color="secondary60" size="18px" weight="regular">
+              􀆏
+            </Text>
+          )}
+        </Inline>
+      </Inline>
+    </Box>
+  );
+
+  return disabled ? (
+    <Item />
+  ) : (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+      <Item />
     </ButtonPressAnimation>
   );
 };
