@@ -14,7 +14,8 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji, Text } from '../text';
-import AppIcon from '@rainbow-me/assets/rainbow-og.png';
+import AppIconIcon from '@rainbow-me/assets/settingsAppIcon.png';
+import AppIconIconDark from '@rainbow-me/assets/settingsAppIconDark.png';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
@@ -317,7 +318,11 @@ export default function SettingsSection({
             </ListItem>
           )}
           <ListItem
-            icon={<SettingIcon source={AppIcon} />}
+            icon={
+              <SettingIcon
+                source={isDarkMode ? AppIconIconDark : AppIconIcon}
+              />
+            }
             label={lang.t('settings.app_icon')}
             onPress={onPressAppIcon}
             testID="app-icon-section"
