@@ -89,7 +89,10 @@ const AppIconSection = () => {
     const mmkv = new MMKV();
     Object.keys(tokenGatedIcons).forEach(key => {
       const icon = tokenGatedIcons[key];
-      if (mmkv.getBoolean(icon.unlock_key)) {
+      const unlocked = mmkv.getBoolean(icon.unlock_key);
+      Logger.log('checking if unlocked', icon.name, unlocked, icon.unlock_key);
+      if (unlocked) {
+        Logger.log('unlocked', icon.name);
         list[key] = icon;
       }
     });

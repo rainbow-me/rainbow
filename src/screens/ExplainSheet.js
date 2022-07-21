@@ -153,10 +153,17 @@ export const explainers = network => ({
       label: lang.t('explain.optimism_app_icon.button'),
       textColor: 'optimismRed',
       bgColor: 'optimismRed06',
-      onPress: navigate => () => {
-        navigate(Routes.SETTINGS_SHEET, {
-          screen: 'AppIconSection',
-        });
+      onPress: (navigate, goBack, handleClose) => () => {
+        if (handleClose) handleClose();
+        if (goBack) goBack();
+        setTimeout(() => {
+          navigate(Routes.SETTINGS_SHEET);
+          setTimeout(() => {
+            navigate(Routes.SETTINGS_SHEET, {
+              screen: 'AppIconSection',
+            });
+          }, 300);
+        }, 300);
       },
     },
   },
@@ -443,7 +450,11 @@ const ExplainSheet = () => {
               }
               onPress={
                 explainSheetConfig.button?.onPress
-                  ? explainSheetConfig.button.onPress(navigate)
+                  ? explainSheetConfig.button.onPress(
+                      navigate,
+                      goBack,
+                      handleClose
+                    )
                   : handleClose
               }
               size="big"

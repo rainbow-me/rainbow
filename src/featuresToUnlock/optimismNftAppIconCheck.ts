@@ -1,6 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from 'ethers';
-import { InteractionManager } from 'react-native';
 // @ts-ignore-next-line
 import { OPTIMISM_KOVAN_RPC } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
@@ -50,27 +49,22 @@ export const optimismNftAppIconCheck = async (
     const found = await opWrapperInstance.areOwners(walletsToCheck);
 
     if (found) {
-      logger.debug('navigating to OP NFT sheet...');
       Navigation.handleAction(Routes.EXPLAIN_SHEET, {
         onClose: () => {
-          InteractionManager.runAfterInteractions(() => {
-            setTimeout(() => {
-              const mmkv = new MMKV();
-              mmkv.set(featureCheckName, true);
-              logger.debug(
-                'Feature check',
-                featureCheckName,
-                'set to true. Wont show up anymore!'
-              );
-            }, 250);
-          });
+          const mmkv = new MMKV();
+          mmkv.set(featureCheckName, true);
+          logger.log(
+            'Feature check',
+            featureCheckName,
+            'set to true. Wont show up anymore!'
+          );
         },
-        type: 'floor_price',
+        type: 'optimism_app_icon',
       });
       return true;
     }
   } catch (e) {
-    logger.debug('areOwners blew up', e);
+    logger.log('areOwners blew up', e);
   }
   return false;
 };
