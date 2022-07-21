@@ -4,7 +4,10 @@ import { MMKV } from 'react-native-mmkv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import { EthereumAddress } from '@/entities';
-import { optimismNftAppIconCheck } from '@/featuresToUnlock';
+import {
+  optimismNftAppIconCheck,
+  UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
+} from '@/featuresToUnlock';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -115,7 +118,7 @@ export const runFeatureUnlockChecks = () => {
   const featuresToUnlock = [
     {
       check: optimismNftAppIconCheck,
-      name: 'optimism_nft_app_icon',
+      name: UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
     },
   ];
 
