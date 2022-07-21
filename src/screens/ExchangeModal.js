@@ -81,13 +81,20 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
-const DEFAULT_SLIPPAGE_BIPS = {
+export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
   [Network.polygon]: 200,
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
 };
 
+export const getDefaultSlippageFromConfig = network => {
+  const slippage =
+    config.default_slippage_bips?.[network] ??
+    DEFAULT_SLIPPAGE_BIPS[network] ??
+    100;
+  return slippage;
+};
 const NOOP = () => null;
 
 const FloatingPanels = AnimatedExchangeFloatingPanels;
@@ -687,6 +694,7 @@ export default function ExchangeModal({
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
         asset: outputCurrency,
+        network: currentNetwork,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -701,14 +709,15 @@ export default function ExchangeModal({
       ? internalNavigate()
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
-    inputFieldRef,
     lastFocusedInputHandle,
+    inputFieldRef,
+    outputFieldRef,
     nativeFieldRef,
+    setParams,
     navigate,
     outputCurrency,
-    outputFieldRef,
+    currentNetwork,
     swapSupportsFlashbots,
-    setParams,
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {

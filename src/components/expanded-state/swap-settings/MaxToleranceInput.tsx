@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { Keyboard } from 'react-native';
+import { getDefaultSlippageFromConfig } from '../../../screens/ExchangeModal';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import StepButtonInput from './StepButtonInput';
@@ -20,6 +21,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { Network } from '@rainbow-me/helpers';
 import {
   add,
   convertNumberToString,
@@ -37,7 +39,13 @@ const SLIPPAGE_INCREMENT = 0.1;
 
 // eslint-disable-next-line react/display-name
 export const MaxToleranceInput = forwardRef(
-  ({ colorForAsset }: { colorForAsset: string }, ref) => {
+  (
+    {
+      colorForAsset,
+      currentNetwork,
+    }: { colorForAsset: string; currentNetwork: Network },
+    ref
+  ) => {
     const { slippageInBips, updateSwapSlippage } = useSwapSettings();
     const { navigate } = useNavigation();
 
@@ -60,7 +68,8 @@ export const MaxToleranceInput = forwardRef(
         slippageRef?.current?.blur();
       },
       reset: () => {
-        onSlippageChange(1);
+        const slippage = getDefaultSlippageFromConfig(currentNetwork);
+        onSlippageChange(convertBipsToPercent(slippage));
       },
     }));
 
