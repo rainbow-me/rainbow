@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
-  CurrencySectionV2,
+  CurrencySection,
   DevNotificationsSection,
   DevSectionV2,
   LanguageSectionV2,
@@ -69,7 +69,7 @@ const SettingsPages = {
     key: 'BackupSection',
   },
   currency: {
-    component: CurrencySectionV2,
+    component: CurrencySection,
     getTitle: () => lang.t('settings.currency'),
     key: 'CurrencySection',
   },
