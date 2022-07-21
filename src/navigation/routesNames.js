@@ -52,7 +52,6 @@ const Routes = {
   SEND_SHEET: 'SendSheet',
   SEND_SHEET_NAVIGATOR: 'SendSheetNavigator',
   SETTINGS_SHEET: 'SettingsSheet',
-  SETTINGS_SHEET_V2: 'SettingsSheetV2',
   SHOWCASE_SHEET: 'ShowcaseSheet',
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',
@@ -74,7 +73,6 @@ const Routes = {
 export const NATIVE_ROUTES = [
   Routes.RECEIVE_MODAL,
   Routes.SETTINGS_SHEET,
-  Routes.SETTINGS_SHEET_V2,
   Routes.EXCHANGE_MODAL,
   Routes.EXPANDED_ASSET_SHEET,
   Routes.TOKEN_INDEX_SHEET,
