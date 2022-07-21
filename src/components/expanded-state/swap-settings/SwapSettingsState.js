@@ -46,7 +46,7 @@ export default function SwapSettingsState({ asset }) {
     settingsChangeFlashbotsEnabled,
   } = useAccountSettings();
   const {
-    params: { swapSupportsFlashbots = false },
+    params: { swapSupportsFlashbots = false, network },
   } = useRoute();
   const { colors } = useTheme();
   const { setParams, goBack } = useNavigation();
@@ -171,6 +171,7 @@ export default function SwapSettingsState({ asset }) {
             )}
             <MaxToleranceInput
               colorForAsset={colorForAsset}
+              currentNetwork={network}
               ref={slippageRef}
             />
           </Stack>

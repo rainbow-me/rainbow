@@ -8,11 +8,10 @@ import React, {
   useState,
 } from 'react';
 import { Keyboard } from 'react-native';
+import { getDefaultSlippageFromConfig } from '../../../screens/ExchangeModal';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import StepButtonInput from './StepButtonInput';
-import { Network } from '@/helpers';
-import { getDefaultSlippageFromConfig } from '@/screens/ExchangeModal';
 import {
   AccentColorProvider,
   Box,
@@ -22,6 +21,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { Network } from '@rainbow-me/helpers';
 import {
   add,
   convertNumberToString,
@@ -68,8 +68,8 @@ export const MaxToleranceInput = forwardRef(
         slippageRef?.current?.blur();
       },
       reset: () => {
-        let slippage = getDefaultSlippageFromConfig(currentNetwork);
-        onSlippageChange(slippage);
+        const slippage = getDefaultSlippageFromConfig(currentNetwork);
+        onSlippageChange(convertBipsToPercent(slippage));
       },
     }));
 

@@ -90,7 +90,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
 
 export const getDefaultSlippageFromConfig = network => {
   const slippage =
-    config.default_slippage_bips[network] ??
+    config.default_slippage_bips?.[network] ??
     DEFAULT_SLIPPAGE_BIPS[network] ??
     100;
   return slippage;
