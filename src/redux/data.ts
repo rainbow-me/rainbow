@@ -12,9 +12,8 @@ import {
   toUpper,
   uniqBy,
 } from 'lodash';
-import debounce from 'lodash/debounce';
 import { MMKV } from 'react-native-mmkv';
-import { AnyAction, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { uniswapClient } from '../apollo/client';
 import {
@@ -23,6 +22,10 @@ import {
 } from '../apollo/queries';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import { addCashUpdatePurchases } from './addCash';
+import {
+  cancelDebouncedUpdateGenericAssets,
+  debouncedUpdateGenericAssets,
+} from './helpers/debouncedUpdateGenericAssets';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
 import { uniqueTokensRefreshState } from './uniqueTokens';
@@ -144,15 +147,15 @@ const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
   'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
 
-const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
+export const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST';
-const DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED =
+export const DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED';
 const DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS';
 const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE';
-const DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED =
+export const DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED';
 
 const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS =
@@ -290,7 +293,7 @@ interface DataUpdateRefetchSavingsAction {
 /**
  * The action to update `genericAssets`.
  */
-interface DataUpdateGenericAssetsAction {
+export interface DataUpdateGenericAssetsAction {
   type: typeof DATA_UPDATE_GENERIC_ASSETS;
   payload: DataState['genericAssets'];
 }
@@ -378,7 +381,7 @@ interface DataLoadAccountAssetsDataFailureAction {
 /**
  * The action used to incidate that loading *all* account assets is finished.
  */
-interface DataLoadAccountAssetsDataFinalizedAction {
+export interface DataLoadAccountAssetsDataFinalizedAction {
   type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED;
 }
 
@@ -790,8 +793,12 @@ export const dataResetState = () => (
 ) => {
   const { uniswapPricesSubscription } = getState().data;
   uniswapPricesSubscription?.unsubscribe?.();
+  // cancel any debounced updates so we won't override any new data with stale debounced ones
+  cancelDebouncedUpdateGenericAssets();
+
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   genericAssetsHandle && clearTimeout(genericAssetsHandle);
+
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
@@ -977,7 +984,13 @@ export const transactionsReceived = (
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
-  if (transactionData.length) {
+
+  const { network } = getState().settings;
+  let currentNetwork = network;
+  if (currentNetwork === Network.mainnet && message?.meta?.chain_id) {
+    currentNetwork = message?.meta?.chain_id;
+  }
+  if (transactionData.length && currentNetwork === Network.mainnet) {
     dispatch(checkForUpdatedNonce(transactionData));
   }
 
@@ -986,10 +999,6 @@ export const transactionsReceived = (
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
 
-  let { network } = getState().settings;
-  if (network === Network.mainnet && message?.meta?.chain_id) {
-    network = message?.meta?.chain_id;
-  }
   const {
     parsedTransactions,
     potentialNftTransaction,
@@ -999,7 +1008,7 @@ export const transactionsReceived = (
     nativeCurrency,
     transactions,
     purchaseTransactions,
-    network,
+    currentNetwork,
     appended
   );
   if (appended && potentialNftTransaction) {
@@ -1182,7 +1191,12 @@ export const addressAssetsReceived = (
   }
 
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
-    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .filter(
+      asset =>
+        (isValidDomain(asset.name.replaceAll(' ', '')) ||
+          isValidDomain(asset.symbol)) &&
+        !asset.isVerified
+    )
     .map(asset => asset.uniqueId);
 
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
@@ -1431,10 +1445,13 @@ export const assetPricesChanged = (
       [address: string]: ParsedAddressAsset;
     };
 
-    dispatch({
-      payload: updatedAssets,
-      type: DATA_UPDATE_GENERIC_ASSETS,
-    });
+    debouncedUpdateGenericAssets(
+      {
+        payload: updatedAssets,
+        type: DATA_UPDATE_GENERIC_ASSETS,
+      },
+      dispatch
+    );
   }
   if (
     message?.meta?.currency?.toLowerCase() ===
@@ -1902,49 +1919,3 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return state;
   }
 };
-
-// -- Middlewares ---------------------------------------- //
-
-const FETCHING_TIMEOUT = 10000;
-const WAIT_FOR_WEBSOCKET_DATA_TIMEOUT = 3000;
-
-/**
- * Waits until data has finished streaming from the websockets. When finished,
- * the assets loading state will be marked as finalized.
- */
-export function loadingAssetsMiddleware({
-  dispatch,
-}: {
-  dispatch: Dispatch<DataLoadAccountAssetsDataFinalizedAction>;
-}) {
-  let accountAssetsDataFetchingTimeout: NodeJS.Timeout;
-
-  const setLoadingFinished = () => {
-    clearTimeout(accountAssetsDataFetchingTimeout);
-    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED });
-  };
-  const debouncedSetLoadingFinished = debounce(
-    setLoadingFinished,
-    WAIT_FOR_WEBSOCKET_DATA_TIMEOUT
-  );
-
-  return (next: Dispatch<AnyAction>) => (action: any) => {
-    // If we have received data from the websockets, we want to debounce
-    // the finalize state as there could be another event streaming in
-    // shortly after.
-    if (action.type === DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED) {
-      debouncedSetLoadingFinished();
-    }
-
-    // On the rare occasion that we can't receive any events from the
-    // websocket, we want to set the loading states back to falsy
-    // after the timeout has elapsed.
-    if (action.type === DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST) {
-      accountAssetsDataFetchingTimeout = setTimeout(() => {
-        setLoadingFinished();
-      }, FETCHING_TIMEOUT);
-    }
-
-    return next(action);
-  };
-}
