@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 import networkTypes from '../../helpers/networkTypes';
-import { useTheme } from '../../theme/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
@@ -15,6 +14,7 @@ import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 
 const sx = StyleSheet.create({
   sectionHeader: {

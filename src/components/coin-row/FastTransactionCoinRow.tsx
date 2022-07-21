@@ -77,7 +77,7 @@ export default React.memo(function TransactionCoinRow({
 }: {
   item: any;
   theme: ThemeContextProps;
-  onTransactionPress: (item: any) => void;
+  onTransactionPress: (item: unknown) => void;
 }) {
   const { mainnetAddress } = item;
   const { colors } = theme;
