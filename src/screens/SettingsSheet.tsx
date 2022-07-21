@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Animated, InteractionManager, View } from 'react-native';
+import { Animated, InteractionManager } from 'react-native';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
@@ -18,7 +18,7 @@ import {
   SettingsSection,
   WalletNotificationsSettings,
 } from '../components/settings-menu';
-import BackupWalletSelectionView from '../components/settings-menu/BackupSection/BackupWalletSelectionView';
+import BackupSection from '../components/settings-menu/BackupSection/BackupSection';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletTypes from '../helpers/walletTypes';
@@ -64,7 +64,7 @@ function cardStyleInterpolator({
 
 const SettingsPages = {
   backup: {
-    component: View,
+    component: BackupSection,
     getTitle: () => lang.t('settings.backup'),
     key: 'BackupSection',
   },
@@ -125,7 +125,7 @@ export default function SettingsSheet() {
             key => wallets[key].type !== WalletTypes.readOnly
           ).length > 1
         ) {
-          route = 'BackupWalletSelectionView';
+          route = 'BackupSection';
         } else {
           if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
             paramsToPass.imported = true;
@@ -222,15 +222,6 @@ export default function SettingsSheet() {
                 />
               )
           )}
-
-          <Stack.Screen
-            component={BackupWalletSelectionView}
-            name="BackupWalletSelectionView"
-            options={{
-              cardStyleInterpolator,
-              title: lang.t('settings.backup'),
-            }}
-          />
           <Stack.Screen
             component={DevNotificationsSection}
             name="DevNotificationsSection"
