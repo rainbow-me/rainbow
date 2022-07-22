@@ -149,6 +149,7 @@ export default function TokenIndexExpandedState({ asset }) {
   }
   const { height: screenHeight } = useDimensions();
   const { network } = useAccountSettings();
+  const isTestnet = isTestnetNetwork(network);
 
   return (
     <Fragment>
@@ -182,7 +183,7 @@ export default function TokenIndexExpandedState({ asset }) {
         ) : (
           <SheetActionButtonRow>
             <Column marginTop={5}>
-              {!isTestnetNetwork(network) && (
+              {!isTestnet && (
                 <SwapActionButton
                   asset={assetWithPrice}
                   color={color}
