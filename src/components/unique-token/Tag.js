@@ -19,7 +19,7 @@ const PropertyActionsEnum = {
   viewTraitOnNftMarketplace: 'viewTraitOnNftMarketplace',
 };
 
-const getViewTraitOnNftMarketplaceAction = (marketplaceName = 'OpenSea') => {
+const getViewTraitOnNftMarketplaceAction = marketplaceName => {
   return {
     actionKey: PropertyActionsEnum.viewTraitOnNftMarketplace,
     actionTitle: lang.t(

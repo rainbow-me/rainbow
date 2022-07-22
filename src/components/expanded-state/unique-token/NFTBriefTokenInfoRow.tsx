@@ -32,7 +32,7 @@ export default function NFTBriefTokenInfoRow({
   currentPrice?: number | null;
   lastPrice?: number | null;
   lastSalePaymentToken?: string | null;
-  network?: string;
+  network: Network;
   urlSuffixForAsset: string;
 }) {
   const { colors } = useTheme();
@@ -45,17 +45,24 @@ export default function NFTBriefTokenInfoRow({
 
   useEffect(() => {
     const isFloorPriceSupported = getIsFloorPriceSupported(assetNetwork);
-    if (isFloorPriceSupported) {
-      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset)
-        .then(result => {
+
+    const fetchFloorPrice = async () => {
+      if (isFloorPriceSupported) {
+        try {
+          const result = await apiGetUniqueTokenFloorPrice(
+            network,
+            urlSuffixForAsset
+          );
           setFloorPrice(result);
-        })
-        .catch(_ => {
+        } catch (_) {
           setFloorPrice(NONE);
-        });
-    } else {
-      setFloorPrice(NONE);
-    }
+        }
+      } else {
+        setFloorPrice(NONE);
+      }
+    };
+
+    fetchFloorPrice();
   }, [assetNetwork, network, urlSuffixForAsset]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);

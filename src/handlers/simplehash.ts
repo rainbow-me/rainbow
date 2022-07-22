@@ -2,6 +2,7 @@ import { captureException } from '@sentry/react-native';
 // @ts-expect-error
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient } from '../rainbow-fetch';
+import { Network } from '@rainbow-me/helpers';
 import { parseSimplehashNfts } from '@rainbow-me/parsers';
 import { logger } from '@rainbow-me/utils';
 
@@ -101,7 +102,7 @@ export async function getNFTByTokenId({
 export async function getNftsByWalletAddress(walletAddress: string) {
   let rawResponseNfts: SimplehashNft[] = [];
   try {
-    const chainParam: string = `${chains.arbitrum},${chains.optimism}`;
+    const chainsParam: string = `${Network.arbitrum},${Network.optimism}`;
 
     let cursor = START_CURSOR;
     while (cursor) {
@@ -112,7 +113,7 @@ export async function getNftsByWalletAddress(walletAddress: string) {
           'x-api-key': SIMPLEHASH_API_KEY,
         },
         params: {
-          chains: chainParam,
+          chains: chainsParam,
           ...(cursor !== START_CURSOR && { cursor }),
           wallet_addresses: walletAddress,
         },

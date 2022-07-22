@@ -10,8 +10,8 @@ import uniqueAssetTraitDisplayTypeCompareFunction from '@rainbow-me/helpers/uniq
 
 interface UniqueTokenAttributesProps {
   color: string;
-  hideNftMarketplaceAction?: boolean;
-  marketplaceName?: string;
+  hideNftMarketplaceAction: boolean;
+  marketplaceName?: string | null;
   slug: string;
   traits: UniqueAsset['traits'];
 }

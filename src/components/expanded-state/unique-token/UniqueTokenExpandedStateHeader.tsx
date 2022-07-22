@@ -144,7 +144,7 @@ interface UniqueTokenExpandedStateHeaderProps {
   asset: UniqueAsset;
   hideNftMarketplaceAction: boolean;
   isSupportedOnRainbowWeb: boolean;
-  rainbowWebUrl?: string;
+  rainbowWebUrl: string;
 }
 
 const UniqueTokenExpandedStateHeader = ({
@@ -174,7 +174,7 @@ const UniqueTokenExpandedStateHeader = ({
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.viewCollection],
-                discoverabilityTitle: asset.marketplaceName,
+                discoverabilityTitle: asset.marketplaceName ?? '',
               },
             ]
           : []),
@@ -260,7 +260,10 @@ const UniqueTokenExpandedStateHeader = ({
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === FamilyActionsEnum.viewCollection) {
+      if (
+        actionKey === FamilyActionsEnum.viewCollection &&
+        asset.marketplaceCollectionUrl
+      ) {
         Linking.openURL(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         // @ts-expect-error external_link and external_url could be null or undefined?
@@ -328,7 +331,7 @@ const UniqueTokenExpandedStateHeader = ({
         title: '',
       },
       (idx: number) => {
-        if (idx === collectionIndex) {
+        if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
           Linking.openURL(asset.marketplaceCollectionUrl);
         } else if (idx === websiteIndex) {
           Linking.openURL(
@@ -339,7 +342,7 @@ const UniqueTokenExpandedStateHeader = ({
           Linking.openURL(
             'https://twitter.com/' + asset.collection.twitter_username
           );
-        } else if (idx === discordIndex) {
+        } else if (idx === discordIndex && asset.collection.discord_url) {
           Linking.openURL(asset.collection.discord_url);
         }
       }

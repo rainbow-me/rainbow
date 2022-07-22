@@ -220,7 +220,7 @@ interface UniqueTokenExpandedStateProps {
   external: boolean;
 }
 
-const getIsSupportedOnRainbowWeb = network => {
+const getIsSupportedOnRainbowWeb = (network: Network) => {
   switch (network) {
     case Network.mainnet:
     case Network.polygon:
@@ -230,7 +230,7 @@ const getIsSupportedOnRainbowWeb = network => {
   }
 };
 
-const getIsSaleInfoSupported = network => {
+const getIsSaleInfoSupported = (network: Network) => {
   switch (network) {
     case Network.mainnet:
       return true;
