@@ -21,6 +21,9 @@ const parseLastSalePrice = lastSale =>
       ) / 1000
     : null;
 
+const getOpenSeaCollectionUrl = slug =>
+  `https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`;
+
 /**
  * @desc signs and handles low res + full res images
  * @param  {Object}
@@ -134,6 +137,7 @@ export const parseAccountUniqueTokens = data => {
             ? asset.last_sale.payment_token?.symbol
             : null,
           lowResUrl,
+          marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
           marketplaceName: 'OpenSea',
           type: AssetTypes.nft,
           uniqueId:
@@ -210,6 +214,7 @@ export const parseAccountUniqueTokensPolygon = data => {
           ? asset.last_sale.payment_token?.symbol
           : null,
         lowResUrl,
+        marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
         marketplaceName: 'OpenSea',
         network: Network.polygon,
         permalink: asset.permalink,
@@ -293,6 +298,7 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
 
   const marketplaceName = marketplace.marketplace_name;
   const collectionId = marketplace.marketplace_collection_id;
+  const collectionUrl = marketplace.collection_url;
   const tokenId = simplehashNft.token_id;
   let permalink = null;
   switch (marketplaceName) {
@@ -307,6 +313,7 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   }
   return {
     collectionId,
+    collectionUrl,
     marketplaceName,
     permalink,
   };
@@ -356,6 +363,7 @@ export const parseSimplehashNfts = nftData => {
       lastPrice: parseLastSalePrice(simplehashNft.last_sale?.unit_price),
       lastSalePaymentToken: simplehashNft.last_sale?.payment_token?.symbol,
       lowResUrl,
+      marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
       marketplaceName: marketplaceInfo?.marketplaceName,
       name: simplehashNft.name,
       network: simplehashNft.chain,

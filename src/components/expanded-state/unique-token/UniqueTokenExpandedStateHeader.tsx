@@ -97,7 +97,6 @@ const FamilyActions = {
   [FamilyActionsEnum.viewCollection]: {
     actionKey: FamilyActionsEnum.viewCollection,
     actionTitle: lang.t('expanded_state.unique_expanded.view_collection'),
-    discoverabilityTitle: lang.t('expanded_state.unique_expanded.opensea'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'rectangle.grid.2x2.fill',
@@ -148,10 +147,12 @@ const FamilyImage = styled(ImgixImage)({
 
 interface UniqueTokenExpandedStateHeaderProps {
   asset: UniqueAsset;
+  hideNftMarketplaceAction: boolean;
 }
 
 const UniqueTokenExpandedStateHeader = ({
   asset,
+  hideNftMarketplaceAction,
 }: UniqueTokenExpandedStateHeaderProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
@@ -171,10 +172,11 @@ const UniqueTokenExpandedStateHeader = ({
   const familyMenuConfig = useMemo(() => {
     return {
       menuItems: [
-        ...(!asset?.isPoap
+        ...(!hideNftMarketplaceAction
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.viewCollection],
+                discoverabilityTitle: asset.marketplaceName,
               },
             ]
           : []),
@@ -208,7 +210,8 @@ const UniqueTokenExpandedStateHeader = ({
     asset.collection.external_url,
     asset.collection.twitter_username,
     asset.external_link,
-    asset?.isPoap,
+    asset.marketplaceName,
+    hideNftMarketplaceAction,
     formattedCollectionUrl,
   ]);
 
@@ -251,11 +254,7 @@ const UniqueTokenExpandedStateHeader = ({
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === FamilyActionsEnum.viewCollection) {
-        Linking.openURL(
-          'https://opensea.io/collection/' +
-            asset.collection.slug +
-            '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
-        );
+        Linking.openURL(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         // @ts-expect-error external_link and external_url could be null or undefined?
         Linking.openURL(asset.external_link || asset.collection.external_url);
@@ -321,11 +320,7 @@ const UniqueTokenExpandedStateHeader = ({
       },
       (idx: number) => {
         if (idx === 0) {
-          Linking.openURL(
-            'https://opensea.io/collection/' +
-              asset.collection.slug +
-              '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
-          );
+          Linking.openURL(asset.marketplaceCollectionUrl);
         }
         if (idx === 1) {
           if (hasWebsite) {
@@ -365,6 +360,7 @@ const UniqueTokenExpandedStateHeader = ({
     asset.collection.slug,
     asset.collection.twitter_username,
     asset.external_link,
+    asset.marketplaceCollectionUrl,
   ]);
 
   const onPressAndroidAsset = useCallback(() => {

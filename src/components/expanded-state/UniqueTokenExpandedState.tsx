@@ -381,6 +381,8 @@ const UniqueTokenExpandedState = ({
     [familyLink]
   );
 
+  const hideNftMarketplaceAction = isPoap || !slug;
+
   return (
     <>
       {ios && (
@@ -463,7 +465,10 @@ const UniqueTokenExpandedState = ({
                           􀈂 {lang.t('button.share')}
                         </TextButton>
                       </Inline>
-                      <UniqueTokenExpandedStateHeader asset={asset} />
+                      <UniqueTokenExpandedStateHeader
+                        asset={asset}
+                        hideNftMarketplaceAction={hideNftMarketplaceAction}
+                      />
                     </Stack>
                     {isNFT || isENS ? (
                       <Columns space="15px">
@@ -577,7 +582,9 @@ const UniqueTokenExpandedState = ({
                               <UniqueTokenAttributes
                                 {...asset}
                                 color={imageColor}
-                                hideNftMarketplaceAction={isPoap || !slug}
+                                hideNftMarketplaceAction={
+                                  hideNftMarketplaceAction
+                                }
                                 slug={slug}
                               />
                             </Section>
