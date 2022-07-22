@@ -3,8 +3,6 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import isEmpty from 'lodash/isEmpty';
-import isNil from 'lodash/isNil';
 import React, {
   Fragment,
   useCallback,
@@ -87,6 +85,8 @@ import {
   fromWei,
   greaterThan,
   greaterThanOrEqualTo,
+  isEmpty,
+  isNil,
   multiply,
   omitFlatten,
 } from '@rainbow-me/utilities';

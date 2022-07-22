@@ -1,5 +1,10 @@
-import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
-import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import { chunk, compact, groupBy, slice, sortBy } from 'lodash';
+import {
+  add,
+  convertAmountToNativeDisplay,
+  greaterThan,
+  isEmpty,
+} from './utilities';
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,

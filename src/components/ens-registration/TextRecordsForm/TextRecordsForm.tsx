@@ -1,4 +1,4 @@
-import { debounce, isEmpty } from 'lodash';
+import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
@@ -10,6 +10,7 @@ import {
   Divider,
   Stack,
 } from '@rainbow-me/design-system';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
 export default function TextRecordsForm({

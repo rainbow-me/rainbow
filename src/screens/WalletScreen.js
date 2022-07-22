@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, isEmpty, keys } from 'lodash';
+import { compact, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
@@ -18,6 +18,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {
   useAccountEmptyState,
   useAccountSettings,

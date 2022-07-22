@@ -1,6 +1,6 @@
-import { isString } from 'lodash';
 import React from 'react';
 import Text from './Text';
+import { isString } from '@rainbow-me/helpers/utilities';
 import { emojis } from '@rainbow-me/references';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [

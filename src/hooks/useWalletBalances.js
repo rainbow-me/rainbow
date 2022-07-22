@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { isEmpty, keys } from 'lodash';
+import keys from 'lodash/keys';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
@@ -11,7 +11,11 @@ import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { balanceCheckerContractAbi } from '@rainbow-me/references';
-import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
+import {
+  fromWei,
+  handleSignificantDecimals,
+  isEmpty,
+} from '@rainbow-me/utilities';
 import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';

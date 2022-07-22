@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isEmpty, isEqual, isString } from 'lodash';
+import isEqual from 'lodash/isEqual';
 import React, {
   useCallback,
   useEffect,
@@ -71,6 +71,8 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
+  isEmpty,
+  isString,
   lessThan,
 } from '@rainbow-me/utilities';
 import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
