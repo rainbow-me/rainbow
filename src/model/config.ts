@@ -50,14 +50,15 @@ export interface RainbowConfig extends Record<string, any> {
   data_api_key?: string;
   data_endpoint?: string;
   data_origin?: string;
+  default_slippage_bips?: string;
   ethereum_goerli_rpc?: string;
   ethereum_kovan_rpc?: string;
   ethereum_mainnet_rpc?: string;
   ethereum_rinkeby_rpc?: string;
   ethereum_ropsten_rpc?: string;
+  op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
-  default_slippage_bips?: string;
 }
 
 const DEFAULT_CONFIG = {
@@ -82,6 +83,7 @@ const DEFAULT_CONFIG = {
   ethereum_ropsten_rpc: __DEV__
     ? ETHEREUM_ROPSTEN_RPC_DEV
     : ETHEREUM_ROPSTEN_RPC,
+  op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
 };
