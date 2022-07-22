@@ -11,6 +11,8 @@ import { useTheme } from '@rainbow-me/theme';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
+const NONE = 'None';
+
 export default function NFTBriefTokenInfoRow({
   currentPrice,
   lastPrice,
@@ -61,7 +63,7 @@ export default function NFTBriefTokenInfoRow({
       ? lastPrice === 0
         ? `< 0.001 ${lastSalePaymentToken}`
         : `${lastPrice} ${lastSalePaymentToken}`
-      : 'None';
+      : NONE;
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (
@@ -69,7 +71,7 @@ export default function NFTBriefTokenInfoRow({
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         color={
-          lastSalePrice === 'None' && !currentPrice
+          lastSalePrice === NONE && !currentPrice
             ? colors.alpha(colors.whiteLabel, 0.5)
             : colors.whiteLabel
         }
@@ -82,7 +84,7 @@ export default function NFTBriefTokenInfoRow({
             ? `􀋢 ${lang.t('expanded_state.nft_brief_token_info.for_sale')}`
             : lang.t('expanded_state.nft_brief_token_info.last_sale')
         }
-        weight={lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'}
+        weight={lastSalePrice === NONE && !currentPrice ? 'bold' : 'heavy'}
       >
         {showCurrentPriceInEth || nativeCurrency === 'ETH' || !currentPrice
           ? currentPrice || lastSalePrice
@@ -96,11 +98,11 @@ export default function NFTBriefTokenInfoRow({
       <TokenInfoItem
         align="right"
         color={
-          floorPrice === 'None'
+          floorPrice === NONE
             ? colors.alpha(colors.whiteLabel, 0.5)
             : colors.whiteLabel
         }
-        enableHapticFeedback={floorPrice !== 'None'}
+        enableHapticFeedback={floorPrice !== NONE}
         isNft
         loading={!floorPrice}
         onInfoPress={handlePressCollectionFloor}
@@ -108,11 +110,11 @@ export default function NFTBriefTokenInfoRow({
         showInfoButton
         size="big"
         title="Floor price"
-        weight={floorPrice === 'None' ? 'bold' : 'heavy'}
+        weight={floorPrice === NONE ? 'bold' : 'heavy'}
       >
         {showFloorInEth ||
         nativeCurrency === 'ETH' ||
-        floorPrice === 'None' ||
+        floorPrice === NONE ||
         floorPrice === null
           ? floorPrice
           : convertAmountToNativeDisplay(
