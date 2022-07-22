@@ -1,4 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
+import { ChainId } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import {
@@ -48,7 +49,7 @@ const swap = async (
   let gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   const isL2 = isL2Network(
-    ethereumUtils.getNetworkFromChainId(parameters?.chainId || 1)
+    ethereumUtils.getNetworkFromChainId(parameters?.chainId || ChainId.mainnet)
   );
   const emptyGasFee = isL2
     ? !gasParams.gasPrice
