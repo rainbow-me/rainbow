@@ -300,24 +300,26 @@ const UniqueTokenExpandedStateHeader = ({
   );
 
   const onPressAndroidFamily = useCallback(() => {
+    const hasCollection = !!asset.marketplaceCollectionUrl;
     const hasWebsite = !!(asset.external_link || asset.collection.external_url);
     const hasTwitter = !!asset.collection.twitter_username;
     const hasDiscord = !!asset.collection.discord_url;
-    const hasCollection = !!asset.collection.slug;
-    const baseActions = [
-      lang.t('expanded_state.unique_expanded.view_collection'),
-      lang.t('expanded_state.unique_expanded.collection_website'),
-      lang.t('expanded_state.unique_expanded.twitter'),
-      lang.t('expanded_state.unique_expanded.discord'),
-    ];
-    const websiteIndex = 1 - (!hasCollection ? 1 : 0);
-    const twitterIndex = 2 - (!hasWebsite ? 1 : 0);
-    const discordIndex = 3 - (!hasWebsite ? 1 : 0) - (!hasTwitter ? 1 : 0);
 
-    if (!hasCollection) baseActions.splice(1, 1);
-    if (!hasWebsite) baseActions.splice(websiteIndex, 1);
-    if (!hasTwitter) baseActions.splice(twitterIndex, 1);
-    if (!hasDiscord) baseActions.splice(discordIndex, 1);
+    const baseActions = [
+      ...(hasCollection
+        ? [lang.t('expanded_state.unique_expanded.view_collection')]
+        : []),
+      ...(hasWebsite
+        ? [lang.t('expanded_state.unique_expanded.collection_website')]
+        : []),
+      ...(hasTwitter ? [lang.t('expanded_state.unique_expanded.twitter')] : []),
+      ...(hasDiscord ? [lang.t('expanded_state.unique_expanded.discord')] : []),
+    ];
+
+    const collectionIndex = hasCollection ? 0 : -1;
+    const websiteIndex = hasWebsite ? collectionIndex + 1 : collectionIndex;
+    const twitterIndex = hasTwitter ? websiteIndex + 1 : websiteIndex;
+    const discordIndex = hasDiscord ? twitterIndex + 1 : twitterIndex;
 
     showActionSheetWithOptions(
       {
@@ -326,37 +328,18 @@ const UniqueTokenExpandedStateHeader = ({
         title: '',
       },
       (idx: number) => {
-        if (idx === 0) {
+        if (idx === collectionIndex) {
           Linking.openURL(asset.marketplaceCollectionUrl);
-        }
-        if (idx === 1) {
-          if (hasWebsite) {
-            Linking.openURL(
-              // @ts-expect-error external_link and external_url could be null or undefined?
-              asset.external_link || asset.collection.external_url
-            );
-          } else if (hasTwitter && twitterIndex === 1) {
-            Linking.openURL(
-              'https://twitter.com/' + asset.collection.twitter_username
-            );
-          } else if (hasDiscord && discordIndex === 1) {
-            Linking.openURL(
-              'https://twitter.com/' + asset.collection.twitter_username
-            );
-          }
-        }
-        if (idx === 2) {
-          if (hasTwitter && twitterIndex === 2) {
-            Linking.openURL(
-              'https://twitter.com/' + asset.collection.twitter_username
-            );
-          } else if (hasDiscord && discordIndex === 2) {
-            Linking.openURL(
-              'https://twitter.com/' + asset.collection.twitter_username
-            );
-          }
-        }
-        if (idx === 3 && asset.collection.discord_url) {
+        } else if (idx === websiteIndex) {
+          Linking.openURL(
+            // @ts-expect-error external_link and external_url could be null or undefined?
+            asset.external_link || asset.collection.external_url
+          );
+        } else if (idx === twitterIndex) {
+          Linking.openURL(
+            'https://twitter.com/' + asset.collection.twitter_username
+          );
+        } else if (idx === discordIndex) {
           Linking.openURL(asset.collection.discord_url);
         }
       }
@@ -364,7 +347,6 @@ const UniqueTokenExpandedStateHeader = ({
   }, [
     asset.collection.discord_url,
     asset.collection.external_url,
-    asset.collection.slug,
     asset.collection.twitter_username,
     asset.external_link,
     asset.marketplaceCollectionUrl,
