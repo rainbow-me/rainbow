@@ -293,7 +293,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   );
 
   const [debouncedIndependentValue] = useDebounce(independentValue, 300);
-
   const source = useSelector((state: AppState) => state.swap.source);
 
   const genericAssets = useSelector(
@@ -385,6 +384,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       derivedValues[SwapModalField.native] = nativeValue;
       displayValues[DisplayValue.native] = nativeValue;
 
+      if (derivedValues[SwapModalField.input] !== independentValue) return;
       const {
         outputAmount,
         outputAmountDisplay,
@@ -432,6 +432,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         true
       );
       displayValues[DisplayValue.input] = inputAmountDisplay;
+
+      if (derivedValues[SwapModalField.native] !== independentValue) return;
       const {
         outputAmount,
         outputAmountDisplay,
@@ -467,6 +469,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       derivedValues[SwapModalField.output] = independentValue;
       displayValues[DisplayValue.output] = independentValue;
 
+      if (derivedValues[SwapModalField.output] !== independentValue) return;
       const {
         inputAmount,
         inputAmountDisplay,
@@ -544,7 +547,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     source,
     type,
   ]);
-
   const { data, isLoading } = useQuery({
     cacheTime: 0,
     queryFn: getTradeDetails,
@@ -552,6 +554,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       'getTradeDetails',
       independentField,
       debouncedIndependentValue,
+      derivedValues[SwapModalField.output],
+      derivedValues[SwapModalField.input],
+      derivedValues[SwapModalField.native],
       inputCurrency,
       outputCurrency,
       inputPrice,
