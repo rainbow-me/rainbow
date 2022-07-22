@@ -353,20 +353,32 @@ const UniqueTokenExpandedStateHeader = ({
   ]);
 
   const onPressAndroidAsset = useCallback(() => {
-    const androidContractActions = [
-      ...(isSupportedOnRainbowWeb
-        ? lang.t('expanded_state.unique_expanded.view_on_web')
-        : []),
-      lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
+    const blockExplorerActionName = lang.t(
+      'expanded_state.unique_expanded.view_on_block_explorer',
+      {
         blockExplorerName: startCase(
           ethereumUtils.getBlockExplorer(asset.network)
         ),
-      }),
+      }
+    );
+
+    const androidContractActions = [
+      ...(isSupportedOnRainbowWeb
+        ? [lang.t('expanded_state.unique_expanded.view_on_web')]
+        : []),
+      blockExplorerActionName,
       ...(isPhotoDownloadAvailable
         ? ([lang.t('expanded_state.unique_expanded.save_to_photos')] as const)
         : []),
       lang.t('expanded_state.unique_expanded.copy_token_id'),
     ] as const;
+
+    const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
+    const blockExplorerIndex = rainbowWebIndex + 1;
+    const photoDownloadIndex = isPhotoDownloadAvailable
+      ? blockExplorerIndex + 1
+      : blockExplorerIndex;
+    const copyTokenIndex = photoDownloadIndex + 1;
 
     showActionSheetWithOptions(
       {
@@ -375,19 +387,19 @@ const UniqueTokenExpandedStateHeader = ({
         title: '',
       },
       (idx: number) => {
-        if (idx === 0) {
+        if (idx === rainbowWebIndex) {
           Linking.openURL(rainbowWebUrl);
-        } else if (idx === 1) {
+        } else if (idx === blockExplorerIndex) {
           ethereumUtils.openNftInBlockExplorer(
             // @ts-expect-error address could be undefined?
             asset.asset_contract.address,
             asset.id,
             asset.network
           );
-        } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
-          setClipboard(asset.id);
-        } else if (idx === 2) {
+        } else if (idx === photoDownloadIndex) {
           saveToCameraRoll(getFullResUrl(asset.image_original_url));
+        } else if (idx === copyTokenIndex) {
+          setClipboard(asset.id);
         }
       }
     );
