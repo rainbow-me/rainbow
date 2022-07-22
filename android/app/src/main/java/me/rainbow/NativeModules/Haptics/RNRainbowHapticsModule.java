@@ -23,7 +23,7 @@ public class RNRainbowHapticsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void notification(String type){
+  public void notification(String type) {
     switch (type) {
       case "error":
         mPerformer.notificationError();
