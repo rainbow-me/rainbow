@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, uniqBy, without } from 'lodash';
+import { concat, uniqBy, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -249,7 +249,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
   const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
-  let shouldUpdateInBatches = isEmpty(existingUniqueTokens);
   let uniqueTokens: UniqueAsset[] = [];
   let errorCheck = false;
 
@@ -288,20 +287,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
 
-      if (shouldUpdateInBatches) {
-        // check that the account address to fetch for has not changed while fetching
-
-        const isCurrentAccountAddress =
-          accountAddress ===
-          (showcaseAddress || getState().settings.accountAddress);
-        if (isCurrentAccountAddress) {
-          dispatch({
-            payload: uniqueTokens,
-            showcase: !!showcaseAddress,
-            type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-          });
-        }
-      }
       if (shouldStopFetching) {
         const existingFamilies = getFamilies(existingUniqueTokens);
         const newFamilies = getFamilies(uniqueTokens);
@@ -357,7 +342,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   });
   if (ensTokens.length > 0) {
     uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'id');
-    shouldUpdateInBatches = false;
   }
 
   // NFT Fetching clean up
@@ -367,7 +351,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   if (!showcaseAddress && isCurrentAccountAddress && !errorCheck) {
     saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
   }
-  if (!shouldUpdateInBatches && isCurrentAccountAddress && !errorCheck) {
+  if (isCurrentAccountAddress && !errorCheck) {
     dispatch({
       payload: uniqueTokens,
       showcase: !!showcaseAddress,
