@@ -97,6 +97,7 @@ export default function TokenIndexExpandedState({ asset }) {
 
       return {
         ...formatItem(assetWithPrice, nativeCurrencySymbol),
+        asset: assetWithPrice,
         color: assetWithPrice.color,
         percentageAllocation,
         pricePerUnitFormatted,
