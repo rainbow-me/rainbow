@@ -1,4 +1,4 @@
-import { mapValues, reverse } from 'lodash';
+import reverse from 'lodash/reverse';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import ChartTypes, { ChartType } from '@rainbow-me/helpers/chartTypes';
@@ -157,18 +157,22 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
   const { nativeCurrency } = getState().settings;
 
   if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
-    const newChartData = mapValues(assetCharts, (chartData, address) => {
+    const newChartData = Object.entries(assetCharts).reduce<
+      ChartsState['charts']
+    >((acc, [address, chartData]) => {
       if (chartType) {
-        return {
+        acc[address] = {
           ...existingCharts[address],
           // .slice to prevent mutation
-          [chartType]: reverse(chartData?.slice()),
+          [chartType]: chartData?.slice().reverse(),
+        };
+      } else {
+        acc[address] = {
+          ...existingCharts[address],
         };
       }
-      return {
-        ...existingCharts[address],
-      };
-    });
+      return acc;
+    }, {});
 
     const updatedCharts = {
       ...existingCharts,

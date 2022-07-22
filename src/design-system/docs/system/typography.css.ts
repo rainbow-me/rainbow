@@ -1,6 +1,4 @@
 import { createTextStyle } from '@capsizecss/vanilla-extract';
-import mapValues from 'lodash/mapValues';
-import merge from 'lodash/merge';
 
 import { typeHierarchy as appTypeHierarchy } from '../../typography/typeHierarchy';
 import { fontMetrics } from '../../typography/typography';
@@ -29,20 +27,39 @@ const docsTypeHierarchy = {
   },
 } as const;
 
-export const typeHierarchy = merge(appTypeHierarchy, docsTypeHierarchy);
+export const typeHierarchy = {
+  ...appTypeHierarchy,
+  heading: { ...docsTypeHierarchy.heading, ...appTypeHierarchy.heading },
+};
 
+const mapTextSizeValues = <T extends object>(objectForMap: T) => {
+  return Object.entries(objectForMap).reduce(
+    (acc, [key, { fontSize, lineHeight }]) => {
+      acc[key as keyof T] = createTextSize({ fontSize, lineHeight });
+      return acc;
+    },
+    {} as { [k in keyof T]: string }
+  );
+};
+
+const mapLetterSpacingValues = <T extends object>(objectForMap: T) => {
+  return Object.entries(objectForMap).reduce(
+    (acc, [key, { letterSpacing }]) => {
+      acc[key as keyof T] = letterSpacing;
+      return acc;
+    },
+    {} as { [k in keyof T]: number }
+  );
+};
 export const sizes = {
-  heading: mapValues(typeHierarchy.heading, createTextSize),
-  text: mapValues(typeHierarchy.text, createTextSize),
+  heading: mapTextSizeValues(typeHierarchy.heading),
+  text: mapTextSizeValues(typeHierarchy.text),
 };
 
 export type HeadingSizes = keyof typeof sizes['heading'];
 export type TextSizes = keyof typeof sizes['text'];
 
 export const letterSpacings = {
-  heading: mapValues(
-    typeHierarchy.heading,
-    ({ letterSpacing }) => letterSpacing
-  ),
-  text: mapValues(typeHierarchy.text, ({ letterSpacing }) => letterSpacing),
+  heading: mapLetterSpacingValues(typeHierarchy.heading),
+  text: mapLetterSpacingValues(typeHierarchy.text),
 };

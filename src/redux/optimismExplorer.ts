@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, mapValues } from 'lodash';
+import { isEmpty, keyBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -171,15 +171,18 @@ export const optimismExplorerInit = () => async (
 
     let updatedAssets = assets;
     if (balances) {
-      updatedAssets = mapValues(assets, assetAndQuantity => {
-        const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
-        return {
+      updatedAssets = Object.entries(assets).reduce<{
+        [x: string]: ChainAsset;
+      }>((acc, [key, assetAndQuantity]) => {
+        const assetCode = assetAndQuantity.asset.asset_code?.toLowerCase();
+        acc[key] = {
           asset: {
             ...assetAndQuantity.asset,
           },
           quantity: balances?.[assetCode],
         };
-      });
+        return acc;
+      }, {});
     }
 
     let assetsWithBalance = pickBy(updatedAssets, asset => asset.quantity > 0);
@@ -197,30 +200,33 @@ export const optimismExplorerInit = () => async (
       );
 
       if (prices) {
-        assetsWithBalance = mapValues(assetsWithBalance, assetWithBalance => {
+        assetsWithBalance = Object.entries(assetsWithBalance).reduce<{
+          [x: string]: ChainAsset;
+        }>((acc, [key, assetWithBalance]) => {
           const assetCoingeckoId = assetWithBalance.asset.coingecko_id.toLowerCase();
-          if (prices[assetCoingeckoId]) {
-            return {
-              ...assetWithBalance,
-              asset: {
-                ...assetWithBalance.asset,
-                // It is technically possible for `asset?.price` to be defined
-                // but have undefined values. However, in this case we assume
-                // that either `asset?.price` is defined with values, or it's
-                // undefined and we use the fallback.
-                price: {
-                  changed_at: prices[assetCoingeckoId].last_updated_at,
-                  relative_change_24h:
-                    prices[assetCoingeckoId][
-                      `${formattedNativeCurrency}_24h_change`
-                    ],
-                  value: prices[assetCoingeckoId][formattedNativeCurrency],
+          const assetWithBalanceValue = prices[assetCoingeckoId]
+            ? {
+                ...assetWithBalance,
+                asset: {
+                  ...assetWithBalance.asset,
+                  // It is technically possible for `asset?.price` to be defined
+                  // but have undefined values. However, in this case we assume
+                  // that either `asset?.price` is defined with values, or it's
+                  // undefined and we use the fallback.
+                  price: {
+                    changed_at: prices[assetCoingeckoId].last_updated_at,
+                    relative_change_24h:
+                      prices[assetCoingeckoId][
+                        `${formattedNativeCurrency}_24h_change`
+                      ],
+                    value: prices[assetCoingeckoId][formattedNativeCurrency],
+                  },
                 },
-              },
-            };
-          }
-          return assetWithBalance;
-        });
+              }
+            : assetWithBalance;
+          acc[key] = assetWithBalanceValue;
+          return acc;
+        }, {});
       }
 
       const newPayload = { assets: assetsWithBalance };

@@ -2,18 +2,7 @@ import { ObservableQuery } from '@apollo/client';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
-import {
-  find,
-  isEmpty,
-  isNil,
-  keyBy,
-  keys,
-  mapKeys,
-  mapValues,
-  partition,
-  toUpper,
-  uniqBy,
-} from 'lodash';
+import { find, isEmpty, isNil, keys, partition, toUpper, uniqBy } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -729,7 +718,7 @@ const genericAssetsFallback = () => async (
   if (!isEmpty(prices)) {
     Object.keys(prices).forEach(key => {
       for (let uniqueAsset of allAssetsUnique) {
-        if (uniqueAsset.coingecko_id.toLowerCase() === key.toLowerCase()) {
+        if (uniqueAsset.coingecko_id?.toLowerCase() === key.toLowerCase()) {
           uniqueAsset.price = {
             changed_at: prices[key].last_updated_at,
             relative_change_24h:
@@ -1127,12 +1116,18 @@ export const addressAssetsReceived = (
   );
 
   if (removed) {
-    updatedAssets = mapValues(newAssets, asset => {
-      return {
+    updatedAssets = Object.entries(newAssets).reduce<{
+      [id: string]: {
+        asset: ZerionAsset | ZerionAssetFallback;
+        quantity: number;
+      };
+    }>((acc, [key, asset]) => {
+      acc[key] = {
         ...asset,
         quantity: 0,
       };
-    });
+      return acc;
+    }, {});
   }
 
   let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
@@ -1248,41 +1243,66 @@ const subscribeToMissingPrices = (addresses: string[]) => (
             const historicalPriceResults = await Promise.all(
               historicalPriceCalls
             );
-            const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
             const { chartsEthUSDDay } = getState().charts;
             const ethereumPriceOneDayAgo = chartsEthUSDDay?.[0]?.[1];
 
-            const missingHistoricalPrices = mapValues(
-              mappedHistoricalData,
-              value => multiply(ethereumPriceOneDayAgo, value?.derivedETH!)
+            const missingHistoricalPrices = historicalPriceResults.reduce<
+              Record<string, string>
+            >((acc, value) => {
+              if (!value?.id) return acc;
+              acc[value.id] = multiply(
+                ethereumPriceOneDayAgo,
+                value?.derivedETH!
+              );
+              return acc;
+            }, {});
+
+            const mappedPricingData = data.tokens.reduce<
+              Record<string, UniswapPricesQueryData['tokens'][0]>
+            >((acc, value) => {
+              if (!value?.id) return acc;
+              acc[value.id] = value;
+              return acc;
+            }, {});
+
+            const missingPrices = data.tokens.reduce<Record<string, string>>(
+              (acc, token) => {
+                if (!token?.id) return acc;
+                acc[token.id] = multiply(nativePriceOfEth, token.derivedETH);
+                return acc;
+              },
+              {}
             );
 
-            const mappedPricingData = keyBy(data.tokens, 'id');
-            const missingPrices = mapValues(mappedPricingData, token =>
-              multiply(nativePriceOfEth, token.derivedETH)
-            );
-            const missingPriceInfo = mapValues(
-              missingPrices,
-              (currentPrice, key) => {
-                const historicalPrice = missingHistoricalPrices?.[key];
-                // mappedPricingData[key].id will be a `string`, assuming `key`
-                // is present, but `get` resolves to an incorrect type, so must
-                // be casted.
-                const tokenAddress: string = mappedPricingData?.[key]
-                  ?.id as any;
-                const relativePriceChange = historicalPrice
-                  ? // @ts-expect-error TypeScript disallows string arithmetic,
-                    // even though it works correctly.
-                    ((currentPrice - historicalPrice) / currentPrice) * 100
-                  : 0;
-                return {
-                  price: currentPrice,
-                  relativePriceChange,
-                  tokenAddress,
-                };
-              }
-            );
-            const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+            const missingPriceInfo = Object.entries(missingPrices).reduce<
+              Record<string, UniswapAssetPriceData>
+            >((acc, [key, currentPrice]) => {
+              const historicalPrice = missingHistoricalPrices?.[key];
+              // mappedPricingData[key].id will be a `string`, assuming `key`
+              // is present, but `get` resolves to an incorrect type, so must
+              // be casted.
+              const tokenAddress = mappedPricingData?.[key]?.id;
+
+              const relativePriceChange = historicalPrice
+                ? // @ts-expect-error TypeScript disallows string arithmetic,
+                  // even though it works correctly.
+                  ((currentPrice - historicalPrice) / currentPrice) * 100
+                : 0;
+              acc[key] = {
+                price: currentPrice,
+                relativePriceChange,
+                tokenAddress,
+              };
+
+              return acc;
+            }, {});
+
+            const tokenPricingInfo = Object.entries(missingPriceInfo).reduce<
+              Record<string, UniswapAssetPriceData>
+            >((acc, [_, value]) => {
+              acc[value.tokenAddress] = value;
+              return acc;
+            }, {});
 
             saveAssetPricesFromUniswap(
               tokenPricingInfo,
@@ -1373,11 +1393,15 @@ export const assetPricesReceived = (
 
   if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
     if (isEmpty(newAssetPrices)) return;
-    const parsedAssets = mapValues(newAssetPrices, asset =>
-      parseAsset(asset)
-    ) as {
-      [id: string]: ParsedAddressAsset;
-    };
+    const parsedAssets = Object.entries(newAssetPrices).reduce(
+      (acc, [key, asset]) => {
+        acc[key] = parseAsset(asset) as ParsedAddressAsset;
+        return acc;
+      },
+      {} as {
+        [id: string]: ParsedAddressAsset;
+      }
+    );
     const { genericAssets } = getState().data;
 
     const updatedAssets = {
