@@ -52,7 +52,7 @@ import {
   Text,
   TextProps,
 } from '@rainbow-me/design-system';
-import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
@@ -230,6 +230,15 @@ const getIsSupportedOnRainbowWeb = network => {
   }
 };
 
+const getIsSaleInfoSupported = network => {
+  switch (network) {
+    case Network.mainnet:
+      return true;
+    default:
+      return false;
+  }
+};
+
 const UniqueTokenExpandedState = ({
   asset,
   external,
@@ -397,6 +406,7 @@ const UniqueTokenExpandedState = ({
   );
 
   const hideNftMarketplaceAction = isPoap || !slug;
+  const isSaleInfoSupported = getIsSaleInfoSupported(asset.network);
 
   return (
     <>
@@ -550,8 +560,7 @@ const UniqueTokenExpandedState = ({
                       separator={<Divider color="divider20" />}
                       space={sectionSpace}
                     >
-                      {(isNFT || isENS) &&
-                      asset.network !== AssetTypes.polygon ? (
+                      {(isNFT || isENS) && isSaleInfoSupported ? (
                         <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                           bottom={android ? '15px' : '6px'}
                           top={android ? '10px' : '4px'}
