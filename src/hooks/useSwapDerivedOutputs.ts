@@ -397,8 +397,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         accountAddress,
         chainId
       );
-      // if original value changed, ignore new quote
-      if (derivedValues[SwapModalField.input] !== independentValue) return;
 
       insufficientLiquidity = !!noLiquidity;
       tradeDetails = newTradeDetails;
@@ -443,8 +441,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         accountAddress,
         chainId
       );
-      // if original value changed, ignore new quote
-      if (derivedValues[SwapModalField.native] !== independentValue) return;
 
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
