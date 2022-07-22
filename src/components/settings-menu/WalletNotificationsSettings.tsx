@@ -18,6 +18,7 @@ const WalletNotificationsSettings = () => {
     <MenuContainer>
       <Menu>
         <MenuItem
+          disabled
           rightComponent={
             <Switch
               onValueChange={toggleNotifications}
@@ -38,6 +39,7 @@ const WalletNotificationsSettings = () => {
       {notificationsAllowed && (
         <Menu>
           <MenuItem
+            disabled
             iconPadding="small"
             leftComponent={
               <MenuItem.Title colorOverride={colors.appleBlue} text="􀈟" />
@@ -51,6 +53,7 @@ const WalletNotificationsSettings = () => {
             }
           />
           <MenuItem
+            disabled
             iconPadding="small"
             leftComponent={
               <MenuItem.Title colorOverride={colors.green} text="􀅀" />
@@ -64,6 +67,7 @@ const WalletNotificationsSettings = () => {
             }
           />
           <MenuItem
+            disabled
             iconPadding="small"
             leftComponent={
               <MenuItem.Title colorOverride={colors.pink} text="􀑉" />
@@ -77,6 +81,7 @@ const WalletNotificationsSettings = () => {
             }
           />
           <MenuItem
+            disabled
             iconPadding="small"
             leftComponent={
               <MenuItem.Title colorOverride={colors.orange} text="􀋡" />
@@ -90,6 +95,7 @@ const WalletNotificationsSettings = () => {
             }
           />
           <MenuItem
+            disabled
             iconPadding="small"
             leftComponent={
               <MenuItem.Title colorOverride={colors.yellowOrange} text="􀆿" />
@@ -103,6 +109,7 @@ const WalletNotificationsSettings = () => {
             }
           />
           <MenuItem
+            disabled
             iconPadding="small"
             leftComponent={
               <MenuItem.Title colorOverride={colors.swapPurple} text="􀖅" />
@@ -116,6 +123,7 @@ const WalletNotificationsSettings = () => {
             }
           />
           <MenuItem
+            disabled
             iconPadding="small"
             leftComponent={
               <MenuItem.Title colorOverride={colors.green} text="􀁢" />
@@ -129,6 +137,7 @@ const WalletNotificationsSettings = () => {
             }
           />
           <MenuItem
+            disabled
             iconPadding="small"
             leftComponent={
               <MenuItem.Title colorOverride={colors.blueGreyDark60} text="􀍡" />

@@ -26,6 +26,7 @@ const NotificationsSection = () => {
     <MenuContainer>
       <Menu>
         <MenuItem
+          disabled
           rightComponent={<Switch />}
           size="medium"
           titleComponent={
@@ -84,6 +85,7 @@ const NotificationsSection = () => {
       </Menu>
       <Menu>
         <MenuItem
+          disabled
           rightComponent={<Switch />}
           size="medium"
           titleComponent={
