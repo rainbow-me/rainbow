@@ -246,7 +246,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   }
   const { network: currentNetwork } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   let shouldUpdateInBatches = isEmpty(existingUniqueTokens);
   let uniqueTokens: UniqueAsset[] = [];
@@ -274,7 +273,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     try {
       let newPageResults = await apiGetAccountUniqueTokens(
         network,
-        accountAddress,
+        showcaseAddress || getState().settings.accountAddress,
         page
       );
 
@@ -307,7 +306,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         const incomingFamilies = without(newFamilies, ...existingFamilies);
         if (incomingFamilies.length) {
           const dedupedAssets = dedupeAssetsWithFamilies(
-            accountAssetsData,
+            getState().data.accountAssetsData,
             incomingFamilies
           );
           dispatch(dataUpdateAssets(dedupedAssets));
