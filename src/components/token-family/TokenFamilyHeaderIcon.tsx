@@ -46,6 +46,16 @@ export default React.memo(function TokenFamilyHeaderIcon({
     );
   }
 
+  if (familyName === 'Hidden') {
+    return (
+      <View style={sx.trophy}>
+        <Text align="center" containsEmoji size="16px">
+          🫣
+        </Text>
+      </View>
+    );
+  }
+
   const source = {
     uri: familyImage,
   };

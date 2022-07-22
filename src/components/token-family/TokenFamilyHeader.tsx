@@ -140,6 +140,9 @@ const TokenFamilyHeader = ({
           {
             backgroundColor: colors.white,
           },
+          {
+            opacity: title === 'Hidden' ? 0.5 : 1,
+          },
         ]}
       >
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
