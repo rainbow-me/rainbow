@@ -292,7 +292,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     (state: AppState) => state.swap.slippageInBips
   );
 
-  const debouncedIndependentValue = useDebounce(independentValue, 300);
+  const [debouncedIndependentValue] = useDebounce(independentValue, 300);
 
   const source = useSelector((state: AppState) => state.swap.source);
 
