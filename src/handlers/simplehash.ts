@@ -65,6 +65,8 @@ const chains = {
 } as const;
 type SimpleHashChain = keyof typeof chains;
 
+const START_CURSOR = 'start';
+
 const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
 });
@@ -97,24 +99,34 @@ export async function getNFTByTokenId({
 }
 
 export async function getNftsByWalletAddress(walletAddress: string) {
+  let rawResponseNfts: SimplehashNft[] = [];
   try {
     const chainParam: string = `${chains.arbitrum},${chains.optimism}`;
-    const response = await simplehashApi.get(`/v0/nfts/owners`, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'x-api-key': SIMPLEHASH_API_KEY,
-      },
-      params: {
-        chains: chainParam,
-        wallet_addresses: walletAddress,
-      },
-    });
-    return parseSimplehashNfts(response.data.nfts);
+
+    let cursor = START_CURSOR;
+    while (cursor) {
+      const response = await simplehashApi.get(`/v0/nfts/owners`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': SIMPLEHASH_API_KEY,
+        },
+        params: {
+          chains: chainParam,
+          ...(cursor !== START_CURSOR && { cursor }),
+          wallet_addresses: walletAddress,
+        },
+      });
+      cursor = response.data.next;
+      if (response.data?.nfts?.length > 0) {
+        rawResponseNfts = rawResponseNfts.concat(response.data.nfts);
+      }
+    }
   } catch (error) {
     logger.sentry(
       `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
     );
     captureException(error);
   }
+  return parseSimplehashNfts(rawResponseNfts);
 }
