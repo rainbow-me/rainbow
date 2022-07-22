@@ -43,7 +43,7 @@ public class RNRainbowHapticsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void impact(String type){
+  public void impact(String type) {
     switch (type) {
       case "light":
         mPerformer.impactLight();
