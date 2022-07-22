@@ -903,6 +903,7 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
     const [latestTx] = txSortedByDescendingNonce;
     const { address_from, nonce } = latestTx;
     if (nonce) {
+      // @ts-ignore-next-line
       dispatch(incrementNonce(address_from!, nonce, network));
     }
   }
@@ -925,6 +926,7 @@ const checkForRemovedNonce = (removedTransactions: RainbowTransaction[]) => (
       .sort(({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0));
     const [lowestNonceTx] = txSortedByAscendingNonce;
     const { nonce } = lowestNonceTx;
+    // @ts-ignore-next-line
     dispatch(decrementNonce(accountAddress, nonce!, network));
   }
 };
@@ -1152,6 +1154,7 @@ export const addressAssetsReceived = (
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
     dispatch(
+      // @ts-ignore
       uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
     );
   }
@@ -1504,6 +1507,7 @@ export const dataAddNewTransaction = (
     saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
     if (parsedTransaction.from && parsedTransaction.nonce) {
       dispatch(
+        // @ts-ignore-next-line
         incrementNonce(
           parsedTransaction.from,
           parsedTransaction.nonce,
@@ -1598,12 +1602,30 @@ export const dataWatchPendingTransactions = (
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
           if (!nonceAlreadyIncluded) {
-            appEvents.emit('transactionConfirmed', txObj);
+            appEvents.emit('transactionConfirmed', {
+              ...txObj,
+              internalType: tx.type,
+            });
           }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          // @ts-expect-error `txObj` is not typed as having a `status` field.
-          if (txObj && !isZero(txObj.status)) {
+          let receipt;
+          try {
+            if (txObj) {
+              receipt = await txObj.wait();
+            }
+          } catch (e: any) {
+            // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
+            if (e.transaction) {
+              // if a transaction field exists, it was confirmed but failed
+              updatedPending.status = TransactionStatus.failed;
+            } else {
+              // cancelled or replaced
+              updatedPending.status = TransactionStatus.cancelled;
+            }
+          }
+          const status = receipt?.status || 0;
+          if (!isZero(status)) {
             const isSelf = tx?.from!.toLowerCase() === tx?.to!.toLowerCase();
             const newStatus = getTransactionLabel({
               direction: isSelf
@@ -1631,6 +1653,34 @@ export const dataWatchPendingTransactions = (
           updatedPending.title = title;
           updatedPending.pending = false;
           updatedPending.minedAt = minedAt;
+        } else {
+          if (tx.flashbots) {
+            const fbStatus = await fetch(
+              `https://protect.flashbots.net/tx/${txHash}`
+            );
+            const fbResponse = await fbStatus.json();
+            logger.debug('Flashbots response', fbResponse);
+            // Make sure it wasn't dropped after 25 blocks or never made it
+            if (
+              fbResponse.status === 'FAILED' ||
+              fbResponse.status === 'CANCELLED'
+            ) {
+              txStatusesDidChange = true;
+              updatedPending.status = TransactionStatus.dropped;
+              const title = getTitle({
+                protocol: tx.protocol,
+                status: updatedPending.status,
+                type: tx.type,
+              });
+              updatedPending.title = title;
+              updatedPending.pending = false;
+              const minedAt = Math.floor(Date.now() / 1000);
+              updatedPending.minedAt = minedAt;
+              // decrement the nonce since it was dropped
+              // @ts-ignore-next-line
+              dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
+            }
+          }
         }
       } catch (error) {
         logger.log('Error watching pending txn', error);

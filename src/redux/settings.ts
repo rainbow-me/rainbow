@@ -4,10 +4,12 @@ import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import {
+  getFlashbotsEnabled,
   getLanguage,
   getNativeCurrency,
   getNetwork,
   getTestnetsEnabled,
+  saveFlashbotsEnabled,
   saveLanguage,
   saveNativeCurrency,
   saveNetwork,
@@ -33,8 +35,10 @@ const SETTINGS_UPDATE_NETWORK_SUCCESS =
   'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
 const SETTINGS_UPDATE_TESTNET_PREF_SUCCESS =
   'settings/SETTINGS_UPDATE_TESTNET_PREF_SUCCESS';
-const SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS =
-  'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS';
+const SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS =
+  'settings/SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS';
+const SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS =
+  'settings/SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS';
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -44,6 +48,7 @@ const SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS =
 interface SettingsState {
   accountAddress: string;
   chainId: number;
+  flashbotsEnabled: boolean;
   language: string;
   nativeCurrency: keyof typeof supportedNativeCurrencies;
   network: Network;
@@ -58,6 +63,7 @@ type SettingsStateUpdateAction =
   | SettingsStateUpdateNativeCurrencySuccessAction
   | SettingsStateUpdateNetworkSuccessAction
   | SettingsStateUpdateTestnetPrefAction
+  | SettingsStateUpdateFlashbotsPrefAction
   | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
   | SettingsStateUpdateLanguageSuccessAction;
 
@@ -72,16 +78,22 @@ interface SettingsStateUpdateNativeCurrencySuccessAction {
 }
 
 interface SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction {
-  type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS;
+  type: typeof SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS;
   payload: {
     nativeCurrency: SettingsState['nativeCurrency'];
     testnetsEnabled: SettingsState['testnetsEnabled'];
+    flashbotsEnabled: SettingsState['flashbotsEnabled'];
   };
 }
 
 interface SettingsStateUpdateTestnetPrefAction {
   type: typeof SETTINGS_UPDATE_TESTNET_PREF_SUCCESS;
   payload: SettingsState['testnetsEnabled'];
+}
+
+interface SettingsStateUpdateFlashbotsPrefAction {
+  type: typeof SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS;
+  payload: SettingsState['flashbotsEnabled'];
 }
 
 interface SettingsStateUpdateNetworkSuccessAction {
@@ -103,14 +115,16 @@ export const settingsLoadState = () => async (
   try {
     const nativeCurrency = await getNativeCurrency();
     const testnetsEnabled = await getTestnetsEnabled();
+    const flashbotsEnabled = await getFlashbotsEnabled();
     analytics.identify(null, {
       currency: nativeCurrency,
+      enabledFlashbots: flashbotsEnabled,
       enabledTestnets: testnetsEnabled,
     });
 
     dispatch({
-      payload: { nativeCurrency, testnetsEnabled },
-      type: SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS,
+      payload: { flashbotsEnabled, nativeCurrency, testnetsEnabled },
+      type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
     });
   } catch (error) {
     logger.log('Error loading native currency and testnets pref', error);
@@ -156,6 +170,16 @@ export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
     type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
   });
   saveTestnetsEnabled(testnetsEnabled);
+};
+
+export const settingsChangeFlashbotsEnabled = (
+  flashbotsEnabled: boolean
+) => async (dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>) => {
+  dispatch({
+    payload: flashbotsEnabled,
+    type: SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS,
+  });
+  saveFlashbotsEnabled(flashbotsEnabled);
 };
 
 export const settingsUpdateAccountAddress = (accountAddress: string) => async (
@@ -227,6 +251,7 @@ export const settingsChangeNativeCurrency = (
 export const INITIAL_STATE: SettingsState = {
   accountAddress: '',
   chainId: 1,
+  flashbotsEnabled: false,
   language: 'en',
   nativeCurrency: NativeCurrencyKeys.USD,
   network: Network.mainnet,
@@ -256,9 +281,10 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
         ...state,
         language: action.payload,
       };
-    case SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS:
+    case SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS:
       return {
         ...state,
+        flashbotsEnabled: action.payload.flashbotsEnabled,
         nativeCurrency: action.payload.nativeCurrency,
         testnetsEnabled: action.payload.testnetsEnabled,
       };
@@ -266,6 +292,11 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         testnetsEnabled: action.payload,
+      };
+    case SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS:
+      return {
+        ...state,
+        flashbotsEnabled: action.payload,
       };
     default:
       return state;

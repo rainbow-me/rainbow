@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { updateLanguageLocale } from '../languages';
 import {
+  settingsChangeFlashbotsEnabled as changeFlashbotsEnabled,
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
@@ -29,6 +30,7 @@ export default function useAccountSettings() {
       settings: {
         accountAddress,
         chainId,
+        flashbotsEnabled,
         nativeCurrency,
         network,
         testnetsEnabled,
@@ -36,6 +38,7 @@ export default function useAccountSettings() {
     }) => ({
       accountAddress,
       chainId,
+      flashbotsEnabled,
       language,
       nativeCurrency,
       nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
@@ -59,7 +62,13 @@ export default function useAccountSettings() {
     [dispatch]
   );
 
+  const settingsChangeFlashbotsEnabled = useCallback(
+    flashbotsEnabled => dispatch(changeFlashbotsEnabled(flashbotsEnabled)),
+    [dispatch]
+  );
+
   return {
+    settingsChangeFlashbotsEnabled,
     settingsChangeLanguage,
     settingsChangeNativeCurrency,
     settingsChangeTestnetsEnabled,

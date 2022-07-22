@@ -181,6 +181,7 @@ export default function TokenIndexExpandedState({ asset }) {
           <SheetActionButtonRow>
             <Column marginTop={5}>
               <SwapActionButton
+                asset={assetWithPrice}
                 color={color}
                 inputType={AssetInputTypes.out}
                 label={`􀖅 ${lang.t('expanded_state.token_index.get_token', {

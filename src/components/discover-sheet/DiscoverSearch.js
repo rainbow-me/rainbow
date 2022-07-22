@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
+import { uniqBy } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -9,7 +10,9 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce/lib';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
 import deviceUtils from '../../utils/deviceUtils';
@@ -21,12 +24,13 @@ import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useHardwareBackOnFocus,
-  useTimeout,
-  useUniswapCurrencyList,
+  usePrevious,
+  useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export const SearchContainer = styled(Row)({
@@ -37,6 +41,7 @@ export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
   const {
+    isSearching,
     isFetchingEns,
     setIsSearching,
     setIsFetchingEns,
@@ -46,30 +51,44 @@ export default function DiscoverSearch() {
     searchInputRef,
     cancelSearch,
   } = useContext(DiscoverSheetContext);
+
+  const { colors } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const currencySelectionListRef = useRef();
-  const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
-  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
+  const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
-  const {
-    uniswapCurrencyList,
-    uniswapCurrencyListLoading,
-  } = useUniswapCurrencyList(searchQueryForSearch);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSwapCurrencyList(
+    searchQueryForSearch
+  );
+  const currencyList = useMemo(() => {
+    let list = [...swapCurrencyList, ...ensResults];
+    // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
+    if (IS_TESTING === 'true') {
+      let symbols = [];
+      list = list?.map(section => {
+        // Remove dupes
+        section.data = uniqBy(section?.data, 'symbol');
+        // Remove dupes across sections
+        section.data = section?.data?.filter(
+          token => !symbols.includes(token?.symbol)
+        );
+        const sectionSymbols = section?.data?.map(token => token?.symbol);
+        symbols = symbols.concat(sectionSymbols);
 
-  const { colors } = useTheme();
-
-  const currencyList = useMemo(() => [...uniswapCurrencyList, ...ensResults], [
-    uniswapCurrencyList,
-    ensResults,
-  ]);
+        return section;
+      });
+    }
+    return list.filter(section => section.data.length > 0);
+  }, [swapCurrencyList, ensResults]);
+  const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const currencyListDataKey = useMemo(
     () =>
-      `${uniswapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${
+      `${swapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${
         ensResults?.[0]?.data?.[0]?.address || '_'
       }`,
-    [ensResults, uniswapCurrencyList]
+    [ensResults, swapCurrencyList]
   );
 
   useHardwareBackOnFocus(() => {
@@ -105,6 +124,7 @@ export default function DiscoverSearch() {
         dispatch(emitAssetRequest(item.address));
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
+          fromDiscover: true,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         });
@@ -155,32 +175,33 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    const searching = searchQuery !== '';
-    if (!searching) {
-      setSearchQueryForSearch(searchQuery);
-    }
-    stopQueryDebounce();
-    startQueryDebounce(
-      () => {
+    if (searchQueryForSearch && !isSearching) {
+      if (lastSearchQuery !== searchQueryForSearch) {
         setIsSearching(true);
-        setSearchQueryForSearch(searchQuery);
         fetchSuggestions(
           searchQuery,
           addEnsResults,
           setIsFetchingEns,
           profilesEnabled
         );
-      },
-      searchQuery === '' ? 1 : 500
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
+      }
+    }
+  }, [
+    addEnsResults,
+    isSearching,
+    lastSearchQuery,
+    searchQuery,
+    searchQueryForSearch,
+    setIsFetchingEns,
+    setIsSearching,
+    profilesEnabled,
+  ]);
 
   useEffect(() => {
-    if (!uniswapCurrencyListLoading && !isFetchingEns) {
+    if (!swapCurrencyListLoading && !isFetchingEns) {
       setIsSearching(false);
     }
-  }, [isFetchingEns, setIsSearching, uniswapCurrencyListLoading]);
+  }, [isFetchingEns, setIsSearching, swapCurrencyListLoading]);
 
   useEffect(() => {
     currencySelectionListRef.current?.scrollToLocation({
@@ -203,7 +224,7 @@ export default function DiscoverSearch() {
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
           listItems={currencyList}
-          loading={uniswapCurrencyListLoading || isFetchingEns}
+          loading={swapCurrencyListLoading || isFetchingEns}
           query={searchQueryForSearch}
           ref={currencySelectionListRef}
           showList
