@@ -57,7 +57,7 @@ module.exports = {
         patterns: [
           'lodash/*',
           '!lodash/debounce',
-          // //remove when this method will be merged
+          //remove when this methods will be merged
           '!lodash/constant',
           '!lodash/isNil',
           '!lodash/isNumber',
