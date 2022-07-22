@@ -220,10 +220,22 @@ interface UniqueTokenExpandedStateProps {
   external: boolean;
 }
 
+const getIsSupportedOnRainbowWeb = network => {
+  switch (network) {
+    case Network.mainnet:
+    case Network.polygon:
+      return true;
+    default:
+      return false;
+  }
+};
+
 const UniqueTokenExpandedState = ({
   asset,
   external,
 }: UniqueTokenExpandedStateProps) => {
+  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
+
   const { accountAddress, accountENS } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
@@ -313,6 +325,8 @@ const UniqueTokenExpandedState = ({
     [showcaseTokens, uniqueId]
   );
 
+  const rainbowWebUrl = buildRainbowUrl(asset, accountENS, accountAddress);
+
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
     usePersistentDominantColorFromImage(asset.lowResUrl).result ||
@@ -342,14 +356,14 @@ const UniqueTokenExpandedState = ({
   }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
 
   const handlePressShare = useCallback(() => {
+    const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.permalink;
+
     Share.share({
-      message: android
-        ? buildRainbowUrl(asset, accountENS, accountAddress)
-        : undefined,
+      message: android ? shareUrl : undefined,
       title: `Share ${buildUniqueTokenName(asset)} Info`,
-      url: buildRainbowUrl(asset, accountENS, accountAddress),
+      url: shareUrl,
     });
-  }, [accountAddress, accountENS, asset]);
+  }, [asset, isSupportedOnRainbowWeb, rainbowWebUrl]);
 
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
@@ -462,13 +476,17 @@ const UniqueTokenExpandedState = ({
                                 'expanded_state.unique_expanded.showcase'
                               )}`}
                         </TextButton>
-                        <TextButton align="right" onPress={handlePressShare}>
-                          􀈂 {lang.t('button.share')}
-                        </TextButton>
+                        {isSupportedOnRainbowWeb || asset.permalink ? (
+                          <TextButton align="right" onPress={handlePressShare}>
+                            􀈂 {lang.t('button.share')}
+                          </TextButton>
+                        ) : null}
                       </Inline>
                       <UniqueTokenExpandedStateHeader
                         asset={asset}
                         hideNftMarketplaceAction={hideNftMarketplaceAction}
+                        isSupportedOnRainbowWeb={isSupportedOnRainbowWeb}
+                        rainbowWebUrl={rainbowWebUrl}
                       />
                     </Stack>
                     {isNFT || isENS ? (

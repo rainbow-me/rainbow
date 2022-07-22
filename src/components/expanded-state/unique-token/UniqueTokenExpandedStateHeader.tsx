@@ -20,17 +20,12 @@ import {
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
-import {
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-} from '@rainbow-me/hooks';
+import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {
-  buildRainbowUrl,
   ethereumUtils,
   magicMemo,
   showActionSheetWithOptions,
@@ -148,27 +143,18 @@ const FamilyImage = styled(ImgixImage)({
 interface UniqueTokenExpandedStateHeaderProps {
   asset: UniqueAsset;
   hideNftMarketplaceAction: boolean;
+  isSupportedOnRainbowWeb: boolean;
+  rainbowWebUrl?: string;
 }
-
-const getIsSupportedOnRainbowWeb = network => {
-  switch (network) {
-    case Network.mainnet:
-    case Network.polygon:
-      return true;
-    default:
-      return false;
-  }
-};
 
 const UniqueTokenExpandedStateHeader = ({
   asset,
   hideNftMarketplaceAction,
+  isSupportedOnRainbowWeb,
+  rainbowWebUrl,
 }: UniqueTokenExpandedStateHeaderProps) => {
-  const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
-
-  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
 
   const formattedCollectionUrl = useMemo(() => {
     // @ts-expect-error external_link could be null or undefined?
@@ -303,14 +289,14 @@ const UniqueTokenExpandedStateHeader = ({
           asset.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
-        Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
+        Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
         saveToCameraRoll(getFullResUrl(asset.image_original_url));
       }
     },
-    [accountAddress, accountENS, asset, setClipboard]
+    [asset, rainbowWebUrl, setClipboard]
   );
 
   const onPressAndroidFamily = useCallback(() => {
@@ -408,7 +394,7 @@ const UniqueTokenExpandedStateHeader = ({
       },
       (idx: number) => {
         if (idx === 0) {
-          Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
+          Linking.openURL(rainbowWebUrl);
         } else if (idx === 1) {
           ethereumUtils.openNftInBlockExplorer(
             // @ts-expect-error address could be undefined?
@@ -424,11 +410,10 @@ const UniqueTokenExpandedStateHeader = ({
       }
     );
   }, [
-    accountAddress,
-    accountENS,
     asset,
     isPhotoDownloadAvailable,
     isSupportedOnRainbowWeb,
+    rainbowWebUrl,
     setClipboard,
   ]);
 
