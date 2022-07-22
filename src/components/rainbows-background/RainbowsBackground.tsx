@@ -5,7 +5,7 @@ import RainbowGreyNeon from '../../assets/rainbows/greyneon.png';
 import RainbowLight from '../../assets/rainbows/light.png';
 import RainbowLiquid from '../../assets/rainbows/liquid.png';
 import RainbowNeon from '../../assets/rainbows/neon.png';
-import RainbowPixel from '../../assets/rainbows/pixel.png';
+import RainbowPixel from '../../assets/rainbows/pixelated.png';
 import SingleRainbow from './SingleRainbow';
 
 const { height: deviceHeight } = Dimensions.get('screen');
@@ -31,10 +31,10 @@ const rainbows = [
   },
   {
     delay: 40,
-    id: 'pixel',
+    id: 'pixelated',
     rotate: 360,
     scale: 0.6666666667,
-    source: ios ? { uri: 'pixel' } : RainbowPixel,
+    source: ios ? { uri: 'pixelated' } : RainbowPixel,
     x: 173,
     y: deviceHeight < 800 ? -263 * (deviceHeight / 800) : -263,
   },
