@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { useCallback, useMemo, useReducer } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
@@ -35,7 +35,7 @@ export default function ConfirmExchangeButton({
   const { isSufficientGas, isValidGas, isGasReady } = useGas();
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
-  const [swapSubmitted, setSwapSubmitted] = useReducer(() => true, false);
+  const [swapSubmitted, setSwapSubmitted] = useState(false);
 
   const isSavings =
     type === ExchangeModalTypes.withdrawal ||
@@ -122,9 +122,13 @@ export default function ConfirmExchangeButton({
   } else if (!isValidGas) {
     label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isSwapDetailsRoute) {
-    label = isHighPriceImpact
-      ? lang.t('button.confirm_exchange.swap_anyway')
-      : `${lang.t('button.confirm_exchange.swap')}`;
+    if (swapSubmitted) {
+      label = lang.t('button.confirm_exchange.submitting');
+    } else {
+      label = isHighPriceImpact
+        ? lang.t('button.confirm_exchange.swap_anyway')
+        : `${lang.t('button.confirm_exchange.swap')}`;
+    }
   } else if (disabled) {
     label = lang.t('button.confirm_exchange.enter_amount');
   }
@@ -145,11 +149,12 @@ export default function ConfirmExchangeButton({
     !isSufficientBalance ||
     !isSufficientGas ||
     !isValidGas ||
-    !isSufficientGas;
+    !isSufficientGas ||
+    swapSubmitted;
 
-  const onSwap = useCallback(() => {
-    onSubmit();
-    setSwapSubmitted();
+  const onSwap = useCallback(async () => {
+    const submitted = await onSubmit();
+    setSwapSubmitted(submitted);
   }, [onSubmit, setSwapSubmitted]);
 
   return (
@@ -163,12 +168,14 @@ export default function ConfirmExchangeButton({
             }
             disableShimmerAnimation={insufficientLiquidity}
             disabled={isDisabled && !insufficientLiquidity}
-            disabledBackgroundColor={disabledButtonColor}
+            disabledBackgroundColor={
+              swapSubmitted ? buttonColor : disabledButtonColor
+            }
             hideInnerBorder
             label={label}
             loading={loadingQuote}
             onLongPress={
-              loading || swapSubmitted
+              loading
                 ? NOOP
                 : insufficientLiquidity
                 ? handleShowLiquidityExplainer
@@ -183,7 +190,7 @@ export default function ConfirmExchangeButton({
                   : shadowsForAsset
                 : shadows.default
             }
-            showBiometryIcon={isSwapDetailsRoute}
+            showBiometryIcon={isSwapDetailsRoute && !swapSubmitted}
             testID={testID}
             {...props}
             parentHorizontalPadding={19}

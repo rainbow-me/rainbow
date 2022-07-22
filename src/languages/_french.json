@@ -198,6 +198,7 @@
         "invalid_fee_lowercase": "Frais non valides",
         "loading": "Loading... :)",
         "review": "Review :)",
+        "submitting": "Submitting... :)",
         "swap": "Tenir pour Swap",
         "swap_anyway": "Echanger quand Même",
         "symbol_balance_too_low": "%{symbol} balance too low :)",
