@@ -127,7 +127,10 @@ export default function SettingsSheet() {
         ) {
           route = 'BackupSection';
         } else {
-          if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
+          if (
+            Object.keys(wallets).length === 1 &&
+            (selectedWallet.imported || selectedWallet.backedUp)
+          ) {
             paramsToPass.imported = true;
             paramsToPass.type = 'AlreadyBackedUpView';
           }
@@ -136,7 +139,7 @@ export default function SettingsSheet() {
       }
       return { params: { ...params, ...paramsToPass }, route };
     },
-    [params, selectedWallet.imported, wallets]
+    [params, selectedWallet.backedUp, selectedWallet.imported, wallets]
   );
 
   const onPressSection = useCallback(
