@@ -13,7 +13,7 @@ import Routes from '@rainbow-me/routes';
 
 const OP_WRAPPER_ADDRESS = {
   'op-kovan': '0x715da5e53526bedac9bd96e8fdb7efb185d1b6ca',
-  'op-mainnet': '0x58AcA48312f44C2f8215E5FBa67078Fb0cfd45bA',
+  'op-mainnet': '0x96a4f2d63b30c78e27025c2a4e4d3c049d02bdcb',
 };
 
 const CURRENT_NETWORK = 'op-kovan';
