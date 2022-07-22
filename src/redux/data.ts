@@ -1075,13 +1075,6 @@ export const addressAssetsReceived = (
     payload: parsedAssets,
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
   });
-  // if (!change) {
-  //   const missingPriceAssetAddresses: string[] = Object.values(parsedAssets)
-  //     .filter(asset => isNil(asset?.price))
-  //     .map(asset => asset.address);
-
-  //   dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
-  // }
 
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
     .filter(
