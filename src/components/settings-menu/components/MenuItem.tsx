@@ -140,7 +140,7 @@ const Label = ({ text, warn }: LabelProps) => {
 interface MenuItemProps {
   rightComponent?: React.ReactNode;
   leftComponent?: React.ReactNode;
-  size: 'medium' | 'large';
+  size: 52 | 60;
   iconPadding?: 'small' | 'medium' | 'large';
   hasRightArrow?: boolean;
   onPress?: () => void;
@@ -174,7 +174,7 @@ const MenuItem = ({
 
   const Item = () => (
     <Box
-      height={{ custom: size === 'large' ? 60 : 52 }}
+      height={{ custom: size }}
       justifyContent="center"
       paddingHorizontal={{ custom: 16 }}
       width="full"

@@ -62,7 +62,7 @@ const CurrencySection = () => {
                   <MenuItem.StatusIcon status="selected" />
                 )
               }
-              size="medium"
+              size={52}
               titleComponent={<MenuItem.Title text={label} />}
             />
           );

@@ -75,7 +75,7 @@ const PrivacySection = () => {
           rightComponent={
             <Switch onValueChange={toggleWebData} value={publicShowCase} />
           }
-          size="medium"
+          size={52}
           titleComponent={
             <MenuItem.Title
               text={lang.t('settings.privacy_section.public_showcase')}
@@ -89,7 +89,7 @@ const PrivacySection = () => {
             iconPadding="medium"
             leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
             onPress={viewProfile}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 isLink

@@ -25,7 +25,7 @@ const WalletNotificationsSettings = () => {
               value={notificationsAllowed}
             />
           }
-          size="medium"
+          size={52}
           titleComponent={
             <MenuItem.Title
               text={lang.t(
@@ -45,7 +45,7 @@ const WalletNotificationsSettings = () => {
               <MenuItem.TextIcon colorOverride={colors.appleBlue} icon="􀈟" />
             }
             rightComponent={<Switch />}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 text={lang.t('settings.notifications_section.sent')}
@@ -59,7 +59,7 @@ const WalletNotificationsSettings = () => {
               <MenuItem.TextIcon colorOverride={colors.green} icon="􀅀" />
             }
             rightComponent={<Switch />}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 text={lang.t('settings.notifications_section.received')}
@@ -73,7 +73,7 @@ const WalletNotificationsSettings = () => {
               <MenuItem.TextIcon colorOverride={colors.pink} icon="􀑉" />
             }
             rightComponent={<Switch />}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 text={lang.t('settings.notifications_section.purchased')}
@@ -87,7 +87,7 @@ const WalletNotificationsSettings = () => {
               <MenuItem.TextIcon colorOverride={colors.orange} icon="􀋡" />
             }
             rightComponent={<Switch />}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 text={lang.t('settings.notifications_section.sold')}
@@ -101,7 +101,7 @@ const WalletNotificationsSettings = () => {
               <MenuItem.TextIcon colorOverride={colors.yellowOrange} icon="􀆿" />
             }
             rightComponent={<Switch />}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 text={lang.t('settings.notifications_section.minted')}
@@ -115,7 +115,7 @@ const WalletNotificationsSettings = () => {
               <MenuItem.TextIcon colorOverride={colors.swapPurple} icon="􀖅" />
             }
             rightComponent={<Switch />}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 text={lang.t('settings.notifications_section.swapped')}
@@ -129,7 +129,7 @@ const WalletNotificationsSettings = () => {
               <MenuItem.TextIcon colorOverride={colors.green} icon="􀁢" />
             }
             rightComponent={<Switch />}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 text={lang.t('settings.notifications_section.approvals')}
@@ -146,7 +146,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 text={lang.t(

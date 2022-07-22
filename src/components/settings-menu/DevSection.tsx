@@ -218,7 +218,7 @@ const DevSection = () => {
               value={testnetsEnabled}
             />
           }
-          size="medium"
+          size={52}
           titleComponent={<MenuItem.Title text="Enable Testnets" />}
         />
         {testnetsEnabled && <NetworkSection inDevSection />}
@@ -226,7 +226,7 @@ const DevSection = () => {
           iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="💥" />}
           onPress={clearLocalStorage}
-          size="medium"
+          size={52}
           titleComponent={<MenuItem.Title text="Clear local storage" />}
         />
       </Menu>
@@ -237,7 +237,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={AsyncStorage.clear}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_async_storage')}
@@ -248,7 +248,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={clearAllStorages}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_mmkv_storage')}
@@ -259,7 +259,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="📷️" />}
               onPress={clearImageMetadataCache}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_image_metadata_cache')}
@@ -270,7 +270,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="📷️" />}
               onPress={clearImageCache}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_image_cache')}
@@ -281,7 +281,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="💣" />}
               onPress={wipeKeychain}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.reset_keychain')}
@@ -292,7 +292,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🔄" />}
               onPress={() => Restart.Restart()}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.restart_app')}
@@ -303,7 +303,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={throwRenderError}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.crash_app_render_error')}
@@ -315,7 +315,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🗑️" />}
               onPress={removeBackups}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.remove_all_backups')}
@@ -326,7 +326,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🤷" />}
               onPress={() => AsyncStorage.removeItem('experimentalConfig')}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.reset_experimental_config')}
@@ -337,7 +337,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="👷" />}
               onPress={connectToHardhat}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.connect_to_hardhat')}
@@ -348,7 +348,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🏖️" />}
               onPress={checkAlert}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title text={lang.t('developer_settings.alert')} />
               }
@@ -357,7 +357,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🔔" />}
               onPress={navToDevNotifications}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.notifications_debug')}
@@ -369,7 +369,7 @@ const DevSection = () => {
               iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="⏩" />}
               onPress={syncCodepush}
-              size="medium"
+              size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.sync_codepush', {
@@ -391,7 +391,7 @@ const DevSection = () => {
                   rightComponent={
                     !!config[key] && <MenuItem.StatusIcon status="selected" />
                   }
-                  size="medium"
+                  size={52}
                   titleComponent={<MenuItem.Title text={key} />}
                 />
               ))}

@@ -255,7 +255,7 @@ const SettingsSection = ({
                 }
               />
             }
-            size="large"
+            size={60}
             titleComponent={<MenuItem.Title text={lang.t('settings.backup')} />}
           />
         )}
@@ -269,7 +269,7 @@ const SettingsSection = ({
               />
             }
             onPress={onPressNotifications}
-            size="large"
+            size={60}
             titleComponent={
               <MenuItem.Title text={lang.t('settings.notifications')} />
             }
@@ -287,7 +287,7 @@ const SettingsSection = ({
           rightComponent={
             <MenuItem.Selection>{nativeCurrency || ''}</MenuItem.Selection>
           }
-          size="large"
+          size={60}
           titleComponent={<MenuItem.Title text={lang.t('settings.currency')} />}
         />
         {(testnetsEnabled || IS_DEV) && (
@@ -305,7 +305,7 @@ const SettingsSection = ({
                 {networkInfo?.[network]?.name}
               </MenuItem.Selection>
             }
-            size="large"
+            size={60}
             titleComponent={
               <MenuItem.Title text={lang.t('settings.network')} />
             }
@@ -331,7 +331,7 @@ const SettingsSection = ({
                 {colorScheme ? capitalizeFirstLetter(colorScheme) : ''}
               </MenuItem.Selection>
             }
-            size="large"
+            size={60}
             titleComponent={<MenuItem.Title text={lang.t('settings.theme')} />}
           />
         </ContextMenuButton>
@@ -346,7 +346,7 @@ const SettingsSection = ({
               />
             }
             onPress={onPressPrivacy}
-            size="large"
+            size={60}
             titleComponent={
               <MenuItem.Title text={lang.t('settings.privacy')} />
             }
@@ -367,7 +367,7 @@ const SettingsSection = ({
                 {(supportedLanguages as any)[language] || ''}
               </MenuItem.Selection>
             }
-            size="large"
+            size={60}
             titleComponent={
               <MenuItem.Title text={lang.t('settings.language')} />
             }
@@ -379,7 +379,7 @@ const SettingsSection = ({
           iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="🌈" />}
           onPress={onPressShare}
-          size="medium"
+          size={52}
           titleComponent={
             <MenuItem.Title text={lang.t('settings.share_rainbow')} />
           }
@@ -388,14 +388,14 @@ const SettingsSection = ({
           iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="🧠" />}
           onPress={onPressLearn}
-          size="medium"
+          size={52}
           titleComponent={<MenuItem.Title text={lang.t('settings.learn')} />}
         />
         <MenuItem
           iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="🐦" />}
           onPress={onPressTwitter}
-          size="medium"
+          size={52}
           titleComponent={
             <MenuItem.Title text={lang.t('settings.follow_us_on_twitter')} />
           }
@@ -404,7 +404,7 @@ const SettingsSection = ({
           iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="💬" />}
           onPress={onSendFeedback}
-          size="medium"
+          size={52}
           titleComponent={
             <MenuItem.Title
               text={lang.t(
@@ -420,7 +420,7 @@ const SettingsSection = ({
             iconPadding="large"
             leftComponent={<MenuItem.TextIcon icon="❤️" />}
             onPress={onPressReview}
-            size="medium"
+            size={52}
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
           />
         )}
@@ -429,7 +429,7 @@ const SettingsSection = ({
             iconPadding="large"
             leftComponent={<MenuItem.TextIcon icon="🤯" />}
             onPress={setOriginalDeploymentKey}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title text={lang.t('settings.restore')} />
             }
@@ -439,7 +439,7 @@ const SettingsSection = ({
           iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} />}
           onPress={onPressDev}
-          size="medium"
+          size={52}
           titleComponent={
             <MenuItem.Title text={lang.t('settings.developer')} />
           }

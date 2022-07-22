@@ -28,7 +28,7 @@ const NotificationsSection = () => {
         <MenuItem
           disabled
           rightComponent={<Switch />}
-          size="medium"
+          size={52}
           titleComponent={
             <MenuItem.Title
               text={lang.t('settings.notifications_section.my_wallets')}
@@ -53,7 +53,7 @@ const NotificationsSection = () => {
             />
           }
           onPress={() => onPress('notben.eth')}
-          size="medium"
+          size={52}
           titleComponent={<MenuItem.Title text="notben.eth" />}
         />
         <MenuItem
@@ -79,7 +79,7 @@ const NotificationsSection = () => {
             />
           }
           onPress={() => onPress('pugson.eth')}
-          size="medium"
+          size={52}
           titleComponent={<MenuItem.Title text="pugson.eth" />}
         />
       </Menu>
@@ -87,7 +87,7 @@ const NotificationsSection = () => {
         <MenuItem
           disabled
           rightComponent={<Switch />}
-          size="medium"
+          size={52}
           titleComponent={
             <MenuItem.Title
               text={lang.t('settings.notifications_section.watched_wallets')}
@@ -112,7 +112,7 @@ const NotificationsSection = () => {
             />
           }
           onPress={() => onPress('moxey.eth')}
-          size="medium"
+          size={52}
           titleComponent={<MenuItem.Title text="moxey.eth" />}
         />
       </Menu>

@@ -39,7 +39,7 @@ const LanguageSection = () => {
               rightComponent={
                 code === language && <MenuItem.StatusIcon status="selected" />
               }
-              size="medium"
+              size={52}
               titleComponent={<MenuItem.Title text={name} />}
             />
           );

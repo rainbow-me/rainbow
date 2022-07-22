@@ -5,13 +5,13 @@ import { ContactAvatar } from '../../contacts';
 import Menu from '../components/Menu';
 import MenuContainer from '../components/MenuContainer';
 import MenuItem from '../components/MenuItem';
-import { addressHashedEmoji } from '@/utils/profileUtils';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { abbreviations } from '@rainbow-me/utils';
+import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
 
 const BackupSection = () => {
   const { navigate } = useNavigation();
@@ -117,7 +117,7 @@ const BackupSection = () => {
                     }
                   />
                 }
-                size="large"
+                size={60}
                 titleComponent={
                   <MenuItem.Title
                     text={
@@ -137,7 +137,7 @@ const BackupSection = () => {
             iconPadding="small"
             leftComponent={<MenuItem.TextIcon icon="􀡜" isLink />}
             onPress={manageCloudBackups}
-            size="medium"
+            size={52}
             titleComponent={
               <MenuItem.Title
                 isLink
