@@ -24,9 +24,12 @@ export const UNLOCK_KEY_OPTIMISM_NFT_APP_ICON = 'optimism_nft_app_icon';
 // Will be removed before release
 
 const getKovanOpProvider = async () => {
-  const provider = new StaticJsonRpcProvider(OPTIMISM_KOVAN_RPC, 69);
-  await provider.ready;
-  return provider;
+  if (OPTIMISM_KOVAN_RPC) {
+    const provider = new StaticJsonRpcProvider(OPTIMISM_KOVAN_RPC, 69);
+    await provider.ready;
+    return provider;
+  }
+  return null;
 };
 
 export const optimismNftAppIconCheck = async (
@@ -38,6 +41,8 @@ export const optimismNftAppIconCheck = async (
     CURRENT_NETWORK === 'op-mainnet'
       ? await getProviderForNetwork(Network.optimism)
       : await getKovanOpProvider();
+
+  if (!p) return false;
 
   const opWrapperInstance = new Contract(
     OP_WRAPPER_ADDRESS[CURRENT_NETWORK],
