@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
   createdWithBiometricError,
@@ -16,6 +15,7 @@ import { Icon } from '../icons';
 import { Column, ColumnWithMargins, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
+import { upperFirst } from '@rainbow-me/helpers/utilities';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';

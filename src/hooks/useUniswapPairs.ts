@@ -1,5 +1,4 @@
 import { Pair, TokenAmount } from '@uniswap/sdk';
-import { compact } from 'lodash';
 import { useMemo } from 'react';
 import useMulticall from './useMulticall';
 import useUniswapCalls from './useUniswapCalls';
@@ -39,7 +38,7 @@ export default function useUniswapPairs() {
     });
 
     return {
-      allPairs: compact(viablePairs),
+      allPairs: viablePairs.filter(Boolean) as Pair[],
       doneLoadingReserves,
     };
   }, [allPairCombinations, multicallResults]);

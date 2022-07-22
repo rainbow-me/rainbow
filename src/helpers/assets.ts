@@ -1,6 +1,7 @@
-import { chunk, compact, groupBy, slice, sortBy } from 'lodash';
+import { groupBy, slice, sortBy } from 'lodash';
 import {
   add,
+  chunk,
   convertAmountToNativeDisplay,
   greaterThan,
   isEmpty,
@@ -20,7 +21,7 @@ export const buildAssetUniqueIdentifier = (item: any) => {
   const nativePrice = item?.native?.price?.display ?? '';
   const uniqueId = item?.uniqueId;
 
-  return compact([balance, nativePrice, uniqueId]).join('_');
+  return [balance, nativePrice, uniqueId].filter(Boolean).join('_');
 };
 
 const addEthPlaceholder = (
@@ -235,7 +236,7 @@ export const buildBriefCoinsList = (
 };
 
 export const buildUniqueTokenList = (
-  uniqueTokens: any,
+  uniqueTokens: any[],
   selectedShowcaseTokens: any[] = []
 ) => {
   let rows: any = [];
@@ -246,7 +247,7 @@ export const buildUniqueTokenList = (
   const families = Object.keys(grouped);
 
   for (let family of families) {
-    const tokensRow: any = [];
+    const tokensRow: any[] = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
       if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
         showcaseTokens.push(grouped[family][j]);
@@ -260,7 +261,7 @@ export const buildUniqueTokenList = (
         tokensRow.push([grouped[family][j]]);
       }
     }
-    let tokens = compact(tokensRow);
+    let tokens = tokensRow.filter(Boolean);
     tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {

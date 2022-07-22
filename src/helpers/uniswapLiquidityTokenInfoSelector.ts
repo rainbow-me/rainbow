@@ -1,5 +1,5 @@
 import { ChainId, WETH } from '@uniswap/sdk';
-import { compact, orderBy, sumBy } from 'lodash';
+import orderBy from 'lodash/orderBy';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -145,14 +145,15 @@ const buildUniswapCards = (
 ): UniswapCard => {
   const uniswapLiquidityPositions =
     allUniswapLiquidityPositions?.[accountAddress];
-  const uniswapPools = compact(
-    uniswapLiquidityPositions?.map(position => {
+  const uniswapPools = uniswapLiquidityPositions
+    ?.map(position => {
       const liquidityToken = uniswapLiquidityTokens.find(
         token => token.address === position?.pair?.id
       );
       return transformPool(liquidityToken, position, nativeCurrency, chainId);
     })
-  );
+    .filter(Boolean) as UniswapPool[];
+
   const orderedUniswapPools = orderBy(
     uniswapPools,
     [({ totalBalancePrice }) => Number(totalBalancePrice)],
@@ -162,13 +163,14 @@ const buildUniswapCards = (
   let uniswapTotal = 0;
 
   if (Array.isArray(orderedUniswapPools) && orderedUniswapPools.length) {
-    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalancePrice }) =>
-      Number(totalBalancePrice)
+    uniswapTotal = orderedUniswapPools.reduce(
+      (acc, { totalBalancePrice }) => acc + Number(totalBalancePrice),
+      0
     );
   }
 
   return {
-    uniswap: orderedUniswapPools,
+    uniswap: orderedUniswapPools.filter(Boolean) as UniswapPool[],
     uniswapTotal,
   };
 };
