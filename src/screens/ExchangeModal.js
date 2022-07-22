@@ -517,6 +517,89 @@ export default function ExchangeModal({
     }
   };
 
+  const submit = useCallback(
+    async amountInUSD => {
+      setIsAuthorizing(true);
+      let NotificationManager = ios ? NativeModules.NotificationManager : null;
+      try {
+        const wallet = await loadWallet();
+        if (!wallet) {
+          setIsAuthorizing(false);
+          logger.sentry(`aborting ${type} due to missing wallet`);
+          return;
+        }
+
+        const callback = (success = false, errorMessage = null) => {
+          setIsAuthorizing(false);
+          if (success) {
+            setParams({ focused: false });
+            navigate(Routes.PROFILE_SCREEN);
+          } else if (errorMessage) {
+            Alert.alert(errorMessage);
+          }
+        };
+        logger.log('[exchange - handle submit] rap');
+        const nonce = await getNextNonce();
+        const swapParameters = {
+          chainId,
+          flashbots,
+          inputAmount,
+          nonce,
+          outputAmount,
+          tradeDetails,
+        };
+        const rapType = getSwapRapTypeByExchangeType(type);
+        await executeRap(wallet, rapType, swapParameters, callback);
+        logger.log('[exchange - handle submit] executed rap!');
+        analytics.track(`Completed ${type}`, {
+          aggregator: tradeDetails?.source || '',
+          amountInUSD,
+          inputTokenAddress: inputCurrency?.address || '',
+          inputTokenName: inputCurrency?.name || '',
+          inputTokenSymbol: inputCurrency?.symbol || '',
+          isHighPriceImpact: debouncedIsHighPriceImpact,
+          liquiditySources: tradeDetails?.protocols || [],
+          network: currentNetwork,
+          outputTokenAddress: outputCurrency?.address || '',
+          outputTokenName: outputCurrency?.name || '',
+          outputTokenSymbol: outputCurrency?.symbol || '',
+          priceImpact: priceImpactPercentDisplay,
+          slippage: slippageInBips / 100,
+          type,
+        });
+        // Tell iOS we finished running a rap (for tracking purposes)
+        NotificationManager &&
+          NotificationManager.postNotification('rapCompleted');
+      } catch (error) {
+        setIsAuthorizing(false);
+        logger.log('[exchange - handle submit] error submitting swap', error);
+        setParams({ focused: false });
+        navigate(Routes.WALLET_SCREEN);
+      }
+    },
+    [
+      chainId,
+      currentNetwork,
+      debouncedIsHighPriceImpact,
+      flashbots,
+      getNextNonce,
+      inputAmount,
+      inputCurrency?.address,
+      inputCurrency?.name,
+      inputCurrency?.symbol,
+      navigate,
+      outputAmount,
+      outputCurrency?.address,
+      outputCurrency?.name,
+      outputCurrency?.symbol,
+      priceImpactPercentDisplay,
+      setParams,
+      slippageInBips,
+      tradeDetails,
+      type,
+    ]
+  );
+
   const handleSubmit = useCallback(async () => {
     let amountInUSD = 0;
     let NotificationManager = ios ? NativeModules.NotificationManager : null;
@@ -564,91 +647,33 @@ export default function ExchangeModal({
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
-      return;
+      return false;
     }
-
-    setIsAuthorizing(true);
-    try {
-      const wallet = await loadWallet();
-      if (!wallet) {
-        setIsAuthorizing(false);
-        logger.sentry(`aborting ${type} due to missing wallet`);
-        return;
-      }
-
-      const callback = (success = false, errorMessage = null) => {
-        setIsAuthorizing(false);
-        if (success) {
-          setParams({ focused: false });
-          navigate(Routes.PROFILE_SCREEN);
-        } else if (errorMessage) {
-          Alert.alert(errorMessage);
-        }
-      };
-      logger.log('[exchange - handle submit] rap');
-      const nonce = await getNextNonce();
-      const swapParameters = {
-        chainId,
-        flashbots,
-        inputAmount,
-        nonce,
-        outputAmount,
-        tradeDetails,
-      };
-      const rapType = getSwapRapTypeByExchangeType(type);
-      await executeRap(wallet, rapType, swapParameters, callback);
-      logger.log('[exchange - handle submit] executed rap!');
-      analytics.track(`Completed ${type}`, {
-        aggregator: tradeDetails?.source || '',
-        amountInUSD,
-        inputTokenAddress: inputCurrency?.address || '',
-        inputTokenName: inputCurrency?.name || '',
-        inputTokenSymbol: inputCurrency?.symbol || '',
-        isHighPriceImpact: debouncedIsHighPriceImpact,
-        liquiditySources: tradeDetails?.protocols || [],
-        network: currentNetwork,
-        outputTokenAddress: outputCurrency?.address || '',
-        outputTokenName: outputCurrency?.name || '',
-        outputTokenSymbol: outputCurrency?.symbol || '',
-        priceImpact: priceImpactPercentDisplay,
-        slippage: slippageInBips / 100,
-        type,
-      });
-      // Tell iOS we finished running a rap (for tracking purposes)
-      NotificationManager &&
-        NotificationManager.postNotification('rapCompleted');
-    } catch (error) {
-      setIsAuthorizing(false);
-      logger.log('[exchange - handle submit] error submitting swap', error);
-      setParams({ focused: false });
-      navigate(Routes.WALLET_SCREEN);
-    }
+    submit(amountInUSD);
+    return true;
   }, [
-    chainId,
-    currentNetwork,
-    debouncedIsHighPriceImpact,
-    flashbots,
+    outputPriceValue,
+    outputAmount,
+    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
+    submit,
+    nativeCurrency,
+    nativeAmount,
     genericAssets,
-    getNextNonce,
-    inputAmount,
     inputCurrency?.address,
     inputCurrency?.name,
     inputCurrency?.symbol,
-    nativeAmount,
-    nativeCurrency,
-    navigate,
-    outputAmount,
+    inputAmount,
+    priceOfEther,
+    type,
+    tradeDetails?.source,
+    tradeDetails?.protocols,
+    debouncedIsHighPriceImpact,
+    currentNetwork,
     outputCurrency?.address,
     outputCurrency?.name,
     outputCurrency?.symbol,
-    slippageInBips,
-    outputPriceValue,
     priceImpactPercentDisplay,
-    priceOfEther,
-    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
-    setParams,
-    tradeDetails,
-    type,
+    slippageInBips,
   ]);
 
   const confirmButtonProps = useMemoOne(
