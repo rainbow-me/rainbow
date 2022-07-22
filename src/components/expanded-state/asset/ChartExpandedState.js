@@ -35,7 +35,7 @@ import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { isL2Network } from '@rainbow-me/handlers/web3';
+import { isL2Network, isTestnetNetwork } from '@rainbow-me/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
@@ -206,6 +206,7 @@ export default function ChartExpandedState({ asset }) {
   const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
     assetWithPrice.type,
   ]);
+  const isTestnet = isTestnetNetwork(currentNetwork);
   // This one includes the original l2 address if exists
   const ogAsset = useMemo(() => {
     return {
@@ -379,7 +380,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          {showSwapButton && (
+          {showSwapButton && !isTestnet && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
