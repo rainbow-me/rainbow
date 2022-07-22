@@ -9,7 +9,7 @@ export default React.memo(function WrappedSavingsRow({
 }: {
   address: string;
 }) {
-  const { savings } = useSavingsAccount(true);
+  const { savings }: { savings: any[] } = useSavingsAccount(true);
 
   const props = useMemo(() => {
     const found = savings.find(

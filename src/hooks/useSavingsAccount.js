@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { isEmpty, isNil, keyBy, orderBy } from 'lodash';
+import { isEmpty, isNil, keyBy } from 'lodash';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
@@ -195,11 +195,11 @@ export default function useSavingsAccount(includeDefaultDai) {
       getUnderlyingPrice(token, genericAssets)
     );
 
-    const orderedAccountTokens = orderBy(
-      accountTokensWithPrices,
-      ['underlyingBalanceNativeValue'],
-      ['desc']
-    );
+    const orderedAccountTokens = accountTokensWithPrices
+      .slice()
+      .sort((a, b) =>
+        a.underlyingBalanceNativeValue > b.underlyingBalanceNativeValue ? -1 : 1
+      );
 
     const accountHasCDAI = orderedAccountTokens.find(
       token => token.underlying.address === DAI_ADDRESS

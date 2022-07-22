@@ -158,6 +158,7 @@ const withBriefUniswapSection = (
   network: any,
   isLoadingAssets: any
 ) => {
+  if (!uniswap) return [];
   const pools = uniswap.map((pool: any) => ({
     address: pool.address,
     type: 'UNISWAP_POOL',
