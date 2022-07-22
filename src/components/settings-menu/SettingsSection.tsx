@@ -10,7 +10,7 @@ import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
-import MenuItem, { StatusType } from './components/MenuItem';
+import MenuItem from './components/MenuItem';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
@@ -248,10 +248,10 @@ const SettingsSection = ({
               <MenuItem.StatusIcon
                 status={
                   allBackedUp
-                    ? StatusType.Complete
+                    ? 'complete'
                     : areBackedUp
-                    ? StatusType.Incomplete
-                    : StatusType.Warning
+                    ? 'incomplete'
+                    : 'warning'
                 }
               />
             }

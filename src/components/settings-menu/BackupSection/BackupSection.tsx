@@ -4,7 +4,7 @@ import { cloudPlatform } from '../../../utils/platform';
 import { ContactAvatar } from '../../contacts';
 import Menu from '../components/Menu';
 import MenuContainer from '../components/MenuContainer';
-import MenuItem, { StatusType } from '../components/MenuItem';
+import MenuItem from '../components/MenuItem';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -109,10 +109,10 @@ const BackupSection = () => {
                   <MenuItem.StatusIcon
                     status={
                       wallet.backupType === WalletBackupTypes.cloud
-                        ? StatusType.Complete
+                        ? 'complete'
                         : wallet.backedUp || wallet.imported
-                        ? StatusType.Incomplete
-                        : StatusType.Warning
+                        ? 'incomplete'
+                        : 'warning'
                     }
                   />
                 }

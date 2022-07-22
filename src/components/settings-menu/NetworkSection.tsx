@@ -7,7 +7,7 @@ import networkInfo from '../../helpers/networkInfo';
 import { settingsUpdateNetwork } from '../../redux/settings';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
-import MenuItem, { StatusType } from './components/MenuItem';
+import MenuItem from './components/MenuItem';
 import { Divider, Stack } from '@rainbow-me/design-system';
 import {
   useAccountSettings,
@@ -52,9 +52,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
             key={value}
             onPress={() => onNetworkChange(value)}
             rightComponent={
-              value === network && (
-                <MenuItem.StatusIcon status={StatusType.Selected} />
-              )
+              value === network && <MenuItem.StatusIcon status="selected" />
             }
             size="medium"
             titleComponent={

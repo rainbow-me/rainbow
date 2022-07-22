@@ -37,12 +37,7 @@ const Selection = ({ children }: SelectionProps) => (
   </Text>
 );
 
-export enum StatusType {
-  Complete = 'complete',
-  Incomplete = 'incomplete',
-  Warning = 'warning',
-  Selected = 'selected',
-}
+type StatusType = 'complete' | 'incomplete' | 'warning' | 'selected';
 
 interface StatusIconProps {
   status: StatusType;
@@ -50,31 +45,20 @@ interface StatusIconProps {
 
 const StatusIcon = ({ status }: StatusIconProps) => {
   const { colors, isDarkMode } = useTheme();
-  let color;
-  switch (status) {
-    case StatusType.Complete:
-      color = colors.green;
-      break;
-    case StatusType.Incomplete:
-      color = colors.alpha(colors.blueGreyDark, 0.5);
-      break;
-    case StatusType.Warning:
-      color = colors.orangeLight;
-      break;
-    case StatusType.Selected:
-      color = colors.appleBlue;
-      break;
-    default:
-      break;
-  }
+  const statusColors: { [key in StatusType]: string } = {
+    complete: colors.green,
+    incomplete: colors.alpha(colors.blueGreyDark, 0.5),
+    selected: colors.appleBlue,
+    warning: colors.orangeLight,
+  };
   return (
     <Box
-      as={status === StatusType.Warning ? WarningIcon : CheckmarkCircledIcon}
-      backgroundColor={color}
-      color={color}
+      as={status === 'warning' ? WarningIcon : CheckmarkCircledIcon}
+      backgroundColor={statusColors[status]}
+      color={statusColors[status]}
       colors={colors}
       fillColor={colors.white}
-      shadowColor={isDarkMode ? colors.shadow : color}
+      shadowColor={isDarkMode ? colors.shadow : statusColors[status]}
       shadowOffset={{
         height: 4,
         width: 0,

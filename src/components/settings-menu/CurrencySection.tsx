@@ -5,7 +5,7 @@ import { reloadTimelines } from 'react-native-widgetkit';
 import { CoinIcon } from '../coin-icon';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
-import MenuItem, { StatusType } from './components/MenuItem';
+import MenuItem from './components/MenuItem';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { emojis, supportedNativeCurrencies } from '@rainbow-me/references';
 
@@ -59,7 +59,7 @@ const CurrencySection = () => {
               onPress={() => onSelectCurrency(currency)}
               rightComponent={
                 currency === nativeCurrency && (
-                  <MenuItem.StatusIcon status={StatusType.Selected} />
+                  <MenuItem.StatusIcon status="selected" />
                 )
               }
               size="medium"
