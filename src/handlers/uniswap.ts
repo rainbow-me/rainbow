@@ -51,12 +51,7 @@ const MAX_GAS_LIMIT = 460000;
 const GAS_LIMIT_INCREMENT = 50000;
 const EXTRA_GAS_PADDING = 1.5;
 const CHAIN_IDS_WITH_TRACE_SUPPORT = [ChainId.mainnet];
-const TOKENS_WITH_FIXED_GAS_LIMIT_AFTER_APPROVAL: any = {
-  [ChainId.mainnet]: {
-    // AAVE
-    '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9': 550000,
-  },
-};
+
 export const getStateDiff = async (
   provider: StaticJsonRpcProvider,
   tradeDetails: Quote
@@ -155,6 +150,7 @@ export const getSwapGasLimitWithFakeApproval = async (
     logger.log(`Blew up trying to get state diff. Falling back to defaults`, e);
   }
   return (
+    Number(tradeDetails?.defaultGasLimit || 0) ||
     ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING
   );
 };
@@ -235,9 +231,9 @@ export const estimateSwapGasLimit = async ({
         1.002
       );
 
-      return gasLimit || default_estimate;
+      return gasLimit || tradeDetails?.defaultGasLimit || default_estimate;
     } catch (e) {
-      return default_estimate;
+      return tradeDetails?.defaultGasLimit || default_estimate;
     }
     // Swap
   } else {
@@ -249,13 +245,6 @@ export const estimateSwapGasLimit = async ({
       );
 
       if (requiresApprove) {
-        const fixedGasLimitAfterApproval =
-          TOKENS_WITH_FIXED_GAS_LIMIT_AFTER_APPROVAL?.[chainId]?.[
-            tradeDetails.sellTokenAddress.toLowerCase()
-          ];
-        if (fixedGasLimitAfterApproval) {
-          return fixedGasLimitAfterApproval;
-        }
         if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
           try {
             const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
@@ -272,7 +261,10 @@ export const estimateSwapGasLimit = async ({
             logger.debug('Error estimating swap gas limit with approval', e);
           }
         }
-        return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+        return (
+          tradeDetails?.defaultGasLimit ||
+          getBasicSwapGasLimitForTrade(tradeDetails, chainId)
+        );
       }
 
       const gasLimit = await estimateGasWithPadding(
@@ -282,9 +274,16 @@ export const estimateSwapGasLimit = async ({
         provider,
         1.01
       );
-      return gasLimit || getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+      return (
+        gasLimit ||
+        tradeDetails?.defaultGasLimit ||
+        getBasicSwapGasLimitForTrade(tradeDetails, chainId)
+      );
     } catch (error) {
-      return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
+      return (
+        tradeDetails?.defaultGasLimit ||
+        getBasicSwapGasLimitForTrade(tradeDetails, chainId)
+      );
     }
   }
 };

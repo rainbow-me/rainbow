@@ -45,7 +45,6 @@ import {
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
-  expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
   explainSheetConfig,
   externalLinkWarningSheetConfig,
@@ -58,6 +57,7 @@ import {
   sendConfirmationSheetConfig,
   settingsSheetConfig,
   stackNavigationConfig,
+  swapDetailsSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -408,7 +408,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.SWAP_DETAILS_SHEET}
-        {...expandedAssetSheetConfig}
+        {...swapDetailsSheetConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
