@@ -61,7 +61,6 @@ interface SettingsState {
  */
 type SettingsStateUpdateAction =
   | SettingsStateUpdateSettingsAddressAction
-  | SettingsStateUpdateAppIconAction
   | SettingsStateUpdateNativeCurrencySuccessAction
   | SettingsStateUpdateAppIconSuccessAction
   | SettingsStateUpdateNetworkSuccessAction
@@ -91,10 +90,6 @@ interface SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction {
   };
 }
 
-interface SettingsStateUpdateAppIconAction {
-  type: typeof SETTINGS_UPDATE_APP_ICON_SUCCESS;
-  payload: SettingsState['appIcon'];
-}
 interface SettingsStateUpdateTestnetPrefAction {
   type: typeof SETTINGS_UPDATE_TESTNET_PREF_SUCCESS;
   payload: SettingsState['testnetsEnabled'];
@@ -114,12 +109,22 @@ interface SettingsStateUpdateLanguageSuccessAction {
 }
 
 export const settingsLoadState = () => async (
-  dispatch: Dispatch<SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction>
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
+    | SettingsStateUpdateAppIconSuccessAction
+  >
 ) => {
   try {
     const nativeCurrency = await getNativeCurrency();
     const testnetsEnabled = await getTestnetsEnabled();
-    settingsLoadAppIcon();
+    const appIcon = (await getAppIcon()) as string;
+    dispatch({
+      payload: appIcon,
+      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+    });
+
     analytics.identify(null, {
       currency: nativeCurrency,
       enabledTestnets: testnetsEnabled,
@@ -131,20 +136,6 @@ export const settingsLoadState = () => async (
     });
   } catch (error) {
     logger.log('Error loading native currency and testnets pref', error);
-  }
-};
-
-export const settingsLoadAppIcon = () => async (
-  dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>
-) => {
-  try {
-    const appIcon = (await getAppIcon()) as string;
-    dispatch({
-      payload: appIcon,
-      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
-    });
-  } catch (error) {
-    logger.log('Error loading app icon', error);
   }
 };
 
