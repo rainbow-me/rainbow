@@ -34,6 +34,7 @@ export {
   parseAccountUniqueTokensPolygon,
   parseSimplehashNfts,
   handleAndSignImages,
+  getOpenSeaCollectionUrl,
   getFamilies,
   dedupeUniqueTokens,
   dedupeAssetsWithFamilies,

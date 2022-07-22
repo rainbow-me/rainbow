@@ -21,7 +21,7 @@ const parseLastSalePrice = lastSale =>
       ) / 1000
     : null;
 
-const getOpenSeaCollectionUrl = slug =>
+export const getOpenSeaCollectionUrl = slug =>
   `https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`;
 
 /**
