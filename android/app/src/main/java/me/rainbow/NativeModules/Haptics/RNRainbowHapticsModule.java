@@ -38,7 +38,7 @@ public class RNRainbowHapticsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void selection(){
+  public void selection() {
     mPerformer.selection();
   }
 
