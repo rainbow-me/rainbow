@@ -5,6 +5,7 @@ import { ContactAvatar } from '../../contacts';
 import Menu from '../components/Menu';
 import MenuContainer from '../components/MenuContainer';
 import MenuItem from '../components/MenuItem';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -52,7 +53,7 @@ const BackupSection = () => {
             );
             const account = visibleAccounts[0];
             const totalAccounts = visibleAccounts.length;
-            const { color, label, index, address } = account;
+            const { color, label, address } = account;
             if (wallet.backupType === WalletBackupTypes.cloud) {
               cloudBackedUpWallets += 1;
             }
@@ -95,7 +96,7 @@ const BackupSection = () => {
                     color={color}
                     marginRight={10}
                     size="small"
-                    value={labelOrName || `${index + 1}`}
+                    value={addressHashedEmoji(address)}
                   />
                 }
                 onPress={() =>
