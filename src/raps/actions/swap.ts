@@ -15,7 +15,7 @@ import {
   estimateSwapGasLimit,
   executeSwap,
 } from '@rainbow-me/handlers/uniswap';
-import { toHex } from '@rainbow-me/handlers/web3';
+import { isL2Network, toHex } from '@rainbow-me/handlers/web3';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@rainbow-me/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
@@ -47,12 +47,14 @@ const swap = async (
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   let gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
-  if (
-    currentRap.actions.length - 1 > index ||
-    !gasParams.maxFeePerGas ||
-    !gasParams.maxPriorityFeePerGas ||
-    !gasParams.gasPrice
-  ) {
+  const isL2 = isL2Network(
+    ethereumUtils.getNetworkFromChainId(parameters?.chainId || 1)
+  );
+  const emptyGasFee = isL2
+    ? !gasParams.gasPrice
+    : !gasParams.maxFeePerGas || !gasParams.maxPriorityFeePerGas;
+
+  if (currentRap.actions.length - 1 > index || emptyGasFee) {
     const fastMaxFeePerGas =
       gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
     const fastMaxPriorityFeePerGas =
