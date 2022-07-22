@@ -1,9 +1,9 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import assetTypes from '../../../entities/assetTypes';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@rainbow-me/design-system';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
+import { Network } from '@rainbow-me/helpers';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -12,6 +12,15 @@ import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const NONE = 'None';
+
+const getIsFloorPriceSupported = (network: Network) => {
+  switch (network) {
+    case Network.mainnet:
+      return true;
+    default:
+      return false;
+  }
+};
 
 export default function NFTBriefTokenInfoRow({
   currentPrice,
@@ -33,11 +42,20 @@ export default function NFTBriefTokenInfoRow({
   const { nativeCurrency, network } = useAccountSettings();
 
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
+
   useEffect(() => {
-    assetNetwork !== assetTypes.polygon &&
-      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
-        setFloorPrice(result);
-      });
+    const isFloorPriceSupported = getIsFloorPriceSupported(assetNetwork);
+    if (isFloorPriceSupported) {
+      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset)
+        .then(result => {
+          setFloorPrice(result);
+        })
+        .catch(_ => {
+          setFloorPrice(NONE);
+        });
+    } else {
+      setFloorPrice(NONE);
+    }
   }, [assetNetwork, network, urlSuffixForAsset]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
