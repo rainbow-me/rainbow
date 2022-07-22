@@ -111,7 +111,7 @@ export const runFeatureUnlockChecks = () => {
     }
   });
 
-  logger.debug('WALLETS TO CHECK', walletsToCheck);
+  logger.log('WALLETS TO CHECK', walletsToCheck);
 
   if (!walletsToCheck.length) return;
 
@@ -127,12 +127,12 @@ export const runFeatureUnlockChecks = () => {
   featuresToUnlock.forEach(async feature => {
     // Check if it was handled already
     const handled = mmkv.getBoolean(feature.name);
-    logger.debug(`${feature.name} was handled?`, handled);
+    logger.log(`${feature.name} was handled?`, handled);
     if (!handled) {
       // if not handled yet, check again
-      logger.debug(`${feature.name} being checked`);
+      logger.log(`${feature.name} being checked`);
       const result = await feature.check(feature.name, walletsToCheck);
-      logger.debug(`${feature.name} check result:`, result);
+      logger.log(`${feature.name} check result:`, result);
     }
   });
 };

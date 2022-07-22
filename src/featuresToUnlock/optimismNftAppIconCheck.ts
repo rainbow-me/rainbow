@@ -6,6 +6,7 @@ import { MMKV } from 'react-native-mmkv';
 import { EthereumAddress } from '@/entities';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
+import config from '@/model/config';
 import { Navigation } from '@/navigation';
 import { opWrapABI } from '@/references';
 import { logger } from '@/utils';
@@ -16,12 +17,11 @@ const OP_WRAPPER_ADDRESS = {
   'op-mainnet': '0x96a4f2d63b30c78e27025c2a4e4d3c049d02bdcb',
 };
 
-const CURRENT_NETWORK = 'op-kovan';
-
 export const UNLOCK_KEY_OPTIMISM_NFT_APP_ICON = 'optimism_nft_app_icon';
 
 // This is a temp fix while we still use kovan optimism for testing.
 // Will be removed before release
+type OpNetworks = 'op-kovan' | 'op-mainnet';
 
 const getKovanOpProvider = async () => {
   if (OPTIMISM_KOVAN_RPC) {
@@ -36,16 +36,18 @@ export const optimismNftAppIconCheck = async (
   featureCheckName: string,
   walletsToCheck: EthereumAddress[]
 ) => {
+  const currentNetwork = config.op_nft_network as OpNetworks;
+  logger.log('Checking OP NFT  on network', currentNetwork);
   const p =
     // @ts-ignore-next-line
-    CURRENT_NETWORK === 'op-mainnet'
+    currentNetwork === 'op-mainnet'
       ? await getProviderForNetwork(Network.optimism)
       : await getKovanOpProvider();
 
   if (!p) return false;
 
   const opWrapperInstance = new Contract(
-    OP_WRAPPER_ADDRESS[CURRENT_NETWORK],
+    OP_WRAPPER_ADDRESS[currentNetwork],
     opWrapABI,
     p
   );
