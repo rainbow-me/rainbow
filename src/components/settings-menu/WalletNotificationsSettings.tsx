@@ -49,6 +49,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -66,6 +67,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -83,6 +85,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -100,6 +103,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -117,6 +121,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -134,6 +139,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -151,6 +157,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -168,6 +175,7 @@ const WalletNotificationsSettings = () => {
               />
             }
             rightComponent={<Switch />}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title

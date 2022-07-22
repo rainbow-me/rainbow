@@ -1,12 +1,10 @@
 import lang from 'i18n-js';
 import { isNil } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Source } from 'react-native-fast-image';
 import { Switch } from 'react-native-gesture-handler';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import ShowcaseIcon from '@rainbow-me/assets/showcaseIcon.png';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
@@ -16,7 +14,6 @@ import {
   useShowcaseTokens,
   useWebData,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -62,18 +59,11 @@ const PrivacySection = () => {
       <Menu description={lang.t('settings.privacy_section.when_public')}>
         <MenuItem
           disabled
-          leftComponent={
-            <Box
-              as={ImgixImage}
-              height={{ custom: 17.5 }}
-              marginTop="-1px"
-              source={ShowcaseIcon as Source}
-              width={{ custom: 22 }}
-            />
-          }
+          leftComponent={<MenuItem.TextIcon icon="􀏅" isLink shiftLeft />}
           rightComponent={
             <Switch onValueChange={toggleWebData} value={publicShowCase} />
           }
+          shiftLeft
           size={52}
           titleComponent={
             <MenuItem.Title
@@ -85,8 +75,14 @@ const PrivacySection = () => {
       {profilesEnabled && accountENS && (
         <Menu>
           <MenuItem
-            leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
+            leftComponent={
+              // added padding to offset variable icon width
+              <Box paddingLeft="3px">
+                <MenuItem.TextIcon icon="􀉭" isLink shiftLeft />
+              </Box>
+            }
             onPress={viewProfile}
+            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title

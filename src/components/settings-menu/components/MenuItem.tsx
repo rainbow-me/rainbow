@@ -19,6 +19,7 @@ const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
     borderRadius={size / 2}
     height={{ custom: size }}
     marginLeft={{ custom: -12 }}
+    marginRight={{ custom: -12 }}
     marginTop={{ custom: 8 }}
     source={source as Source}
     width={{ custom: size }}
@@ -42,10 +43,7 @@ const TextIcon = ({
   isLink,
   shiftLeft = false,
 }: TextIconProps) => (
-  <Box
-    paddingLeft={{ custom: shiftLeft ? 0 : 7 }}
-    width={{ custom: shiftLeft ? 34 : 46 }}
-  >
+  <Box paddingLeft={{ custom: shiftLeft ? 0 : 7 }}>
     <Text
       color={
         colorOverride
@@ -153,6 +151,7 @@ interface MenuItemProps {
   labelComponent?: React.ReactNode;
   disabled?: boolean;
   hasChevron?: boolean;
+  shiftLeft?: boolean;
 }
 
 const MenuItem = ({
@@ -165,6 +164,7 @@ const MenuItem = ({
   labelComponent,
   disabled,
   hasChevron,
+  shiftLeft,
 }: MenuItemProps) => {
   const { colors } = useTheme();
 
@@ -177,7 +177,9 @@ const MenuItem = ({
     >
       <Inline alignHorizontal="justify" alignVertical="center">
         <Inline alignVertical="center">
-          {leftComponent}
+          {leftComponent && (
+            <Box width={{ custom: shiftLeft ? 34 : 46 }}>{leftComponent}</Box>
+          )}
           <Stack space="8px">
             {titleComponent}
             {labelComponent}
