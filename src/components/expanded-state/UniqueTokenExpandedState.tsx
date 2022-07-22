@@ -53,6 +53,7 @@ import {
   TextProps,
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
@@ -514,10 +515,10 @@ const UniqueTokenExpandedState = ({
                         ) : null}
                       </Columns>
                     ) : null}
-                    {asset.network === AssetTypes.polygon ? (
+                    {asset.network !== Network.mainnet ? (
                       // @ts-expect-error JavaScript component
                       <L2Disclaimer
-                        assetType={AssetTypes.polygon}
+                        assetType={asset.network}
                         colors={colors}
                         hideDivider
                         isNft
