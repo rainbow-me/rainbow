@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { TouchableWithoutFeedback, View } from 'react-native';
 import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
@@ -51,6 +51,7 @@ const ExchangeField = (
     amount,
     disableCurrencySelection,
     editable,
+    loading,
     type,
     network,
     onBlur,
@@ -61,7 +62,7 @@ const ExchangeField = (
     symbol,
     testID,
     useCustomAndroidMask = false,
-    updateOnFocus = true,
+    updateOnFocus = false,
     ...props
   },
   ref
@@ -90,8 +91,11 @@ const ExchangeField = (
       if (updateOnFocus) {
         onFocus?.(event);
       }
+      if (loading) {
+        setAmount(value);
+      }
     },
-    [onFocus, updateOnFocus]
+    [loading, onFocus, setAmount, updateOnFocus, value]
   );
 
   const onChangeText = useCallback(
@@ -109,6 +113,12 @@ const ExchangeField = (
   const placeholderText = symbol ? '0' : EnDash.unicode;
 
   const editing = ref?.current?.isFocused() ?? false;
+
+  useEffect(() => {
+    if (!editing || updateOnFocus) {
+      setValue(amount);
+    }
+  }, [amount, editing, updateOnFocus]);
 
   return (
     <Container {...props}>

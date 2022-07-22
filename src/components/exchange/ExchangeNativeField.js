@@ -29,10 +29,12 @@ const ExchangeNativeField = (
     address,
     editable,
     height,
+    loading,
     nativeAmount,
     nativeCurrency,
     onFocus,
     setNativeAmount,
+    updateOnFocus,
     testID,
   },
   ref
@@ -51,8 +53,11 @@ const ExchangeNativeField = (
   const handleFocus = useCallback(
     event => {
       onFocus?.(event);
+      if (loading) {
+        setNativeAmount(value);
+      }
     },
-    [onFocus]
+    [loading, onFocus, setNativeAmount, value]
   );
 
   const onChangeText = useCallback(
@@ -76,6 +81,12 @@ const ExchangeNativeField = (
 
     return colors.alpha(color, opacity);
   }, [colors, isFocused, nativeAmount]);
+
+  useEffect(() => {
+    if (!isFocused || updateOnFocus) {
+      setValue(nativeAmount);
+    }
+  }, [nativeAmount, isFocused, updateOnFocus]);
 
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
