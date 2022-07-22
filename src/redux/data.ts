@@ -1068,11 +1068,6 @@ export const addressAssetsReceived = (
     saveAccountEmptyState(false, accountAddress, network);
   }
 
-  dispatch({
-    payload: parsedAssets,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
-  });
-
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
     .filter(
       asset =>
@@ -1082,7 +1077,15 @@ export const addressAssetsReceived = (
     )
     .map(asset => asset.uniqueId);
 
+  // we need to store hidden coins before storing parsedAssets
+  // so all the selectors that depend on both will have hidden coins by that time
+  // to be able to filter them
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
+
+  dispatch({
+    payload: parsedAssets,
+    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
+  });
 };
 
 const callbacksOnAssetReceived: {
