@@ -33,7 +33,6 @@ const LanguageSection = () => {
         {languageListItems.map(({ name, code }: any) => {
           return (
             <MenuItem
-              iconPadding="large"
               key={code}
               onPress={() => onSelectLanguage(code)}
               rightComponent={

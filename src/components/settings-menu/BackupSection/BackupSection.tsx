@@ -134,7 +134,6 @@ const BackupSection = () => {
       {cloudBackedUpWallets > 0 && (
         <Menu>
           <MenuItem
-            iconPadding="small"
             leftComponent={<MenuItem.TextIcon icon="􀡜" isLink />}
             onPress={manageCloudBackups}
             size={52}

@@ -237,7 +237,6 @@ const SettingsSection = ({
         {canBeBackedUp && (
           <MenuItem
             hasRightArrow
-            iconPadding="medium"
             leftComponent={
               <MenuItem.ImageIcon
                 source={isDarkMode ? BackupIconDark : BackupIcon}
@@ -262,7 +261,6 @@ const SettingsSection = ({
         {isNotificationsEnabled && (
           <MenuItem
             hasRightArrow
-            iconPadding="medium"
             leftComponent={
               <MenuItem.ImageIcon
                 source={isDarkMode ? NotificationsIconDark : NotificationsIcon}
@@ -277,7 +275,6 @@ const SettingsSection = ({
         )}
         <MenuItem
           hasRightArrow
-          iconPadding="medium"
           leftComponent={
             <MenuItem.ImageIcon
               source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
@@ -293,7 +290,6 @@ const SettingsSection = ({
         {(testnetsEnabled || IS_DEV) && (
           <MenuItem
             hasRightArrow
-            iconPadding="medium"
             leftComponent={
               <MenuItem.ImageIcon
                 source={isDarkMode ? NetworkIconDark : NetworkIcon}
@@ -320,7 +316,6 @@ const SettingsSection = ({
         >
           <MenuItem
             hasChevron
-            iconPadding="medium"
             leftComponent={
               <MenuItem.ImageIcon
                 source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
@@ -339,7 +334,6 @@ const SettingsSection = ({
         {!isReadOnlyWallet && (
           <MenuItem
             hasRightArrow
-            iconPadding="medium"
             leftComponent={
               <MenuItem.ImageIcon
                 source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
@@ -355,7 +349,6 @@ const SettingsSection = ({
         {isLanguageSelectionEnabled && (
           <MenuItem
             hasRightArrow
-            iconPadding="medium"
             leftComponent={
               <MenuItem.ImageIcon
                 source={isDarkMode ? LanguageIconDark : LanguageIcon}
@@ -376,7 +369,6 @@ const SettingsSection = ({
       </Menu>
       <Menu>
         <MenuItem
-          iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="🌈" />}
           onPress={onPressShare}
           size={52}
@@ -385,14 +377,12 @@ const SettingsSection = ({
           }
         />
         <MenuItem
-          iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="🧠" />}
           onPress={onPressLearn}
           size={52}
           titleComponent={<MenuItem.Title text={lang.t('settings.learn')} />}
         />
         <MenuItem
-          iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="🐦" />}
           onPress={onPressTwitter}
           size={52}
@@ -401,7 +391,6 @@ const SettingsSection = ({
           }
         />
         <MenuItem
-          iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="💬" />}
           onPress={onSendFeedback}
           size={52}
@@ -417,7 +406,6 @@ const SettingsSection = ({
         />
         {isReviewAvailable && (
           <MenuItem
-            iconPadding="large"
             leftComponent={<MenuItem.TextIcon icon="❤️" />}
             onPress={onPressReview}
             size={52}
@@ -426,7 +414,6 @@ const SettingsSection = ({
         )}
         {isCustomBuild.value && (
           <MenuItem
-            iconPadding="large"
             leftComponent={<MenuItem.TextIcon icon="🤯" />}
             onPress={setOriginalDeploymentKey}
             size={52}
@@ -436,7 +423,6 @@ const SettingsSection = ({
           />
         )}
         <MenuItem
-          iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} />}
           onPress={onPressDev}
           size={52}

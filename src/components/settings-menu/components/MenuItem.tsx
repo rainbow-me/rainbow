@@ -18,8 +18,7 @@ const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
     as={ImgixImage}
     borderRadius={size / 2}
     height={{ custom: size }}
-    marginLeft={{ custom: -11 }}
-    marginRight={{ custom: -11 }}
+    marginLeft={{ custom: -12 }}
     marginTop={{ custom: 8 }}
     source={source as Source}
     width={{ custom: size }}
@@ -32,6 +31,7 @@ interface TextIconProps {
   disabled?: boolean;
   isLink?: boolean;
   colorOverride?: string;
+  shiftLeft?: boolean;
 }
 
 const TextIcon = ({
@@ -40,23 +40,29 @@ const TextIcon = ({
   weight = 'semibold',
   disabled,
   isLink,
+  shiftLeft = false,
 }: TextIconProps) => (
-  <Text
-    color={
-      colorOverride
-        ? { custom: colorOverride }
-        : disabled
-        ? 'secondary60'
-        : isLink
-        ? 'action'
-        : 'primary'
-    }
-    containsEmoji
-    size="18px"
-    weight={weight}
+  <Box
+    paddingLeft={{ custom: shiftLeft ? 0 : 7 }}
+    width={{ custom: shiftLeft ? 34 : 46 }}
   >
-    {icon}
-  </Text>
+    <Text
+      color={
+        colorOverride
+          ? { custom: colorOverride }
+          : disabled
+          ? 'secondary60'
+          : isLink
+          ? 'action'
+          : 'primary'
+      }
+      containsEmoji
+      size="20px"
+      weight={weight}
+    >
+      {icon}
+    </Text>
+  </Box>
 );
 
 interface SelectionProps {
@@ -141,7 +147,6 @@ interface MenuItemProps {
   rightComponent?: React.ReactNode;
   leftComponent?: React.ReactNode;
   size: 52 | 60;
-  iconPadding?: 'small' | 'medium' | 'large';
   hasRightArrow?: boolean;
   onPress?: () => void;
   titleComponent: React.ReactNode;
@@ -156,21 +161,12 @@ const MenuItem = ({
   leftComponent,
   rightComponent,
   size,
-  iconPadding,
   titleComponent,
   labelComponent,
   disabled,
   hasChevron,
 }: MenuItemProps) => {
   const { colors } = useTheme();
-  const space =
-    iconPadding === 'small'
-      ? 6
-      : iconPadding === 'medium'
-      ? 10
-      : iconPadding === 'large'
-      ? 17
-      : 0;
 
   const Item = () => (
     <Box
@@ -180,7 +176,7 @@ const MenuItem = ({
       width="full"
     >
       <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline alignVertical="center" space={{ custom: space }}>
+        <Inline alignVertical="center">
           {leftComponent}
           <Stack space="8px">
             {titleComponent}

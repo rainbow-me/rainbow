@@ -62,7 +62,6 @@ const PrivacySection = () => {
       <Menu description={lang.t('settings.privacy_section.when_public')}>
         <MenuItem
           disabled
-          iconPadding="medium"
           leftComponent={
             <Box
               as={ImgixImage}
@@ -86,7 +85,6 @@ const PrivacySection = () => {
       {profilesEnabled && accountENS && (
         <Menu>
           <MenuItem
-            iconPadding="medium"
             leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
             onPress={viewProfile}
             size={52}

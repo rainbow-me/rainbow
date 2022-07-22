@@ -210,7 +210,6 @@ const DevSection = () => {
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
         <MenuItem
           disabled
-          iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="🕹️" />}
           rightComponent={
             <Switch
@@ -223,7 +222,6 @@ const DevSection = () => {
         />
         {testnetsEnabled && <NetworkSection inDevSection />}
         <MenuItem
-          iconPadding="large"
           leftComponent={<MenuItem.TextIcon icon="💥" />}
           onPress={clearLocalStorage}
           size={52}
@@ -234,7 +232,6 @@ const DevSection = () => {
         <>
           <Menu header="Rainbow Developer Settings">
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={AsyncStorage.clear}
               size={52}
@@ -245,7 +242,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={clearAllStorages}
               size={52}
@@ -256,7 +252,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="📷️" />}
               onPress={clearImageMetadataCache}
               size={52}
@@ -267,7 +262,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="📷️" />}
               onPress={clearImageCache}
               size={52}
@@ -278,7 +272,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="💣" />}
               onPress={wipeKeychain}
               size={52}
@@ -289,7 +282,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🔄" />}
               onPress={() => Restart.Restart()}
               size={52}
@@ -300,7 +292,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={throwRenderError}
               size={52}
@@ -312,7 +303,6 @@ const DevSection = () => {
             />
             {errorObj}
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🗑️" />}
               onPress={removeBackups}
               size={52}
@@ -323,7 +313,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🤷" />}
               onPress={() => AsyncStorage.removeItem('experimentalConfig')}
               size={52}
@@ -334,7 +323,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="👷" />}
               onPress={connectToHardhat}
               size={52}
@@ -345,7 +333,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🏖️" />}
               onPress={checkAlert}
               size={52}
@@ -354,7 +341,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="🔔" />}
               onPress={navToDevNotifications}
               size={52}
@@ -366,7 +352,6 @@ const DevSection = () => {
             />
 
             <MenuItem
-              iconPadding="large"
               leftComponent={<MenuItem.TextIcon icon="⏩" />}
               onPress={syncCodepush}
               size={52}
@@ -385,7 +370,6 @@ const DevSection = () => {
               .filter(key => (defaultConfig as any)[key]?.settings)
               .map(key => (
                 <MenuItem
-                  iconPadding="large"
                   key={key}
                   onPress={() => onExperimentalKeyChange(key)}
                   rightComponent={

@@ -44,7 +44,6 @@ const CurrencySection = () => {
         {currencyListItems.map(({ label, emojiName, currency }: any) => {
           return (
             <MenuItem
-              iconPadding="large"
               key={currency}
               leftComponent={
                 emojiName ? (

@@ -48,7 +48,6 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
         return (
           <MenuItem
             disabled={(!testnetsEnabled && testnet) || disabled}
-            iconPadding="large"
             key={value}
             onPress={() => onNetworkChange(value)}
             rightComponent={
