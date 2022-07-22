@@ -28,7 +28,7 @@ const WalletBackupStatus = {
 };
 
 const CheckmarkIconContainer = styled(View)(
-  ({ color, isDarkMode, theme: { colors } }) => ({
+  ({ color, isDarkMode, theme: { colors } }: any) => ({
     ...shadow.buildAsObject(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4),
     ...position.sizeAsObject(50),
     backgroundColor: color,
@@ -37,7 +37,7 @@ const CheckmarkIconContainer = styled(View)(
   })
 );
 
-const CheckmarkIcon = ({ color, isDarkMode }) => (
+const CheckmarkIcon = ({ color, isDarkMode }: any) => (
   <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
     <Box alignItems="center" height="full" justifyContent="center" width="full">
       <Text color={{ custom: colors.whiteLabel }} size="20px" weight="bold">
@@ -47,7 +47,7 @@ const CheckmarkIcon = ({ color, isDarkMode }) => (
   </CheckmarkIconContainer>
 );
 
-const onError = error => DelayedAlert({ title: error }, 500);
+const onError = (error: any) => DelayedAlert({ title: error }, 500);
 
 export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
@@ -55,7 +55,7 @@ export default function AlreadyBackedUpView() {
   const { manageCloudBackups } = useManageCloudBackups();
   const { wallets, selectedWallet } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
-  const walletId = params?.walletId || selectedWallet.id;
+  const walletId = (params as any)?.walletId || selectedWallet.id;
 
   useEffect(() => {
     analytics.track('Already Backed Up View', {

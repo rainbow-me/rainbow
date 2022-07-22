@@ -14,6 +14,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -31,7 +32,7 @@ export default function NeedsBackupView() {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
   const { wallets, selectedWallet } = useWallets();
-  const walletId = params?.walletId || selectedWallet.id;
+  const walletId = (params as any)?.walletId || selectedWallet.id;
 
   useEffect(() => {
     if (wallets[walletId]?.backedUp) {
@@ -105,6 +106,7 @@ export default function NeedsBackupView() {
           />
           <SheetActionButton
             color={colors.white}
+            // @ts-ignore
             label={`🤓 ${lang.t('modal.back_up.default.button.manual')}`}
             onPress={onManualBackup}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}

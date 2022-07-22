@@ -5,7 +5,7 @@ import NeedsBackupView from './NeedsBackupView';
 
 export default function SettingsBackupView() {
   const { params } = useRoute();
-  if (params?.type === 'AlreadyBackedUpView') {
+  if ((params as any)?.type === 'AlreadyBackedUpView') {
     return <AlreadyBackedUpView />;
   } else {
     return <NeedsBackupView />;
