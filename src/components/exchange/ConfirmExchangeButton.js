@@ -173,7 +173,7 @@ export default function ConfirmExchangeButton({
             }
             hideInnerBorder
             label={label}
-            loading={loadingQuote}
+            loading={loadingQuote || swapSubmitted}
             onLongPress={
               loading
                 ? NOOP

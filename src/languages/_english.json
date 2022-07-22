@@ -199,7 +199,7 @@
         "invalid_fee_lowercase": "Invalid fee",
         "loading": "Loading...",
         "review": "Review",
-        "submitting": "Submitting...",
+        "submitting": "Submitting",
         "swap": "Hold to Swap",
         "swap_anyway": "Swap Anyway",
         "symbol_balance_too_low": "%{symbol} balance too low",
