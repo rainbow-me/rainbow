@@ -13,6 +13,7 @@ import { NativeModules } from 'react-native';
 import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDebounce } from 'use-debounce/lib';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -291,6 +292,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     (state: AppState) => state.swap.slippageInBips
   );
 
+  const [debouncedIndependentValue] = useDebounce(independentValue, 300);
   const source = useSelector((state: AppState) => state.swap.source);
 
   const genericAssets = useSelector(
@@ -382,6 +384,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       derivedValues[SwapModalField.native] = nativeValue;
       displayValues[DisplayValue.native] = nativeValue;
 
+      if (derivedValues[SwapModalField.input] !== independentValue) return;
       const {
         outputAmount,
         outputAmountDisplay,
@@ -429,6 +432,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         true
       );
       displayValues[DisplayValue.input] = inputAmountDisplay;
+
+      if (derivedValues[SwapModalField.native] !== independentValue) return;
       const {
         outputAmount,
         outputAmountDisplay,
@@ -464,6 +469,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       derivedValues[SwapModalField.output] = independentValue;
       displayValues[DisplayValue.output] = independentValue;
 
+      if (derivedValues[SwapModalField.output] !== independentValue) return;
       const {
         inputAmount,
         inputAmountDisplay,
@@ -541,13 +547,16 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     source,
     type,
   ]);
-
   const { data, isLoading } = useQuery({
+    cacheTime: 0,
     queryFn: getTradeDetails,
     queryKey: [
       'getTradeDetails',
       independentField,
-      independentValue,
+      debouncedIndependentValue,
+      derivedValues[SwapModalField.output],
+      derivedValues[SwapModalField.input],
+      derivedValues[SwapModalField.native],
       inputCurrency,
       outputCurrency,
       inputPrice,

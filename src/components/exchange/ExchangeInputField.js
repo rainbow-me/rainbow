@@ -27,6 +27,7 @@ export default function ExchangeInputField({
   inputCurrencyMainnetAddress,
   inputCurrencySymbol,
   inputFieldRef,
+  loading,
   nativeAmount,
   nativeCurrency,
   nativeFieldRef,
@@ -47,6 +48,7 @@ export default function ExchangeInputField({
         amount={inputAmount}
         disableCurrencySelection={disableInputCurrencySelection}
         editable={editable}
+        loading={loading}
         mainnetAddress={inputCurrencyMainnetAddress}
         network={network}
         onFocus={onFocus}
@@ -64,12 +66,14 @@ export default function ExchangeInputField({
           address={inputCurrencyAddress}
           editable={editable}
           height={64}
+          loading={loading}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
           onFocus={onFocus}
           ref={nativeFieldRef}
           setNativeAmount={setNativeAmount}
           testID={testID + '-native'}
+          updateOnFocus={updateAmountOnFocus}
         />
         <ExchangeMaxButton
           address={inputCurrencyAddress}
