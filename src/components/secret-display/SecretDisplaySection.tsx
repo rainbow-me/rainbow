@@ -15,13 +15,16 @@ import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import SecretDisplayCard from './SecretDisplayCard';
 import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletTypes, {
+  EthereumWalletType,
+} from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, position, shadow } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import logger from 'logger';
 
-const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
+const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }: any) => ({
   color: colors.appleBlue,
   name: 'copy',
 }))({
@@ -29,7 +32,7 @@ const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   marginTop: 0.5,
 });
 
-const ToggleSecretButton = styled(Button)(({ theme: { colors } }) => ({
+const ToggleSecretButton = styled(Button)(({ theme: { colors } }: any) => ({
   ...margin.object(0, 20),
   ...shadow.buildAsObject(0, 5, 15, colors.purple, 0.3),
   backgroundColor: colors.appleBlue,
@@ -37,17 +40,22 @@ const ToggleSecretButton = styled(Button)(({ theme: { colors } }) => ({
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
+interface SecretDisplaySectionProps {
+  onSecretLoaded?: (seedExists: boolean) => void;
+  onWalletTypeIdentified?: (walletType: EthereumWalletType) => void;
+}
+
 export default function SecretDisplaySection({
   onSecretLoaded,
   onWalletTypeIdentified,
-}) {
+}: SecretDisplaySectionProps) {
   const { params } = useRoute();
   const { selectedWallet, wallets } = useWallets();
-  const walletId = params?.walletId || selectedWallet.id;
+  const walletId = (params as any)?.walletId || selectedWallet.id;
   const currentWallet = wallets[walletId];
   const [visible, setVisible] = useState(true);
   const [isRecoveryPhraseVisible, setIsRecoveryPhraseVisible] = useState(false);
-  const [seed, setSeed] = useState(null);
+  const [seed, setSeed] = useState(null as any);
   const [type, setType] = useState(currentWallet?.type);
 
   const loadSeed = useCallback(async () => {
@@ -62,7 +70,7 @@ export default function SecretDisplaySection({
       setVisible(!!s);
       onSecretLoaded?.(!!s);
       setIsRecoveryPhraseVisible(!!s);
-    } catch (e) {
+    } catch (e: any) {
       logger.sentry('Error while trying to reveal secret', e);
       if (e?.message === createdWithBiometricError) {
         setIsRecoveryPhraseVisible(false);
@@ -103,6 +111,7 @@ export default function SecretDisplaySection({
               })}
             </Text>
             <ToggleSecretButton onPress={loadSeed}>
+              {/* @ts-ignore */}
               <BiometricButtonContent
                 color={colors.white}
                 label={lang.t('back_up.secret.show_recovery', {
@@ -130,13 +139,13 @@ export default function SecretDisplaySection({
         <Box
           alignItems="center"
           justifyContent="center"
-          marginHorizontal="16px"
           paddingBottom="30px"
-          paddingHorizontal="30px"
+          paddingHorizontal={{ custom: 46 }}
         >
           {seed ? (
             <>
               <Box paddingBottom="19px">
+                {/* @ts-ignore */}
                 <CopyFloatingEmojis textToCopy={seed}>
                   <Inline alignVertical="center" space="6px">
                     <CopyButtonIcon />
