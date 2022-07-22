@@ -37,7 +37,7 @@ import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { isL2Network } from '@rainbow-me/handlers/web3';
+import { isL2Network, isTestnetNetwork } from '@rainbow-me/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
@@ -187,7 +187,7 @@ export default function ChartExpandedState({ asset }) {
   } = useRoute();
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
-  const { nativeCurrency } = useAccountSettings();
+  const { nativeCurrency, network } = useAccountSettings();
   const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
   // If we don't have a balance for this asset
@@ -200,6 +200,7 @@ export default function ChartExpandedState({ asset }) {
       ? ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
       : { ...asset };
   }, [asset, genericAsset, hasBalance, nativeCurrency]);
+  const isTestNet = isTestnetNetwork(network);
 
   if (assetWithPrice?.mainnet_address) {
     assetWithPrice.l2Address = assetWithPrice.address;
@@ -372,7 +373,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          {hasBalance && (
+          {hasBalance && !isTestNet && (
             <SwapActionButton
               asset={ogAsset}
               color={color}
