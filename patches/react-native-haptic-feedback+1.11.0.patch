@@ -1,0 +1,42 @@
+diff --git a/node_modules/react-native-haptic-feedback/index.js b/node_modules/react-native-haptic-feedback/index.js
+index 083c4fc..132ed79 100644
+--- a/node_modules/react-native-haptic-feedback/index.js
++++ b/node_modules/react-native-haptic-feedback/index.js
+@@ -1,4 +1,4 @@
+-import { NativeModules } from 'react-native';
++import { NativeModules, Platform } from 'react-native';
+ 
+ const defaultOptions = {
+     enableVibrateFallback: false,
+@@ -10,7 +10,30 @@ class RNReactNativeHapticFeedback {
+         const triggerOptions = createTriggerOptions(options)
+ 
+         try {
+-            NativeModules.RNReactNativeHapticFeedback.trigger(type, triggerOptions);
++            if (Platform.OS === "android") {
++                switch (type) {
++                    case 'impactLight':
++                        NativeModules.RNRainbowHaptics.impact("light")
++                        break;
++                    case 'impactHeavy':
++                        NativeModules.RNRainbowHaptics.impact("heavy")
++                        break;
++                    case 'notificationSuccess':
++                        NativeModules.RNRainbowHaptics.notification("success")
++                        break;
++                    case 'notificationWarning':
++                        NativeModules.RNRainbowHaptics.notification("warning")
++                        break;
++                    case 'notificationError':
++                        NativeModules.RNRainbowHaptics.notification("error")
++                        break;
++                    default:
++                        NativeModules.RNRainbowHaptics.selection()
++                        break;
++                }
++            } else {
++                NativeModules.RNReactNativeHapticFeedback.trigger(type, triggerOptions);
++            }
+         } catch (err) {
+             console.warn('RNReactNativeHapticFeedback is not available');
+         }
