@@ -14,10 +14,10 @@ export default function RefreshControlWrapped(
   const { refresh, isRefreshing } = useRefreshAccountData();
   const { colors } = useTheme();
 
-  return isLoadingAssets ? null : (
+  return (
     <RefreshControl
       {...props}
-      onRefresh={refresh}
+      onRefresh={() => (isLoadingAssets ? Function.prototype() : refresh())}
       progressViewOffset={android ? 30 : 0}
       refreshing={isRefreshing}
       tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
