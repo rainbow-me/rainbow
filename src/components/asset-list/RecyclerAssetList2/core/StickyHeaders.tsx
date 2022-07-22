@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { sortBy } from 'lodash';
 import React, {
   MutableRefObject,
   ReactElement,
@@ -14,6 +13,7 @@ import { Animated as RNAnimated } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { BaseScrollView } from 'recyclerlistview';
 import { useRecyclerAssetListPosition } from './Contexts';
+import { sortByKeyHelper } from '@rainbow-me/helpers/utilities';
 
 const Context = React.createContext<
   | {
@@ -105,7 +105,7 @@ export function StickyHeaderManager({ children }: { children: ReactElement }) {
     string,
     { range: number[]; last: boolean }
   > = useMemo(() => {
-    const sorted = sortBy(Object.values(positions), 'position');
+    const sorted = Object.values(positions).sort(sortByKeyHelper('position'));
     const ranges: number[][] = [];
     const rangesKeyed: Record<string, { range: number[]; last: boolean }> = {};
 
