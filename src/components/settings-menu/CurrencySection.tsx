@@ -48,8 +48,8 @@ const CurrencySection = () => {
               key={currency}
               leftComponent={
                 emojiName ? (
-                  <MenuItem.Title
-                    text={(emoji.get('flag_' + emojiName) as string) || ''}
+                  <MenuItem.TextIcon
+                    icon={(emoji.get('flag_' + emojiName) as string) || ''}
                   />
                 ) : (
                   // @ts-ignore missing props

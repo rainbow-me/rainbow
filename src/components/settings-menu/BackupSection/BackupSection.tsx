@@ -135,7 +135,7 @@ const BackupSection = () => {
         <Menu>
           <MenuItem
             iconPadding="small"
-            leftComponent={<MenuItem.Title isLink text="􀡜" />}
+            leftComponent={<MenuItem.TextIcon icon="􀡜" isLink />}
             onPress={manageCloudBackups}
             size="medium"
             titleComponent={

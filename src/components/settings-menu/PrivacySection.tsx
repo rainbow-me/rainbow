@@ -87,7 +87,7 @@ const PrivacySection = () => {
         <Menu>
           <MenuItem
             iconPadding="medium"
-            leftComponent={<MenuItem.Title isLink text="􀉭" />}
+            leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
             onPress={viewProfile}
             size="medium"
             titleComponent={

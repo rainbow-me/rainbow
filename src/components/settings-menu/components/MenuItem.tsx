@@ -8,23 +8,55 @@ import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '@rainbow-me/theme';
 
-const ICON_SIZE = 60;
-
 interface ImageIconProps {
+  size?: number;
   source: StaticImageData;
 }
 
-const ImageIcon = ({ source }: ImageIconProps) => (
+const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
   <Box
     as={ImgixImage}
-    borderRadius={ICON_SIZE / 2}
-    height={{ custom: ICON_SIZE }}
+    borderRadius={size / 2}
+    height={{ custom: size }}
     marginLeft={{ custom: -11 }}
     marginRight={{ custom: -11 }}
     marginTop={{ custom: 8 }}
     source={source as Source}
-    width={{ custom: ICON_SIZE }}
+    width={{ custom: size }}
   />
+);
+
+interface TextIconProps {
+  icon: string;
+  weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
+  disabled?: boolean;
+  isLink?: boolean;
+  colorOverride?: string;
+}
+
+const TextIcon = ({
+  colorOverride,
+  icon,
+  weight = 'semibold',
+  disabled,
+  isLink,
+}: TextIconProps) => (
+  <Text
+    color={
+      colorOverride
+        ? { custom: colorOverride }
+        : disabled
+        ? 'secondary60'
+        : isLink
+        ? 'action'
+        : 'primary'
+    }
+    containsEmoji
+    size="18px"
+    weight={weight}
+  >
+    {icon}
+  </Text>
 );
 
 interface SelectionProps {
@@ -74,26 +106,11 @@ interface TitleProps {
   weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
   disabled?: boolean;
   isLink?: boolean;
-  colorOverride?: string;
 }
 
-const Title = ({
-  text,
-  weight = 'semibold',
-  disabled,
-  isLink,
-  colorOverride,
-}: TitleProps) => (
+const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
   <Text
-    color={
-      colorOverride
-        ? { custom: colorOverride }
-        : disabled
-        ? 'secondary60'
-        : isLink
-        ? 'action'
-        : 'primary'
-    }
+    color={disabled ? 'secondary60' : isLink ? 'action' : 'primary'}
     containsEmoji
     size="18px"
     weight={weight}
@@ -200,10 +217,11 @@ const MenuItem = ({
   );
 };
 
-MenuItem.Title = Title;
-MenuItem.Label = Label;
 MenuItem.ImageIcon = ImageIcon;
+MenuItem.Label = Label;
 MenuItem.Selection = Selection;
 MenuItem.StatusIcon = StatusIcon;
+MenuItem.TextIcon = TextIcon;
+MenuItem.Title = Title;
 
 export default MenuItem;

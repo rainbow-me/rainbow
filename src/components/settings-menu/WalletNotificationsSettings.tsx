@@ -42,7 +42,7 @@ const WalletNotificationsSettings = () => {
             disabled
             iconPadding="small"
             leftComponent={
-              <MenuItem.Title colorOverride={colors.appleBlue} text="􀈟" />
+              <MenuItem.TextIcon colorOverride={colors.appleBlue} icon="􀈟" />
             }
             rightComponent={<Switch />}
             size="medium"
@@ -56,7 +56,7 @@ const WalletNotificationsSettings = () => {
             disabled
             iconPadding="small"
             leftComponent={
-              <MenuItem.Title colorOverride={colors.green} text="􀅀" />
+              <MenuItem.TextIcon colorOverride={colors.green} icon="􀅀" />
             }
             rightComponent={<Switch />}
             size="medium"
@@ -70,7 +70,7 @@ const WalletNotificationsSettings = () => {
             disabled
             iconPadding="small"
             leftComponent={
-              <MenuItem.Title colorOverride={colors.pink} text="􀑉" />
+              <MenuItem.TextIcon colorOverride={colors.pink} icon="􀑉" />
             }
             rightComponent={<Switch />}
             size="medium"
@@ -84,7 +84,7 @@ const WalletNotificationsSettings = () => {
             disabled
             iconPadding="small"
             leftComponent={
-              <MenuItem.Title colorOverride={colors.orange} text="􀋡" />
+              <MenuItem.TextIcon colorOverride={colors.orange} icon="􀋡" />
             }
             rightComponent={<Switch />}
             size="medium"
@@ -98,7 +98,7 @@ const WalletNotificationsSettings = () => {
             disabled
             iconPadding="small"
             leftComponent={
-              <MenuItem.Title colorOverride={colors.yellowOrange} text="􀆿" />
+              <MenuItem.TextIcon colorOverride={colors.yellowOrange} icon="􀆿" />
             }
             rightComponent={<Switch />}
             size="medium"
@@ -112,7 +112,7 @@ const WalletNotificationsSettings = () => {
             disabled
             iconPadding="small"
             leftComponent={
-              <MenuItem.Title colorOverride={colors.swapPurple} text="􀖅" />
+              <MenuItem.TextIcon colorOverride={colors.swapPurple} icon="􀖅" />
             }
             rightComponent={<Switch />}
             size="medium"
@@ -126,7 +126,7 @@ const WalletNotificationsSettings = () => {
             disabled
             iconPadding="small"
             leftComponent={
-              <MenuItem.Title colorOverride={colors.green} text="􀁢" />
+              <MenuItem.TextIcon colorOverride={colors.green} icon="􀁢" />
             }
             rightComponent={<Switch />}
             size="medium"
@@ -140,7 +140,10 @@ const WalletNotificationsSettings = () => {
             disabled
             iconPadding="small"
             leftComponent={
-              <MenuItem.Title colorOverride={colors.blueGreyDark60} text="􀍡" />
+              <MenuItem.TextIcon
+                colorOverride={colors.blueGreyDark60}
+                icon="􀍡"
+              />
             }
             rightComponent={<Switch />}
             size="medium"

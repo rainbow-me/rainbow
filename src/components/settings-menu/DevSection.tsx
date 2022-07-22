@@ -211,7 +211,7 @@ const DevSection = () => {
         <MenuItem
           disabled
           iconPadding="large"
-          leftComponent={<MenuItem.Title text="🕹️" />}
+          leftComponent={<MenuItem.TextIcon icon="🕹️" />}
           rightComponent={
             <Switch
               onValueChange={toggleTestnetsEnabled}
@@ -224,7 +224,7 @@ const DevSection = () => {
         {testnetsEnabled && <NetworkSection inDevSection />}
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.Title text="💥" />}
+          leftComponent={<MenuItem.TextIcon icon="💥" />}
           onPress={clearLocalStorage}
           size="medium"
           titleComponent={<MenuItem.Title text="Clear local storage" />}
@@ -235,7 +235,7 @@ const DevSection = () => {
           <Menu header="Rainbow Developer Settings">
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="💥" />}
+              leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={AsyncStorage.clear}
               size="medium"
               titleComponent={
@@ -246,7 +246,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="💥" />}
+              leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={clearAllStorages}
               size="medium"
               titleComponent={
@@ -257,7 +257,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="📷️" />}
+              leftComponent={<MenuItem.TextIcon icon="📷️" />}
               onPress={clearImageMetadataCache}
               size="medium"
               titleComponent={
@@ -268,7 +268,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="📷️" />}
+              leftComponent={<MenuItem.TextIcon icon="📷️" />}
               onPress={clearImageCache}
               size="medium"
               titleComponent={
@@ -279,7 +279,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="💣" />}
+              leftComponent={<MenuItem.TextIcon icon="💣" />}
               onPress={wipeKeychain}
               size="medium"
               titleComponent={
@@ -290,7 +290,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="🔄" />}
+              leftComponent={<MenuItem.TextIcon icon="🔄" />}
               onPress={() => Restart.Restart()}
               size="medium"
               titleComponent={
@@ -301,7 +301,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="💥" />}
+              leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={throwRenderError}
               size="medium"
               titleComponent={
@@ -313,7 +313,7 @@ const DevSection = () => {
             {errorObj}
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="🗑️" />}
+              leftComponent={<MenuItem.TextIcon icon="🗑️" />}
               onPress={removeBackups}
               size="medium"
               titleComponent={
@@ -324,7 +324,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="🤷" />}
+              leftComponent={<MenuItem.TextIcon icon="🤷" />}
               onPress={() => AsyncStorage.removeItem('experimentalConfig')}
               size="medium"
               titleComponent={
@@ -335,7 +335,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="👷" />}
+              leftComponent={<MenuItem.TextIcon icon="👷" />}
               onPress={connectToHardhat}
               size="medium"
               titleComponent={
@@ -346,7 +346,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="🏖️" />}
+              leftComponent={<MenuItem.TextIcon icon="🏖️" />}
               onPress={checkAlert}
               size="medium"
               titleComponent={
@@ -355,7 +355,7 @@ const DevSection = () => {
             />
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="🔔" />}
+              leftComponent={<MenuItem.TextIcon icon="🔔" />}
               onPress={navToDevNotifications}
               size="medium"
               titleComponent={
@@ -367,7 +367,7 @@ const DevSection = () => {
 
             <MenuItem
               iconPadding="large"
-              leftComponent={<MenuItem.Title text="⏩" />}
+              leftComponent={<MenuItem.TextIcon icon="⏩" />}
               onPress={syncCodepush}
               size="medium"
               titleComponent={

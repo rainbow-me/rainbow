@@ -377,7 +377,7 @@ const SettingsSection = ({
       <Menu>
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.Title text="🌈" />}
+          leftComponent={<MenuItem.TextIcon icon="🌈" />}
           onPress={onPressShare}
           size="medium"
           titleComponent={
@@ -386,14 +386,14 @@ const SettingsSection = ({
         />
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.Title text="🧠" />}
+          leftComponent={<MenuItem.TextIcon icon="🧠" />}
           onPress={onPressLearn}
           size="medium"
           titleComponent={<MenuItem.Title text={lang.t('settings.learn')} />}
         />
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.Title text="🐦" />}
+          leftComponent={<MenuItem.TextIcon icon="🐦" />}
           onPress={onPressTwitter}
           size="medium"
           titleComponent={
@@ -402,7 +402,7 @@ const SettingsSection = ({
         />
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.Title text="💬" />}
+          leftComponent={<MenuItem.TextIcon icon="💬" />}
           onPress={onSendFeedback}
           size="medium"
           titleComponent={
@@ -418,7 +418,7 @@ const SettingsSection = ({
         {isReviewAvailable && (
           <MenuItem
             iconPadding="large"
-            leftComponent={<MenuItem.Title text="❤️" />}
+            leftComponent={<MenuItem.TextIcon icon="❤️" />}
             onPress={onPressReview}
             size="medium"
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
@@ -427,7 +427,7 @@ const SettingsSection = ({
         {isCustomBuild.value && (
           <MenuItem
             iconPadding="large"
-            leftComponent={<MenuItem.Title text="🤯" />}
+            leftComponent={<MenuItem.TextIcon icon="🤯" />}
             onPress={setOriginalDeploymentKey}
             size="medium"
             titleComponent={
@@ -437,7 +437,7 @@ const SettingsSection = ({
         )}
         <MenuItem
           iconPadding="large"
-          leftComponent={<MenuItem.Title text={ios ? '🚧' : '🐞'} />}
+          leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} />}
           onPress={onPressDev}
           size="medium"
           titleComponent={
