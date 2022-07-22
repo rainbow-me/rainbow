@@ -139,6 +139,7 @@ export const parseAccountUniqueTokens = data => {
           lowResUrl,
           marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
           marketplaceName: 'OpenSea',
+          network: Network.mainnet,
           type: AssetTypes.nft,
           uniqueId:
             asset_contract.address === ENS_NFT_CONTRACT_ADDRESS

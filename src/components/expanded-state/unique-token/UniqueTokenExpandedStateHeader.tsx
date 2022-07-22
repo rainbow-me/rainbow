@@ -150,6 +150,16 @@ interface UniqueTokenExpandedStateHeaderProps {
   hideNftMarketplaceAction: boolean;
 }
 
+const getIsSupportedOnRainbowWeb = network => {
+  switch (network) {
+    case Network.mainnet:
+    case Network.polygon:
+      return true;
+    default:
+      return false;
+  }
+};
+
 const UniqueTokenExpandedStateHeader = ({
   asset,
   hideNftMarketplaceAction,
@@ -157,6 +167,8 @@ const UniqueTokenExpandedStateHeader = ({
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
+
+  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
 
   const formattedCollectionUrl = useMemo(() => {
     // @ts-expect-error external_link could be null or undefined?
@@ -223,14 +235,18 @@ const UniqueTokenExpandedStateHeader = ({
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {
-    // @ts-expect-error network could be undefined?
-    const AssetActions = getAssetActions(asset?.network);
+    const AssetActions = getAssetActions(asset.network);
+
     return {
       menuItems: [
-        {
-          ...AssetActions[AssetActionsEnum.rainbowWeb],
-          discoverabilityTitle: 'rainbow.me',
-        },
+        ...(isSupportedOnRainbowWeb
+          ? [
+              {
+                ...AssetActions[AssetActionsEnum.rainbowWeb],
+                discoverabilityTitle: 'rainbow.me',
+              },
+            ]
+          : []),
         {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
@@ -249,7 +265,12 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [asset.id, asset?.network, isPhotoDownloadAvailable]);
+  }, [
+    asset.id,
+    asset.network,
+    isPhotoDownloadAvailable,
+    isSupportedOnRainbowWeb,
+  ]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -279,7 +300,7 @@ const UniqueTokenExpandedStateHeader = ({
           // @ts-expect-error address could be undefined?
           asset.asset_contract.address,
           asset.id,
-          asset?.network
+          asset.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
@@ -365,11 +386,12 @@ const UniqueTokenExpandedStateHeader = ({
 
   const onPressAndroidAsset = useCallback(() => {
     const androidContractActions = [
-      lang.t('expanded_state.unique_expanded.view_on_web'),
+      ...(isSupportedOnRainbowWeb
+        ? lang.t('expanded_state.unique_expanded.view_on_web')
+        : []),
       lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
         blockExplorerName: startCase(
-          // @ts-expect-error network could be undefined?
-          ethereumUtils.getBlockExplorer(asset?.network)
+          ethereumUtils.getBlockExplorer(asset.network)
         ),
       }),
       ...(isPhotoDownloadAvailable
@@ -392,7 +414,7 @@ const UniqueTokenExpandedStateHeader = ({
             // @ts-expect-error address could be undefined?
             asset.asset_contract.address,
             asset.id,
-            asset?.network
+            asset.network
           );
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
@@ -406,6 +428,7 @@ const UniqueTokenExpandedStateHeader = ({
     accountENS,
     asset,
     isPhotoDownloadAvailable,
+    isSupportedOnRainbowWeb,
     setClipboard,
   ]);
 
