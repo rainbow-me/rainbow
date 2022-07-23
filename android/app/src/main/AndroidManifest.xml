@@ -77,7 +77,8 @@
           <category android:name="android.intent.category.BROWSABLE" />
         </intent-filter>
       </activity>
-      <activity-alias
+
+      <!-- <activity-alias
         android:name="me.rainbow.MainActivityog"
         android:enabled="false"
         android:icon="@mipmap/og"
@@ -115,7 +116,7 @@
           <action android:name="android.intent.action.MAIN" />
           <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
-      </activity-alias>
+      </activity-alias> -->
 
 
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
