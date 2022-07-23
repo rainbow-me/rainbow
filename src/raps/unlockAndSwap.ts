@@ -1,3 +1,4 @@
+import { Linking } from 'react-native';
 import { concat, reduce } from 'lodash';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
@@ -61,6 +62,16 @@ export const createUnlockAndSwapRap = async (
 ) => {
   const { inputAmount, tradeDetails } = swapParameters;
   const { inputCurrency } = store.getState().swap;
+
+  const inputSymbol = tradeDetails.route.input.symbol;
+  const outputSymbol = tradeDetails.route.output.symbol;
+  if (
+    (inputSymbol === 'ETH' && outputSymbol === 'WETH') ||
+    (inputSymbol === 'WETH' && outputSymbol === 'ETH')
+  ) {
+    Linking.openURL('https://app.uniswap.org/#/swap');
+    return;
+  }
 
   // create unlock rap
   const { accountAddress } = store.getState().settings;
