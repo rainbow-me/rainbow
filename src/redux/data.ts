@@ -490,6 +490,10 @@ export const dataLoadState = () => async (
       network
     );
 
+    const isCurrentAccountAddress =
+      accountAddress === getState().settings.accountAddress;
+    if (!isCurrentAccountAddress) return;
+
     if (!isEmpty(accountAssetsData)) {
       dispatch({
         payload: accountAssetsData,
@@ -506,6 +510,10 @@ export const dataLoadState = () => async (
       accountAddress,
       network
     );
+    const isCurrentAccountAddress =
+      accountAddress === getState().settings.accountAddress;
+    if (!isCurrentAccountAddress) return;
+
     dispatch({
       payload: pendingTransactions,
       type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
@@ -903,6 +911,11 @@ export const transactionsReceived = (
     currentNetwork,
     appended
   );
+
+  const isCurrentAccountAddress =
+    accountAddress === getState().settings.accountAddress;
+  if (!isCurrentAccountAddress) return;
+
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
       dispatch(uniqueTokensRefreshState());
@@ -912,6 +925,7 @@ export const transactionsReceived = (
   const updatedPendingTransactions = pendingTransactions.filter(
     tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
+
   dispatch({
     payload: updatedPendingTransactions,
     type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
