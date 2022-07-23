@@ -317,18 +317,20 @@ export default function SettingsSection({
               </ListItemArrowGroup>
             </ListItem>
           )}
-          <ListItem
-            icon={
-              <SettingIcon
-                source={isDarkMode ? AppIconIconDark : AppIconIcon}
-              />
-            }
-            label={lang.t('settings.app_icon')}
-            onPress={onPressAppIcon}
-            testID="app-icon-section"
-          >
-            <ListItemArrowGroup />
-          </ListItem>
+          {ios && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? AppIconIconDark : AppIconIcon}
+                />
+              }
+              label={lang.t('settings.app_icon')}
+              onPress={onPressAppIcon}
+              testID="app-icon-section"
+            >
+              <ListItemArrowGroup />
+            </ListItem>
+          )}
         </ColumnWithDividers>
         <ListFooter />
         <ColumnWithDividers dividerRenderer={ListItemDivider}>
