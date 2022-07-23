@@ -88,14 +88,12 @@ const ExchangeField = (
   );
   const handleFocus = useCallback(
     event => {
-      if (updateOnFocus) {
-        onFocus?.(event);
-      }
+      onFocus?.(event);
       if (loading) {
         setAmount(value);
       }
     },
-    [loading, onFocus, setAmount, updateOnFocus, value]
+    [loading, onFocus, setAmount, value]
   );
 
   const onChangeText = useCallback(

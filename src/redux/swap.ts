@@ -35,6 +35,7 @@ interface SwapState {
   independentField: SwapModalField;
   independentValue: string | null;
   maxInputUpdate: boolean;
+  flipCurrenciesUpdate: boolean;
   slippageInBips: number;
   source: Source;
   type: string;
@@ -207,6 +208,7 @@ export const flipSwapCurrencies = (
   const { inputCurrency, outputCurrency } = getState().swap;
   dispatch({
     payload: {
+      flipCurrenciesUpdate: true,
       independentField: outputIndependentField
         ? SwapModalField.output
         : SwapModalField.input,
@@ -234,6 +236,7 @@ const INITIAL_STATE: SwapState = {
   depositCurrency: null,
   derivedValues: null,
   displayValues: null,
+  flipCurrenciesUpdate: false,
   independentField: SwapModalField.input,
   independentValue: null,
   inputCurrency: null,

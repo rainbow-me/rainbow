@@ -143,7 +143,11 @@ export default function ExchangeModal({
 }) {
   const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
-  const { slippageInBips, maxInputUpdate } = useSwapSettings();
+  const {
+    slippageInBips,
+    maxInputUpdate,
+    flipCurrenciesUpdate,
+  } = useSwapSettings();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute();
@@ -862,7 +866,7 @@ export default function ExchangeModal({
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
-              updateAmountOnFocus={maxInputUpdate}
+              updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
             />
             {showOutputField && (
               <ExchangeOutputField
@@ -887,7 +891,7 @@ export default function ExchangeModal({
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
                 testID={`${testID}-output`}
-                updateAmountOnFocus={maxInputUpdate}
+                updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
               />
             )}
           </FloatingPanel>
