@@ -104,7 +104,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'
-    grey20: '#333333', // '51, 51, 51'
+    grey20: '#333333', // '51, 51, 51',
     lighterGrey: '#F7F7F8', // '247, 247, 248'
     lightestGrey: '#E9EBEF', // '238, 233, 232'
     lightGrey: '#CDCFD4', // '205, 207, 212'
@@ -183,11 +183,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
     polygon: '#8247E5',
     rinkeby: '#f6c343',
     ropsten: '#ff4a8d',
-  };
-
-  let settings = {
-    background: '#F5F5F7',
-    foreground: base.white,
   };
 
   let gradients = {
@@ -345,11 +340,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
       whiteButton: ['#404656', buildRgba('#404656', 0.8)],
     };
 
-    settings = {
-      background: darkModeColors.lighterGrey,
-      foreground: '#1E2028',
-    };
-
     listHeaders = {
       firstGradient: '#12131Aff',
       secondGradient: '#12131A80',
@@ -382,7 +372,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
     listHeaders,
     networkColors,
     sendScreen,
-    settings,
     ...base,
     ...transparent,
     ...light,

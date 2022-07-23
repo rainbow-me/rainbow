@@ -5,6 +5,8 @@ export const colors = {
   appleBlueLight: '#1F87FF',
   black: '#000000',
   blackTint: '#12131a',
+  dark: '#1E2028',
+  darker: '#12131A',
   grey: 'rgb(60, 66, 82)',
   grey06: 'rgba(60, 66, 82, 0.06)',
   grey10: 'rgba(60, 66, 82, 0.1)',
@@ -17,6 +19,7 @@ export const colors = {
   grey70: 'rgba(60, 66, 82, 0.7)',
   grey80: 'rgba(60, 66, 82, 0.8)',
   greyDark: '#25292E',
+  offwhite: '#F5F5F7',
   paleBlue: '#579DFF',
   sky: '#E0E8FF',
   sky06: 'rgba(224, 232, 255, 0.06)',
@@ -53,7 +56,12 @@ export type ContextualColorValue<Value> = {
   darkTinted?: Value;
 };
 
-export type BackgroundColor = 'body' | 'action' | 'swap';
+export type BackgroundColor =
+  | 'body'
+  | 'action'
+  | 'swap'
+  | 'card'
+  | 'cardBackdrop';
 
 export type BackgroundColorValue = {
   color: string;
@@ -95,6 +103,26 @@ export const backgroundColors: Record<
     lightTinted: {
       color: colors.white,
       mode: 'lightTinted',
+    },
+  },
+  card: {
+    dark: {
+      color: colors.dark,
+      mode: 'dark',
+    },
+    light: {
+      color: colors.white,
+      mode: 'light',
+    },
+  },
+  cardBackdrop: {
+    dark: {
+      color: colors.darker,
+      mode: 'dark',
+    },
+    light: {
+      color: colors.offwhite,
+      mode: 'light',
     },
   },
   swap: {

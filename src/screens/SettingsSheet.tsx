@@ -24,7 +24,7 @@ import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecret
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
-import { AccentColorProvider, Box } from '@rainbow-me/design-system';
+import { Box } from '@rainbow-me/design-system';
 import { useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 
@@ -173,95 +173,91 @@ export default function SettingsSheet() {
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
-    <AccentColorProvider color={colors.settings.background}>
-      <Box
-        background="accent"
-        flexGrow={1}
-        testID="settings-sheet"
-        {...(android && { borderTopRadius: 30 })}
+    <Box
+      background="cardBackdrop"
+      flexGrow={1}
+      testID="settings-sheet"
+      {...(android && { borderTopRadius: 30 })}
+    >
+      <Stack.Navigator
+        // @ts-expect-error
+        screenOptions={{
+          ...memoSettingsOptions,
+          headerRight: renderHeaderRight,
+        }}
       >
-        <Stack.Navigator
-          // @ts-expect-error
-          screenOptions={{
-            ...memoSettingsOptions,
-            headerRight: renderHeaderRight,
+        <Stack.Screen
+          name="SettingsSection"
+          options={{
+            cardStyleInterpolator,
+            title: lang.t('settings.label'),
           }}
         >
-          <Stack.Screen
-            name="SettingsSection"
-            options={{
-              cardStyleInterpolator,
-              title: lang.t('settings.label'),
-            }}
-          >
-            {() => (
-              <SettingsSection
-                onCloseModal={goBack}
-                onPressBackup={onPressSection(SettingsPages.backup)}
-                onPressCurrency={onPressSection(SettingsPages.currency)}
-                onPressDev={onPressSection(SettingsPages.dev)}
-                onPressLanguage={onPressSection(SettingsPages.language)}
-                onPressNetwork={onPressSection(SettingsPages.network)}
-                onPressNotifications={onPressSection(
-                  SettingsPages.notifications
-                )}
-                onPressPrivacy={onPressSection(SettingsPages.privacy)}
-              />
-            )}
-          </Stack.Screen>
-          {Object.values(SettingsPages).map(
-            ({ component, getTitle, key }) =>
-              component && (
-                <Stack.Screen
-                  component={component}
-                  key={key}
-                  name={key}
-                  options={{
-                    cardStyleInterpolator,
-                    title: getTitle(),
-                  }}
-                  // @ts-expect-error
-                  title={getTitle()}
-                />
-              )
+          {() => (
+            <SettingsSection
+              onCloseModal={goBack}
+              onPressBackup={onPressSection(SettingsPages.backup)}
+              onPressCurrency={onPressSection(SettingsPages.currency)}
+              onPressDev={onPressSection(SettingsPages.dev)}
+              onPressLanguage={onPressSection(SettingsPages.language)}
+              onPressNetwork={onPressSection(SettingsPages.network)}
+              onPressNotifications={onPressSection(SettingsPages.notifications)}
+              onPressPrivacy={onPressSection(SettingsPages.privacy)}
+            />
           )}
-          <Stack.Screen
-            component={DevNotificationsSection}
-            name="DevNotificationsSection"
-            options={{
-              cardStyleInterpolator,
-              title: lang.t('developer_settings.notifications_debug'),
-            }}
-          />
-          <Stack.Screen
-            component={WalletNotificationsSettings}
-            name="WalletNotificationsSettings"
-            options={({ route }) => ({
-              cardStyleInterpolator,
-              // @ts-expect-error
-              title: route.params?.title,
-            })}
-          />
-          <Stack.Screen
-            component={SettingsBackupView}
-            name="SettingsBackupView"
-            options={({ route }) => ({
-              cardStyleInterpolator,
-              // @ts-expect-error
-              title: route.params?.title || lang.t('settings.backup'),
-            })}
-          />
-          <Stack.Screen
-            component={ShowSecretView}
-            name="ShowSecretView"
-            options={({ route }) => ({
-              cardStyleInterpolator,
-              // @ts-expect-error
-              title: route.params?.title || lang.t('settings.backup'),
-            })}
-          />
-        </Stack.Navigator>
-      </Box>
-    </AccentColorProvider>
+        </Stack.Screen>
+        {Object.values(SettingsPages).map(
+          ({ component, getTitle, key }) =>
+            component && (
+              <Stack.Screen
+                component={component}
+                key={key}
+                name={key}
+                options={{
+                  cardStyleInterpolator,
+                  title: getTitle(),
+                }}
+                // @ts-expect-error
+                title={getTitle()}
+              />
+            )
+        )}
+        <Stack.Screen
+          component={DevNotificationsSection}
+          name="DevNotificationsSection"
+          options={{
+            cardStyleInterpolator,
+            title: lang.t('developer_settings.notifications_debug'),
+          }}
+        />
+        <Stack.Screen
+          component={WalletNotificationsSettings}
+          name="WalletNotificationsSettings"
+          options={({ route }) => ({
+            cardStyleInterpolator,
+            // @ts-expect-error
+            title: route.params?.title,
+          })}
+        />
+        <Stack.Screen
+          component={SettingsBackupView}
+          name="SettingsBackupView"
+          options={({ route }) => ({
+            cardStyleInterpolator,
+            // @ts-expect-error
+            title: route.params?.title || lang.t('settings.backup'),
+          })}
+        />
+        <Stack.Screen
+          component={ShowSecretView}
+          name="ShowSecretView"
+          options={({ route }) => ({
+            cardStyleInterpolator,
+            // @ts-expect-error
+            title: route.params?.title || lang.t('settings.backup'),
+          })}
+        />
+      </Stack.Navigator>
+    </Box>
   );
 }
