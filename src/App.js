@@ -206,9 +206,11 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runWalletBackupStatusChecks();
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => runFeatureUnlockChecks(), 2000);
-      });
+      if (ios) {
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => runFeatureUnlockChecks(), 2000);
+        });
+      }
     }
   }
 
