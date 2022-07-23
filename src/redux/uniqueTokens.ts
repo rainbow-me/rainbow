@@ -273,7 +273,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     try {
       let newPageResults = await apiGetAccountUniqueTokens(
         network,
-        showcaseAddress || getState().settings.accountAddress,
+        accountAddress,
         page
       );
 
@@ -300,16 +300,22 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
           });
         }
       }
+
       if (shouldStopFetching) {
-        const existingFamilies = getFamilies(existingUniqueTokens);
-        const newFamilies = getFamilies(uniqueTokens);
-        const incomingFamilies = without(newFamilies, ...existingFamilies);
-        if (incomingFamilies.length) {
-          const dedupedAssets = dedupeAssetsWithFamilies(
-            getState().data.accountAssetsData,
-            incomingFamilies
-          );
-          dispatch(dataUpdateAssets(dedupedAssets));
+        const isCurrentAccountAddress =
+          accountAddress ===
+          (showcaseAddress || getState().settings.accountAddress);
+        if (isCurrentAccountAddress) {
+          const existingFamilies = getFamilies(existingUniqueTokens);
+          const newFamilies = getFamilies(uniqueTokens);
+          const incomingFamilies = without(newFamilies, ...existingFamilies);
+          if (incomingFamilies.length) {
+            const dedupedAssets = dedupeAssetsWithFamilies(
+              getState().data.accountAssetsData,
+              incomingFamilies
+            );
+            dispatch(dataUpdateAssets(dedupedAssets));
+          }
         }
       }
     } catch (error) {
