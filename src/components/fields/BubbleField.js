@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { MiniButton } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';

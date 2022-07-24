@@ -1,8 +1,7 @@
 import lang from 'i18n-js';
-import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -92,11 +91,13 @@ export default function RestoreSheetFirstStep({
 
   const walletsBackedUp = useMemo(() => {
     let count = 0;
-    forEach(userData?.wallets, wallet => {
-      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-        count++;
-      }
-    });
+    if (userData?.wallets) {
+      Object.values(userData.wallets).forEach(wallet => {
+        if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+          count++;
+        }
+      });
+    }
     return count;
   }, [userData]);
 

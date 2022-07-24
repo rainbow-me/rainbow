@@ -17,9 +17,9 @@ type CoingeckoMappingState = {
   [key: string]: string;
 };
 
-type State = {
+export interface AdditionalAssetsDataState {
   coingeckoIds: CoingeckoMappingState;
-};
+}
 
 // -- Actions --------------------------------------------------------------- //
 export const additionalDataCoingeckoIds = async (
@@ -41,7 +41,10 @@ export const INITIAL_UNIQUE_TOKENS_STATE = {
   coingeckoIds: {},
 };
 
-export default (state: State = INITIAL_UNIQUE_TOKENS_STATE, action: Action) => {
+export default (
+  state: AdditionalAssetsDataState = INITIAL_UNIQUE_TOKENS_STATE,
+  action: Action
+): AdditionalAssetsDataState => {
   switch (action.type) {
     case ADDITIONAL_ASSET_DATA_COINGECKO_IDS:
       return {

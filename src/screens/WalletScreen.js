@@ -1,18 +1,12 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, get, isEmpty, keys, map, toLower } from 'lodash';
+import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import {
-  ExchangeFab,
-  FabWrapper,
-  RegisterEnsFab,
-  SendFab,
-} from '../components/fab';
+import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
 import {
   DiscoverHeaderButton,
   Header,
@@ -30,9 +24,12 @@ import {
   useCoinListEdited,
   useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadAccountLateData,
   useLoadGlobalLateData,
   usePortfolios,
+  useTrackENSProfile,
   useUserAccounts,
+  useWalletENSAvatar,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
@@ -69,12 +66,14 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
-  const { isEmpty: isAccountEmpty } = useAccountEmptyState();
+  const { trackENSProfile } = useTrackENSProfile();
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
+  const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
+  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
@@ -83,10 +82,13 @@ export default function WalletScreen() {
     refetchSavings,
     sections,
     shouldRefetchSavings,
+    isEmpty: isSectionsEmpty,
+    briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
 
+  const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
+
   const dispatch = useDispatch();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -94,6 +96,8 @@ export default function WalletScreen() {
       assetsSocket,
     })
   );
+
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {
     const fetchAndResetFetchSavings = async () => {
@@ -125,7 +129,7 @@ export default function WalletScreen() {
         for (let i = 0; i < userAccounts.length; i++) {
           const account = userAccounts[i];
           // Passing usd for consistency in tracking
-          dispatch(emitPortfolioRequest(toLower(account.address), 'usd'));
+          dispatch(emitPortfolioRequest(account.address.toLowerCase(), 'usd'));
         }
       };
       fetchPortfolios();
@@ -140,6 +144,12 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
+    if (profilesEnabled) {
+      trackENSProfile();
+    }
+  }, [profilesEnabled, trackENSProfile]);
+
+  useEffect(() => {
     if (
       !isEmpty(portfolios) &&
       portfoliosFetched &&
@@ -152,7 +162,10 @@ export default function WalletScreen() {
   useEffect(() => {
     if (initialized && assetsSocket && !fetchedCharts) {
       const balancesSection = sections.find(({ name }) => name === 'balances');
-      const assetCodes = compact(map(balancesSection?.data, 'address'));
+      const assetCodes = compact(
+        balancesSection?.data.map(({ address }) => address)
+      );
+
       if (!isEmpty(assetCodes)) {
         dispatch(emitChartsRequest(assetCodes));
         setFetchedCharts(true);
@@ -162,28 +175,37 @@ export default function WalletScreen() {
 
   useEffect(() => {
     if (walletReady && assetsSocket) {
+      loadAccountLateData();
       loadGlobalLateData();
       initializeDiscoverData();
     }
-  }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
+  }, [
+    assetsSocket,
+    initializeDiscoverData,
+    loadAccountLateData,
+    loadGlobalLateData,
+    walletReady,
+  ]);
+
+  useEffect(() => {
+    if (walletReady) updateWalletENSAvatars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
   const fabs = useMemo(
     () =>
-      [
-        !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
-        SendFab,
-        profilesEnabled ? RegisterEnsFab : null,
-      ].filter(e => !!e),
-    [network, profilesEnabled]
+      [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(
+        e => !!e
+      ),
+    [network]
   );
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
 
   return (
     <WalletPage testID="wallet-screen">
-      {ios && <StatusBar barStyle="dark-content" />}
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />
@@ -209,6 +231,7 @@ export default function WalletScreen() {
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
+          walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>
     </WalletPage>

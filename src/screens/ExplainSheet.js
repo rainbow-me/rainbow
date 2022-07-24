@@ -9,9 +9,13 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import { Box } from '@/design-system';
+import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
+import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
@@ -48,6 +52,29 @@ const Gradient = styled(GradientText).attrs({
   steps: [0, 0.5, 1],
   weight: 'heavy',
 })({});
+
+const OptimismAppIcon = () => {
+  const { colors, isDarkMode } = useTheme();
+  return (
+    <Box
+      style={{
+        shadowColor: isDarkMode ? colors.shadowBlack : colors.optimismRed,
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={AppIconOptimism}
+        style={{
+          width: 64,
+          height: 64,
+        }}
+      />
+    </Box>
+  );
+};
 
 const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
@@ -92,7 +119,54 @@ const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
 });
 
+const ENS_PRIMARY_NAME_EXPLAINER =
+  'Setting a primary ENS name makes your Ethereum address point to your .eth name, enabling dapps to find and display it when you connect your wallet.';
+
+const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
+  'The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
+
+const ENS_ON_CHAIN_DATA_WARNING_TITLE = 'Heads up!';
+
+const ENS_PRIMARY_NAME_TITLE = 'What is a primary ENS name?';
+
+const ENS_MANAGER_TITLE = `Who is the .eth manager?`;
+
+const ENS_MANAGER_EXPLAINER = `The manager of a .eth name registration. The manager may transfer ownership, set a resolver or TTL, as well as create or reassign subdomains`;
+
+const ENS_OWNER_TITLE = `Who is the .eth owner?`;
+
+const ENS_OWNER_EXPLAINER = `The owner of a .eth name registration. The owner may transfer the registration or reclaim ownership of the name in the registry if required.`;
+
+const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
+
+const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
+
+const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
+
 export const explainers = network => ({
+  optimism_app_icon: {
+    logo: <OptimismAppIcon />,
+    extraHeight: -25,
+    text: OPTIMISM_APP_ICON_EXPLAINER,
+    title: lang.t('explain.optimism_app_icon.title'),
+    button: {
+      label: lang.t('explain.optimism_app_icon.button'),
+      textColor: 'optimismRed',
+      bgColor: 'optimismRed06',
+      onPress: (navigate, goBack, handleClose) => () => {
+        if (handleClose) handleClose();
+        if (goBack) goBack();
+        setTimeout(() => {
+          navigate(Routes.SETTINGS_SHEET);
+          setTimeout(() => {
+            navigate(Routes.SETTINGS_SHEET, {
+              screen: 'AppIconSection',
+            });
+          }, 300);
+        }, 300);
+      },
+    },
+  },
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
@@ -106,6 +180,36 @@ export const explainers = network => ({
     title: lang.t('explain.gas.title', {
       networkName: network,
     }),
+  },
+  ens_primary_name: {
+    extraHeight: -70,
+    emoji: '❓',
+    text: ENS_PRIMARY_NAME_EXPLAINER,
+    title: ENS_PRIMARY_NAME_TITLE,
+  },
+  ens_manager: {
+    extraHeight: -80,
+    emoji: '❓',
+    text: ENS_MANAGER_EXPLAINER,
+    title: ENS_MANAGER_TITLE,
+  },
+  ens_owner: {
+    extraHeight: -80,
+    emoji: '❓',
+    text: ENS_OWNER_EXPLAINER,
+    title: ENS_OWNER_TITLE,
+  },
+  ens_resolver: {
+    extraHeight: -60,
+    emoji: '❓',
+    text: ENS_RESOLVER_EXPLAINER,
+    title: ENS_RESOLVER_TITLE,
+  },
+  ensOnChainDataWarning: {
+    extraHeight: -30,
+    emoji: '✋',
+    text: ENS_ON_CHAIN_DATA_WARNING_EXPLAINER,
+    title: ENS_ON_CHAIN_DATA_WARNING_TITLE,
   },
   currentBaseFeeStable: {
     emoji: '🌞',
@@ -230,7 +334,7 @@ const ExplainSheet = () => {
     params = {},
   } = useRoute();
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
@@ -336,12 +440,27 @@ const ExplainSheet = () => {
               </Column>
             )}
             <SheetActionButton
-              color={colors.alpha(colors.appleBlue, 0.04)}
+              color={
+                colors[explainSheetConfig.button?.bgColor] ||
+                colors.alpha(colors.appleBlue, 0.04)
+              }
               isTransparent
-              label={lang.t('button.got_it')}
-              onPress={handleClose}
+              label={
+                explainSheetConfig.button?.label || lang.t('button.got_it')
+              }
+              onPress={
+                explainSheetConfig.button?.onPress
+                  ? explainSheetConfig.button.onPress(
+                      navigate,
+                      goBack,
+                      handleClose
+                    )
+                  : handleClose
+              }
               size="big"
-              textColor={colors.appleBlue}
+              textColor={
+                colors[explainSheetConfig.button?.textColor] || colors.appleBlue
+              }
               weight="heavy"
             />
           </ColumnWithMargins>
@@ -352,3 +471,4 @@ const ExplainSheet = () => {
 };
 
 export default React.memo(ExplainSheet);
+2;

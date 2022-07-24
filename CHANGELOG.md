@@ -12,6 +12,47 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.18](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.18)
+### Changed
+* Support custom icons
+* Support Optimism and Arbitrum collectibles viewing
+
+## [1.6.16](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.16)
+### Changed
+* Main release
+* Bug fixes
+* Performance improvements
+
+## [1.6.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.15)
+
+### Changed
+* Fix for WC dapp contract signature metadata
+
+## [1.6.14](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.14)
+
+### Changed
+* Audit deps
+* Opensea WC sign message issue
+* Send details row crash
+
+## [1.6.13](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.13)
+
+### Changed
+* welcome screen adjustments
+* fixed queued txs
+* pngs for coin icons
+* fixed walletconnect disconnect issue
+* fixed sending NFTs on android
+* fixed android token param for send flow
+
+## [1.6.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.11)
+
+### Changed
+* separate pending transactions
+* i18n wrap up
+* update animations
+* sentry performance setup
+
 ## [1.6.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.11)
 
 ### Changed

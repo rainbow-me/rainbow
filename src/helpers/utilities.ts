@@ -1,9 +1,14 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import { get, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
+interface Dictionary<T> {
+  [index: string]: T;
+}
+type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
+type nativeCurrencyType = typeof supportedNativeCurrencies;
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
@@ -153,9 +158,9 @@ export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
   new BigNumber(numberOne).plus(numberTwo).toFixed();
 
 export const addDisplay = (numberOne: string, numberTwo: string): string => {
-  const template = numberOne.split(/\d+\.\d+/);
+  const template = numberOne.split(/^(\D*)(.*)/);
   const display = currency(numberOne, { symbol: '' }).add(numberTwo).format();
-  return template.map(item => (item === '' ? `${display}` : item)).join('');
+  return [template[1], display].join('');
 };
 
 export const multiply = (
@@ -261,7 +266,7 @@ export const convertAmountToNativeAmount = (
 export const convertAmountAndPriceToNativeDisplay = (
   amount: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
   skipDecimals: boolean = false
 ): { amount: string; display: string } => {
@@ -285,7 +290,7 @@ export const convertRawAmountToNativeDisplay = (
   rawAmount: BigNumberish,
   assetDecimals: number,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number
 ) => {
   const assetBalance = convertRawAmountToDecimalFormat(
@@ -308,7 +313,7 @@ export const convertRawAmountToBalance = (
   asset: { decimals: number },
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
+  const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
@@ -322,12 +327,12 @@ export const convertRawAmountToBalance = (
  */
 export const convertAmountToBalanceDisplay = (
   value: BigNumberish,
-  asset: { decimals: number },
+  asset: { decimals: number; symbol?: string },
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
+  const decimals = asset?.decimals ?? 18;
   const display = handleSignificantDecimals(value, decimals, buffer);
-  return `${display} ${get(asset, 'symbol', '')}`;
+  return `${display} ${asset?.symbol || ''}`;
 };
 
 /**
@@ -372,11 +377,11 @@ export const convertBipsToPercentage = (
  */
 export const convertAmountToNativeDisplay = (
   value: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
   skipDecimals?: boolean
 ) => {
-  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { decimals } = nativeSelected;
   const display = handleSignificantDecimals(
     value,
@@ -415,6 +420,76 @@ export const delay = (ms: number): Promise<void> => {
 export const getKeyByValue = (
   object: { [key: string]: string },
   value: string
-) => {
-  return Object.keys(object).find(key => object[key] === value);
+) => Object.keys(object).find(key => object[key] === value);
+
+export const times = (n: number, fn: (i: number) => unknown) =>
+  Array.from({ length: n }, (_, i) => fn(i));
+
+/**
+ * @desc Creates an object composed of the omitted object properties by some predicate function.
+ */
+export const omitBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => !predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
+};
+
+/**
+ * @desc Can omit only flattened key, will not work with nested props like 'key.someObj.value'
+ */
+export const omitFlatten = <T extends object, K extends keyof T>(
+  obj: T | null | undefined,
+  keys: K[] | K
+): Omit<T, K> => {
+  const keysArr = Array.isArray(keys) ? keys : [keys];
+  const newObj: any = {};
+  const keysArrObj: any = {};
+  for (const key of keysArr) {
+    keysArrObj[key] = true;
+  }
+  for (const key in obj) {
+    if (!keysArrObj[key]) newObj[key] = obj[key];
+  }
+  return newObj;
+};
+
+/**
+ * Creates an object composed of the picked object properties.
+ * @param obj The source object
+ * @param paths The property paths to pick
+ */
+export const pickShallow = <T extends object, K extends keyof T>(
+  obj: T,
+  paths: K[]
+): Pick<T, K> => {
+  return paths.reduce((acc, key) => {
+    if (obj.hasOwnProperty(key)) {
+      acc[key] = obj[key];
+      return acc;
+    }
+    return acc;
+  }, {} as Pick<T, K>);
+};
+
+/**
+ * Creates an object composed of the picked object properties by some predicate function.
+ * @param obj The source object
+ * @param predicate The function invoked per property
+ */
+export const pickBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
 };

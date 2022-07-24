@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
@@ -21,6 +22,7 @@ import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import useResetAccountState from './useResetAccountState';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
@@ -35,6 +37,7 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const initializeWallet = useCallback(
     async (
@@ -44,14 +47,15 @@ export default function useInitializeWallet() {
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
-      switching
+      switching,
+      image,
+      silent = false
     ) => {
       try {
         PerformanceTracking.startMeasuring(
           PerformanceMetrics.useInitializeWallet
         );
         logger.sentry('Start wallet setup');
-
         await resetAccountState();
         logger.sentry('resetAccountState ran ok');
 
@@ -60,7 +64,7 @@ export default function useInitializeWallet() {
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.sentry('shouldRunMigrations && !seedPhrase? => true');
-          await dispatch(walletsLoadState());
+          await dispatch(walletsLoadState(profilesEnabled));
           logger.sentry('walletsLoadState call #1');
           await runMigrations();
           logger.sentry('done with migrations');
@@ -77,7 +81,9 @@ export default function useInitializeWallet() {
           name,
           overwrite,
           checkedWallet,
-          network
+          network,
+          image,
+          silent
         );
 
         logger.sentry('walletInit returned ', {
@@ -93,14 +99,12 @@ export default function useInitializeWallet() {
 
         if (seedPhrase || isNew) {
           logger.sentry('walletsLoadState call #2');
-          await dispatch(walletsLoadState());
+          await dispatch(walletsLoadState(profilesEnabled));
         }
 
         if (isNil(walletAddress)) {
           logger.sentry('walletAddress is nil');
-          Alert.alert(
-            'Import failed due to an invalid private key. Please try again.'
-          );
+          Alert.alert(lang.t('wallet.import_failed_invalid_private_key'));
           if (!isImporting) {
             dispatch(appStateUpdate({ walletReady: true }));
           }
@@ -150,7 +154,7 @@ export default function useInitializeWallet() {
         }
         hideSplashScreen();
         captureException(error);
-        Alert.alert('Something went wrong while importing. Please try again!');
+        Alert.alert(lang.t('wallet.something_went_wrong_importing'));
         dispatch(appStateUpdate({ walletReady: true }));
         return null;
       }
@@ -162,6 +166,7 @@ export default function useInitializeWallet() {
       loadAccountData,
       loadGlobalEarlyData,
       network,
+      profilesEnabled,
       resetAccountState,
       setIsSmallBalancesOpen,
     ]

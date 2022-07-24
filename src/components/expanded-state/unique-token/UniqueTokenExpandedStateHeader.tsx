@@ -1,8 +1,7 @@
 import lang from 'i18n-js';
-import { startCase, toLower } from 'lodash';
+import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
-// @ts-expect-error Missing types
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
@@ -21,23 +20,18 @@ import {
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import {
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-} from '@rainbow-me/hooks';
+import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {
-  buildRainbowUrl,
   ethereumUtils,
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 import { getFullResUrl } from '@rainbow-me/utils/getFullResUrl';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -98,7 +92,6 @@ const FamilyActions = {
   [FamilyActionsEnum.viewCollection]: {
     actionKey: FamilyActionsEnum.viewCollection,
     actionTitle: lang.t('expanded_state.unique_expanded.view_collection'),
-    discoverabilityTitle: lang.t('expanded_state.unique_expanded.opensea'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'rectangle.grid.2x2.fill',
@@ -149,12 +142,17 @@ const FamilyImage = styled(ImgixImage)({
 
 interface UniqueTokenExpandedStateHeaderProps {
   asset: UniqueAsset;
+  hideNftMarketplaceAction: boolean;
+  isSupportedOnRainbowWeb: boolean;
+  rainbowWebUrl: string;
 }
 
 const UniqueTokenExpandedStateHeader = ({
   asset,
+  hideNftMarketplaceAction,
+  isSupportedOnRainbowWeb,
+  rainbowWebUrl,
 }: UniqueTokenExpandedStateHeaderProps) => {
-  const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
 
@@ -172,39 +170,69 @@ const UniqueTokenExpandedStateHeader = ({
   const familyMenuConfig = useMemo(() => {
     return {
       menuItems: [
-        !asset?.isPoap && {
-          ...FamilyActions[FamilyActionsEnum.viewCollection],
-        },
-        (asset.external_link || asset.collection.external_url) && {
-          ...FamilyActions[FamilyActionsEnum.collectionWebsite],
-          discoverabilityTitle: formattedCollectionUrl,
-        },
-        asset.collection.twitter_username && {
-          ...FamilyActions[FamilyActionsEnum.twitter],
-        },
-        asset.collection.discord_url && {
-          ...FamilyActions[FamilyActionsEnum.discord],
-        },
+        ...(!hideNftMarketplaceAction
+          ? [
+              {
+                ...FamilyActions[FamilyActionsEnum.viewCollection],
+                discoverabilityTitle: asset.marketplaceName ?? '',
+              },
+            ]
+          : []),
+        ...(asset.external_link || asset.collection.external_url
+          ? [
+              {
+                ...FamilyActions[FamilyActionsEnum.collectionWebsite],
+                discoverabilityTitle: formattedCollectionUrl,
+              },
+            ]
+          : []),
+        ...(asset.collection.twitter_username
+          ? [
+              {
+                ...FamilyActions[FamilyActionsEnum.twitter],
+              },
+            ]
+          : []),
+        ...(asset.collection.discord_url
+          ? [
+              {
+                ...FamilyActions[FamilyActionsEnum.discord],
+              },
+            ]
+          : []),
       ],
       menuTitle: '',
-    } as const;
-  }, [asset, formattedCollectionUrl]);
+    };
+  }, [
+    asset.collection.discord_url,
+    asset.collection.external_url,
+    asset.collection.twitter_username,
+    asset.external_link,
+    asset.marketplaceName,
+    hideNftMarketplaceAction,
+    formattedCollectionUrl,
+  ]);
 
   // @ts-expect-error image_url could be null or undefined?
-  const isSVG = isSupportedUriExtension(asset.image_original_url, ['.svg']);
+  const isSVG = isSVGImage(asset.image_url);
   const isENS =
-    toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+    asset.asset_contract?.address?.toLowerCase() ===
+    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {
-    // @ts-expect-error network could be undefined?
-    const AssetActions = getAssetActions(asset?.network);
+    const AssetActions = getAssetActions(asset.network);
+
     return {
       menuItems: [
-        {
-          ...AssetActions[AssetActionsEnum.rainbowWeb],
-          discoverabilityTitle: 'rainbow.me',
-        },
+        ...(isSupportedOnRainbowWeb
+          ? [
+              {
+                ...AssetActions[AssetActionsEnum.rainbowWeb],
+                discoverabilityTitle: 'rainbow.me',
+              },
+            ]
+          : []),
         {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
@@ -222,17 +250,21 @@ const UniqueTokenExpandedStateHeader = ({
         },
       ],
       menuTitle: '',
-    } as const;
-  }, [asset.id, asset?.network, isPhotoDownloadAvailable]);
+    };
+  }, [
+    asset.id,
+    asset.network,
+    isPhotoDownloadAvailable,
+    isSupportedOnRainbowWeb,
+  ]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === FamilyActionsEnum.viewCollection) {
-        Linking.openURL(
-          'https://opensea.io/collection/' +
-            asset.collection.slug +
-            '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
-        );
+      if (
+        actionKey === FamilyActionsEnum.viewCollection &&
+        asset.marketplaceCollectionUrl
+      ) {
+        Linking.openURL(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         // @ts-expect-error external_link and external_url could be null or undefined?
         Linking.openURL(asset.external_link || asset.collection.external_url);
@@ -257,38 +289,40 @@ const UniqueTokenExpandedStateHeader = ({
           // @ts-expect-error address could be undefined?
           asset.asset_contract.address,
           asset.id,
-          asset?.network
+          asset.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
-        Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
+        Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
         saveToCameraRoll(getFullResUrl(asset.image_original_url));
       }
     },
-    [accountAddress, accountENS, asset, setClipboard]
+    [asset, rainbowWebUrl, setClipboard]
   );
 
   const onPressAndroidFamily = useCallback(() => {
+    const hasCollection = !!asset.marketplaceCollectionUrl;
     const hasWebsite = !!(asset.external_link || asset.collection.external_url);
     const hasTwitter = !!asset.collection.twitter_username;
     const hasDiscord = !!asset.collection.discord_url;
-    const hasCollection = !!asset.collection.slug;
-    const baseActions = [
-      lang.t('expanded_state.unique_expanded.view_collection'),
-      lang.t('expanded_state.unique_expanded.collection_website'),
-      lang.t('expanded_state.unique_expanded.twitter'),
-      lang.t('expanded_state.unique_expanded.discord'),
-    ];
-    const websiteIndex = 1 - (!hasCollection ? 1 : 0);
-    const twitterIndex = 2 - (!hasWebsite ? 1 : 0);
-    const discordIndex = 3 - (!hasWebsite ? 1 : 0) - (!hasTwitter ? 1 : 0);
 
-    if (!hasCollection) baseActions.splice(1, 1);
-    if (!hasWebsite) baseActions.splice(websiteIndex, 1);
-    if (!hasTwitter) baseActions.splice(twitterIndex, 1);
-    if (!hasDiscord) baseActions.splice(discordIndex, 1);
+    const baseActions = [
+      ...(hasCollection
+        ? [lang.t('expanded_state.unique_expanded.view_collection')]
+        : []),
+      ...(hasWebsite
+        ? [lang.t('expanded_state.unique_expanded.collection_website')]
+        : []),
+      ...(hasTwitter ? [lang.t('expanded_state.unique_expanded.twitter')] : []),
+      ...(hasDiscord ? [lang.t('expanded_state.unique_expanded.discord')] : []),
+    ];
+
+    const collectionIndex = hasCollection ? 0 : -1;
+    const websiteIndex = hasWebsite ? collectionIndex + 1 : collectionIndex;
+    const twitterIndex = hasTwitter ? websiteIndex + 1 : websiteIndex;
+    const discordIndex = hasDiscord ? twitterIndex + 1 : twitterIndex;
 
     showActionSheetWithOptions(
       {
@@ -297,41 +331,18 @@ const UniqueTokenExpandedStateHeader = ({
         title: '',
       },
       (idx: number) => {
-        if (idx === 0) {
+        if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
+          Linking.openURL(asset.marketplaceCollectionUrl);
+        } else if (idx === websiteIndex) {
           Linking.openURL(
-            'https://opensea.io/collection/' +
-              asset.collection.slug +
-              '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
+            // @ts-expect-error external_link and external_url could be null or undefined?
+            asset.external_link || asset.collection.external_url
           );
-        }
-        if (idx === 1) {
-          if (hasWebsite) {
-            Linking.openURL(
-              // @ts-expect-error external_link and external_url could be null or undefined?
-              asset.external_link || asset.collection.external_url
-            );
-          } else if (hasTwitter && twitterIndex === 1) {
-            Linking.openURL(
-              'https://twitter.com/' + asset.collection.twitter_username
-            );
-          } else if (hasDiscord && discordIndex === 1) {
-            Linking.openURL(
-              'https://twitter.com/' + asset.collection.twitter_username
-            );
-          }
-        }
-        if (idx === 2) {
-          if (hasTwitter && twitterIndex === 2) {
-            Linking.openURL(
-              'https://twitter.com/' + asset.collection.twitter_username
-            );
-          } else if (hasDiscord && discordIndex === 2) {
-            Linking.openURL(
-              'https://twitter.com/' + asset.collection.twitter_username
-            );
-          }
-        }
-        if (idx === 3 && asset.collection.discord_url) {
+        } else if (idx === twitterIndex) {
+          Linking.openURL(
+            'https://twitter.com/' + asset.collection.twitter_username
+          );
+        } else if (idx === discordIndex && asset.collection.discord_url) {
           Linking.openURL(asset.collection.discord_url);
         }
       }
@@ -339,25 +350,38 @@ const UniqueTokenExpandedStateHeader = ({
   }, [
     asset.collection.discord_url,
     asset.collection.external_url,
-    asset.collection.slug,
     asset.collection.twitter_username,
     asset.external_link,
+    asset.marketplaceCollectionUrl,
   ]);
 
   const onPressAndroidAsset = useCallback(() => {
-    const androidContractActions = [
-      lang.t('expanded_state.unique_expanded.view_on_web'),
-      lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
+    const blockExplorerActionName = lang.t(
+      'expanded_state.unique_expanded.view_on_block_explorer',
+      {
         blockExplorerName: startCase(
-          // @ts-expect-error network could be undefined?
-          ethereumUtils.getBlockExplorer(asset?.network)
+          ethereumUtils.getBlockExplorer(asset.network)
         ),
-      }),
+      }
+    );
+
+    const androidContractActions = [
+      ...(isSupportedOnRainbowWeb
+        ? [lang.t('expanded_state.unique_expanded.view_on_web')]
+        : []),
+      blockExplorerActionName,
       ...(isPhotoDownloadAvailable
         ? ([lang.t('expanded_state.unique_expanded.save_to_photos')] as const)
         : []),
       lang.t('expanded_state.unique_expanded.copy_token_id'),
     ] as const;
+
+    const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
+    const blockExplorerIndex = rainbowWebIndex + 1;
+    const photoDownloadIndex = isPhotoDownloadAvailable
+      ? blockExplorerIndex + 1
+      : blockExplorerIndex;
+    const copyTokenIndex = photoDownloadIndex + 1;
 
     showActionSheetWithOptions(
       {
@@ -366,27 +390,27 @@ const UniqueTokenExpandedStateHeader = ({
         title: '',
       },
       (idx: number) => {
-        if (idx === 0) {
-          Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
-        } else if (idx === 1) {
+        if (idx === rainbowWebIndex) {
+          Linking.openURL(rainbowWebUrl);
+        } else if (idx === blockExplorerIndex) {
           ethereumUtils.openNftInBlockExplorer(
             // @ts-expect-error address could be undefined?
             asset.asset_contract.address,
             asset.id,
-            asset?.network
+            asset.network
           );
-        } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
-          setClipboard(asset.id);
-        } else if (idx === 2) {
+        } else if (idx === photoDownloadIndex) {
           saveToCameraRoll(getFullResUrl(asset.image_original_url));
+        } else if (idx === copyTokenIndex) {
+          setClipboard(asset.id);
         }
       }
     );
   }, [
-    accountAddress,
-    accountENS,
     asset,
     isPhotoDownloadAvailable,
+    isSupportedOnRainbowWeb,
+    rainbowWebUrl,
     setClipboard,
   ]);
 
@@ -396,19 +420,17 @@ const UniqueTokenExpandedStateHeader = ({
   return (
     <Stack space="15px">
       <Columns space="24px">
-        <Heading size="23px" weight="heavy">
+        <Heading containsEmoji size="23px" weight="heavy">
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>
             <ContextMenuButton
-              activeOpacity={1}
               menuConfig={assetMenuConfig}
               {...(android ? { onPress: onPressAndroidAsset } : {})}
               isMenuPrimaryAction
               onPressMenuItem={handlePressAssetMenuItem}
               useActionSheetFallback={false}
-              wrapNativeComponent
             >
               <ButtonPressAnimation scaleTo={0.75}>
                 <Inset space={overflowMenuHitSlop}>
@@ -424,13 +446,11 @@ const UniqueTokenExpandedStateHeader = ({
       <Inline wrap={false}>
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
-            activeOpacity={0}
             menuConfig={familyMenuConfig}
             {...(android ? { onPress: onPressAndroidFamily } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}
-            wrapNativeComponent={false}
           >
             <ButtonPressAnimation scaleTo={0.88}>
               <Inset space={familyNameHitSlop}>

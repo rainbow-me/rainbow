@@ -1,6 +1,6 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { Row } from '../layout';
 import ExchangeNotchLeft from '@rainbow-me/assets/exchangeNotchLeft.png';
 import ExchangeNotchLeftDark from '@rainbow-me/assets/exchangeNotchLeftDark.png';

@@ -19,7 +19,7 @@ import {
 } from '@rainbow-me/handlers/cloudBackup';
 import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
 import walletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import {
   useDimensions,
   useInitializeWallet,

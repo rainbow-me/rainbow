@@ -1,6 +1,5 @@
-import { get } from 'lodash';
-import React, { forwardRef, useEffect, useRef } from 'react';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import React, { forwardRef } from 'react';
+import { View } from 'react-native';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -8,7 +7,6 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
-import { usePrevious } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -23,14 +21,6 @@ const NoCurrencyResults = styled(NoResults)({
   paddingBottom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
 });
 
-const skeletonTransition = (
-  <Transition.Sequence>
-    <Transition.Out interpolation="easeOut" type="fade" />
-    <Transition.Change durationMs={0.001} interpolation="easeOut" />
-    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
-  </Transition.Sequence>
-);
-
 const CurrencySelectionList = (
   {
     keyboardDismissMode,
@@ -39,30 +29,18 @@ const CurrencySelectionList = (
     listItems,
     loading,
     query,
+    scrollIndicatorInsets,
     showList,
     testID,
   },
   ref
 ) => {
-  const skeletonTransitionRef = useRef();
-  const noResults = get(listItems, '[0].data', []).length === 0;
+  const noResults = !listItems?.[0]?.data?.length;
   const showGhost = !loading && noResults;
   const showSkeleton = noResults && loading;
-  const prevShowSkeleton = usePrevious(showSkeleton);
-
-  useEffect(() => {
-    if (!showSkeleton && prevShowSkeleton && ios) {
-      skeletonTransitionRef.current?.animateNextTransition();
-    }
-  }, [prevShowSkeleton, showSkeleton]);
 
   return (
-    <Transitioning.View
-      flex={1}
-      ref={skeletonTransitionRef}
-      testID={testID}
-      transition={skeletonTransition}
-    >
+    <View flex={1} testID={testID}>
       {showList && !showSkeleton && (
         <Centered flex={1}>
           {showGhost ? (
@@ -75,13 +53,14 @@ const CurrencySelectionList = (
               keyboardDismissMode={keyboardDismissMode}
               query={query}
               ref={ref}
+              scrollIndicatorInsets={scrollIndicatorInsets}
               testID={testID}
             />
           )}
         </Centered>
       )}
       {(showSkeleton || !showList) && <EmptyCurrencySelectionList />}
-    </Transitioning.View>
+    </View>
   );
 };
 
@@ -89,4 +68,5 @@ export default magicMemo(forwardRef(CurrencySelectionList), [
   'listItems',
   'loading',
   'showList',
+  'query',
 ]);

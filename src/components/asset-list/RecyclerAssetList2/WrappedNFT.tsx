@@ -1,18 +1,42 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
 import { useCollectible } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
 export default React.memo(function WrappedNFT({
+  onPress,
   uniqueId,
   placement,
+  externalAddress,
 }: {
+  onPress?: (asset: UniqueAsset) => void;
   uniqueId: string;
   placement: 'left' | 'right';
+  externalAddress?: string;
 }) {
-  const asset = useCollectible({ uniqueId });
+  const assetCollectible = useCollectible(
+    { uniqueId },
+    undefined,
+    externalAddress
+  );
+
+  const asset = useMemo(
+    () => ({
+      ...assetCollectible,
+      ...(IS_TESTING === 'true'
+        ? { image_original_url: null, image_preview_url: null, image_url: null }
+        : {}),
+    }),
+    [assetCollectible]
+  );
+
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
@@ -21,13 +45,13 @@ export default React.memo(function WrappedNFT({
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
-        external: false,
+        external: assetCollectible?.isExternal || false,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,
         type: 'unique_token',
       }),
-    [navigate]
+    [assetCollectible?.isExternal, navigate]
   );
 
   const placementProps: BoxProps =
@@ -40,10 +64,14 @@ export default React.memo(function WrappedNFT({
           alignItems: 'flex-end',
           paddingRight: '19px',
         };
-
   return (
-    <Box flexGrow={1} justifyContent="center" {...placementProps}>
-      <UniqueTokenCard item={asset} onPress={handleItemPress} />
+    <Box
+      flexGrow={1}
+      justifyContent="center"
+      testID={`wrapped-nft-${asset.name}`}
+      {...placementProps}
+    >
+      <UniqueTokenCard item={asset} onPress={onPress || handleItemPress} />
     </Box>
   );
 });

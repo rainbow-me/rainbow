@@ -1,36 +1,111 @@
 import { concat } from 'lodash';
 import {
-  createNewAction,
+  createNewENSAction,
   createNewRap,
-  RapAction,
+  ENSActionParameters,
   RapActionTypes,
-  RegisterENSActionParameters,
+  RapENSAction,
 } from './common';
+import {
+  formatRecordsForTransaction,
+  recordsForTransactionAreValid,
+  shouldUseMulticallTransaction,
+} from '@rainbow-me/handlers/ens';
+
+export const createSetRecordsENSRap = async (
+  ensActionParameters: ENSActionParameters
+) => {
+  let actions: RapENSAction[] = [];
+
+  const ensRegistrationRecords = formatRecordsForTransaction(
+    ensActionParameters.records
+  );
+  const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
+  if (validRecords) {
+    const shouldUseMulticall = shouldUseMulticallTransaction(
+      ensRegistrationRecords
+    );
+    const recordsAction = createNewENSAction(
+      shouldUseMulticall
+        ? RapActionTypes.multicallENS
+        : RapActionTypes.setTextENS,
+      ensActionParameters
+    );
+    actions = concat(actions, recordsAction);
+  }
+
+  // create the overall rap
+  const newRap = createNewRap(actions);
+  return newRap;
+};
 
 export const createRegisterENSRap = async (
-  registerENSActionParameters: RegisterENSActionParameters
+  ensActionParameters: ENSActionParameters
 ) => {
-  let actions: RapAction[] = [];
+  let actions: RapENSAction[] = [];
 
-  const register = createNewAction(
+  const register = createNewENSAction(
     RapActionTypes.registerWithConfigENS,
-    registerENSActionParameters
+    ensActionParameters
   );
   actions = concat(actions, register);
 
-  // ? records rap
-  const multicall = createNewAction(
-    RapActionTypes.multicallENS,
-    registerENSActionParameters
+  const ensRegistrationRecords = formatRecordsForTransaction(
+    ensActionParameters.records
   );
-  actions = concat(actions, multicall);
+  const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
+  if (validRecords) {
+    const shouldUseMulticall = shouldUseMulticallTransaction(
+      ensRegistrationRecords
+    );
+    const recordsAction = createNewENSAction(
+      shouldUseMulticall
+        ? RapActionTypes.multicallENS
+        : RapActionTypes.setTextENS,
+      ensActionParameters
+    );
+    actions = concat(actions, recordsAction);
+  }
 
-  // ? reverse name rap
-  const setName = createNewAction(
-    RapActionTypes.setNameENS,
-    registerENSActionParameters
+  if (ensActionParameters.setReverseRecord) {
+    const setName = createNewENSAction(
+      RapActionTypes.setNameENS,
+      ensActionParameters
+    );
+    actions = concat(actions, setName);
+  }
+
+  // create the overall rap
+  const newRap = createNewRap(actions);
+  return newRap;
+};
+
+export const createRenewENSRap = async (
+  ENSActionParameters: ENSActionParameters
+) => {
+  let actions: RapENSAction[] = [];
+  // // commit rap
+  const commit = createNewENSAction(
+    RapActionTypes.renewENS,
+    ENSActionParameters
   );
-  actions = concat(actions, setName);
+  actions = concat(actions, commit);
+
+  // create the overall rap
+  const newRap = createNewRap(actions);
+  return newRap;
+};
+
+export const createSetNameENSRap = async (
+  ENSActionParameters: ENSActionParameters
+) => {
+  let actions: RapENSAction[] = [];
+  // // commit rap
+  const commit = createNewENSAction(
+    RapActionTypes.setNameENS,
+    ENSActionParameters
+  );
+  actions = concat(actions, commit);
 
   // create the overall rap
   const newRap = createNewRap(actions);
@@ -38,13 +113,13 @@ export const createRegisterENSRap = async (
 };
 
 export const createCommitENSRap = async (
-  registerENSActionParameters: RegisterENSActionParameters
+  ENSActionParameters: ENSActionParameters
 ) => {
-  let actions: RapAction[] = [];
+  let actions: RapENSAction[] = [];
   // // commit rap
-  const commit = createNewAction(
+  const commit = createNewENSAction(
     RapActionTypes.commitENS,
-    registerENSActionParameters
+    ENSActionParameters
   );
   actions = concat(actions, commit);
 

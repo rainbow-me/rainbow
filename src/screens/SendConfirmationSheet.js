@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { capitalize, get, toLower } from 'lodash';
+import { capitalize } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -24,18 +24,26 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
+import {
+  isENSAddressFormat,
+  isValidDomainFormat,
+} from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
   useColorForAsset,
   useContacts,
   useDimensions,
+  useENSProfileImages,
   useUserAccounts,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -172,6 +180,7 @@ export default function SendConfirmationSheet() {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {
     android && Keyboard.dismiss();
@@ -204,7 +213,7 @@ export default function SendConfirmationSheet() {
   const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
-      return toLower(account.address) === toLower(toAddress);
+      return account.address.toLowerCase() === toAddress?.toLowerCase();
     });
     return !!found;
   }, [toAddress, userAccounts]);
@@ -214,7 +223,7 @@ export default function SendConfirmationSheet() {
       let sends = 0;
       let sendsCurrentNetwork = 0;
       transactions.forEach(tx => {
-        if (toLower(tx.to) === toLower(toAddress)) {
+        if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
           sends++;
           if (tx.network === network) {
             sendsCurrentNetwork++;
@@ -231,8 +240,8 @@ export default function SendConfirmationSheet() {
   }, [isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(to)]}`);
-  }, [contacts, to]);
+    return contacts?.[toAddress?.toLowerCase()];
+  }, [contacts, toAddress]);
 
   const [checkboxes, setCheckboxes] = useState([
     {
@@ -275,6 +284,7 @@ export default function SendConfirmationSheet() {
 
   let color = useColorForAsset({
     address: asset.mainnet_address || asset.address,
+    type: asset?.mainnet_address ? AssetTypes.token : asset?.type,
   });
 
   if (isNft) {
@@ -333,7 +343,6 @@ export default function SendConfirmationSheet() {
 
   const avatarValue =
     returnStringFirstEmoji(existingAccount?.label) ||
-    contact?.nickname ||
     addressHashedEmoji(toAddress);
 
   const avatarColor =
@@ -349,7 +358,13 @@ export default function SendConfirmationSheet() {
     realSheetHeight -= 80;
   }
 
-  const accountImage = existingAccount?.image;
+  const { data: images } = useENSProfileImages(to, {
+    enabled: isENSAddressFormat(to),
+  });
+
+  const accountImage = profilesEnabled
+    ? images?.avatarUrl || existingAccount?.image
+    : existingAccount?.image;
 
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
   return (

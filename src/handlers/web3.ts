@@ -1,3 +1,4 @@
+import { Interface } from '@ethersproject/abi';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
@@ -13,6 +14,8 @@ import {
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
+// @ts-expect-error – No TS definitions
+import { IS_TESTING } from 'react-native-dotenv';
 import { RainbowConfig } from '../model/config';
 import {
   AssetType,
@@ -40,6 +43,7 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
+import { fetchContractABI } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
 export const networkProviders: {
@@ -68,7 +72,7 @@ type GasParamsInput = { gasPrice: BigNumberish } & {
  */
 type TransactionDetailsInput = Pick<
   NewTransactionNonNullable,
-  'from' | 'to' | 'data' | 'gasLimit' | 'network'
+  'from' | 'to' | 'data' | 'gasLimit' | 'network' | 'nonce'
 > &
   Pick<NewTransaction, 'amount'> &
   GasParamsInput;
@@ -83,6 +87,7 @@ type TransactionDetailsReturned = {
   network?: Network | string;
   to?: TransactionRequest['to'];
   value?: TransactionRequest['value'];
+  nonce?: TransactionRequest['nonce'];
 } & GasParamsReturned;
 
 /**
@@ -320,7 +325,6 @@ export async function estimateGasWithPadding(
 ): Promise<string | null> {
   try {
     const p = provider || web3Provider;
-
     if (!p) {
       return null;
     }
@@ -454,7 +458,7 @@ export const getTransactionGasParams = (
 export const getTxDetails = async (
   transaction: TransactionDetailsInput
 ): Promise<TransactionDetailsReturned> => {
-  const { to } = transaction;
+  const { nonce, to } = transaction;
   const data = transaction?.data ?? '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x0';
   const gasLimit = transaction.gasLimit
@@ -463,14 +467,17 @@ export const getTxDetails = async (
   const baseTx = {
     data,
     gasLimit,
+    nonce,
     to,
     value,
   };
+
   const gasParams = getTransactionGasParams(transaction);
   const tx = {
     ...baseTx,
     ...gasParams,
   };
+
   return tx;
 };
 
@@ -496,10 +503,10 @@ export const resolveUnstoppableDomain = async (
 
   const res = resolution
     .addr(domain, 'ETH')
-    .then(address => {
+    .then((address: string) => {
       return address;
     })
-    .catch(error => logger.error(error));
+    .catch((error: any) => logger.error(error));
   return res;
 };
 
@@ -551,7 +558,7 @@ export const getTransferNftTransaction = async (
 
   const { from } = transaction;
   const contractAddress = transaction.asset.asset_contract?.address;
-  const data = getDataForNftTransfer(from, recipient, transaction.asset);
+  const data = await getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
     data,
@@ -667,11 +674,11 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param asset The asset to transfer.
  * @return The data string.
  */
-export const getDataForNftTransfer = (
+export const getDataForNftTransfer = async (
   from: string,
   to: string,
   asset: ParsedAddressAsset
-): string => {
+): Promise<string> => {
   const nftVersion = asset.asset_contract?.nft_version;
   const schema_name = asset.asset_contract?.schema_name;
   if (nftVersion === '3.0') {
@@ -694,9 +701,27 @@ export const getDataForNftTransfer = (
       convertStringToHex('0'),
     ]);
     return data;
+  } else if (IS_TESTING === 'true') {
+    const transferMethodHash = smartContractMethods.nft_transfer.hash;
+    const data = ethereumUtils.getDataString(transferMethodHash, [
+      ethereumUtils.removeHexPrefix(to),
+      convertStringToHex(asset.id),
+    ]);
+    return data;
   }
-  const transferMethodHash = smartContractMethods.nft_transfer.hash;
+
+  const address = asset.asset_contract?.address!;
+  const abi = await fetchContractABI(address);
+  const iface = new Interface(abi);
+
+  const isTransferFrom =
+    iface.functions?.[smartContractMethods.nft_transfer_from.method];
+  const transferMethodHash = isTransferFrom
+    ? smartContractMethods.nft_transfer_from.hash
+    : smartContractMethods.nft_transfer.hash;
+
   const data = ethereumUtils.getDataString(transferMethodHash, [
+    ...(isTransferFrom ? [ethereumUtils.removeHexPrefix(from)] : []),
     ethereumUtils.removeHexPrefix(to),
     convertStringToHex(asset.id),
   ]);
@@ -742,7 +767,7 @@ export const buildTransaction = async (
   };
   if (asset.type === AssetType.nft) {
     const contractAddress = asset.asset_contract?.address;
-    const data = getDataForNftTransfer(address, _recipient, asset);
+    const data = await getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,
       from: address,

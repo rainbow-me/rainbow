@@ -1,9 +1,9 @@
 import lang from 'i18n-js';
-import { compact, get, startCase, toLower } from 'lodash';
+import { compact, startCase } from 'lodash';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FlexItem, Row, RowWithMargins } from '../layout';
@@ -32,6 +32,14 @@ const containerStyles = {
   paddingLeft: 19,
 };
 
+export const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 7;
+
+const contentStyles = android
+  ? {
+      height: CoinIconSize + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
+    }
+  : {};
+
 const BottomRow = ({ description, native, status, type }) => {
   const { colors } = useTheme();
   const isFailed = status === TransactionStatusTypes.failed;
@@ -54,7 +62,7 @@ const BottomRow = ({ description, native, status, type }) => {
   if (isIncomingSwap) balanceTextColor = colors.swapPurple;
   if (isOutgoingSwap) balanceTextColor = colors.dark;
 
-  const nativeDisplay = get(native, 'display');
+  const nativeDisplay = native?.display;
   const balanceText = nativeDisplay
     ? compact([isFailed || isSent ? '-' : null, nativeDisplay]).join(' ')
     : '';
@@ -78,7 +86,7 @@ const TopRow = ({ balance, pending, status, title }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
     <TransactionStatusBadge pending={pending} status={status} title={title} />
     <Row align="center" flex={1} justify="end">
-      <BottomRowText align="right">{get(balance, 'display', '')}</BottomRowText>
+      <BottomRowText align="right">{balance?.display ?? ''}</BottomRowText>
     </Row>
   </RowWithMargins>
 );
@@ -97,7 +105,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       status === TransactionStatusTypes.sent;
     const showContactInfo = hasAddableContact(status, type);
 
-    const isOutgoing = toLower(from) === toLower(accountAddress);
+    const isOutgoing = from?.toLowerCase() === accountAddress.toLowerCase();
     const canBeResubmitted = isOutgoing && !minedAt;
     const canBeCancelled =
       canBeResubmitted && status !== TransactionStatusTypes.cancelling;
@@ -208,13 +216,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         address={mainnetAddress || item.address}
         bottomRowRender={BottomRow}
         containerStyles={containerStyles}
-        {...(android
-          ? {
-              contentStyles: {
-                height: CoinIconSize + 14,
-              },
-            }
-          : {})}
+        contentStyles={contentStyles}
         topRowRender={TopRow}
         type={item.network}
       />

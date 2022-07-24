@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { get, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -16,7 +15,7 @@ import { Text } from '../components/text';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import showWalletErrorAlert from '../helpers/support';
-import WalletLoadingStates from '../helpers/walletLoadingStates';
+import { WalletLoadingStates } from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { cleanUpWalletKeys, createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
@@ -27,6 +26,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -40,6 +40,7 @@ import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,
   deviceUtils,
+  doesWalletsContainAddress,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
@@ -122,6 +123,7 @@ export default function ChangeWalletSheet() {
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(
@@ -189,7 +191,7 @@ export default function ChangeWalletSheet() {
         [walletId]: {
           ...wallets[walletId],
           addresses: wallets[walletId].addresses.map(account =>
-            toLower(account.address) === toLower(address)
+            account.address.toLowerCase() === address.toLowerCase()
               ? { ...account, visible: false }
               : account
           ),
@@ -356,18 +358,13 @@ export default function ChangeWalletSheet() {
                     // If we're deleting the selected wallet
                     // we need to switch to another one
                     if (address === currentAddress) {
-                      for (let i = 0; i < Object.keys(wallets).length; i++) {
-                        const key = Object.keys(wallets)[i];
-                        const someWallet = wallets[key];
-                        const found = someWallet.addresses.find(
-                          account =>
-                            account.visible && account.address !== address
-                        );
-
-                        if (found) {
-                          await onChangeAccount(key, found.address, true);
-                          break;
-                        }
+                      const { wallet: foundWallet, key } =
+                        doesWalletsContainAddress({
+                          address: address,
+                          wallets,
+                        }) || {};
+                      if (foundWallet) {
+                        await onChangeAccount(key, foundWallet.address, true);
                       }
                     }
                   }
@@ -408,8 +405,8 @@ export default function ChangeWalletSheet() {
             onCloseModal: async args => {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
-                const name = get(args, 'name', '');
-                const color = get(args, 'color', null);
+                const name = args?.name ?? '';
+                const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id
@@ -472,7 +469,7 @@ export default function ChangeWalletSheet() {
                     // If doesn't exist, we need to create a new wallet
                   } else {
                     await createWallet(null, color, name);
-                    await dispatch(walletsLoadState());
+                    await dispatch(walletsLoadState(profilesEnabled));
                     await initializeWallet();
                   }
                 } catch (e) {
@@ -527,6 +524,7 @@ export default function ChangeWalletSheet() {
     selectedWallet.primary,
     setIsWalletLoading,
     wallets,
+    profilesEnabled,
   ]);
 
   const onPressImportSeedPhrase = useCallback(() => {

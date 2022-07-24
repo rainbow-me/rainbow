@@ -2,7 +2,6 @@ import './languages';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
-import { get } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
@@ -12,7 +11,6 @@ import {
   InteractionManager,
   Linking,
   LogBox,
-  StatusBar,
   View,
 } from 'react-native';
 // eslint-disable-next-line import/default
@@ -41,12 +39,14 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
-import { MainThemeProvider } from './context/ThemeContext';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
-import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
+import {
+  runFeatureUnlockChecks,
+  runWalletBackupStatusChecks,
+} from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
@@ -56,6 +56,7 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
@@ -66,6 +67,7 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
+import { MainThemeProvider } from './theme/ThemeContext';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import {
@@ -81,8 +83,6 @@ import { Portal } from 'react-native-cool-modals/Portal';
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
-
-StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 // We need to disable React Navigation instrumentation for E2E tests
 // because detox doesn't like setTimeout calls that are used inside
@@ -170,8 +170,7 @@ class App extends Component {
     this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
       async remoteMessage => {
         setTimeout(() => {
-          const topic = get(remoteMessage, 'data.topic');
-          this.onPushNotificationOpened(topic);
+          this.onPushNotificationOpened(remoteMessage?.data?.topic);
         }, WALLETCONNECT_SYNC_DELAY);
       }
     );
@@ -204,6 +203,11 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runWalletBackupStatusChecks();
+      if (ios) {
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => runFeatureUnlockChecks(), 2000);
+        });
+      }
     }
   }
 
@@ -218,11 +222,9 @@ class App extends Component {
 
   identifyFlow = async () => {
     const address = await loadAddress();
-    if (address) {
-      this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-    } else {
-      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
-    }
+    const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
+    this.setState({ initialRoute });
+    PerformanceContextMap.set('initialRoute', initialRoute);
   };
 
   async handleTokenListUpdate() {
@@ -230,9 +232,8 @@ class App extends Component {
   }
 
   onRemoteNotification = notification => {
-    const topic = get(notification, 'data.topic');
     setTimeout(() => {
-      this.onPushNotificationOpened(topic);
+      this.onPushNotificationOpened(notification?.data?.topic);
     }, WALLETCONNECT_SYNC_DELAY);
   };
 

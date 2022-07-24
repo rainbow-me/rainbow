@@ -13,23 +13,11 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  Value,
   withDecay,
 } from 'react-native-reanimated';
-import { TopMoverCoinRow } from '../coin-row';
 import { withSpeed } from '@rainbow-me/utils';
 
 const DECCELERATION = 0.998;
-
-export const useReanimatedValue = initialValue => {
-  const value = useRef();
-
-  if (!value.current) {
-    value.current = new Value(initialValue);
-  }
-
-  return value.current;
-};
 
 const SAFETY_MARGIN = 100;
 // beginning of the component should be within -100 and inf
@@ -240,33 +228,20 @@ const SwipeableList = ({ components, speed, testID }) => {
   );
 };
 
-const MarqueeList = ({ items = [], speed, testID }) => {
-  const renderItemCallback = useCallback(
-    ({ item, index, onPressCancel, onPressStart, testID }) => (
-      <TopMoverCoinRow
-        {...item}
-        key={`topmovercoinrow-${item?.address}`}
-        onPressCancel={onPressCancel}
-        onPressStart={onPressStart}
-        testID={`${testID}-coin-row-${index}`}
-      />
-    ),
-    []
-  );
-
+const MarqueeList = ({ items = [], renderItem, speed, testID }) => {
   return (
     <>
       <SwipeableList
         components={items.map((item, index) => ({
           view: ios
-            ? ({ testID }) => renderItemCallback({ index, item, testID })
-            : ({ onPressCancel, onPressStart, testID }) =>
-                renderItemCallback({
+            ? () => renderItem({ index, item, testID: item.testID })
+            : ({ onPressCancel, onPressStart }) =>
+                renderItem({
                   index,
                   item,
                   onPressCancel,
                   onPressStart,
-                  testID,
+                  testID: item.testID,
                 }),
         }))}
         speed={speed}

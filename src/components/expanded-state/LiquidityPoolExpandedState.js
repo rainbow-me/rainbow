@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
@@ -22,7 +21,6 @@ import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { useTheme } from '@rainbow-me/context';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import chartTypes from '@rainbow-me/helpers/chartTypes';
@@ -39,6 +37,7 @@ import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const Spacer = styled.View({
@@ -53,7 +52,7 @@ export const initialLiquidityPoolExpandedStateSheetHeight = android
   : heightWithoutChart;
 
 const formatTokenAddress = address => {
-  if (!address || toLower(address) === ETH_ADDRESS) {
+  if (!address || address.toLowerCase() === ETH_ADDRESS) {
     return 'ETH';
   }
   return toChecksumAddress(address);
@@ -99,7 +98,11 @@ const LiquidityPoolExpandedState = () => {
   }, [tokens]);
 
   useEffect(() => {
-    dispatch(emitAssetRequest(tokenAddresses.map(toLower)));
+    dispatch(
+      emitAssetRequest(
+        tokenAddresses.map(tokenAddress => tokenAddress.toLowerCase())
+      )
+    );
   }, [dispatch, tokenAddresses]);
 
   const { nativeCurrency } = useAccountSettings();
@@ -118,12 +121,12 @@ const LiquidityPoolExpandedState = () => {
   const { annualized_fees: fee, volume, nativeLiquidity } = details || {};
 
   const token0 = useAsset({
-    address: toLower(tokenAddresses?.[0]),
+    address: tokenAddresses?.[0]?.toLowerCase(),
     type: 'token',
   });
 
   const token1 = useAsset({
-    address: toLower(tokenAddresses?.[1]),
+    address: tokenAddresses?.[1]?.toLowerCase(),
     type: 'token',
   });
 

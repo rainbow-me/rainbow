@@ -3,11 +3,8 @@
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
 import { Contract } from '@ethersproject/contracts';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
 import { convertUtf8ToHex } from '@walletconnect/utils';
-import { ethers } from 'ethers';
 import * as Helpers from './helpers';
 import kittiesABI from '@rainbow-me/references/cryptokitties-abi.json';
 import erc20ABI from '@rainbow-me/references/erc20-abi.json';
@@ -17,26 +14,13 @@ let uri = null;
 let account = null;
 
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
-const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
+const CRYPTOKITTIES_ADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
 const ETH_ADDRESS = 'eth';
 const BAT_TOKEN_ADDRESS = '0x0d8775f648430679a709e98d2b0cb6250d2887ef';
-const CRYPTOKITTIES_ADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
-
-const getProvider = () => {
-  if (!getProvider._instance) {
-    getProvider._instance = new JsonRpcProvider(
-      device.getPlatform() === 'ios'
-        ? process.env.HARDHAT_URL_IOS
-        : process.env.HARDHAT_URL_ANDROID,
-      'any'
-    );
-  }
-  return getProvider._instance;
-};
 
 const isNFTOwner = async address => {
-  const provider = getProvider();
+  const provider = Helpers.getProvider();
   const kittiesContract = new Contract(
     CRYPTOKITTIES_ADDRESS,
     kittiesABI,
@@ -47,7 +31,7 @@ const isNFTOwner = async address => {
 };
 
 const getOnchainBalance = async (address, tokenContractAddress) => {
-  const provider = getProvider();
+  const provider = Helpers.getProvider();
   if (tokenContractAddress === ETH_ADDRESS) {
     const balance = await provider.getBalance(RAINBOW_WALLET_DOT_ETH);
     return balance;
@@ -60,21 +44,6 @@ const getOnchainBalance = async (address, tokenContractAddress) => {
     const balance = await tokenContract.balanceOf(address);
     return balance;
   }
-};
-
-const sendETHtoTestWallet = async () => {
-  const provider = getProvider();
-  // Hardhat account 0 that has 10000 ETH
-  const wallet = new Wallet(
-    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-    provider
-  );
-  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
-  await wallet.sendTransaction({
-    to: TESTING_WALLET,
-    value: ethers.utils.parseEther('20'),
-  });
-  return true;
 };
 
 beforeAll(async () => {
@@ -125,14 +94,18 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.enableSynchronization();
   });
 
+  it('Should send ETH to test wallet"', async () => {
+    await Helpers.sendETHtoTestWallet();
+  });
+
   it('Should navigate to the Profile screen after swiping right', async () => {
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('Should navigate to Settings Modal after tapping Settings Button', async () => {
+  it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
     await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-modal');
+    await Helpers.checkIfVisible('settings-sheet');
   });
 
   it('Should toggle Dark Mode on and off', async () => {
@@ -142,7 +115,7 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should navigate to Developer Settings after tapping Developer Section', async () => {
     await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-modal');
+    await Helpers.checkIfVisible('developer-settings-sheet');
   });
 
   if (device.getPlatform() === 'ios') {
@@ -150,13 +123,11 @@ describe('Hardhat Transaction Flow', () => {
       await Helpers.waitAndTap('alert-section');
       await Helpers.checkIfElementByTextIsVisible('APPLIED');
       await Helpers.tapAlertWithButton('OK');
-      await Helpers.checkIfVisible('developer-settings-modal');
+      await Helpers.checkIfVisible('developer-settings-sheet');
     });
   }
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await sendETHtoTestWallet();
-
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -206,7 +177,6 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-
   it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-Ethereum');
@@ -229,13 +199,28 @@ describe('Hardhat Transaction Flow', () => {
     );
     await Helpers.waitAndTap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
+    await Helpers.waitAndTap('gas-speed-custom');
+    await Helpers.waitAndTap('speed-pill-urgent');
+    await Helpers.waitAndTap('gas-speed-done-button');
     await Helpers.waitAndTap('send-sheet-confirm-action-button', 20000);
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
     const isOwnerRecipient = await isNFTOwner(RAINBOW_WALLET_DOT_ETH);
-    if (!isOwnerRecipient)
+    if (!isOwnerRecipient) {
       throw new Error('Recepient did not recieve Cryptokitty');
+    }
+  });
+
+  it('Should show completed send NFT (Cryptokitties)', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
+    } catch (e) {
+      await Helpers.checkIfVisible(
+        'Sending-Arun Cattybinky-1.00 CryptoKitties'
+      );
+    }
+
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it('Should send ERC20 (BAT)', async () => {
@@ -253,14 +238,22 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
     const postSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
       BAT_TOKEN_ADDRESS
     );
-    if (!postSendBalance.gt(preSendBalance))
+    if (!postSendBalance.gt(preSendBalance)) {
       throw new Error('Recepient did not recieve BAT');
-    await Helpers.delay(2000);
+    }
+  });
+
+  it('Should show completed send ERC20 (BAT)', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Basic Attention Token-1.02 BAT');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Basic Attention Token-1.02 BAT');
+    }
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it('Should send ETH', async () => {
@@ -282,8 +275,18 @@ describe('Hardhat Transaction Flow', () => {
       RAINBOW_WALLET_DOT_ETH,
       ETH_ADDRESS
     );
-    if (!postSendBalance.gt(preSendBalance))
+    if (!postSendBalance.gt(preSendBalance)) {
       throw new Error('Recepient did not recieve ETH');
+    }
+  });
+
+  it('Should show completed send ETH', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Ethereum-0.003 ETH');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Ethereum-0.003 ETH');
+    }
+    await Helpers.checkIfVisible('profile-screen');
   });
 
   it('Should receive the WC connect request and approve it', async () => {
@@ -296,7 +299,6 @@ describe('Hardhat Transaction Flow', () => {
         url: 'https://walletconnect.org',
       },
     });
-    await Helpers.delay(3000);
 
     await connector.createSession();
     uri = connector.uri;
@@ -319,16 +321,7 @@ describe('Hardhat Transaction Flow', () => {
     const encodedUri = encodeURIComponent(uri);
     const fullUrl = `${baseUrl}/wc?uri=${encodedUri}`;
 
-    await Helpers.disableSynchronization();
-    await device.sendToHome();
-    await Helpers.enableSynchronization();
-
-    await Helpers.delay(2000);
-
-    await device.launchApp({
-      newInstance: false,
-      url: fullUrl,
-    });
+    await Helpers.openDeeplinkFromBackground(fullUrl);
 
     await Helpers.checkIfVisible('wc-approval-sheet', 30000);
     await Helpers.waitAndTap('wc-connect-action-button');
@@ -342,7 +335,7 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signPersonalMessage(['My msg', account]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    await Helpers.delay(1000);
+
     if (!result) throw new Error('WC Connection failed');
     const signature = await result;
     if (
@@ -360,7 +353,6 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signMessage(msgParams);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    await Helpers.delay(1000);
 
     if (!result) throw new Error('WC Connection failed');
     const signature = await result;
@@ -429,7 +421,7 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signTypedData([account, JSON.stringify(msg)]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    await Helpers.delay(1000);
+
     const signature = await result;
     if (
       signature !==
@@ -452,76 +444,20 @@ describe('Hardhat Transaction Flow', () => {
       data: '0x',
     });
     await Helpers.checkIfVisible('wc-request-sheet');
-    await Helpers.delay(3000);
+
     await Helpers.waitAndTap('wc-confirm-action-button');
-    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('profile-screen');
     const hash = await result;
     if (!hash) {
       throw new Error('WC approving tx failed');
     }
-    await Helpers.delay(3000);
+
     const postSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
       ETH_ADDRESS
     );
     if (!postSendBalance.gt(preSendBalance))
       throw new Error('Recepient did not recieve ETH');
-  });
-
-  /*
-  it('Should show completed swap ERC20 (BAT) -> ERC20 (ZRX)', async () => {
-    try {
-      await Helpers.checkIfVisible('Swapped-Basic Attention Token');
-    } catch (e) {
-      await Helpers.checkIfVisible('Swapping-Basic Attention Token');
-    }
-  });
-
-  it('Should show completed swap ERC20 (USDC) -> ETH', async () => {
-    try {
-      await Helpers.checkIfVisible('Swapped-USD Coin');
-    } catch (e) {
-      await Helpers.checkIfVisible('Swapping-USD Coin');
-    }
-    try {
-      await Helpers.checkIfVisible('Sent-Compound Sai');
-    } catch (e) {
-      await Helpers.checkIfVisible('Sending-Compound Sai');
-    }
-  });*/
-  /*
-  it('Should show completed send ERC20 (cSAI)', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Compound SAI-1.69 cSAI');
-    } catch (e) {
-      await Helpers.checkIfVisible('Sending-Compound SAI-1.69 cSAI');
-    }
-  });
-*/
-  it('Should show completed send NFT (Cryptokitties)', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
-    } catch (e) {
-      await Helpers.checkIfVisible(
-        'Sending-Arun Cattybinky-1.00 CryptoKitties'
-      );
-    }
-  });
-
-  it('Should show completed send ERC20 (BAT)', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Basic Attention Token-1.02 BAT');
-    } catch (e) {
-      await Helpers.checkIfVisible('Sending-Basic Attention Token-1.02 BAT');
-    }
-  });
-
-  it('Should show completed send ETH', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Ethereum-0.003 ETH');
-    } catch (e) {
-      await Helpers.checkIfVisible('Sending-Ethereum-0.003 ETH');
-    }
   });
 
   it('Should show completed send ETH (WC)', async () => {
@@ -538,6 +474,5 @@ describe('Hardhat Transaction Flow', () => {
     connector = null;
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
-    await Helpers.delay(2000);
   });
 });

@@ -5,11 +5,9 @@ import {
   saveAccountEmptyState,
 } from '../handlers/localstorage/accountLocal';
 import useAccountSettings from './useAccountSettings';
-import useWalletSectionsData from './useWalletSectionsData';
 
-export default function useAccountEmptyState() {
+export default function useAccountEmptyState(isSectionsEmpty) {
   const { network, accountAddress } = useAccountSettings();
-  const { isEmpty: isSectionsEmpty } = useWalletSectionsData();
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
   const isAccountEmptyInStorage = useMemo(
     () => getAccountEmptyState(accountAddress, network),

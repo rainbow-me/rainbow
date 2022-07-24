@@ -1,10 +1,9 @@
-import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { useRemoveNextToLast } from '../../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../../animations';
-import { UnderlyingAssetCoinRow } from '../../coin-row';
+import UnderlyingAssetCoinRow from '../../coin-row/UnderlyingAssetCoinRow';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -39,7 +38,7 @@ export default function UnderlyingAsset({
     const asset =
       ethereumUtils.getAccountAsset(address) ||
       ethereumUtils.formatGenericAsset(
-        genericAssets[toLower(address)],
+        genericAssets[address?.toLowerCase()],
         nativeCurrency
       );
 

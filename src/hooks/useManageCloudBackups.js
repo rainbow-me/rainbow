@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
@@ -128,7 +129,7 @@ export default function useManageCloudBackups() {
                   // Delete all backups (debugging)
                   await deleteAllBackups();
 
-                  Alert.alert('Backups Deleted Succesfully');
+                  Alert.alert(lang.t('back_up.backup_deleted_successfully'));
                 }
               }
             );

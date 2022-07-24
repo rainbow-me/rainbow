@@ -1,9 +1,8 @@
 import analytics from '@segment/analytics-react-native';
-import { get } from 'lodash';
 import { StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
-import currentColors from '../context/currentColors';
+import currentColors from '../theme/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
@@ -62,11 +61,11 @@ export function onNavigationStateChange(currentState) {
       const wasCustomSlackOpen =
         oldBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
         oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-        oldBottomSheetStackRoute === Routes.SETTINGS_MODAL;
+        oldBottomSheetStackRoute === Routes.SETTINGS_SHEET;
       const isCustomSlackOpen =
         newBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
         newBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-        newBottomSheetStackRoute === Routes.SETTINGS_MODAL;
+        newBottomSheetStackRoute === Routes.SETTINGS_SHEET;
 
       if (wasCustomSlackOpen !== isCustomSlackOpen) {
         StatusBar.setBarStyle(
@@ -121,6 +120,7 @@ export function onNavigationStateChange(currentState) {
       routeName === Routes.SWAP_DETAILS_SHEET ||
       routeName === Routes.QR_SCANNER_SCREEN ||
       routeName === Routes.CUSTOM_GAS_SHEET ||
+      routeName === Routes.ENS_INTRO_SHEET ||
       routeName === Routes.ENS_SEARCH_SHEET ||
       routeName === Routes.ENS_ASSIGN_RECORDS_SHEET ||
       (routeName === Routes.MODAL_SCREEN &&
@@ -138,10 +138,9 @@ export function onNavigationStateChange(currentState) {
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
       const { asset, type } = Navigation.getActiveRoute().params;
       paramsToTrack = {
-        assetContractAddress:
-          asset.address || get(asset, 'asset_contract.address'),
+        assetContractAddress: asset.address || asset?.asset_contract?.address,
         assetName: asset.name,
-        assetSymbol: asset.symbol || get(asset, 'asset_contract.symbol'),
+        assetSymbol: asset.symbol || asset?.asset_contract?.symbol,
         assetType: type,
       };
     }

@@ -7,10 +7,11 @@ import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import { useTheme } from '../context/ThemeContext';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
+import { useTheme } from '../theme/ThemeContext';
+import { NOTIFICATIONS, useExperimentalFlag } from '@rainbow-me/config';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -39,6 +40,7 @@ export default function ProfileScreen({ navigation }) {
     activityListInitialized,
     isFocused
   );
+
   const {
     isLoadingTransactions: isLoading,
     sections,
@@ -61,9 +63,14 @@ export default function ProfileScreen({ navigation }) {
     navigate,
   ]);
 
-  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_MODAL), [
-    navigate,
-  ]);
+  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
+  const onPressSettings = useCallback(
+    () =>
+      notificationsEnabled
+        ? navigate(Routes.SETTINGS_SHEET_V2)
+        : navigate(Routes.SETTINGS_SHEET),
+    [navigate, notificationsEnabled]
+  );
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

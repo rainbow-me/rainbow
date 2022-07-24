@@ -1,9 +1,9 @@
 import React from 'react';
 import { RefreshControl, RefreshControlProps } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useTheme } from '@rainbow-me/context';
 import { useRefreshAccountData } from '@rainbow-me/hooks';
 import { AppState } from '@rainbow-me/redux/store';
+import { useTheme } from '@rainbow-me/theme';
 
 export default function RefreshControlWrapped(
   props: Partial<RefreshControlProps>
@@ -13,11 +13,12 @@ export default function RefreshControlWrapped(
   );
   const { refresh, isRefreshing } = useRefreshAccountData();
   const { colors } = useTheme();
+  const onRefresh = isLoadingAssets ? () => {} : refresh;
 
-  return isLoadingAssets ? null : (
+  return (
     <RefreshControl
       {...props}
-      onRefresh={refresh}
+      onRefresh={onRefresh}
       progressViewOffset={android ? 30 : 0}
       refreshing={isRefreshing}
       tintColor={colors.alpha(colors.blueGreyDark, 0.4)}

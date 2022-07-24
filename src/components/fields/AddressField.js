@@ -48,13 +48,22 @@ const formatValue = value =>
     : value;
 
 const AddressField = (
-  { address, autoFocus, name, onChange, onFocus, testID, ...props },
+  {
+    address,
+    autoFocus,
+    editable,
+    name,
+    onChangeText,
+    onFocus,
+    testID,
+    ...props
+  },
   ref
 ) => {
   const { isTinyPhone } = useDimensions();
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(address ?? '');
   const [isValid, setIsValid] = useState(false);
 
   const expandAbbreviatedClipboard = useCallback(() => {
@@ -68,21 +77,23 @@ const AddressField = (
     return setIsValid(newIsValid);
   }, []);
 
-  const handleChange = useCallback(
-    ({ nativeEvent: { text } }) => {
-      onChange(text);
+  const handleChangeText = useCallback(
+    text => {
       validateAddress(text);
       expandAbbreviatedClipboard();
+      setInputValue(text);
+      onChangeText(text);
     },
-    [expandAbbreviatedClipboard, onChange, validateAddress]
+    [validateAddress, setInputValue, expandAbbreviatedClipboard, onChangeText]
   );
 
   useEffect(() => {
-    if (address !== inputValue || name !== inputValue) {
-      setInputValue(name || address);
+    if (name !== inputValue || name !== address) {
+      setInputValue(name);
       validateAddress(address);
     }
-  }, [address, inputValue, name, validateAddress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, editable, name, validateAddress]);
 
   return (
     <Row flex={1}>
@@ -90,9 +101,9 @@ const AddressField = (
         {...props}
         autoFocus={autoFocus}
         color={isValid ? colors.appleBlue : colors.dark}
+        editable={editable}
         onBlur={expandAbbreviatedClipboard}
-        onChange={handleChange}
-        onChangeText={setInputValue}
+        onChangeText={handleChangeText}
         onFocus={onFocus}
         ref={ref}
         testID={testID}

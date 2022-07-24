@@ -1,7 +1,9 @@
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../../theme/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
 import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
@@ -92,6 +94,8 @@ const WalletSelectionView = () => {
   const { colors, isDarkMode } = useTheme();
   const { walletNames, wallets } = useWallets();
   const { manageCloudBackups } = useManageCloudBackups();
+  const isInsideBottomSheet = !!useContext(BottomSheetContext);
+
   const onPress = useCallback(
     (walletId, name) => {
       const wallet = wallets[walletId];
@@ -115,8 +119,12 @@ const WalletSelectionView = () => {
 
   let cloudBackedUpWallets = 0;
 
+  const ScrollComponent = isInsideBottomSheet
+    ? BottomSheetScrollView
+    : ScrollView;
+
   return (
-    <ScrollView>
+    <ScrollComponent>
       {Object.keys(wallets)
         .filter(key => wallets[key].type !== WalletTypes.readOnly)
         .map(key => {
@@ -231,7 +239,7 @@ const WalletSelectionView = () => {
           </ButtonPressAnimation>
         </Footer>
       )}
-    </ScrollView>
+    </ScrollComponent>
   );
 };
 

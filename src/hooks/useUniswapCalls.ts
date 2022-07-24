@@ -1,5 +1,5 @@
 import { ChainId, Pair, Token } from '@uniswap/sdk';
-import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import { useMemo } from 'react';
 import { getTokenForCurrency } from '../handlers/uniswap';
 import useAccountSettings from './useAccountSettings';
@@ -38,31 +38,30 @@ export default function useUniswapCalls() {
       // token B against all bases
       ...bases.map((base): [Token, Token] => [outputToken, base]),
       // each base against all bases
-      ...flatMap(bases, (base): [Token, Token][] =>
+      ...bases.flatMap((base): [Token, Token][] =>
         bases.map(otherBase => [base, otherBase])
       ),
     ];
 
-    const validCombos = filter(
-      combos,
+    const validCombos = combos.filter(
       ([inputToken, outputToken]) =>
         inputToken && outputToken && !inputToken.equals(outputToken)
     );
 
     const uniqCombos = uniqBy(validCombos, ([inputToken, outputToken]) =>
-      toLower(Pair.getAddress(inputToken, outputToken))
+      Pair.getAddress(inputToken, outputToken)?.toLowerCase()
     );
     return uniqCombos;
   }, [bases, inputToken, outputToken]);
 
   const pairAddresses = useMemo(() => {
-    return map(allPairCombinations, ([inputToken, outputToken]) =>
-      toLower(Pair.getAddress(inputToken, outputToken))
+    return allPairCombinations.map(([inputToken, outputToken]) =>
+      Pair.getAddress(inputToken, outputToken)?.toLowerCase()
     );
   }, [allPairCombinations]);
 
   const calls = useMemo(() => {
-    return map(pairAddresses, address => ({
+    return pairAddresses.map(address => ({
       address,
       callData: PAIR_GET_RESERVES_CALL_DATA,
     }));

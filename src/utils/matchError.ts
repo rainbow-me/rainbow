@@ -3,9 +3,10 @@ export default function mirrorKeys<
   MirroredKeys = { [K in Key]: K }
 >(keys: Key[]): MirroredKeys {
   return keys.reduce((acc, current) => {
+    // @ts-expect-error
     acc[current] = current;
     return acc;
-  }, {});
+  }, {} as MirroredKeys);
 }
 
 export const errorsCode = mirrorKeys([
@@ -43,10 +44,11 @@ export const errorsCode = mirrorKeys([
   'CLOUD_BACKUP_WALLET_BACKUP_STATUS_UPDATE_FAILED',
 ]);
 
-export function matchError(error: string): typeof errorsCode {
+type codes = keyof typeof errorsCode;
+export function matchError(error: string) {
   // const { message: msgKey } = error;
   return Object.keys(errorsCode).reduce((acc, item) => {
-    acc[item] = error === item;
+    acc[item as codes] = error === item;
     return acc;
-  }, {});
+  }, {} as Record<codes, boolean>);
 }

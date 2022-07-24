@@ -1,19 +1,28 @@
-import { toLower } from 'lodash';
+import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
-import useUpdateEmoji from './useUpdateEmoji';
+import useENSProfile from './useENSProfile';
+import { prefetchENSProfileImages } from './useENSProfileImages';
+import useENSRegistration from './useENSRegistration';
+import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
+import {
+  enableActionsOnReadOnlyWallet,
+  PROFILES,
+  useExperimentalFlag,
+} from '@rainbow-me/config';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 export default () => {
-  const { wallets, selectedWallet } = useWallets();
+  const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const {
@@ -23,6 +32,10 @@ export default () => {
     accountImage,
     accountENS,
   } = useAccountProfile();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
+  const profileEnabled = Boolean(accountENS);
+  const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });
+  const { openPicker } = useImagePicker();
 
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets = {
@@ -32,7 +45,7 @@ export default () => {
         addresses: wallets[
           selectedWallet.id
         ].addresses.map((account: RainbowAccount) =>
-          toLower(account.address) === toLower(accountAddress)
+          account.address.toLowerCase() === accountAddress?.toLowerCase()
             ? { ...account, image: null }
             : account
         ),
@@ -46,6 +59,9 @@ export default () => {
   const processPhoto = useCallback(
     (image: any) => {
       const stringIndex = image?.path.indexOf('/tmp');
+      const imagePath = ios
+        ? `~${image?.path.slice(stringIndex)}`
+        : image?.path;
       const newWallets = {
         ...wallets,
         [selectedWallet.id]: {
@@ -53,8 +69,8 @@ export default () => {
           addresses: wallets[
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
-            toLower(account.address) === toLower(accountAddress)
-              ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
+            account.address.toLowerCase() === accountAddress?.toLowerCase()
+              ? { ...account, image: imagePath }
               : account
           ),
         },
@@ -73,12 +89,18 @@ export default () => {
     });
   }, [accountColor, accountName, navigate]);
 
-  const onAvatarChooseImage = useCallback(() => {
-    ImagePicker.openPicker({
+  const onAvatarChooseImage = useCallback(async () => {
+    const image = await openPicker({
       cropperCircleOverlay: true,
       cropping: true,
-    }).then(processPhoto);
-  }, [processPhoto]);
+    });
+    if (!image) return;
+    processPhoto(image);
+  }, [openPicker, processPhoto]);
+
+  const onAvatarCreateProfile = useCallback(() => {
+    navigate(Routes.REGISTER_ENS_NAVIGATOR);
+  }, [navigate]);
 
   const onAvatarWebProfile = useCallback(() => {
     const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
@@ -87,48 +109,96 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
-  const { setNextEmoji } = useUpdateEmoji();
+  const { startRegistration } = useENSRegistration();
 
   const onAvatarPress = useCallback(() => {
-    if (android) {
-      setNextEmoji();
-      return;
+    if (profileEnabled && !ensProfile?.isSuccess) return;
+
+    const isENSProfile =
+      profilesEnabled && profileEnabled && ensProfile?.isOwner;
+
+    if (isENSProfile) {
+      // Prefetch profile images
+      prefetchENSProfileImages({ name: accountENS });
     }
-    const avatarActionSheetOptions = [
-      'Choose from Library',
-      ...(!accountImage ? ['Pick an Emoji'] : []),
-      ...(accountImage ? ['Remove Photo'] : []),
-      ...(ios ? ['Cancel'] : []),
-    ];
+
+    const avatarActionSheetOptions = (isENSProfile
+      ? [
+          lang.t('profiles.profile_avatar.view_profile'),
+          (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+            lang.t('profiles.profile_avatar.edit_profile'),
+        ]
+      : [
+          lang.t('profiles.profile_avatar.choose_from_library'),
+          !accountImage
+            ? lang.t('profiles.profile_avatar.pick_emoji')
+            : lang.t('profiles.profile_avatar.remove_photo'),
+          profilesEnabled &&
+            (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+            lang.t('profiles.profile_avatar.create_profile'),
+        ]
+    )
+      .filter(option => Boolean(option))
+      .concat(ios ? ['Cancel'] : []);
+
+    const callback = async (buttonIndex: Number) => {
+      if (isENSProfile) {
+        if (buttonIndex === 0) {
+          analytics.track('Viewed ENS profile', {
+            category: 'profiles',
+            ens: accountENS,
+            from: 'Transaction list',
+          });
+          navigate(Routes.PROFILE_SHEET, {
+            address: accountENS,
+            fromRoute: 'ProfileAvatar',
+          });
+        } else if (buttonIndex === 1 && !isReadOnlyWallet) {
+          startRegistration(accountENS, REGISTRATION_MODES.EDIT);
+          navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+            ensName: accountENS,
+            mode: REGISTRATION_MODES.EDIT,
+          });
+        }
+      } else {
+        if (buttonIndex === 0) {
+          onAvatarChooseImage();
+        } else if (buttonIndex === 1) {
+          if (accountImage) {
+            onAvatarRemovePhoto();
+          } else {
+            onAvatarPickEmoji();
+          }
+        } else if (buttonIndex === 2 && profilesEnabled) {
+          onAvatarCreateProfile();
+        }
+      }
+    };
 
     showActionSheetWithOptions(
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
-        destructiveButtonIndex: accountImage
-          ? avatarActionSheetOptions.length - 2
-          : undefined,
+        destructiveButtonIndex:
+          !isENSProfile && accountImage
+            ? avatarActionSheetOptions.length - (profilesEnabled ? 3 : 2)
+            : undefined,
         options: avatarActionSheetOptions,
       },
-      async (buttonIndex: Number) => {
-        if (buttonIndex === 0) {
-          onAvatarChooseImage();
-        } else if (buttonIndex === 1) {
-          if (!accountImage) {
-            onAvatarPickEmoji();
-          }
-          if (accountImage) {
-            onAvatarRemovePhoto();
-          }
-        }
-      }
+      (buttonIndex: Number) => callback(buttonIndex)
     );
   }, [
-    setNextEmoji,
+    ensProfile,
+    profileEnabled,
+    profilesEnabled,
+    isReadOnlyWallet,
     accountImage,
+    navigate,
+    accountENS,
+    startRegistration,
     onAvatarChooseImage,
-    onAvatarPickEmoji,
     onAvatarRemovePhoto,
-    setNextEmoji,
+    onAvatarPickEmoji,
+    onAvatarCreateProfile,
   ]);
 
   const avatarOptions = useMemo(
@@ -168,6 +238,7 @@ export default () => {
   return {
     avatarOptions,
     onAvatarChooseImage,
+    onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarPress,
     onAvatarRemovePhoto,

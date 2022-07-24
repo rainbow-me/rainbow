@@ -1,16 +1,12 @@
 import {
   compact,
   concat,
-  findIndex,
   flatten,
-  includes,
   isEmpty,
-  map,
   orderBy,
   partition,
   reverse,
   slice,
-  toLower,
   toUpper,
   uniqBy,
   upperFirst,
@@ -33,7 +29,11 @@ import {
 import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
+import {
+  ETH_ADDRESS,
+  savingsAssetsList,
+  supportedNativeCurrencies,
+} from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
@@ -52,7 +52,7 @@ const dataFromLastTxHash = (
   );
   const lastTxHash = lastSuccessfulTxn?.hash;
   if (lastTxHash) {
-    const lastTxnHashIndex = findIndex(transactionData, txn =>
+    const lastTxnHashIndex = transactionData.findIndex(txn =>
       lastTxHash.startsWith(txn.hash)
     );
     if (lastTxnHashIndex > -1) {
@@ -65,13 +65,13 @@ const dataFromLastTxHash = (
 export const parseTransactions = async (
   transactionData: ZerionTransaction[],
   accountAddress: EthereumAddress,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   existingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
   network: Network,
   appended = false
 ) => {
-  const purchaseTransactionHashes = map(purchaseTransactions, txn =>
+  const purchaseTransactionHashes = purchaseTransactions.map(txn =>
     ethereumUtils.getHash(txn)
   );
 
@@ -168,7 +168,8 @@ const overrideFailedCompound = (
     ...txn,
   };
   newTxn.status = ZerionTransactionStatus.failed;
-  const asset = savingsAssetsList[network][toLower(txn?.address_to ?? '')];
+  const asset =
+    savingsAssetsList[network][txn?.address_to?.toLowerCase() ?? ''];
 
   const assetInternalTransaction = {
     address_from: txn.address_from,
@@ -274,7 +275,7 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
 
 const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   network: Network
 ) => {
   const methodName = await getTransactionMethodName(txn);
@@ -319,7 +320,7 @@ const parseTransactionWithEmptyChanges = async (
 
 const parseTransaction = async (
   transaction: ZerionTransaction,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   purchaseTransactionsHashes: string[],
   network: Network
 ): Promise<RainbowTransaction[]> => {
@@ -333,10 +334,9 @@ const parseTransaction = async (
   txn = overrideTradeRefund(txn);
 
   if (txn.changes.length) {
-    const internalTransactions = map(
-      txn?.changes,
+    const internalTransactions = txn.changes.map(
       (internalTxn, index): RainbowTransaction => {
-        const address = toLower(internalTxn?.asset?.asset_code);
+        const address = internalTxn?.asset?.asset_code?.toLowerCase() ?? '';
         const metadata = getTokenMetadata(address);
         const updatedAsset = {
           address,
@@ -355,7 +355,7 @@ const parseTransaction = async (
           nativeCurrency
         );
 
-        if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
+        if (purchaseTransactionsHashes.includes(txn.hash.toLowerCase())) {
           txn.type = TransactionType.purchase;
         }
 
@@ -380,7 +380,7 @@ const parseTransaction = async (
         });
         return {
           address:
-            toLower(updatedAsset.address) === ETH_ADDRESS
+            updatedAsset.address.toLowerCase() === ETH_ADDRESS
               ? ETH_ADDRESS
               : updatedAsset.address,
           balance: convertRawAmountToBalance(valueUnit, updatedAsset),

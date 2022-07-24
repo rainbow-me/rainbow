@@ -1,14 +1,14 @@
-import { get } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
+import { Network } from '@rainbow-me/helpers';
+
 /**
  * @desc parse poaps
  * @param  {Object}
  * @return {Array}
  */
-
 export const parsePoaps = data => {
-  const poaps = get(data, 'data', null);
+  const poaps = data?.data ?? null;
   return poaps.map(({ event }) => {
     return {
       animation_url: event.image_url,
@@ -29,7 +29,7 @@ export const parsePoaps = data => {
         name: 'POAP',
         short_description: 'The Proof of Attendance Protocol',
       },
-      description: event.description,
+      description: event?.description,
       external_link: event.event_url,
       familyImage:
         'https://lh3.googleusercontent.com/FwLriCvKAMBBFHMxcjqvxjTlmROcDIabIFKRp87NS3u_QfSLxcNThgAzOJSbphgQqnyZ_v2fNgMZQkdCYHUliJwH-Q=s60',
@@ -43,6 +43,7 @@ export const parsePoaps = data => {
       lastSalePaymentToken: null,
       lowResUrl: imageToPng(event.image_url, 300),
       name: event.name,
+      network: Network.mainnet,
       permalink: event.event_url,
       traits: [
         {
