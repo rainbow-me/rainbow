@@ -88,7 +88,7 @@ export const parseTransactions = async (
   );
 
   const newTransactions = await Promise.all(newTransactionPromises);
-  const parsedNewTransactions = newTransactions.flatMap(key => key);
+  const parsedNewTransactions = newTransactions.flat();
 
   const updatedResults = parsedNewTransactions.concat(
     existingTransactions,

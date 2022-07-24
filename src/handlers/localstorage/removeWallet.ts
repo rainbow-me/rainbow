@@ -18,7 +18,7 @@ export const removeWalletData = async (accountAddress: any) => {
   const allKeysWithNetworks = allPrefixes.map(prefix =>
     networks.map(network => getKey(prefix, accountAddress, network))
   );
-  const allKeys = allKeysWithNetworks.flatMap(key => key);
+  const allKeys = allKeysWithNetworks.flat();
   try {
     await AsyncStorage.multiRemove(allKeys);
   } catch (error) {
