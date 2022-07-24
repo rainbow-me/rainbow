@@ -1,15 +1,26 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import assetTypes from '../../../entities/assetTypes';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@rainbow-me/design-system';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
+import { Network } from '@rainbow-me/helpers';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
+
+const NONE = 'None';
+
+const getIsFloorPriceSupported = (network: Network) => {
+  switch (network) {
+    case Network.mainnet:
+      return true;
+    default:
+      return false;
+  }
+};
 
 export default function NFTBriefTokenInfoRow({
   currentPrice,
@@ -21,7 +32,7 @@ export default function NFTBriefTokenInfoRow({
   currentPrice?: number | null;
   lastPrice?: number | null;
   lastSalePaymentToken?: string | null;
-  network?: string;
+  network: Network;
   urlSuffixForAsset: string;
 }) {
   const { colors } = useTheme();
@@ -31,11 +42,27 @@ export default function NFTBriefTokenInfoRow({
   const { nativeCurrency, network } = useAccountSettings();
 
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
+
   useEffect(() => {
-    assetNetwork !== assetTypes.polygon &&
-      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
-        setFloorPrice(result);
-      });
+    const isFloorPriceSupported = getIsFloorPriceSupported(assetNetwork);
+
+    const fetchFloorPrice = async () => {
+      if (isFloorPriceSupported) {
+        try {
+          const result = await apiGetUniqueTokenFloorPrice(
+            network,
+            urlSuffixForAsset
+          );
+          setFloorPrice(result);
+        } catch (_) {
+          setFloorPrice(NONE);
+        }
+      } else {
+        setFloorPrice(NONE);
+      }
+    };
+
+    fetchFloorPrice();
   }, [assetNetwork, network, urlSuffixForAsset]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
@@ -61,7 +88,7 @@ export default function NFTBriefTokenInfoRow({
       ? lastPrice === 0
         ? `< 0.001 ${lastSalePaymentToken}`
         : `${lastPrice} ${lastSalePaymentToken}`
-      : 'None';
+      : NONE;
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (
@@ -69,7 +96,7 @@ export default function NFTBriefTokenInfoRow({
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         color={
-          lastSalePrice === 'None' && !currentPrice
+          lastSalePrice === NONE && !currentPrice
             ? colors.alpha(colors.whiteLabel, 0.5)
             : colors.whiteLabel
         }
@@ -82,7 +109,7 @@ export default function NFTBriefTokenInfoRow({
             ? `􀋢 ${lang.t('expanded_state.nft_brief_token_info.for_sale')}`
             : lang.t('expanded_state.nft_brief_token_info.last_sale')
         }
-        weight={lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'}
+        weight={lastSalePrice === NONE && !currentPrice ? 'bold' : 'heavy'}
       >
         {showCurrentPriceInEth || nativeCurrency === 'ETH' || !currentPrice
           ? currentPrice || lastSalePrice
@@ -96,11 +123,11 @@ export default function NFTBriefTokenInfoRow({
       <TokenInfoItem
         align="right"
         color={
-          floorPrice === 'None'
+          floorPrice === NONE
             ? colors.alpha(colors.whiteLabel, 0.5)
             : colors.whiteLabel
         }
-        enableHapticFeedback={floorPrice !== 'None'}
+        enableHapticFeedback={floorPrice !== NONE}
         isNft
         loading={!floorPrice}
         onInfoPress={handlePressCollectionFloor}
@@ -108,11 +135,11 @@ export default function NFTBriefTokenInfoRow({
         showInfoButton
         size="big"
         title="Floor price"
-        weight={floorPrice === 'None' ? 'bold' : 'heavy'}
+        weight={floorPrice === NONE ? 'bold' : 'heavy'}
       >
         {showFloorInEth ||
         nativeCurrency === 'ETH' ||
-        floorPrice === 'None' ||
+        floorPrice === NONE ||
         floorPrice === null
           ? floorPrice
           : convertAmountToNativeDisplay(
