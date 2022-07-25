@@ -13,6 +13,9 @@ export default function useSwapSettings() {
   const maxInputUpdate = useSelector(
     (state: AppState) => state.swap.maxInputUpdate
   );
+  const flipCurrenciesUpdate = useSelector(
+    (state: AppState) => state.swap.flipCurrenciesUpdate
+  );
   const currentSource = useSelector((state: AppState) => state.swap.source);
 
   const updateSwapSlippage = useCallback(
@@ -29,6 +32,7 @@ export default function useSwapSettings() {
     [dispatch]
   );
   return {
+    flipCurrenciesUpdate,
     maxInputUpdate,
     slippageInBips: slippage,
     source: currentSource,

@@ -13,7 +13,6 @@ import { NativeModules } from 'react-native';
 import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { useDebounce } from 'use-debounce/lib';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -60,8 +59,8 @@ const getInputAmount = async (
 ) => {
   if (!outputAmount || isZero(outputAmount) || !outputToken) {
     return {
-      outputAmount: null,
-      outputAmountDisplay: null,
+      inputAmount: null,
+      inputAmountDisplay: null,
       tradeDetails: null,
     };
   }
@@ -292,7 +291,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     (state: AppState) => state.swap.slippageInBips
   );
 
-  const [debouncedIndependentValue] = useDebounce(independentValue, 300);
   const source = useSelector((state: AppState) => state.swap.source);
 
   const genericAssets = useSelector(
@@ -553,7 +551,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     queryKey: [
       'getTradeDetails',
       independentField,
-      debouncedIndependentValue,
+      independentValue,
       derivedValues[SwapModalField.output],
       derivedValues[SwapModalField.input],
       derivedValues[SwapModalField.native],
@@ -570,7 +568,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
 
   return {
     insufficientLiquidity: data?.insufficientLiquidity || false,
-    loading: isLoading,
+    loading: isLoading && Boolean(independentValue),
     resetSwapInputs,
     result: data?.result || {
       derivedValues,
