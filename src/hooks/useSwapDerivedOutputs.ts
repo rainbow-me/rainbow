@@ -13,6 +13,7 @@ import { NativeModules } from 'react-native';
 import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDebounce } from 'use-debounce/lib';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -291,6 +292,10 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     (state: AppState) => state.swap.slippageInBips
   );
 
+  const [debouncedIndependentValue] = useDebounce(
+    independentValue,
+    IS_TESTING !== 'true' ? 300 : 500
+  );
   const source = useSelector((state: AppState) => state.swap.source);
 
   const genericAssets = useSelector(
@@ -546,12 +551,13 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     type,
   ]);
   const { data, isLoading } = useQuery({
-    cacheTime: 0,
+    cacheTime: IS_TESTING !== 'true' ? 0 : 10000,
+    enabled: !!debouncedIndependentValue,
     queryFn: getTradeDetails,
     queryKey: [
       'getTradeDetails',
       independentField,
-      independentValue,
+      debouncedIndependentValue,
       derivedValues[SwapModalField.output],
       derivedValues[SwapModalField.input],
       derivedValues[SwapModalField.native],
@@ -563,7 +569,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       slippageInBips,
       source,
     ],
-    refetchInterval: SWAP_POLLING_INTERVAL,
+    ...(IS_TESTING !== 'true'
+      ? { refetchInterval: SWAP_POLLING_INTERVAL }
+      : {}),
   });
 
   return {
