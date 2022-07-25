@@ -201,10 +201,9 @@ export const explainers = (params, colors) => ({
     extraHeight: -25,
     text: OPTIMISM_APP_ICON_EXPLAINER,
     title: lang.t('explain.optimism_app_icon.title'),
+    buttonColor: colors?.optimismRed,
+    buttonText: lang.t('explain.optimism_app_icon.button'),
     button: {
-      label: lang.t('explain.optimism_app_icon.button'),
-      textColor: 'optimismRed',
-      bgColor: 'optimismRed06',
       onPress: (navigate, goBack, handleClose) => () => {
         if (handleClose) handleClose();
         if (goBack) goBack();
@@ -709,7 +708,11 @@ const ExplainSheet = () => {
         )}
         isTransparent
         label={explainSheetConfig.buttonText || lang.t('button.got_it')}
-        onPress={handleClose}
+        onPress={
+          explainSheetConfig.button?.onPress
+            ? explainSheetConfig.button.onPress(navigate, goBack, handleClose)
+            : handleClose
+        }
         size="big"
         textColor={explainSheetConfig.buttonColor || colors.appleBlue}
         weight="heavy"
@@ -723,6 +726,7 @@ const ExplainSheet = () => {
   }, [
     colors,
     explainSheetConfig.buttonColor,
+    explainSheetConfig.button?.onPress,
     explainSheetConfig.buttonText,
     explainSheetConfig?.readMoreLink,
     explainSheetConfig?.secondaryButtonColor,
@@ -731,6 +735,7 @@ const ExplainSheet = () => {
     goBack,
     handleClose,
     handleReadMore,
+    navigate,
     type,
   ]);
 
@@ -787,31 +792,6 @@ const ExplainSheet = () => {
             {explainSheetConfig?.stillCurious &&
               explainSheetConfig.stillCurious}
             {buttons}
-
-            <SheetActionButton
-              color={
-                colors[explainSheetConfig.button?.bgColor] ||
-                colors.alpha(colors.appleBlue, 0.04)
-              }
-              isTransparent
-              label={
-                explainSheetConfig.button?.label || lang.t('button.got_it')
-              }
-              onPress={
-                explainSheetConfig.button?.onPress
-                  ? explainSheetConfig.button.onPress(
-                      navigate,
-                      goBack,
-                      handleClose
-                    )
-                  : handleClose
-              }
-              size="big"
-              textColor={
-                colors[explainSheetConfig.button?.textColor] || colors.appleBlue
-              }
-              weight="heavy"
-            />
           </ColumnWithMargins>
         </Centered>
       </SlackSheet>
@@ -820,4 +800,3 @@ const ExplainSheet = () => {
 };
 
 export default React.memo(ExplainSheet);
-2;
