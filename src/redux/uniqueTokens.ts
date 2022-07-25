@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import concat from 'lodash/concat';
-import isEmpty from 'lodash/isEmpty';
 import uniqBy from 'lodash/uniqBy';
 import without from 'lodash/without';
 import { Dispatch } from 'redux';
@@ -25,6 +24,7 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
+import { getNftsByWalletAddress } from '@rainbow-me/handlers/simplehash';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
@@ -251,7 +251,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
   const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
-  let shouldUpdateInBatches = isEmpty(existingUniqueTokens);
   let uniqueTokens: UniqueAsset[] = [];
   let errorCheck = false;
 
@@ -290,20 +289,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
 
-      if (shouldUpdateInBatches) {
-        // check that the account address to fetch for has not changed while fetching
-
-        const isCurrentAccountAddress =
-          accountAddress ===
-          (showcaseAddress || getState().settings.accountAddress);
-        if (isCurrentAccountAddress) {
-          dispatch({
-            payload: uniqueTokens,
-            showcase: !!showcaseAddress,
-            type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-          });
-        }
-      }
       if (shouldStopFetching) {
         const existingFamilies = getFamilies(existingUniqueTokens);
         const newFamilies = getFamilies(uniqueTokens);
@@ -330,6 +315,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   };
 
   await fetchNetwork(currentNetwork);
+
   // Only include poaps and L2 nft's on mainnet
   if (currentNetwork === Network.mainnet) {
     const poaps = (await fetchPoaps(accountAddress)) ?? [];
@@ -338,6 +324,14 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       uniqueTokens = concat(uniqueTokens, poaps);
     }
     await fetchNetwork(Network.polygon);
+
+    // Fetch Optimism and Arbitrum NFTs
+    const optimismArbitrumNFTs = await getNftsByWalletAddress(accountAddress);
+
+    if (optimismArbitrumNFTs.length > 0) {
+      uniqueTokens = concat(uniqueTokens, optimismArbitrumNFTs);
+    }
+
     //we only care about analytics for mainnet + L2's
     analytics.identify(null, { NFTs: uniqueTokens.length });
   }
@@ -349,8 +343,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     timeAgo: { hours: 48 },
   });
   if (ensTokens.length > 0) {
-    uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'id');
-    shouldUpdateInBatches = false;
+    uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
   }
 
   // NFT Fetching clean up
@@ -360,7 +353,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   if (!showcaseAddress && isCurrentAccountAddress && !errorCheck) {
     saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
   }
-  if (!shouldUpdateInBatches && isCurrentAccountAddress && !errorCheck) {
+  if (isCurrentAccountAddress && !errorCheck) {
     dispatch({
       payload: uniqueTokens,
       showcase: !!showcaseAddress,
