@@ -566,7 +566,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       slippageInBips,
       source,
     ],
-    refetchInterval: SWAP_POLLING_INTERVAL,
+    ...(IS_TESTING !== 'true'
+      ? { refetchInterval: SWAP_POLLING_INTERVAL }
+      : {}),
   });
 
   return {
