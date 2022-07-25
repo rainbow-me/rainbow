@@ -17,6 +17,10 @@ import {
 } from '@rainbow-me/swaps';
 import { ethers } from 'ethers';
 import { mapKeys, mapValues } from 'lodash';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
 import { loadWallet } from '../model/wallet';
 import {
@@ -248,7 +252,7 @@ export const estimateSwapGasLimit = async ({
         provider
       );
 
-      if (requiresApprove) {
+      if (requiresApprove && IS_TESTING !== 'true') {
         if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
           try {
             const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
