@@ -548,7 +548,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     type,
   ]);
   const { data, isLoading } = useQuery({
-    cacheTime: 0,
+    cacheTime: IS_TESTING !== 'true' ? 0 : 10000,
+    enabled: !!independentValue,
     queryFn: getTradeDetails,
     queryKey: [
       'getTradeDetails',
