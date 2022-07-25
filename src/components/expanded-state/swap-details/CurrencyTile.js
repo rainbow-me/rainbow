@@ -12,7 +12,10 @@ import {
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+} from '@rainbow-me/utilities';
 
 export const CurrencyTileHeight = android ? 153 : 143;
 
@@ -67,18 +70,24 @@ export default function CurrencyTile({
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
+  const {
+    displayValues: { nativeAmountDisplay },
+  } = useSelector(state => state.swap);
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
   const { address, mainnet_address, symbol, type: assetType } = asset;
   const isOther =
     (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
+  //console.log('native amount display: ', nativeAmountDisplay);
   const priceDisplay = priceValue
-    ? convertAmountAndPriceToNativeDisplay(
-        amount,
-        priceValue ?? 0,
-        nativeCurrency
-      ).display
+    ? type === 'input'
+      ? convertAmountToNativeDisplay(nativeAmountDisplay, nativeCurrency)
+      : convertAmountAndPriceToNativeDisplay(
+          amount,
+          priceValue ?? 0,
+          nativeCurrency
+        ).display
     : '-';
 
   return (
