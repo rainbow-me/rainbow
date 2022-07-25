@@ -1,11 +1,8 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-// <<<<<<< HEAD:src/redux/wallets.js
 import { isEmpty, keys } from 'lodash';
-// =======
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-// >>>>>>> cbbe0a35ee40fa90a6e8f5d0ea24fce7bc4ec878:src/redux/wallets.ts
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {

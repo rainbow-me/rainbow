@@ -38,6 +38,7 @@ import {
   Records,
   UniqueAsset,
 } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers';
 import {
   ENS_DOMAIN,
   ENS_RECORDS,
@@ -48,7 +49,10 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { add } from '@rainbow-me/helpers/utilities';
 import { ImgixImage } from '@rainbow-me/images';
-import { handleAndSignImages } from '@rainbow-me/parsers';
+import {
+  getOpenSeaCollectionUrl,
+  handleAndSignImages,
+} from '@rainbow-me/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
@@ -77,6 +81,7 @@ const buildEnsToken = ({
 }) => {
   // @ts-expect-error JavaScript function
   const { imageUrl, lowResUrl } = handleAndSignImages(imageUrl_);
+  const slug = 'ens';
   return {
     animation_url: null,
     asset_contract: {
@@ -100,7 +105,7 @@ const buildEnsToken = ({
         'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
       name: 'ENS: Ethereum Name Service',
       short_description: null,
-      slug: 'ens',
+      slug,
       twitter_username: 'ensdomains',
     },
     currentPrice: null,
@@ -120,7 +125,10 @@ const buildEnsToken = ({
     lastSale: undefined,
     lastSalePaymentToken: null,
     lowResUrl,
+    marketplaceCollectionUrl: getOpenSeaCollectionUrl(slug),
+    marketplaceName: 'OpenSea',
     name,
+    network: Network.mainnet,
     permalink: '',
     sell_orders: [],
     traits: [],

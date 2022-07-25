@@ -1,4 +1,3 @@
-import { concat } from 'lodash';
 import {
   createNewENSAction,
   createNewRap,
@@ -31,7 +30,7 @@ export const createSetRecordsENSRap = async (
         : RapActionTypes.setTextENS,
       ensActionParameters
     );
-    actions = concat(actions, recordsAction);
+    actions = actions.concat(recordsAction);
   }
 
   if (ensActionParameters.setReverseRecord) {
@@ -56,7 +55,7 @@ export const createRegisterENSRap = async (
     RapActionTypes.registerWithConfigENS,
     ensActionParameters
   );
-  actions = concat(actions, register);
+  actions = actions.concat(register);
 
   const ensRegistrationRecords = formatRecordsForTransaction(
     ensActionParameters.records
@@ -72,7 +71,7 @@ export const createRegisterENSRap = async (
         : RapActionTypes.setTextENS,
       ensActionParameters
     );
-    actions = concat(actions, recordsAction);
+    actions = actions.concat(recordsAction);
   }
 
   if (ensActionParameters.setReverseRecord) {
@@ -80,7 +79,7 @@ export const createRegisterENSRap = async (
       RapActionTypes.setNameENS,
       ensActionParameters
     );
-    actions = concat(actions, setName);
+    actions = actions.concat(setName);
   }
 
   // create the overall rap
@@ -97,7 +96,7 @@ export const createRenewENSRap = async (
     RapActionTypes.renewENS,
     ENSActionParameters
   );
-  actions = concat(actions, commit);
+  actions = actions.concat(commit);
 
   // create the overall rap
   const newRap = createNewRap(actions);
@@ -113,7 +112,7 @@ export const createSetNameENSRap = async (
     RapActionTypes.setNameENS,
     ENSActionParameters
   );
-  actions = concat(actions, commit);
+  actions = actions.concat(commit);
 
   // create the overall rap
   const newRap = createNewRap(actions);
@@ -129,7 +128,7 @@ export const createCommitENSRap = async (
     RapActionTypes.commitENS,
     ENSActionParameters
   );
-  actions = concat(actions, commit);
+  actions = actions.concat(commit);
 
   // create the overall rap
   const newRap = createNewRap(actions);

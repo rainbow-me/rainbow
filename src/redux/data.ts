@@ -1186,7 +1186,12 @@ export const addressAssetsReceived = (
   }
 
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
-    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .filter(
+      asset =>
+        (isValidDomain(asset.name.replaceAll(' ', '')) ||
+          isValidDomain(asset.symbol)) &&
+        !asset.isVerified
+    )
     .map(asset => asset.uniqueId);
 
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
