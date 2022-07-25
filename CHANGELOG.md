@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.18](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.18)
+### Changed
+* Support custom icons
+* Support Optimism and Arbitrum collectibles viewing
+
 ## [1.6.16](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.16)
 ### Changed
 * Main release
