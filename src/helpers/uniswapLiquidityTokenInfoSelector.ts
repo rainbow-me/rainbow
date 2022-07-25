@@ -1,7 +1,6 @@
 import { ChainId, WETH } from '@uniswap/sdk';
 import compact from 'lodash/compact';
 import isEmpty from 'lodash/isEmpty';
-import join from 'lodash/join';
 import orderBy from 'lodash/orderBy';
 import sumBy from 'lodash/sumBy';
 import { createSelector } from 'reselect';
@@ -127,10 +126,7 @@ const transformPool = (
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
-  const tokenNames = join(
-    formattedTokens.map(token => token.symbol),
-    '-'
-  );
+  const tokenNames = formattedTokens.map(token => token.symbol).join('-');
 
   return {
     ...liquidityTokenWithNative,

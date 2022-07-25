@@ -1,9 +1,8 @@
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@rai... Remove this comment to see the full error message
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
-import join from 'lodash/join';
-import split from 'lodash/split';
 import values from 'lodash/values';
+
 import {
   // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   RAINBOW_WYRE_MERCHANT_ID,
@@ -60,7 +59,7 @@ class WyreException extends Error {
     message: any
   ) {
     const referenceInfoIds = values(referenceInfo);
-    const referenceId = join(referenceInfoIds, ':');
+    const referenceId = referenceInfoIds.join(':');
     super(`${referenceId}:${errorId}:${errorCode}:${message}`);
     this.name = name;
   }
@@ -413,7 +412,7 @@ const createPayload = (
 
 const getAddressDetails = (addressInfo: any) => {
   const { name, postalAddress: address } = addressInfo;
-  const addressLines = split(address.street, '\n');
+  const addressLines = address?.street?.split('\n');
   return {
     addressLines,
     administrativeArea: address.state,

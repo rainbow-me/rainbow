@@ -1,5 +1,4 @@
 import produce from 'immer';
-import concat from 'lodash/concat';
 import isArray from 'lodash/isArray';
 import uniq from 'lodash/uniq';
 import without from 'lodash/without';
@@ -198,7 +197,7 @@ export const userListsUpdateList = (
     // add or remove
     if (listIndex !== null) {
       const updatedListTokens = add
-        ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
+        ? uniq(allNewLists[listIndex].tokens.concat(assetAddress))
         : isArray(assetAddress)
         ? without(allNewLists[listIndex].tokens, ...assetAddress)
         : without(allNewLists[listIndex].tokens, assetAddress);

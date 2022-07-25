@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import compact from 'lodash/compact';
-import flattenDeep from 'lodash/flattenDeep';
 import groupBy from 'lodash/groupBy';
 import property from 'lodash/property';
 import React from 'react';
@@ -19,7 +18,12 @@ import {
   buildUniqueTokenList,
 } from './assets';
 import networkTypes from './networkTypes';
-import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import {
+  add,
+  convertAmountToNativeDisplay,
+  flattenDeep,
+  multiply,
+} from './utilities';
 import { Network } from '.';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';

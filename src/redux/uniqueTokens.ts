@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import concat from 'lodash/concat';
 import uniqBy from 'lodash/uniqBy';
 import without from 'lodash/without';
 import { Dispatch } from 'redux';
@@ -284,7 +283,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       // metadata service.
       newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
 
-      uniqueTokens = concat(uniqueTokens, newPageResults);
+      uniqueTokens = uniqueTokens.concat(newPageResults);
       shouldStopFetching =
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
@@ -321,7 +320,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     const poaps = (await fetchPoaps(accountAddress)) ?? [];
     if (poaps.length > 0) {
       uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
-      uniqueTokens = concat(uniqueTokens, poaps);
+      uniqueTokens = uniqueTokens.concat(poaps);
     }
     await fetchNetwork(Network.polygon);
 
@@ -329,7 +328,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     const optimismArbitrumNFTs = await getNftsByWalletAddress(accountAddress);
 
     if (optimismArbitrumNFTs.length > 0) {
-      uniqueTokens = concat(uniqueTokens, optimismArbitrumNFTs);
+      uniqueTokens = uniqueTokens.concat(optimismArbitrumNFTs);
     }
 
     //we only care about analytics for mainnet + L2's

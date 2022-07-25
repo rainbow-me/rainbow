@@ -1,6 +1,4 @@
 import compact from 'lodash/compact';
-import concat from 'lodash/concat';
-import flatten from 'lodash/flatten';
 import isEmpty from 'lodash/isEmpty';
 import orderBy from 'lodash/orderBy';
 import partition from 'lodash/partition';
@@ -88,10 +86,9 @@ export const parseTransactions = async (
   );
 
   const newTransactions = await Promise.all(newTransactionPromises);
-  const parsedNewTransactions = flatten(newTransactions);
+  const parsedNewTransactions = newTransactions.flat();
 
-  const updatedResults = concat(
-    parsedNewTransactions,
+  const updatedResults = parsedNewTransactions.concat(
     existingTransactions,
     allL2Transactions
   );

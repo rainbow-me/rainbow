@@ -1,4 +1,3 @@
-import concat from 'lodash/concat';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -97,7 +96,7 @@ const TopRow = ({ item, name, selected }) => {
 
 const buildSendCoinRowIdentifier = props => {
   const uniqueId = buildAssetUniqueIdentifier(props.item);
-  return concat(uniqueId, !!props?.showNativeValue);
+  return [uniqueId, !!props?.showNativeValue];
 };
 
 const SendCoinRow = magicMemo(

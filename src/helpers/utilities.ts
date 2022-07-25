@@ -441,6 +441,11 @@ export const toStartCaseStr = (string?: string | undefined): string => {
     .replace(/(\s|^)(\w)/g, (string, $1, $2) => $1 + $2.toUpperCase());
 };
 
+export const flattenDeep = (arr: unknown[]): unknown[] =>
+  arr.flatMap(subArray =>
+    Array.isArray(subArray) ? flattenDeep(subArray) : subArray
+  );
+
 export const times = (n: number, fn: (i: number) => unknown) =>
   Array.from({ length: n }, (_, i) => fn(i));
 

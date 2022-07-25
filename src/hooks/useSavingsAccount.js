@@ -1,5 +1,4 @@
 import { useQuery } from '@apollo/client';
-import concat from 'lodash/concat';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
 import keyBy from 'lodash/keyBy';
@@ -215,8 +214,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
 
     if (shouldAddDai) {
-      savings = concat(
-        orderedAccountTokens,
+      savings = orderedAccountTokens.concat(
         getUnderlyingPrice(daiMarketData, genericAssets)
       );
     }

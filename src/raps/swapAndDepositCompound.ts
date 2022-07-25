@@ -1,5 +1,3 @@
-import concat from 'lodash/concat';
-import reduce from 'lodash/reduce';
 import {
   assetNeedsUnlocking,
   estimateApprove,
@@ -50,7 +48,7 @@ export const estimateSwapAndDepositCompound = async (
         inputCurrency.address,
         UNISWAP_V2_ROUTER_ADDRESS
       );
-      gasLimits = concat(gasLimits, unlockGasLimit);
+      gasLimits = gasLimits.concat(unlockGasLimit);
     }
 
     const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
@@ -61,7 +59,7 @@ export const estimateSwapAndDepositCompound = async (
       slippage,
       tradeDetails,
     });
-    gasLimits = concat(gasLimits, swapGasLimit);
+    gasLimits = gasLimits.concat(swapGasLimit);
   }
   const tokenToDeposit: Asset = requiresSwap ? outputCurrency : inputCurrency;
   const cTokenContract =
@@ -84,12 +82,12 @@ export const estimateSwapAndDepositCompound = async (
       tokenToDeposit.address,
       cTokenContract
     );
-    gasLimits = concat(gasLimits, depositGasLimit);
+    gasLimits = gasLimits.concat(depositGasLimit);
   }
 
   const depositGasLimit = getDepositGasLimit(inputCurrency);
-  gasLimits = concat(gasLimits, depositGasLimit);
-  return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
+  gasLimits = gasLimits.concat(depositGasLimit);
+  return gasLimits.reduce((acc, limit) => add(acc, limit), '0');
 };
 
 export const createSwapAndDepositCompoundRap = async (
@@ -119,7 +117,7 @@ export const createSwapAndDepositCompoundRap = async (
         assetToUnlock: inputCurrency,
         contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
       });
-      actions = concat(actions, unlock);
+      actions = actions.concat(unlock);
       logger.log('[swap and deposit] making unlock for swap func');
     }
 
@@ -128,7 +126,7 @@ export const createSwapAndDepositCompoundRap = async (
       inputAmount,
       tradeDetails,
     });
-    actions = concat(actions, swap);
+    actions = actions.concat(swap);
     logger.log('[swap and deposit] making swap func');
   }
 
@@ -152,7 +150,7 @@ export const createSwapAndDepositCompoundRap = async (
       assetToUnlock: tokenToDeposit,
       contractAddress: cTokenContract,
     });
-    actions = concat(actions, unlockTokenToDeposit);
+    actions = actions.concat(unlockTokenToDeposit);
   }
 
   // create a deposit rap
@@ -161,7 +159,7 @@ export const createSwapAndDepositCompoundRap = async (
     inputAmount,
     outputAmount,
   });
-  actions = concat(actions, deposit);
+  actions = actions.concat(deposit);
 
   // create the overall rap
   const newRap = createNewRap(actions);

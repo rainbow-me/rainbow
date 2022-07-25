@@ -1,4 +1,3 @@
-import concat from 'lodash/concat';
 import isEmpty from 'lodash/isEmpty';
 import uniqBy from 'lodash/uniqBy';
 import { Dispatch } from 'redux';
@@ -170,8 +169,9 @@ export const uniswapUpdateLiquidityTokens = (
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
+
     updatedLiquidityTokens = uniqBy(
-      concat(updatedLiquidityTokens, existingLiquidityTokens),
+      updatedLiquidityTokens.concat(existingLiquidityTokens),
       token => token.address
     ).filter(token => !!Number(token?.balance?.amount ?? 0));
   } else {
