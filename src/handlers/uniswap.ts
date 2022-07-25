@@ -252,8 +252,11 @@ export const estimateSwapGasLimit = async ({
         provider
       );
 
-      if (requiresApprove && IS_TESTING !== 'true') {
-        if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
+      if (requiresApprove) {
+        if (
+          CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) &&
+          IS_TESTING !== 'true'
+        ) {
           try {
             const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
               chainId,
