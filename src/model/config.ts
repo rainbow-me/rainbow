@@ -57,6 +57,7 @@ export interface RainbowConfig extends Record<string, any> {
   ethereum_ropsten_rpc?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
+  op_nft_network?: string;
 }
 
 const DEFAULT_CONFIG = {
@@ -75,6 +76,7 @@ const DEFAULT_CONFIG = {
   ethereum_ropsten_rpc: __DEV__
     ? ETHEREUM_ROPSTEN_RPC_DEV
     : ETHEREUM_ROPSTEN_RPC,
+  op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
 };
