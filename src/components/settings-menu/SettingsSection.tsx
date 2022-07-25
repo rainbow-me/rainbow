@@ -311,6 +311,7 @@ const SettingsSection = ({
           menuConfig={themeMenuConfig}
           {...(android ? { onPress: onPressThemeAndroidActions } : {})}
           isMenuPrimaryAction
+          menuAlignmentOverride="right"
           onPressMenuItem={handleSelectTheme}
           useActionSheetFallback={false}
         >
