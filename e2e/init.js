@@ -13,5 +13,6 @@ beforeAll(async () => {
     '.*api.coingecko.com.*',
     '.*rainbow.imgix.net.*',
     '.*infura.io.*',
+    '.*127.0.0.1*.',
   ]);
 });
