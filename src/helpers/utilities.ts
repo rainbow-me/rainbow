@@ -414,6 +414,11 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+export const flattenDeep = (arr: unknown[]): unknown[] =>
+  arr.flatMap(subArray =>
+    Array.isArray(subArray) ? flattenDeep(subArray) : subArray
+  );
+
 export const times = (n: number, fn: (i: number) => unknown) =>
   Array.from({ length: n }, (_, i) => fn(i));
 
