@@ -63,7 +63,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
       >
         <ImgixImage
           source={eyeSlash as Source}
-          style={{ height: 18, width: 26 }}
+          style={{ height: 17, width: 25 }}
         />
       </View>
     );
