@@ -51,7 +51,8 @@ import {
   Text,
   TextProps,
 } from '@rainbow-me/design-system';
-import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
@@ -213,10 +214,31 @@ interface UniqueTokenExpandedStateProps {
   external: boolean;
 }
 
+const getIsSupportedOnRainbowWeb = (network: Network) => {
+  switch (network) {
+    case Network.mainnet:
+    case Network.polygon:
+      return true;
+    default:
+      return false;
+  }
+};
+
+const getIsSaleInfoSupported = (network: Network) => {
+  switch (network) {
+    case Network.mainnet:
+      return true;
+    default:
+      return false;
+  }
+};
+
 const UniqueTokenExpandedState = ({
   asset,
   external,
 }: UniqueTokenExpandedStateProps) => {
+  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
+
   const { accountAddress, accountENS } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
@@ -224,7 +246,11 @@ const UniqueTokenExpandedState = ({
   const { isReadOnlyWallet } = useWallets();
 
   const {
-    collection: { description: familyDescription, external_url: familyLink },
+    collection: {
+      description: familyDescription,
+      external_url: familyLink,
+      slug,
+    },
     currentPrice,
     description,
     familyImage,
@@ -232,6 +258,7 @@ const UniqueTokenExpandedState = ({
     isSendable,
     lastPrice,
     lastSalePaymentToken,
+    marketplaceName,
     traits,
     uniqueId,
     urlSuffixForAsset,
@@ -309,6 +336,8 @@ const UniqueTokenExpandedState = ({
     [showcaseTokens, uniqueId]
   );
 
+  const rainbowWebUrl = buildRainbowUrl(asset, accountENS, accountAddress);
+
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
     usePersistentDominantColorFromImage(asset.lowResUrl).result ||
@@ -324,7 +353,7 @@ const UniqueTokenExpandedState = ({
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressOpensea = useCallback(
+  const handlePressMarketplaceName = useCallback(
     () => Linking.openURL(asset.permalink),
     [asset.permalink]
   );
@@ -338,14 +367,14 @@ const UniqueTokenExpandedState = ({
   }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
 
   const handlePressShare = useCallback(() => {
+    const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.permalink;
+
     Share.share({
-      message: android
-        ? buildRainbowUrl(asset, accountENS, accountAddress)
-        : undefined,
+      message: android ? shareUrl : undefined,
       title: `Share ${buildUniqueTokenName(asset)} Info`,
-      url: buildRainbowUrl(asset, accountENS, accountAddress),
+      url: shareUrl,
     });
-  }, [accountAddress, accountENS, asset]);
+  }, [asset, isSupportedOnRainbowWeb, rainbowWebUrl]);
 
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
@@ -377,6 +406,9 @@ const UniqueTokenExpandedState = ({
       familyLink ? new URL(familyLink).hostname.replace(/^www\./, '') : null,
     [familyLink]
   );
+
+  const hideNftMarketplaceAction = isPoap || !slug;
+  const isSaleInfoSupported = getIsSaleInfoSupported(asset.network);
 
   return (
     <>
@@ -456,11 +488,18 @@ const UniqueTokenExpandedState = ({
                                 'expanded_state.unique_expanded.showcase'
                               )}`}
                         </TextButton>
-                        <TextButton align="right" onPress={handlePressShare}>
-                          􀈂 {lang.t('button.share')}
-                        </TextButton>
+                        {isSupportedOnRainbowWeb || asset.permalink ? (
+                          <TextButton align="right" onPress={handlePressShare}>
+                            􀈂 {lang.t('button.share')}
+                          </TextButton>
+                        ) : null}
                       </Inline>
-                      <UniqueTokenExpandedStateHeader asset={asset} />
+                      <UniqueTokenExpandedStateHeader
+                        asset={asset}
+                        hideNftMarketplaceAction={hideNftMarketplaceAction}
+                        isSupportedOnRainbowWeb={isSupportedOnRainbowWeb}
+                        rainbowWebUrl={rainbowWebUrl}
+                      />
                     </Stack>
                     {isNFT || isENS ? (
                       <Columns space="15px">
@@ -482,15 +521,16 @@ const UniqueTokenExpandedState = ({
                             // @ts-expect-error JavaScript component
                             label={
                               hasSendButton
-                                ? `􀮶 ${lang.t(
-                                    'expanded_state.unique_expanded.opensea'
-                                  )}`
+                                ? `􀮶 ${marketplaceName}`
                                 : `􀮶 ${lang.t(
-                                    'expanded_state.unique_expanded.view_on_opensea'
+                                    'expanded_state.unique_expanded.view_on_marketplace_name',
+                                    {
+                                      marketplaceName,
+                                    }
                                   )}`
                             }
                             nftShadows
-                            onPress={handlePressOpensea}
+                            onPress={handlePressMarketplaceName}
                             // @ts-expect-error JavaScript component
                             testID="unique-expanded-state-send"
                             textColor={textColor}
@@ -507,10 +547,10 @@ const UniqueTokenExpandedState = ({
                         ) : null}
                       </Columns>
                     ) : null}
-                    {asset.network === AssetTypes.polygon ? (
+                    {asset.network !== Network.mainnet ? (
                       // @ts-expect-error JavaScript component
                       <L2Disclaimer
-                        assetType={AssetTypes.polygon}
+                        assetType={asset.network}
                         colors={colors}
                         hideDivider
                         isNft
@@ -524,8 +564,7 @@ const UniqueTokenExpandedState = ({
                       separator={<Divider color="divider20" />}
                       space={sectionSpace}
                     >
-                      {(isNFT || isENS) &&
-                      asset.network !== AssetTypes.polygon ? (
+                      {(isNFT || isENS) && isSaleInfoSupported ? (
                         <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                           bottom={android ? '15px' : '6px'}
                           top={android ? '10px' : '4px'}
@@ -575,8 +614,10 @@ const UniqueTokenExpandedState = ({
                               <UniqueTokenAttributes
                                 {...asset}
                                 color={imageColor}
-                                hideOpenSeaAction={isPoap}
-                                slug={asset.collection.slug}
+                                hideNftMarketplaceAction={
+                                  hideNftMarketplaceAction
+                                }
+                                slug={slug}
                               />
                             </Section>
                           ) : null}

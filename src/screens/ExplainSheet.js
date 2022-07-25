@@ -9,9 +9,13 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import { Box } from '@/design-system';
+import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
+import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
@@ -48,6 +52,29 @@ const Gradient = styled(GradientText).attrs({
   steps: [0, 0.5, 1],
   weight: 'heavy',
 })({});
+
+const OptimismAppIcon = () => {
+  const { colors, isDarkMode } = useTheme();
+  return (
+    <Box
+      style={{
+        shadowColor: isDarkMode ? colors.shadowBlack : colors.optimismRed,
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={AppIconOptimism}
+        style={{
+          width: 64,
+          height: 64,
+        }}
+      />
+    </Box>
+  );
+};
 
 const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
@@ -119,7 +146,32 @@ const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
 const ENS_CONFIGURATION_EXPLAINER =
   'When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient’s address and make the recipient address the manager of the name.';
 
+const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
+
 export const explainers = network => ({
+  optimism_app_icon: {
+    logo: <OptimismAppIcon />,
+    extraHeight: -25,
+    text: OPTIMISM_APP_ICON_EXPLAINER,
+    title: lang.t('explain.optimism_app_icon.title'),
+    button: {
+      label: lang.t('explain.optimism_app_icon.button'),
+      textColor: 'optimismRed',
+      bgColor: 'optimismRed06',
+      onPress: (navigate, goBack, handleClose) => () => {
+        if (handleClose) handleClose();
+        if (goBack) goBack();
+        setTimeout(() => {
+          navigate(Routes.SETTINGS_SHEET);
+          setTimeout(() => {
+            navigate(Routes.SETTINGS_SHEET, {
+              screen: 'AppIconSection',
+            });
+          }, 300);
+        }, 300);
+      },
+    },
+  },
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
@@ -293,7 +345,7 @@ const ExplainSheet = () => {
     params = {},
   } = useRoute();
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
@@ -399,12 +451,27 @@ const ExplainSheet = () => {
               </Column>
             )}
             <SheetActionButton
-              color={colors.alpha(colors.appleBlue, 0.04)}
+              color={
+                colors[explainSheetConfig.button?.bgColor] ||
+                colors.alpha(colors.appleBlue, 0.04)
+              }
               isTransparent
-              label={lang.t('button.got_it')}
-              onPress={handleClose}
+              label={
+                explainSheetConfig.button?.label || lang.t('button.got_it')
+              }
+              onPress={
+                explainSheetConfig.button?.onPress
+                  ? explainSheetConfig.button.onPress(
+                      navigate,
+                      goBack,
+                      handleClose
+                    )
+                  : handleClose
+              }
               size="big"
-              textColor={colors.appleBlue}
+              textColor={
+                colors[explainSheetConfig.button?.textColor] || colors.appleBlue
+              }
               weight="heavy"
             />
           </ColumnWithMargins>
@@ -415,3 +482,4 @@ const ExplainSheet = () => {
 };
 
 export default React.memo(ExplainSheet);
+2;
