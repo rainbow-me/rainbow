@@ -292,7 +292,10 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     (state: AppState) => state.swap.slippageInBips
   );
 
-  const [debouncedIndependentValue] = useDebounce(independentValue, 300);
+  const [debouncedIndependentValue] = useDebounce(
+    independentValue,
+    IS_TESTING !== 'true' ? 300 : 500
+  );
   const source = useSelector((state: AppState) => state.swap.source);
 
   const genericAssets = useSelector(
@@ -549,15 +552,12 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   ]);
   const { data, isLoading } = useQuery({
     cacheTime: IS_TESTING !== 'true' ? 0 : 10000,
-    enabled: !!independentValue,
+    enabled: !!debouncedIndependentValue,
     queryFn: getTradeDetails,
     queryKey: [
       'getTradeDetails',
       independentField,
       debouncedIndependentValue,
-      derivedValues[SwapModalField.output],
-      derivedValues[SwapModalField.input],
-      derivedValues[SwapModalField.native],
       inputCurrency,
       outputCurrency,
       inputPrice,
