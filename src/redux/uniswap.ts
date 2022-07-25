@@ -1,5 +1,4 @@
 import produce from 'immer';
-import concat from 'lodash/concat';
 import toLower from 'lodash/toLower';
 import uniq from 'lodash/uniq';
 import { Dispatch } from 'redux';
@@ -242,8 +241,9 @@ export const uniswapUpdateFavorites = (
   const normalizedFavorites = favorites.map(toLower);
 
   const updatedFavorites = add
-    ? uniq(concat(normalizedFavorites, assetAddress))
+    ? uniq(normalizedFavorites.concat(assetAddress))
     : excludeSpecifiedStrings(normalizedFavorites, assetAddress);
+
   const updatedFavoritesMeta =
     (await getUniswapFavoritesMetadata(updatedFavorites)) || favoritesMeta;
   dispatch({

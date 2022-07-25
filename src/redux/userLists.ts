@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, uniq } from 'lodash';
+import uniq from 'lodash/uniq';
 import { InteractionManager } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -196,8 +196,9 @@ export const userListsUpdateList = (
     // add or remove
     if (listIndex !== null) {
       const updatedListTokens = add
-        ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
+        ? uniq(allNewLists[listIndex].tokens.concat(assetAddress))
         : excludeSpecifiedStrings(allNewLists[listIndex].tokens, assetAddress);
+
       if (add) {
         dispatch(emitAssetRequest(assetAddress));
       }
