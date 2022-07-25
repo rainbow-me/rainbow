@@ -32,7 +32,9 @@ export {
 export {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
+  parseSimplehashNfts,
   handleAndSignImages,
+  getOpenSeaCollectionUrl,
   getFamilies,
   dedupeUniqueTokens,
   dedupeAssetsWithFamilies,

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { updateLanguageLocale } from '../languages';
 import {
+  settingsChangeAppIcon as changeAppIcon,
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
@@ -29,6 +30,7 @@ export default function useAccountSettings() {
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'settings' does not exist on type 'Defaul... Remove this comment to see the full error message
       settings: {
         accountAddress,
+        appIcon,
         chainId,
         nativeCurrency,
         network,
@@ -36,6 +38,7 @@ export default function useAccountSettings() {
       },
     }) => ({
       accountAddress,
+      appIcon,
       chainId,
       language,
       nativeCurrency,
@@ -51,6 +54,11 @@ export default function useAccountSettings() {
     [dispatch]
   );
 
+  const settingsChangeAppIcon = useCallback(
+    appIcon => dispatch(changeAppIcon(appIcon)),
+    [dispatch]
+  );
+
   const settingsChangeNativeCurrency = useCallback(
     currency => dispatch(changeNativeCurrency(currency)),
     [dispatch]
@@ -62,6 +70,7 @@ export default function useAccountSettings() {
   );
 
   return {
+    settingsChangeAppIcon,
     settingsChangeLanguage,
     settingsChangeNativeCurrency,
     settingsChangeTestnetsEnabled,
