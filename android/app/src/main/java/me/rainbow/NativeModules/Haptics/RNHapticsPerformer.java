@@ -6,16 +6,16 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 
 class RNHapticsPerformer {
-  // some phones are lying about having amplitude control
-  // Then, we make every second tick 0 length with 0 time
+  // some phones (e.g., OnePlus 7) are lying about having the amplitude control
+  // Then, we make every second tick 0 length with 0 ampl
   // so this is not impacting phones with amplitude control.
   // However, on those problematic phones, there are no vibrations at all
 
   static int [] addBreaks(int [] interval) {
     int [] results = new int[interval.length * 2];
     for (int i = 0; i < interval.length; i++) {
-      results[i * 2] = 0;
-      results[i * 2 + 1] = interval[i];
+      results[i * 2] = interval[i];
+      results[i * 2 + 1] = 0;
     }
     return results;
   }
@@ -23,8 +23,8 @@ class RNHapticsPerformer {
   static long [] addBreaks(long [] interval) {
     long [] results = new long[interval.length * 2];
     for (int i = 0; i < interval.length; i++) {
-      results[i * 2] = 0;
-      results[i * 2 + 1] = interval[i];
+      results[i * 2] = interval[i];
+      results[i * 2 + 1] = 0;
     }
     return results;
   }
@@ -88,8 +88,8 @@ class RNHapticsPerformer {
     if (mHasAmplitudeControl) {
       mVibrator.vibrate(
               VibrationEffect.createWaveform(
-                      new long[]{4},
-                      new int[]{30},
+                      addBreaks(new long[]{4}),
+                      addBreaks(new int[]{30}),
                       -1));
     }
   }
@@ -98,8 +98,8 @@ class RNHapticsPerformer {
     if (mHasAmplitudeControl) {
       mVibrator.vibrate(
               VibrationEffect.createWaveform(
-                      new long[]{2},
-                      new int[]{60},
+                      addBreaks(new long[]{2}),
+                      addBreaks(new int[]{60}),
                       -1));
     }
   }
