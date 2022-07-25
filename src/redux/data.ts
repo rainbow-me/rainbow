@@ -1194,8 +1194,8 @@ export const addressAssetsReceived = (
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
     .filter(
       asset =>
-        (isValidDomain(asset.name.replaceAll(' ', '')) ||
-          isValidDomain(asset.symbol)) &&
+        ((asset?.name && isValidDomain(asset?.name.replaceAll(' ', ''))) ||
+          (asset?.symbol && isValidDomain(asset.symbol))) &&
         !asset.isVerified
     )
     .map(asset => asset.uniqueId);
