@@ -158,9 +158,7 @@ const TokenFamilyHeader = ({
             />
           )}
         </View>
-        <View
-          style={[sx.title, { paddingLeft: title === 'Showcase' ? 1 : 10 }]}
-        >
+        <View style={[sx.title, { paddingLeft: 10 }]}>
           <Text numberOfLines={1} size="18px" weight="heavy">
             {title}
           </Text>
