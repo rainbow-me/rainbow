@@ -1,17 +1,18 @@
+import { MenuView } from '@react-native-menu/menu';
 import React from 'react';
 import isEqual from 'react-fast-compare';
-import { Text as RNText, StyleSheet, View } from 'react-native';
+import { Platform, Text as RNText, StyleSheet, View } from 'react-native';
 import {
   // @ts-ignore
   IS_TESTING,
 } from 'react-native-dotenv';
 // @ts-ignore
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../../../animations';
 import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@rainbow-me/design-system';
 import { useAccountAsset } from '@rainbow-me/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
@@ -168,11 +169,7 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.fav}>
           {isInfoButtonVisible && (
             <ContextMenuButton
-              activeOpacity={0}
-              isMenuPrimaryAction
               onPressMenuItem={contextMenuProps.handlePressMenuItem}
-              useActionSheetFallback={false}
-              wrapNativeComponent={false}
               {...contextMenuProps}
             >
               <ButtonPressAnimation>
