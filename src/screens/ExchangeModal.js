@@ -851,7 +851,6 @@ export default function ExchangeModal({
               inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
-              loading={loading}
               nativeAmount={nativeAmountDisplay}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={nativeFieldRef}
@@ -862,7 +861,7 @@ export default function ExchangeModal({
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
-              updateAmountOnFocus={maxInputUpdate}
+              updateAmountOnFocus={!maxInputUpdate}
             />
             {showOutputField && (
               <ExchangeOutputField
@@ -878,7 +877,6 @@ export default function ExchangeModal({
                   !!outputCurrency && {
                     onTapWhileDisabled: handleTapWhileDisabled,
                   })}
-                loading={loading}
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencyAssetType={outputCurrency?.type}
@@ -887,7 +885,6 @@ export default function ExchangeModal({
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
                 testID={`${testID}-output`}
-                updateAmountOnFocus={maxInputUpdate}
               />
             )}
           </FloatingPanel>

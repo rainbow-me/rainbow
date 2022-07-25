@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
+import { useDebounce } from 'use-debounce';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { useColorForAsset } from '@rainbow-me/hooks';
+import { useColorForAsset, useTimeout } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { fonts } from '@rainbow-me/styles';
@@ -29,18 +30,20 @@ const ExchangeNativeField = (
     address,
     editable,
     height,
-    loading,
     nativeAmount,
     nativeCurrency,
     onFocus,
     setNativeAmount,
-    updateOnFocus,
     testID,
   },
   ref
 ) => {
   const colorForAsset = useColorForAsset({ address });
+  const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState(nativeAmount);
+  const [debouncedValue] = useDebounce(value, 300);
+  const [startTimeout, stopTimeout] = useTimeout();
+  const [editing, setEditing] = useState(false);
 
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
     nativeCurrency
@@ -50,27 +53,19 @@ const ExchangeNativeField = (
     ref,
   ]);
 
+  const handleBlur = useCallback(() => setIsFocused(false), []);
   const handleFocus = useCallback(
     event => {
+      setIsFocused(true);
       onFocus?.(event);
-      if (loading) {
-        setNativeAmount(value);
-      }
     },
-    [loading, onFocus, setNativeAmount, value]
+    [onFocus]
   );
-
-  const onChangeText = useCallback(
-    text => {
-      setNativeAmount(text);
-      setValue(text);
-    },
-    [setNativeAmount]
-  );
-
   const { colors } = useTheme();
 
-  const isFocused = ref?.current?.isFocused();
+  useEffect(() => {
+    setNativeAmount(debouncedValue);
+  }, [debouncedValue, setNativeAmount]);
 
   const nativeAmountColor = useMemo(() => {
     const nativeAmountExists =
@@ -83,10 +78,10 @@ const ExchangeNativeField = (
   }, [colors, isFocused, nativeAmount]);
 
   useEffect(() => {
-    if (!isFocused || updateOnFocus) {
-      setValue(nativeAmount);
-    }
-  }, [nativeAmount, isFocused, updateOnFocus]);
+    setEditing(true);
+    startTimeout(() => setEditing(false), 1000);
+    return () => stopTimeout();
+  }, [value, startTimeout, stopTimeout]);
 
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
@@ -99,13 +94,14 @@ const ExchangeNativeField = (
           editable={editable}
           height={android ? height : 58}
           mask={mask}
-          onChangeText={onChangeText}
+          onBlur={handleBlur}
+          onChangeText={setValue}
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
           selectionColor={colorForAsset}
           testID={testID}
-          value={isFocused ? value : nativeAmount}
+          value={editing ? value : nativeAmount}
         />
       </Row>
     </TouchableWithoutFeedback>

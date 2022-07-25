@@ -32,7 +32,7 @@ export default function PriceImpactWarning({
   const headingValue = priceImpactNativeAmount ?? priceImpactPercentDisplay;
   return (
     <Animated.View {...props} style={[style, position.coverAsObject]}>
-      {isHighPriceImpact && headingValue && (
+      {isHighPriceImpact && (
         <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
           <Box paddingHorizontal="19px" paddingTop="19px">
             <Inline alignHorizontal="center">
