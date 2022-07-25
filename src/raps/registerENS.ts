@@ -38,7 +38,7 @@ export const createSetRecordsENSRap = async (
       RapActionTypes.setNameENS,
       ensActionParameters
     );
-    actions = concat(actions, setName);
+    actions = actions.concat(setName);
   }
 
   // create the overall rap
