@@ -285,7 +285,13 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [asset.id, asset?.network, isPhotoDownloadAvailable, isHiddenAsset, isSupportedOnRainbowWeb]);
+  }, [
+    asset.id,
+    asset?.network,
+    isPhotoDownloadAvailable,
+    isHiddenAsset,
+    isSupportedOnRainbowWeb,
+  ]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -339,8 +345,6 @@ const UniqueTokenExpandedStateHeader = ({
       }
     },
     [
-      accountAddress,
-      accountENS,
       asset,
       setClipboard,
       addHiddenToken,
