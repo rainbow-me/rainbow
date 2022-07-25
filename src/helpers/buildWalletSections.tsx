@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, flattenDeep } from 'lodash';
+import compact from 'lodash/compact';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -19,6 +19,7 @@ import networkTypes from './networkTypes';
 import {
   add,
   convertAmountToNativeDisplay,
+  flattenDeep,
   groupBy,
   multiply,
 } from './utilities';
