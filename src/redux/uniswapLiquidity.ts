@@ -1,4 +1,4 @@
-import { concat, uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
@@ -169,8 +169,9 @@ export const uniswapUpdateLiquidityTokens = (
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
+
     updatedLiquidityTokens = uniqBy(
-      concat(updatedLiquidityTokens, existingLiquidityTokens),
+      updatedLiquidityTokens.concat(existingLiquidityTokens),
       token => token.address
     ).filter(token => !!Number(token?.balance?.amount ?? 0));
   } else {

@@ -12,6 +12,7 @@ type nativeCurrencyType = typeof supportedNativeCurrencies;
 export const isNil = (value: unknown): value is null | undefined =>
   value == null;
 export const isNull = (value: unknown): value is null => value == null;
+
 export const isEmpty = (obj: any): boolean =>
   [Object, Array].includes((obj || {}).constructor) &&
   !Object.entries(obj || {}).length;
@@ -21,6 +22,7 @@ export const isString = (str: any): str is string => {
   }
   return false;
 };
+
 export const isNumber = (value: any) =>
   typeof value === 'number' && !Number.isNaN(value);
 
@@ -427,6 +429,11 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+export const flattenDeep = (arr: unknown[]): unknown[] =>
+  arr.flatMap(subArray =>
+    Array.isArray(subArray) ? flattenDeep(subArray) : subArray
+  );
 
 export const times = (n: number, fn: (i: number) => unknown) =>
   Array.from({ length: n }, (_, i) => fn(i));
