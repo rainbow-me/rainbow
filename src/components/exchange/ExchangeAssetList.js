@@ -30,6 +30,7 @@ import { TokenSectionTypes } from '@rainbow-me/helpers';
 import {
   useAndroidScrollViewGestureHandler,
   usePrevious,
+  useUserLists,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import store from '@rainbow-me/redux/store';
@@ -166,6 +167,7 @@ const ExchangeAssetList = (
     copyCount,
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
+  const { updateList } = useUserLists();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
@@ -287,7 +289,7 @@ const ExchangeAssetList = (
           toggleFavorite: onNewEmoji => {
             setLocalFavorite(prev => {
               const newValue = !prev[rowData.address];
-
+              updateList(rowData?.address, 'favorites', newValue);
               if (newValue) {
                 ios && onNewEmoji();
                 haptics.notificationSuccess();
@@ -312,6 +314,7 @@ const ExchangeAssetList = (
       onCopySwapDetailsText,
       testID,
       theme,
+      updateList,
     ]
   );
 
