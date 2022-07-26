@@ -277,6 +277,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case SWAP_UPDATE_INPUT_AMOUNT:
       return {
         ...state,
+        flipCurrenciesUpdate: false,
         independentField: SwapModalField.input,
         independentValue: action.payload.independentValue,
         maxInputUpdate: action.payload.maxInputUpdate,
@@ -284,14 +285,18 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case SWAP_UPDATE_NATIVE_AMOUNT:
       return {
         ...state,
+        flipCurrenciesUpdate: false,
         independentField: SwapModalField.native,
         independentValue: action.payload,
+        maxInputUpdate: false,
       };
     case SWAP_UPDATE_OUTPUT_AMOUNT:
       return {
         ...state,
+        flipCurrenciesUpdate: false,
         independentField: SwapModalField.output,
         independentValue: action.payload,
+        maxInputUpdate: false,
       };
     case SWAP_UPDATE_DEPOSIT_CURRENCY:
       return {
@@ -311,10 +316,12 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case SWAP_FLIP_CURRENCIES:
       return {
         ...state,
+        flipCurrenciesUpdate: action.payload.flipCurrenciesUpdate,
         independentField: action.payload.independentField,
         independentValue:
           action.payload.independentValue ?? state.independentValue,
         inputCurrency: action.payload.newInputCurrency,
+        maxInputUpdate: false,
         outputCurrency: action.payload.newOutputCurrency,
       };
     case SWAP_CLEAR_STATE:
