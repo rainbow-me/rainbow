@@ -371,9 +371,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     if (independentField === SwapModalField.input) {
       derivedValues[SwapModalField.input] = independentValue;
 
-      displayValues[DisplayValue.input] = maxInputUpdate
-        ? updatePrecisionToDisplay(independentValue, null, true)
-        : independentValue;
+      displayValues[DisplayValue.input] = independentValue;
 
       const nativeValue = inputPrice
         ? convertAmountToNativeAmount(independentValue, inputPrice)
