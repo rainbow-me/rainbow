@@ -150,7 +150,7 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
-  it('Should clear inputs when typing a number in inputs and the clearing it', async () => {
+  it('Should clear inputs when typing a number in inputs and then clearing it', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
@@ -194,7 +194,7 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
-  it('Should clear inputs when typing a number in inputs and the clearing it optimism', async () => {
+  it('Should clear inputs when typing a number in inputs and then clearing it optimism', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
@@ -219,7 +219,7 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
-  it('Should clear inputs when typing a number in inputs and the clearing it arbitrum', async () => {
+  it('Should clear inputs when typing a number in inputs and then clearing it arbitrum', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
@@ -238,7 +238,7 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
-  it('Should clear inputs when typing a number in inputs and the clearing it polygon', async () => {
+  it('Should clear inputs when typing a number in inputs and then clearing it polygon', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'WETH\n', true);
