@@ -274,7 +274,7 @@ const useSwapCurrencyList = (
             'verifiedAssets',
             'importedAssets',
           ]
-        : ['verifiedAssets'];
+        : ['verifiedAssets', 'importedAssets'];
     setLoading(true);
     await Promise.all(
       categories.map(assetType => getResultsForAssetType(assetType))
@@ -372,7 +372,7 @@ const useSwapCurrencyList = (
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
-      if (verifiedAssets?.length) {
+      if (verifiedAssetsWithImport?.length) {
         list.push({
           data: verifiedAssetsWithImport,
           key: 'verified',
@@ -380,14 +380,14 @@ const useSwapCurrencyList = (
           useGradientText: IS_TESTING === 'true' ? false : true,
         });
       }
-      if (highLiquidityAssets?.length) {
+      if (highLiquidityAssetsWithImport?.length) {
         list.push({
           data: highLiquidityAssetsWithImport,
           key: 'highLiquidity',
           title: tokenSectionTypes.unverifiedTokenSection,
         });
       }
-      if (lowLiquidityAssets?.length) {
+      if (lowLiquidityAssetsWithoutImport?.length) {
         list.push({
           data: lowLiquidityAssetsWithoutImport,
           key: 'lowLiqudiity',
