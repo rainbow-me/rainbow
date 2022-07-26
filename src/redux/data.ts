@@ -904,10 +904,11 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
       })
       .sort(({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0));
     const [latestTx] = txSortedByDescendingNonce;
-    const { address_from, nonce } = latestTx;
-    if (nonce) {
+    const addressFrom = latestTx?.address_from;
+    const nonce = latestTx?.nonce;
+    if (addressFrom && nonce) {
       // @ts-ignore-next-line
-      dispatch(incrementNonce(address_from!, nonce, network));
+      dispatch(incrementNonce(addressFrom!, nonce, network));
     }
   }
 };
