@@ -27,6 +27,7 @@ const AssetList = ({
     <EmptyAssetList
       {...props}
       hideHeader={hideHeader}
+      isAnimatedSkeleton
       isLoading={isLoading}
       isWalletEthZero={isWalletEthZero}
       network={network}

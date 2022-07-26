@@ -21,6 +21,7 @@ const EmptyAssetList = ({
   network,
   skeletonCount = 5,
   title,
+  isAnimatedSkeleton = false,
   ...props
 }) => {
   const { bottom: bottomInset } = useSafeArea();
@@ -64,7 +65,7 @@ const EmptyAssetList = ({
               <Column cover>
                 {times(skeletonCount, index => (
                   <AssetListItemSkeleton
-                    animated={!isWalletEthZero}
+                    animated={!isWalletEthZero || isAnimatedSkeleton}
                     descendingOpacity={descendingOpacity || isWalletEthZero}
                     index={index}
                     key={`skeleton${index}`}
