@@ -311,6 +311,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case SWAP_FLIP_CURRENCIES:
       return {
         ...state,
+        flipCurrenciesUpdate: action.payload.flipCurrenciesUpdate,
         independentField: action.payload.independentField,
         independentValue:
           action.payload.independentValue ?? state.independentValue,
