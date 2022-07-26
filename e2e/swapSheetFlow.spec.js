@@ -635,7 +635,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
-    // await device.clearKeychain();
+    await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
   });
 });
