@@ -150,6 +150,117 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
+  it('Should clear inputs when typing a number in inputs and the clearing it', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
+    await Helpers.checkIfVisible(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
+    await Helpers.waitAndTap('exchange-modal-input-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
+
+    await Helpers.checkIfElementHasString(
+      'exchange-modal-input-selection-button-text',
+      'DAI'
+    );
+    await Helpers.checkIfElementHasString(
+      'exchange-modal-output-selection-button-text',
+      'ETH'
+    );
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.typeText('exchange-modal-input', '246', true);
+    await Helpers.delay(2000);
+    await Helpers.clearField('exchange-modal-input-246');
+    await Helpers.checkIfVisible('exchange-modal-output');
+    await Helpers.typeText('exchange-modal-output', '246', true);
+    await Helpers.delay(2000);
+    await Helpers.clearField('exchange-modal-output-246');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    }
+  });
+
+  it('Should clear inputs when typing a number in inputs and the clearing it optimism', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-optimism');
+
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.tap('currency-select-list-exchange-coin-row-OP-optimism');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.typeText('exchange-modal-input', '246\n', false);
+    await Helpers.clearField('exchange-modal-input-246', '\n', false);
+    await Helpers.checkIfVisible('exchange-modal-output');
+    await Helpers.typeText('exchange-modal-output', '246\n', false);
+    await Helpers.clearField('exchange-modal-output-246', '\n', false);
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkForElementByLabel('Enter an Amount');
+
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    }
+  });
+
+  it('Should clear inputs when typing a number in inputs and the clearing it arbitrum', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-arbitrum');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.typeText('exchange-modal-input', '246\n', false);
+    await Helpers.clearField('exchange-modal-input-246', '\n', false);
+    await Helpers.checkIfVisible('exchange-modal-output');
+
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    }
+  });
+
+  it('Should clear inputs when typing a number in inputs and the clearing it polygon', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.typeText('currency-select-search-input', 'WETH\n', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.tap('currency-select-list-exchange-coin-row-MATIC-polygon');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.typeText('exchange-modal-input', '246\n', false);
+    await Helpers.clearField('exchange-modal-input-246', '\n', false);
+    await Helpers.checkIfVisible('exchange-modal-output');
+    await Helpers.typeText('exchange-modal-output', '246\n', false);
+    await Helpers.clearField('exchange-modal-output-246', '\n', false);
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkForElementByLabel('Enter an Amount');
+
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    }
+  });
+
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ETH as output', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
@@ -524,7 +635,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
-    await device.clearKeychain();
+    // await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
   });
 });
