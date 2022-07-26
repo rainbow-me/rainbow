@@ -180,13 +180,16 @@ describe('Swap Sheet Interaction Flow', () => {
     );
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246', true);
-    await Helpers.delay(2000);
     await Helpers.clearField('exchange-modal-input-246');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.typeText('exchange-modal-output', '246', true);
-    await Helpers.delay(2000);
     await Helpers.clearField('exchange-modal-output-246');
     await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.typeText('exchange-modal-input-native', '246\n', true);
+    await Helpers.clearField('exchange-modal-input-native-246');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkIfVisible('exchange-modal-output');
+
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
@@ -205,12 +208,16 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-OP-optimism');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-246', '\n', false);
+    await Helpers.clearField('exchange-modal-input-246');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.typeText('exchange-modal-output', '246\n', false);
-    await Helpers.clearField('exchange-modal-output-246', '\n', false);
+    await Helpers.clearField('exchange-modal-output-246');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkForElementByLabel('Enter an Amount');
+    await Helpers.typeText('exchange-modal-input-native', '246\n', false);
+    await Helpers.clearField('exchange-modal-input-native-246');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkIfVisible('exchange-modal-output');
 
     if (device.getPlatform() === 'android') {
       await device.pressBack();
@@ -228,9 +235,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-246', '\n', false);
+    await Helpers.clearField('exchange-modal-input-246');
     await Helpers.checkIfVisible('exchange-modal-output');
-
+    await Helpers.typeText('exchange-modal-input-native', '246\n', false);
+    await Helpers.clearField('exchange-modal-input-native-246');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkIfVisible('exchange-modal-output');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
@@ -247,13 +257,15 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-MATIC-polygon');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-246', '\n', false);
+    await Helpers.clearField('exchange-modal-input-246');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.typeText('exchange-modal-output', '246\n', false);
-    await Helpers.clearField('exchange-modal-output-246', '\n', false);
+    await Helpers.clearField('exchange-modal-output-246');
     await Helpers.checkIfVisible('exchange-modal-input');
-    await Helpers.checkForElementByLabel('Enter an Amount');
-
+    await Helpers.typeText('exchange-modal-input-native', '246\n', false);
+    await Helpers.clearField('exchange-modal-input-native-246');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkIfVisible('exchange-modal-output');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
