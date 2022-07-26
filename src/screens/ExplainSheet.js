@@ -9,12 +9,15 @@ import { Centered, Column, ColumnWithMargins, Row } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import { Box } from '@rainbow-me/design-system';
+import { Box } from '@/design-system';
+import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
+import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
@@ -67,6 +70,29 @@ const Gradient = styled(GradientText).attrs({
   steps: [0, 0.5, 1],
   weight: 'heavy',
 })({});
+
+const OptimismAppIcon = () => {
+  const { colors, isDarkMode } = useTheme();
+  return (
+    <Box
+      style={{
+        shadowColor: isDarkMode ? colors.shadowBlack : colors.optimismRed,
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={AppIconOptimism}
+        style={{
+          width: 64,
+          height: 64,
+        }}
+      />
+    </Box>
+  );
+};
 
 const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
@@ -146,6 +172,8 @@ const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
 
 const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
 
+const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
+
 export const explainers = (params, colors) => ({
   output_disabled: {
     extraHeight: -30,
@@ -167,6 +195,28 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
+  },
+  optimism_app_icon: {
+    logo: <OptimismAppIcon />,
+    extraHeight: -25,
+    text: OPTIMISM_APP_ICON_EXPLAINER,
+    title: lang.t('explain.optimism_app_icon.title'),
+    buttonColor: colors?.optimismRed,
+    buttonText: lang.t('explain.optimism_app_icon.button'),
+    button: {
+      onPress: (navigate, goBack, handleClose) => () => {
+        if (handleClose) handleClose();
+        if (goBack) goBack();
+        setTimeout(() => {
+          navigate(Routes.SETTINGS_SHEET);
+          setTimeout(() => {
+            navigate(Routes.SETTINGS_SHEET, {
+              screen: 'AppIconSection',
+            });
+          }, 300);
+        }, 300);
+      },
+    },
   },
   floor_price: {
     emoji: '📊',
@@ -591,7 +641,7 @@ const ExplainSheet = () => {
   const type = params.type;
 
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
@@ -658,7 +708,11 @@ const ExplainSheet = () => {
         )}
         isTransparent
         label={explainSheetConfig.buttonText || lang.t('button.got_it')}
-        onPress={handleClose}
+        onPress={
+          explainSheetConfig.button?.onPress
+            ? explainSheetConfig.button.onPress(navigate, goBack, handleClose)
+            : handleClose
+        }
         size="big"
         textColor={explainSheetConfig.buttonColor || colors.appleBlue}
         weight="heavy"
@@ -672,6 +726,7 @@ const ExplainSheet = () => {
   }, [
     colors,
     explainSheetConfig.buttonColor,
+    explainSheetConfig.button?.onPress,
     explainSheetConfig.buttonText,
     explainSheetConfig?.readMoreLink,
     explainSheetConfig?.secondaryButtonColor,
@@ -680,6 +735,7 @@ const ExplainSheet = () => {
     goBack,
     handleClose,
     handleReadMore,
+    navigate,
     type,
   ]);
 
@@ -732,6 +788,7 @@ const ExplainSheet = () => {
                 {explainSheetConfig.text}
               </Text>
             )}
+
             {explainSheetConfig?.stillCurious &&
               explainSheetConfig.stillCurious}
             {buttons}

@@ -44,7 +44,10 @@ import { Playground } from './design-system/playground/Playground';
 import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
-import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
+import {
+  runFeatureUnlockChecks,
+  runWalletBackupStatusChecks,
+} from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
@@ -203,6 +206,11 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runWalletBackupStatusChecks();
+      if (ios) {
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => runFeatureUnlockChecks(), 2000);
+        });
+      }
     }
   }
 
