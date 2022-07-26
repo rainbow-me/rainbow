@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { isEmpty, isEqual } from 'lodash';
+import { isEmpty } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -464,13 +464,10 @@ export default function ExchangeModal({
 
   // Update gas limit
   useEffect(() => {
-    if (
-      !isEmpty(gasFeeParamsBySpeed) &&
-      !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed)
-    ) {
+    if (!isEmpty(gasFeeParamsBySpeed)) {
       updateGasLimit();
     }
-  }, [gasFeeParamsBySpeed, prevGasFeesParamsBySpeed, updateGasLimit]);
+  }, [gasFeeParamsBySpeed, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {

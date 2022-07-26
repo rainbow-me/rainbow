@@ -363,7 +363,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         },
       };
     }
-
     if (!independentValue) {
       return resetSwapInputs();
     }
@@ -540,7 +539,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     independentValue,
     inputCurrency,
     inputPrice,
-    maxInputUpdate,
     outputCurrency,
     outputPrice,
     resetSwapInputs,
@@ -550,7 +548,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   ]);
   const { data, isLoading } = useQuery({
     cacheTime: IS_TESTING !== 'true' ? 0 : 10000,
-    enabled: !!debouncedIndependentValue,
     queryFn: getTradeDetails,
     queryKey: [
       'getTradeDetails',
@@ -574,7 +571,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
 
   return {
     insufficientLiquidity: data?.insufficientLiquidity || false,
-    loading: isLoading && Boolean(independentValue),
+    loading: Boolean(
+      isLoading && (Boolean(independentValue) || independentValue !== '')
+    ),
     resetSwapInputs,
     result: data?.result || {
       derivedValues,
