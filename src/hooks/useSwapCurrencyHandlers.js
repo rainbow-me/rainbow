@@ -163,7 +163,6 @@ export default function useSwapCurrencyHandlers({
       );
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
       updateOutputAmount(null);
-      // outputFieldRef?.current?.clear();
       flipSwapCurrenciesWithTimeout(
         inputFieldRef,
         false,
