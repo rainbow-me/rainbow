@@ -105,7 +105,7 @@ const useSwapCurrencyList = (
   const handleSearchResponse = useCallback(
     (tokens: RT[]) => {
       // These transformations are necessary for L2 tokens to match our spec
-      return tokens
+      return (tokens || [])
         .map(token => {
           token.address = token.networks?.[chainId]?.address || token.address;
           if (chainId !== MAINNET_CHAINID) {

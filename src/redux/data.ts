@@ -895,16 +895,20 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
   if (transactionData.length) {
     const { accountAddress, network } = getState().settings;
     const txSortedByDescendingNonce = transactionData
-      .filter(
-        ({ address_from }) =>
-          address_from?.toLowerCase() === accountAddress.toLowerCase()
-      )
+      .filter(tx => {
+        const addressFrom = tx?.address_from;
+        return (
+          addressFrom &&
+          addressFrom.toLowerCase() === accountAddress.toLowerCase()
+        );
+      })
       .sort(({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0));
     const [latestTx] = txSortedByDescendingNonce;
-    const { address_from, nonce } = latestTx;
-    if (nonce) {
+    const addressFrom = latestTx?.address_from;
+    const nonce = latestTx?.nonce;
+    if (addressFrom && nonce) {
       // @ts-ignore-next-line
-      dispatch(incrementNonce(address_from!, nonce, network));
+      dispatch(incrementNonce(addressFrom!, nonce, network));
     }
   }
 };
@@ -1191,8 +1195,8 @@ export const addressAssetsReceived = (
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
     .filter(
       asset =>
-        (isValidDomain(asset.name.replaceAll(' ', '')) ||
-          isValidDomain(asset.symbol)) &&
+        ((asset?.name && isValidDomain(asset?.name.replaceAll(' ', ''))) ||
+          (asset?.symbol && isValidDomain(asset.symbol))) &&
         !asset.isVerified
     )
     .map(asset => asset.uniqueId);
