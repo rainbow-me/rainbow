@@ -533,7 +533,7 @@ export default function ExchangeModal({
         if (!wallet) {
           setIsAuthorizing(false);
           logger.sentry(`aborting ${type} due to missing wallet`);
-          return;
+          return false;
         }
 
         const callback = (success = false, errorMessage = null) => {
@@ -577,11 +577,13 @@ export default function ExchangeModal({
         // Tell iOS we finished running a rap (for tracking purposes)
         NotificationManager &&
           NotificationManager.postNotification('rapCompleted');
+        return true;
       } catch (error) {
         setIsAuthorizing(false);
         logger.log('[exchange - handle submit] error submitting swap', error);
         setParams({ focused: false });
         navigate(Routes.WALLET_SCREEN);
+        return false;
       }
     },
     [
@@ -656,8 +658,11 @@ export default function ExchangeModal({
     if (cancelTransaction) {
       return false;
     }
-    submit(amountInUSD);
-    return true;
+    try {
+      return await submit(amountInUSD);
+    } catch (e) {
+      return false;
+    }
   }, [
     outputPriceValue,
     outputAmount,
