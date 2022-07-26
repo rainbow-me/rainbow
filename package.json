@@ -355,6 +355,7 @@
     "**/postcss": "8.2.13",
     "**/resolve": "1.8.1",
     "**/semver": "7.3.2",
+    "**/terser": "5.14.2",
     "**/xmldom": "github:xmldom/xmldom#c568938641cc1f121cef5b4df80fcfda1e489b6e",
     "**/xmlhttprequest-ssl": "1.6.2",
     "**/y18n": "5.0.5",

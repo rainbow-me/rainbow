@@ -138,6 +138,7 @@ export const settingsLoadState = () => async (
     });
 
     const flashbotsEnabled = await getFlashbotsEnabled();
+
     analytics.identify(null, {
       currency: nativeCurrency,
       enabledFlashbots: flashbotsEnabled,

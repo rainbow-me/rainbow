@@ -531,7 +531,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     independentValue,
     inputCurrency,
     inputPrice,
-    maxInputUpdate,
     outputCurrency,
     outputPrice,
     resetSwapInputs,

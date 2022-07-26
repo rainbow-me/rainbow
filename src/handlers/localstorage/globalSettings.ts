@@ -82,13 +82,6 @@ export const getTestnetsEnabled = () => getGlobal(TESTNETS_ENABLED, false);
 export const saveTestnetsEnabled = (preference: boolean) => {
   saveGlobal(TESTNETS_ENABLED, preference);
 };
-/**
- * @desc save app icon  preference
- * @param  {string}  [value]
- */
-export const saveAppIcon = (appIcon: string) => {
-  saveGlobal(APP_ICON, appIcon);
-};
 
 /**
  * @desc get flashbots preference
@@ -101,4 +94,12 @@ export const getFlashbotsEnabled = () => getGlobal(FLASHBOTS_ENABLED, false);
  */
 export const saveFlashbotsEnabled = (preference: boolean) => {
   saveGlobal(FLASHBOTS_ENABLED, preference);
+};
+
+/**
+ * @desc save app icon  preference
+ * @param  {string}  [value]
+ */
+export const saveAppIcon = (appIcon: string) => {
+  saveGlobal(APP_ICON, appIcon);
 };
