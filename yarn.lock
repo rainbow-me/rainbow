@@ -3939,10 +3939,10 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@0.1.12":
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.12.tgz#2056abb65a107e9468169d1251456e95c048aff0"
-  integrity sha512-oV5FeubnwgRuqyK1OrM2fEbmNSxlX3dUNPlm+yX9X6xqX4+HsMcauTY0KvIBR8uM7I15ddqGW77tqyBOYIlGfw==
+"@rainbow-me/swaps@0.1.14":
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.14.tgz#9772f9a5ab21b6d3f88d9f90424f5d42b4f68fd2"
+  integrity sha512-AJlirHhXhRfnTuRt1Yr4L4qTtuVGUF21FpCjfy02jUSsYYJ6GxVSuUWdqePNgKaADfMQwp/R/i1tP7Y1di6CmQ==
   dependencies:
     "@ethersproject/abi" "5.6.0"
     "@ethersproject/bignumber" "5.6.0"
