@@ -117,7 +117,8 @@ const getNativeAssetForNetwork = async (
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
-  let differentWallet = address.toLowerCase() !== accountAddress.toLowerCase();
+  let differentWallet =
+    address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
