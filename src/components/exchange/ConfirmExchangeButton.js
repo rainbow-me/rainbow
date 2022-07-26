@@ -149,12 +149,11 @@ export default function ConfirmExchangeButton({
     !isSufficientBalance ||
     !isSufficientGas ||
     !isValidGas ||
-    !isSufficientGas ||
-    isSwapSubmitting;
+    !isSufficientGas;
 
   const onSwap = useCallback(async () => {
-    ios && setIsSwapSubmitting(true);
-    const submitted = await onSubmit();
+    setIsSwapSubmitting(true);
+    const submitted = await onSubmit(setIsSwapSubmitting);
     setIsSwapSubmitting(submitted);
   }, [onSubmit]);
 
@@ -175,10 +174,11 @@ export default function ConfirmExchangeButton({
               isSwapSubmitting ? buttonColor : disabledButtonColor
             }
             hideInnerBorder
+            isAuthorizing={isSwapSubmitting}
             label={label}
             loading={loadingQuote || isSwapSubmitting}
             onLongPress={
-              loading
+              loading || isSwapSubmitting
                 ? NOOP
                 : insufficientLiquidity
                 ? handleShowLiquidityExplainer
