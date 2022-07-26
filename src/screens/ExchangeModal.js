@@ -455,10 +455,7 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (
-      (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) ||
-      !isGasReady
-    ) {
+    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
       updateTxFee(defaultGasLimit);
     }
   }, [
