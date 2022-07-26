@@ -461,7 +461,6 @@ export default function ExchangeModal({
   }, [
     defaultGasLimit,
     gasFeeParamsBySpeed,
-    isGasReady,
     prevGasFeesParamsBySpeed,
     updateTxFee,
   ]);
