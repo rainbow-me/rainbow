@@ -157,7 +157,7 @@ const TokenFamilyHeader = ({
         </View>
         <View style={[sx.title, { paddingLeft: 10 }]}>
           <Text
-            color="secondary60"
+            color={title === 'Hidden' ? 'secondary60' : 'primary'}
             numberOfLines={1}
             size="18px"
             weight="heavy"
@@ -167,7 +167,11 @@ const TokenFamilyHeader = ({
         </View>
         <View style={[sx.center, sx.amountContainer]}>
           <Animated.View style={amountAnimatedStyles}>
-            <Text align="right" color="secondary60" size="18px">
+            <Text
+              align="right"
+              color={title === 'Hidden' ? 'secondary60' : 'primary'}
+              size="18px"
+            >
               {childrenAmount}
             </Text>
           </Animated.View>
