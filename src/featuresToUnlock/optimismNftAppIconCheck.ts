@@ -32,6 +32,8 @@ const getKovanOpProvider = async () => {
   return null;
 };
 
+const mmkv = new MMKV();
+
 export const optimismNftAppIconCheck = async (
   featureCheckName: string,
   walletsToCheck: EthereumAddress[]
@@ -58,7 +60,6 @@ export const optimismNftAppIconCheck = async (
     if (found) {
       Navigation.handleAction(Routes.EXPLAIN_SHEET, {
         onClose: () => {
-          const mmkv = new MMKV();
           mmkv.set(featureCheckName, true);
           logger.log(
             'Feature check',
