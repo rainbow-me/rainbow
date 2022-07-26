@@ -35,7 +35,7 @@ export default function ConfirmExchangeButton({
   const { isSufficientGas, isValidGas, isGasReady } = useGas();
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
-  const [swapSubmitted, setSwapSubmitted] = useState(false);
+  const [isSwapSubmitting, setIsSwapSubmitting] = useState(false);
 
   const isSavings =
     type === ExchangeModalTypes.withdrawal ||
@@ -122,7 +122,7 @@ export default function ConfirmExchangeButton({
   } else if (!isValidGas) {
     label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isSwapDetailsRoute) {
-    if (swapSubmitted) {
+    if (isSwapSubmitting) {
       label = lang.t('button.confirm_exchange.submitting');
     } else {
       label = isHighPriceImpact
@@ -150,12 +150,13 @@ export default function ConfirmExchangeButton({
     !isSufficientGas ||
     !isValidGas ||
     !isSufficientGas ||
-    swapSubmitted;
+    isSwapSubmitting;
 
   const onSwap = useCallback(async () => {
+    ios && setIsSwapSubmitting(true);
     const submitted = await onSubmit();
-    setSwapSubmitted(submitted);
-  }, [onSubmit, setSwapSubmitted]);
+    setIsSwapSubmitting(submitted);
+  }, [onSubmit]);
 
   return (
     <Box>
@@ -164,16 +165,18 @@ export default function ConfirmExchangeButton({
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
             disableLongPress={
-              (shouldOpenSwapDetails && !insufficientLiquidity) || loading
+              (shouldOpenSwapDetails && !insufficientLiquidity) ||
+              loading ||
+              isSwapSubmitting
             }
             disableShimmerAnimation={insufficientLiquidity}
             disabled={isDisabled && !insufficientLiquidity}
             disabledBackgroundColor={
-              swapSubmitted ? buttonColor : disabledButtonColor
+              isSwapSubmitting ? buttonColor : disabledButtonColor
             }
             hideInnerBorder
             label={label}
-            loading={loadingQuote || swapSubmitted}
+            loading={loadingQuote || isSwapSubmitting}
             onLongPress={
               loading
                 ? NOOP
@@ -190,7 +193,7 @@ export default function ConfirmExchangeButton({
                   : shadowsForAsset
                 : shadows.default
             }
-            showBiometryIcon={isSwapDetailsRoute && !swapSubmitted}
+            showBiometryIcon={isSwapDetailsRoute && !isSwapSubmitting}
             testID={testID}
             {...props}
             parentHorizontalPadding={19}
