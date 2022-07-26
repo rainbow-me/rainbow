@@ -121,7 +121,12 @@ export default function useSwapCurrencyHandlers({
   const flipSwapCurrenciesWithTimeout = useCallback(
     (focusToRef, outputIndependentField = false, independentValue = null) => {
       InteractionManager.runAfterInteractions(() => {
-        dispatch(flipSwapCurrencies(outputIndependentField, independentValue));
+        dispatch(
+          flipSwapCurrencies(
+            outputIndependentField,
+            independentValue ? updatePrecisionToDisplay(independentValue) : null
+          )
+        );
         setTimeout(() => {
           focusTextInput(focusToRef.current);
         }, 50);
@@ -132,42 +137,42 @@ export default function useSwapCurrencyHandlers({
 
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
-      const outputAmount = derivedValues?.outputAmount;
       updateOutputAmount(null);
+      outputFieldRef?.current?.clear();
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
           ? nativeFieldRef
           : inputFieldRef,
         false,
-        outputAmount ? updatePrecisionToDisplay(outputAmount) : null
+        derivedValues?.outputAmount
       );
     } else if (nativeFieldRef.current === currentlyFocusedInput()) {
-      const inputAmount = derivedValues?.inputAmount;
-      updateOutputAmount(null);
-      updateNativeAmount(null);
-      flipSwapCurrenciesWithTimeout(
-        outputFieldRef,
-        true,
-        inputAmount ? updatePrecisionToDisplay(inputAmount) : null
-      );
-    } else if (inputFieldRef.current === currentlyFocusedInput()) {
-      const inputAmount = derivedValues?.inputAmount;
       updateNativeAmount(null);
       updateInputAmount(null);
+      inputFieldRef?.current?.clear();
+      nativeFieldRef?.current?.clear();
       flipSwapCurrenciesWithTimeout(
         outputFieldRef,
         true,
-        inputAmount ? updatePrecisionToDisplay(inputAmount) : null
+        derivedValues?.inputAmount
+      );
+    } else if (inputFieldRef.current === currentlyFocusedInput()) {
+      updateNativeAmount(null);
+      updateInputAmount(null);
+      inputFieldRef?.current?.clear();
+      nativeFieldRef?.current?.clear();
+      flipSwapCurrenciesWithTimeout(
+        outputFieldRef,
+        true,
+        derivedValues?.inputAmount
       );
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
-      const outputAmount = derivedValues?.outputAmount;
       updateOutputAmount(null);
+      outputFieldRef?.current?.clear();
       flipSwapCurrenciesWithTimeout(
         inputFieldRef,
         false,
-        outputAmount
-          ? updatePrecisionToDisplay(derivedValues?.outputAmount)
-          : null
+        derivedValues?.outputAmount
       );
     }
   }, [

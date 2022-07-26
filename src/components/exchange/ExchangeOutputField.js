@@ -12,6 +12,7 @@ const Container = styled(Row).attrs({ align: 'center' })({
 
 export default function ExchangeOutputField({
   editable,
+  loading,
   network,
   onFocus,
   onPressSelectOutputCurrency,
@@ -23,6 +24,7 @@ export default function ExchangeOutputField({
   outputCurrencySymbol,
   outputFieldRef,
   setOutputAmount,
+  updateAmountOnFocus,
   testID,
 }) {
   return (
@@ -31,6 +33,7 @@ export default function ExchangeOutputField({
         address={outputCurrencyAddress}
         amount={outputAmount}
         editable={editable}
+        loading={loading}
         mainnetAddress={outputCurrencyMainnetAddress}
         network={network}
         onFocus={onFocus}
@@ -41,6 +44,7 @@ export default function ExchangeOutputField({
         symbol={outputCurrencySymbol}
         testID={testID}
         type={outputCurrencyAssetType}
+        updateOnFocus={updateAmountOnFocus}
         useCustomAndroidMask={android}
       />
     </Container>

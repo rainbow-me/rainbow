@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect } from 'react';
 import { TouchableWithoutFeedback, View } from 'react-native';
-import { useDebounce } from 'use-debounce';
 import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { AssetType } from '@rainbow-me/entities';
-import { useColorForAsset, useTimeout } from '@rainbow-me/hooks';
+import { useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 
@@ -52,6 +51,7 @@ const ExchangeField = (
     amount,
     disableCurrencySelection,
     editable,
+    loading,
     type,
     network,
     onBlur,
@@ -62,12 +62,14 @@ const ExchangeField = (
     symbol,
     testID,
     useCustomAndroidMask = false,
-    updateOnFocus = true,
+    updateOnFocus = false,
     ...props
   },
   ref
 ) => {
   const { colors } = useTheme();
+  const [value, setValue] = useState(amount);
+
   const colorForAsset = useColorForAsset({
     address,
     fallbackColor: colors.appleBlue,
@@ -78,10 +80,6 @@ const ExchangeField = (
     ref?.current?.focus();
   }, [ref]);
 
-  const [value, setValue] = useState(amount);
-  const [editing, setEditing] = useState(false);
-  const [debouncedValue] = useDebounce(value, 300);
-  const [startTimeout, stopTimeout] = useTimeout();
   const handleBlur = useCallback(
     event => {
       onBlur?.(event);
@@ -90,28 +88,35 @@ const ExchangeField = (
   );
   const handleFocus = useCallback(
     event => {
-      if (updateOnFocus) {
-        onFocus?.(event);
+      onFocus?.(event);
+      if (loading) {
+        setAmount(value);
       }
     },
-    [onFocus, updateOnFocus]
+    [loading, onFocus, setAmount, value]
   );
 
-  useEffect(() => {
-    setAmount(debouncedValue);
-  }, [debouncedValue, setAmount]);
-
-  useEffect(() => {
-    setEditing(true);
-    startTimeout(() => setEditing(false), 1000);
-    return () => stopTimeout();
-  }, [value, startTimeout, stopTimeout]);
+  const onChangeText = useCallback(
+    text => {
+      setAmount(text);
+      setValue(text);
+    },
+    [setAmount]
+  );
 
   const placeholderTextColor = symbol
     ? colors.alpha(colors.blueGreyDark, 0.3)
     : colors.alpha(colors.blueGreyDark, 0.1);
 
   const placeholderText = symbol ? '0' : EnDash.unicode;
+
+  const editing = ref?.current?.isFocused() ?? false;
+
+  useEffect(() => {
+    if (!editing || updateOnFocus) {
+      setValue(amount);
+    }
+  }, [amount, editing, updateOnFocus]);
 
   return (
     <Container {...props}>
@@ -141,7 +146,7 @@ const ExchangeField = (
             color={colorForAsset}
             editable={editable}
             onBlur={handleBlur}
-            onChangeText={setValue}
+            onChangeText={onChangeText}
             onFocus={handleFocus}
             placeholder={placeholderText}
             placeholderTextColor={placeholderTextColor}

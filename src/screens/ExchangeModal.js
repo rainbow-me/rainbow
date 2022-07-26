@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -143,7 +143,11 @@ export default function ExchangeModal({
 }) {
   const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
-  const { slippageInBips, maxInputUpdate } = useSwapSettings();
+  const {
+    slippageInBips,
+    maxInputUpdate,
+    flipCurrenciesUpdate,
+  } = useSwapSettings();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute();
@@ -460,10 +464,13 @@ export default function ExchangeModal({
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(gasFeeParamsBySpeed)) {
+    if (
+      !isEmpty(gasFeeParamsBySpeed) &&
+      !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed)
+    ) {
       updateGasLimit();
     }
-  }, [gasFeeParamsBySpeed, updateGasLimit]);
+  }, [gasFeeParamsBySpeed, prevGasFeesParamsBySpeed, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
@@ -851,6 +858,7 @@ export default function ExchangeModal({
               inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
+              loading={loading}
               nativeAmount={nativeAmountDisplay}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={nativeFieldRef}
@@ -861,7 +869,7 @@ export default function ExchangeModal({
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
-              updateAmountOnFocus={!maxInputUpdate}
+              updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
             />
             {showOutputField && (
               <ExchangeOutputField
@@ -877,6 +885,7 @@ export default function ExchangeModal({
                   !!outputCurrency && {
                     onTapWhileDisabled: handleTapWhileDisabled,
                   })}
+                loading={loading}
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencyAssetType={outputCurrency?.type}
@@ -885,6 +894,7 @@ export default function ExchangeModal({
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
                 testID={`${testID}-output`}
+                updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
               />
             )}
           </FloatingPanel>
