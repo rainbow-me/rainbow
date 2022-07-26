@@ -32,7 +32,7 @@ export default function ConfirmExchangeButton({
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
-  const { isSufficientGas, isValidGas } = useGas();
+  const { isSufficientGas, isValidGas, isGasReady } = useGas();
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
   const [isSwapSubmitting, setIsSwapSubmitting] = useState(false);
@@ -101,6 +101,7 @@ export default function ConfirmExchangeButton({
   ]);
 
   let label = '';
+  const loadingQuote = loading || (!loading && !isGasReady);
 
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
@@ -109,7 +110,7 @@ export default function ConfirmExchangeButton({
   } else if (type === ExchangeModalTypes.withdrawal) {
     label = lang.t('button.confirm_exchange.withdraw');
   }
-  if (loading) {
+  if (loadingQuote) {
     label = lang.t('button.confirm_exchange.fetching_quote');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
@@ -175,7 +176,7 @@ export default function ConfirmExchangeButton({
             hideInnerBorder
             isAuthorizing={isSwapSubmitting}
             label={label}
-            loading={loading || isSwapSubmitting}
+            loading={loadingQuote || isSwapSubmitting}
             onLongPress={
               loading || isSwapSubmitting
                 ? NOOP
