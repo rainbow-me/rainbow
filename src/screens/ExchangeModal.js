@@ -218,6 +218,7 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
     updateTxFee,
     txNetwork,
+    isGasReady,
   } = useGas();
   const {
     accountAddress,
@@ -454,20 +455,24 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
+    if (
+      (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) ||
+      !isGasReady
+    ) {
       updateTxFee(defaultGasLimit);
     }
   }, [
     defaultGasLimit,
     gasFeeParamsBySpeed,
+    isGasReady,
     prevGasFeesParamsBySpeed,
     updateTxFee,
   ]);
-
   // Update gas limit
   useEffect(() => {
     if (
-      txNetwork !== prevTxNetwork ||
+      !isGasReady ||
+      (!prevTxNetwork && txNetwork !== prevTxNetwork) ||
       (!isEmpty(gasFeeParamsBySpeed) &&
         !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed))
     ) {
@@ -475,6 +480,7 @@ export default function ExchangeModal({
     }
   }, [
     gasFeeParamsBySpeed,
+    isGasReady,
     prevGasFeesParamsBySpeed,
     prevTxNetwork,
     txNetwork,
