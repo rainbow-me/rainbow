@@ -152,10 +152,11 @@ export default function ConfirmExchangeButton({
     !isSufficientGas;
 
   const onSwap = useCallback(async () => {
+    if (isSwapSubmitting) return;
     setIsSwapSubmitting(true);
     const submitted = await onSubmit(setIsSwapSubmitting);
     setIsSwapSubmitting(submitted);
-  }, [onSubmit]);
+  }, [isSwapSubmitting, onSubmit]);
 
   return (
     <Box>
