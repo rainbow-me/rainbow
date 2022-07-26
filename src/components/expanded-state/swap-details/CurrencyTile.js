@@ -79,7 +79,6 @@ export default function CurrencyTile({
   const isOther =
     (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
-  //console.log('native amount display: ', nativeAmountDisplay);
   const priceDisplay = priceValue
     ? type === 'input'
       ? convertAmountToNativeDisplay(nativeAmountDisplay, nativeCurrency)
