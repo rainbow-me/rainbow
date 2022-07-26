@@ -10,8 +10,9 @@ import BaseScrollView, {
 import { useMemoOne } from 'use-memo-one';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';
+import { safeAreaInsetValues } from '@/utils';
 
-const extraPadding = { paddingBottom: 144 };
+const extraPadding = { paddingBottom: 100 + safeAreaInsetValues.bottom };
 const ExternalScrollViewWithRef = React.forwardRef<
   BaseScrollView,
   ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }
