@@ -217,6 +217,7 @@ export default function ExchangeModal({
     stopPollingGasFees,
     updateDefaultGasLimit,
     updateTxFee,
+    txNetwork,
   } = useGas();
   const {
     accountAddress,
@@ -228,6 +229,7 @@ export default function ExchangeModal({
   const [currentProvider, setCurrentProvider] = useState(null);
 
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
+  const prevTxNetwork = usePrevious(txNetwork);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -465,12 +467,19 @@ export default function ExchangeModal({
   // Update gas limit
   useEffect(() => {
     if (
-      !isEmpty(gasFeeParamsBySpeed) &&
-      !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed)
+      txNetwork !== prevTxNetwork ||
+      (!isEmpty(gasFeeParamsBySpeed) &&
+        !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed))
     ) {
       updateGasLimit();
     }
-  }, [gasFeeParamsBySpeed, prevGasFeesParamsBySpeed, updateGasLimit]);
+  }, [
+    gasFeeParamsBySpeed,
+    prevGasFeesParamsBySpeed,
+    prevTxNetwork,
+    txNetwork,
+    updateGasLimit,
+  ]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
