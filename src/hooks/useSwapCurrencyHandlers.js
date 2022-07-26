@@ -138,6 +138,7 @@ export default function useSwapCurrencyHandlers({
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
       updateOutputAmount(null);
+      outputFieldRef?.current?.clear();
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
           ? nativeFieldRef
@@ -148,6 +149,8 @@ export default function useSwapCurrencyHandlers({
     } else if (nativeFieldRef.current === currentlyFocusedInput()) {
       updateNativeAmount(null);
       updateInputAmount(null);
+      inputFieldRef?.current?.clear();
+      nativeFieldRef?.current?.clear();
       flipSwapCurrenciesWithTimeout(
         outputFieldRef,
         true,
@@ -156,6 +159,8 @@ export default function useSwapCurrencyHandlers({
     } else if (inputFieldRef.current === currentlyFocusedInput()) {
       updateNativeAmount(null);
       updateInputAmount(null);
+      inputFieldRef?.current?.clear();
+      nativeFieldRef?.current?.clear();
       flipSwapCurrenciesWithTimeout(
         outputFieldRef,
         true,
@@ -163,6 +168,7 @@ export default function useSwapCurrencyHandlers({
       );
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
       updateOutputAmount(null);
+      outputFieldRef?.current?.clear();
       flipSwapCurrenciesWithTimeout(
         inputFieldRef,
         false,
