@@ -1,17 +1,19 @@
 import { MenuView } from '@react-native-menu/menu';
 import React, { useMemo } from 'react';
-import { Platform } from 'react-native';
-import { lightModeThemeColors } from '@/styles';
+import { useLatestCallback } from '@/hooks';
 
 export default function ContextMenuAndroid({
   children,
   menuConfig: { menuItems, menuTitle },
-  ...rest
+  isAnchoredToRight,
+  handlePressMenuItem,
 }) {
   const actions = useMemo(() => {
     return [
       {
-        disabled: true,
+        attributes: {
+          disabled: true,
+        },
         id: 'title',
         title: menuTitle,
       },
@@ -24,14 +26,19 @@ export default function ContextMenuAndroid({
         };
       })
     );
-  }, [menuItems]);
+  }, [menuItems, menuTitle]);
+
+  const onPressAction = useLatestCallback(
+    ({ nativeEvent: { event } }) =>
+      handlePressMenuItem({ nativeEvent: { actionKey: event } }),
+    [handlePressMenuItem]
+  );
 
   return (
     <MenuView
       actions={actions}
-      onPressAction={({ nativeEvent }) => {
-        console.warn(JSON.stringify(nativeEvent));
-      }}
+      isAnchoredToRight={isAnchoredToRight}
+      onPressAction={onPressAction}
     >
       {children}
     </MenuView>

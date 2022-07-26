@@ -9,7 +9,6 @@ import {
   haptics,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-import { MenuView } from '@react-native-menu/menu';
 
 const buildBlockExplorerAction = (type: Network) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
@@ -20,7 +19,7 @@ const buildBlockExplorerAction = (type: Network) => {
     actionTitle: blockExplorerText,
     icon: {
       iconType: 'SYSTEM',
-      iconValue: ios ? 'link' : 'ic_menu_share',
+      iconValue: ios ? 'link' : null,
     },
   };
 };
@@ -36,7 +35,7 @@ const CoinRowActions = {
     actionTitle: lang.t('wallet.action.copy_contract_address'),
     icon: {
       iconType: 'SYSTEM',
-      iconValue: ios ? 'doc.on.doc' : 'ic_menu_copy',
+      iconValue: ios ? 'doc.on.doc' : null,
     },
   },
 };
@@ -104,7 +103,7 @@ export default function contextMenuProps(
   };
   return {
     menuConfig,
-    ...(android ? { onPress: onPressAndroid } : {}),
+    ...(android ? { isAnchoredToRight: true, onPress: onPressAndroid } : {}),
     handlePressMenuItem,
   };
 }

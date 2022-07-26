@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { StatusBar } from 'react-native';
+import { NativeModules, StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import currentColors from '../theme/currentColors';
@@ -31,6 +31,7 @@ export function onNavigationStateChange(currentState) {
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
+  android && NativeModules.MenuViewModule.dismiss();
 
   if (isOnSwipeScreen(routeName)) {
     action?.();
