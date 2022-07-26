@@ -179,7 +179,7 @@ export default function ConfirmExchangeButton({
             label={label}
             loading={loadingQuote || isSwapSubmitting}
             onLongPress={
-              loading
+              loading || isSwapSubmitting
                 ? NOOP
                 : insufficientLiquidity
                 ? handleShowLiquidityExplainer
