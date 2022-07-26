@@ -1,7 +1,6 @@
-import { MenuView } from '@react-native-menu/menu';
 import React from 'react';
 import isEqual from 'react-fast-compare';
-import { Platform, Text as RNText, StyleSheet, View } from 'react-native';
+import { Text as RNText, StyleSheet, View } from 'react-native';
 import {
   // @ts-ignore
   IS_TESTING,
