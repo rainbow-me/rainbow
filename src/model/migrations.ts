@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, uniq } from 'lodash';
 import RNFS from 'react-native-fs';
-import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
@@ -35,6 +34,7 @@ import {
   publicAccessControlOptions,
   saveString,
 } from './keychain';
+import { getGlobalMMKV } from './mmkv';
 import {
   DEFAULT_WALLET_NAME,
   loadAddress,
@@ -70,7 +70,7 @@ export default async function runMigrations() {
   // get current version
   const currentVersion = Number(await getMigrationVersion());
   const migrations = [];
-  const mmkv = new MMKV();
+  const mmkv = getGlobalMMKV();
 
   /*
    *************** Migration v0 ******************

@@ -10,7 +10,6 @@ import {
   toUpper,
   uniqBy,
 } from 'lodash';
-import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
@@ -23,6 +22,7 @@ import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
+import { getGlobalMMKV } from '@/model/mmkv';
 import {
   AssetTypes,
   NativeCurrencyKeys,
@@ -81,8 +81,7 @@ import {
 } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const storage = new MMKV();
-
+const storage = getGlobalMMKV();
 /**
  * Adds new hidden coins for an address and updates key-value storage.
  *

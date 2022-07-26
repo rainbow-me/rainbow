@@ -13,7 +13,6 @@ import React, {
 } from 'react';
 import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import { useTheme } from 'styled-components';
@@ -27,7 +26,7 @@ import {
 import NetworkSwitcher from '../components/exchange/NetworkSwitcher';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
-import { STORAGE_IDS } from '../model/mmkv';
+import { getGlobalMMKV, STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
@@ -54,7 +53,7 @@ import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils, filterList } from '@rainbow-me/utils';
 
-const storage = new MMKV();
+const storage = getGlobalMMKV();
 const getHasShownWarning = () =>
   storage.getBoolean(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING);
 const setHasShownWarning = () =>

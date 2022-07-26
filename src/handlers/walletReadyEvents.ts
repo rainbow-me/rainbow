@@ -1,6 +1,5 @@
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import { EthereumAddress } from '@/entities';
@@ -8,6 +7,7 @@ import {
   optimismNftAppIconCheck,
   UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
 } from '@/featuresToUnlock';
+import { getGlobalMMKV } from '@/model/mmkv';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -122,7 +122,7 @@ export const runFeatureUnlockChecks = () => {
     },
   ];
 
-  const mmkv = new MMKV();
+  const mmkv = getGlobalMMKV();
 
   featuresToUnlock.forEach(async feature => {
     // Check if it was handled already

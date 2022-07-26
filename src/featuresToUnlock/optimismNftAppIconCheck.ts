@@ -2,11 +2,11 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from 'ethers';
 // @ts-ignore-next-line
 import { OPTIMISM_KOVAN_RPC } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
 import { EthereumAddress } from '@/entities';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import config from '@/model/config';
+import { getGlobalMMKV } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
 import { opWrapABI } from '@/references';
 import { logger } from '@/utils';
@@ -32,7 +32,7 @@ const getKovanOpProvider = async () => {
   return null;
 };
 
-const mmkv = new MMKV();
+const mmkv = getGlobalMMKV();
 
 export const optimismNftAppIconCheck = async (
   featureCheckName: string,

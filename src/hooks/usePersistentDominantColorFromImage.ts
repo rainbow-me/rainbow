@@ -24,7 +24,7 @@ export default function usePersistentDominantColorFromImage(
   colorToMeasureAgainst: string = '#333333'
 ): Result {
   const [dominantColor, setPersistentDominantColor] = useMMKVString(
-    (url || '') as string,
+    (url || '696969') as string,
     storage
   );
 

@@ -20,7 +20,10 @@ type Result = {
 };
 
 export default function usePersistentAspectRatio(url: string): Result {
-  const [ratio, setAspectRatio] = useMMKVNumber((url || '') as string, storage);
+  const [ratio, setAspectRatio] = useMMKVNumber(
+    (url || '420420') as string,
+    storage
+  );
   const [state, setState] = useState<State>(ratio ? State.loaded : State.init);
   useEffect(() => {
     if (state === State.init && url) {

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { MMKV } from 'react-native-mmkv';
 import { RadioList, RadioListItem } from '../radio-list';
 import { UNLOCK_KEY_OPTIMISM_NFT_APP_ICON } from '@/featuresToUnlock';
+import { getGlobalMMKV } from '@/model/mmkv';
 import AppIconOg from '@rainbow-me/assets/appIconOg.png';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import AppIconPixel from '@rainbow-me/assets/appIconPixel.png';
@@ -72,7 +72,7 @@ const AppIconListItem = ({ name, value, source, color, ...item }) => {
   );
 };
 
-const mmkv = new MMKV();
+const mmkv = getGlobalMMKV();
 
 const AppIconSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();
