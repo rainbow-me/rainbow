@@ -101,7 +101,6 @@ export default function ConfirmExchangeButton({
   ]);
 
   let label = '';
-  const loadingQuote = loading || (!loading && !isGasReady);
 
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
@@ -110,7 +109,7 @@ export default function ConfirmExchangeButton({
   } else if (type === ExchangeModalTypes.withdrawal) {
     label = lang.t('button.confirm_exchange.withdraw');
   }
-  if (loadingQuote) {
+  if (loading) {
     label = lang.t('button.confirm_exchange.fetching_quote');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
@@ -119,7 +118,7 @@ export default function ConfirmExchangeButton({
       currentNetwork === NetworkTypes.polygon
         ? lang.t('button.confirm_exchange.insufficient_matic')
         : lang.t('button.confirm_exchange.insufficient_eth');
-  } else if (!isValidGas) {
+  } else if (!isValidGas && isGasReady) {
     label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isSwapDetailsRoute) {
     if (isSwapSubmitting) {
@@ -176,7 +175,7 @@ export default function ConfirmExchangeButton({
             hideInnerBorder
             isAuthorizing={isSwapSubmitting}
             label={label}
-            loading={loadingQuote || isSwapSubmitting}
+            loading={loading || isSwapSubmitting}
             onLongPress={
               loading || isSwapSubmitting
                 ? NOOP
