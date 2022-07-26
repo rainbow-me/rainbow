@@ -1,37 +1,81 @@
 diff --git a/node_modules/@react-native-menu/menu/.DS_Store b/node_modules/@react-native-menu/menu/.DS_Store
 new file mode 100644
-index 0000000..c68f0ac
-Binary files /dev/null and b/node_modules/@react-native-menu/menu/.DS_Store differ
-diff --git a/node_modules/@react-native-menu/menu/android/.DS_Store b/node_modules/@react-native-menu/menu/android/.DS_Store
-new file mode 100644
-index 0000000..b67a68d
-Binary files /dev/null and b/node_modules/@react-native-menu/menu/android/.DS_Store differ
-diff --git a/node_modules/@react-native-menu/menu/android/build.gradle b/node_modules/@react-native-menu/menu/android/build.gradle
-index dbd6a14..3caad9f 100644
---- a/node_modules/@react-native-menu/menu/android/build.gradle
-+++ b/node_modules/@react-native-menu/menu/android/build.gradle
-@@ -17,6 +17,8 @@ buildscript {
- apply plugin: 'com.android.library'
- apply plugin: 'kotlin-android'
- 
-+def DEFAULT_SUPPORT_LIB_VERSION             = "26.1.0"
-+
- def getExtOrDefault(name) {
-   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['Menu_' + name]
- }
+index 0000000..e69de29
 diff --git a/node_modules/@react-native-menu/menu/android/src/.DS_Store b/node_modules/@react-native-menu/menu/android/src/.DS_Store
 new file mode 100644
-index 0000000..1c040d0
-Binary files /dev/null and b/node_modules/@react-native-menu/menu/android/src/.DS_Store differ
+index 0000000..e69de29
 diff --git a/node_modules/@react-native-menu/menu/android/src/main/.DS_Store b/node_modules/@react-native-menu/menu/android/src/main/.DS_Store
 new file mode 100644
-index 0000000..5480bfe
-Binary files /dev/null and b/node_modules/@react-native-menu/menu/android/src/main/.DS_Store differ
+index 0000000..e69de29
+diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
+index 978d5e6..4ebfbc2 100644
+--- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
++++ b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
+@@ -1,20 +1,32 @@
+ package com.reactnativemenu
+ 
+-import java.util.Arrays
+-import java.util.Collections
+-
+ import com.facebook.react.ReactPackage
+-import com.facebook.react.bridge.NativeModule
+-import com.facebook.react.bridge.ReactApplicationContext
++import com.facebook.react.bridge.*
+ import com.facebook.react.uimanager.ViewManager
+-import com.facebook.react.bridge.JavaScriptModule
+ 
+ class MenuPackage : ReactPackage {
+     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+-        return emptyList()
++        return mutableListOf(MenuViewModule(reactContext))
+     }
+ 
+     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+         return mutableListOf(MenuViewManager())
+     }
+ }
++
++class MenuViewModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
++  override fun getName(): String {
++    return "MenuViewModule"
++  }
++
++  @ReactMethod
++  fun dismiss() {
++    reactContext.runOnUiQueueThread {
++      if (MenuView.shownModal !== null) {
++        MenuView.shownModal!!.dismiss()
++        MenuView.shownModal = null
++      }
++    }
++  }
++}
++
 diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
-index 1cec798..ebdd3a3 100644
+index 1cec798..aa04b5f 100644
 --- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
 +++ b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
-@@ -92,6 +92,12 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+@@ -16,6 +16,9 @@ import java.lang.reflect.Field
+ 
+ 
+ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
++  companion object {
++    var shownModal: PopupMenu? = null
++  }
+   private lateinit var mActions: ReadableArray
+   private var mIsAnchoredToRight = false
+   private val mPopupMenu: PopupMenu = PopupMenu(context, this)
+@@ -54,6 +57,9 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+     super.onDetachedFromWindow()
+     if (mIsMenuDisplayed) {
+       mPopupMenu.dismiss()
++      if (shownModal === mPopupMenu) {
++        shownModal = null
++      }
+     }
+   }
+ 
+@@ -92,6 +98,12 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
        true -> config.getMap("attributes")
        else -> null
      }
@@ -44,7 +88,7 @@ index 1cec798..ebdd3a3 100644
      val subactions = when (config != null && config.hasKey("subactions") && !config.isNull(("subactions"))) {
        true -> config.getArray("subactions")
        else -> null
-@@ -101,6 +107,8 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+@@ -101,6 +113,8 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
        menuItem.title = getMenuItemTextWithColor(menuItem.title.toString(), titleColor)
      }
  
@@ -53,3 +97,11 @@ index 1cec798..ebdd3a3 100644
      if (imageName != null) {
        val resourceId: Int = getDrawableIdWithName(imageName)
        if (resourceId != 0) {
+@@ -230,6 +244,7 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+       }
+       mIsMenuDisplayed = true
+       mPopupMenu.show()
++      shownModal = mPopupMenu
+     }
+   }
+ 
