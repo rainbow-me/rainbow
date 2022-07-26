@@ -31,7 +31,10 @@ export function onNavigationStateChange(currentState) {
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
-  android && NativeModules.MenuViewModule.dismiss();
+  if (android) {
+    NativeModules.MenuViewModule.dismiss();
+    setTimeout(NativeModules.MenuViewModule.dismiss, 400);
+  }
 
   if (isOnSwipeScreen(routeName)) {
     action?.();
