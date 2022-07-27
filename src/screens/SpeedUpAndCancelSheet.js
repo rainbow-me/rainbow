@@ -288,7 +288,7 @@ export default function SpeedUpAndCancelSheet() {
   // Set the provider
   useEffect(() => {
     if (currentNetwork) {
-      startPollingGasFees(currentNetwork);
+      startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
         let provider;
         if (tx.network === Network.mainnet && tx.flashbots) {
@@ -586,6 +586,7 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
+                      flashbotTransaction={tx.flashbots}
                       speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}
                     />
