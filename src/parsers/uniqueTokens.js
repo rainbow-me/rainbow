@@ -120,6 +120,12 @@ export const parseAccountUniqueTokens = data => {
             asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
               ? 'ENS'
               : collection.name,
+          /*
+           * TODO replace with `chain_identifier` from OpenSea API v2 response
+           * once we migrate off v1. `ethereum` here is hard-coded to match the
+           * v2 response we utilize on web profiles, as opposed to
+           * `Network.mainnet` that we typically use in the app.
+           */
           fullUniqueId: `ethereum_${asset_contract?.address}_${token_id}`,
           id: token_id,
           image_original_url: asset.image_url,

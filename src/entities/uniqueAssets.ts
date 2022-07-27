@@ -56,9 +56,6 @@ export interface UniqueAsset {
   marketplaceCollectionUrl?: string | null;
   marketplaceName: string | null;
   type: AssetType;
-  /**
-   * @deprecated use fullUniqueId
-   */
   uniqueId: string;
   /**
    * @description a computed unique value comprised of <network>_<address>_<token_id>
