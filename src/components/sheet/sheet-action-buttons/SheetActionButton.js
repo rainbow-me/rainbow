@@ -4,7 +4,7 @@ import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
-import { Emoji, Text } from '../../text';
+import { Text } from '@rainbow-me/design-system';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -19,12 +19,9 @@ const Button = styled(Centered)(({ isCharts, size }) => ({
 }));
 
 const Content = styled(RowWithMargins).attrs({
-  align: 'center',
   margin: 4,
 })({
-  height: ({ size }) => (size === 'big' ? 56 : 46),
   paddingBottom: ({ label }) => (label && containsEmoji(label) ? 2.5 : 1),
-  paddingHorizontal: 19,
   zIndex: 1,
 });
 
@@ -135,14 +132,18 @@ const SheetActionButton = ({
         )}
       </ShadowStack>
       <Content label={label} size={size}>
-        {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
+        {emoji && (
+          <Text containsEmoji lineHeight={23} size="15px">
+            {emoji}
+          </Text>
+        )}
         {icon && <Icon color="white" height={18} name={icon} size={18} />}
         {label ? (
           <Text
             align="center"
-            color={textColor}
+            color={{ custom: textColor }}
             numberOfLines={truncate ? 1 : undefined}
-            size={textSize ?? (size === 'big' ? 'larger' : 'large')}
+            size={textSize ?? (size === 'big' ? '20px' : '18px')}
             weight={weight}
           >
             {label}
