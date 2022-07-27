@@ -22,12 +22,9 @@ const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.whiteLabel,
   letterSpacing: 2,
-  lineHeight: android ? 68 : 66,
   size: ios ? 38 : 30,
   weight: 'semibold',
-}))({
-  width: android ? 66 : 67,
-});
+}))({ left: android ? -1 : 0 });
 
 export default function AvatarCircle({
   isAvatarPickerAvailable,
