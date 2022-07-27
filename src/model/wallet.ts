@@ -36,6 +36,7 @@ import profileUtils, {
 } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
+import match from '@/utils/match';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
@@ -257,18 +258,36 @@ export const loadWallet = async (
     if (isErrorBubbling) {
       throw err;
     }
-
-    const matched = matchError(err);
-    if (matched.KEYCHAIN_NOT_AUTHENTICATED) {
-      Alert.alert(
-        lang.t('errors.error'),
-        lang.t('errors.keychain.not_authenticated')
-      );
-      return null;
-    }
-
     if (showErrorIfNotLoaded) {
-      showWalletErrorAlert();
+      const matched = matchError(err);
+      if (
+        matched.KEYCHAIN_USER_CANCELED ||
+        matched.KEYCHAIN_CANCEL ||
+        matched.KEYCHAIN_FACE_UNLOCK_CANCEL
+      ) {
+        return null;
+      }
+
+      const textForAlert = match(
+        '',
+        [
+          matched.KEYCHAIN_ERROR_AUTHENTICATING,
+          lang.t('errors.keychain.error_authorization'),
+        ],
+        [
+          matched.KEYCHAIN_NOT_AUTHENTICATED,
+          lang.t('errors.keychain.not_authenticated'),
+        ],
+        [
+          matched.DECRYPT_ANDROID_PIN_ERROR,
+          lang.t('errors.keychain.decrypt_android_pin_error'),
+        ]
+      );
+      if (textForAlert) {
+        Alert.alert(lang.t('errors.error'), textForAlert);
+      } else {
+        showWalletErrorAlert();
+      }
     }
     return null;
   }
@@ -503,7 +522,7 @@ const loadPrivateKey = async (
 
       const privateKeyData = await getPrivateKey(addressToUse);
 
-      privateKey = privateKeyData?.privateKey ?? null;
+      privateKey = privateKeyData?.privateKey;
 
       let userPIN = null;
       if (android) {
@@ -1299,7 +1318,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
     } else {
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
-      seedPhrase = seedData?.seedphrase ?? null;
+      seedPhrase = seedData?.seedphrase;
 
       let userPIN = null;
       if (android) {

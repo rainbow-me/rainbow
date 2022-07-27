@@ -3,6 +3,8 @@ import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
+import match from '@/utils/match';
+import { matchError } from '@/utils/matchError';
 import {
   deleteAllBackups,
   fetchAllBackups,
@@ -137,7 +139,28 @@ export default function useManageCloudBackups() {
         }
       );
     } catch (err) {
-      //fetchUserDataFromCloud is not handling errors but at the same time can throw it
+      const matched = matchError(err);
+
+      const textForAlert = match(
+        lang.t('errors.connectWithSupport'),
+        [
+          matched.CLOUD_BACKUP_NO_BACKUPS_FOUND,
+          lang.t('errors.backup.no_backups_found'),
+        ],
+        [
+          matched.CLOUD_BACKUP_SPECIFIC_BACKUP_NOT_FOUND,
+          lang.t('errors.backup.specific_backup_no_found'),
+        ],
+        [
+          matched.CLOUD_BACKUP_ERROR_DECRYPTING_DATA,
+          lang.t('errors.backup.error_decrypting_data'),
+        ],
+        [
+          matched.CLOUD_BACKUP_ERROR_GETTING_ENCRYPTED_DATA,
+          lang.t('errors.backup.error_getting_data'),
+        ]
+      );
+      Alert.alert(textForAlert);
     }
   }, [dispatch, navigate, wallets]);
 

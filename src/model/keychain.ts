@@ -9,7 +9,6 @@ import {
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
   getAllInternetCredentials,
-  // getAllInternetCredentialsKeys,
   getInternetCredentials,
   getSupportedBiometryType,
   hasInternetCredentials,
@@ -21,16 +20,6 @@ import {
 } from 'react-native-keychain';
 import { delay, getKeyByValue } from '../helpers/utilities';
 import logger from 'logger';
-
-// interface AnonymousKey {
-//   length: number;
-//   nil: boolean;
-//   type: string;
-// }
-
-// interface AnonymousKeyData {
-//   [key: string]: AnonymousKey;
-// }
 
 export const keychainErrKey = {
   KEYCHAIN_ALLOCATE: 'Failed to allocate memory.',
@@ -132,7 +121,6 @@ export async function loadString(
         captureException(err);
         analytics.track('Error on getting credentials from keychain', {
           error: err,
-          os: ios ? 'ios' : 'android',
         });
 
         if (!isErrorBubbling) return null;
@@ -205,19 +193,6 @@ export async function loadAllKeys(): Promise<null | UserCredentials[]> {
     throw errCode;
   }
 }
-
-// export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
-//   const data: AnonymousKeyData = {};
-//   const results = await loadAllKeys();
-//   results?.forEach(result => {
-//     data[result?.username] = {
-//       length: result?.password?.length,
-//       nil: isNil(result?.password),
-//       type: typeof result?.password,
-//     };
-//   });
-//   return data;
-// }
 
 export async function hasKey(key: string): Promise<boolean | Result> {
   try {

@@ -1371,6 +1371,12 @@
         "error_authorization": "Your account has been secured with biometric data, like fingerprint or face identification. To continue this operation, turn on biometrics in your phone’s settings.",
         "not_authenticated": "Your current authentication method (Face Recognition) is not secure enough, please go to 'Settings > Biometrics & Security' and enable an alternative biometric method like Fingerprint or Iris.",
         "decrypt_android_pin_error": "We are having trouble verifying your password, please contact support"
+      },
+      "backup": {
+        "no_backups_found": "No Backups found",
+        "specific_backup_no_found": "Your Backup not found",
+        "error_decrypting_data": "Your Backup is damaged",
+        "error_getting_data": "The error occur while encrypting data"
       }
     }
   }

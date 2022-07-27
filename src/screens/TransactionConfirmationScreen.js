@@ -773,7 +773,7 @@ export default function TransactionConfirmationScreen() {
     try {
       const existingWallet = await loadWallet(
         accountInfo.address,
-        true,
+        false,
         provider,
         true
       );
