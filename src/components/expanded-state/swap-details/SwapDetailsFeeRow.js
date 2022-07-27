@@ -20,9 +20,9 @@ export default function SwapDetailsUniswapRow({ tradeDetails, network }) {
   const rainbowFeeNativeDisplay =
     rainbowFeeNative &&
     convertAmountToNativeDisplay(rainbowFeeNative, nativeCurrency);
-  const rainbowFeePercentageDisplay = convertAmountToPercentageDisplayWithThreshold(
-    rainbowFeePercentage
-  );
+  const rainbowFeePercentageDisplay = rainbowFeePercentage
+    ? convertAmountToPercentageDisplayWithThreshold(rainbowFeePercentage)
+    : '0%';
   const steps = rainbowFeeNativeDisplay
     ? [rainbowFeeNativeDisplay, rainbowFeePercentageDisplay]
     : [rainbowFeePercentageDisplay];
