@@ -96,9 +96,10 @@ export default function CurrencyTile({
         <Rows alignHorizontal="center" alignVertical="center" space="10px">
           <Row height="content">
             <CoinIcon
-              address={mainnet_address || address}
+              address={address}
               badgeXPosition={-5}
               badgeYPosition={0}
+              mainnet_address={mainnet_address}
               size={50}
               symbol={symbol}
               type={assetType}
