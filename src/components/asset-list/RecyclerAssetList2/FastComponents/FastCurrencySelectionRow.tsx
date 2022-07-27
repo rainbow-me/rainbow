@@ -124,6 +124,7 @@ export default React.memo(function FastCurrencySelectionRow({
             <View
               style={[
                 sx.column,
+                sx.flex,
                 {
                   justifyContent: showBalance ? 'center' : 'space-between',
                 },
