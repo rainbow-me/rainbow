@@ -1,4 +1,3 @@
-import { concat, reduce } from 'lodash';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
   createNewAction,
@@ -40,7 +39,7 @@ export const estimateUnlockAndSwap = async (
       inputCurrency.address,
       UNISWAP_V2_ROUTER_ADDRESS
     );
-    gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
+    gasLimits = gasLimits.concat(unlockGasLimit, ethUnits.basic_swap);
   } else {
     const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
       accountAddress,
@@ -50,10 +49,10 @@ export const estimateUnlockAndSwap = async (
       slippage,
       tradeDetails,
     });
-    gasLimits = concat(gasLimits, swapGasLimit);
+    gasLimits = gasLimits.concat(swapGasLimit);
   }
 
-  return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
+  return gasLimits.reduce((acc, limit) => add(acc, limit), '0');
 };
 
 export const createUnlockAndSwapRap = async (
@@ -80,7 +79,7 @@ export const createUnlockAndSwapRap = async (
       assetToUnlock: inputCurrency,
       contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
     });
-    actions = concat(actions, unlock);
+    actions = actions.concat(unlock);
   }
 
   // create a swap rap
@@ -88,7 +87,7 @@ export const createUnlockAndSwapRap = async (
     inputAmount,
     tradeDetails,
   });
-  actions = concat(actions, swap);
+  actions = actions.concat(swap);
 
   // create the overall rap
   const newRap = createNewRap(actions);

@@ -11,6 +11,8 @@ import AppVersionStamp from '../AppVersionStamp';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import AppIconIcon from '@rainbow-me/assets/settingsAppIcon.png';
+import AppIconIconDark from '@rainbow-me/assets/settingsAppIconDark.png';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
@@ -90,6 +92,7 @@ const checkAllWallets = (wallets: any) => {
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
+  onPressAppIcon: () => void;
   onPressBackup: () => void;
   onPressCurrency: () => void;
   onPressDev: () => void;
@@ -101,6 +104,7 @@ interface SettingsSectionProps {
 
 const SettingsSection = ({
   onCloseModal,
+  onPressAppIcon,
   onPressBackup,
   onPressCurrency,
   onPressDev,
@@ -364,6 +368,22 @@ const SettingsSection = ({
             size={60}
             titleComponent={
               <MenuItem.Title text={lang.t('settings.language')} />
+            }
+          />
+        )}
+        {ios && (
+          <MenuItem
+            hasRightArrow
+            leftComponent={
+              <MenuItem.ImageIcon
+                source={isDarkMode ? AppIconIconDark : AppIconIcon}
+              />
+            }
+            onPress={onPressAppIcon}
+            size={60}
+            testID="app-icon-section"
+            titleComponent={
+              <MenuItem.Title text={lang.t('settings.app_icon')} />
             }
           />
         )}
