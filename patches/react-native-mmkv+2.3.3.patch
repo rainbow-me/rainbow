@@ -1,5 +1,19 @@
+diff --git a/node_modules/react-native-mmkv/ios/JSIUtils.mm b/node_modules/react-native-mmkv/ios/JSIUtils.mm
+index 4168933..ca74127 100644
+--- a/node_modules/react-native-mmkv/ios/JSIUtils.mm
++++ b/node_modules/react-native-mmkv/ios/JSIUtils.mm
+@@ -80,7 +80,8 @@
+ 
+ NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
+ {
+-    return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
++  const char* s = value.utf8(runtime).c_str();
++  return [NSString stringWithUTF8String:s];
+ }
+ 
+ NSArray *convertJSIArrayToNSArray(jsi::Runtime &runtime,
 diff --git a/node_modules/react-native-mmkv/lib/module/hooks.js b/node_modules/react-native-mmkv/lib/module/hooks.js
-index 0c5fe95..9fdf560 100644
+index 0c5fe95..dea116b 100644
 --- a/node_modules/react-native-mmkv/lib/module/hooks.js
 +++ b/node_modules/react-native-mmkv/lib/module/hooks.js
 @@ -70,7 +70,7 @@ function createMMKVHook(getter) {
