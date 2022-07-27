@@ -120,7 +120,7 @@ export const parseAccountUniqueTokens = data => {
             asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
               ? 'ENS'
               : collection.name,
-          fullUniqueId: `${Network.mainnet}_${asset_contract?.address}_${token_id}`,
+          fullUniqueId: `ethereum_${asset_contract?.address}_${token_id}`,
           id: token_id,
           image_original_url: asset.image_url,
           image_thumbnail_url: lowResUrl,
