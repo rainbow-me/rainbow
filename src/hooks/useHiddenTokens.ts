@@ -22,8 +22,9 @@ export default function useHiddenTokens() {
 
   const addHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
-      dispatch(rawAddHiddenToken(asset.uniqueId));
-      !isReadOnlyWallet && updateWebHidden([...hiddenTokens, asset.uniqueId]);
+      dispatch(rawAddHiddenToken(asset.fullUniqueId));
+      !isReadOnlyWallet &&
+        updateWebHidden([...hiddenTokens, asset.fullUniqueId]);
 
       analytics.track('Toggled an NFT as Hidden', {
         collectionContractAddress: asset.asset_contract.address || null,
@@ -36,9 +37,9 @@ export default function useHiddenTokens() {
 
   const removeHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
-      dispatch(rawRemoveHiddenToken(asset.uniqueId));
+      dispatch(rawRemoveHiddenToken(asset.fullUniqueId));
       !isReadOnlyWallet &&
-        updateWebHidden(hiddenTokens.filter(id => id !== asset.uniqueId));
+        updateWebHidden(hiddenTokens.filter(id => id !== asset.fullUniqueId));
 
       analytics.track('Toggled an NFT as Hidden', {
         collectionContractAddress: asset.asset_contract.address || null,
