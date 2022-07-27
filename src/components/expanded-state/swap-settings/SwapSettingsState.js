@@ -11,6 +11,7 @@ import { SlackSheet } from '../../sheet';
 import { MaxToleranceInput } from './MaxToleranceInput';
 import SourcePicker from './SourcePicker';
 
+import { Network } from '@/helpers';
 import {
   Box,
   ColorModeProvider,
@@ -137,10 +138,12 @@ export default function SwapSettingsState({ asset }) {
             <Text align="center" color="primary" size="18px" weight="bold">
               {lang.t('exchange.settings')}
             </Text>
-            <SourcePicker
-              currentSource={currentSource}
-              onSelect={updateSource}
-            />
+            {network !== Network.arbitrum && (
+              <SourcePicker
+                currentSource={currentSource}
+                onSelect={updateSource}
+              />
+            )}
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Column width="content">
