@@ -5,6 +5,7 @@ import SwapDetailsRow from './SwapDetailsRow';
 import {
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplayWithThreshold,
+  isZero,
 } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -20,9 +21,9 @@ export default function SwapDetailsUniswapRow({ tradeDetails, network }) {
   const rainbowFeeNativeDisplay =
     rainbowFeeNative &&
     convertAmountToNativeDisplay(rainbowFeeNative, nativeCurrency);
-  const rainbowFeePercentageDisplay = convertAmountToPercentageDisplayWithThreshold(
-    rainbowFeePercentage
-  );
+  const rainbowFeePercentageDisplay = isZero(rainbowFeePercentage)
+    ? '0.00%'
+    : convertAmountToPercentageDisplayWithThreshold(rainbowFeePercentage);
   const steps = rainbowFeeNativeDisplay
     ? [rainbowFeeNativeDisplay, rainbowFeePercentageDisplay]
     : [rainbowFeePercentageDisplay];
