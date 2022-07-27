@@ -45,7 +45,6 @@ const WalletNotificationsSettings = () => {
                 colorOverride={colors.appleBlue}
                 icon="􀈟"
                 shiftLeft
-                width={34}
               />
             }
             rightComponent={<Switch />}

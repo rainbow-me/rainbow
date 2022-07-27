@@ -381,7 +381,6 @@ const SettingsSection = ({
             }
             onPress={onPressAppIcon}
             size={60}
-            testID="app-icon-section"
             titleComponent={
               <MenuItem.Title text={lang.t('settings.app_icon')} />
             }
