@@ -42,40 +42,34 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
     [dispatch, initializeAccountData, loadAccountData, resetAccountState]
   );
 
-  const NetworkList = () => (
-    <>
-      {networks.map(({ disabled, name, value, testnet }: any) => {
-        return (
-          <MenuItem
+  const renderNetworkList = useCallback(() => {
+    return networks.map(({ disabled, name, value, testnet }: any) => (
+      <MenuItem
+        disabled={(!testnetsEnabled && testnet) || disabled}
+        key={value}
+        onPress={() => onNetworkChange(value)}
+        rightComponent={
+          value === network && <MenuItem.StatusIcon status="selected" />
+        }
+        size={52}
+        titleComponent={
+          <MenuItem.Title
             disabled={(!testnetsEnabled && testnet) || disabled}
-            key={value}
-            onPress={() => onNetworkChange(value)}
-            rightComponent={
-              value === network && <MenuItem.StatusIcon status="selected" />
-            }
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                disabled={(!testnetsEnabled && testnet) || disabled}
-                text={name}
-                weight={inDevSection ? 'medium' : 'semibold'}
-              />
-            }
+            text={name}
+            weight={inDevSection ? 'medium' : 'semibold'}
           />
-        );
-      })}
-    </>
-  );
+        }
+      />
+    ));
+  }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
 
   return inDevSection ? (
     <Stack separator={<Divider color="divider60" />}>
-      <NetworkList />
+      {renderNetworkList()}
     </Stack>
   ) : (
     <MenuContainer>
-      <Menu>
-        <NetworkList />
-      </Menu>
+      <Menu>{renderNetworkList()}</Menu>
     </MenuContainer>
   );
 };

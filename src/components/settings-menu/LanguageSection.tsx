@@ -30,19 +30,17 @@ const LanguageSection = () => {
   return (
     <MenuContainer>
       <Menu>
-        {languageListItems.map(({ name, code }: any) => {
-          return (
-            <MenuItem
-              key={code}
-              onPress={() => onSelectLanguage(code)}
-              rightComponent={
-                code === language && <MenuItem.StatusIcon status="selected" />
-              }
-              size={52}
-              titleComponent={<MenuItem.Title text={name} />}
-            />
-          );
-        })}
+        {languageListItems.map(({ name, code }: any) => (
+          <MenuItem
+            key={code}
+            onPress={() => onSelectLanguage(code)}
+            rightComponent={
+              code === language && <MenuItem.StatusIcon status="selected" />
+            }
+            size={52}
+            titleComponent={<MenuItem.Title text={name} />}
+          />
+        ))}
       </Menu>
     </MenuContainer>
   );

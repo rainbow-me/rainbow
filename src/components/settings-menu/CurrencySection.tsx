@@ -41,31 +41,34 @@ const CurrencySection = () => {
   return (
     <MenuContainer>
       <Menu>
-        {currencyListItems.map(({ label, emojiName, currency }: any) => {
-          return (
-            <MenuItem
-              key={currency}
-              leftComponent={
-                emojiName ? (
-                  <MenuItem.TextIcon
-                    icon={(emoji.get('flag_' + emojiName) as string) || ''}
-                  />
-                ) : (
-                  // @ts-ignore missing props
-                  <CoinIcon address={currency} size={23} symbol={currency} />
-                )
-              }
-              onPress={() => onSelectCurrency(currency)}
-              rightComponent={
-                currency === nativeCurrency && (
-                  <MenuItem.StatusIcon status="selected" />
-                )
-              }
-              size={52}
-              titleComponent={<MenuItem.Title text={label} />}
-            />
-          );
-        })}
+        {currencyListItems.map(({ label, emojiName, currency }: any) => (
+          <MenuItem
+            key={currency}
+            leftComponent={
+              emojiName ? (
+                <MenuItem.TextIcon
+                  icon={(emoji.get('flag_' + emojiName) as string) || ''}
+                />
+              ) : (
+                // @ts-ignore missing props
+                <CoinIcon
+                  address={currency}
+                  size={23}
+                  style={{ marginLeft: 7 }}
+                  symbol={currency}
+                />
+              )
+            }
+            onPress={() => onSelectCurrency(currency)}
+            rightComponent={
+              currency === nativeCurrency && (
+                <MenuItem.StatusIcon status="selected" />
+              )
+            }
+            size={52}
+            titleComponent={<MenuItem.Title text={label} />}
+          />
+        ))}
       </Menu>
     </MenuContainer>
   );

@@ -12,7 +12,6 @@ const StyledButton = styled(Pressable)({
   marginBottom: -10,
   paddingBottom: 10,
   paddingHorizontal: 40,
-  paddingTop: 10,
 });
 
 // On CI this will be modified if the app is in Fedora mode
