@@ -781,6 +781,7 @@ export default function ExchangeModal({
       navigate(Routes.SWAP_DETAILS_SHEET, {
         confirmButtonProps,
         currentNetwork,
+        flashbotTransaction: flashbots,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -804,6 +805,7 @@ export default function ExchangeModal({
   }, [
     confirmButtonProps,
     currentNetwork,
+    flashbots,
     inputCurrency?.address,
     inputCurrency?.name,
     inputCurrency?.symbol,

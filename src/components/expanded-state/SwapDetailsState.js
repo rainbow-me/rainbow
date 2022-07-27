@@ -86,7 +86,9 @@ export default function SwapDetailsState({
   restoreFocusOnSwapModal,
 }) {
   const { setParams } = useNavigation();
-  const { params: { longFormHeight, currentNetwork } = {} } = useRoute();
+  const {
+    params: { longFormHeight, currentNetwork, flashbotTransaction } = {},
+  } = useRoute();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
@@ -189,6 +191,7 @@ export default function SwapDetailsState({
           <GasSpeedButton
             asset={outputCurrency}
             currentNetwork={currentNetwork}
+            flashbotTransaction={flashbotTransaction}
             testID="swap-details-gas"
             theme="light"
           />
