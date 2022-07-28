@@ -238,7 +238,7 @@ export default function useUniswapPools(
 
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
-    // @ts-expect-error FIXME: Property 'slice' does not exist on type 'never'
+    // @ts-expect-error FIXME: Property 'slice' does not exist on type 'never'.
     let sortedPairs = pairs.slice().sort(sortByKeyHelper(sortField));
     if (sortDirection === SORT_DIRECTION.DESC) {
       sortedPairs = sortedPairs.reverse();
