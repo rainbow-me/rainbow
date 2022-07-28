@@ -33,7 +33,9 @@ export default function useContacts() {
   ]);
 
   const filteredContacts = sortedContacts.filter(contact =>
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     contact.network === network ||
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     (!contact.network && network === networkTypes.mainnet)
       ? contact
       : false

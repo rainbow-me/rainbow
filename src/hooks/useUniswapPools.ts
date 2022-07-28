@@ -238,6 +238,7 @@ export default function useUniswapPools(
 
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
+    // @ts-expect-error FIXME: Property 'slice' does not exist on type 'never'.
     let sortedPairs = pairs.slice().sort(sortByKeyHelper(sortField));
     if (sortDirection === SORT_DIRECTION.DESC) {
       sortedPairs = sortedPairs.reverse();
@@ -247,36 +248,30 @@ export default function useUniswapPools(
     sortedPairs = sortedPairs.slice(0, AMOUNT_OF_PAIRS_TO_DISPLAY - 1);
     const tmpAllTokens = [];
     // Override with tokens from generic assets
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     sortedPairs = sortedPairs.map(pair => {
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       const token0 = (pair.token0?.id?.toLowerCase() === WETH_ADDRESS
         ? genericAssets['eth']
-        : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-          genericAssets[pair.token0?.id?.toLowerCase()]) || {
-        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+        : genericAssets[pair.token0?.id?.toLowerCase()]) || {
         ...pair.token0,
-        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+
         address: pair.token0?.id,
       };
       const token1 =
-        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         pair.token1?.id?.toLowerCase() === WETH_ADDRESS
           ? genericAssets['eth']
-          : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-            genericAssets[pair.token1?.id?.toLowerCase()] || {
-              // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+          : genericAssets[pair.token1?.id?.toLowerCase()] || {
               ...pair.token1,
-              // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+
               address: pair.token1?.id,
             };
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+
       pair.tokens = [token0, token1];
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+
       tmpAllTokens.push(pair.tokens[0]?.id?.toLowerCase());
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+
       tmpAllTokens.push(pair.tokens[1]?.id?.toLowerCase());
       const pairAdjustedForCurrency = {
-        // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
         ...pair,
         liquidity: (pair as any).liquidity * currenciesRate,
         oneDayVolumeUSD: (pair as any).oneDayVolumeUSD * currenciesRate,
@@ -297,9 +292,7 @@ export default function useUniswapPools(
 
     // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     const allLPTokens = sortedPairs.map(({ address }) => address);
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     dispatch(emitAssetRequest(allLPTokens));
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     dispatch(emitChartsRequest(allLPTokens));
     return sortedPairs;
     // eslint-disable-next-line react-hooks/exhaustive-deps

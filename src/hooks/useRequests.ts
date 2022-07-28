@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-const sorterByTimestampInMs = (a, b) => {
+const sorterByTimestampInMs = (a: any, b: any) => {
   if (a?.displayDetails?.timestampInMs < b?.displayDetails?.timestampInMs) {
     return 1;
   } else if (
