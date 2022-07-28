@@ -3,7 +3,7 @@ import { get, isFunction, isString, toLower } from 'lodash';
 export const sortList = (
   array: any[] = [],
   sortByKey: any,
-  direction: any,
+  direction?: any,
   defaultValue?: any,
   formatter?: any
 ) =>
