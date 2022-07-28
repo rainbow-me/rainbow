@@ -267,11 +267,14 @@ export default function WalletConnectApprovalSheet() {
   }, [approvalAccount.address, goBack, type]);
 
   useEffect(() => {
+    const waitingTime = (Date.now() - receivedTimestamp) / 1000;
     InteractionManager.runAfterInteractions(() => {
       analytics.track('Received wc connection', {
         dappName,
         dappUrl,
-        waitingTime: (Date.now() - receivedTimestamp) / 1000,
+        waitingTime: isNaN(waitingTime)
+          ? 'Error calculating waiting time.'
+          : waitingTime,
       });
     });
   }, [dappName, dappUrl, receivedTimestamp]);

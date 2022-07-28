@@ -569,6 +569,7 @@ export default function ExchangeModal({
         const rapType = getSwapRapTypeByExchangeType(type);
         await executeRap(wallet, rapType, swapParameters, callback);
         logger.log('[exchange - handle submit] executed rap!');
+        const slippage = slippageInBips / 100;
         analytics.track(`Completed ${type}`, {
           aggregator: tradeDetails?.source || '',
           amountInUSD,
@@ -582,7 +583,7 @@ export default function ExchangeModal({
           outputTokenName: outputCurrency?.name || '',
           outputTokenSymbol: outputCurrency?.symbol || '',
           priceImpact: priceImpactPercentDisplay,
-          slippage: slippageInBips / 100,
+          slippage: isNaN(slippage) ? 'Error calculating slippage.' : slippage,
           type,
         });
         // Tell iOS we finished running a rap (for tracking purposes)
@@ -644,6 +645,7 @@ export default function ExchangeModal({
     } catch (e) {
       logger.log('error getting the swap amount in USD price', e);
     } finally {
+      const slippage = slippageInBips / 100;
       analytics.track(`Submitted ${type}`, {
         aggregator: tradeDetails?.source || '',
         amountInUSD,
@@ -657,7 +659,7 @@ export default function ExchangeModal({
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
         priceImpact: priceImpactPercentDisplay,
-        slippage: slippageInBips / 100,
+        slippage: isNaN(slippage) ? 'Error caclulating slippage.' : slippage,
         type,
       });
     }
