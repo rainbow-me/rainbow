@@ -109,7 +109,7 @@ export const getStateDiff = async (
       value: '0x0',
     },
     ['stateDiff'],
-    blockNumber - Number(config.trace_call_block_number_offset),
+    blockNumber - Number(config.trace_call_block_number_offset ?? 20),
   ];
 
   const trace = await provider.send('trace_call', callParams);
