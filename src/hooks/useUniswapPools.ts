@@ -275,15 +275,19 @@ export default function useUniswapPools(
           ? genericAssets['eth']
           : genericAssets[pair.token1?.id?.toLowerCase()] || {
               ...pair.token1,
+
               address: pair.token1?.id,
             };
+
       pair.tokens = [token0, token1];
+
       tmpAllTokens.push(pair.tokens[0]?.id?.toLowerCase());
+
       tmpAllTokens.push(pair.tokens[1]?.id?.toLowerCase());
       const pairAdjustedForCurrency = {
         ...pair,
-        liquidity: pair.liquidity * currenciesRate,
-        oneDayVolumeUSD: pair.oneDayVolumeUSD * currenciesRate,
+        liquidity: (pair as any).liquidity * currenciesRate,
+        oneDayVolumeUSD: (pair as any).oneDayVolumeUSD * currenciesRate,
       };
 
       return pickShallow(pairAdjustedForCurrency, [

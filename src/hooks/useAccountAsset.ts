@@ -1,4 +1,3 @@
-import { isNil } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -31,8 +30,6 @@ const getZeroEth = () => {
 
 export const accountAssetsDataSelector = (state: AppState) =>
   state.data.accountAssetsData;
-const assetPricesFromUniswapSelector = (state: AppState) =>
-  state.data.assetPricesFromUniswap;
 const uniqueIdSelector = (_: AppState, uniqueId: string) => uniqueId;
 
 const accountAssetDataSelector = createSelector(
@@ -41,32 +38,10 @@ const accountAssetDataSelector = createSelector(
   (accountAssetsData, uniqueId) => accountAssetsData?.[uniqueId]
 );
 
-const assetPriceFromUniswapSelector = createSelector(
-  assetPricesFromUniswapSelector,
-  uniqueIdSelector,
-  (assetPricesFromUniswap, uniqueId) => assetPricesFromUniswap?.[uniqueId]
-);
-
 const makeAccountAssetSelector = () =>
   createSelector(
     accountAssetDataSelector,
-    assetPriceFromUniswapSelector,
-    (accountAsset, assetPriceFromUniswap) => {
-      if (!accountAsset) return null;
-      const assetUniswapPrice = assetPriceFromUniswap?.price;
-      const assetUniswapRelativeChange =
-        assetPriceFromUniswap?.relativePriceChange;
-      if (isNil(accountAsset?.price) && assetUniswapPrice) {
-        return {
-          ...accountAsset,
-          price: {
-            relative_change_24h: assetUniswapRelativeChange,
-            value: assetUniswapPrice,
-          },
-        };
-      }
-      return accountAsset;
-    }
+    accountAsset => accountAsset ?? null
   );
 
 // this is meant to be used for assets under balances

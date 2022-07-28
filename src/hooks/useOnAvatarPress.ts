@@ -197,9 +197,9 @@ export default () => {
     accountENS,
     startRegistration,
     onAvatarChooseImage,
-    onAvatarRemovePhoto,
     onAvatarPickEmoji,
     onAvatarCreateProfile,
+    onAvatarRemovePhoto,
   ]);
 
   const avatarOptions = useMemo(

@@ -46,7 +46,7 @@ export default function useAddCashLimits() {
     );
     const startFilteringIndex = Math.max(firstIndexBeyondThisWeek, 0);
     const firstIndexBeyondThisYear = purchaseTransactions.findIndex(
-      (txn, index) => {
+      (txn: any, index: number) => {
         if (index < startFilteringIndex) return false;
         const txnTimestampInMs = txn.timestamp || txn.minedAt! * 1000;
         return differenceInYears(now, txnTimestampInMs) >= 1;

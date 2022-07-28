@@ -87,6 +87,7 @@ const SavingsListHeader = ({
       marginBottom={title === 'Pools' ? -6 : 0}
       onPress={onPress}
       scaleTo={1.05}
+      testID={`${title}-list-header`}
     >
       <Row
         align="center"

@@ -53,7 +53,7 @@ export default function BiometricButtonContent({
     <Label
       testID={testID || label}
       {...props}
-      {...(android && { lineHeight: 21 })}
+      {...(android && { lineHeight: 23 })}
     >
       {`${biometryIcon}${label}`}
     </Label>

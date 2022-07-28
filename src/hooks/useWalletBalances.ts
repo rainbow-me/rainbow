@@ -24,8 +24,8 @@ const useWalletBalances = (wallets: AllRainbowWallets) => {
     const walletBalances: { [address: string]: string } = {};
 
     // Get list of addresses to get balances for
-    Object.values(wallets).forEach(wallet => {
-      wallet.addresses.forEach(account => {
+    Object.values(wallets).forEach((wallet: any) => {
+      wallet.addresses.forEach((account: any) => {
         walletBalances[account.address] = '0.00';
       });
     });
@@ -60,9 +60,9 @@ const useWalletBalances = (wallets: AllRainbowWallets) => {
     enabled: !isEmpty(wallets),
   });
 
-  const resultFromStorage = queryClient.getQueryData(
-    WALLET_BALANCES_FROM_STORAGE
-  );
+  const resultFromStorage = queryClient.getQueryData<{
+    [address: string]: string;
+  }>(WALLET_BALANCES_FROM_STORAGE);
 
   if (isEmpty(data) && !isEmpty(resultFromStorage)) {
     return resultFromStorage;

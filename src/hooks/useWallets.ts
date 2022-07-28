@@ -24,7 +24,7 @@ const walletSelector = createSelector(
     },
   }: AppState) => ({
     isWalletLoading,
-    selectedWallet: selected,
+    selectedWallet: selected as any,
     walletNames,
     wallets,
   }),

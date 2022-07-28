@@ -31,15 +31,19 @@ export default function useColorForAsset(
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
-    const color = isETH(address!)
-      ? isDarkMode
-        ? forceETHColor
-          ? colors.appleBlue
-          : colors.brighten(lightModeThemeColors.dark)
-        : colors.dark
-      : pseudoRandomArrayItemFromString(address!, colors.avatarBackgrounds);
+    const color =
+      isETH(address) || isETH(mainnet_address)
+        ? isDarkMode
+          ? forceETHColor
+            ? colors.appleBlue
+            : colors.brighten(lightModeThemeColors.dark)
+          : colors.dark
+        : pseudoRandomArrayItemFromString(
+            mainnet_address || address!,
+            colors.avatarBackgrounds
+          );
     return color;
-  }, [address, colors, forceETHColor, isDarkMode]);
+  }, [address, colors, forceETHColor, isDarkMode, mainnet_address]);
 
   return useMemo(() => {
     let color2Return;

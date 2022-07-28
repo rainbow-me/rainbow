@@ -9,7 +9,7 @@ const uniqueTokensSelector = (state: AppState) =>
 
 const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
   const sendableUniqueTokens = uniqueTokens?.filter(
-    uniqueToken => uniqueToken.isSendable
+    (uniqueToken: any) => uniqueToken.isSendable
   );
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
   const families = Object.keys(grouped).sort();

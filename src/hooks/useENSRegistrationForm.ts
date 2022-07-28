@@ -104,7 +104,7 @@ export default function useENSRegistrationForm({
       setSelectedFields(
         Object.keys(defaultRecords)
           .map(key => textRecordFields[key as keyof typeof textRecordFields])
-          .filter((key): key is TextRecordField => !!key)
+          .filter((key): key is TextRecordField => Boolean(key))
       );
     } else {
       if (defaultFields) {
