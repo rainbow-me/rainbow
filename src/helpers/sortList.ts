@@ -4,7 +4,7 @@ import { isString } from './utilities';
 export const sortList = (
   array: any[] = [],
   sortByKey: any,
-  direction: any,
+  direction?: any,
   defaultValue?: any,
   formatter?: any
 ) =>
