@@ -30,13 +30,13 @@ export default function useDeleteWallet({
     const newWallets = {
       ...wallets,
       [watchingWalletId]: {
-        ...wallets[watchingWalletId],
-        addresses: wallets[
+        ...wallets![watchingWalletId],
+        addresses: wallets![
           watchingWalletId
         ].addresses.map((account: { address: string }) =>
           account.address.toLowerCase() === primaryAddress?.toLowerCase()
-            ? { ...account, visible: false }
-            : account
+            ? { ...(account as RainbowAccount), visible: false }
+            : (account as RainbowAccount)
         ),
       },
     };

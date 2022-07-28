@@ -42,8 +42,8 @@ export default () => {
     const newWallets = {
       ...wallets,
       [selectedWallet.id]: {
-        ...wallets[selectedWallet.id],
-        addresses: wallets[
+        ...wallets![selectedWallet.id],
+        addresses: wallets![
           selectedWallet.id
         ].addresses.map((account: RainbowAccount) =>
           account.address.toLowerCase() === accountAddress?.toLowerCase()
@@ -66,8 +66,8 @@ export default () => {
       const newWallets = {
         ...wallets,
         [selectedWallet.id]: {
-          ...wallets[selectedWallet.id],
-          addresses: wallets[
+          ...wallets![selectedWallet.id],
+          addresses: wallets![
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             account.address.toLowerCase() === accountAddress?.toLowerCase()

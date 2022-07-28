@@ -10,10 +10,8 @@ export default function useLongPressEvents({
   const [startTimeout, stopTimeout, timeoutRef] = useTimeout();
 
   const handleStartPress = useCallback(() => {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'current' does not exist on type '((func:... Remove this comment to see the full error message
     if (timeoutRef.current == null) {
       startTimeout(() => {
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'current' does not exist on type '((func:... Remove this comment to see the full error message
         timeoutRef.current = null;
         onLongPress?.();
       }, minLongPressDuration);
@@ -24,10 +22,8 @@ export default function useLongPressEvents({
 
   const handlePress = useCallback(() => {
     stopTimeout();
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'current' does not exist on type '((func:... Remove this comment to see the full error message
     if (timeoutRef.current) {
       onPress?.();
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'current' does not exist on type '((func:... Remove this comment to see the full error message
       timeoutRef.current = null;
     }
   }, [onPress, stopTimeout, timeoutRef]);

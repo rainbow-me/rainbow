@@ -116,13 +116,13 @@ export default function SettingsSheet() {
         const walletId = params?.walletId;
         if (
           !walletId &&
-          Object.keys(wallets).filter(
-            key => wallets[key].type !== WalletTypes.readOnly
+          Object.keys(wallets!).filter(
+            key => wallets![key].type !== WalletTypes.readOnly
           ).length > 1
         ) {
           route = 'WalletSelectionView';
         } else {
-          if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
+          if (Object.keys(wallets!).length === 1 && selectedWallet.imported) {
             paramsToPass.imported = true;
             paramsToPass.type = 'AlreadyBackedUpView';
           }

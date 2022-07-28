@@ -41,7 +41,7 @@ export default function useWatchWallet({
   const initializeWallet = useInitializeWallet();
   const changeAccount = useCallback(
     async (walletId, address) => {
-      const wallet = wallets[walletId];
+      const wallet = wallets![walletId];
       try {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
@@ -76,7 +76,7 @@ export default function useWatchWallet({
         const { wallet: foundWallet, key } =
           doesWalletsContainAddress({
             address: primaryAddress,
-            wallets,
+            wallets: wallets!,
           }) || {};
         if (foundWallet) {
           await changeAccount(key, foundWallet.address);

@@ -88,7 +88,7 @@ export default function useWebData() {
   const updateWebProfile = useCallback(
     async (address, name, color) => {
       if (!webDataEnabled) return;
-      const wallet = findWalletWithAccount(wallets, address);
+      const wallet = findWalletWithAccount(wallets!, address);
       // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {

@@ -48,13 +48,13 @@ const DevNotificationsSection = () => {
   const { wallets } = useWallets();
   const { chainId } = useAccountSettings();
   const [loading, setLoading] = useState<boolean>(true);
-  const walletIDs = Object.keys(wallets);
+  const walletIDs = Object.keys(wallets!);
   let allWallets: any[] = useMemo(() => [], []);
   const [notificationState, setNotificationState] = useState<any>({});
 
   useEffect(() => {
     walletIDs.forEach(key => {
-      const wallet = wallets[key];
+      const wallet = wallets![key];
 
       wallet.addresses.forEach((item: { address: string }) => {
         allWallets.push(item);

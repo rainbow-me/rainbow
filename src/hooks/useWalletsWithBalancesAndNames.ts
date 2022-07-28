@@ -5,7 +5,7 @@ import useWallets from './useWallets';
 
 export default function useWalletsWithBalancesAndNames() {
   const { walletNames, wallets } = useWallets();
-  const walletBalances = useWalletBalances(wallets);
+  const walletBalances = useWalletBalances(wallets!);
 
   const walletsWithBalancesAndNames = useMemo(
     () =>

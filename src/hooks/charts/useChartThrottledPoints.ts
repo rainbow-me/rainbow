@@ -101,7 +101,6 @@ export default function useChartThrottledPoints({
     assetForColor = asset?.tokens?.[0] || asset;
   }
 
-  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-4 arguments, but got 1.
   const color = useColorForAsset(assetForColor);
 
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
