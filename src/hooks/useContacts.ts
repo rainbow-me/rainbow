@@ -1,15 +1,15 @@
-import { sortBy, values } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import networkTypes from '../helpers/networkTypes';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
+import { sortByKeyHelper } from '@rainbow-me/helpers/utilities';
 
 const contactsSelector = createSelector(
   ({ contacts: { contacts } }) => contacts,
   contacts => ({
     contacts,
-    sortedContacts: sortBy(values(contacts), 'nickname'),
+    sortedContacts: Object.values(contacts).sort(sortByKeyHelper('nickname')),
   })
 );
 
@@ -33,7 +33,9 @@ export default function useContacts() {
   ]);
 
   const filteredContacts = sortedContacts.filter(contact =>
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     contact.network === network ||
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     (!contact.network && network === networkTypes.mainnet)
       ? contact
       : false

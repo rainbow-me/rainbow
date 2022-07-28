@@ -1,4 +1,3 @@
-import groupBy from 'lodash/groupBy';
 import values from 'lodash/values';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +8,7 @@ import {
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
+import { groupBy } from '@rainbow-me/helpers/utilities';
 
 const formatDappData = (connections: any) =>
   Object.values(
@@ -39,9 +39,13 @@ const walletConnectSelector = createSelector(
   state => state.walletconnect.walletConnectors,
   walletConnectors => {
     const sorted = sortList(values(walletConnectors), 'peerMeta.name');
-    const groupedByDappName = groupBy(sorted, 'peerMeta.url');
+    const groupedByDappName = groupBy(sorted, ({ peerMeta }) => peerMeta.url);
     const mostRecent = sortList(sorted, '_handshakeId', 'desc');
-    const sortedByMostRecentHandshake = groupBy(mostRecent, 'peerMeta.url');
+
+    const sortedByMostRecentHandshake = groupBy(
+      mostRecent,
+      ({ peerMeta }) => peerMeta.url
+    );
     return {
       mostRecentWalletConnectors: formatDappData(sortedByMostRecentHandshake),
       sortedWalletConnectors: sorted,
