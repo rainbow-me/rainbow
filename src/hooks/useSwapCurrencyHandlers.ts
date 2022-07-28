@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -12,6 +11,7 @@ import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
 } from '@rainbow-me/helpers';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { useNavigation } from '@rainbow-me/navigation';
 import {
   multicallAddListeners,

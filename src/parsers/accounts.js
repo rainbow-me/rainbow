@@ -1,4 +1,3 @@
-import isNil from 'lodash/isNil';
 import toUpper from 'lodash/toUpper';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
@@ -10,6 +9,7 @@ import {
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
+  isNil,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
 import { memoFn } from '@rainbow-me/utils/memoFn';

@@ -1,5 +1,4 @@
 import { Pair, Token, TokenAmount, Trade } from '@uniswap/sdk';
-import { isEmpty } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
@@ -12,6 +11,7 @@ import {
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
   convertNumberToString,
+  isEmpty,
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';

@@ -1,9 +1,10 @@
-import { groupBy, isEmpty, slice, sortBy } from 'lodash';
+import { groupBy, slice, sortBy } from 'lodash';
 import {
   add,
   chunk,
   convertAmountToNativeDisplay,
   greaterThan,
+  isEmpty,
 } from './utilities';
 import store from '@rainbow-me/redux/store';
 import {

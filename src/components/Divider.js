@@ -1,6 +1,6 @@
-import { isNil, isNumber } from 'lodash';
 import React from 'react';
 import { magicMemo } from '../utils';
+import { isNil, isNumber } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';
 

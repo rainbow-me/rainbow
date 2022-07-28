@@ -1,6 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty, keys } from 'lodash';
+import keys from 'lodash/keys';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
@@ -40,6 +40,7 @@ import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { WalletLoadingState } from '@rainbow-me/helpers/walletLoadingStates';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 

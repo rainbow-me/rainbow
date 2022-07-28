@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -32,7 +31,7 @@ import {
   isL2Network,
   toHex,
 } from '@rainbow-me/handlers/web3';
-import { greaterThan } from '@rainbow-me/helpers/utilities';
+import { greaterThan, isEmpty } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';

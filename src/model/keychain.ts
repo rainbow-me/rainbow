@@ -1,5 +1,4 @@
 import { captureException, captureMessage } from '@sentry/react-native';
-import isNil from 'lodash/isNil';
 import DeviceInfo from 'react-native-device-info';
 // @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
@@ -19,7 +18,7 @@ import {
   setInternetCredentials,
   UserCredentials,
 } from 'react-native-keychain';
-import { delay } from '../helpers/utilities';
+import { delay, isNil } from '../helpers/utilities';
 import logger from 'logger';
 
 interface AnonymousKey {

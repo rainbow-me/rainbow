@@ -1,10 +1,10 @@
-import { isArray, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
+import { isString } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
@@ -52,7 +52,7 @@ const Container = styled(Centered)(
 );
 
 const shouldRenderChildrenAsText = children =>
-  isArray(children) ? isString(children[0]) : isString(children);
+  Array.isArray(children) ? isString(children[0]) : isString(children);
 
 const Button = ({
   backgroundColor,

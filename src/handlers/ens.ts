@@ -4,7 +4,7 @@ import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
 import { isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
-import { debounce, isEmpty, sortBy } from 'lodash';
+import { debounce, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_ACCOUNT_REGISTRATIONS,
@@ -39,7 +39,7 @@ import {
   getENSExecutionDetails,
   getNameOwner,
 } from '@rainbow-me/helpers/ens';
-import { add } from '@rainbow-me/helpers/utilities';
+import { add, isEmpty } from '@rainbow-me/helpers/utilities';
 import { ImgixImage } from '@rainbow-me/images';
 import {
   getOpenSeaCollectionUrl,

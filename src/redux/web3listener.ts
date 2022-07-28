@@ -1,6 +1,7 @@
-import { debounce, isEmpty } from 'lodash';
+import { debounce } from 'lodash';
 import { ThunkDispatch } from 'redux-thunk';
 import { web3Provider } from '@rainbow-me/handlers/web3';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { multicallUpdateOutdatedListeners } from '@rainbow-me/redux/multicall';
 import store, { AppGetState, AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';

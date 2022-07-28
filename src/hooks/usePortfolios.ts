@@ -1,7 +1,8 @@
 import analytics from '@segment/analytics-react-native';
-import { isNil, keys } from 'lodash';
+import { keys } from 'lodash';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { isNil } from '@rainbow-me/helpers/utilities';
 import logger from 'logger';
 
 export default function usePortfolios() {
