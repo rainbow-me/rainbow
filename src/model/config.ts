@@ -59,6 +59,7 @@ export interface RainbowConfig extends Record<string, any> {
   op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
+  trace_call_block_number_offset?: number;
 }
 
 const DEFAULT_CONFIG = {
@@ -86,6 +87,7 @@ const DEFAULT_CONFIG = {
   op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
+  trace_call_block_number_offset: 20,
 };
 
 // Initialize with defaults in case firebase doesn't respond

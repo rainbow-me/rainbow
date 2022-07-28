@@ -1,5 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import {
   ALLOWS_PERMIT,
@@ -30,6 +30,7 @@ import {
   toHex,
   toHexNoLeadingZeros,
 } from './web3';
+import config from '@/model/config';
 import { Asset } from '@rainbow-me/entities';
 import {
   add,
@@ -89,6 +90,9 @@ export const getStateDiff = async (
   const fromAddr = tradeDetails.from;
   const toAddr = RAINBOW_ROUTER_CONTRACT_ADDRESS;
   const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
+  const {
+    number: blockNumber,
+  } = await (provider.getBlock as () => Promise<Block>)();
 
   // Get data
   const { data } = await tokenContract.populateTransaction.approve(
@@ -105,7 +109,7 @@ export const getStateDiff = async (
       value: '0x0',
     },
     ['stateDiff'],
-    'latest',
+    blockNumber - Number(config.trace_call_block_number_offset || 20),
   ];
 
   const trace = await provider.send('trace_call', callParams);
