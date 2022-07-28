@@ -97,7 +97,7 @@ export const EmojiSelector = ({
             dim.height = Math.floor(entry.data.length / columns + 1) * cellSize;
             dim.width = deviceUtils.dimensions.width;
           } else if (type === HEADER_ROW) {
-            dim.height = 34.7;
+            dim.height = Object.keys(Categories).length > 1 ? 34.7 : 0;
             dim.width = deviceUtils.dimensions.width;
           } else if (type === OVERLAY) {
             dim.height = i === 0 ? 0.1 : 100;
@@ -336,7 +336,10 @@ export const EmojiSelector = ({
                 // @ts-expect-error
                 rowRenderer={renderItem}
                 scrollIndicatorInsets={[15, 0, 15, 0]}
-                style={sx.listStyle}
+                style={[
+                  sx.listStyle,
+                  Object.keys(Categories).length === 1 && { paddingTop: 16 },
+                ]}
               />
             </StickyContainer>
           </View>
