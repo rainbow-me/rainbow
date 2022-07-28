@@ -633,7 +633,11 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
           transactionDetails: request,
         });
         InteractionManager.runAfterInteractions(() => {
-          analytics.track('Showing Walletconnect signing request');
+          analytics.track('Showing Walletconnect signing request', {
+            dappName,
+            // @ts-ignore
+            dappUrl,
+          });
         });
       }
     }
