@@ -23,10 +23,12 @@ function startMonitoring() {
   }
 }
 
-function stopMonitoring() {
+async function stopMonitoring() {
   if (isMonitoring) {
     isMonitoring = false;
-    FrameRateMonitorModule.stopMonitoring();
+    await FrameRateMonitorModule.stopMonitoring();
+    const stats = await FrameRateMonitorModule.getStats();
+    global.console.log(JSON.stringify(stats, null, 2));
   }
 }
 

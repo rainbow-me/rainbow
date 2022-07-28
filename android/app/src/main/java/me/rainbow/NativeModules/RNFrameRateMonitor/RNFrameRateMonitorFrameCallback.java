@@ -13,25 +13,34 @@ import com.facebook.react.uimanager.UIManagerModule;
 
 public class RNFrameRateMonitorFrameCallback extends ChoreographerCompat.FrameCallback {
   private final ReactContext reactContext;
-  private RNFrameRateMonitorStats stats;
   @Nullable
   private ChoreographerCompat choreographer;
   private final UIManagerModule uiManagerModule;
   private final DidJSUpdateUiDuringFrameDetector didJSUpdateUiDuringFrameDetector;
 
+  private RNFrameRateMonitorFrameDropStatsManager frameDropStatsManager;
+
+  public void setFrameDropStatsManager(RNFrameRateMonitorFrameDropStatsManager frameDropStatsManager) {
+    this.frameDropStatsManager = frameDropStatsManager;
+  }
+
+  private long lastFrameTime = -1;
   private boolean shouldStop = true;
 
-  public RNFrameRateMonitorFrameCallback(ReactContext reactContext) {
+  public RNFrameRateMonitorFrameCallback(ReactContext reactContext, RNFrameRateMonitorFrameDropStatsManager frameDropStatsManager) {
     this.reactContext = reactContext;
+    this.frameDropStatsManager = frameDropStatsManager;
     uiManagerModule =
         Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
-    stats = new RNFrameRateMonitorStats();
     didJSUpdateUiDuringFrameDetector = new DidJSUpdateUiDuringFrameDetector();
   }
 
   public void start() {
-    shouldStop = false;
     Log.d("FRAMERARTE", "START");
+
+    // Resetting the state of the callback object
+    shouldStop = false;
+
     reactContext
         .getCatalystInstance()
         .addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector);
@@ -58,12 +67,19 @@ public class RNFrameRateMonitorFrameCallback extends ChoreographerCompat.FrameCa
   @Override
   public void doFrame(long frameTimeNanos) {
     if (shouldStop) {
-      // Stops posting new frame callbacks
       return;
     }
 
-    // Executed on each Native frame
-    Log.d("FRAME MONITOR", "do Frame fren");
+    if (!frameDropStatsManager.isStarted()) {
+      frameDropStatsManager.start();
+    }
+
+    long lastFrameStartTime = lastFrameTime;
+    lastFrameTime = frameTimeNanos;
+
+    if (didJSUpdateUiDuringFrameDetector.getDidJSHitFrameAndCleanup(lastFrameStartTime, frameTimeNanos)) {
+      frameDropStatsManager.recordFrameDrawn();
+    }
 
     // schedules new frame callbacks for continuous calls post each frame
     if (choreographer != null) {

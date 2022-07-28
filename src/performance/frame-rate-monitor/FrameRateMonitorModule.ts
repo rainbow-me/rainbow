@@ -3,7 +3,7 @@ import { NativeModules } from 'react-native';
 type FrameRateMonitorModuleInterface = {
   startMonitoring: () => Promise<void>;
   stopMonitoring: () => Promise<void>;
-  getStats: () => object;
+  getStats: () => Promise<object>;
   addSlowPeriodEventListener: any;
   removeSlowPeriodEventListener: any;
   resetStats: any;
