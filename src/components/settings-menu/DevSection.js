@@ -4,7 +4,11 @@ import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
-import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
+import {
+  HARDHAT_URL_ANDROID,
+  HARDHAT_URL_IOS,
+  IS_TESTING,
+} from 'react-native-dotenv';
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
 import { defaultConfig } from '../../config/experimental';
@@ -14,10 +18,17 @@ import { RadioListItem } from '../radio-list';
 import UserDevSection from './UserDevSection';
 import { Divider } from '@rainbow-me/design-system';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
-import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  web3SetHttpProvider,
+} from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { useWallets } from '@rainbow-me/hooks';
+import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import {
+  useAccountSettings,
+  useUpdateAssetOnchainBalance,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { clearAllStorages } from '@rainbow-me/model/mmkv';
@@ -27,14 +38,18 @@ import { explorerInit } from '@rainbow-me/redux/explorer';
 import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
 import store from '@rainbow-me/redux/store';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext);
   const { wallets } = useWallets();
+  const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
+  const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
 
   const onExperimentalKeyChange = useCallback(
     value => {
@@ -61,16 +76,28 @@ const DevSection = () => {
     }
     navigate(Routes.PROFILE_SCREEN);
     dispatch(explorerInit());
-  }, [dispatch, navigate]);
+
+    if (IS_TESTING === 'true') {
+      const provider = await getProviderForNetwork(Network.mainnet);
+      const ethAsset = ethereumUtils.getAccountAsset(ETH_ADDRESS);
+      updateAssetOnchainBalanceIfNeeded(
+        ethAsset,
+        accountAddress,
+        Network.mainnet,
+        provider,
+        () => {}
+      );
+    }
+  }, [accountAddress, dispatch, navigate, updateAssetOnchainBalanceIfNeeded]);
 
   const syncCodepush = useCallback(async () => {
     const isUpdate = !!(await codePush.checkForUpdate());
     if (!isUpdate) {
-      Alert.alert('No update');
+      Alert.alert(lang.t('developer_settings.no_update'));
     } else {
       // dismissing not to fuck up native nav structure
       navigate(Routes.PROFILE_SCREEN);
-      Alert.alert('Installing update');
+      Alert.alert(lang.t('developer_settings.installing_update'));
 
       const result = await codePush.sync({
         installMode: codePush.InstallMode.IMMEDIATE,
@@ -138,7 +165,7 @@ const DevSection = () => {
   const codePushVersion = useAppVersion()[1];
 
   return (
-    <ScrollView testID="developer-settings-modal">
+    <ScrollView testID="developer-settings-sheet">
       <ListItem
         label={`💥 ${lang.t('developer_settings.clear_async_storage')}`}
         onPress={AsyncStorage.clear}

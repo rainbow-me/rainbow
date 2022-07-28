@@ -5,12 +5,10 @@ import {
   saveAccountEmptyState,
 } from '../handlers/localstorage/accountLocal';
 import useAccountSettings from './useAccountSettings';
-import useWalletSectionsData from './useWalletSectionsData';
 import { AppState } from '@rainbow-me/redux/store';
 
-export default function useAccountEmptyState() {
+export default function useAccountEmptyState(isSectionsEmpty: boolean) {
   const { network, accountAddress } = useAccountSettings();
-  const { isEmpty: isSectionsEmpty } = useWalletSectionsData();
   const isLoadingAssets = useSelector(
     (state: AppState) => state.data.isLoadingAssets
   );

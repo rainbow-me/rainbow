@@ -1,7 +1,8 @@
 import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
+import { findKey, isNumber, keys } from 'lodash';
+import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
@@ -11,6 +12,7 @@ import {
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
+import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import {
@@ -190,7 +192,7 @@ export default async function runMigrations() {
         await store.dispatch(walletsUpdate(updatedWallets));
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
-        if (selected.id === primaryWalletKey) {
+        if (selected!.id === primaryWalletKey) {
           const updatedSelectedWallet = updatedWallets[primaryWalletKey];
           await store.dispatch(walletsSetSelected(updatedSelectedWallet));
         }
@@ -262,10 +264,9 @@ export default async function runMigrations() {
         logger.sentry('done updating all wallets');
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
-        if (selected.id === incorrectDamagedWalletId) {
+        if (selected!.id === incorrectDamagedWalletId) {
           logger.sentry('need to update the selected wallet');
           const updatedSelectedWallet =
-            // @ts-expect-error
             updatedWallets[incorrectDamagedWalletId];
           await store.dispatch(walletsSetSelected(updatedSelectedWallet));
           logger.sentry('selected wallet updated');
@@ -496,7 +497,7 @@ export default async function runMigrations() {
 
         const pinnedCoinsMigrated = pinnedCoins.map((address: string) => {
           const asset = assets?.find(
-            (asset: any) => asset.address === toLower(address)
+            (asset: any) => asset.address === address.toLowerCase()
           );
           if (asset?.type && isL2Asset(asset.type)) {
             return `${asset.address}_${asset.network}`;
@@ -545,8 +546,8 @@ export default async function runMigrations() {
       // Add existing signatures
       // which look like'signature_0x...'
       const { wallets } = store.getState().wallets;
-      if (Object.keys(wallets).length > 0) {
-        for (let wallet of Object.values(wallets)) {
+      if (Object.keys(wallets!).length > 0) {
+        for (let wallet of Object.values(wallets!)) {
           for (let account of (wallet as RainbowWallet).addresses) {
             keysToMigrate.push(`signature_${account.address}`);
           }
@@ -638,6 +639,46 @@ export default async function runMigrations() {
   };
 
   migrations.push(v16);
+
+  /*
+  *************** Migration v17 ******************
+  Pinned coins: list -> obj
+  */
+  const v17 = async () => {
+    const { wallets } = store.getState().wallets;
+    if (!wallets) return;
+    for (let wallet of Object.values(wallets)) {
+      for (let account of (wallet as RainbowWallet).addresses) {
+        const pinnedCoins = JSON.parse(
+          mmkv.getString('pinned-coins-' + account.address) ?? '[]'
+        );
+        const hiddenCoins = JSON.parse(
+          mmkv.getString('hidden-coins-' + account.address) ?? '[]'
+        );
+        mmkv.set(
+          'hidden-coins-obj-' + account.address,
+          JSON.stringify(
+            hiddenCoins.reduce((acc: BooleanMap, curr: string) => {
+              acc[curr] = true;
+              return acc;
+            }, {} as BooleanMap)
+          )
+        );
+
+        mmkv.set(
+          'pinned-coins-obj-' + account.address,
+          JSON.stringify(
+            pinnedCoins.reduce((acc: BooleanMap, curr: string) => {
+              acc[curr] = true;
+              return acc;
+            }, {} as BooleanMap)
+          )
+        );
+      }
+    }
+  };
+
+  migrations.push(v17);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`

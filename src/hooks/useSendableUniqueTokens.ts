@@ -1,4 +1,4 @@
-import { filter, groupBy } from 'lodash';
+import { groupBy } from 'lodash';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { UniqueAsset } from '@rainbow-me/entities';
@@ -8,7 +8,9 @@ const uniqueTokensSelector = (state: AppState) =>
   state.uniqueTokens.uniqueTokens;
 
 const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
-  const sendableUniqueTokens = filter(uniqueTokens, ['isSendable', true]);
+  const sendableUniqueTokens = uniqueTokens?.filter(
+    uniqueToken => uniqueToken.isSendable
+  );
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
   const families = Object.keys(grouped).sort();
   let sendableTokens = [];

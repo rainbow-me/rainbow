@@ -1,9 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { Linking } from 'react-native';
+import { Linking, View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
@@ -36,7 +35,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
   })
 );
 
-const InterstitialButton = styled(ButtonPressAnimation).attrs(
+const InterstitialButton = styled(ButtonPressAnimation).attrs({
+  borderRadius: 23,
+})();
+
+const InterstitialButtonContent = styled(View).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
     borderRadius: 23,
@@ -56,10 +59,15 @@ const InterstitialDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   borderRadius: 1,
 });
 
-const CopyAddressButton = styled(ButtonPressAnimation).attrs(
+const CopyAddressButton = styled(ButtonPressAnimation).attrs({
+  borderRadius: 23,
+})();
+
+const CopyAddressButtonContent = styled(RowWithMargins).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.alpha(colors.appleBlue, 0.06),
     borderRadius: 23,
+    margin: 6,
   })
 )({
   ...padding.object(10.5, 15, 14.5),
@@ -257,15 +265,17 @@ const AddFundsInterstitial = ({ network }) => {
           </Row>
           <InterstitialButtonRow>
             <InterstitialButton onPress={handlePressAmount} radiusAndroid={23}>
-              <Text
-                align="center"
-                color={colors.alpha(colors.blueGreyDark, 0.6)}
-                lineHeight="loose"
-                size="large"
-                weight="bold"
-              >
-                {` 􀍡 ${lang.t('wallet.add_cash.interstitial.other_amount')}`}
-              </Text>
+              <InterstitialButtonContent>
+                <Text
+                  align="center"
+                  color={colors.alpha(colors.blueGreyDark, 0.6)}
+                  lineHeight="loose"
+                  size="large"
+                  weight="bold"
+                >
+                  {` 􀍡 ${lang.t('wallet.add_cash.interstitial.other_amount')}`}
+                </Text>
+              </InterstitialButtonContent>
             </InterstitialButton>
           </InterstitialButtonRow>
           {!isSmallPhone && <InterstitialDivider />}
@@ -281,7 +291,7 @@ const AddFundsInterstitial = ({ network }) => {
         <Fragment>
           <Title>
             {lang.t('add_funds.test_eth.request_test_eth', {
-              testnetName: get(networkInfo[network], 'name'),
+              testnetName: networkInfo[network]?.name,
             })}
           </Title>
           <Row marginTop={30}>
@@ -301,10 +311,9 @@ const AddFundsInterstitial = ({ network }) => {
           <Subtitle isSmallPhone={isSmallPhone}>
             {lang.t('add_funds.test_eth.or_send_test_eth')}
           </Subtitle>
-
           <Paragraph>
             {lang.t('add_funds.test_eth.send_test_eth_from_another_source', {
-              testnetName: get(networkInfo[network], 'name'),
+              testnetName: networkInfo[network]?.name,
             })}
           </Paragraph>
         </Fragment>
@@ -314,7 +323,7 @@ const AddFundsInterstitial = ({ network }) => {
         radiusAndroid={23}
         testID="copy-address-button"
       >
-        <RowWithMargins margin={6}>
+        <CopyAddressButtonContent>
           <Icon
             color={colors.appleBlue}
             marginTop={0.5}
@@ -330,7 +339,7 @@ const AddFundsInterstitial = ({ network }) => {
           >
             {lang.t('wallet.settings.copy_address')}
           </Text>
-        </RowWithMargins>
+        </CopyAddressButtonContent>
       </CopyAddressButton>
     </Container>
   );

@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, get, isEmpty, keys, map, toLower } from 'lodash';
+import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,7 +66,6 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
-  const { isEmpty: isAccountEmpty } = useAccountEmptyState();
   const { trackENSProfile } = useTrackENSProfile();
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
@@ -84,7 +82,11 @@ export default function WalletScreen() {
     refetchSavings,
     sections,
     shouldRefetchSavings,
+    isEmpty: isSectionsEmpty,
+    briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
+
+  const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 
   const dispatch = useDispatch();
 
@@ -127,7 +129,7 @@ export default function WalletScreen() {
         for (let i = 0; i < userAccounts.length; i++) {
           const account = userAccounts[i];
           // Passing usd for consistency in tracking
-          dispatch(emitPortfolioRequest(toLower(account.address), 'usd'));
+          dispatch(emitPortfolioRequest(account.address.toLowerCase(), 'usd'));
         }
       };
       fetchPortfolios();
@@ -160,7 +162,10 @@ export default function WalletScreen() {
   useEffect(() => {
     if (initialized && assetsSocket && !fetchedCharts) {
       const balancesSection = sections.find(({ name }) => name === 'balances');
-      const assetCodes = compact(map(balancesSection?.data, 'address'));
+      const assetCodes = compact(
+        balancesSection?.data.map(({ address }) => address)
+      );
+
       if (!isEmpty(assetCodes)) {
         dispatch(emitChartsRequest(assetCodes));
         setFetchedCharts(true);
@@ -191,10 +196,9 @@ export default function WalletScreen() {
   // (mainnet & rinkeby)
   const fabs = useMemo(
     () =>
-      [
-        !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
-        SendFab,
-      ].filter(e => !!e),
+      [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(
+        e => !!e
+      ),
     [network]
   );
 
@@ -202,7 +206,6 @@ export default function WalletScreen() {
 
   return (
     <WalletPage testID="wallet-screen">
-      {ios && <StatusBar barStyle="dark-content" />}
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />
@@ -228,6 +231,7 @@ export default function WalletScreen() {
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
+          walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>
     </WalletPage>

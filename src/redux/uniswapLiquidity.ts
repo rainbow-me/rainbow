@@ -1,9 +1,8 @@
-import { concat, filter, isEmpty, map, uniqBy } from 'lodash';
-import { AppState } from 'react-native';
+import { isEmpty, uniqBy } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
-import { AppGetState } from './store';
+import { AppGetState, AppState } from './store';
 import { ParsedAddressAsset } from '@rainbow-me/entities';
 import {
   getLiquidity,
@@ -41,6 +40,7 @@ export interface UniswapPoolAddressDetailsFull {
   symbol: string;
   token0: UniswapPoolToken;
   token1: UniswapPoolToken;
+  tokens?: [UniswapPoolToken, UniswapPoolToken];
   tokenNames: string;
   type: string;
 }
@@ -169,15 +169,13 @@ export const uniswapUpdateLiquidityTokens = (
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
-    updatedLiquidityTokens = filter(
-      uniqBy(
-        concat(updatedLiquidityTokens, existingLiquidityTokens),
-        token => token.address
-      ),
-      token => !!Number(token?.balance?.amount ?? 0)
-    );
+
+    updatedLiquidityTokens = uniqBy(
+      updatedLiquidityTokens.concat(existingLiquidityTokens),
+      token => token.address
+    ).filter(token => !!Number(token?.balance?.amount ?? 0));
   } else {
-    const assetCodes = map(liquidityTokens, token => token.address);
+    const assetCodes = liquidityTokens.map(token => token.address);
     dispatch(emitChartsRequest(assetCodes));
   }
   const { accountAddress, network } = getState().settings;

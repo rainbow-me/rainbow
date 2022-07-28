@@ -1,14 +1,14 @@
-import { get } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
+import { Network } from '@rainbow-me/helpers';
+
 /**
  * @desc parse poaps
  * @param  {Object}
  * @return {Array}
  */
-
 export const parsePoaps = data => {
-  const poaps = get(data, 'data', null);
+  const poaps = data?.data ?? null;
   return poaps.map(({ event }) => {
     return {
       animation_url: event.image_url,
@@ -43,6 +43,7 @@ export const parsePoaps = data => {
       lastSalePaymentToken: null,
       lowResUrl: imageToPng(event.image_url, 300),
       name: event.name,
+      network: Network.mainnet,
       permalink: event.event_url,
       traits: [
         {

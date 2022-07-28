@@ -26,6 +26,7 @@ const fallbackTextStyles = {
 const FallbackImage = styled(ImageWithCachedMetadata)(
   ({
     size,
+    layoutSize,
     theme: { colors },
     shadowColor: color,
     shadowOffset: { height: y, width: x },
@@ -33,8 +34,8 @@ const FallbackImage = styled(ImageWithCachedMetadata)(
     shadowRadius: radius,
     showImage,
   }) => ({
-    height: size,
-    width: size,
+    height: layoutSize ?? size,
+    width: layoutSize ?? size,
     ...position.coverAsObject,
     ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
     backgroundColor: showImage ? colors.white : colors.transparent,
@@ -42,6 +43,14 @@ const FallbackImage = styled(ImageWithCachedMetadata)(
     overflow: 'visible',
   })
 );
+
+// If th size is e.g., 20, we can use 40 that is the default icon size in the (used in discover and wallet list)
+const getIconSize = size => {
+  if (40 % size === 0) {
+    return 40;
+  }
+  return size;
+};
 
 function WrappedFallbackImage({
   color,
@@ -70,7 +79,7 @@ function WrappedFallbackImage({
         overlayColor={color || colors.dark}
         shadowOpacity={shadowOpacity}
         showImage={showImage}
-        size={size}
+        size={getIconSize(size)}
         type={type}
       />
     </Centered>
@@ -127,7 +136,8 @@ const CoinIconFallback = fallbackProps => {
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
         showImage={showImage}
-        size={width}
+        {...(ios && { layoutSize: width })}
+        size={ios ? getIconSize(width) : width}
       />
     </Centered>
   );

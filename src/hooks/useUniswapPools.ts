@@ -1,4 +1,4 @@
-import { pick, sortBy, toLower } from 'lodash';
+import sortBy from 'lodash/sortBy';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import {
   UniswapPairHistoricalData,
 } from '@rainbow-me/entities';
 import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import {
   emitAssetRequest,
   emitChartsRequest,
@@ -74,6 +75,12 @@ function parseData(
   newData.annualized_fees =
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
+  const { id, name, symbol } = newData.token0;
+  const {
+    id: idToken1,
+    name: nameToken1,
+    symbol: symbolToken1,
+  } = newData.token1;
   return {
     address: newData?.id,
     annualized_fees: newData.annualized_fees,
@@ -81,8 +88,8 @@ function parseData(
     oneDayVolumeUSD: newData.oneDayVolumeUSD,
     profit30d: newData.profit30d,
     symbol: 'UNI-V2',
-    token0: pick(newData.token0, ['id', 'name', 'symbol']),
-    token1: pick(newData.token1, ['id', 'name', 'symbol']),
+    token0: { id, name, symbol },
+    token1: { id: idToken1, name: nameToken1, symbol: symbolToken1 },
     tokenNames: `${newData.token0.symbol}-${newData.token1.symbol}`.replace(
       'WETH',
       'ETH'
@@ -257,31 +264,29 @@ export default function useUniswapPools(
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
-      const token0 = (toLower(pair.token0?.id) === WETH_ADDRESS
+      const token0 = (pair.token0?.id?.toLowerCase() === WETH_ADDRESS
         ? genericAssets['eth']
-        : genericAssets[toLower(pair.token0?.id)]) || {
+        : genericAssets[pair.token0?.id?.toLowerCase()]) || {
         ...pair.token0,
         address: pair.token0?.id,
       };
       const token1 =
-        toLower(pair.token1?.id) === WETH_ADDRESS
+        pair.token1?.id?.toLowerCase() === WETH_ADDRESS
           ? genericAssets['eth']
-          : genericAssets[toLower(pair.token1?.id)] || {
+          : genericAssets[pair.token1?.id?.toLowerCase()] || {
               ...pair.token1,
               address: pair.token1?.id,
             };
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       pair.tokens = [token0, token1];
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      tmpAllTokens.push(toLower(pair.tokens[0]?.id));
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      tmpAllTokens.push(toLower(pair.tokens[1]?.id));
+      tmpAllTokens.push(pair.tokens[0]?.id?.toLowerCase());
+      tmpAllTokens.push(pair.tokens[1]?.id?.toLowerCase());
       const pairAdjustedForCurrency = {
         ...pair,
         liquidity: pair.liquidity * currenciesRate,
         oneDayVolumeUSD: pair.oneDayVolumeUSD * currenciesRate,
       };
-      return pick(pairAdjustedForCurrency, [
+
+      return pickShallow(pairAdjustedForCurrency, [
         'address',
         'annualized_fees',
         'liquidity',
@@ -294,7 +299,7 @@ export default function useUniswapPools(
       ]) as UniswapPoolAddressDetailsFull;
     });
 
-    const allLPTokens = sortedPairs.map(({ address }) => address);
+    const allLPTokens = sortedPairs.map(({ address }) => address!);
     dispatch(emitAssetRequest(allLPTokens));
     dispatch(emitChartsRequest(allLPTokens));
     return sortedPairs;

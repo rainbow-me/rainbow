@@ -1,5 +1,4 @@
 import { Contract } from '@ethersproject/contracts';
-import { toLower } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -37,7 +36,9 @@ export function isL2Asset(type: any) {
 }
 
 export function isNativeAsset(address: any, network: any) {
-  return toLower(nativeAssetsPerNetwork[network]) === toLower(address);
+  return (
+    nativeAssetsPerNetwork[network]?.toLowerCase() === address?.toLowerCase()
+  );
 }
 
 export async function getOnchainAssetBalance(
@@ -102,7 +103,6 @@ async function getOnchainNativeAssetBalance(
     );
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
       decimals,
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ decimals: any; symbol: any; }'... Remove this comment to see the full error message
       symbol,
     });
 

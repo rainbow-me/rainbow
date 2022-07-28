@@ -14,6 +14,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -130,7 +131,7 @@ function HoldToAuthorizeButtonContent2({
         {
           duration: calculateReverseDuration(longPressProgress.value),
         },
-        () => setIsAuthorizing(false)
+        () => runOnJS(setIsAuthorizing)(false)
       );
     }
   }, [disabled, longPressProgress]);
@@ -171,7 +172,7 @@ function HoldToAuthorizeButtonContent2({
       buttonScale.value = withTiming(
         1,
         { duration: BUTTON_SCALE_DURATION_IN_MS },
-        () => setIsAuthorizing(true)
+        () => runOnJS(setIsAuthorizing)(true)
       );
 
       handlePress();

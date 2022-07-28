@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { get } from 'lodash';
 import React, { PureComponent } from 'react';
 import {
   DataProvider,
@@ -20,11 +19,7 @@ import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { buildTransactionUniqueIdentifier } from '@rainbow-me/helpers/transactions';
 import styled from '@rainbow-me/styled-components';
-import {
-  deviceUtils,
-  isNewValueForPath,
-  safeAreaInsetValues,
-} from '@rainbow-me/utils';
+import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,
@@ -41,23 +36,25 @@ const Wrapper = styled.View({
 });
 
 const hasRowChanged = (r1, r2) => {
+  const props1 = r1?.header?.props;
+  const props2 = r2?.header?.props;
   if (
     r1.hash === '_header' &&
-    (isNewValueForPath(r1, r2, 'header.props.accountAddress') ||
-      isNewValueForPath(r1, r2, 'header.props.accountName') ||
-      isNewValueForPath(r1, r2, 'header.props.accountColor'))
+    (props1?.accountAddress !== props2?.accountAddress ||
+      props1?.accountName !== props2?.accountName ||
+      props1?.accountColor !== props2?.accountColor)
   ) {
     return true;
   }
 
-  const r1Key = r1.hash ? r1.hash : get(r1, 'displayDetails.timestampInMs', '');
-  const r2Key = r2.hash ? r2.hash : get(r2, 'displayDetails.timestampInMs', '');
+  const r1Key = r1?.hash ?? r1?.displayDetails?.timestampInMs ?? '';
+  const r2Key = r2?.hash ?? r2?.displayDetails?.timestampInMs ?? '';
 
   return (
     r1Key !== r2Key ||
-    isNewValueForPath(r1, r2, 'contact') ||
-    isNewValueForPath(r1, r2, 'native.symbol') ||
-    isNewValueForPath(r1, r2, 'pending')
+    r1?.contact !== r2?.contact ||
+    r1?.native?.symbol !== r2?.native?.symbol ||
+    r1?.pending !== r2?.pending
   );
 };
 
@@ -154,7 +151,7 @@ export default class RecyclerActivityList extends PureComponent {
   }
 
   getStableId = index => {
-    const row = get(this.state, `dataProvider._data[${index}]`);
+    const row = this.state?.dataProvider?._data?.[index];
     return buildTransactionUniqueIdentifier(row);
   };
 

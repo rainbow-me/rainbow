@@ -11,7 +11,6 @@ import {
   SheetTitle,
 } from '../components/sheet';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils } from '../utils';
 import {
   useAddCashLimits,
@@ -22,6 +21,7 @@ import {
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -30,6 +30,8 @@ const sheetHeight =
   statusBarHeight -
   (isNativeStackAvailable ? (deviceHeight >= 812 ? 10 : 20) : 0);
 
+const subtitleInterval = 3000;
+
 const SheetContainer = styled(Column)({
   ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
   backgroundColor: ({ colors }) => colors.white,
@@ -37,8 +39,6 @@ const SheetContainer = styled(Column)({
   top: isNativeStackAvailable ? 0 : statusBarHeight,
   width: '100%',
 });
-
-const SubtitleInterval = 3000;
 
 export default function AddCashSheet() {
   const { colors } = useTheme();
@@ -86,7 +86,7 @@ export default function AddCashSheet() {
     limit => {
       stopErrorTimeout();
       setErrorIndex(Object.keys(cashLimits).indexOf(limit));
-      startErrorTimeout(() => onClearError(), SubtitleInterval);
+      startErrorTimeout(() => onClearError(), subtitleInterval);
     },
     [stopErrorTimeout, cashLimits, startErrorTimeout, onClearError]
   );
@@ -97,25 +97,23 @@ export default function AddCashSheet() {
       <Column
         align="center"
         height={isNativeStackAvailable ? sheetHeight : '100%'}
-        justify="end"
         paddingBottom={isNarrowPhone ? 15 : insets.bottom + 11}
       >
         <Column align="center" paddingVertical={6}>
           <SheetHandle />
           <ColumnWithMargins
+            align="center"
             margin={4}
             paddingTop={isNativeStackAvailable ? 7 : 5}
           >
             <SheetTitle>{lang.t('button.add_cash')}</SheetTitle>
-            {!isPaymentComplete && (
-              <SheetSubtitleCycler
-                animatedValue={errorAnimation}
-                errorIndex={errorIndex}
-                interval={SubtitleInterval}
-                items={Object.values(cashLimits)}
-                paddingVertical={14}
-              />
-            )}
+            <SheetSubtitleCycler
+              errorIndex={errorIndex}
+              interval={subtitleInterval}
+              isPaymentComplete={isPaymentComplete}
+              items={Object.values(cashLimits)}
+              sharedValue={errorAnimation}
+            />
           </ColumnWithMargins>
         </Column>
         <FlexItem width="100%">

@@ -1,6 +1,8 @@
 import { captureException, captureMessage } from '@sentry/react-native';
-import { forEach, isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import DeviceInfo from 'react-native-device-info';
+// @ts-expect-error
+import { IS_TESTING } from 'react-native-dotenv';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
@@ -45,7 +47,13 @@ export async function saveString(
       captureMessage('Keychain write first attempt failed');
       await delay(1000);
       try {
-        await setInternetCredentials(key, key, value, accessControlOptions);
+        let acOptions = accessControlOptions;
+        // This is a bug on iOS 14 and 15 simulators
+        // See https://github.com/oblador/react-native-keychain/issues/509
+        if (IS_TESTING === 'true') {
+          acOptions.accessControl = undefined;
+        }
+        await setInternetCredentials(key, key, value, acOptions);
         logger.sentry(
           `Keychain: saved string for key: ${key} on second attempt`
         );
@@ -175,7 +183,7 @@ export async function loadAllKeys(): Promise<null | UserCredentials[]> {
 export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
   const data: AnonymousKeyData = {};
   const results = await loadAllKeys();
-  forEach(results, result => {
+  results?.forEach(result => {
     data[result?.username] = {
       length: result?.password?.length,
       nil: isNil(result?.password),

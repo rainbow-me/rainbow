@@ -1,20 +1,21 @@
-import { Ref, useCallback, useEffect, useRef } from 'react';
+import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 
 export default function useTimeout(): [
-  ReturnType<typeof useCallback>,
-  ReturnType<typeof useCallback>,
-  Ref<number | undefined>
+  (func: () => void, ms?: number) => void,
+  () => void,
+  MutableRefObject<NodeJS.Timeout | null>
 ] {
-  const handle = useRef<number | undefined>();
+  const handle = useRef<NodeJS.Timeout | null>(null);
 
-  const start = useCallback((func, ms) => {
+  const start = useCallback((func: () => void, ms?: number) => {
     handle.current = setTimeout(func, ms);
   }, []);
 
-  const stop = useCallback(
-    () => (handle.current && clearTimeout(handle.current)) as void,
-    []
-  );
+  const stop = useCallback(() => {
+    if (handle.current) {
+      clearTimeout(handle.current);
+    }
+  }, []);
 
   useEffect(() => () => stop(), [stop]);
 

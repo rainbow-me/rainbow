@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { updateLanguageLocale } from '../languages';
 import {
+  settingsChangeAppIcon as changeAppIcon,
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
@@ -29,6 +30,7 @@ export default function useAccountSettings() {
     ({
       settings: {
         accountAddress,
+        appIcon,
         chainId,
         nativeCurrency,
         network,
@@ -36,6 +38,7 @@ export default function useAccountSettings() {
       },
     }: AppState) => ({
       accountAddress,
+      appIcon,
       chainId,
       language,
       nativeCurrency,
@@ -53,6 +56,11 @@ export default function useAccountSettings() {
     [dispatch]
   );
 
+  const settingsChangeAppIcon = useCallback(
+    appIcon => dispatch(changeAppIcon(appIcon)),
+    [dispatch]
+  );
+
   const settingsChangeNativeCurrency = useCallback(
     currency => dispatch(changeNativeCurrency(currency)),
     [dispatch]
@@ -64,6 +72,7 @@ export default function useAccountSettings() {
   );
 
   return {
+    settingsChangeAppIcon,
     settingsChangeLanguage,
     settingsChangeNativeCurrency,
     settingsChangeTestnetsEnabled,

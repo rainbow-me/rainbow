@@ -1,8 +1,6 @@
-import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { spring } from 'react-native-reanimated';
-import { useValues } from 'react-native-redash/src/v1';
+import { useSharedValue, withSpring } from 'react-native-reanimated';
 import JellySelectorItem from './JellySelectorItem';
 import JellySelectorRow from './JellySelectorRow';
 import {
@@ -11,16 +9,14 @@ import {
 } from './jelly-selector-indicator';
 import { magicMemo } from '@rainbow-me/utils';
 
-const springTo = (node, toValue) =>
-  spring(node, {
-    damping: 38,
-    mass: 1,
-    overshootClamping: false,
-    restDisplacementThreshold: 0.001,
-    restSpeedThreshold: 0.001,
-    stiffness: 600,
-    toValue,
-  }).start();
+const springConfig = {
+  damping: 38,
+  mass: 1,
+  overshootClamping: false,
+  restDisplacementThreshold: 0.001,
+  restSpeedThreshold: 0.001,
+  stiffness: 600,
+};
 
 let calculatedItemWidths = 0;
 let positions = [];
@@ -48,9 +44,10 @@ const JellySelector = ({
   ...props
 }) => {
   const { colors } = useTheme();
-  const color = givenColor || colors.dark;
+  const color = givenColor ?? colors.dark;
   const [selected, setSelected] = useState(defaultIndex);
-  const [translateX, width] = useValues(0, 0);
+  const translateX = useSharedValue(0);
+  const width = useSharedValue(0);
   const [selectorVisible, setSelectorVisible] = useState(false);
 
   useEffect(() => {
@@ -64,11 +61,11 @@ const JellySelector = ({
       const nextX = positions[index] + widths[index] / 2;
 
       if (skipAnimation) {
-        translateX.setValue(nextX);
-        width.setValue(nextWidth);
+        translateX.value = nextX;
+        width.value = nextWidth;
       } else {
-        springTo(translateX, nextX);
-        springTo(width, nextWidth);
+        translateX.value = withSpring(nextX, springConfig);
+        width.value = withSpring(nextWidth, springConfig);
       }
     },
     [translateX, width]
@@ -76,8 +73,8 @@ const JellySelector = ({
 
   const handleItemLayout = useCallback(
     (event, index) => {
-      const itemWidth = get(event, 'nativeEvent.layout.width', 0);
-      const itemX = get(event, 'nativeEvent.layout.x', 0);
+      const itemWidth = event?.nativeEvent?.layout?.width ?? 0;
+      const itemX = event?.nativeEvent?.layout?.x ?? 0;
       setSelectorVisible(true);
 
       positions[index] = Math.floor(itemX) - Math.floor(itemWidth / 2);

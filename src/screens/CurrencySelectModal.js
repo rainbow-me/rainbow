@@ -1,6 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { toLower } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
@@ -50,7 +49,7 @@ const searchWalletCurrencyList = (searchList, query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
 
   if (isAddress) {
-    const formattedQuery = toLower(addHexPrefix(query));
+    const formattedQuery = addHexPrefix(query).toLowerCase();
     return filterList(searchList, formattedQuery, ['address'], {
       threshold: matchSorter.rankings.CASE_SENSITIVE_EQUAL,
     });
@@ -88,14 +87,12 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
-  const { hiddenCoins } = useCoinListEditOptions();
+  const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const filteredUniswapAssetsInWallet = useMemo(
     () =>
-      uniswapAssetsInWallet.filter(
-        ({ uniqueId }) => !hiddenCoins.includes(uniqueId)
-      ),
-    [uniswapAssetsInWallet, hiddenCoins]
+      uniswapAssetsInWallet.filter(({ uniqueId }) => !hiddenCoinsObj[uniqueId]),
+    [uniswapAssetsInWallet, hiddenCoinsObj]
   );
 
   const {

@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
@@ -35,7 +34,7 @@ export default function useDeleteWallet({
         addresses: wallets[
           watchingWalletId
         ].addresses.map((account: { address: string }) =>
-          toLower(account.address) === toLower(primaryAddress)
+          account.address.toLowerCase() === primaryAddress?.toLowerCase()
             ? { ...account, visible: false }
             : account
         ),

@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -11,13 +10,18 @@ import {
 import useInitializeWallet from './useInitializeWallet';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { RainbowAccount } from '@rainbow-me/model/wallet';
+import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
 import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
 const walletSelector = createSelector(
   ({
-    wallets: { isWalletLoading, selected = {}, walletNames, wallets },
+    wallets: {
+      isWalletLoading,
+      selected = {} as RainbowWallet,
+      walletNames,
+      wallets,
+    },
   }: AppState) => ({
     isWalletLoading,
     selectedWallet: selected,
@@ -60,17 +64,17 @@ export default function useWallets() {
   }, [selectedWallet, wallets]);
 
   const switchToWalletWithAddress = async (address: string) => {
-    const walletKey = Object.keys(wallets).find(key => {
+    const walletKey = Object.keys(wallets!).find(key => {
       // Addresses
-      return wallets[key].addresses.find(
+      return wallets![key].addresses.find(
         (account: RainbowAccount) =>
-          toLower(account.address) === toLower(address)
+          account.address.toLowerCase() === address.toLowerCase()
       );
     });
 
     if (!walletKey) return;
-    const p1 = dispatch(walletsSetSelected(wallets[walletKey]));
-    const p2 = dispatch(addressSetSelected(toChecksumAddress(address)));
+    const p1 = dispatch(walletsSetSelected(wallets![walletKey]));
+    const p2 = dispatch(addressSetSelected(toChecksumAddress(address)!));
     await Promise.all([p1, p2]);
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
     return initializeWallet(null, null, null, false, false, null, true);

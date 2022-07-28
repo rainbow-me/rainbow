@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, toLower, without } from 'lodash';
+import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
@@ -133,8 +133,8 @@ export const addShowcaseToken = (tokenId: string) => (
   getState: AppGetState
 ) => {
   const { accountAddress, network } = getState().settings;
-  const { showcaseTokens } = getState().showcaseTokens;
-  const updatedShowcaseTokens = concat(showcaseTokens, tokenId);
+  const { showcaseTokens = [] } = getState().showcaseTokens;
+  const updatedShowcaseTokens = showcaseTokens.concat(tokenId);
   dispatch({
     payload: updatedShowcaseTokens,
     type: SHOWCASE_TOKENS_UPDATE,
@@ -181,7 +181,7 @@ export const updateWebDataEnabled = (
     payload: enabled,
     type: UPDATE_WEB_DATA_ENABLED,
   });
-  await saveWebDataEnabled(enabled, toLower(address), network);
+  await saveWebDataEnabled(enabled, address.toLowerCase(), network);
 };
 
 // -- Reducer ----------------------------------------- //

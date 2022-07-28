@@ -1,5 +1,5 @@
 import { differenceInDays, differenceInYears } from 'date-fns';
-import { findIndex, sumBy, take } from 'lodash';
+import { sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
@@ -27,16 +27,15 @@ const findRemainingAmount = (
 
 export default function useAddCashLimits() {
   const purchaseTransactions = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'addCash' does not exist on type 'Default... Remove this comment to see the full error message
-    ({ addCash: { purchaseTransactions } }) => purchaseTransactions
+    ({ addCash: { purchaseTransactions = [] } }: AppState) =>
+      purchaseTransactions
   );
 
   const limits = useMemo(() => {
     const now = Date.now();
 
-    const firstIndexBeyondThisWeek = findIndex(purchaseTransactions, txn => {
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      const txnTimestampInMs = txn.timestamp || txn.minedAt * 1000;
+    const firstIndexBeyondThisWeek = purchaseTransactions.findIndex(txn => {
+      const txnTimestampInMs = txn.timestamp || txn.minedAt! * 1000;
       return differenceInDays(now, txnTimestampInMs) >= 7;
     });
 
@@ -45,15 +44,13 @@ export default function useAddCashLimits() {
       purchaseTransactions,
       firstIndexBeyondThisWeek
     );
-
-    const firstIndexBeyondThisYear = findIndex(
-      purchaseTransactions,
-      txn => {
-        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-        const txnTimestampInMs = txn.timestamp || txn.minedAt * 1000;
+    const startFilteringIndex = Math.max(firstIndexBeyondThisWeek, 0);
+    const firstIndexBeyondThisYear = purchaseTransactions.findIndex(
+      (txn, index) => {
+        if (index < startFilteringIndex) return false;
+        const txnTimestampInMs = txn.timestamp || txn.minedAt! * 1000;
         return differenceInYears(now, txnTimestampInMs) >= 1;
-      },
-      Math.max(firstIndexBeyondThisWeek, 0)
+      }
     );
     const yearlyRemainingLimit = findRemainingAmount(
       DEFAULT_YEARLY_LIMIT,

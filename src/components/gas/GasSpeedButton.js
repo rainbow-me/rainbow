@@ -101,6 +101,10 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
 }))({});
 
+const TextContainer = styled(Column).attrs(() => ({
+  marginBottom: ios ? 0 : 11,
+}))({});
+
 const TransactionTimeLabel = ({ formatter, theme }) => {
   const { colors } = useTheme();
   return (
@@ -139,7 +143,6 @@ const GasSpeedButton = ({
 
   const {
     gasFeeParamsBySpeed,
-    isSufficientGas,
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
@@ -173,9 +176,8 @@ const GasSpeedButton = ({
     () =>
       isNil(price) ||
       isEmpty(gasFeeParamsBySpeed) ||
-      isEmpty(selectedGasFee?.gasFee) ||
-      isSufficientGas === null,
-    [gasFeeParamsBySpeed, isSufficientGas, price, selectedGasFee]
+      isEmpty(selectedGasFee?.gasFee),
+    [gasFeeParamsBySpeed, price, selectedGasFee]
   );
 
   const formatGasPrice = useCallback(
@@ -503,27 +505,25 @@ const GasSpeedButton = ({
                 symbol={nativeFeeCurrency.symbol}
               />
             </NativeCoinIconWrapper>
-            <Column>
-              <AnimateNumber
-                formatter={formatGasPrice}
-                interval={6}
-                renderContent={renderGasPriceText}
-                steps={6}
-                timing="linear"
-                value={price}
-              />
-            </Column>
-            <Column>
-              <Text letterSpacing="one" size="lmedium" weight="heavy">
-                {' '}
+            <TextContainer>
+              <Text>
+                <AnimateNumber
+                  formatter={formatGasPrice}
+                  interval={6}
+                  renderContent={renderGasPriceText}
+                  steps={6}
+                  timing="linear"
+                  value={price}
+                />
+                <Text letterSpacing="one" size="lmedium" weight="heavy">
+                  {' '}
+                </Text>
+                <TransactionTimeLabel
+                  formatter={formatTransactionTime}
+                  theme={theme}
+                />
               </Text>
-            </Column>
-            <Column>
-              <TransactionTimeLabel
-                formatter={formatTransactionTime}
-                theme={theme}
-              />
-            </Column>
+            </TextContainer>
           </Row>
           <Row justify="space-between">
             <Label

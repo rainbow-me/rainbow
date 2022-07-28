@@ -17,7 +17,7 @@ import {
   default as LibWallet,
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
-import { findKey, forEach, get, isEmpty } from 'lodash';
+import { findKey, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
@@ -53,7 +53,7 @@ import {
 } from '@rainbow-me/handlers/web3';
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
@@ -128,7 +128,7 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
-  image: string | null;
+  image?: string | null;
 }
 
 export interface RainbowWallet {
@@ -139,10 +139,11 @@ export interface RainbowWallet {
   name: string;
   primary: boolean;
   type: EthereumWalletType;
-  backedUp: boolean;
-  backupFile?: string;
+  backedUp?: boolean;
+  backupFile?: string | null;
   backupDate?: string;
   backupType?: string;
+  damaged?: boolean;
 }
 
 export interface AllRainbowWallets {
@@ -486,7 +487,7 @@ const loadPrivateKey = async (
       if (privateKeyData === -1) {
         return -1;
       }
-      privateKey = get(privateKeyData, 'privateKey', null);
+      privateKey = privateKeyData?.privateKey ?? null;
 
       let userPIN = null;
       if (android) {
@@ -588,7 +589,7 @@ export const createWallet = async (
     // Get all wallets
     const allWalletsResult = await getAllWallets();
     logger.sentry('[createWallet] - getAllWallets');
-    const allWallets: AllRainbowWallets = get(allWalletsResult, 'wallets', {});
+    const allWallets: AllRainbowWallets = allWalletsResult?.wallets ?? {};
 
     let existingWalletId = null;
     if (isImported) {
@@ -620,8 +621,8 @@ export const createWallet = async (
         setTimeout(
           () =>
             Alert.alert(
-              'Oops!',
-              'Looks like you already imported this wallet!'
+              lang.t('wallet.new.alert.oops'),
+              lang.t('wallet.new.alert.looks_like_already_imported')
             ),
           1
         );
@@ -748,7 +749,8 @@ export const createWallet = async (
 
         let discoveredAccount: RainbowAccount | undefined;
         let discoveredWalletId: RainbowWallet['id'] | undefined;
-        forEach(allWallets, someWallet => {
+
+        Object.values(allWallets).forEach(someWallet => {
           const existingAccount = someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
@@ -925,8 +927,10 @@ export const getPrivateKey = async (
 
     if (pkey === -2) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
+        lang.t('wallet.authenticate.alert.error'),
+        lang.t(
+          'wallet.authenticate.alert.current_authentication_not_secure_enough'
+        )
       );
       return null;
     }
@@ -965,8 +969,10 @@ export const getSeedPhrase = async (
 
     if (seedPhraseData === -2) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
+        lang.t('wallet.authenticate.alert.error'),
+        lang.t(
+          'wallet.authenticate.alert.current_authentication_not_secure_enough'
+        )
       );
       return null;
     }
@@ -1034,6 +1040,13 @@ export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => 
     return null;
   }
 };
+let callbackAfterSeeds: null | (() => void) = null;
+
+export function setCallbackAfterObtainingSeedsFromKeychainOrError(
+  callback: () => void
+) {
+  callbackAfterSeeds = callback;
+}
 
 export const generateAccount = async (
   id: RainbowWallet['id'],
@@ -1063,6 +1076,8 @@ export const generateAccount = async (
           userPIN = await authenticateWithPINAndCreateIfNeeded();
           dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
         } catch (e) {
+          callbackAfterSeeds?.();
+          callbackAfterSeeds = null;
           return null;
         }
       }
@@ -1070,6 +1085,8 @@ export const generateAccount = async (
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id);
+      callbackAfterSeeds?.();
+      callbackAfterSeeds = null;
       seedphrase = seedData?.seedphrase;
       if (userPIN) {
         try {
@@ -1079,6 +1096,8 @@ export const generateAccount = async (
         }
       }
     }
+
+    callbackAfterSeeds = null;
 
     if (!seedphrase) {
       throw new Error(`Can't access secret phrase to create new accounts`);
@@ -1272,7 +1291,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       // In that case we regenerate the existing private key to store it with the new format
       if (!isSeedPhraseMigrated) {
         const migratedSecrets = await migrateSecrets();
-        seedPhrase = get(migratedSecrets, 'seedphrase', null);
+        seedPhrase = migratedSecrets?.seedphrase ?? null;
       } else {
         logger.sentry('Migrated flag was set but there is no key!', id);
         captureMessage('Missing seed for wallet');
@@ -1280,7 +1299,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
     } else {
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
-      seedPhrase = get(seedData, 'seedphrase', null);
+      seedPhrase = seedData?.seedphrase ?? null;
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
