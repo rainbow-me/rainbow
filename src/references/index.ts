@@ -1,4 +1,3 @@
-import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists.json';
 import {
@@ -242,12 +241,16 @@ export const savingsAssetsList: Record<
 export const savingsAssetsListByUnderlying: Record<
   string,
   Record<string, SavingsAsset>
-> = mapValues(savingsAssets, (assetsByNetwork: Record<string, Asset>) =>
-  mapKeys(
-    mapValues(assetsByNetwork, (assetByContract, contractAddress) => ({
-      ...assetByContract,
-      contractAddress,
-    })),
-    value => value.address
-  )
-);
+> = Object.entries(savingsAssets).reduce((a, [key, assetsByNetwork]) => {
+  a[key] = Object.entries(assetsByNetwork).reduce(
+    (acc, [nestedKey, assetByContract]) => {
+      acc[assetByContract.address] = {
+        ...assetByContract,
+        contractAddress: nestedKey,
+      };
+      return acc;
+    },
+    {} as Record<string, SavingsAsset>
+  );
+  return a;
+}, {} as Record<string, Record<string, SavingsAsset>>);

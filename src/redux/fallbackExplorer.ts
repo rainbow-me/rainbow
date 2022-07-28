@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, mapValues, uniqBy } from 'lodash';
+import { isEmpty, keyBy, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import {
   // @ts-ignore
@@ -84,7 +84,7 @@ interface FallbackExplorerState {
    * Loaded mainnet asset data.
    */
   mainnetAssets: {
-    [key: string]: { asset: ZerionAssetFallback };
+    [key: string]: { asset: ZerionAssetFallback; quantity?: number | string }; //TODO:
   };
 }
 
@@ -193,7 +193,9 @@ interface FallbackOnChainAssetsPayload {
 export interface MainnetAssetDiscoveryMessage {
   payload?: {
     assets: {
-      [assetCode: string]: { asset: ZerionAsset } | FallbackAssetWithQuantity;
+      [assetCode: string]:
+        | { asset: ZerionAsset; quantity?: number | string }
+        | FallbackAssetWithQuantity; //TODO:
     };
   };
   meta?: MessageMeta;
@@ -665,17 +667,23 @@ export const fetchOnchainBalances = ({
 
     const isEmptyAssets = isEmpty(assets);
     if (isEmptyAssets && !isEmpty(accountAssetsData)) {
-      assets = mapValues(accountAssetsData, asset => ({
-        asset: {
-          asset_code: asset.address,
-          decimals: asset.decimals,
-          icon_url: asset.icon_url,
-          name: asset.name,
-          price: asset.price,
-          symbol: asset.symbol,
+      assets = Object.entries(accountAssetsData).reduce<typeof assets>(
+        (acc, [key, asset]) => {
+          acc[key] = {
+            asset: {
+              asset_code: asset.address,
+              decimals: asset.decimals,
+              icon_url: asset.icon_url,
+              name: asset.name,
+              price: asset.price,
+              symbol: asset.symbol,
+            },
+            quantity: 0,
+          };
+          return acc;
         },
-        quantity: 0,
-      })) as typeof assets;
+        {}
+      );
     }
 
     if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
@@ -711,27 +719,34 @@ export const fetchOnchainBalances = ({
         asset: typeof assets[keyof typeof assets]['asset'] & {
           coingecko_id?: string;
         };
+        quantity?: string | number;
       };
     } = assets;
+
     if (balances) {
-      updatedAssets = mapValues(assets, assetAndQuantity => {
-        const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
-        return {
-          asset: {
-            ...assetAndQuantity.asset,
-            asset_code:
-              assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-                ? ETH_ADDRESS
-                : assetCode,
-          },
-          quantity:
-            balances?.[
-              assetCode === ETH_ADDRESS
-                ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-                : assetCode
-            ],
-        };
-      }) as typeof updatedAssets;
+      updatedAssets = Object.entries(assets).reduce<typeof updatedAssets>(
+        (acc, [key, assetAndQuantity]) => {
+          const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
+
+          acc[key] = {
+            asset: {
+              ...assetAndQuantity.asset,
+              asset_code:
+                assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                  ? ETH_ADDRESS
+                  : assetCode,
+            },
+            quantity:
+              balances?.[
+                assetCode === ETH_ADDRESS
+                  ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                  : assetCode
+              ],
+          };
+          return acc;
+        },
+        {}
+      );
     }
 
     if (withPrices) {
@@ -744,10 +759,13 @@ export const fetchOnchainBalances = ({
       );
 
       if (prices) {
-        updatedAssets = mapValues(updatedAssets, asset => {
+        updatedAssets = Object.entries(updatedAssets).reduce<
+          typeof updatedAssets
+        >((acc, [key, asset]) => {
           const assetCoingeckoId = asset.asset.coingecko_id?.toLowerCase();
+
           if (assetCoingeckoId && prices[assetCoingeckoId]) {
-            return {
+            acc[key] = {
               ...asset,
               asset: {
                 ...asset.asset,
@@ -761,9 +779,11 @@ export const fetchOnchainBalances = ({
                 },
               },
             };
+            return acc;
           }
-          return asset;
-        }) as typeof updatedAssets;
+          acc[key] = asset;
+          return acc;
+        }, {});
       }
     }
 

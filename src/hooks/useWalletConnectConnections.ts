@@ -1,4 +1,5 @@
-import { groupBy, mapValues, values } from 'lodash';
+import groupBy from 'lodash/groupBy';
+import values from 'lodash/values';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -10,16 +11,27 @@ import {
 } from '../redux/walletconnect';
 
 const formatDappData = (connections: any) =>
-  values(
-    mapValues(connections, connection => ({
-      account: connection?.[0].accounts?.[0],
-      chainId: connection?.[0].chainId,
-      dappIcon: connection?.[0].peerMeta?.icons?.[0],
-      dappName: connection?.[0].peerMeta?.name,
-      dappUrl: connection?.[0].peerMeta?.url,
-      handshakeId: connection?.[0]._handshakeId,
-      peerId: connection?.[0].peerId, // unix timestamp in microseconds when connection was made
-    }))
+  Object.values(
+    Object.entries(connections).reduce((acc, [key, connection]) => {
+      // @ts-expect-error
+      acc[key] = {
+        // @ts-expect-error FIXME: Object is of type 'unknown'.
+        account: connection?.[0].accounts?.[0],
+        // @ts-expect-error FIXME: Object is of type 'unknown'.
+        chainId: connection?.[0].chainId,
+        // @ts-expect-error FIXME: Object is of type 'unknown'.
+        dappIcon: connection?.[0].peerMeta?.icons?.[0],
+        // @ts-expect-error FIXME: Object is of type 'unknown'.
+        dappName: connection?.[0].peerMeta?.name,
+        // @ts-expect-error FIXME: Object is of type 'unknown'.
+        dappUrl: connection?.[0].peerMeta?.url,
+        // @ts-expect-error FIXME: Object is of type 'unknown'.
+        handshakeId: connection?.[0]._handshakeId,
+        // @ts-expect-error FIXME: Object is of type 'unknown'.
+        peerId: connection?.[0].peerId, // unix timestamp in microseconds when connection was made
+      };
+      return acc;
+    }, {})
   );
 
 const walletConnectSelector = createSelector(

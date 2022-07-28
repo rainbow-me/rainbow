@@ -32,7 +32,7 @@ type ZerionAssetFallbackOmittedFields = 'decimals' | 'type';
 // the additional `coingecko_id` property but may or may not have the
 // fields specified in `ZerionAssetFallbackOmittedFields`.
 export type ZerionAssetFallback = {
-  coingecko_id: string;
+  coingecko_id?: string;
 } & Omit<ZerionAsset, ZerionAssetFallbackOmittedFields> &
   Partial<Pick<ZerionAsset, ZerionAssetFallbackOmittedFields>>;
 
@@ -68,9 +68,9 @@ export interface ParsedAddressAsset
   color?: string;
   icon_url?: string;
   price?: {
-    changed_at?: number;
-    relative_change_24h?: number;
-    value?: number;
+    changed_at: number;
+    relative_change_24h: number;
+    value: number;
   };
   asset_contract?: AssetContract;
   type?: string;

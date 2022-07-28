@@ -11,10 +11,12 @@ export default function useUserAccounts() {
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const userAccounts = useMemo(() => {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(
+      // @ts-expect-error FIXME: Object is of type 'unknown'.
       wallet => wallet.type !== walletTypes.readOnly
     );
     const addresses: any = [];
     filteredWallets.forEach(wallet => {
+      // @ts-expect-error FIXME: Object is of type 'unknown'.
       wallet.addresses.forEach((account: any) => {
         addresses.push({
           ...account,
@@ -28,10 +30,12 @@ export default function useUserAccounts() {
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const watchedAccounts = useMemo(() => {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(
+      // @ts-expect-error FIXME: Object is of type 'unknown'.
       wallet => wallet.type === walletTypes.readOnly
     );
     const addresses: any = [];
     filteredWallets.forEach(wallet => {
+      // @ts-expect-error FIXME: Object is of type 'unknown'.
       wallet.addresses.forEach((account: any) => {
         addresses.push({
           ...account,

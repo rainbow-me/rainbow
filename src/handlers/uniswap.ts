@@ -12,7 +12,6 @@ import {
   TradeType,
   WETH,
 } from '@uniswap/sdk';
-import { mapKeys, mapValues } from 'lodash';
 import { loadWallet } from '../model/wallet';
 import { estimateGasWithPadding, toHex, web3Provider } from './web3';
 import { Asset } from '@rainbow-me/entities';
@@ -49,11 +48,24 @@ export const getTestnetUniswapPairs = (
   const pairs: { [address: string]: Asset } =
     (UNISWAP_TESTNET_TOKEN_LIST as any)?.[network] ?? {};
 
-  const loweredPairs = mapKeys(pairs, (_, key) => key.toLowerCase());
-  return mapValues(loweredPairs, value => ({
-    ...value,
-    address: value.address.toLowerCase(),
-  }));
+  const keysToLowerCase = Object.entries(pairs).reduce<Record<string, Asset>>(
+    (acc, [key, value]) => {
+      acc[key.toLocaleLowerCase()] = value;
+      return acc;
+    },
+    {}
+  );
+
+  return Object.entries(keysToLowerCase).reduce<Record<string, Asset>>(
+    (acc, [key, value]) => {
+      acc[key] = {
+        ...value,
+        address: value.address?.toLocaleLowerCase() ?? '',
+      };
+      return acc;
+    },
+    {}
+  );
 };
 
 export const estimateSwapGasLimit = async ({

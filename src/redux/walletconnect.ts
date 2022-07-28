@@ -3,7 +3,7 @@ import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
-import { isEmpty, mapValues, values } from 'lodash';
+import { isEmpty, values } from 'lodash';
 import { Alert, AppState, InteractionManager, Linking } from 'react-native';
 import {
   // @ts-ignore
@@ -673,7 +673,9 @@ export const walletConnectLoadState = () => async (
     const allSessions = await getAllValidWalletConnectSessions();
     const { clientMeta, push } = await getNativeOptions();
 
-    newWalletConnectors = mapValues(allSessions, session => {
+    newWalletConnectors = Object.entries(allSessions).reduce<{
+      [x: string]: WalletConnect;
+    }>((acc, [key, session]) => {
       const connector = walletConnectors[session.peerId];
       // @ts-expect-error "_transport" is private.
       const connectorConnected = connector?._transport.connected;
@@ -687,10 +689,12 @@ export const walletConnectLoadState = () => async (
           { clientMeta, session },
           push
         );
-        return dispatch(listenOnNewMessages(walletConnector));
+        acc[key] = dispatch(listenOnNewMessages(walletConnector));
+        return acc;
       }
-      return connector;
-    });
+      acc[key] = connector;
+      return acc;
+    }, {});
   } catch (error) {
     analytics.track('Error on walletConnectLoadState', {
       // @ts-ignore
@@ -932,12 +936,10 @@ export const walletConnectDisconnectAllByDappUrl = (
     )
   );
   try {
-    const peerIds = values(
-      mapValues(
-        matchingWalletConnectors,
-        (walletConnector: WalletConnect) => walletConnector.peerId
-      )
+    const peerIds = matchingWalletConnectors.map(
+      walletConnector => walletConnector.peerId
     );
+
     await removeWalletConnectSessions(peerIds);
 
     if (killSession) {
