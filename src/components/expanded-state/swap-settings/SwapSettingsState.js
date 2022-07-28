@@ -138,7 +138,7 @@ export default function SwapSettingsState({ asset }) {
             <Text align="center" color="primary" size="18px" weight="bold">
               {lang.t('exchange.settings')}
             </Text>
-            {network !== Network.arbitrum && (
+            {network !== Network.optimism && (
               <SourcePicker
                 currentSource={currentSource}
                 onSelect={updateSource}
