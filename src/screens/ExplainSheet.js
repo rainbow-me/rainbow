@@ -213,31 +213,31 @@ export const explainers = network => ({
   },
   currentBaseFeeStable: {
     emoji: '🌞',
-    extraHeight: android ? 40 : 28,
+    extraHeight: android ? 42 : 28,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeFalling: {
     emoji: '📉',
-    extraHeight: android ? 20 : 2,
+    extraHeight: android ? 22 : 2,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeRising: {
     emoji: '🥵',
-    extraHeight: android ? 60 : 54,
+    extraHeight: android ? 62 : 54,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeSurging: {
     emoji: '🎢',
-    extraHeight: android ? 100 : 54,
+    extraHeight: android ? 102 : 54,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeNotrend: {
     emoji: '⛽',
-    extraHeight: android ? -20 : -40,
+    extraHeight: android ? -18 : -40,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER,
     title: CURRENT_BASE_FEE_TITLE,
   },
@@ -399,7 +399,7 @@ const ExplainSheet = () => {
                 size="h1"
                 style={{
                   ...fontWithWidth(fonts.weight.bold),
-                  height: android ? 60 : 47,
+                  height: android ? 62 : 47,
                 }}
               >
                 {explainSheetConfig.emoji}
