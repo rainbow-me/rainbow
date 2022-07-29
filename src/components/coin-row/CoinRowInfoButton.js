@@ -27,7 +27,7 @@ const InfoButton = styled(Centered)({
   height: CoinRowHeight,
   justifyContent: 'center',
   position: 'absolute',
-  right: 40,
+  right: ({ showFavoriteButton }) => (showFavoriteButton ? 40 : 0),
   top: 0,
   width: 68,
 });
@@ -88,7 +88,11 @@ const buildBlockExplorerAction = type => {
   };
 };
 
-const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
+const CoinRowInfoButton = ({
+  item,
+  onCopySwapDetailsText,
+  showFavoriteButton,
+}) => {
   const { setClipboard } = useClipboard();
   const handleCopyContractAddress = useCallback(
     address => {
@@ -153,9 +157,8 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
     },
     [item, handleCopyContractAddress]
   );
-
   return (
-    <InfoButton>
+    <InfoButton showFavoriteButton={showFavoriteButton}>
       <ContextMenuButton
         activeOpacity={0}
         menuConfig={menuConfig}

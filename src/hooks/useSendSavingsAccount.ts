@@ -6,6 +6,7 @@ export default function useSendSavingsAccount() {
   const { nativeCurrency } = useAccountSettings();
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   let { savings } = useSavingsAccount();
+  // @ts-expect-error FIXME: Parameter 'asset' implicitly has an 'any' type.
   savings = savings.map(asset => {
     const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
     const cTokenBalanceDisplay = `${cTokenBalance} ${cToken.symbol}`;

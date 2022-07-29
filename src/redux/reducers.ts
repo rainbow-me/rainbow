@@ -13,7 +13,6 @@ import fallbackExplorer from './fallbackExplorer';
 import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
-import multicall from './multicall';
 import nonceManager from './nonceManager';
 import optimismExplorer from './optimismExplorer';
 import requests from './requests';
@@ -44,7 +43,6 @@ export default combineReducers({
   gas,
   imageMetadata,
   keyboardHeight,
-  multicall,
   nonceManager,
   optimismExplorer,
   requests,

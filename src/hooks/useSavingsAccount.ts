@@ -201,11 +201,12 @@ export default function useSavingsAccount(includeDefaultDai: any) {
 
     const orderedAccountTokens = accountTokensWithPrices
       .slice()
-      .sort((a, b) =>
+      .sort((a: any, b: any) =>
         a.underlyingBalanceNativeValue > b.underlyingBalanceNativeValue ? -1 : 1
       );
 
     const accountHasCDAI = orderedAccountTokens.find(
+      // @ts-expect-error FIXME: Parameter 'token' implicitly has an 'any' type.
       token => token.underlying.address === DAI_ADDRESS
     );
 

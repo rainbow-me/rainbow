@@ -12,6 +12,7 @@ export {
   default as useAccountENSDomains,
   prefetchAccountENSDomains,
 } from './useAccountENSDomains';
+export { default as useAndroidScrollViewGestureHandler } from './useAndroidScrollViewGestureHandler';
 export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAccountTransactions } from './useAccountTransactions';
@@ -21,7 +22,6 @@ export { default as useAppState } from './useAppState';
 export { default as useAppVersion } from './useAppVersion';
 export { default as useAsset } from './useAsset';
 export { default as useBiometryType } from './useBiometryType';
-export { default as useBlockPolling } from './useBlockPolling';
 export { default as useBooleanState } from './useBooleanState';
 export { default as useClipboard } from './useClipboard';
 export { default as useCoinListEdited } from './useCoinListEdited';
@@ -80,7 +80,6 @@ export { default as useLongPressEvents } from './useLongPressEvents';
 export { default as useMagicAutofocus } from './useMagicAutofocus';
 export { default as useManageCloudBackups } from './useManageCloudBackups';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
-export { default as useMulticall } from './useMulticall';
 export { default as useUniqueToken } from './useUniqueToken';
 export { default as useOpenInvestmentCards } from './useOpenInvestmentCards';
 export { default as useOpenSavings } from './useOpenSavings';
@@ -111,14 +110,14 @@ export { default as useSwapCurrencyHandlers } from './useSwapCurrencyHandlers';
 export { default as useSwapInputRefs } from './useSwapInputRefs';
 export { default as useSwapInputHandlers } from './useSwapInputHandlers';
 export { default as useSwapIsSufficientBalance } from './useSwapIsSufficientBalance';
-export { default as useSwapIsSufficientLiquidity } from './useSwapIsSufficientLiquidity';
+export { default as useSwapSettings } from './useSwapSettings';
 export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
+export { default as useSwapDerivedValues } from './useSwapDerivedValues';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
 export { default as usePendingTransactions } from './usePendingTransactions';
-export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
-export { default as useUniswapCalls } from './useUniswapCalls';
+export { default as useAssetsInWallet } from './useAssetsInWallet';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
 export { default as useUniswapPools } from './useUniswapPools';
 export { default as useUserAccounts } from './useUserAccounts';
@@ -148,7 +147,7 @@ export {
   default as useHardwareBack,
   useHardwareBackOnFocus,
 } from './useHardwareBack';
-export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
+export { default as useSwapCurrencyList } from './useSwapCurrencyList';
 export { default as useWalletENSAvatar } from './useWalletENSAvatar';
 export { default as useImagePicker } from './useImagePicker';
 export { default as useLatestCallback } from './useLatestCallback';
