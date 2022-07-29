@@ -202,7 +202,14 @@ const SimpleScaleButton = ({
         onPress?.();
       }
     },
-    [onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
+    [
+      enableHapticFeedback,
+      hapticType,
+      onLongPress,
+      onLongPressEnded,
+      onPress,
+      shouldLongPressHoldPress,
+    ]
   );
 
   // we won't guess if there are any animated styles in there but we can
