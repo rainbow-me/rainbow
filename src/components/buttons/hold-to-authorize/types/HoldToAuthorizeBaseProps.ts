@@ -8,6 +8,7 @@ export interface HoldToAuthorizeBaseProps {
   deviceDimensions: DeviceDimensions;
   disabled: boolean;
   disabledBackgroundColor: string;
+  disableShimmerAnimation?: boolean;
   enableLongPress?: boolean;
   hideInnerBorder: boolean;
   isAuthorizing: boolean;
@@ -21,4 +22,5 @@ export interface HoldToAuthorizeBaseProps {
   testID: string;
   theme: 'light' | 'dark';
   tinyButton?: boolean;
+  loading?: boolean;
 }

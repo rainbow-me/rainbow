@@ -2,6 +2,7 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
@@ -19,11 +20,9 @@ import {
   SwapDetailsSlippageMessage,
 } from './swap-details';
 import {
-  useAccountSettings,
   useHeight,
   usePriceImpactDetails,
   useSwapCurrencies,
-  useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
@@ -41,9 +40,7 @@ const AnimatedContainer = styled(Animated.View)({
 });
 
 const Footer = styled(Column).attrs({
-  align: 'end',
   grow: 1,
-  justify: 'end',
   shrink: 0,
 })({
   ...padding.object(6, 0, 0),
@@ -60,7 +57,7 @@ const Header = styled(Column).attrs({
 });
 
 const FOOTER_MIN_HEIGHT = 143;
-const FOOTER_CONTENT_MIN_HEIGHT = 241;
+const FOOTER_CONTENT_MIN_HEIGHT = 160;
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -88,16 +85,18 @@ export default function SwapDetailsState({
   confirmButtonProps,
   restoreFocusOnSwapModal,
 }) {
-  const { network } = useAccountSettings();
   const { setParams } = useNavigation();
-  const { params: { longFormHeight } = {} } = useRoute();
-  const { outputCurrency } = useSwapCurrencies();
+  const {
+    params: { longFormHeight, currentNetwork, flashbotTransaction } = {},
+  } = useRoute();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
     derivedValues: { inputAmount, outputAmount },
     displayValues: { inputAmountDisplay, outputAmountDisplay },
     tradeDetails,
-  } = useSwapDerivedOutputs();
+  } = useSelector(state => state.swap);
+
   const {
     inputPriceValue,
     isHighPriceImpact,
@@ -105,7 +104,13 @@ export default function SwapDetailsState({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(inputAmount, outputAmount, tradeDetails);
+  } = usePriceImpactDetails(
+    inputAmount,
+    outputAmount,
+    inputCurrency,
+    outputCurrency,
+    currentNetwork
+  );
 
   const {
     copiedText,
@@ -133,7 +138,10 @@ export default function SwapDetailsState({
 
   useEffect(() => {
     contentScroll.value = withSpring(0, springConfig);
-    setParams({ longFormHeight: sheetHeightWithoutKeyboard });
+    setParams({
+      longFormHeight: sheetHeightWithoutKeyboard,
+      transitionDuration: 0.7,
+    });
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
 
   return (
@@ -173,9 +181,6 @@ export default function SwapDetailsState({
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={setContentHeight}
-          priceImpactColor={priceImpactColor}
-          priceImpactNativeAmount={priceImpactNativeAmount}
-          priceImpactPercentDisplay={priceImpactPercentDisplay}
           tradeDetails={tradeDetails}
         />
         <Footer onLayout={setFooterHeight}>
@@ -185,7 +190,8 @@ export default function SwapDetailsState({
           />
           <GasSpeedButton
             asset={outputCurrency}
-            currentNetwork={network}
+            currentNetwork={currentNetwork}
+            flashbotTransaction={flashbotTransaction}
             testID="swap-details-gas"
             theme="light"
           />
