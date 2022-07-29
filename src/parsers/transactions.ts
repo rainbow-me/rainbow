@@ -1,7 +1,5 @@
 import {
   compact,
-  concat,
-  flatten,
   isEmpty,
   orderBy,
   partition,
@@ -90,10 +88,9 @@ export const parseTransactions = async (
   );
 
   const newTransactions = await Promise.all(newTransactionPromises);
-  const parsedNewTransactions = flatten(newTransactions);
+  const parsedNewTransactions = newTransactions.flat();
 
-  const updatedResults = concat(
-    parsedNewTransactions,
+  const updatedResults = parsedNewTransactions.concat(
     existingTransactions,
     allL2Transactions
   );
@@ -520,6 +517,7 @@ export const getTransactionLabel = ({
   if (pending && isToAccount) return TransactionStatus.receiving;
 
   if (status === TransactionStatus.failed) return TransactionStatus.failed;
+  if (status === TransactionStatus.dropped) return TransactionStatus.dropped;
 
   if (type === TransactionType.trade && isFromAccount)
     return TransactionStatus.swapped;

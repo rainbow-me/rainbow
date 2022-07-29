@@ -51,8 +51,24 @@ const checkValidGas = (
   const gasValue = isL2
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
     : (selectedGasParams as GasFeeParams)?.maxFeePerGas;
-  const isValidGas = greaterThan(gasValue?.amount, 0);
+  const isValidGas =
+    Boolean(gasValue?.amount) && greaterThan(gasValue?.amount, 0);
   return isValidGas;
+};
+
+const checkGasReady = (
+  txFee: LegacyGasFee | GasFee,
+  selectedGasParams: LegacyGasFeeParams | GasFeeParams,
+  network: Network
+) => {
+  const isL2 = isL2Network(network);
+  const gasValue = isL2
+    ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
+    : (selectedGasParams as GasFeeParams)?.maxFeePerGas;
+  const txFeeValue = isL2
+    ? (txFee as LegacyGasFee)?.estimatedFee
+    : (txFee as GasFee)?.maxFee;
+  return Boolean(gasValue?.amount) && Boolean(txFeeValue?.value?.amount);
 };
 
 export default function useGas({ nativeAsset }: { nativeAsset?: any } = {}) {
@@ -99,9 +115,23 @@ export default function useGas({ nativeAsset }: { nativeAsset?: any } = {}) {
     [gasData?.selectedGasFee, gasData?.txNetwork]
   );
 
+  const isGasReady = useMemo(
+    () =>
+      checkGasReady(
+        gasData?.selectedGasFee?.gasFee,
+        gasData?.selectedGasFee?.gasFeeParams,
+        gasData?.txNetwork
+      ),
+    [
+      gasData?.selectedGasFee?.gasFee,
+      gasData?.selectedGasFee?.gasFeeParams,
+      gasData?.txNetwork,
+    ]
+  );
+
   const startPollingGasFees = useCallback(
-    (network = networkTypes.mainnet) =>
-      dispatch(gasPricesStartPolling(network)),
+    (network = networkTypes.mainnet, flashbots = false) =>
+      dispatch(gasPricesStartPolling(network, flashbots)),
     [dispatch]
   );
   const stopPollingGasFees = useCallback(
@@ -134,6 +164,7 @@ export default function useGas({ nativeAsset }: { nativeAsset?: any } = {}) {
   );
 
   return {
+    isGasReady,
     isSufficientGas,
     isValidGas,
     prevSelectedGasFee,

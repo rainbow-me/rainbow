@@ -10,10 +10,12 @@ export default function AnimatedExchangeFloatingPanels(props) {
   const scrollPosition = usePagerPosition();
   const style = useAnimatedStyle(() => {
     return {
-      opacity: 1 - (scrollPosition.value || 0),
+      flexGrow: 1,
+      justifyContent: 'center',
+      opacity: android ? 1 : 1 - (scrollPosition.value || 0),
       transform: [
-        { scale: 1 - scrollPosition.value / 10 },
-        { translateX: scrollPosition.value * -8 },
+        { scale: android ? 1 : 1 - scrollPosition.value / 10 },
+        { translateX: android ? 1 : scrollPosition.value * -8 },
       ],
       width: '100%',
     };
