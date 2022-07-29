@@ -1,4 +1,3 @@
-import { concat } from 'lodash';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -97,7 +96,7 @@ const TopRow = ({ item, name, selected }) => {
 
 const buildSendCoinRowIdentifier = props => {
   const uniqueId = buildAssetUniqueIdentifier(props.item);
-  return concat(uniqueId, !!props?.showNativeValue);
+  return [uniqueId, !!props?.showNativeValue];
 };
 
 const SendCoinRow = magicMemo(
@@ -116,8 +115,10 @@ const SendCoinRow = magicMemo(
     const fiatValue = native?.balance?.display;
     const chopCents =
       fiatValue && fiatValue.split('.')[0].replace(/\D/g, '') > 100;
+    // TODO i18n: relying on dots and commas for currency separator does not
+    // scale to other locales than US-en.
     const fiatValueFormatted =
-      fiatValue && chopCents ? fiatValue.split('.')[0] : fiatValue;
+      !!fiatValue && chopCents ? fiatValue.replace(/\.\d+/, '') : fiatValue;
 
     const Wrapper = disablePressAnimation
       ? TouchableWithoutFeedback
