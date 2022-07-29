@@ -59,6 +59,7 @@ export default function FeesGweiInput({
   buttonColor,
   testID,
   inputRef,
+  editable = true,
 }) {
   const longPressHandle = useRef(null);
   const [trigger, setTrigger] = useState(false);
@@ -111,14 +112,10 @@ export default function FeesGweiInput({
     if (!prevTrigger && trigger) {
       if (actionType === PLUS_ACTION_TYPE) {
         plusAction();
-        if (!android) {
-          ReactNativeHapticFeedback.trigger('selection');
-        }
+        ReactNativeHapticFeedback.trigger('selection');
       } else if (actionType === MINUS_ACTION_TYPE) {
         minusAction();
-        if (!android) {
-          ReactNativeHapticFeedback.trigger('selection');
-        }
+        ReactNativeHapticFeedback.trigger('selection');
       }
     }
   }, [trigger, prevTrigger, actionType, plusAction, minusAction]);
@@ -135,6 +132,7 @@ export default function FeesGweiInput({
       />
       <GweiInputPill
         color={buttonColor}
+        editable={editable}
         onBlur={onBlur}
         onChange={onChange}
         onFocus={onInputPress}

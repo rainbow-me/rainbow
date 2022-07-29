@@ -11,7 +11,6 @@ export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
-export { default as arbitrumTokenMapping } from './arbitrum-token-mapping.json';
 export { default as chainAssets } from './chain-assets.json';
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
@@ -33,16 +32,7 @@ export { default as migratedTokens } from './migratedTokens.json';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 export { default as smartContractMethods } from './smartcontract-methods.json';
-export {
-  PAIR_GET_RESERVES_CALL_DATA,
-  PAIR_GET_RESERVES_FRAGMENT,
-  PAIR_INTERFACE,
-  UNISWAP_TESTNET_TOKEN_LIST,
-  UNISWAP_V1_EXCHANGE_ABI,
-  UNISWAP_V2_BASES,
-  UNISWAP_V2_ROUTER_ABI,
-  UNISWAP_V2_ROUTER_ADDRESS,
-} from './uniswap';
+export { UNISWAP_TESTNET_TOKEN_LIST } from './uniswap';
 export { rainbowTokenList } from './rainbow-token-list';
 export {
   getWyreErrorOverride,
@@ -72,6 +62,8 @@ export const POLYGON_BLOCK_EXPLORER_URL = 'polygonscan.com';
 export const OPTIMISM_BLOCK_EXPLORER_URL = 'optimistic.etherscan.io';
 
 // NFTs Contracts
+export const SWAP_AGGREGATOR_CONTRACT_ADDRESS =
+  '0x00000000009726632680FB29d3F7A9734E3010E2';
 export const ENS_NFT_CONTRACT_ADDRESS =
   '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85';
 export const UNIV3_NFT_CONTRACT_ADDRESS =
@@ -95,6 +87,8 @@ export const COVALENT_ETH_ADDRESS =
   '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+export const WMATIC_POLYGON_ADDRESS =
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
@@ -194,6 +188,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Dai',
       symbol: 'DAI',
+      type: 'token',
       uniqueId: DAI_ADDRESS,
     },
     [ETH_ADDRESS]: {
@@ -205,6 +200,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Ethereum',
       symbol: 'ETH',
+      type: 'token',
       uniqueId: ETH_ADDRESS,
     },
     [SOCKS_ADDRESS]: {
@@ -217,6 +213,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Unisocks',
       symbol: 'SOCKS',
+      type: 'token',
       uniqueId: SOCKS_ADDRESS,
     },
     [WBTC_ADDRESS]: {
@@ -229,6 +226,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Wrapped Bitcoin',
       symbol: 'WBTC',
+      type: 'token',
       uniqueId: WBTC_ADDRESS,
     },
   },
