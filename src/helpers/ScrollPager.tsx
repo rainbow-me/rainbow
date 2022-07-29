@@ -245,8 +245,10 @@ class ScrollPager extends React.Component {
 
 export default function ScrollPagerWrapperWithScrollHandler(props: any) {
   const scrollHandler = useAnimatedScrollHandler(event => {
-    props.position.value =
-      event.contentOffset.x / event.layoutMeasurement.width;
+    if (event.layoutMeasurement.width) {
+      props.position.value =
+        event.contentOffset.x / event.layoutMeasurement.width;
+    }
   });
   return <ScrollPager {...props} scrollHandler={scrollHandler} />;
 }

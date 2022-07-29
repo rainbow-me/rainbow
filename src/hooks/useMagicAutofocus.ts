@@ -9,6 +9,7 @@ const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
 let timeout: any = null;
 let delay = false;
+let cancel = false;
 
 export function delayNext() {
   if (timeout !== null) {
@@ -16,6 +17,15 @@ export function delayNext() {
     timeout = null;
   }
   delay = true;
+  cancel = false;
+}
+
+export function cancelNext() {
+  cancel = true;
+}
+
+export function uncancelNext() {
+  cancel = false;
 }
 
 export default function useMagicAutofocus(
@@ -36,6 +46,11 @@ export default function useMagicAutofocus(
   }, []);
 
   const triggerFocus = useCallback(() => {
+    if (cancel) {
+      cancel = false;
+      return;
+    }
+
     if (!lastFocusedInputHandle.current) {
       return focusTextInput(defaultAutofocusInputRef.current);
     }
@@ -78,18 +93,16 @@ export default function useMagicAutofocus(
             delay = false;
           }, 200);
         });
+      } else if (!isNativeStackAvailable) {
+        // We need to do this in order to assure that the input gets focused
+        // when using fallback stacks.
+        InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
       } else {
         if (showAfterInteractions) {
           InteractionManager.runAfterInteractions(triggerFocus);
         } else {
           triggerFocus();
         }
-      }
-
-      // We need to do this in order to assure that the input gets focused
-      // when using fallback stacks.
-      if (!isNativeStackAvailable) {
-        InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
       }
 
       return () => {

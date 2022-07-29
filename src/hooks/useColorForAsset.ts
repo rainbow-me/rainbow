@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetType } from '@rainbow-me/entities';
 import {
   getTokenMetadata,
   getUrlForTrustIconFallback,
@@ -25,22 +25,26 @@ export default function useColorForAsset(
   const { color: imageColor } = useImageMetadata(
     getUrlForTrustIconFallback(
       mainnet_address || address,
-      mainnet_address ? AssetTypes.token : type
+      mainnet_address ? AssetType.token : type
     )
   );
 
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
-    const color = isETH(address)
-      ? isDarkMode
-        ? forceETHColor
-          ? colors.appleBlue
-          : colors.brighten(lightModeThemeColors.dark)
-        : colors.dark
-      : pseudoRandomArrayItemFromString(address, colors.avatarBackgrounds);
+    const color =
+      isETH(address) || isETH(mainnet_address)
+        ? isDarkMode
+          ? forceETHColor
+            ? colors.appleBlue
+            : colors.brighten(lightModeThemeColors.dark)
+          : colors.dark
+        : pseudoRandomArrayItemFromString(
+            mainnet_address || address,
+            colors.avatarBackgrounds
+          );
     return color;
-  }, [address, colors, forceETHColor, isDarkMode]);
+  }, [address, colors, forceETHColor, isDarkMode, mainnet_address]);
 
   return useMemo(() => {
     let color2Return;
