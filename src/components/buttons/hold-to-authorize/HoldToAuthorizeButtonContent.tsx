@@ -14,6 +14,9 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, {
+  FadeIn,
+  FadeOut,
+  Layout,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -42,6 +45,7 @@ import { ThemeContextProps } from '@rainbow-me/theme';
 import { haptics } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
+const BUTTON_FADE_IN_ANIMATION = FadeIn.duration(200).delay(100);
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 
 interface ButtonOptionParams {
@@ -253,24 +257,43 @@ function HoldToAuthorizeButtonContent2({
               {children ?? (
                 <Fragment>
                   {!android && !disabled && (
-                    <HoldToAuthorizeButtonIcon
-                      sharedValue={longPressProgress}
-                    />
+                    <Animated.View
+                      entering={BUTTON_FADE_IN_ANIMATION}
+                      exiting={FadeOut}
+                      layout={Layout}
+                    >
+                      <HoldToAuthorizeButtonIcon
+                        sharedValue={longPressProgress}
+                      />
+                    </Animated.View>
                   )}
                   {(loading || (android && isAuthorizing)) && (
-                    <LoadingSpinner />
+                    <Animated.View
+                      entering={BUTTON_FADE_IN_ANIMATION}
+                      exiting={FadeOut}
+                      layout={Layout}
+                    >
+                      <LoadingSpinner />
+                    </Animated.View>
                   )}
-                  <Label
-                    label={
-                      isAuthorizing
-                        ? lang.t('button.hold_to_authorize.authorizing')
-                        : label
-                    }
-                    showIcon={showBiometryIcon && !isAuthorizing}
-                    smallButton={smallButton}
-                    testID={testID}
-                    tinyButton={tinyButton}
-                  />
+                  <Animated.View
+                    entering={BUTTON_FADE_IN_ANIMATION}
+                    exiting={FadeOut}
+                    key={label}
+                    layout={Layout}
+                  >
+                    <Label
+                      label={
+                        isAuthorizing
+                          ? lang.t('button.hold_to_authorize.authorizing')
+                          : label
+                      }
+                      showIcon={showBiometryIcon && !isAuthorizing}
+                      smallButton={smallButton}
+                      testID={testID}
+                      tinyButton={tinyButton}
+                    />
+                  </Animated.View>
                 </Fragment>
               )}
               <ShimmerAnimation

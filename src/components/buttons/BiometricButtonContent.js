@@ -1,4 +1,5 @@
 import React from 'react';
+import Animated, { FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 import { Text } from '../text';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType } from '@rainbow-me/hooks';
@@ -50,12 +51,19 @@ export default function BiometricButtonContent({
 }) {
   const biometryIcon = useBiometryIconString(!android && showIcon);
   return (
-    <Label
-      testID={testID || label}
-      {...props}
-      {...(android && { lineHeight: 23 })}
+    <Animated.View
+      entering={FadeIn.duration(200).delay(100)}
+      exiting={FadeOut}
+      key={label}
+      layout={Layout}
     >
-      {`${biometryIcon}${label}`}
-    </Label>
+      <Label
+        testID={testID || label}
+        {...props}
+        {...(android && { lineHeight: 23 })}
+      >
+        {`${biometryIcon}${label}`}
+      </Label>
+    </Animated.View>
   );
 }
