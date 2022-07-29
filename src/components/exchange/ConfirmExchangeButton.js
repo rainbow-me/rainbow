@@ -144,6 +144,7 @@ export default function ConfirmExchangeButton({
   }, [navigate]);
 
   const isDisabled =
+    loading ||
     disabled ||
     !isSufficientBalance ||
     !isSufficientGas ||
