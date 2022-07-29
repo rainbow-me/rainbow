@@ -74,9 +74,10 @@ export default function useAccountTransactions(
   const { accountAddress } = useAccountSettings();
   const theme = useTheme();
   const { navigate } = useNavigation();
-  const onTransactionPress = useCallback(transactionPressBuilder(navigate), [
-    navigate,
-  ]);
+  const onTransactionPress = useCallback(
+    transactionPressBuilder({ navigate }),
+    [navigate]
+  );
 
   const accountState = {
     accountAddress,
