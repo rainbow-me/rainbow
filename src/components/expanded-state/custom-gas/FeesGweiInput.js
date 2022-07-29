@@ -59,6 +59,7 @@ export default function FeesGweiInput({
   buttonColor,
   testID,
   inputRef,
+  editable = true,
 }) {
   const longPressHandle = useRef(null);
   const [trigger, setTrigger] = useState(false);
@@ -135,6 +136,7 @@ export default function FeesGweiInput({
       />
       <GweiInputPill
         color={buttonColor}
+        editable={editable}
         onBlur={onBlur}
         onChange={onChange}
         onFocus={onInputPress}

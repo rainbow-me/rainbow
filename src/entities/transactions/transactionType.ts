@@ -5,6 +5,7 @@ export enum TransactionType {
   contract_interaction = 'contract interaction',
   deployment = 'deployment',
   deposit = 'deposit',
+  dropped = 'dropped',
   execution = 'execution',
   purchase = 'purchase', // Rainbow-specific type
   receive = 'receive',
@@ -21,6 +22,7 @@ export default {
   contract_interaction: 'contract interaction',
   deployment: 'deployment',
   deposit: 'deposit',
+  dropped: 'dropped',
   execution: 'execution',
   purchase: 'purchase',
   receive: 'receive',
