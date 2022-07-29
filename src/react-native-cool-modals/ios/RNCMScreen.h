@@ -59,6 +59,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic) BOOL disableShortFormAfterTransitionToLongForm;
 @property (nonatomic) NSNumber* topOffset;
 @property (nonatomic) NSNumber* cornerRadius;
+@property (nonatomic) NSNumber* relevantScrollViewDepth;
 @property (nonatomic) RNSScreenStackAnimation stackAnimation;
 @property (nonatomic) RNSScreenStackPresentation stackPresentation;
 

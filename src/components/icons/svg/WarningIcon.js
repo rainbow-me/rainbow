@@ -4,8 +4,10 @@ import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
 const WarningIcon = ({ color, colors, ...props }) => {
+  const size = props.size || 22;
+
   return (
-    <Svg height="21" viewBox="0 0 22 21" width="22" {...props}>
+    <Svg {...props} height={size} viewBox="0 0 22 21" width={size}>
       <Path
         d="M2.77232 20.2883H19.2277C20.8974 20.2883 22 19.0282 22 17.516C22 17.0539 21.8845 16.5919 21.6325 16.1508L13.389 1.39666C12.8745 0.472554 11.9399 0 11.0052 0C10.0706 0 9.11504 0.472554 8.61098 1.39666L0.367542 16.1613C0.115513 16.5919 0 17.0539 0 17.516C0 19.0282 1.10263 20.2883 2.77232 20.2883Z"
         fill={color || colors.black}

@@ -6,8 +6,8 @@ import { greaterThanOrEqualTo } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapIsSufficientBalance(inputAmount: string | null) {
-  const inputCurrencyAddress = useSelector(
-    (state: AppState) => state.swap.inputCurrency?.address
+  const inputCurrencyUniqueId = useSelector(
+    (state: AppState) => state.swap.inputCurrency?.uniqueId
   );
   const type = useSelector((state: AppState) => state.swap.type);
   const supplyBalanceUnderlying = useSelector(
@@ -17,16 +17,15 @@ export default function useSwapIsSufficientBalance(inputAmount: string | null) {
 
   const isSufficientBalance = useMemo(() => {
     if (!inputAmount) return true;
-
     const maxInputBalance =
-      ethereumUtils.getAccountAsset(inputCurrencyAddress)?.balance?.amount ?? 0;
-
+      ethereumUtils.getAccountAsset(inputCurrencyUniqueId)?.balance?.amount ??
+      0;
     const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
     return isWithdrawal
       ? greaterThanOrEqualTo(supplyBalanceUnderlying, inputAmount)
       : greaterThanOrEqualTo(maxInputBalance, inputAmount);
-  }, [inputAmount, inputCurrencyAddress, supplyBalanceUnderlying, type]);
+  }, [inputAmount, inputCurrencyUniqueId, supplyBalanceUnderlying, type]);
 
   return isSufficientBalance;
 }

@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { ActivityIndicator, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import {
   State as GestureHandlerState,
   HandlerStateChangeEvent,
@@ -67,6 +67,9 @@ const Content = styled(Centered).attrs({
 interface LabelProps extends ButtonOptionParams {
   theme: ThemeContextProps;
 }
+interface LoadingSpinnerProps {
+  theme: ThemeContextProps;
+}
 
 const Label = styled(BiometricButtonContent).attrs(
   ({ smallButton, theme: { colors }, tinyButton }: LabelProps) => ({
@@ -74,18 +77,15 @@ const Label = styled(BiometricButtonContent).attrs(
     size: smallButton || tinyButton ? 'large' : 'larger',
     weight: 'heavy',
   })
-)({
-  bottom: 2,
-});
+)({});
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-  ({ theme: { colors } }: { theme: ThemeContextProps }) => ({
+const LoadingSpinner = styled(Spinner).attrs(
+  ({ theme: { colors } }: LoadingSpinnerProps) => ({
     color: colors.whiteLabel,
-    size: 31,
+    size: 24,
   })
 )({
-  left: 15,
-  position: 'absolute',
+  marginRight: 15,
 });
 
 const calculateReverseDuration = (longPressProgress: number) =>
@@ -100,6 +100,7 @@ function HoldToAuthorizeButtonContent2({
   deviceDimensions,
   disabled = false,
   disabledBackgroundColor,
+  disableShimmerAnimation = false,
   enableLongPress,
   hideInnerBorder,
   label,
@@ -112,6 +113,7 @@ function HoldToAuthorizeButtonContent2({
   tinyButton,
   isAuthorizing: isAuthorizingProp,
   theme = 'light',
+  loading = false,
   onLongPress,
   ...props
 }: Props) {
@@ -188,11 +190,12 @@ function HoldToAuthorizeButtonContent2({
           {
             duration: BUTTON_SCALE_DURATION_IN_MS,
           },
-          () => {
-            buttonScale.value = withTiming(1, {
-              duration: BUTTON_SCALE_DURATION_IN_MS,
-            });
-          }
+          () =>
+            runOnJS(() => {
+              buttonScale.value = withTiming(1, {
+                duration: BUTTON_SCALE_DURATION_IN_MS,
+              });
+            })()
         );
       }
     } else {
@@ -221,9 +224,8 @@ function HoldToAuthorizeButtonContent2({
       }
     }
   };
-
   return (
-    <TapGestureHandler onHandlerStateChange={onTapChange}>
+    <TapGestureHandler enabled={!disabled} onHandlerStateChange={onTapChange}>
       <LongPressGestureHandler
         enabled={enableLongPress}
         minDurationMs={LONG_PRESS_DURATION_IN_MS}
@@ -255,7 +257,9 @@ function HoldToAuthorizeButtonContent2({
                       sharedValue={longPressProgress}
                     />
                   )}
-                  {android && isAuthorizing && <LoadingSpinner />}
+                  {(loading || (android && isAuthorizing)) && (
+                    <LoadingSpinner />
+                  )}
                   <Label
                     label={
                       isAuthorizing
@@ -271,7 +275,7 @@ function HoldToAuthorizeButtonContent2({
               )}
               <ShimmerAnimation
                 color={colors.whiteLabel}
-                enabled={!disabled}
+                enabled={!disableShimmerAnimation && !disabled}
                 width={width}
               />
               {!hideInnerBorder && <InnerBorder radius={height} />}
