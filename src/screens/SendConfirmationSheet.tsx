@@ -625,6 +625,7 @@ export default function SendConfirmationSheet() {
             </Row>
 
             <Row marginVertical={19}>
+              {/* @ts-expect-error – JS component */}
               <Pill
                 borderRadius={15}
                 height={30}
