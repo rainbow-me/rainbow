@@ -4754,10 +4754,10 @@ index 0000000..0491d34
 +  return p;
 +}
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
-index 8ed93cd..5073ffa 100644
+index 03dcc94..3cc495c 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
-@@ -791,6 +791,11 @@ - (void)displayLayer:(CALayer *)layer
+@@ -808,6 +808,11 @@ - (void)displayLayer:(CALayer *)layer
      layer.backgroundColor = backgroundColor;
      layer.contents = nil;
      layer.needsDisplayOnBoundsChange = NO;
