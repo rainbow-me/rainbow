@@ -381,7 +381,6 @@ const SettingsSection = ({
             }
             onPress={onPressAppIcon}
             size={60}
-            testID="app-icon-section"
             titleComponent={
               <MenuItem.Title text={lang.t('settings.app_icon')} />
             }
@@ -390,7 +389,7 @@ const SettingsSection = ({
       </Menu>
       <Menu>
         <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="🌈" />}
+          leftComponent={<MenuItem.TextIcon icon="🌈" isEmoji />}
           onPress={onPressShare}
           size={52}
           titleComponent={
@@ -398,13 +397,13 @@ const SettingsSection = ({
           }
         />
         <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="🧠" />}
+          leftComponent={<MenuItem.TextIcon icon="🧠" isEmoji />}
           onPress={onPressLearn}
           size={52}
           titleComponent={<MenuItem.Title text={lang.t('settings.learn')} />}
         />
         <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="🐦" />}
+          leftComponent={<MenuItem.TextIcon icon="🐦" isEmoji />}
           onPress={onPressTwitter}
           size={52}
           titleComponent={
@@ -412,7 +411,7 @@ const SettingsSection = ({
           }
         />
         <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="💬" />}
+          leftComponent={<MenuItem.TextIcon icon="💬" isEmoji />}
           onPress={onSendFeedback}
           size={52}
           titleComponent={
@@ -427,7 +426,7 @@ const SettingsSection = ({
         />
         {isReviewAvailable && (
           <MenuItem
-            leftComponent={<MenuItem.TextIcon icon="❤️" />}
+            leftComponent={<MenuItem.TextIcon icon="❤️" isEmoji />}
             onPress={onPressReview}
             size={52}
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
@@ -435,7 +434,7 @@ const SettingsSection = ({
         )}
         {isCustomBuild.value && (
           <MenuItem
-            leftComponent={<MenuItem.TextIcon icon="🤯" />}
+            leftComponent={<MenuItem.TextIcon icon="🤯" isEmoji />}
             onPress={setOriginalDeploymentKey}
             size={52}
             titleComponent={
@@ -444,7 +443,7 @@ const SettingsSection = ({
           />
         )}
         <MenuItem
-          leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} />}
+          leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
           onPress={onPressDev}
           size={52}
           titleComponent={

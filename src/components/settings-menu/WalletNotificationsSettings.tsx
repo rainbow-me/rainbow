@@ -42,11 +42,7 @@ const WalletNotificationsSettings = () => {
             disabled
             isSfSymbol
             leftComponent={
-              <MenuItem.TextIcon
-                colorOverride={colors.appleBlue}
-                icon="􀈟"
-                isSfSymbol
-              />
+              <MenuItem.TextIcon colorOverride={colors.appleBlue} icon="􀈟" />
             }
             rightComponent={<Switch />}
             size={52}
@@ -60,11 +56,7 @@ const WalletNotificationsSettings = () => {
             disabled
             isSfSymbol
             leftComponent={
-              <MenuItem.TextIcon
-                colorOverride={colors.green}
-                icon="􀅀"
-                isSfSymbol
-              />
+              <MenuItem.TextIcon colorOverride={colors.green} icon="􀅀" />
             }
             rightComponent={<Switch />}
             size={52}
@@ -78,11 +70,7 @@ const WalletNotificationsSettings = () => {
             disabled
             isSfSymbol
             leftComponent={
-              <MenuItem.TextIcon
-                colorOverride={colors.pink}
-                icon="􀑉"
-                isSfSymbol
-              />
+              <MenuItem.TextIcon colorOverride={colors.pink} icon="􀑉" />
             }
             rightComponent={<Switch />}
             size={52}
@@ -96,11 +84,7 @@ const WalletNotificationsSettings = () => {
             disabled
             isSfSymbol
             leftComponent={
-              <MenuItem.TextIcon
-                colorOverride={colors.orange}
-                icon="􀋡"
-                isSfSymbol
-              />
+              <MenuItem.TextIcon colorOverride={colors.orange} icon="􀋡" />
             }
             rightComponent={<Switch />}
             size={52}
@@ -114,11 +98,7 @@ const WalletNotificationsSettings = () => {
             disabled
             isSfSymbol
             leftComponent={
-              <MenuItem.TextIcon
-                colorOverride={colors.yellowOrange}
-                icon="􀆿"
-                isSfSymbol
-              />
+              <MenuItem.TextIcon colorOverride={colors.yellowOrange} icon="􀆿" />
             }
             rightComponent={<Switch />}
             size={52}
@@ -132,11 +112,7 @@ const WalletNotificationsSettings = () => {
             disabled
             isSfSymbol
             leftComponent={
-              <MenuItem.TextIcon
-                colorOverride={colors.swapPurple}
-                icon="􀖅"
-                isSfSymbol
-              />
+              <MenuItem.TextIcon colorOverride={colors.swapPurple} icon="􀖅" />
             }
             rightComponent={<Switch />}
             size={52}
@@ -150,11 +126,7 @@ const WalletNotificationsSettings = () => {
             disabled
             isSfSymbol
             leftComponent={
-              <MenuItem.TextIcon
-                colorOverride={colors.green}
-                icon="􀁢"
-                isSfSymbol
-              />
+              <MenuItem.TextIcon colorOverride={colors.green} icon="􀁢" />
             }
             rightComponent={<Switch />}
             size={52}
@@ -171,7 +143,6 @@ const WalletNotificationsSettings = () => {
               <MenuItem.TextIcon
                 colorOverride={colors.blueGreyDark60}
                 icon="􀍡"
-                isSfSymbol
               />
             }
             rightComponent={<Switch />}

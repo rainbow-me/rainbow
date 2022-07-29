@@ -3,6 +3,7 @@ import { Source } from 'react-native-fast-image';
 import { ButtonPressAnimation } from '../../animations';
 import CheckmarkCircledIcon from '../../icons/svg/CheckmarkCircledIcon';
 import WarningIcon from '../../icons/svg/WarningIcon';
+import Chevron from '@rainbow-me/assets/chevronUpDown.png';
 import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
@@ -28,22 +29,20 @@ const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
 
 interface TextIconProps {
   icon: string;
-  weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
   disabled?: boolean;
   isLink?: boolean;
   colorOverride?: string;
-  isSfSymbol?: boolean;
+  isEmoji?: boolean;
 }
 
 const TextIcon = ({
   colorOverride,
   icon,
-  weight = 'semibold',
   disabled,
   isLink,
-  isSfSymbol = false,
+  isEmoji = false,
 }: TextIconProps) => (
-  <Box paddingLeft={{ custom: isSfSymbol ? 0 : 7 }}>
+  <Box paddingLeft={{ custom: isEmoji ? 7 : 0 }}>
     <Text
       color={
         colorOverride
@@ -55,8 +54,8 @@ const TextIcon = ({
           : 'primary'
       }
       containsEmoji
-      size="20px"
-      weight={weight}
+      size="18px"
+      weight="semibold"
     >
       {icon}
     </Text>
@@ -178,7 +177,7 @@ const MenuItem = ({
       <Inline alignHorizontal="justify" alignVertical="center">
         <Inline alignVertical="center">
           {leftComponent && (
-            <Box width={{ custom: isSfSymbol ? 40 : 46 }}>
+            <Box width={{ custom: isSfSymbol ? 34 : 46 }}>
               {isSfSymbol ? (
                 <Box alignItems="center" width={{ custom: 28 }}>
                   {leftComponent}
@@ -198,16 +197,20 @@ const MenuItem = ({
           {hasRightArrow && (
             <Box
               as={ImgixImage}
-              height={{ custom: 15 }}
+              height={{ custom: 16 }}
               source={Caret as Source}
               tintColor={colors.blueGreyDark60}
-              width={{ custom: 5.83 }}
+              width={{ custom: 7 }}
             />
           )}
           {hasChevron && (
-            <Text color="secondary60" size="18px" weight="regular">
-              􀆏
-            </Text>
+            <Box
+              as={ImgixImage}
+              height={{ custom: 16 }}
+              source={Chevron as Source}
+              tintColor={colors.blueGreyDark60}
+              width={{ custom: 16 }}
+            />
           )}
         </Inline>
       </Inline>

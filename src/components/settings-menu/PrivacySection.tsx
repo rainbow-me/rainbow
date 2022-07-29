@@ -59,7 +59,7 @@ const PrivacySection = () => {
         <MenuItem
           disabled
           isSfSymbol
-          leftComponent={<MenuItem.TextIcon icon="􀏅" isLink isSfSymbol />}
+          leftComponent={<MenuItem.TextIcon icon="􀏅" isLink />}
           rightComponent={
             <Switch onValueChange={toggleWebData} value={publicShowCase} />
           }
@@ -75,7 +75,7 @@ const PrivacySection = () => {
         <Menu>
           <MenuItem
             isSfSymbol
-            leftComponent={<MenuItem.TextIcon icon="􀉭" isLink isSfSymbol />}
+            leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
             onPress={viewProfile}
             size={52}
             titleComponent={
