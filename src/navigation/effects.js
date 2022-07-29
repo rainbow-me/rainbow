@@ -374,6 +374,17 @@ export const expandedPreset = {
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
+export const swapSettingsPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
+  cardStyleInterpolator: expandStyleInterpolator(1),
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: openSpec },
+};
+
 export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: false,

@@ -1,4 +1,4 @@
-import { ChainId, WETH } from '@uniswap/sdk';
+import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { compact, isEmpty, orderBy, sumBy } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
@@ -56,7 +56,7 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
-  if (token.address.toLowerCase() === WETH[chainId].address.toLowerCase()) {
+  if (token?.address?.toLowerCase() === WRAPPED_ASSET[chainId]?.toLowerCase()) {
     return {
       ...token,
       address: ETH_ADDRESS,
