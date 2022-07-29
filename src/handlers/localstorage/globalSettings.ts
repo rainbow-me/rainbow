@@ -13,6 +13,7 @@ const AUTH_TIMELOCK = 'authTimelock';
 const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
 const TRANSACTION_SIGNATURES = 'transactionSignatures';
 const TESTNETS_ENABLED = 'testnetsEnabled';
+const FLASHBOTS_ENABLED = 'flashbotsEnabled';
 
 export const getKeychainIntegrityState = () =>
   getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
@@ -81,6 +82,20 @@ export const getTestnetsEnabled = () => getGlobal(TESTNETS_ENABLED, false);
 export const saveTestnetsEnabled = (preference: boolean) => {
   saveGlobal(TESTNETS_ENABLED, preference);
 };
+
+/**
+ * @desc get flashbots preference
+ */
+export const getFlashbotsEnabled = () => getGlobal(FLASHBOTS_ENABLED, false);
+
+/**
+ * @desc save flashbots preference
+ * @param  {Boolean}  [value]
+ */
+export const saveFlashbotsEnabled = (preference: boolean) => {
+  saveGlobal(FLASHBOTS_ENABLED, preference);
+};
+
 /**
  * @desc save app icon  preference
  * @param  {string}  [value]

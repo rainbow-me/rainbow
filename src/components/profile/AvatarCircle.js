@@ -24,7 +24,11 @@ const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 2,
   size: ios ? 38 : 30,
   weight: 'semibold',
-}))({ left: android ? -1 : 0 });
+  ...(ios && { lineHeight: 66 }),
+}))({
+  ...(android && { left: -1 }),
+  ...(ios && { width: 67 }),
+});
 
 export default function AvatarCircle({
   isAvatarPickerAvailable,

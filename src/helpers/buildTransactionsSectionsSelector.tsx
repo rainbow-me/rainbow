@@ -29,8 +29,11 @@ const groupTransactionByDate = ({ pending, minedAt }: any) => {
   if (ts > todayTimestamp) return 'Today';
   if (ts > yesterdayTimestamp) return 'Yesterday';
   if (ts > thisMonthTimestamp) return 'This Month';
-
-  return format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`);
+  try {
+    return format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`);
+  } catch (e) {
+    return 'Dropped';
+  }
 };
 
 const addContactInfo = (contacts: any) => (txn: any) => {
@@ -68,21 +71,25 @@ const buildTransactionsSections = (
       transactionsWithContacts,
       groupTransactionByDate
     );
-    sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
-      data: transactionsByDate[section].map(txn => ({
-        ...txn,
-        accountAddress,
-        mainnetAddress: mainnetAddresses[`${txn.address}_${txn.network}`],
-      })),
-      renderItem: ({ item }: any) => (
-        <FastTransactionCoinRow
-          item={item}
-          onTransactionPress={onTransactionPress}
-          theme={theme}
-        />
-      ),
-      title: section,
-    }));
+
+    sectionedTransactions = Object.keys(transactionsByDate)
+      .filter(section => section !== 'Dropped')
+      .map(section => ({
+        data: transactionsByDate[section].map(txn => ({
+          ...txn,
+          accountAddress,
+          mainnetAddress: mainnetAddresses[`${txn.address}_${txn.network}`],
+        })),
+        renderItem: ({ item }: any) => (
+          <FastTransactionCoinRow
+            item={item}
+            onTransactionPress={onTransactionPress}
+            theme={theme}
+          />
+        ),
+        title: section,
+      }));
+
     const pendingSectionIndex = sectionedTransactions.findIndex(
       // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'title' implicitly has an 'any' ty... Remove this comment to see the full error message
       ({ title }) => title === 'Pending'
