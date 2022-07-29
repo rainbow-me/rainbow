@@ -512,6 +512,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         tradeDetails: data.tradeDetails,
       })
     );
+    const slippage = slippageInBips / 100;
     analytics.track(`Updated ${type} details`, {
       aggregator: data.tradeDetails?.source || '',
       inputTokenAddress: inputToken?.address || '',
@@ -522,7 +523,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       outputTokenAddress: outputToken?.address || '',
       outputTokenName: outputToken?.name || '',
       outputTokenSymbol: outputToken?.symbol || '',
-      slippage: slippageInBips / 100,
+      slippage: isNaN(slippage) ? 'Error calculating slippage.' : slippage,
       type,
     });
 
@@ -543,7 +544,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     type,
   ]);
   const { data, isLoading } = useQuery({
-    cacheTime: IS_TESTING !== 'true' ? 0 : 10000,
     queryFn: getTradeDetails,
     queryKey: [
       'getTradeDetails',
