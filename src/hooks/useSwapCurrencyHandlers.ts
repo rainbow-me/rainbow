@@ -1,22 +1,17 @@
-import { useRoute } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
-import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
-import useSwapCurrencies from './useSwapCurrencies';
-import useTimeout from './useTimeout';
-import useUniswapCalls from './useUniswapCalls';
+import { AssetType } from '@rainbow-me/entities';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
+  Network,
 } from '@rainbow-me/helpers';
+import { updatePrecisionToDisplay } from '@rainbow-me/helpers/utilities';
+import { useSwapDerivedValues, useSwapInputHandlers } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import {
-  multicallAddListeners,
-  multicallUpdateOutdatedListeners,
-} from '@rainbow-me/redux/multicall';
+import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {
   flipSwapCurrencies,
   updateSwapDepositCurrency,
@@ -30,21 +25,29 @@ import { ethereumUtils } from '@rainbow-me/utils';
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
 export default function useSwapCurrencyHandlers({
+  currentNetwork,
   defaultInputAsset,
   defaultOutputAsset,
+  fromDiscover,
+  ignoreInitialTypeCheck = false,
   inputFieldRef,
-  setLastFocusedInputHandle,
+  nativeFieldRef,
   outputFieldRef,
+  setLastFocusedInputHandle,
+  shouldUpdate = true,
   title,
   type,
-}: any) {
+}: any = {}) {
   const dispatch = useDispatch();
-  const { chainId } = useAccountSettings();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
+
+  const { derivedValues } = useSwapDerivedValues();
+
   const {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'blockInteractions' does not exist on typ... Remove this comment to see the full error message
-    params: { blockInteractions },
-  } = useRoute();
+    updateInputAmount,
+    updateNativeAmount,
+    updateOutputAmount,
+  } = useSwapInputHandlers();
 
   const { defaultInputItemInWallet, defaultOutputItem } = useMemo(() => {
     if (type === ExchangeModalTypes.withdrawal) {
@@ -72,9 +75,15 @@ export default function useSwapCurrencyHandlers({
       };
     }
     if (type === ExchangeModalTypes.swap) {
+      const defaultInputItemInWallet = defaultInputAsset
+        ? {
+            ...defaultInputAsset,
+            type: defaultInputAsset?.type ?? AssetType.token,
+          }
+        : null;
+
       return {
-        defaultInputItemInWallet:
-          defaultInputAsset ?? ethereumUtils.getAccountAsset(ETH_ADDRESS),
+        defaultInputItemInWallet,
         defaultOutputItem: defaultOutputAsset ?? null,
       };
     }
@@ -84,93 +93,172 @@ export default function useSwapCurrencyHandlers({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useLayoutEffect(() => {
-    dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
-    dispatch(updateSwapOutputCurrency(defaultOutputItem));
-  }, [defaultInputItemInWallet, dispatch, defaultOutputItem]);
-
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
-
-  const { calls } = useUniswapCalls();
-
   useEffect(() => {
-    if (!inputCurrency || !outputCurrency || isEmpty(calls)) return;
-    dispatch(multicallAddListeners({ calls, chainId }));
-    dispatch(multicallUpdateOutdatedListeners());
-  }, [calls, chainId, dispatch, inputCurrency, outputCurrency]);
-
-  const [startFlipFocusTimeout] = useTimeout();
-  const flipCurrencies = useCallback(() => {
-    dispatch(flipSwapCurrencies());
-    startFlipFocusTimeout(() => {
-      if (inputFieldRef.current === currentlyFocusedInput()) {
-        focusTextInput(outputFieldRef.current);
-      } else if (outputFieldRef.current === currentlyFocusedInput()) {
-        focusTextInput(inputFieldRef.current);
+    if (shouldUpdate) {
+      if (defaultInputItemInWallet) {
+        dispatch(
+          updateSwapInputCurrency(
+            defaultInputItemInWallet,
+            ignoreInitialTypeCheck
+          )
+        );
       }
-    }, 50);
-  }, [dispatch, inputFieldRef, outputFieldRef, startFlipFocusTimeout]);
+      if (defaultOutputItem) {
+        dispatch(
+          updateSwapOutputCurrency(defaultOutputItem, ignoreInitialTypeCheck)
+        );
+      }
+    }
+  }, [
+    defaultInputItemInWallet,
+    dispatch,
+    defaultOutputItem,
+    shouldUpdate,
+    fromDiscover,
+    ignoreInitialTypeCheck,
+  ]);
+
+  const flipSwapCurrenciesWithTimeout = useCallback(
+    (focusToRef, outputIndependentField = false, independentValue = null) => {
+      InteractionManager.runAfterInteractions(() => {
+        dispatch(
+          flipSwapCurrencies(
+            outputIndependentField,
+            independentValue ? updatePrecisionToDisplay(independentValue) : null
+          )
+        );
+        setTimeout(() => {
+          focusTextInput(focusToRef.current);
+        }, 50);
+      });
+    },
+    [dispatch]
+  );
+
+  const flipCurrencies = useCallback(() => {
+    if (currentNetwork === Network.arbitrum) {
+      updateOutputAmount(null);
+      flipSwapCurrenciesWithTimeout(
+        nativeFieldRef.current === currentlyFocusedInput()
+          ? nativeFieldRef
+          : inputFieldRef,
+        false,
+        derivedValues?.outputAmount
+      );
+    } else if (nativeFieldRef.current === currentlyFocusedInput()) {
+      updateNativeAmount(null);
+      updateInputAmount(null);
+      flipSwapCurrenciesWithTimeout(
+        outputFieldRef,
+        true,
+        derivedValues?.inputAmount
+      );
+    } else if (inputFieldRef.current === currentlyFocusedInput()) {
+      updateNativeAmount(null);
+      updateInputAmount(null);
+      flipSwapCurrenciesWithTimeout(
+        outputFieldRef,
+        true,
+        derivedValues?.inputAmount
+      );
+    } else if (outputFieldRef.current === currentlyFocusedInput()) {
+      updateOutputAmount(null);
+      flipSwapCurrenciesWithTimeout(
+        inputFieldRef,
+        false,
+        derivedValues?.outputAmount
+      );
+    }
+  }, [
+    currentNetwork,
+    nativeFieldRef,
+    inputFieldRef,
+    outputFieldRef,
+    updateOutputAmount,
+    updateInputAmount,
+    flipSwapCurrenciesWithTimeout,
+    derivedValues?.outputAmount,
+    derivedValues?.inputAmount,
+    updateNativeAmount,
+  ]);
 
   const updateInputCurrency = useCallback(
-    newInputCurrency => {
+    (inputCurrency, handleNavigate) => {
+      const newInputCurrency = inputCurrency
+        ? {
+            ...inputCurrency,
+            type: inputCurrency?.type ?? AssetType.token,
+          }
+        : null;
+
+      dispatch(emitAssetRequest(newInputCurrency.mainnet_address));
       dispatch(updateSwapInputCurrency(newInputCurrency));
-      setLastFocusedInputHandle(inputFieldRef);
+      setLastFocusedInputHandle?.(inputFieldRef);
+      handleNavigate?.(newInputCurrency);
     },
     [dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const updateOutputCurrency = useCallback(
-    newOutputCurrency => {
+    (outputCurrency, handleNavigate) => {
+      const newOutputCurrency = outputCurrency
+        ? {
+            ...outputCurrency,
+            type: outputCurrency?.type ?? AssetType.token,
+          }
+        : null;
+
+      dispatch(emitAssetRequest(newOutputCurrency.mainnet_address));
       dispatch(updateSwapOutputCurrency(newOutputCurrency));
-      setLastFocusedInputHandle(outputFieldRef);
+      setLastFocusedInputHandle?.(inputFieldRef);
+      handleNavigate?.(newOutputCurrency);
     },
-    [dispatch, outputFieldRef, setLastFocusedInputHandle]
+    [dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
-  const navigateToSelectInputCurrency = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-      dangerouslyGetParent().dangerouslyGetState().index = 0;
-      setParams({ focused: false });
-      delayNext();
-      navigate(Routes.CURRENCY_SELECT_SCREEN, {
-        onSelectCurrency: updateInputCurrency,
-        restoreFocusOnSwapModal: () => setParams({ focused: true }),
-        title,
-        type: CurrencySelectionTypes.input,
+  const navigateToSelectInputCurrency = useCallback(
+    chainId => {
+      InteractionManager.runAfterInteractions(() => {
+        // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
+        dangerouslyGetParent().dangerouslyGetState().index = 0;
+        setParams({ focused: false });
+        delayNext();
+        navigate(Routes.CURRENCY_SELECT_SCREEN, {
+          callback: inputFieldRef?.current?.clear,
+          chainId,
+          onSelectCurrency: updateInputCurrency,
+          restoreFocusOnSwapModal: () => setParams({ focused: true }),
+          title,
+          type: CurrencySelectionTypes.input,
+        });
       });
-      blockInteractions();
-    });
-  }, [
-    blockInteractions,
-    dangerouslyGetParent,
-    navigate,
-    setParams,
-    title,
-    updateInputCurrency,
-  ]);
+    },
+    [
+      dangerouslyGetParent,
+      inputFieldRef,
+      navigate,
+      setParams,
+      title,
+      updateInputCurrency,
+    ]
+  );
 
-  const navigateToSelectOutputCurrency = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setParams({ focused: false });
-      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-      dangerouslyGetParent().dangerouslyGetState().index = 0;
-      delayNext();
-      navigate(Routes.CURRENCY_SELECT_SCREEN, {
-        onSelectCurrency: updateOutputCurrency,
-        restoreFocusOnSwapModal: () => setParams({ focused: true }),
-        title: 'Receive',
-        type: CurrencySelectionTypes.output,
+  const navigateToSelectOutputCurrency = useCallback(
+    chainId => {
+      InteractionManager.runAfterInteractions(() => {
+        setParams({ focused: false });
+        navigate(Routes.CURRENCY_SELECT_SCREEN, {
+          callback: outputFieldRef?.current?.clear,
+          chainId,
+          onSelectCurrency: updateOutputCurrency,
+          restoreFocusOnSwapModal: () => setParams({ focused: true }),
+          title: 'Receive',
+          type: CurrencySelectionTypes.output,
+        });
       });
-      blockInteractions();
-    });
-  }, [
-    blockInteractions,
-    dangerouslyGetParent,
-    navigate,
-    setParams,
-    updateOutputCurrency,
-  ]);
+    },
+    [navigate, outputFieldRef, setParams, updateOutputCurrency]
+  );
 
   return {
     flipCurrencies,

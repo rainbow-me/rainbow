@@ -97,6 +97,16 @@ export const backupSheetConfig = {
   },
 };
 
+export const swapDetailsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    }),
+  }),
+};
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
