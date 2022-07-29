@@ -39,7 +39,7 @@ export default () => {
   const { openPicker } = useImagePicker();
 
   const onAvatarRemovePhoto = useCallback(async () => {
-    const newWallets = {
+    const newWallets: typeof wallets = {
       ...wallets,
       [selectedWallet.id]: {
         ...wallets![selectedWallet.id],
@@ -63,7 +63,7 @@ export default () => {
       const imagePath = ios
         ? `~${image?.path.slice(stringIndex)}`
         : image?.path;
-      const newWallets = {
+      const newWallets: typeof wallets = {
         ...wallets,
         [selectedWallet.id]: {
           ...wallets![selectedWallet.id],

@@ -17,7 +17,7 @@ export default function useUpdateEmoji() {
   const saveInfo = useCallback(
     async (name, color) => {
       const walletId = selectedWallet.id;
-      const newWallets = {
+      const newWallets: typeof wallets = {
         ...wallets,
         [walletId]: {
           ...wallets![walletId],

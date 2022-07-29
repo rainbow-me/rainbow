@@ -10,7 +10,6 @@ export default function usePurchaseTransactionStatus() {
     purchaseTransactions,
   } = useSelector(
     ({
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'addCash' does not exist on type 'Default... Remove this comment to see the full error message
       addCash: {
         currentOrderStatus,
         currentTransferId,
