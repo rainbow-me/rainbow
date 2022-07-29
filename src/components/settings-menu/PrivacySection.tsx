@@ -8,7 +8,6 @@ import MenuItem from './components/MenuItem';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
-import { Box } from '@rainbow-me/design-system';
 import {
   useAccountProfile,
   useShowcaseTokens,
@@ -59,11 +58,11 @@ const PrivacySection = () => {
       <Menu description={lang.t('settings.privacy_section.when_public')}>
         <MenuItem
           disabled
-          leftComponent={<MenuItem.TextIcon icon="􀏅" isLink shiftLeft />}
+          isSfSymbol
+          leftComponent={<MenuItem.TextIcon icon="􀏅" isLink isSfSymbol />}
           rightComponent={
             <Switch onValueChange={toggleWebData} value={publicShowCase} />
           }
-          shiftLeft
           size={52}
           titleComponent={
             <MenuItem.Title
@@ -75,14 +74,9 @@ const PrivacySection = () => {
       {profilesEnabled && accountENS && (
         <Menu>
           <MenuItem
-            leftComponent={
-              // added padding to offset variable icon width
-              <Box paddingLeft="3px">
-                <MenuItem.TextIcon icon="􀉭" isLink shiftLeft />
-              </Box>
-            }
+            isSfSymbol
+            leftComponent={<MenuItem.TextIcon icon="􀉭" isLink isSfSymbol />}
             onPress={viewProfile}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title

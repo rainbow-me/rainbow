@@ -17,7 +17,7 @@ const Menu = ({ children, description, header }: MenuProps) => {
           </Text>
         </Box>
       )}
-      <Box background="card" borderRadius={18} shadow="9px medium" width="full">
+      <Box background="card" borderRadius={18} shadow="21px light" width="full">
         <Stack separator={<Divider color="divider60" />}>{children}</Stack>
       </Box>
       {!!description && (

@@ -108,7 +108,7 @@ const AppIconSection = () => {
             rightComponent={
               key === appIcon && <MenuItem.StatusIcon status="selected" />
             }
-            size={52}
+            size={60}
             titleComponent={<MenuItem.Title text={name} />}
           />
         ))}

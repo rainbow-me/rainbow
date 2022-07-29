@@ -40,15 +40,15 @@ const WalletNotificationsSettings = () => {
         <Menu>
           <MenuItem
             disabled
+            isSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.appleBlue}
                 icon="􀈟"
-                shiftLeft
+                isSfSymbol
               />
             }
             rightComponent={<Switch />}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -58,15 +58,15 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
+            isSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.green}
                 icon="􀅀"
-                shiftLeft
+                isSfSymbol
               />
             }
             rightComponent={<Switch />}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -76,15 +76,15 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
+            isSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.pink}
                 icon="􀑉"
-                shiftLeft
+                isSfSymbol
               />
             }
             rightComponent={<Switch />}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -94,15 +94,15 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
+            isSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.orange}
                 icon="􀋡"
-                shiftLeft
+                isSfSymbol
               />
             }
             rightComponent={<Switch />}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -112,15 +112,15 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
+            isSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.yellowOrange}
                 icon="􀆿"
-                shiftLeft
+                isSfSymbol
               />
             }
             rightComponent={<Switch />}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -130,15 +130,15 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
+            isSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.swapPurple}
                 icon="􀖅"
-                shiftLeft
+                isSfSymbol
               />
             }
             rightComponent={<Switch />}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -148,15 +148,15 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
+            isSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.green}
                 icon="􀁢"
-                shiftLeft
+                isSfSymbol
               />
             }
             rightComponent={<Switch />}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title
@@ -166,15 +166,15 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
+            isSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.blueGreyDark60}
                 icon="􀍡"
-                shiftLeft
+                isSfSymbol
               />
             }
             rightComponent={<Switch />}
-            shiftLeft
             size={52}
             titleComponent={
               <MenuItem.Title

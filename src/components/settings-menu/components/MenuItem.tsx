@@ -32,7 +32,7 @@ interface TextIconProps {
   disabled?: boolean;
   isLink?: boolean;
   colorOverride?: string;
-  shiftLeft?: boolean;
+  isSfSymbol?: boolean;
 }
 
 const TextIcon = ({
@@ -41,9 +41,9 @@ const TextIcon = ({
   weight = 'semibold',
   disabled,
   isLink,
-  shiftLeft = false,
+  isSfSymbol = false,
 }: TextIconProps) => (
-  <Box paddingLeft={{ custom: shiftLeft ? 0 : 7 }}>
+  <Box paddingLeft={{ custom: isSfSymbol ? 0 : 7 }}>
     <Text
       color={
         colorOverride
@@ -151,7 +151,7 @@ interface MenuItemProps {
   labelComponent?: React.ReactNode;
   disabled?: boolean;
   hasChevron?: boolean;
-  shiftLeft?: boolean;
+  isSfSymbol?: boolean;
 }
 
 const MenuItem = ({
@@ -164,7 +164,7 @@ const MenuItem = ({
   labelComponent,
   disabled,
   hasChevron,
-  shiftLeft,
+  isSfSymbol,
 }: MenuItemProps) => {
   const { colors } = useTheme();
 
@@ -178,7 +178,15 @@ const MenuItem = ({
       <Inline alignHorizontal="justify" alignVertical="center">
         <Inline alignVertical="center">
           {leftComponent && (
-            <Box width={{ custom: shiftLeft ? 34 : 46 }}>{leftComponent}</Box>
+            <Box width={{ custom: isSfSymbol ? 40 : 46 }}>
+              {isSfSymbol ? (
+                <Box alignItems="center" width={{ custom: 28 }}>
+                  {leftComponent}
+                </Box>
+              ) : (
+                leftComponent
+              )}
+            </Box>
           )}
           <Stack space="8px">
             {titleComponent}
