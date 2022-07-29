@@ -259,6 +259,7 @@ const SettingsSection = ({
               />
             }
             size={60}
+            testID="backup-section"
             titleComponent={<MenuItem.Title text={lang.t('settings.backup')} />}
           />
         )}
@@ -289,6 +290,7 @@ const SettingsSection = ({
             <MenuItem.Selection>{nativeCurrency || ''}</MenuItem.Selection>
           }
           size={60}
+          testID="currency-section"
           titleComponent={<MenuItem.Title text={lang.t('settings.currency')} />}
         />
         {(testnetsEnabled || IS_DEV) && (
@@ -306,6 +308,7 @@ const SettingsSection = ({
               </MenuItem.Selection>
             }
             size={60}
+            testID="network-section"
             titleComponent={
               <MenuItem.Title text={lang.t('settings.network')} />
             }
@@ -332,6 +335,7 @@ const SettingsSection = ({
               </MenuItem.Selection>
             }
             size={60}
+            testID={`darkmode-section-${isDarkMode}`}
             titleComponent={<MenuItem.Title text={lang.t('settings.theme')} />}
           />
         </ContextMenuButton>
@@ -346,6 +350,7 @@ const SettingsSection = ({
             }
             onPress={onPressPrivacy}
             size={60}
+            testID="privacy"
             titleComponent={
               <MenuItem.Title text={lang.t('settings.privacy')} />
             }
@@ -381,6 +386,7 @@ const SettingsSection = ({
             }
             onPress={onPressAppIcon}
             size={60}
+            testID="app-icon-section"
             titleComponent={
               <MenuItem.Title text={lang.t('settings.app_icon')} />
             }
@@ -392,6 +398,7 @@ const SettingsSection = ({
           leftComponent={<MenuItem.TextIcon icon="🌈" isEmoji />}
           onPress={onPressShare}
           size={52}
+          testID="share-section"
           titleComponent={
             <MenuItem.Title text={lang.t('settings.share_rainbow')} />
           }
@@ -400,12 +407,14 @@ const SettingsSection = ({
           leftComponent={<MenuItem.TextIcon icon="🧠" isEmoji />}
           onPress={onPressLearn}
           size={52}
+          testID="learn-section"
           titleComponent={<MenuItem.Title text={lang.t('settings.learn')} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="🐦" isEmoji />}
           onPress={onPressTwitter}
           size={52}
+          testID="twitter-section"
           titleComponent={
             <MenuItem.Title text={lang.t('settings.follow_us_on_twitter')} />
           }
@@ -414,6 +423,7 @@ const SettingsSection = ({
           leftComponent={<MenuItem.TextIcon icon="💬" isEmoji />}
           onPress={onSendFeedback}
           size={52}
+          testID="feedback-section"
           titleComponent={
             <MenuItem.Title
               text={lang.t(
@@ -429,6 +439,7 @@ const SettingsSection = ({
             leftComponent={<MenuItem.TextIcon icon="❤️" isEmoji />}
             onPress={onPressReview}
             size={52}
+            testID="review-section"
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
           />
         )}
@@ -446,6 +457,7 @@ const SettingsSection = ({
           leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
           onPress={onPressDev}
           size={52}
+          testID="developer-section"
           titleComponent={
             <MenuItem.Title text={lang.t('settings.developer')} />
           }

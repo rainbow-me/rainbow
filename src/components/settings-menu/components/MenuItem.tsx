@@ -151,6 +151,7 @@ interface MenuItemProps {
   disabled?: boolean;
   hasChevron?: boolean;
   isSfSymbol?: boolean;
+  testID?: string;
 }
 
 const MenuItem = ({
@@ -164,6 +165,7 @@ const MenuItem = ({
   disabled,
   hasChevron,
   isSfSymbol,
+  testID,
 }: MenuItemProps) => {
   const { colors } = useTheme();
 
@@ -172,6 +174,7 @@ const MenuItem = ({
       height={{ custom: size }}
       justifyContent="center"
       paddingHorizontal={{ custom: 16 }}
+      testID={disabled ? testID : undefined}
       width="full"
     >
       <Inline alignHorizontal="justify" alignVertical="center">
@@ -220,7 +223,7 @@ const MenuItem = ({
   return disabled ? (
     <Item />
   ) : (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} testID={testID}>
       <Item />
     </ButtonPressAnimation>
   );
