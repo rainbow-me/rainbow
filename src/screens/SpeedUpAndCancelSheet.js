@@ -27,10 +27,12 @@ import {
 import { Emoji, Text } from '../components/text';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
+  getFlashbotsProvider,
   getProviderForNetwork,
   isL2Network,
   toHex,
 } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers';
 import { greaterThan, isEmpty } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
@@ -285,9 +287,16 @@ export default function SpeedUpAndCancelSheet() {
   // Set the provider
   useEffect(() => {
     if (currentNetwork) {
-      startPollingGasFees(currentNetwork);
+      startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
-        const provider = await getProviderForNetwork(currentNetwork);
+        let provider;
+        if (tx.network === Network.mainnet && tx.flashbots) {
+          logger.debug('using flashbots provider');
+          provider = await getFlashbotsProvider();
+        } else {
+          logger.debug('using normal provider');
+          provider = await getProviderForNetwork(currentNetwork);
+        }
         setCurrentProvider(provider);
       };
 
@@ -297,7 +306,13 @@ export default function SpeedUpAndCancelSheet() {
         stopPollingGasFees();
       };
     }
-  }, [currentNetwork, startPollingGasFees, stopPollingGasFees]);
+  }, [
+    currentNetwork,
+    startPollingGasFees,
+    stopPollingGasFees,
+    tx.flashbots,
+    tx.network,
+  ]);
 
   // Update gas limit
   useEffect(() => {
@@ -570,6 +585,7 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
+                      flashbotTransaction={tx.flashbots}
                       speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}
                     />

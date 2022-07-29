@@ -517,6 +517,7 @@ export const getTransactionLabel = ({
   if (pending && isToAccount) return TransactionStatus.receiving;
 
   if (status === TransactionStatus.failed) return TransactionStatus.failed;
+  if (status === TransactionStatus.dropped) return TransactionStatus.dropped;
 
   if (type === TransactionType.trade && isFromAccount)
     return TransactionStatus.swapped;
