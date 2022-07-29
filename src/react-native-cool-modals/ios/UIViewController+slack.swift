@@ -138,13 +138,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     if panScrollableCache != nil {
       return panScrollableCache
     }
+    var foundScrollViews = 0
     var viewsToTraverse = [view]
     while !viewsToTraverse.isEmpty {
       let last = viewsToTraverse.last!
       viewsToTraverse.removeLast()
       if last is UIScrollView {
-        panScrollableCache = last as? UIScrollView
-        return last as? UIScrollView
+        foundScrollViews += 1
+        if foundScrollViews == relevantScrollViewDepth {
+          panScrollableCache = last as? UIScrollView
+          return last as? UIScrollView
+        }
       }
       last.subviews.forEach { subview in
         viewsToTraverse.append(subview)
@@ -191,6 +195,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
   var anchorModalToLongForm: Bool {
     return self.config?.anchorModalToLongForm ?? false
+  }
+  
+  var relevantScrollViewDepth: Int {
+    return self.config?.relevantScrollViewDepth.intValue ?? 1
   }
 
   var panModalBackgroundColor: UIColor {

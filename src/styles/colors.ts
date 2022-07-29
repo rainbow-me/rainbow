@@ -24,6 +24,7 @@ const darkModeColors = {
   dark: '#E0E8FF',
   darkGrey: '#333333',
   darkModeDark: '#404656',
+  exchangeFallback: 'rgba(60, 66, 82, 0.8)',
   green: '#00D146',
   grey: '#333333',
   grey20: '#333333',
@@ -101,6 +102,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     dpiDark: '#8150E6', // '129, 80, 230'
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
+    exchangeFallback: '#F4F4F5', // '244, 244, 245'
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'
@@ -181,7 +183,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     arbitrum: '#2D374B',
     goerli: '#f6c343',
     kovan: '#7057ff',
-    mainnet: buildRgba('#3C4252', 0.5),
+    mainnet: '#25292E',
     optimism: '#FF4040',
     polygon: '#8247E5',
     rinkeby: '#f6c343',
@@ -350,12 +352,12 @@ const getColorsByTheme = (darkMode?: boolean) => {
     };
 
     networkColors = {
-      arbitrum: '#96BEDC',
+      arbitrum: '#ADBFE3',
       goerli: '#f6c343',
       kovan: '#7057ff',
-      mainnet: buildRgba('#E0E8FF', 0.5),
-      optimism: '#FF4040',
-      polygon: '#8247E5',
+      mainnet: '#E0E8FF',
+      optimism: '#FF6A6A',
+      polygon: '#A275EE',
       rinkeby: '#f6c343',
       ropsten: '#ff4a8d',
     };

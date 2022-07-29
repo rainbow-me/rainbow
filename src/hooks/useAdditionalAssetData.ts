@@ -18,6 +18,7 @@ export default function useAdditionalAssetData(
   totalLiquidity: string | null;
   marketCap: string | null;
   links: Record<string, string[]>;
+  networks: Record<string, { address: EthereumAddress; decimals: number }>;
 } {
   const address = rawAddress === ETH_ADDRESS ? WETH_ADDRESS : rawAddress;
   const { data } = useQuery(['additionalAssetData', address], () =>
@@ -49,6 +50,7 @@ export default function useAdditionalAssetData(
     links: data?.links,
     loading,
     marketCap,
+    networks: data?.networks,
     totalLiquidity,
     totalVolume,
   };

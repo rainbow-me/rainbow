@@ -44,7 +44,6 @@ import {
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
-  expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
   explainSheetConfig,
   externalLinkWarningSheetConfig,
@@ -57,6 +56,7 @@ import {
   sendConfirmationSheetConfig,
   settingsSheetConfig,
   stackNavigationConfig,
+  swapDetailsSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -256,7 +256,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
-        options={{ ...nativeStackDefaultConfig, interactWithScrollView: false }}
+        options={{ ...nativeStackDefaultConfig, relevantScrollViewDepth: 2 }}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
@@ -398,7 +398,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.SWAP_DETAILS_SHEET}
-        {...expandedAssetSheetConfig}
+        {...swapDetailsSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.SWAP_SETTINGS_SHEET}
+        {...customGasSheetConfig}
       />
 
       {profilesEnabled && (

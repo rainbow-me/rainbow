@@ -5,45 +5,16 @@ import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
 
 const EMPTY_ARRAY: any = [];
 
-const assetPricesFromUniswapSelector = (state: any) =>
-  state.data.assetPricesFromUniswap;
 const accountAssetsDataSelector = (state: any) => state.data.accountAssetsData;
 const isLoadingAssetsSelector = (state: any) => state.data.isLoadingAssets;
 const nativeCurrencySelector = (state: any) => state.settings.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
   accountAssetsData: any,
-  assetPricesFromUniswap: any,
   isLoadingAssets: any,
   nativeCurrency: any
 ) => {
   let assetsNativePrices = Object.values(accountAssetsData);
-
-  if (!isEmpty(assetPricesFromUniswap)) {
-    assetsNativePrices = assetsNativePrices.map(asset => {
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      if (isNil(asset.price)) {
-        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-        const assetPrice = assetPricesFromUniswap[asset.address]?.price;
-
-        const relativePriceChange =
-          // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-          assetPricesFromUniswap[asset.address]?.relativePriceChange;
-
-        if (assetPrice) {
-          return {
-            // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
-            ...asset,
-            price: {
-              relative_change_24h: relativePriceChange,
-              value: assetPrice,
-            },
-          };
-        }
-      }
-      return asset;
-    });
-  }
 
   let total = null;
   if (!isEmpty(assetsNativePrices)) {
@@ -102,11 +73,6 @@ const groupAssetsByMarketValue = (assets: any) =>
   );
 
 export const sortAssetsByNativeAmountSelector = createSelector(
-  [
-    accountAssetsDataSelector,
-    assetPricesFromUniswapSelector,
-    isLoadingAssetsSelector,
-    nativeCurrencySelector,
-  ],
+  [accountAssetsDataSelector, isLoadingAssetsSelector, nativeCurrencySelector],
   sortAssetsByNativeAmount
 );
