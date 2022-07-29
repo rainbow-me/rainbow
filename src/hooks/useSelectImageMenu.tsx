@@ -105,11 +105,11 @@ export default function useSelectImageMenu({
     useCallback(() => {
       isFocused.current = true;
       const dismiss = () => (isFocused.current = false);
-      // @ts-expect-error `dismiss` is valid event
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"dismiss"' is not assignable to ... Remove this comment to see the full error message
       dangerouslyGetParent()?.addListener('dismiss', dismiss);
       return () => {
         isFocused.current = false;
-        // @ts-expect-error `dismiss` is valid event
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"dismiss"' is not assignable to ... Remove this comment to see the full error message
         dangerouslyGetParent()?.removeListener('dismiss', dismiss);
       };
     }, [dangerouslyGetParent])
