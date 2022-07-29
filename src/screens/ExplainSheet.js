@@ -9,9 +9,13 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import { Box } from '@/design-system';
+import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
+import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
@@ -48,6 +52,29 @@ const Gradient = styled(GradientText).attrs({
   steps: [0, 0.5, 1],
   weight: 'heavy',
 })({});
+
+const OptimismAppIcon = () => {
+  const { colors, isDarkMode } = useTheme();
+  return (
+    <Box
+      style={{
+        shadowColor: isDarkMode ? colors.shadowBlack : colors.optimismRed,
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={AppIconOptimism}
+        style={{
+          width: 64,
+          height: 64,
+        }}
+      />
+    </Box>
+  );
+};
 
 const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
@@ -114,7 +141,32 @@ const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
 
 const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
 
+const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
+
 export const explainers = network => ({
+  optimism_app_icon: {
+    logo: <OptimismAppIcon />,
+    extraHeight: -25,
+    text: OPTIMISM_APP_ICON_EXPLAINER,
+    title: lang.t('explain.optimism_app_icon.title'),
+    button: {
+      label: lang.t('explain.optimism_app_icon.button'),
+      textColor: 'optimismRed',
+      bgColor: 'optimismRed06',
+      onPress: (navigate, goBack, handleClose) => () => {
+        if (handleClose) handleClose();
+        if (goBack) goBack();
+        setTimeout(() => {
+          navigate(Routes.SETTINGS_SHEET);
+          setTimeout(() => {
+            navigate(Routes.SETTINGS_SHEET, {
+              screen: 'AppIconSection',
+            });
+          }, 300);
+        }, 300);
+      },
+    },
+  },
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
@@ -161,31 +213,31 @@ export const explainers = network => ({
   },
   currentBaseFeeStable: {
     emoji: '🌞',
-    extraHeight: android ? 40 : 28,
+    extraHeight: android ? 42 : 28,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeFalling: {
     emoji: '📉',
-    extraHeight: android ? 20 : 2,
+    extraHeight: android ? 22 : 2,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeRising: {
     emoji: '🥵',
-    extraHeight: android ? 60 : 54,
+    extraHeight: android ? 62 : 54,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeSurging: {
     emoji: '🎢',
-    extraHeight: android ? 100 : 54,
+    extraHeight: android ? 102 : 54,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeNotrend: {
     emoji: '⛽',
-    extraHeight: android ? -20 : -40,
+    extraHeight: android ? -18 : -40,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER,
     title: CURRENT_BASE_FEE_TITLE,
   },
@@ -282,7 +334,7 @@ const ExplainSheet = () => {
     params = {},
   } = useRoute();
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
@@ -347,7 +399,7 @@ const ExplainSheet = () => {
                 size="h1"
                 style={{
                   ...fontWithWidth(fonts.weight.bold),
-                  height: android ? 60 : 47,
+                  height: android ? 62 : 47,
                 }}
               >
                 {explainSheetConfig.emoji}
@@ -388,12 +440,27 @@ const ExplainSheet = () => {
               </Column>
             )}
             <SheetActionButton
-              color={colors.alpha(colors.appleBlue, 0.04)}
+              color={
+                colors[explainSheetConfig.button?.bgColor] ||
+                colors.alpha(colors.appleBlue, 0.04)
+              }
               isTransparent
-              label={lang.t('button.got_it')}
-              onPress={handleClose}
+              label={
+                explainSheetConfig.button?.label || lang.t('button.got_it')
+              }
+              onPress={
+                explainSheetConfig.button?.onPress
+                  ? explainSheetConfig.button.onPress(
+                      navigate,
+                      goBack,
+                      handleClose
+                    )
+                  : handleClose
+              }
               size="big"
-              textColor={colors.appleBlue}
+              textColor={
+                colors[explainSheetConfig.button?.textColor] || colors.appleBlue
+              }
               weight="heavy"
             />
           </ColumnWithMargins>
@@ -404,3 +471,4 @@ const ExplainSheet = () => {
 };
 
 export default React.memo(ExplainSheet);
+2;

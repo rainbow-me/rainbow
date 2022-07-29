@@ -7,6 +7,7 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -147,6 +148,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
+  const isL2 = isL2Network(tx.network);
 
   const getNewTransactionGasParams = useCallback(() => {
     if (txType === GasFeeTypes.eip1559) {
@@ -330,7 +332,7 @@ export default function SpeedUpAndCancelSheet() {
           setData(hexData);
           setTo(tx.txTo);
           setGasLimit(hexGasLimit);
-          if (!isL2Network(tx.network)) {
+          if (!isL2) {
             setTxType(GasFeeTypes.eip1559);
             const hexMaxPriorityFeePerGas = toHex(
               tx.maxPriorityFeePerGas.toString()
@@ -380,6 +382,7 @@ export default function SpeedUpAndCancelSheet() {
     currentNetwork,
     currentProvider,
     goBack,
+    isL2,
     network,
     tx,
     tx.gasLimit,
@@ -429,6 +432,13 @@ export default function SpeedUpAndCancelSheet() {
     : null;
 
   const { colors, isDarkMode } = useTheme();
+  const speeds = useMemo(() => {
+    const defaultSpeeds = [URGENT];
+    if (!isL2) {
+      defaultSpeeds.push(CUSTOM);
+    }
+    return defaultSpeeds;
+  }, [isL2]);
 
   return (
     <SheetKeyboardAnimation
@@ -558,7 +568,7 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
-                      speeds={[URGENT, CUSTOM]}
+                      speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}
                     />
                   </GasSpeedButtonContainer>

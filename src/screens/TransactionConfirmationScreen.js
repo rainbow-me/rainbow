@@ -691,7 +691,10 @@ export default function TransactionConfirmationScreen() {
           txSavedInCurrentWallet = true;
         }
       }
-      analytics.track('Approved WalletConnect transaction request');
+      analytics.track('Approved WalletConnect transaction request', {
+        dappName,
+        dappUrl,
+      });
       if (isFocused && requestId) {
         dispatch(removeRequest(requestId));
         await dispatch(
@@ -792,7 +795,10 @@ export default function TransactionConfirmationScreen() {
     }
     const { result, error } = response;
     if (result) {
-      analytics.track('Approved WalletConnect signature request');
+      analytics.track('Approved WalletConnect signature request', {
+        dappName,
+        dappUrl,
+      });
       if (requestId) {
         dispatch(removeRequest(requestId));
         await dispatch(walletConnectSendStatus(peerId, requestId, response));
@@ -805,18 +811,20 @@ export default function TransactionConfirmationScreen() {
       await onCancel(error);
     }
   }, [
+    method,
     accountInfo.address,
+    provider,
+    params,
+    dappName,
+    dappUrl,
+    requestId,
     callback,
     closeScreen,
     dispatch,
-    method,
-    onCancel,
-    params,
-    peerId,
     removeRequest,
-    requestId,
     walletConnectSendStatus,
-    provider,
+    peerId,
+    onCancel,
   ]);
 
   const onConfirm = useCallback(async () => {

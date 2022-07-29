@@ -12,6 +12,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.20](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.20)
+### Changed
+* Swap aggregator UI fixes - follow up release
+
+## [1.6.19](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.19)
+### Added
+* Swap aggregator release
+
+### Changed
+* Fixes for shitcoin pricing flash
+* Fixes for cross-wallet data mixing
+
+## [1.6.18](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.18)
+### Added
+* Support custom icons
+* Support Optimism and Arbitrum collectibles viewing
+
+## [1.6.16](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.16)
+### Changed
+* Main release
+* Bug fixes
+* Performance improvements
+
 ## [1.6.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.15)
 
 ### Changed

@@ -8,9 +8,7 @@ import { Box } from '../../components/Box/Box';
 export default ({ children, themeName }) => (
   <DesignSystemProvider colorMode={themeName}>
     <div id="root">
-      <Box background="body">
-        {children}
-      </Box>
+      <Box background="body">{children}</Box>
     </div>
   </DesignSystemProvider>
 );
