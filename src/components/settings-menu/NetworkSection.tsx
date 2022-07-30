@@ -52,6 +52,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
           value === network && <MenuItem.StatusIcon status="selected" />
         }
         size={52}
+        testID={`${value}-network`}
         titleComponent={
           <MenuItem.Title
             disabled={(!testnetsEnabled && testnet) || disabled}

@@ -206,7 +206,7 @@ const DevSection = () => {
   }, []);
 
   return (
-    <MenuContainer>
+    <MenuContainer testID="developer-settings-sheet">
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
         <MenuItem
           disabled
@@ -218,6 +218,7 @@ const DevSection = () => {
             />
           }
           size={52}
+          testID="testnet-switch"
           titleComponent={<MenuItem.Title text="Enable Testnets" />}
         />
         {testnetsEnabled && <NetworkSection inDevSection />}
@@ -275,6 +276,7 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="💣" />}
               onPress={wipeKeychain}
               size={52}
+              testID="reset-keychain-section"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.reset_keychain')}
@@ -295,6 +297,7 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="💥" />}
               onPress={throwRenderError}
               size={52}
+              testID="crash-app-section"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.crash_app_render_error')}
@@ -326,6 +329,7 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="👷" />}
               onPress={connectToHardhat}
               size={52}
+              testID="hardhat-section"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.connect_to_hardhat')}
@@ -336,6 +340,7 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="🏖️" />}
               onPress={checkAlert}
               size={52}
+              testID="alert-section"
               titleComponent={
                 <MenuItem.Title text={lang.t('developer_settings.alert')} />
               }
@@ -344,6 +349,7 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="🔔" />}
               onPress={navToDevNotifications}
               size={52}
+              testID="notifications-section"
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.notifications_debug')}

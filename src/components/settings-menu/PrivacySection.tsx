@@ -64,6 +64,7 @@ const PrivacySection = () => {
             <Switch onValueChange={toggleWebData} value={publicShowCase} />
           }
           size={52}
+          testID="public-showcase"
           titleComponent={
             <MenuItem.Title
               text={lang.t('settings.privacy_section.public_showcase')}
