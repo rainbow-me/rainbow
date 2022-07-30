@@ -48,6 +48,7 @@ const CurrencySection = () => {
               emojiName ? (
                 <MenuItem.TextIcon
                   icon={(emoji.get('flag_' + emojiName) as string) || ''}
+                  isEmoji
                 />
               ) : (
                 // @ts-ignore missing props
