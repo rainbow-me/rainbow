@@ -1,5 +1,5 @@
+import { ViewPropTypes } from 'deprecated-react-native-prop-types';
 import PropTypes from 'prop-types';
-import { ViewPropTypes } from 'react-native';
 import styled from '@rainbow-me/styled-components';
 import { buildTextStyles } from '@rainbow-me/styles';
 

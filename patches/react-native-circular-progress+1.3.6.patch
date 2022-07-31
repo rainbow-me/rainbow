@@ -1,0 +1,29 @@
+diff --git a/node_modules/react-native-circular-progress/index.d.ts b/node_modules/react-native-circular-progress/index.d.ts
+index 45f3d98..9b2a561 100644
+--- a/node_modules/react-native-circular-progress/index.d.ts
++++ b/node_modules/react-native-circular-progress/index.d.ts
+@@ -3,10 +3,10 @@ declare module 'react-native-circular-progress' {
+   import {
+     Animated,
+     Easing,
+-    ViewPropTypes,
+     StyleProp,
+     ViewStyle
+   } from 'react-native';
++  import { ViewPropTypes } from 'deprecated-react-native-prop-types';
+ 
+   export interface AnimatedCircularProgressProps {
+     /**
+diff --git a/node_modules/react-native-circular-progress/src/CircularProgress.js b/node_modules/react-native-circular-progress/src/CircularProgress.js
+index 47e2e03..d1c16bd 100644
+--- a/node_modules/react-native-circular-progress/src/CircularProgress.js
++++ b/node_modules/react-native-circular-progress/src/CircularProgress.js
+@@ -1,6 +1,7 @@
+ import React from 'react';
+ import PropTypes from 'prop-types';
+-import { View, ViewPropTypes } from 'react-native';
++import { ViewPropTypes } from 'deprecated-react-native-prop-types';
++import { View } from 'react-native';
+ import { Svg, Path, G } from 'react-native-svg';
+ 
+ export default class CircularProgress extends React.PureComponent {

@@ -1,0 +1,16 @@
+diff --git a/node_modules/react-native-tooltips/RNTooltips.js b/node_modules/react-native-tooltips/RNTooltips.js
+index 7dd4478..435b6d0 100644
+--- a/node_modules/react-native-tooltips/RNTooltips.js
++++ b/node_modules/react-native-tooltips/RNTooltips.js
+@@ -1,10 +1,10 @@
+ import { PureComponent } from "react";
+ import {
+   findNodeHandle,
+-  ViewPropTypes,
+   NativeModules,
+   Platform
+ } from "react-native";
++import { ViewPropTypes } from 'deprecated-react-native-prop-types';
+ import PropTypes from "prop-types";
+ 
+ let { RNTooltips } = NativeModules;
