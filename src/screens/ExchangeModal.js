@@ -386,15 +386,6 @@ export default function ExchangeModal({
 
   const updateGasLimit = useCallback(async () => {
     try {
-      if (
-        ((type === ExchangeModalTypes.swap ||
-          type === ExchangeModalTypes.deposit) &&
-          !(inputCurrency && outputCurrency)) ||
-        type === ExchangeModalTypes.withdraw ||
-        loading
-      ) {
-        return;
-      }
       const swapParams = {
         chainId,
         inputAmount,
@@ -438,10 +429,7 @@ export default function ExchangeModal({
     currentProvider,
     defaultGasLimit,
     inputAmount,
-    inputCurrency,
-    loading,
     outputAmount,
-    outputCurrency,
     tradeDetails,
     type,
     updateTxFee,
