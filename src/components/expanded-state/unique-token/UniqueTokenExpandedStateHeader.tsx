@@ -2,11 +2,11 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
 import saveToCameraRoll from './saveToCameraRoll';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import {
   Bleed,
   Column,
