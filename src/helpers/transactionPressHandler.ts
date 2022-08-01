@@ -15,16 +15,21 @@ import {
 const startCase = (string: string) =>
   string.charAt(0).toUpperCase() + string.slice(1);
 
-export const transactionPressBuilder = ({
-  navigate,
-}: {
-  navigate: ReturnType<typeof useNavigation>['navigate'];
-}) => (item: any) => {
+type MenuType = {
+  buttons: string[];
+  title: string;
+};
+
+type Navigate = ReturnType<typeof useNavigation>['navigate'];
+
+type Action = keyof typeof TransactionActions;
+
+export const getMenuItems = (item: any) => {
   const {
     accountAddress,
     contact,
-    hash,
     from,
+    hash,
     minedAt,
     pending,
     to,
@@ -53,6 +58,73 @@ export const transactionPressBuilder = ({
   };
 
   const contactAddress = isSent ? to : from;
+
+  if (contact) {
+    headerInfo.address = contact.nickname;
+  } else {
+    headerInfo.address = isValidDomainFormat(contactAddress)
+      ? contactAddress
+      : abbreviations.address(contactAddress, 4, 10);
+  }
+
+  const blockExplorerAction = lang.t('exchange.coin_row.view_on', {
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+  });
+
+  if (!hash) {
+    return {
+      buttons: [],
+      title: '',
+    };
+  }
+
+  let buttons = [
+    ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
+    ...(canBeCancelled ? [TransactionActions.cancel] : []),
+    blockExplorerAction,
+    ...(ios ? [TransactionActions.close] : []),
+  ];
+
+  if (showContactInfo) {
+    buttons.unshift(
+      contact
+        ? TransactionActions.viewContact
+        : TransactionActions.addToContacts
+    );
+  }
+
+  let title;
+  if (pending) {
+    title = `${headerInfo.type}${
+      showContactInfo ? ' ' + headerInfo.divider + ' ' + headerInfo.address : ''
+    }`;
+  } else if (showContactInfo) {
+    title = `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`;
+  } else {
+    title = `${headerInfo.type} ${date}`;
+  }
+
+  return { buttons, title };
+};
+
+export const getCallback = (navigate: Navigate, item: any) => (
+  action: Action
+) => {
+  const { contact, hash, from, to, status, network } = item;
+
+  const isSent =
+    status === TransactionStatusTypes.sending ||
+    status === TransactionStatusTypes.sent;
+
+  const headerInfo = {
+    address: '',
+    divider: isSent
+      ? lang.t('exchange.coin_row.to_divider')
+      : lang.t('exchange.coin_row.from_divider'),
+    type: status.charAt(0).toUpperCase() + status.slice(1),
+  };
+
+  const contactAddress = isSent ? to : from;
   let contactColor = 0;
 
   if (contact) {
@@ -68,76 +140,69 @@ export const transactionPressBuilder = ({
   const blockExplorerAction = lang.t('exchange.coin_row.view_on', {
     blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
   });
-  if (hash) {
-    let buttons = [
-      ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
-      ...(canBeCancelled ? [TransactionActions.cancel] : []),
-      blockExplorerAction,
-      ...(ios ? [TransactionActions.close] : []),
-    ];
 
-    if (showContactInfo) {
-      buttons.unshift(
-        contact
-          ? TransactionActions.viewContact
-          : TransactionActions.addToContacts
-      );
-    }
-
-    let title;
-    if (pending) {
-      title = `${headerInfo.type}${
-        showContactInfo
-          ? ' ' + headerInfo.divider + ' ' + headerInfo.address
-          : ''
-      }`;
-    } else if (showContactInfo) {
-      title = `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`;
-    } else {
-      title = `${headerInfo.type} ${date}`;
-    }
-
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: buttons.length - 1,
-        options: buttons,
-        title,
-      },
-      (buttonIndex: number) => {
-        const action = buttons[buttonIndex];
-        switch (action) {
-          case TransactionActions.viewContact:
-          case TransactionActions.addToContacts:
-            navigate(Routes.MODAL_SCREEN, {
-              address: contactAddress,
-              asset: item,
-              color: contactColor,
-              contact,
-              type: 'contact_profile',
-            });
-            break;
-          case TransactionActions.speedUp:
-            navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-              tx: item,
-              type: 'speed_up',
-            });
-            break;
-          case TransactionActions.cancel:
-            navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-              tx: item,
-              type: 'cancel',
-            });
-            break;
-          case TransactionActions.close:
-            return;
-          case blockExplorerAction:
-            ethereumUtils.openTransactionInBlockExplorer(hash, network);
-            break;
-          default: {
-            return;
-          }
-        }
-      }
-    );
+  if (!hash) {
+    return;
   }
+
+  switch (action) {
+    case TransactionActions.viewContact:
+    case TransactionActions.addToContacts:
+      navigate(Routes.MODAL_SCREEN, {
+        address: contactAddress,
+        asset: item,
+        color: contactColor,
+        contact,
+        type: 'contact_profile',
+      });
+      break;
+    case TransactionActions.speedUp:
+      navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+        tx: item,
+        type: 'speed_up',
+      });
+      break;
+    case TransactionActions.cancel:
+      navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+        tx: item,
+        type: 'cancel',
+      });
+      break;
+    case TransactionActions.close:
+      return;
+    case blockExplorerAction:
+      ethereumUtils.openTransactionInBlockExplorer(hash, network);
+      break;
+    default: {
+      return;
+    }
+  }
+};
+
+export const getOnPressAndroid = (
+  menu: MenuType,
+  callback: (action: Action) => void
+) => (e: any) => {
+  const buttonIndex = menu.buttons.findIndex(
+    item => item === e.nativeEvent.actionKey
+  );
+  const action = menu.buttons[buttonIndex] as Action;
+  callback(action);
+};
+
+export const getOnPressIOS = (
+  menu: MenuType,
+  callback: (action: Action) => void
+) => () => {
+  showActionSheetWithOptions(
+    {
+      cancelButtonIndex: menu.buttons.length - 1,
+      options: menu.buttons,
+      title: menu.title,
+    },
+    (buttonIndex: number) => {
+      const action = menu.buttons[buttonIndex] as Action;
+      callback(action);
+    }
+  );
 };
