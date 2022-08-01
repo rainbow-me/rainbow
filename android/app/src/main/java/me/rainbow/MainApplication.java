@@ -18,6 +18,8 @@ import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import io.branch.rnbranch.RNBranchModule;
+import me.rainbow.NativeModules.Haptics.RNHapticsPackage;
+import me.rainbow.NativeModules.Haptics.RNRainbowHapticsModule;
 import me.rainbow.NativeModules.Internals.InternalPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
@@ -64,6 +66,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new InternalPackage());
           packages.add(new KeychainPackage(new KeychainModuleBuilder().withoutWarmUp()));
           packages.add(new RNStartTimePackage(MainApplication.START_MARK));
+          packages.add(new RNHapticsPackage());
 
             return packages;
         }

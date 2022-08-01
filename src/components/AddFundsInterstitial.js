@@ -273,7 +273,7 @@ const AddFundsInterstitial = ({ network }) => {
                   size="large"
                   weight="bold"
                 >
-                  {` 􀍡 ${lang.t('wallet.add_cash.interstitial.other_amount')}`}
+                  {`􀍡 ${lang.t('wallet.add_cash.interstitial.other_amount')}`}
                 </Text>
               </InterstitialButtonContent>
             </InterstitialButton>
