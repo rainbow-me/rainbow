@@ -306,7 +306,9 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: HeaderHeightWithStatusBar,
+            // See: src/components/profile/ProfileMasthead.js. <AvatarCircle />
+            // has marginTop: 10.
+            top: HeaderHeightWithStatusBar + (android ? 10 : 0),
           }}
         >
           <AvatarCircle overlayStyles />

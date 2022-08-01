@@ -105,7 +105,7 @@ const AvatarBuilder = ({ route: { params } }) => {
       <Column
         align="center"
         pointerEvents="box-none"
-        top={AvatarBuilderTopPoint}
+        top={AvatarBuilderTopPoint + (android ? 10 : 0)}
       >
         <Row justify="center" paddingBottom={16} paddingTop={15} width="100%">
           <ScrollableColorPicker
