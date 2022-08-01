@@ -8,6 +8,7 @@ import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
+import { AppState } from '@/redux/store';
 import {
   buildBriefWalletSectionsSelector,
   buildWalletSectionsSelector,
@@ -23,7 +24,9 @@ export default function useWalletSectionsData({
 
   const { language, network, nativeCurrency } = useAccountSettings();
   const sendableUniqueTokens = useSendableUniqueTokens();
-  const allUniqueTokens = useSelector(state => state.uniqueTokens.uniqueTokens);
+  const allUniqueTokens = useSelector(
+    (state: AppState) => state.uniqueTokens.uniqueTokens
+  );
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
 
