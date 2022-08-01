@@ -115,6 +115,7 @@ export default React.memo(function TransactionCoinRow({
         actionKey: label,
         actionTitle: label,
       })),
+      menuTitle: menu.title,
     }),
     [menu]
   );
