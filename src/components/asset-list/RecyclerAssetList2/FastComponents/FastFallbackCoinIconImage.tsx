@@ -69,13 +69,7 @@ export const FastFallbackCoinIconImage = React.memo(
     );
 
     return (
-      <View
-        style={[
-          sx.coinIconContainer,
-          isLoaded && sx.withShadow,
-          { shadowColor },
-        ]}
-      >
+      <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor }]}>
         {shouldShowImage && (
           <ImageWithCachedMetadata
             cache={ImgixImage.cacheControl.immutable}
