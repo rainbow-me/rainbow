@@ -335,7 +335,7 @@ const SettingsSection = ({
               </MenuItem.Selection>
             }
             size={60}
-            testID={`darkmode-section-${isDarkMode}`}
+            testID={`theme-section-${isDarkMode ? 'dark' : 'light'}`}
             titleComponent={<MenuItem.Title text={lang.t('settings.theme')} />}
           />
         </ContextMenuButton>

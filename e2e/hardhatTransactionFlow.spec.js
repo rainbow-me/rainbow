@@ -128,8 +128,10 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should toggle Dark Mode on and off', async () => {
-    await Helpers.waitAndTap('darkmode-section-false');
-    await Helpers.waitAndTap('darkmode-section-true');
+    await Helpers.waitAndTap('theme-section-light');
+    await Helpers.tapByText('Dark');
+    await Helpers.waitAndTap('theme-section-dark');
+    await Helpers.tapByText('Light');
   });
 
   it('Should navigate to Developer Settings after tapping Developer Section', async () => {
