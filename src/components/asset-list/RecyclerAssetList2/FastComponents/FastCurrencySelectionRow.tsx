@@ -6,12 +6,12 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 // @ts-ignore
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../../../animations';
 import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@rainbow-me/design-system';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { Network } from '@rainbow-me/helpers';
@@ -178,11 +178,7 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.fav}>
           {isInfoButtonVisible && (
             <ContextMenuButton
-              activeOpacity={0}
-              isMenuPrimaryAction
               onPressMenuItem={contextMenuProps.handlePressMenuItem}
-              useActionSheetFallback={false}
-              wrapNativeComponent={false}
               {...contextMenuProps}
               style={(showFavoriteButton || showAddButton) && sx.info}
             >
