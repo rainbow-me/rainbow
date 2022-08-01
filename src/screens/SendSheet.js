@@ -14,6 +14,7 @@ import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -41,6 +42,7 @@ import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import Network from '@rainbow-me/helpers/networkTypes';
 import {
   checkIsValidAddressOrDomain,
+  checkIsValidAddressOrDomainFormat,
   isENSAddressFormat,
 } from '@rainbow-me/helpers/validators';
 import {
@@ -152,6 +154,8 @@ export default function SendSheet(props) {
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+
+  const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState();
@@ -413,15 +417,17 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
-      let realAddress = recipient;
-      const isValid = await checkIsValidAddressOrDomain(recipient);
+      let realAddress = debouncedRecipient;
+      const isValid = await checkIsValidAddressOrDomain(debouncedRecipient);
       if (isValid) {
-        realAddress = await resolveNameOrAddress(recipient);
+        realAddress = await resolveNameOrAddress(debouncedRecipient);
+        setToAddress(realAddress);
+      } else {
+        setIsValidAddress(false);
       }
-      setToAddress(realAddress);
     };
-    recipient && resolveAddressIfNeeded();
-  }, [recipient]);
+    debouncedRecipient && resolveAddressIfNeeded();
+  }, [debouncedRecipient]);
 
   const updateTxFeeForOptimism = useCallback(
     async updatedGasLimit => {
@@ -642,7 +648,8 @@ export default function SendSheet(props) {
     if (
       isEmpty(gasFeeParamsBySpeed) ||
       !selectedGasFee ||
-      isEmpty(selectedGasFee?.gasFee)
+      isEmpty(selectedGasFee?.gasFee) ||
+      !toAddress
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -671,6 +678,7 @@ export default function SendSheet(props) {
     selectedGasFee,
     isSufficientGas,
     isValidGas,
+    toAddress,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -730,6 +738,8 @@ export default function SendSheet(props) {
 
   const onChangeInput = useCallback(
     text => {
+      setIsValidAddress();
+      setToAddress();
       setCurrentInput(text);
       setRecipient(text);
       setNickname(text);
@@ -755,8 +765,8 @@ export default function SendSheet(props) {
 
   const checkAddress = useCallback(async recipient => {
     if (recipient) {
-      const validAddress = await checkIsValidAddressOrDomain(recipient);
-      setIsValidAddress(validAddress);
+      const isValidFormat = await checkIsValidAddressOrDomainFormat(recipient);
+      setIsValidAddress(isValidFormat);
     }
   }, []);
 
@@ -788,8 +798,8 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
-    checkAddress(recipient);
-  }, [checkAddress, recipient]);
+    checkAddress(debouncedRecipient);
+  }, [checkAddress, debouncedRecipient]);
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
