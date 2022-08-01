@@ -8,7 +8,7 @@ import { AppState } from '@rainbow-me/redux/store';
 import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
 
 export default function useCollectible(
-  initialAsset: ParsedAddressAsset,
+  initialAsset: Partial<ParsedAddressAsset>,
   { revalidateInBackground = false } = {},
   externalAddress?: string
 ) {
@@ -46,7 +46,7 @@ export default function useCollectible(
     contractAddress: asset?.asset_contract?.address,
     enabled: revalidateInBackground && !isExternal,
     isExternal,
-    tokenId: asset?.id,
+    tokenId: asset?.id!,
   });
 
   return { ...asset, isExternal };

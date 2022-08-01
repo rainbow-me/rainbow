@@ -10,8 +10,8 @@ export const sortList = <T>(
   array.slice(0).sort((a, b) => {
     const isAscending = direction === 'asc';
 
-    let itemA: any = a;
-    let itemB: any = b;
+    let itemA: T | string = a;
+    let itemB: T | string = b;
 
     if (sortByKey) {
       itemA = get(a, sortByKey, defaultValue);
@@ -19,8 +19,8 @@ export const sortList = <T>(
     }
 
     if (isFunction(formatter)) {
-      itemA = formatter(itemA);
-      itemB = formatter(itemB);
+      itemA = formatter(itemA as T);
+      itemB = formatter(itemB as T);
     }
 
     if (isString(itemA) && isString(itemB)) {
