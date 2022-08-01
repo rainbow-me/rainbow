@@ -11,6 +11,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -153,74 +154,76 @@ export default function AddressRow({
 
   return (
     <View style={sx.accountRow}>
-      <ButtonPressAnimation
-        enableHapticFeedback={!editMode}
-        onLongPress={!watchOnly ? onOptionsPress : onPress}
-        onPress={editMode ? onOptionsPress : onPress}
-        scaleTo={editMode ? 1 : 0.98}
-      >
-        <Row align="center">
-          <Row align="center" flex={1} height={59}>
-            {accountImage ? (
-              <ImageAvatar
-                image={accountImage}
-                marginRight={10}
-                size="medium"
-              />
-            ) : (
-              <ContactAvatar
-                color={accountColor}
-                marginRight={10}
-                size="medium"
-                value={
-                  returnStringFirstEmoji(label) ||
-                  profileUtils.addressHashedEmoji(address) ||
-                  label ||
-                  ens
-                }
-              />
-            )}
-            <ColumnWithMargins margin={android ? -6 : 3}>
-              {cleanedUpLabel || ens ? (
-                <StyledTruncatedText color={colors.dark}>
-                  {cleanedUpLabel || ens}
-                </StyledTruncatedText>
+      <ContextMenuButton menuConfig={[]}>
+        <ButtonPressAnimation
+          enableHapticFeedback={!editMode}
+          onLongPress={!watchOnly ? onOptionsPress : onPress}
+          onPress={editMode ? onOptionsPress : onPress}
+          scaleTo={editMode ? 1 : 0.98}
+        >
+          <Row align="center">
+            <Row align="center" flex={1} height={59}>
+              {accountImage ? (
+                <ImageAvatar
+                  image={accountImage}
+                  marginRight={10}
+                  size="medium"
+                />
               ) : (
-                <TruncatedAddress
-                  address={address}
-                  color={colors.dark}
-                  firstSectionLength={6}
-                  size="smaller"
-                  style={sx.accountLabel}
-                  truncationLength={4}
-                  weight="medium"
+                <ContactAvatar
+                  color={accountColor}
+                  marginRight={10}
+                  size="medium"
+                  value={
+                    returnStringFirstEmoji(label) ||
+                    profileUtils.addressHashedEmoji(address) ||
+                    label ||
+                    ens
+                  }
                 />
               )}
-              <StyledBottomRowText
-                color={colors.alpha(colors.blueGreyDark, 0.5)}
-              >
-                {cleanedUpBalance || 0} ETH
-              </StyledBottomRowText>
-            </ColumnWithMargins>
+              <ColumnWithMargins margin={android ? -6 : 3}>
+                {cleanedUpLabel || ens ? (
+                  <StyledTruncatedText color={colors.dark}>
+                    {cleanedUpLabel || ens}
+                  </StyledTruncatedText>
+                ) : (
+                  <TruncatedAddress
+                    address={address}
+                    color={colors.dark}
+                    firstSectionLength={6}
+                    size="smaller"
+                    style={sx.accountLabel}
+                    truncationLength={4}
+                    weight="medium"
+                  />
+                )}
+                <StyledBottomRowText
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                >
+                  {cleanedUpBalance || 0} ETH
+                </StyledBottomRowText>
+              </ColumnWithMargins>
+            </Row>
+            <Column style={sx.rightContent}>
+              {isReadOnly && (
+                <LinearGradient
+                  {...linearGradientProps}
+                  marginRight={editMode || isSelected ? -9 : 19}
+                >
+                  <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+                    {lang.t('wallet.change_wallet.watching')}
+                  </ReadOnlyText>
+                </LinearGradient>
+              )}
+              {!editMode && isSelected && (
+                <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
+              )}
+              {editMode && <OptionsIcon onPress={NOOP} />}
+            </Column>
           </Row>
-          <Column style={sx.rightContent}>
-            {isReadOnly && (
-              <LinearGradient
-                {...linearGradientProps}
-                marginRight={editMode || isSelected ? -9 : 19}
-              >
-                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                  {lang.t('wallet.change_wallet.watching')}
-                </ReadOnlyText>
-              </LinearGradient>
-            )}
-            {!editMode && isSelected && (
-              <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
-            )}
-            {editMode && <OptionsIcon onPress={NOOP} />}
-          </Column>
-        </Row>
-      </ButtonPressAnimation>
+        </ButtonPressAnimation>
+      </ContextMenuButton>
     </View>
   );
 }

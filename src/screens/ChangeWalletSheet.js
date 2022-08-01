@@ -297,6 +297,38 @@ export default function ChangeWalletSheet() {
     ]
   );
 
+  // const getEditMenuItems = () => {
+  //   // If there's more than 1 account
+  //   // it's deletable
+  //   let isLastAvailableWallet = false;
+  //   for (let i = 0; i < Object.keys(wallets).length; i++) {
+  //     const key = Object.keys(wallets)[i];
+  //     const someWallet = wallets[key];
+  //     const otherAccount = someWallet.addresses.find(
+  //       account => account.visible && account.address !== address
+  //     );
+  //     if (otherAccount) {
+  //       isLastAvailableWallet = true;
+  //       break;
+  //     }
+  //   }
+
+  //   const buttons = [lang.t('wallet.action.edit')];
+  //   buttons.push(lang.t('wallet.action.delete'));
+  //   buttons.push(lang.t('button.cancel'));
+
+  //   const title = `${label || abbreviations.address(address, 4, 6)}`;
+
+  //   return {
+  //     title,
+  //     menuItems: buttons,
+  //   };
+  // };
+
+  // const getIOSRowPressCallback = () => {};
+
+  // const getAndroidItemPressCallback = () => {};
+
   const onEditWallet = useCallback(
     (walletId, address, label) => {
       // If there's more than 1 account
