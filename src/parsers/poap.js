@@ -35,11 +35,11 @@ export const parsePoaps = data => {
         'https://lh3.googleusercontent.com/FwLriCvKAMBBFHMxcjqvxjTlmROcDIabIFKRp87NS3u_QfSLxcNThgAzOJSbphgQqnyZ_v2fNgMZQkdCYHUliJwH-Q=s60',
       familyName: 'POAP',
       /**
-       * See also `parseAccountUniqueTokens`. We use "ethereum_" here because
-       * (1) we assume that POAPs are on mainnet and (2) we need to match
-       * the signature used on the web.
+       * See also `parseAccountUniqueTokens`. We use "xdai_" here to match the
+       * chain ID returned by the v2 API for POAPs (even though elsewhere in
+       * the app we use "mainnet" as the network for POAPs).
        */
-      fullUniqueId: `ethereum_0x22c1f6050e56d2876009903609a2cc3fef83b415_${event.id}`,
+      fullUniqueId: `xdai_0x22c1f6050e56d2876009903609a2cc3fef83b415_${event.id}`,
       id: event.id,
       image_original_url: event.image_url,
       image_url: imageToPng(event.image_url, 300),
