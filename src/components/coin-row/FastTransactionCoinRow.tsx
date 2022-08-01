@@ -93,6 +93,7 @@ export default React.memo(function TransactionCoinRow({
           <FastCoinIcon
             address={mainnetAddress || item.address}
             assetType={item.network}
+            mainnetAddress={mainnetAddress}
             symbol={item.symbol}
             theme={theme}
           />
