@@ -4,13 +4,13 @@ import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -32,7 +32,15 @@ import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
+const {
+  GAS_EMOJIS,
+  GAS_ICONS,
+  GasSpeedOrder,
+  CUSTOM,
+  URGENT,
+  NORMAL,
+  FAST,
+} = gasUtils;
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
   align: 'center',
@@ -361,7 +369,8 @@ const GasSpeedButton = ({
             )} Gwei`;
       return {
         actionKey: gasOption,
-        actionTitle: upperFirst(gasOption),
+        actionTitle:
+          (android ? `${GAS_EMOJIS[gasOption]}  ` : '') + upperFirst(gasOption),
         discoverabilityTitle: gweiDisplay,
         icon: {
           iconType: 'ASSET',
@@ -437,6 +446,7 @@ const GasSpeedButton = ({
       <ContextMenuButton
         activeOpacity={0}
         enableContextMenu
+        isAnchoredToRight
         menuConfig={menuConfig}
         {...(android ? { onPress: onPressAndroid } : {})}
         isMenuPrimaryAction
