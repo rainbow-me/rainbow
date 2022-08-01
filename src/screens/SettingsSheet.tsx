@@ -183,7 +183,7 @@ export default function SettingsSheet() {
       background="cardBackdrop"
       flexGrow={1}
       testID="settings-sheet"
-      {...(android && { borderTopRadius: 30 })}
+      {...(android && { borderTopRadius: 30, marginTop: { custom: 8 } })}
     >
       <Stack.Navigator
         // @ts-expect-error
