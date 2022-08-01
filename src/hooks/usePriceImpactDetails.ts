@@ -1,7 +1,9 @@
-import { Trade } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
+import { RainbowToken, SwappableAsset } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { useTheme } from '@rainbow-me/theme';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -13,6 +15,7 @@ import {
   isPositive,
   subtract,
 } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;
@@ -20,34 +23,72 @@ const SeverePriceImpactThreshold = 0.1;
 export default function usePriceImpactDetails(
   inputAmount: string | null,
   outputAmount: string | null,
-  tradeDetails: Trade | null
+  inputCurrency: SwappableAsset | null,
+  outputCurrency: SwappableAsset | null,
+  currentNetwork = Network.mainnet,
+  loading = false
 ) {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
-  const inputCurrencyAddress = useSelector(
-    (state: AppState) => state.swap.inputCurrency?.address
-  );
-  const outputCurrencyAddress = useSelector(
-    (state: AppState) => state.swap.outputCurrency?.address
-  );
+
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
   );
 
-  let inputPriceValue = genericAssets[inputCurrencyAddress]?.price?.value;
-  let outputPriceValue = genericAssets[outputCurrencyAddress]?.price?.value;
+  if (!inputCurrency || !outputCurrency) {
+    return {
+      inputPriceValue: 0,
+      isHighPriceImpact: false,
+      outputPriceValue: 0,
+    };
+  }
+
+  const inputTokenAddress = ethereumUtils.getMultichainAssetAddress(
+    inputCurrency as RainbowToken,
+    currentNetwork
+  );
+  const outputTokenAddress = ethereumUtils.getMultichainAssetAddress(
+    outputCurrency as RainbowToken,
+    currentNetwork
+  );
+
+  let inputPriceValue =
+    genericAssets[inputTokenAddress.toLowerCase()]?.price?.value;
+  let outputPriceValue =
+    genericAssets[outputTokenAddress.toLowerCase()]?.price?.value;
+
+  // Override WETH price to ETH price
+  if (inputTokenAddress?.toLowerCase() === WETH_ADDRESS) {
+    inputPriceValue = genericAssets[ETH_ADDRESS]?.price?.value;
+  } else if (outputTokenAddress?.toLowerCase() === WETH_ADDRESS) {
+    outputPriceValue = genericAssets[ETH_ADDRESS]?.price?.value;
+  }
+
+  if (
+    inputPriceValue === outputPriceValue ||
+    !inputPriceValue ||
+    !outputPriceValue
+  ) {
+    return {
+      inputPriceValue,
+      isHighPriceImpact: false,
+      outputPriceValue,
+    };
+  }
 
   let priceImpactNativeAmount = null;
   let impact = null;
   let priceImpactPercentDisplay = null;
+  let inputNativeAmount = null;
+  let outputNativeAmount = null;
   if (inputAmount && outputAmount) {
     if (inputPriceValue && outputPriceValue) {
-      const inputNativeAmount = convertAmountToNativeAmount(
+      inputNativeAmount = convertAmountToNativeAmount(
         inputAmount,
         inputPriceValue
       );
 
-      const outputNativeAmount = convertAmountAndPriceToNativeDisplay(
+      outputNativeAmount = convertAmountAndPriceToNativeDisplay(
         outputAmount,
         outputPriceValue,
         nativeCurrency
@@ -68,20 +109,17 @@ export default function usePriceImpactDetails(
           nativeCurrency
         );
       }
-    } else {
-      if (tradeDetails) {
-        impact = divide(tradeDetails.priceImpact.toFixed(), 100);
-        priceImpactPercentDisplay = convertAmountToPercentageDisplayWithThreshold(
-          impact
-        );
-      }
     }
   }
 
   const isHighPriceImpact =
-    !!impact && greaterThanOrEqualTo(impact, PriceImpactWarningThreshold);
+    !loading &&
+    !!impact &&
+    greaterThanOrEqualTo(impact, PriceImpactWarningThreshold);
   const isSeverePriceImpact =
-    !!impact && greaterThanOrEqualTo(impact, SeverePriceImpactThreshold);
+    !loading &&
+    !!impact &&
+    greaterThanOrEqualTo(impact, SeverePriceImpactThreshold);
 
   const priceImpactColor = isSeverePriceImpact
     ? colors.red
@@ -92,6 +130,7 @@ export default function usePriceImpactDetails(
   return {
     inputPriceValue,
     isHighPriceImpact,
+    isSeverePriceImpact,
     outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,

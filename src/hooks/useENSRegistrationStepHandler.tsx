@@ -1,9 +1,7 @@
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
+import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
 import { useENSRegistration } from '.';
@@ -149,7 +147,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
     let interval: NodeJS.Timer;
     if (registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) {
       interval = setInterval(() => {
-        setSecondsSinceCommitConfirmed(seconds => seconds + 1);
+        setSecondsSinceCommitConfirmed((seconds: any) => seconds + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
