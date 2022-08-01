@@ -95,6 +95,7 @@
     "@react-native-firebase/messaging": "14.7.0",
     "@react-native-firebase/remote-config": "14.7.0",
     "@react-native-masked-view/masked-view": "0.2.6",
+    "@react-native-menu/menu": "0.5.2",
     "@react-navigation/core": "5.12.5",
     "@react-navigation/material-top-tabs": "5.2.19",
     "@react-navigation/native": "5.7.6",
@@ -386,7 +387,8 @@
     "**/plist": "3.0.5",
     "**/minimist": "1.2.6",
     "react-native/react-devtools-core": "4.24.0",
-    "cross-fetch": "3.1.5"
+    "cross-fetch": "3.1.5",
+    "**/undici": "5.5.1"
   },
   "jest": {
     "preset": "react-native",
