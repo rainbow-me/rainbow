@@ -117,7 +117,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
+                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ 'github.event.pull_request.title' }}\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
                   }
                 },
                 {
