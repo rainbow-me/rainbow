@@ -52,7 +52,7 @@ index 978d5e6..4ebfbc2 100644
 +}
 +
 diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
-index 1cec798..c38522b 100644
+index 1cec798..5e87989 100644
 --- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
 +++ b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
 @@ -16,6 +16,9 @@ import java.lang.reflect.Field
@@ -97,11 +97,12 @@ index 1cec798..c38522b 100644
      if (imageName != null) {
        val resourceId: Int = getDrawableIdWithName(imageName)
        if (resourceId != 0) {
-@@ -230,6 +244,8 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+@@ -229,7 +243,9 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+         mIsMenuDisplayed = false
        }
        mIsMenuDisplayed = true
-       mPopupMenu.show()
 +      shownModal?.dismiss()
+       mPopupMenu.show()
 +      shownModal = mPopupMenu
      }
    }
