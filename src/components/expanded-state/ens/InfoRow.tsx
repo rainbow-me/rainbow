@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
@@ -93,6 +93,14 @@ export default function InfoRow({
     navigate(Routes.EXPLAIN_SHEET, { type: explainSheetType });
   }, [explainSheetType, navigate]);
 
+  const explainer = explainSheetType ? (
+    <ButtonPressAnimation onPress={handlePressExplain}>
+      <Text color="secondary25" size="16px" weight="bold">
+        􀅵
+      </Text>
+    </ButtonPressAnimation>
+  ) : null;
+
   return (
     <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
       <Box style={{ minWidth: 60, opacity: show ? 1 : 0 }}>
@@ -100,14 +108,9 @@ export default function InfoRow({
           <Inline space="4px">
             <Text color="secondary60" size="16px" weight="bold">
               {label}
+              {android && <Fragment> {explainer}</Fragment>}
             </Text>
-            {explainSheetType && (
-              <ButtonPressAnimation onPress={handlePressExplain}>
-                <Text color="secondary25" size="16px" weight="bold">
-                  􀅵
-                </Text>
-              </ButtonPressAnimation>
-            )}
+            {ios && explainer}
           </Inline>
         </Inset>
       </Box>
