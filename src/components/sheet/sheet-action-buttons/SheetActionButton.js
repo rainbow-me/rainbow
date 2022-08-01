@@ -139,6 +139,10 @@ const SheetActionButton = ({
         {icon && <Icon color="white" height={18} name={icon} size={18} />}
         {label ? (
           <Text
+            // This is a random change to workaround Android text layout adding
+            // totally unpredictable line breaks (although interestingly
+            // consistent between different phone models).
+            adjustsFontSizeToFit={android}
             align="center"
             color={textColor}
             numberOfLines={truncate ? 1 : undefined}
