@@ -287,13 +287,14 @@ export default function ExchangeModal({
     type,
   });
 
-  const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
-
-  const defaultGasLimit = isDeposit
-    ? ethUnits.basic_deposit
-    : isWithdrawal
-    ? ethUnits.basic_withdrawal
-    : basicSwap;
+  const defaultGasLimit = useMemo(() => {
+    const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
+    return isDeposit
+      ? ethUnits.basic_deposit
+      : isWithdrawal
+      ? ethUnits.basic_withdrawal
+      : basicSwap;
+  }, [chainId, isDeposit, isWithdrawal]);
 
   const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
