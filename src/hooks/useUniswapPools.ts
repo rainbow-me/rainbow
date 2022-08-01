@@ -280,9 +280,7 @@ export default function useUniswapPools(
             };
 
       pair.tokens = [token0, token1];
-
       tmpAllTokens.push(pair.tokens[0]?.id?.toLowerCase());
-
       tmpAllTokens.push(pair.tokens[1]?.id?.toLowerCase());
       const pairAdjustedForCurrency = {
         ...pair,
