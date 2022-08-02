@@ -9,7 +9,7 @@ import { Network } from '@rainbow-me/helpers';
  */
 export const parsePoaps = data => {
   const poaps = data?.data ?? null;
-  return poaps.map(({ event }) => {
+  return poaps.map(({ event, chain }) => {
     return {
       animation_url: event.image_url,
       asset_contract: {
@@ -35,11 +35,11 @@ export const parsePoaps = data => {
         'https://lh3.googleusercontent.com/FwLriCvKAMBBFHMxcjqvxjTlmROcDIabIFKRp87NS3u_QfSLxcNThgAzOJSbphgQqnyZ_v2fNgMZQkdCYHUliJwH-Q=s60',
       familyName: 'POAP',
       /**
-       * See also `parseAccountUniqueTokens`. We use "xdai_" here to match the
-       * chain ID returned by the v2 API for POAPs (even though elsewhere in
-       * the app we use "mainnet" as the network for POAPs).
+       * See also `parseAccountUniqueTokens`. We want `chain` here to match the
+       * response from the POAP API so that it will match up with what we fetch
+       * on the web.
        */
-      fullUniqueId: `xdai_0x22c1f6050e56d2876009903609a2cc3fef83b415_${event.id}`,
+      fullUniqueId: `${chain}_0x22c1f6050e56d2876009903609a2cc3fef83b415_${event.id}`,
       id: event.id,
       image_original_url: event.image_url,
       image_url: imageToPng(event.image_url, 300),
