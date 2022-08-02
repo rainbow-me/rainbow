@@ -41,12 +41,13 @@ const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
 export default function ExchangeDetailsRow({
   isHighPriceImpact,
   onFlipCurrencies,
-  onPressViewDetails,
+  onPressSettings,
+  onPressImpactWarning,
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
-  showDetailsButton,
   type,
+  flipDisabled,
   ...props
 }) {
   const detailsRowOpacity = useSharedValue(1);
@@ -107,7 +108,7 @@ export default function ExchangeDetailsRow({
     <Container {...props}>
       <PriceImpactWarning
         isHighPriceImpact={isHighPriceImpact}
-        onPress={onPressViewDetails}
+        onPress={onPressImpactWarning}
         pointerEvents={isHighPriceImpact ? 'auto' : 'none'}
         priceImpactColor={priceImpactColor}
         priceImpactNativeAmount={priceImpactNativeAmount}
@@ -119,17 +120,17 @@ export default function ExchangeDetailsRow({
         style={detailsRowAnimatedStyle}
       >
         <ExchangeDetailsButton
+          disabled={flipDisabled}
           onPress={onFlipCurrencies}
           testID="exchange-flip-button"
         >
           􀄬 {lang.t('exchange.flip')}
         </ExchangeDetailsButton>
         <ExchangeDetailsButton
-          disabled={!showDetailsButton}
-          onPress={onPressViewDetails}
-          testID="exchange-details-button"
+          onPress={onPressSettings}
+          testID="exchange-settings-button"
         >
-          􀕹 {lang.t('exchange.view_details')}
+          􀣋 {lang.t('exchange.settings')}
         </ExchangeDetailsButton>
       </AnimatedExchangeDetailsButtonRow>
     </Container>

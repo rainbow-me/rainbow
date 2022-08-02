@@ -154,6 +154,7 @@ const SavingsListRow = ({
       onPress={onButtonPress}
       overflowMargin={10}
       scaleTo={0.96}
+      testID={`savings-list-row-${underlying?.symbol}`}
     >
       <Centered direction="column" marginBottom={15}>
         <SavingsListRowShadowStack deviceWidth={deviceWidth}>

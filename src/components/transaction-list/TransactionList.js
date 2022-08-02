@@ -162,7 +162,7 @@ export default function TransactionList({
         contactColor = getRandomColor();
       }
 
-      const isOutgoing = from.toLowerCase() === accountAddress?.toLowerCase();
+      const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
       const canBeResubmitted = isOutgoing && !minedAt;
       const canBeCancelled =
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;

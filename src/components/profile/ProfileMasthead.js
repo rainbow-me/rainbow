@@ -99,7 +99,11 @@ export default function ProfileMasthead({
     accountImage,
   } = useAccountProfile();
 
-  const { onAvatarPress } = useOnAvatarPress();
+  const {
+    onAvatarPress,
+    avatarActionSheetOptions,
+    onSelectionCallback,
+  } = useOnAvatarPress();
 
   const handlePressAvatar = useCallback(() => {
     recyclerListRef?.scrollToTop(true);
@@ -167,7 +171,9 @@ export default function ProfileMasthead({
         accountSymbol={accountSymbol}
         image={accountImage}
         isAvatarPickerAvailable
+        menuOptions={avatarActionSheetOptions}
         onPress={handlePressAvatar}
+        onSelectionCallback={onSelectionCallback}
         style={android && { marginTop: 10 }}
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>

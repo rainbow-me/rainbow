@@ -94,10 +94,16 @@ const Shadow = styled(Reanimated.View)(
     ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
     borderRadius: 30,
     height: 60,
-    left: -3,
     position: 'absolute',
-    top: -3,
     width: 236,
+    ...(ios
+      ? {
+          left: -3,
+          top: -3,
+        }
+      : {
+          elevation: 30,
+        }),
   })
 );
 
@@ -124,12 +130,13 @@ const RainbowButton = ({
   return (
     <ButtonPressAnimation
       onPress={onPress}
+      overflowMargin={40}
       radiusAndroid={height / 2}
       scaleTo={0.9}
       {...props}
     >
       {ios && <DarkShadow style={darkShadowStyle} />}
-      {ios && <Shadow style={shadowStyle} />}
+      <Shadow style={shadowStyle} />
       <ButtonContainer height={height} style={style}>
         <ButtonContent>
           <ButtonEmoji name={emoji} />

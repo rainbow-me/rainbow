@@ -54,7 +54,7 @@ function logDirectly(
     analytics.track(metric, {
       durationInMs,
       performanceTrackingVersion,
-      ...additionalParams,
+      ...additionalParams, // wondering if we need to protect ourselves here
     });
   }
 }

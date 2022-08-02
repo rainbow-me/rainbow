@@ -102,9 +102,8 @@ export default function useENSRegistrationForm({
     // populate with that.
     if (!isEmpty(defaultRecords)) {
       setSelectedFields(
-        // @ts-ignore
         Object.keys(defaultRecords)
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           .map(key => textRecordFields[key])
           .filter(Boolean)
       );

@@ -38,7 +38,7 @@ import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)({});
-const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
+const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
 const PanelRow = styled(Row).attrs({
   alignItems: 'center',
@@ -132,7 +132,9 @@ export default function FeesPanel({
   const { navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
 
-  const { params: { type, focusTo } = {} } = useRoute();
+  const {
+    params: { type, focusTo, flashbotTransaction = false } = {},
+  } = useRoute();
 
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
@@ -296,6 +298,12 @@ export default function FeesPanel({
         gweiToWei(newGweiMaxPriorityFeePerGas)
       );
 
+      if (
+        flashbotTransaction &&
+        greaterThan(FLASHBOTS_MIN_TIP, newMaxPriorityFeePerGas.gwei)
+      )
+        return;
+
       if (greaterThan(0, newMaxPriorityFeePerGas.amount)) return;
 
       setCustomFees({
@@ -310,6 +318,7 @@ export default function FeesPanel({
       updateToCustomGasFee(newGasParams);
     },
     [
+      flashbotTransaction,
       minerTipFieldRef,
       selectedGasFee.gasFeeParams,
       setLastFocusedInputHandle,
@@ -774,6 +783,7 @@ export default function FeesPanel({
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
+            editable={!flashbotTransaction}
             inputRef={minerTipFieldRef}
             minusAction={substMinerTip}
             onChange={onMinerTipChange}

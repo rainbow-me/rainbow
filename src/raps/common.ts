@@ -1,8 +1,9 @@
+import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
+import { Quote } from '@rainbow-me/swaps';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { Trade } from '@uniswap/sdk';
 import {
   depositCompound,
   ens,
@@ -65,7 +66,11 @@ export interface RapExchangeActionParameters {
   contractAddress?: string;
   inputAmount?: string | null;
   outputAmount?: string | null;
-  tradeDetails?: Trade;
+  tradeDetails?: Quote;
+  permit?: boolean;
+  flashbots?: boolean;
+  chainId?: number;
+  requiresApprove?: boolean;
 }
 
 export interface RapENSActionParameters {
@@ -81,13 +86,19 @@ export interface UnlockActionParameters {
   amount: string;
   assetToUnlock: Asset;
   contractAddress: string;
+  chainId: number;
 }
 
 export interface SwapActionParameters {
   inputAmount: string;
   nonce: number;
   outputAmount: string;
-  tradeDetails: Trade;
+  tradeDetails: Quote;
+  permit?: boolean;
+  flashbots?: boolean;
+  provider: Provider;
+  chainId?: number;
+  requiresApprove?: boolean;
 }
 
 export interface ENSActionParameters {
@@ -329,6 +340,7 @@ const executeAction = async (
       return { baseNonce: nonce, errorMessage: null };
     }
   } catch (error: any) {
+    logger.debug('Rap blew up', error);
     logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
     analytics.track('Rap failed', {

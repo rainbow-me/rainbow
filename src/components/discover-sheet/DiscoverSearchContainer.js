@@ -12,9 +12,9 @@ import React, {
   useState,
 } from 'react';
 import { ButtonPressAnimation } from '../animations';
-import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
+import DiscoverSearchInput from './DiscoverSearchInput';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
@@ -140,7 +140,7 @@ export default forwardRef(function DiscoverSearchContainer(
     <>
       <Row>
         <Column flex={1} marginTop={19}>
-          <ExchangeSearch
+          <DiscoverSearchInput
             clearTextOnFocus={false}
             isDiscover
             isFetching={isFetchingEns}

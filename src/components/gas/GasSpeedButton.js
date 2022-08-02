@@ -86,8 +86,8 @@ const Container = styled(Column).attrs({
   alignItems: 'center',
   hapticType: 'impactHeavy',
   justifyContent: 'center',
-})(({ marginBottom, horizontalPadding }) => ({
-  ...margin.object(18, 0, marginBottom),
+})(({ marginBottom, marginTop, horizontalPadding }) => ({
+  ...margin.object(marginTop, 0, marginBottom),
   ...padding.object(0, horizontalPadding),
   width: '100%',
 }));
@@ -125,16 +125,17 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 
 const GasSpeedButton = ({
   asset,
-  bottom = 0,
   currentNetwork,
   horizontalPadding = 19,
   marginBottom = 20,
+  marginTop = 18,
   speeds = null,
   showGasOptions = false,
   testID,
   theme = 'dark',
   canGoBack = true,
   validateGasParams,
+  flashbotTransaction = false,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -212,6 +213,7 @@ const GasSpeedButton = ({
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
+      flashbotTransaction,
       focusTo: shouldOpenCustomGasSheet.focusTo,
       openCustomOptions: focusTo => openCustomOptionsRef.current(focusTo),
       speeds: speeds ?? GasSpeedOrder,
@@ -222,6 +224,7 @@ const GasSpeedButton = ({
     navigate,
     asset,
     shouldOpenCustomGasSheet.focusTo,
+    flashbotTransaction,
     speeds,
   ]);
 
@@ -283,7 +286,7 @@ const GasSpeedButton = ({
   );
 
   const formatTransactionTime = useCallback(() => {
-    if (!gasPriceReady) return '';
+    if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
       ' '
     );
@@ -291,14 +294,14 @@ const GasSpeedButton = ({
     const time = parseFloat(estimatedTimeValue).toFixed(0);
 
     let timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
-    if (time === '0' && estimatedTimeUnit === 'min') {
+    if (!estimatedTime || (time === '0' && estimatedTimeUnit === 'min')) {
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
 
   const openGasHelper = useCallback(() => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     const network = currentNetwork ?? networkTypes.mainnet;
     const networkName = networkInfo[network].name;
     navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
@@ -379,7 +382,7 @@ const GasSpeedButton = ({
   ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
-    speedOptions,
+    speedOptions.length,
   ]);
 
   const onDonePress = useCallback(() => {
@@ -410,6 +413,7 @@ const GasSpeedButton = ({
 
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
+    const label = selectedGasFeeOption ?? NORMAL;
     const pager = (
       <GasSpeedLabelPager
         colorForAsset={
@@ -422,7 +426,7 @@ const GasSpeedButton = ({
         }
         currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
-        label={selectedGasFeeOption ?? NORMAL}
+        label={label}
         showGasOptions={showGasOptions}
         showPager
         theme={theme}
@@ -486,9 +490,9 @@ const GasSpeedButton = ({
 
   return (
     <Container
-      bottom={bottom}
       horizontalPadding={horizontalPadding}
       marginBottom={marginBottom}
+      marginTop={marginTop}
       testID={testID}
     >
       <Row justify="space-between">
@@ -554,6 +558,7 @@ const GasSpeedButton = ({
           <GasSpeedPagerCentered testID="gas-speed-pager">
             {renderGasSpeedPager}
           </GasSpeedPagerCentered>
+
           <Centered>
             {isL2 ? (
               <ChainBadgeContainer>
@@ -578,7 +583,7 @@ const GasSpeedButton = ({
                         )
                   }
                 >
-                  {lang.t('button.done')}
+                  Done
                 </DoneCustomGas>
               </CustomGasButton>
             ) : (
