@@ -4,8 +4,6 @@
 <dict>
 	<key>RCTAsyncStorageExcludeFromBackup</key>
 	<false/>
-	<key>CodePushDeploymentKey</key>
-	<string>$(CODE_PUSH_DEPLOYMENT_KEY_IOS)</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
