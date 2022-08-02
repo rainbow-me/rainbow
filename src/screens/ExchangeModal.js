@@ -33,9 +33,9 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
-import { analytics } from '@rainbow-me/analytics';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
+import { analytics } from '@rainbow-me/analytics';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
