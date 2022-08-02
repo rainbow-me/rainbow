@@ -25,7 +25,7 @@ export default function IntroMarquee() {
     (ensName: string) => {
       const data = queryClient.getQueryData<
         ReturnType<typeof useENSRecords>['data']
-      >(ensRecordsQueryKey(ensName));
+      >(ensRecordsQueryKey({ name: ensName }));
       const description = data?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,

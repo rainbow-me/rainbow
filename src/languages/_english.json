@@ -303,6 +303,30 @@
       "sync_codepush": "Sync codepush, current: %{codePushVersion}"
     },
     "discover": {
+      "dpi": {
+        "title": "DeFi Pulse Index",
+        "body": "All the top decentralized finance tokens in one. Track the industry.",
+        "view": "View"
+      },
+      "ens_create_profile": {
+        "title": "Create your ENS profile",
+        "body": "Replace your wallet address with a profile owned entirely by you."
+      },
+      "ens_search": {
+        "mini_title": "ENS",
+        "title_part_1": "Register a ",
+        "title_part_2": ".eth name"
+      },
+      "gas": {
+        "average": "Average",
+        "gwei": "Gwei",
+        "high": "High",
+        "loading": "Loading…",
+        "low": "Low",
+        "network_fees": "Network fees",
+        "surging": "Surging",
+        "very_low": "Very low"
+      },
       "lists": {
         "lists_title": "Lists",
         "this_list_is_empty": "This list is empty!"
@@ -1418,10 +1442,14 @@
           "transaction_status": "Failed to send transaction status"
         },
         "checkboxes": {
+          "clear_profile_information": "Clear profile information",
+          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "transfer_control": "Transfer control to the recipient",
           "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
           "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
         },
         "complete_checks": "Complete checks",
+        "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",
         "placeholder_title": "Placeholder",

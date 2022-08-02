@@ -284,6 +284,7 @@ export default function useENSRegistrationCosts({
       [REGISTRATION_STEPS.EDIT]: setRecordsGasLimit,
       [REGISTRATION_STEPS.REGISTER]: registerRapGasLimit,
       [REGISTRATION_STEPS.SET_NAME]: setNameGasLimit,
+      [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),

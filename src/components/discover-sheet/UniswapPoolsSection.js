@@ -118,6 +118,7 @@ export default function UniswapPools({
   token,
   hideIfEmpty,
   initialPageAmount = INITIAL_PAGE_AMOUNT,
+  marginTop,
   ShowMoreButton = DefaultShowMoreButton,
   forceShowAll,
   alwaysShowMoreButton,
@@ -306,7 +307,7 @@ export default function UniswapPools({
   }
 
   return (
-    <Column marginTop={32}>
+    <Column marginTop={marginTop}>
       <Row marginBottom={12} paddingHorizontal={19}>
         <PoolEmoji>🐋</PoolEmoji>
         <Text size="larger" testID="pools-section" weight="heavy">

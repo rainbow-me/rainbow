@@ -154,6 +154,7 @@ const PulseIndex = () => {
       </ButtonPressAnimation>
       <ButtonPressAnimation
         flex={1}
+        marginTop={android ? 4 : 8}
         onPress={handlePress}
         scaleTo={0.92}
         style={{
