@@ -92,7 +92,7 @@ export default function UnderlyingAsset({
             height={30}
             marginLeft={6}
           >
-            <Column height={16} marginTop={ios ? 8 : 3} width={columnWidth}>
+            <Column height={16} marginTop={ios ? 3 : 8} width={columnWidth}>
               <ShadowStack
                 backgroundColor={colorFromAsset}
                 borderRadius={8}
