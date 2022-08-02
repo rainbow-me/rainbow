@@ -55,7 +55,7 @@ export enum Field {
 const MAX_GAS_LIMIT = 460000;
 const GAS_LIMIT_INCREMENT = 50000;
 const EXTRA_GAS_PADDING = 1.5;
-const SWAP_GAS_PADDING = 1.05;
+const SWAP_GAS_PADDING = 1.1;
 const CHAIN_IDS_WITH_TRACE_SUPPORT = [ChainId.mainnet];
 
 export const getDefaultGasLimitForTrade = (
