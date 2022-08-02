@@ -43,8 +43,10 @@ export default function useWalletSectionsData({
 
   const { isCoinListEdited } = useCoinListEdited();
 
+  const isImage = (uniqueToken: any) => !uniqueToken.animation_url;
+
   const uniqueImageTokens = useMemo(
-    () => allUniqueTokens.filter(uniqueToken => !uniqueToken.animation_url),
+    () => allUniqueTokens.filter((uniqueToken: any) => isImage(uniqueToken)),
     [allUniqueTokens]
   );
 
