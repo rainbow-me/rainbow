@@ -54,10 +54,7 @@ export default function UnderlyingAsset({
 
   const colorFromAsset = useColorForAsset(asset, color);
 
-  const columnWidth = useMemo(() => {
-    if (percentageAllocation < 2) return 4;
-    return percentageAllocation * 2;
-  }, [percentageAllocation]);
+  const columnWidth = Math.max(3, percentageAllocation * 2);
 
   return (
     <Row
@@ -95,7 +92,7 @@ export default function UnderlyingAsset({
             height={30}
             marginLeft={6}
           >
-            <Column height={16} marginTop={android ? 8 : 3} width={columnWidth}>
+            <Column height={16} marginTop={ios ? 8 : 3} width={columnWidth}>
               <ShadowStack
                 backgroundColor={colorFromAsset}
                 borderRadius={8}
