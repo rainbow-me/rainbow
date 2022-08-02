@@ -10,6 +10,28 @@ index 52aea34..e6cda4f 100644
 +    implementation 'com.facebook.react:react-native:+'
  }
    
+diff --git a/node_modules/react-native-radial-gradient/android/src/main/java/com/surajit/rnrg/GradientView.java b/node_modules/react-native-radial-gradient/android/src/main/java/com/surajit/rnrg/GradientView.java
+index ae1b121..889e43f 100644
+--- a/node_modules/react-native-radial-gradient/android/src/main/java/com/surajit/rnrg/GradientView.java
++++ b/node_modules/react-native-radial-gradient/android/src/main/java/com/surajit/rnrg/GradientView.java
+@@ -7,15 +7,14 @@ import android.graphics.Paint;
+ import android.graphics.RadialGradient;
+ import android.graphics.RectF;
+ import android.graphics.Shader;
+-import android.support.annotation.Nullable;
+-import android.support.v4.graphics.ColorUtils;
++import androidx.annotation.Nullable;
++import androidx.core.graphics.ColorUtils;
+ import android.util.AttributeSet;
+ import android.view.View;
+ 
+ import com.facebook.react.bridge.ReadableArray;
+ import com.facebook.react.uimanager.PixelUtil;
+ 
+-import java.text.DecimalFormat;
+ 
+ /**
+  * Created by Surajit Sarkar on 22/12/17.
 diff --git a/node_modules/react-native-radial-gradient/index.js b/node_modules/react-native-radial-gradient/index.js
 index 88990e0..215b8aa 100644
 --- a/node_modules/react-native-radial-gradient/index.js
