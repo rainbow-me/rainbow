@@ -165,7 +165,21 @@ export default function AddressRow({
     return getOnMenuItemPress(walletId, address);
   }, [address, getOnMenuItemPress, walletId]);
 
-  const showIOSMenu = () => {
+  const handlePressMenuItem = useCallback(
+    e => {
+      if (!android) {
+        return;
+      }
+
+      const buttonIndex = menuConfig.menuItems.findIndex(
+        item => item.actionKey === e.nativeEvent.actionKey
+      );
+      onMenuItemPress(buttonIndex);
+    },
+    [menuConfig, onMenuItemPress]
+  );
+
+  const showIOSMenu = useCallback(() => {
     if (!ios) {
       return;
     }
@@ -179,7 +193,7 @@ export default function AddressRow({
       },
       onMenuItemPress
     );
-  };
+  }, [menuConfig, onMenuItemPress]);
 
   const content = (
     <Row align="center">
@@ -243,21 +257,12 @@ export default function AddressRow({
     return (
       <View style={sx.accountRow}>
         <ContextMenuButton
-          handlePressMenuItem={e => {
-            if (!android) {
-              return;
-            }
-
-            const buttonIndex = menuConfig.menuItems.findIndex(
-              item => item.actionKey === e.nativeEvent.actionKey
-            );
-            onMenuItemPress(buttonIndex);
-          }}
+          handlePressMenuItem={handlePressMenuItem}
           menuConfig={editMode ? menuConfig : emptyMenu}
         >
           <ButtonPressAnimation
             enableHapticFeedback={!editMode}
-            onPress={!editMode && onPress}
+            onPress={editMode ? NOOP : onPress}
             scaleTo={editMode ? 1 : 0.98}
           >
             {content}
