@@ -98,6 +98,7 @@ export default function TokenIndexExpandedState({ asset }) {
 
       return {
         ...formatItem(assetWithPrice, nativeCurrencySymbol),
+        asset: assetWithPrice,
         color: assetWithPrice.color,
         percentageAllocation,
         pricePerUnitFormatted,
@@ -223,10 +224,15 @@ export default function TokenIndexExpandedState({ asset }) {
             </Text>
           </Column>
         </Row>
-        <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
+        <Column marginBottom={55} marginLeft={19} marginTop={12}>
           {underlying?.length
             ? underlying.map(item => (
-                <UnderlyingAsset {...item} changeVisible key={item.address} />
+                <UnderlyingAsset
+                  {...item}
+                  changeVisible
+                  key={item.address}
+                  marginRight={19}
+                />
               ))
             : times(3, index => (
                 <AssetListItemSkeleton
@@ -234,6 +240,7 @@ export default function TokenIndexExpandedState({ asset }) {
                   descendingOpacity
                   ignorePaddingHorizontal
                   key={`underlying-assets-skeleton-${index}`}
+                  paddingRight={19}
                 />
               ))}
         </Column>
