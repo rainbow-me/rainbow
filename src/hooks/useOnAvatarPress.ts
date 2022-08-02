@@ -125,29 +125,10 @@ export default () => {
 
   const { startRegistration } = useENSRegistration();
 
-  const onAvatarPress = useCallback(() => {
-    const isENSProfile = profilesEnabled && profileEnabled && isOwner;
+  const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
-    const avatarActionSheetOptions = (isENSProfile
-      ? [
-          lang.t('profiles.profile_avatar.view_profile'),
-          (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
-            lang.t('profiles.profile_avatar.edit_profile'),
-        ]
-      : [
-          lang.t('profiles.profile_avatar.choose_from_library'),
-          !accountImage
-            ? lang.t('profiles.profile_avatar.pick_emoji')
-            : lang.t('profiles.profile_avatar.remove_photo'),
-          profilesEnabled &&
-            (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
-            lang.t('profiles.profile_avatar.create_profile'),
-        ]
-    )
-      .filter(option => Boolean(option))
-      .concat(ios ? ['Cancel'] : []);
-
-    const callback = async (buttonIndex: Number) => {
+  const callback = useCallback(
+    async (buttonIndex: Number) => {
       if (isENSProfile) {
         if (buttonIndex === 0) {
           analytics.track('Viewed ENS profile', {
@@ -185,7 +166,47 @@ export default () => {
           onAvatarCreateProfile();
         }
       }
-    };
+    },
+    [
+      accountENS,
+      accountImage,
+      isENSProfile,
+      isReadOnlyWallet,
+      navigate,
+      onAvatarChooseImage,
+      onAvatarCreateProfile,
+      onAvatarPickEmoji,
+      onAvatarRemovePhoto,
+      profilesEnabled,
+      startRegistration,
+    ]
+  );
+
+  const avatarActionSheetOptions = useMemo(
+    () =>
+      (isENSProfile
+        ? [
+            lang.t('profiles.profile_avatar.view_profile'),
+            (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+              lang.t('profiles.profile_avatar.edit_profile'),
+          ]
+        : [
+            lang.t('profiles.profile_avatar.choose_from_library'),
+            !accountImage
+              ? lang.t('profiles.profile_avatar.pick_emoji')
+              : lang.t('profiles.profile_avatar.remove_photo'),
+            profilesEnabled &&
+              (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+              lang.t('profiles.profile_avatar.create_profile'),
+          ]
+      )
+        .filter(option => Boolean(option))
+        .concat(ios ? ['Cancel'] : []),
+    [accountImage, isENSProfile, isReadOnlyWallet, profilesEnabled]
+  );
+
+  const onAvatarPress = useCallback(() => {
+    if (profileEnabled) return;
 
     showActionSheetWithOptions(
       {
@@ -199,18 +220,12 @@ export default () => {
       (buttonIndex: Number) => callback(buttonIndex)
     );
   }, [
-    profilesEnabled,
     profileEnabled,
-    isOwner,
-    isReadOnlyWallet,
+    isENSProfile,
+    avatarActionSheetOptions,
     accountImage,
-    accountENS,
-    navigate,
-    startRegistration,
-    onAvatarChooseImage,
-    onAvatarPickEmoji,
-    onAvatarCreateProfile,
-    onAvatarRemovePhoto,
+    profilesEnabled,
+    callback,
   ]);
 
   const avatarOptions = useMemo(
@@ -248,6 +263,7 @@ export default () => {
   );
 
   return {
+    avatarActionSheetOptions,
     avatarOptions,
     onAvatarChooseImage,
     onAvatarCreateProfile,
@@ -255,5 +271,6 @@ export default () => {
     onAvatarPress,
     onAvatarRemovePhoto,
     onAvatarWebProfile,
+    onSelectionCallback: callback,
   };
 };

@@ -9,6 +9,8 @@ import {
 } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
+const emojiSpacing = ios ? '' : '  ';
+
 export default function ChartContextButton({ asset, color }) {
   const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
 
@@ -51,12 +53,12 @@ export default function ChartContextButton({ asset, color }) {
 
   const options = useMemo(
     () => [
-      `📌️ ${
+      `📌️ ${emojiSpacing}${
         currentAction === EditAction.unpin
           ? lang.t('wallet.action.unpin')
           : lang.t('wallet.action.pin')
       }`,
-      `🙈️ ${
+      `🙈️ ${emojiSpacing}${
         currentAction === EditAction.unhide
           ? lang.t('wallet.action.unhide')
           : lang.t('wallet.action.hide')
@@ -64,7 +66,7 @@ export default function ChartContextButton({ asset, color }) {
       ...(asset?.isNativeAsset
         ? []
         : [
-            `🔍 ${lang.t('wallet.action.view_on', {
+            `🔍 ${emojiSpacing}${lang.t('wallet.action.view_on', {
               blockExplorerName: startCase(
                 ethereumUtils.getBlockExplorer(asset?.type)
               ),
