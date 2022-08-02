@@ -51,6 +51,7 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
+  useAccountProfile,
   useDimensions,
   useENSModifiedRegistration,
   useENSRecords,
@@ -250,9 +251,10 @@ export function ENSAssignRecordsBottomActions({
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
+  const { accountENS } = useAccountProfile();
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const { mode } = useENSRegistration();
+  const { mode, name } = useENSRegistration();
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
@@ -291,11 +293,13 @@ export function ENSAssignRecordsBottomActions({
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         longFormHeight:
           mode === REGISTRATION_MODES.EDIT
-            ? ENSConfirmUpdateSheetHeight
+            ? ENSConfirmUpdateSheetHeight +
+              (accountENS !== name ? 50 : 0) +
+              (values.avatar ? 70 : 0)
             : ENSConfirmRegisterSheetHeight + (values.avatar ? 70 : 0),
       });
     });
-  }, [mode, navigate, submit, values.avatar]);
+  }, [accountENS, mode, name, navigate, submit, values.avatar]);
 
   const navigateToAdditionalRecords = useCallback(() => {
     android && Keyboard.dismiss();

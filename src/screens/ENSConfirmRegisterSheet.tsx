@@ -53,7 +53,7 @@ import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
-export const ENSConfirmUpdateSheetHeight = 400;
+export const ENSConfirmUpdateSheetHeight = 290;
 const avatarSize = 60;
 
 function TransactionActionRow({

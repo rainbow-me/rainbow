@@ -2,7 +2,14 @@ import lang from 'i18n-js';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { Inline, Inset, Row, Rows, Text } from '@rainbow-me/design-system';
+import {
+  Divider,
+  Inline,
+  Inset,
+  Row,
+  Rows,
+  Text,
+} from '@rainbow-me/design-system';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
@@ -23,11 +30,19 @@ const EditContent = ({
     navigate(Routes.EXPLAIN_SHEET, { type: 'ens_primary_name' });
   };
 
-  if (!showReverseRecordSwitch) return null;
+  if (!showReverseRecordSwitch)
+    return (
+      <Rows alignVertical="bottom">
+        <Row height="content">
+          <Divider />
+        </Row>
+      </Rows>
+    );
   return (
     <Rows alignVertical="bottom">
       <Row height="content">
-        <Inset top="24px">
+        <Divider />
+        <Inset top="19px">
           <Inline alignHorizontal="justify" alignVertical="center">
             <Inline>
               <Text color="secondary80" size="16px" weight="bold">
