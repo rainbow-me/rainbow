@@ -140,6 +140,7 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const response = await getPreference('hidden', accountAddress);
       // If the showcase is populated, just updated it
+      // @ts-expect-error
       if (response?.ids?.length > 0) {
         setPreference(
           PreferenceActionType.update,
