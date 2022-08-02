@@ -15,7 +15,7 @@ export async function fetchENSCover(
   const cachedCover = await getENSData('cover', name);
   if (cachedCover) {
     queryClient.setQueryData(ensCoverQueryKey(name), cachedCover);
-    if (cacheFirst) return cachedCover;
+    if (cacheFirst) return cachedCover as { imageUrl?: string | null };
   }
   const cover = await fetchImage('cover', name);
   saveENSData('cover', name, cover);

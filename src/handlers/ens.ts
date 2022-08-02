@@ -26,7 +26,7 @@ import { prefetchENSAddress } from '../hooks/useENSAddress';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
-import { ENSActionParameters } from '../raps/common';
+import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import {
   getENSData,
   getNameFromLabelhash,
@@ -359,7 +359,10 @@ export const fetchImage = async (
   return { imageUrl };
 };
 
-export const fetchRecords = async (ensName: string) => {
+export const fetchRecords = async (
+  ensName: string,
+  { supportedOnly = true }: { supportedOnly?: boolean } = {}
+) => {
   const response = await ensClient.query<EnsGetRecordsData>({
     query: ENS_GET_RECORDS,
     variables: {
@@ -373,7 +376,7 @@ export const fetchRecords = async (ensName: string) => {
   const supportedRecords = Object.values(ENS_RECORDS);
   const rawRecordKeys: string[] = data.resolver?.texts || [];
   const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key =>
-    supportedRecords.includes(key)
+    supportedOnly ? supportedRecords.includes(key) : true
   );
   const recordValues = await Promise.all(
     recordKeys.map((key: string) => resolver?.getText(key))
@@ -389,7 +392,8 @@ export const fetchRecords = async (ensName: string) => {
 };
 
 export const fetchCoinAddresses = async (
-  ensName: string
+  ensName: string,
+  { supportedOnly = true }: { supportedOnly?: boolean } = {}
 ): Promise<{ [key in ENS_RECORDS]: string }> => {
   const response = await ensClient.query<EnsGetCoinTypesData>({
     query: ENS_GET_COIN_TYPES,
@@ -407,7 +411,7 @@ export const fetchCoinAddresses = async (
   );
   const coinTypes: number[] =
     (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(name => supportedRecords.includes(name))
+      .filter(name => (supportedOnly ? supportedRecords.includes(name) : true))
       .map(name => formatsByName[name].coinType) || [];
 
   const coinAddressValues = await Promise.all(
@@ -585,6 +589,38 @@ export const estimateENSSetNameGasLimit = async ({
     type: ENSRegistrationTransactionType.SET_NAME,
   });
 
+export const estimateENSReclaimGasLimit = async ({
+  name,
+  ownerAddress,
+  toAddress,
+}: {
+  name: string;
+  ownerAddress: string;
+  toAddress: string;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    toAddress,
+    type: ENSRegistrationTransactionType.RECLAIM,
+  });
+
+export const estimateENSSetAddressGasLimit = async ({
+  name,
+  ownerAddress,
+  records,
+}: {
+  name: string;
+  ownerAddress?: string;
+  records: ENSRegistrationRecords;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    records,
+    type: ENSRegistrationTransactionType.SET_ADDR,
+  });
+
 export const estimateENSSetTextGasLimit = async ({
   name,
   records,
@@ -605,6 +641,7 @@ export const estimateENSTransactionGasLimit = async ({
   name,
   type,
   ownerAddress,
+  toAddress,
   rentPrice,
   duration,
   records,
@@ -613,6 +650,7 @@ export const estimateENSTransactionGasLimit = async ({
   name?: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
+  toAddress?: string;
   rentPrice?: string;
   duration?: number;
   salt?: string;
@@ -625,6 +663,7 @@ export const estimateENSTransactionGasLimit = async ({
     records,
     rentPrice,
     salt,
+    toAddress,
     type,
   });
 
@@ -727,6 +766,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     promises.push(
       estimateENSSetRecordsGasLimit({
         name,
+        ownerAddress,
         records,
       })
     );
@@ -755,16 +795,37 @@ export const estimateENSSetRecordsGasLimit = async ({
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
-    const shouldUseMulticall = shouldUseMulticallTransaction(
-      ensRegistrationRecords
-    );
-    promises.push(
-      (shouldUseMulticall
-        ? estimateENSMulticallGasLimit
-        : estimateENSSetTextGasLimit)({
-        ...{ name, ownerAddress, records: ensRegistrationRecords },
-      })
-    );
+    const txType = getTransactionTypeForRecords(ensRegistrationRecords);
+    switch (txType) {
+      case ENSRegistrationTransactionType.MULTICALL:
+        promises.push(
+          estimateENSMulticallGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
+        break;
+      case ENSRegistrationTransactionType.SET_ADDR:
+        promises.push(
+          estimateENSSetAddressGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
+        break;
+      case ENSRegistrationTransactionType.SET_TEXT:
+        promises.push(
+          estimateENSSetTextGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
+        break;
+      default:
+    }
   }
   if (setReverseRecord && ownerAddress) {
     promises.push(
@@ -851,7 +912,7 @@ export const recordsForTransactionAreValid = (
   return true;
 };
 
-export const shouldUseMulticallTransaction = (
+export const getTransactionTypeForRecords = (
   registrationRecords: ENSRegistrationRecords
 ) => {
   const {
@@ -860,15 +921,35 @@ export const shouldUseMulticallTransaction = (
     ensAssociatedAddress,
     text,
   } = registrationRecords;
+
   if (
-    !coinAddress?.length &&
-    !contentHash &&
-    !ensAssociatedAddress &&
-    text?.length === 1
+    contentHash ||
+    ensAssociatedAddress ||
+    (text?.length || 0) + (coinAddress?.length || 0) > 1
   ) {
-    return false;
+    return ENSRegistrationTransactionType.MULTICALL;
+  } else if (text?.length) {
+    return ENSRegistrationTransactionType.SET_TEXT;
+  } else if (coinAddress?.length) {
+    return ENSRegistrationTransactionType.SET_ADDR;
+  } else {
+    return null;
   }
-  return true;
+};
+
+export const getRapActionTypeForTxType = (
+  txType: ENSRegistrationTransactionType
+) => {
+  switch (txType) {
+    case ENSRegistrationTransactionType.MULTICALL:
+      return RapActionTypes.multicallENS;
+    case ENSRegistrationTransactionType.SET_ADDR:
+      return RapActionTypes.setAddrENS;
+    case ENSRegistrationTransactionType.SET_TEXT:
+      return RapActionTypes.setTextENS;
+    default:
+      return null;
+  }
 };
 
 export const fetchReverseRecord = async (address: string) => {

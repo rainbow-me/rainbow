@@ -1,7 +1,7 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Wallet } from '@ethersproject/wallet';
-import { BigNumberish, Contract } from 'ethers';
+import { BigNumber, BigNumberish, Contract } from 'ethers';
 import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
@@ -42,6 +42,8 @@ export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
   REGISTER_WITH_CONFIG = 'registerWithConfig',
   RENEW = 'renew',
+  SET_ADDR = 'setAddr',
+  RECLAIM = 'reclaim',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
@@ -79,6 +81,7 @@ export enum REGISTRATION_STEPS {
   REGISTER = 'REGISTER',
   RENEW = 'RENEW',
   SET_NAME = 'SET_NAME',
+  TRANSFER = 'TRANSFER',
   WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
   WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
 }
@@ -416,9 +419,13 @@ const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
   );
 };
 
-const getENSRegistryContract = async () => {
-  const provider = await getProviderForNetwork();
-  return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, provider);
+const getENSRegistryContract = async (wallet?: Wallet) => {
+  const signerOrProvider = wallet ?? (await getProviderForNetwork());
+  return new Contract(
+    ensRegistryAddress,
+    ENSRegistryWithFallbackABI,
+    signerOrProvider
+  );
 };
 
 const getAvailable = async (
@@ -511,7 +518,9 @@ const setupMulticallRecords = (
   if (textAssociatedRecord) {
     data.push(
       textAssociatedRecord
-        .filter(textRecord => Boolean(textRecord.value))
+        .filter(
+          textRecord => Boolean(textRecord.value) || textRecord.value === ''
+        )
         .map(textRecord => {
           return resolver.encodeFunctionData('setText', [
             namehash,
@@ -541,6 +550,7 @@ const getENSExecutionDetails = async ({
   type,
   ownerAddress,
   salt,
+  toAddress,
   rentPrice,
   duration,
   records,
@@ -553,6 +563,7 @@ const getENSExecutionDetails = async ({
   rentPrice?: string;
   duration?: number;
   records?: ENSRegistrationRecords;
+  toAddress?: string;
   wallet?: Wallet;
   salt?: string;
   resolverAddress?: EthereumAddress;
@@ -617,6 +628,25 @@ const getENSExecutionDetails = async ({
       args = [name];
       contract = await getENSReverseRegistrarContract(wallet);
       break;
+    case ENSRegistrationTransactionType.SET_ADDR: {
+      if (!name || !records || !records?.coinAddress?.[0])
+        throw new Error('Bad arguments for setAddr');
+      const record = records?.coinAddress[0];
+      const namehash = hash(name);
+      const coinType = formatsByName[record.key].coinType;
+      args = [namehash, coinType, record.address];
+      contract = await getENSPublicResolverContract(wallet, resolverAddress);
+      break;
+    }
+    case ENSRegistrationTransactionType.RECLAIM: {
+      if (!name || !toAddress) throw new Error('Bad arguments for reclaim');
+      const id = BigNumber.from(
+        labelhash(name.replace(ENS_DOMAIN, ''))
+      ).toString();
+      args = [id, toAddress];
+      contract = await getENSBaseRegistrarImplementationContract(wallet);
+      break;
+    }
     case ENSRegistrationTransactionType.SET_TEXT: {
       if (!name || !records || !records?.text?.[0])
         throw new Error('Bad arguments for setText');

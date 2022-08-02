@@ -1417,10 +1417,14 @@
           "transaction_status": "Failed to send transaction status"
         },
         "checkboxes": {
+          "clear_profile_information": "Clear profile information",
+          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "transfer_control": "Transfer control to the recipient",
           "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
           "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
         },
         "complete_checks": "Complete checks",
+        "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",
         "placeholder_title": "Placeholder",

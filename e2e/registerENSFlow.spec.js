@@ -6,15 +6,20 @@ import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
 import registrarABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
 import publicResolverABI from '@rainbow-me/references/ens/ENSPublicResolver.json';
+import registryWithFallbackABI from '@rainbow-me/references/ens/ENSRegistryWithFallback.json';
+
 const ensETHRegistrarControllerAddress =
   '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 const ensPublicResolverAddress = '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41';
+const ensRegistryAddress = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
 
 const RANDOM_NAME = 'somerandomname321';
 const RANDOM_NAME_ETH = RANDOM_NAME + '.eth';
 const RAINBOW_TEST_WALLET_NAME = 'rainbowtestwallet.eth';
 const RAINBOW_TEST_WALLET_ADDRESS =
   '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
+const RAINBOW_WALLET_NAME = 'rainbowwallet.eth';
+const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const RECORD_BIO = 'my bio';
 const RECORD_NAME = 'random';
 const EIP155_FORMATTED_AVATAR_RECORD =
@@ -29,6 +34,17 @@ const nameIsAvailable = async name => {
   );
   const nameIsAvailable = await registrarContract.available(name);
   return !!nameIsAvailable;
+};
+
+const getNameOwner = async ensName => {
+  const provider = Helpers.getProvider();
+  const registry = new Contract(
+    ensRegistryAddress,
+    registryWithFallbackABI,
+    provider
+  );
+  const owner = await registry.owner(hash(ensName));
+  return owner;
 };
 
 const getRecords = async ensName => {
@@ -295,6 +311,51 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
     await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
     await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
+  });
+
+  it('Should navigate to the Wallet screen to send ENS from renew tx', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+  });
+
+  it('Should open ENS rainbowtestwallet.eth to send ENS', async () => {
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.tapByText('CryptoKitties');
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
+    await Helpers.waitAndTap('send-action-button');
+  });
+
+  it('Should go to review send ENS', async () => {
+    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth\n');
+    await Helpers.waitAndTap('gas-speed-custom');
+    await Helpers.waitAndTap('speed-pill-urgent');
+    await Helpers.waitAndTap('gas-speed-done-button');
+    await Helpers.waitAndTap('send-sheet-confirm-action-button');
+  });
+
+  it('Should press all ENS options', async () => {
+    await Helpers.waitAndTap('clear-records');
+    await Helpers.waitAndTap('set-address');
+    await Helpers.waitAndTap('transfer-control');
+    await Helpers.tapAndLongPress('send-confirmation-button');
+  });
+
+  it('Should confirm the ENS was sent correctly', async () => {
+    await Helpers.delay(1000);
+    const { displayName } = await getRecords(RAINBOW_TEST_WALLET_NAME);
+    const { address, primaryName } = await resolveName(
+      RAINBOW_TEST_WALLET_NAME
+    );
+    const owner = await getNameOwner(RAINBOW_TEST_WALLET_NAME);
+    if (address !== RAINBOW_WALLET_ADDRESS)
+      throw new Error('Resolved address is wrong');
+    if (primaryName !== RAINBOW_WALLET_NAME)
+      throw new Error('Resolved primary name is wrong');
+    if (displayName) throw new Error('me.rainbow.displayName name is wrong');
+    if (owner !== RAINBOW_WALLET_ADDRESS)
+      throw new Error('Owner not set correctly');
   });
 
   afterAll(async () => {

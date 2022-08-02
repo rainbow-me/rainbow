@@ -233,6 +233,7 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.SET_NAME]: null,
+      [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.RENEW]: (
         <RenewContent
           name={name}
@@ -353,6 +354,7 @@ export default function ENSConfirmRegisterSheet() {
           testID={step}
         />
       ),
+      [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
