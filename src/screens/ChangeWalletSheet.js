@@ -297,124 +297,83 @@ export default function ChangeWalletSheet() {
     ]
   );
 
-  // const getEditMenuItems = () => {
-  //   // If there's more than 1 account
-  //   // it's deletable
-  //   let isLastAvailableWallet = false;
-  //   for (let i = 0; i < Object.keys(wallets).length; i++) {
-  //     const key = Object.keys(wallets)[i];
-  //     const someWallet = wallets[key];
-  //     const otherAccount = someWallet.addresses.find(
-  //       account => account.visible && account.address !== address
-  //     );
-  //     if (otherAccount) {
-  //       isLastAvailableWallet = true;
-  //       break;
-  //     }
-  //   }
+  const getEditMenuItems = (address, label) => {
+    const buttons = [lang.t('wallet.action.edit')];
+    buttons.push(lang.t('wallet.action.delete'));
 
-  //   const buttons = [lang.t('wallet.action.edit')];
-  //   buttons.push(lang.t('wallet.action.delete'));
-  //   buttons.push(lang.t('button.cancel'));
-
-  //   const title = `${label || abbreviations.address(address, 4, 6)}`;
-
-  //   return {
-  //     title,
-  //     menuItems: buttons,
-  //   };
-  // };
-
-  // const getIOSRowPressCallback = () => {};
-
-  // const getAndroidItemPressCallback = () => {};
-
-  const onEditWallet = useCallback(
-    (walletId, address, label) => {
-      // If there's more than 1 account
-      // it's deletable
-      let isLastAvailableWallet = false;
-      for (let i = 0; i < Object.keys(wallets).length; i++) {
-        const key = Object.keys(wallets)[i];
-        const someWallet = wallets[key];
-        const otherAccount = someWallet.addresses.find(
-          account => account.visible && account.address !== address
-        );
-        if (otherAccount) {
-          isLastAvailableWallet = true;
-          break;
-        }
-      }
-
-      const buttons = [lang.t('wallet.action.edit')];
-      buttons.push(lang.t('wallet.action.delete'));
+    if (ios) {
       buttons.push(lang.t('button.cancel'));
+    }
 
+    const title = `${label || abbreviations.address(address, 4, 6)}`;
+
+    return {
+      menuItems: buttons.map(button => ({
+        actionKey: button,
+        actionTitle: button,
+      })),
+      menuTitle: title,
+    };
+  };
+
+  const getOnMenuItemPress = (walletId, address) => buttonIndex => {
+    // If there's more than 1 account
+    // it's deletable
+    let isLastAvailableWallet = false;
+    for (let i = 0; i < Object.keys(wallets).length; i++) {
+      const key = Object.keys(wallets)[i];
+      const someWallet = wallets[key];
+      const otherAccount = someWallet.addresses.find(
+        account => account.visible && account.address !== address
+      );
+      if (otherAccount) {
+        isLastAvailableWallet = true;
+        break;
+      }
+    }
+
+    if (buttonIndex === 0) {
+      // Edit wallet
+      analytics.track('Tapped "Edit Wallet"');
+      renameWallet(walletId, address);
+    } else if (buttonIndex === 1) {
+      analytics.track('Tapped "Delete Wallet"');
+      // Delete wallet with confirmation
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: 2,
-          destructiveButtonIndex: 1,
-          options: buttons,
-          title: `${label || abbreviations.address(address, 4, 6)}`,
+          cancelButtonIndex: 1,
+          destructiveButtonIndex: 0,
+          message: lang.t('wallet.action.delete_confirm'),
+          options: [lang.t('wallet.action.delete'), lang.t('button.cancel')],
         },
-        buttonIndex => {
+        async buttonIndex => {
           if (buttonIndex === 0) {
-            // Edit wallet
-            analytics.track('Tapped "Edit Wallet"');
-            renameWallet(walletId, address);
-          } else if (buttonIndex === 1) {
-            analytics.track('Tapped "Delete Wallet"');
-            // Delete wallet with confirmation
-            showActionSheetWithOptions(
-              {
-                cancelButtonIndex: 1,
-                destructiveButtonIndex: 0,
-                message: lang.t('wallet.action.delete_confirm'),
-                options: [
-                  lang.t('wallet.action.delete'),
-                  lang.t('button.cancel'),
-                ],
-              },
-              async buttonIndex => {
-                if (buttonIndex === 0) {
-                  analytics.track('Tapped "Delete Wallet" (final confirm)');
-                  await deleteWallet(walletId, address);
-                  ReactNativeHapticFeedback.trigger('notificationSuccess');
-                  if (!isLastAvailableWallet) {
-                    await cleanUpWalletKeys();
-                    goBack();
-                    navigate(Routes.WELCOME_SCREEN);
-                  } else {
-                    // If we're deleting the selected wallet
-                    // we need to switch to another one
-                    if (address === currentAddress) {
-                      const { wallet: foundWallet, key } =
-                        doesWalletsContainAddress({
-                          address: address,
-                          wallets,
-                        }) || {};
-                      if (foundWallet) {
-                        await onChangeAccount(key, foundWallet.address, true);
-                      }
-                    }
-                  }
+            analytics.track('Tapped "Delete Wallet" (final confirm)');
+            await deleteWallet(walletId, address);
+            ReactNativeHapticFeedback.trigger('notificationSuccess');
+            if (!isLastAvailableWallet) {
+              await cleanUpWalletKeys();
+              goBack();
+              navigate(Routes.WELCOME_SCREEN);
+            } else {
+              // If we're deleting the selected wallet
+              // we need to switch to another one
+              if (address === currentAddress) {
+                const { wallet: foundWallet, key } =
+                  doesWalletsContainAddress({
+                    address: address,
+                    wallets,
+                  }) || {};
+                if (foundWallet) {
+                  await onChangeAccount(key, foundWallet.address, true);
                 }
               }
-            );
+            }
           }
         }
       );
-    },
-    [
-      currentAddress,
-      deleteWallet,
-      goBack,
-      onChangeAccount,
-      renameWallet,
-      navigate,
-      wallets,
-    ]
-  );
+    }
+  };
 
   const onPressAddAccount = useCallback(async () => {
     try {
@@ -576,9 +535,10 @@ export default function ChangeWalletSheet() {
         allWallets={walletsWithBalancesAndNames}
         currentWallet={currentSelectedWallet}
         editMode={editMode}
+        getEditMenuItems={getEditMenuItems}
+        getOnMenuItemPress={getOnMenuItemPress}
         height={listHeight}
         onChangeAccount={onChangeAccount}
-        onEditWallet={onEditWallet}
         onPressAddAccount={onPressAddAccount}
         onPressImportSeedPhrase={onPressImportSeedPhrase}
         scrollEnabled={scrollEnabled}
