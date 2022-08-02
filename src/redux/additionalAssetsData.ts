@@ -181,7 +181,9 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
     ];
 
     // @ts-ignore
-    updatedAssets.forEach(asset => asset && dispatch(dataUpdateAsset(asset)));
+    updatedAssets
+      .filter(asset => asset?.mainnet_address)
+      .forEach(asset => asset && dispatch(dataUpdateAsset(asset)));
 
     const newL2AssetsToWatch = Object.entries(l2AssetsToWatch).reduce(
       (newData, [key, asset]) => {
