@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { useQuery } from 'react-query';
+import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
 import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';
 import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
@@ -53,12 +55,10 @@ export async function prefetchAccountENSDomains({
   );
 }
 
-export default function useAccountENSDomains({
-  accountAddress,
-}: {
-  accountAddress: string;
-}) {
-  return useQuery<
+export default function useAccountENSDomains() {
+  const { accountAddress, accountENS } = useAccountProfile();
+
+  const { data: domains, isLoading, isFetched, isSuccess } = useQuery<
     EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
   >(
     queryKey({ accountAddress }),
@@ -67,4 +67,35 @@ export default function useAccountENSDomains({
       enabled: Boolean(accountAddress),
     }
   );
+
+  const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
+    const ownedDomains = domains?.filter(
+      ({ owner }) => owner?.id?.toLowerCase() === accountAddress?.toLowerCase()
+    );
+    return {
+      nonPrimaryDomains:
+        ownedDomains?.filter(({ name }) => accountENS !== name) || [],
+      ownedDomains,
+      primaryDomain: ownedDomains?.find(({ name }) => accountENS === name),
+    };
+  }, [accountAddress, accountENS, domains]);
+
+  const uniqueDomain = useMemo(() => {
+    return primaryDomain
+      ? primaryDomain
+      : nonPrimaryDomains?.length === 1
+      ? nonPrimaryDomains?.[0]
+      : null;
+  }, [nonPrimaryDomains, primaryDomain]);
+
+  return {
+    domains,
+    isFetched,
+    isLoading,
+    isSuccess,
+    nonPrimaryDomains,
+    ownedDomains,
+    primaryDomain,
+    uniqueDomain,
+  };
 }

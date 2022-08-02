@@ -231,5 +231,5 @@ export default function useSelectImageMenu({
     [handleAndroidPress, handlePressMenuItem, menuItems, testID]
   );
 
-  return { ContextMenu, isUploading };
+  return { ContextMenu, handleSelectImage, handleSelectNFT, isUploading };
 }

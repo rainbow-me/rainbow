@@ -1018,6 +1018,7 @@
           "description": "Your profile is stored directly on Ethereum and owned by you.",
           "title": "Stored on Ethereum"
         },
+        "edit_name": "Edit %{name}",
         "use_existing_name": "Use an existing ENS name",
         "use_name": "Use %{name}",
         "wallet_address_info": {

@@ -61,6 +61,7 @@ import {
   useENSSearch,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
+  useWalletSectionsData,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
@@ -73,6 +74,7 @@ export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
+  const { hasNFTs } = useWalletSectionsData();
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
@@ -185,12 +187,14 @@ export default function ENSAssignRecordsSheet() {
       >
         <Stack space="19px">
           <RegistrationCover
+            enableNFTs={hasNFTs}
             hasSeenExplainSheet={hasSeenExplainSheet}
             onShowExplainSheet={handleFocus}
           />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
               <RegistrationAvatar
+                enableNFTs={hasNFTs}
                 hasSeenExplainSheet={hasSeenExplainSheet}
                 onChangeAvatarUrl={setAvatarUrl}
                 onShowExplainSheet={handleFocus}
@@ -252,7 +256,9 @@ export function ENSAssignRecordsBottomActions({
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
-    isEmpty,
+    errors,
+    isValidating,
+    isEmpty: isEmptyForm,
     selectedFields,
     onAddField,
     onRemoveField,
@@ -370,7 +376,7 @@ export function ENSAssignRecordsBottomActions({
                       {lang.t('profiles.create.back')}
                     </TintButton>
                   )}
-                  {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
+                  {isEmptyForm && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
                       disabled={disabled}
                       onPress={handlePressContinue}
@@ -383,6 +389,7 @@ export function ENSAssignRecordsBottomActions({
                       {!disabled ? (
                         <SheetActionButton
                           color={accentColor}
+                          disabled={isValidating || !isEmpty(errors)}
                           // @ts-expect-error JavaScript component
                           label={lang.t('profiles.create.review')}
                           onPress={handlePressContinue}

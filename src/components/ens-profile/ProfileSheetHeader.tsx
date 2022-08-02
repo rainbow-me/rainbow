@@ -27,9 +27,9 @@ import {
   useENSAddress,
   useENSAvatar,
   useENSCover,
+  useENSFirstTransactionTimestamp,
   useENSRecords,
   useFetchUniqueTokens,
-  useFirstTransactionTimestamp,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -146,9 +146,9 @@ export default function ProfileSheetHeader({
     records?.cover,
   ]);
 
-  const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({
-    ensName,
-  });
+  const { data: firstTransactionTimestamp } = useENSFirstTransactionTimestamp(
+    ensName
+  );
 
   const emoji = useMemo(
     () => (profileAddress ? addressHashedEmoji(profileAddress) : ''),
