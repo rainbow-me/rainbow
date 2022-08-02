@@ -14,10 +14,14 @@ import {
 } from '@rainbow-me/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
+interface Props {
+  type?: string;
+  withVideos?: boolean;
+}
 export default function useWalletSectionsData({
-  type = undefined,
+  type,
   withVideos = true,
-} = {}) {
+}: Props = {}) {
   const sortedAccountData = useSortedAccountAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
