@@ -20,8 +20,6 @@ import {
   prefetchENSCover,
   prefetchENSRecords,
   useAccountENSDomains,
-  useAccountProfile,
-  useAccountSettings,
   useENSAvatar,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -35,12 +33,11 @@ const rowHeight = 40;
 const maxListHeight = deviceHeight - 220;
 
 export default function SelectENSSheet() {
-  const { accountAddress } = useAccountSettings();
-  const { accountENS } = useAccountProfile();
-
-  const { data: accountENSDomains, isSuccess } = useAccountENSDomains({
-    accountAddress,
-  });
+  const {
+    isSuccess,
+    nonPrimaryDomains,
+    primaryDomain,
+  } = useAccountENSDomains();
 
   const secondary06 = useForegroundColor('secondary06');
 
@@ -59,21 +56,14 @@ export default function SelectENSSheet() {
   );
 
   const ownedDomains = useMemo(() => {
-    const domains = accountENSDomains
-      ?.filter(
-        ({ owner, name }) =>
-          owner?.id?.toLowerCase() === accountAddress.toLowerCase() &&
-          accountENS !== name
-      )
-      ?.sort((a, b) => (a.name > b.name ? 1 : -1));
-
-    const primaryDomain = accountENSDomains?.find(
-      ({ name }) => accountENS === name
+    const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) =>
+      a.name > b.name ? 1 : -1
     );
-    if (primaryDomain) domains?.unshift(primaryDomain);
 
-    return domains;
-  }, [accountAddress, accountENS, accountENSDomains]);
+    if (primaryDomain) sortedNonPrimaryDomains.unshift(primaryDomain);
+
+    return sortedNonPrimaryDomains;
+  }, [primaryDomain, nonPrimaryDomains]);
 
   let listHeight = (rowHeight + 40) * (ownedDomains?.length || 0);
   let scrollEnabled = false;

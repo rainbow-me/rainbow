@@ -139,11 +139,12 @@ function Tag({
           <Text
             align="center"
             color={textColors[color]}
+            containsEmoji
             size={size}
             weight="bold"
           >
             {symbol ? `${symbol} ` : ''}
-            {children}
+            {children as string}
           </Text>
         </Inline>
       </Inset>

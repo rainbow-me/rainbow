@@ -1,7 +1,6 @@
-import { useFocusEffect } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
@@ -13,6 +12,7 @@ import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSModifiedRegistration,
+  useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
@@ -27,9 +27,11 @@ export const coverMetadataAtom = atom<Image | undefined>({
 const RegistrationCover = ({
   hasSeenExplainSheet,
   onShowExplainSheet,
+  enableNFTs,
 }: {
   hasSeenExplainSheet: boolean;
   onShowExplainSheet: () => void;
+  enableNFTs: boolean;
 }) => {
   const {
     images: { coverUrl: initialCoverUrl },
@@ -41,7 +43,7 @@ const RegistrationCover = ({
     setDisabled,
     values,
   } = useENSRegistrationForm();
-
+  const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
   useEffect(() => {
@@ -53,19 +55,19 @@ const RegistrationCover = ({
   }, [initialCoverUrl, coverUpdateAllowed, values, coverUrl]);
 
   // We want to allow cover state update when the screen is first focussed.
-  useFocusEffect(useCallback(() => setCoverUpdateAllowed(true), []));
+  useEffect(() => setCoverUpdateAllowed(true), [setCoverUpdateAllowed, name]);
 
   const accentColor = useForegroundColor('accent');
 
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
 
-  const { ContextMenu } = useSelectImageMenu({
+  const { ContextMenu, handleSelectImage } = useSelectImageMenu({
     imagePickerOptions: {
       cropping: true,
       height: 500,
       width: 1500,
     },
-    menuItems: ['library', 'nft'],
+    menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage: ({
       asset,
       image,
@@ -73,11 +75,14 @@ const RegistrationCover = ({
       asset?: UniqueAsset;
       image?: Image & { tmpPath?: string };
     }) => {
-      // We want to disallow future avatar state changes (i.e. when upload successful)
-      // to avoid avatar flashing (from temp URL to uploaded URL).
-      setCoverUpdateAllowed(false);
       setCoverMetadata(image);
-      setCoverUrl(image?.tmpPath);
+      setCoverUrl(
+        image?.tmpPath ||
+          asset?.image_url ||
+          asset?.lowResUrl ||
+          asset?.image_thumbnail_url ||
+          ''
+      );
 
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
@@ -92,6 +97,9 @@ const RegistrationCover = ({
           }),
         });
       } else if (image?.tmpPath) {
+        // We want to disallow future avatar state changes (i.e. when upload successful)
+        // to avoid avatar flashing (from temp URL to uploaded URL).
+        setCoverUpdateAllowed(false);
         onBlurField({
           key: 'cover',
           value: image.tmpPath,
@@ -125,11 +133,17 @@ const RegistrationCover = ({
   }
   return (
     <ConditionalWrap
-      condition={hasSeenExplainSheet}
+      condition={hasSeenExplainSheet && (enableNFTs || !!coverUrl)}
       wrap={children => <ContextMenu>{children}</ContextMenu>}
     >
       <ButtonPressAnimation
-        onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+        onPress={
+          !hasSeenExplainSheet
+            ? onShowExplainSheet
+            : enableNFTs
+            ? undefined
+            : handleSelectImage
+        }
         scaleTo={1}
       >
         <Box

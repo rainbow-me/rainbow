@@ -8,6 +8,7 @@ import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
+import { AppState } from '@/redux/store';
 import {
   buildBriefWalletSectionsSelector,
   buildWalletSectionsSelector,
@@ -22,7 +23,10 @@ export default function useWalletSectionsData({
   const isWalletEthZero = useIsWalletEthZero();
 
   const { language, network, nativeCurrency } = useAccountSettings();
-  const uniqueTokens = useSendableUniqueTokens();
+  const sendableUniqueTokens = useSendableUniqueTokens();
+  const allUniqueTokens = useSelector(
+    (state: AppState) => state.uniqueTokens.uniqueTokens
+  );
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
 
@@ -47,7 +51,7 @@ export default function useWalletSectionsData({
       pinnedCoins,
       savings,
       ...sortedAccountData,
-      ...uniqueTokens,
+      ...sendableUniqueTokens,
       ...uniswap,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
@@ -57,8 +61,10 @@ export default function useWalletSectionsData({
 
     const sectionsData = buildWalletSectionsSelector(accountInfo);
     const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
+    const hasNFTs = allUniqueTokens.length > 0;
 
     return {
+      hasNFTs,
       isWalletEthZero,
       refetchSavings,
       shouldRefetchSavings,
@@ -66,6 +72,7 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
+    allUniqueTokens,
     hiddenCoins,
     isCoinListEdited,
     isWalletEthZero,
@@ -79,7 +86,7 @@ export default function useWalletSectionsData({
     showcaseTokens,
     sortedAccountData,
     type,
-    uniqueTokens,
+    sendableUniqueTokens,
     uniswap,
   ]);
   return walletSections;

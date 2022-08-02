@@ -1,8 +1,9 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
+import { getAddress } from '@ethersproject/address';
 import { Resolver } from '@ethersproject/providers';
 import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
-import { isZeroAddress } from 'ethereumjs-util';
+import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
@@ -25,6 +26,7 @@ import {
 import { prefetchENSAddress } from '../hooks/useENSAddress';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
+import { prefetchENSFirstTransactionTimestamp } from '../hooks/useENSFirstTransactionTimestamp';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import {
@@ -224,6 +226,42 @@ export const fetchSuggestions = async (
   setIsFetching = (_unused: any) => {},
   profilesEnabled = false
 ) => {
+  if (isValidAddress(recipient)) {
+    const address = getAddress(recipient);
+    const ens = await fetchReverseRecord(address);
+    if (!ens) {
+      setSuggestions([]);
+      setIsFetching(false);
+      return [];
+    }
+    let avatar;
+    try {
+      avatar = await fetchENSAvatar(ens, {
+        cacheFirst: true,
+      });
+      prefetchENSAddress(ens, { cacheFirst: true });
+      prefetchENSCover(ens, { cacheFirst: true });
+      prefetchENSRecords(ens, { cacheFirst: true });
+      prefetchENSFirstTransactionTimestamp(ens, {
+        cacheFirst: true,
+      });
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+    const suggestion = [
+      {
+        address: address,
+        color: profileUtils.addressHashedColorIndex(recipient),
+        ens: true,
+        image: avatar?.imageUrl,
+        network: 'mainnet',
+        nickname: ens,
+        uniqueId: address,
+      },
+    ];
+    setSuggestions(suggestion);
+    setIsFetching(false);
+    return suggestion;
+  }
   if (recipient.length > 2) {
     let suggestions: {
       address: any;
@@ -251,11 +289,14 @@ export const fetchSuggestions = async (
               !isZeroAddress(domain.owner.id)
           )
           .map(
-            async (domain: {
-              name: string;
-              resolver: { texts: string[] };
-              owner: { id: string };
-            }) => {
+            async (
+              domain: {
+                name: string;
+                resolver: { texts: string[] };
+                owner: { id: string };
+              },
+              i: number
+            ) => {
               const hasAvatar = domain?.resolver?.texts?.find(
                 text => text === ENS_RECORDS.avatar
               );
@@ -264,6 +305,14 @@ export const fetchSuggestions = async (
                   const avatar = await fetchENSAvatar(domain.name, {
                     cacheFirst: true,
                   });
+                  if (i === 0) {
+                    prefetchENSAddress(domain.name, { cacheFirst: true });
+                    prefetchENSCover(domain.name, { cacheFirst: true });
+                    prefetchENSRecords(domain.name, { cacheFirst: true });
+                    prefetchENSFirstTransactionTimestamp(domain.name, {
+                      cacheFirst: true,
+                    });
+                  }
                   return {
                     ...domain,
                     avatar: avatar?.imageUrl,
@@ -503,6 +552,7 @@ export function prefetchENSIntroData() {
     prefetchENSAvatar(name, { cacheFirst: true });
     prefetchENSCover(name, { cacheFirst: true });
     prefetchENSRecords(name, { cacheFirst: true });
+    prefetchENSFirstTransactionTimestamp(name, { cacheFirst: true });
   }
 }
 
@@ -954,8 +1004,9 @@ export const getRapActionTypeForTxType = (
 
 export const fetchReverseRecord = async (address: string) => {
   try {
+    const checksumAddress = getAddress(address);
     const provider = await getProviderForNetwork();
-    const reverseRecord = await provider.lookupAddress(address);
+    const reverseRecord = await provider.lookupAddress(checksumAddress);
     return reverseRecord ?? '';
   } catch (e) {
     return '';

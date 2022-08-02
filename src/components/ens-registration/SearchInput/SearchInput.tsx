@@ -128,7 +128,7 @@ const SearchInput = ({
             </Column>
             <Input
               autoCorrect={false}
-              keyboardType="visible-password"
+              keyboardType={android ? 'visible-password' : 'default'}
               onChangeText={onChangeText}
               onFocus={handleFocus}
               ref={inputRef}

@@ -48,7 +48,6 @@ export default function InlineField({
   onFocus,
   placeholder,
   inputProps,
-  validations,
   onEndEditing,
   selectionColor,
   shouldFormatText,
@@ -72,25 +71,6 @@ export default function InlineField({
       setInputHeight(textSize);
     }
   }, []);
-
-  const handleChangeText = useCallback(
-    text => {
-      const { onChange: { match = null } = {} } = validations || {};
-      if (!match) {
-        onChangeText(text);
-        return;
-      }
-      if (text === '') {
-        onChangeText(text);
-        return;
-      }
-      if (match?.test(text)) {
-        onChangeText(text);
-        return;
-      }
-    },
-    [onChangeText, validations]
-  );
 
   const valueRef = useRef(value);
   const style = useMemo(
@@ -173,7 +153,7 @@ export default function InlineField({
             autoCorrect={shouldFormatText}
             autoFocus={autoFocus}
             defaultValue={defaultValue}
-            onChangeText={handleChangeText}
+            onChangeText={onChangeText}
             onContentSizeChange={
               android && inputProps?.multiline
                 ? handleContentSizeChange

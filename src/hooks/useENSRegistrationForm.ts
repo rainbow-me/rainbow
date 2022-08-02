@@ -20,6 +20,11 @@ const errorsAtom = atom<{ [name: string]: string }>({
   key: 'ensProfileForm.errors',
 });
 
+const isValidatingAtom = atom({
+  default: false,
+  key: 'ensProfileForm.isValidating',
+});
+
 const selectedFieldsAtom = atom<TextRecordField[]>({
   default: [],
   key: 'ensProfileForm.selectedFields',
@@ -81,6 +86,7 @@ export default function useENSRegistrationForm({
 
   const [errors, setErrors] = useRecoilState(errorsAtom);
   const [submitting, setSubmitting] = useRecoilState(submittingAtom);
+  const [isValidating, setIsValidating] = useRecoilState(isValidatingAtom);
 
   const [disabled, setDisabled] = useRecoilState(disabledAtom);
   useEffect(() => {
@@ -88,10 +94,8 @@ export default function useENSRegistrationForm({
     // when there are no changed records.
     // Note: We don't want to do this in create mode as we have the "Skip"
     // button.
-    setDisabled(
-      mode === REGISTRATION_MODES.EDIT ? isEmpty(changedRecords) : false
-    );
-  }, [changedRecords, disabled, mode, setDisabled]);
+    setDisabled(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
+  }, [changedRecords, mode, setDisabled]);
 
   const [selectedFields, setSelectedFields] = useRecoilState(
     selectedFieldsAtom
@@ -200,22 +204,29 @@ export default function useENSRegistrationForm({
 
   const onChangeField = useCallback(
     ({ key, value }) => {
-      if (!isEmpty(errors)) {
-        setErrors(errors => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { [key]: _, ...newErrors } = errors;
-
-          return newErrors;
-        });
+      setIsValidating(true);
+      const validation = textRecordFields[key as ENS_RECORDS]?.validation;
+      if (validation) {
+        const { message, validator } = validation;
+        const isValid = !value || validator(value);
+        isValid
+          ? key in errors &&
+            setErrors(errors => {
+              // omit key from errors
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const { [key]: _, ...newErrors } = errors;
+              return newErrors;
+            })
+          : setErrors({ ...errors, [key]: message });
       }
-
+      setIsValidating(false);
       setValuesMap(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
       updateRecordByKey(key, value);
     },
-    [errors, name, setErrors, setValuesMap, updateRecordByKey]
+    [errors, name, setErrors, setIsValidating, setValuesMap, updateRecordByKey]
   );
 
   const blurFields = useCallback(() => {
@@ -246,46 +257,17 @@ export default function useENSRegistrationForm({
 
   const submit = useCallback(
     async submitFn => {
-      const errors = Object.entries(textRecordFields).reduce(
-        (currentErrors, [key, { validations }]) => {
-          const value = values[key as ENS_RECORDS];
-          if (validations?.onSubmit?.match) {
-            const { value: regex, message } =
-              validations?.onSubmit?.match || {};
-            if (regex && value && !value.match(regex)) {
-              return {
-                ...currentErrors,
-                [key]: message,
-              };
-            }
-          }
-          if (validations?.onSubmit?.validate) {
-            const { callback, message } = validations?.onSubmit?.validate || {};
-            if (value && !callback(value)) {
-              return {
-                ...currentErrors,
-                [key]: message,
-              };
-            }
-          }
-          return currentErrors;
-        },
-        {}
-      );
-      setErrors(errors);
-
       setSubmitting(true);
-      if (isEmpty(errors)) {
-        try {
-          await submitFn();
-          // eslint-disable-next-line no-empty
-        } catch (err) {}
-      }
+      try {
+        await submitFn();
+        // eslint-disable-next-line no-empty
+      } catch (err) {}
+
       setTimeout(() => {
         setSubmitting(false);
       }, 100);
     },
-    [setErrors, setSubmitting, values]
+    [setSubmitting]
   );
 
   return {
@@ -296,6 +278,7 @@ export default function useENSRegistrationForm({
     isEmpty: empty,
     isLoading,
     isSuccess,
+    isValidating,
     onAddField,
     onBlurField,
     onChangeField,

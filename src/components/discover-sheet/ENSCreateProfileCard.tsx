@@ -19,7 +19,12 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { useWallets } from '@rainbow-me/hooks';
+import {
+  prefetchENSAvatar,
+  prefetchENSRecords,
+  useAccountENSDomains,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@rainbow-me/utils';
@@ -73,6 +78,15 @@ export default function ENSCreateProfileCard() {
       watchingAlert();
     }
   }, [isReadOnlyWallet, navigate]);
+
+  const { uniqueDomain } = useAccountENSDomains();
+
+  useEffect(() => {
+    if (uniqueDomain?.name) {
+      prefetchENSAvatar(uniqueDomain.name);
+      prefetchENSRecords(uniqueDomain.name);
+    }
+  }, [uniqueDomain]);
 
   useEffect(() => {
     // Preload intro screen preview marquee ENS images

@@ -13,6 +13,7 @@ import {
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
+import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
@@ -116,13 +117,19 @@ export default function useFetchUniqueTokens({
       setShouldFetchMore(false);
       (async () => {
         // Fetch more Ethereum tokens until all have fetched
-        let tokens = await fetchMore({
-          network,
-          // If there are stored tokens in storage, then we want
-          // to do a background refresh.
-          page: hasStoredTokens ? 0 : 1,
-          uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
-        });
+        let tokens = (
+          await fetchMore({
+            network,
+            // If there are stored tokens in storage, then we want
+            // to do a background refresh.
+            page: hasStoredTokens ? 0 : 1,
+            uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
+          })
+        ).filter((token: any) => token.familyName !== 'POAP');
+
+        // Fetch poaps
+        const poaps = (await fetchPoaps(address)) || [];
+        tokens = [...tokens, ...poaps];
 
         // Fetch Polygon tokens until all have fetched
         const polygonTokens = await fetchMore({ network: Network.polygon });
