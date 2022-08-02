@@ -116,6 +116,9 @@ const useSwapCurrencyList = (
             }
             token.uniqueId = `${token.address}_${network}`;
           }
+          if (!token?.decimals) {
+            token.decimals = 0;
+          }
           return token;
         })
         .filter(({ address }) => !isFavorite(address));
