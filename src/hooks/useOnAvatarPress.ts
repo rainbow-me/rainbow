@@ -151,41 +151,10 @@ export default () => {
 
   const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
-  const onAvatarPress = useCallback(() => {
-    const isENSProfile = profilesEnabled && profileEnabled && isOwner;
+  const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
-    const avatarActionSheetOptions = (!isReadOnly
-      ? [
-          ...(isENSProfile
-            ? [
-                ...(!hasENSAvatar
-                  ? [
-                      lang.t('profiles.profile_avatar.choose_from_library'),
-                      !accountImage
-                        ? lang.t(`profiles.profile_avatar.pick_emoji`)
-                        : lang.t(`profiles.profile_avatar.remove_photo`),
-                    ]
-                  : []),
-                lang.t('profiles.profile_avatar.view_profile'),
-                lang.t('profiles.profile_avatar.edit_profile'),
-              ]
-            : [
-                lang.t('profiles.profile_avatar.choose_from_library'),
-                !accountImage
-                  ? lang.t(`profiles.profile_avatar.pick_emoji`)
-                  : lang.t(`profiles.profile_avatar.remove_photo`),
-                profilesEnabled &&
-                  lang.t('profiles.profile_avatar.create_profile'),
-              ]),
-        ]
-      : [isENSProfile && lang.t('profiles.profile_avatar.view_profile')]
-    ).filter(option => Boolean(option));
-
-    if (ios && avatarActionSheetOptions.length) {
-      avatarActionSheetOptions.push('Cancel');
-    }
-
-    const callback = async (buttonIndex: Number) => {
+  const callback = useCallback(
+    async (buttonIndex: Number) => {
       switch (buttonIndex) {
         case 0:
           if (isReadOnly) {
@@ -234,7 +203,52 @@ export default () => {
         default:
           break;
       }
-    };
+    },
+    [
+      accountImage,
+      hasENSAvatar,
+      isENSProfile,
+      isReadOnly,
+      onAvatarChooseImage,
+      onAvatarCreateProfile,
+      onAvatarEditProfile,
+      onAvatarPickEmoji,
+      onAvatarRemovePhoto,
+      onAvatarViewProfile,
+    ]
+  );
+
+  const avatarActionSheetOptions = (!isReadOnly
+    ? [
+        ...(isENSProfile
+          ? [
+              ...(!hasENSAvatar
+                ? [
+                    lang.t('profiles.profile_avatar.choose_from_library'),
+                    !accountImage
+                      ? lang.t(`profiles.profile_avatar.pick_emoji`)
+                      : lang.t(`profiles.profile_avatar.remove_photo`),
+                  ]
+                : []),
+              lang.t('profiles.profile_avatar.view_profile'),
+              lang.t('profiles.profile_avatar.edit_profile'),
+            ]
+          : [
+              lang.t('profiles.profile_avatar.choose_from_library'),
+              !accountImage
+                ? lang.t(`profiles.profile_avatar.pick_emoji`)
+                : lang.t(`profiles.profile_avatar.remove_photo`),
+              profilesEnabled &&
+                lang.t('profiles.profile_avatar.create_profile'),
+            ]),
+      ]
+    : [isENSProfile && lang.t('profiles.profile_avatar.view_profile')]
+  ).filter(option => Boolean(option));
+
+  const onAvatarPress = useCallback(() => {
+    if (ios && avatarActionSheetOptions.length) {
+      avatarActionSheetOptions.push('Cancel');
+    }
 
     if (avatarActionSheetOptions.length) {
       showActionSheetWithOptions(
@@ -248,18 +262,11 @@ export default () => {
       );
     }
   }, [
-    profilesEnabled,
-    profileEnabled,
-    isOwner,
+    avatarActionSheetOptions,
     isReadOnly,
     hasENSAvatar,
     accountImage,
-    onAvatarViewProfile,
-    onAvatarChooseImage,
-    onAvatarEditProfile,
-    onAvatarRemovePhoto,
-    onAvatarPickEmoji,
-    onAvatarCreateProfile,
+    callback,
   ]);
 
   const avatarOptions = useMemo(
@@ -297,6 +304,7 @@ export default () => {
   );
 
   return {
+    avatarActionSheetOptions,
     avatarOptions,
     onAvatarChooseImage,
     onAvatarCreateProfile,
@@ -304,5 +312,6 @@ export default () => {
     onAvatarPress,
     onAvatarRemovePhoto,
     onAvatarWebProfile,
+    onSelectionCallback: callback,
   };
 };
