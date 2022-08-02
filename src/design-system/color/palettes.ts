@@ -5,7 +5,7 @@ export const colors = {
   appleBlueLight: '#1F87FF',
   black: '#000000',
   blackTint: '#12131a',
-  grey: 'rgb(60, 66, 82)',
+  grey: '#3C4252',
   grey06: 'rgba(60, 66, 82, 0.06)',
   grey10: 'rgba(60, 66, 82, 0.1)',
   grey15: 'rgba(60, 66, 82, 0.15)',

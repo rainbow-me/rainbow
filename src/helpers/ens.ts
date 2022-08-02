@@ -90,6 +90,7 @@ export enum REGISTRATION_MODES {
   CREATE = 'CREATE',
   EDIT = 'EDIT',
   RENEW = 'RENEW',
+  SEARCH = 'SEARCH',
   SET_NAME = 'SET_NAME',
 }
 

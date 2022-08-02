@@ -59,9 +59,10 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfNotVisible('lists-section');
   });
 
-  it('Should open Discover Search on pressing search fab', async () => {
+  it('Should open Discover Search on pressing search input', async () => {
     await Helpers.swipe('discover-header', 'up');
-    await Helpers.waitAndTap('search-fab');
+    await Helpers.swipe('discover-home', 'down');
+    await Helpers.waitAndTap('discover-search-input');
     await Helpers.checkIfVisible('done-button');
   });
 
@@ -222,8 +223,12 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('ens-register-name-banner');
   });
 
+  it('Should see the gas card', async () => {
+    await Helpers.checkIfVisible('gas-button');
+    await Helpers.tap('gas-button');
+  });
+
   it('Should search and open Profile for rainbowwallet.eth', async () => {
-    await Helpers.waitAndTap('search-fab');
     await Helpers.typeText(
       'discover-search-input',
       'rainbowwallet.eth\n',
