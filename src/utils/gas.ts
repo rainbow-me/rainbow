@@ -25,7 +25,7 @@ const GAS_ICONS = {
 const GAS_EMOJIS = {
   [CUSTOM]: '⚙️',
   [FAST]: '🚀',
-  [NORMAL]: ios ? '⏱' : '⌚',
+  [NORMAL]: ios ? '⏱' : '🕘',
   [URGENT]: '🚨',
 };
 
