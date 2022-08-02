@@ -16,7 +16,7 @@ const EmojiForGasSpeedType = {
     top: android ? -1.25 : -1.25,
   },
   [gasUtils.NORMAL]: {
-    emoji: 'stopwatch',
+    emoji: ios ? 'stopwatch' : 'watch',
     // ⏱️
     top: -1.25,
   },

@@ -1,6 +1,6 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
+import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
@@ -30,7 +30,7 @@ import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
-import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { gasUtils } from '@rainbow-me/utils';
 
 const {
   GAS_EMOJIS,
@@ -402,24 +402,6 @@ const GasSpeedButton = ({
     }
   }, [canGoBack, goBack, validateGasParams]);
 
-  const onPressAndroid = useCallback(() => {
-    if (gasIsNotReady) return;
-    const uppercasedSpeedOptions = speedOptions.map(speed => upperFirst(speed));
-    const androidContractActions = [...uppercasedSpeedOptions];
-
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: androidContractActions.length,
-        options: androidContractActions,
-        showSeparators: true,
-        title: '',
-      },
-      buttonIndex => {
-        handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
-      }
-    );
-  }, [gasIsNotReady, handlePressSpeedOption, speedOptions]);
-
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
     const label = selectedGasFeeOption ?? NORMAL;
@@ -447,9 +429,8 @@ const GasSpeedButton = ({
         activeOpacity={0}
         enableContextMenu
         isAnchoredToRight
-        menuConfig={menuConfig}
-        {...(android ? { onPress: onPressAndroid } : {})}
         isMenuPrimaryAction
+        menuConfig={menuConfig}
         onPressMenuItem={handlePressMenuItem}
         useActionSheetFallback={false}
         wrapNativeComponent={false}
@@ -464,7 +445,6 @@ const GasSpeedButton = ({
     gasOptionsAvailable,
     handlePressMenuItem,
     menuConfig,
-    onPressAndroid,
     rawColorForAsset,
     selectedGasFeeOption,
     showGasOptions,
