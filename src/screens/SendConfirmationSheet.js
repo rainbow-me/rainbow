@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import { capitalize } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -178,7 +178,7 @@ export default function SendConfirmationSheet() {
     width: deviceWidth,
   } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { contacts } = useContacts();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
