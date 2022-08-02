@@ -244,12 +244,11 @@ export default () => {
       ]
     : [isENSProfile && lang.t('profiles.profile_avatar.view_profile')]
   ).filter(option => Boolean(option));
+  if (ios && avatarActionSheetOptions.length) {
+    avatarActionSheetOptions.push('Cancel');
+  }
 
   const onAvatarPress = useCallback(() => {
-    if (ios && avatarActionSheetOptions.length) {
-      avatarActionSheetOptions.push('Cancel');
-    }
-
     if (avatarActionSheetOptions.length) {
       showActionSheetWithOptions(
         {
