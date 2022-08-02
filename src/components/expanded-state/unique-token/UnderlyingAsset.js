@@ -24,6 +24,7 @@ export default function UnderlyingAsset({
   percentageAllocation,
   changeVisible,
   asset,
+  marginRight,
 }) {
   const { nativeCurrency } = useAccountSettings();
 
@@ -75,7 +76,7 @@ export default function UnderlyingAsset({
           symbol={symbol}
         />
       </Column>
-      <Column aling="end">
+      <Column aling="end" marginRight={marginRight}>
         <Row key={`allocation-${symbol}`}>
           <Text
             align="right"
