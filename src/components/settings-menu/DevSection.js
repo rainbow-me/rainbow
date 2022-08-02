@@ -4,11 +4,7 @@ import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
-import {
-  HARDHAT_URL_ANDROID,
-  HARDHAT_URL_IOS,
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
 import { defaultConfig } from '../../config/experimental';
@@ -77,17 +73,15 @@ const DevSection = () => {
     navigate(Routes.PROFILE_SCREEN);
     dispatch(explorerInit());
 
-    if (IS_TESTING === 'true') {
-      const provider = await getProviderForNetwork(Network.mainnet);
-      const ethAsset = ethereumUtils.getAccountAsset(ETH_ADDRESS);
-      updateAssetOnchainBalanceIfNeeded(
-        ethAsset,
-        accountAddress,
-        Network.mainnet,
-        provider,
-        () => {}
-      );
-    }
+    const provider = await getProviderForNetwork(Network.mainnet);
+    const ethAsset = ethereumUtils.getAccountAsset(ETH_ADDRESS);
+    updateAssetOnchainBalanceIfNeeded(
+      ethAsset,
+      accountAddress,
+      Network.mainnet,
+      provider,
+      () => {}
+    );
   }, [accountAddress, dispatch, navigate, updateAssetOnchainBalanceIfNeeded]);
 
   const syncCodepush = useCallback(async () => {
