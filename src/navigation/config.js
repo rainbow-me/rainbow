@@ -8,7 +8,7 @@ import { getENSAdditionalRecordsSheetHeight } from '../screens/ENSAdditionalReco
 import { ENSConfirmRegisterSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
-import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
+import { getSheetHeight as getSendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { useTheme } from '../theme/ThemeContext';
 import colors from '../theme/currentColors';
 import { onWillPop } from './Navigation';
@@ -129,13 +129,7 @@ export const addTokenSheetConfig = {
 
 export const sendConfirmationSheetConfig = {
   options: ({ route: { params = {} } }) => {
-    let height = params.shouldShowChecks
-      ? SendConfirmationSheetHeight
-      : SendConfirmationSheetHeight - 104;
-
-    if (!params.isL2) {
-      height -= 59;
-    }
+    const height = getSendConfirmationSheetHeight(params);
     return {
       ...buildCoolModalConfig({
         ...params,

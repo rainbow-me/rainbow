@@ -71,6 +71,7 @@ import { lightModeThemeColors, position } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 import {
   buildRainbowUrl,
+  getUniqueTokenType,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
@@ -208,12 +209,6 @@ const Markdown = ({
   );
 };
 
-export enum UniqueTokenType {
-  NFT = 'NFT',
-  ENS = 'ENS',
-  POAP = 'POAP',
-}
-
 interface UniqueTokenExpandedStateProps {
   asset: UniqueAsset;
   external: boolean;
@@ -269,18 +264,12 @@ const UniqueTokenExpandedState = ({
     urlSuffixForAsset,
   } = asset;
 
-  const uniqueTokenType = useMemo(() => {
-    if (asset.isPoap) return UniqueTokenType.POAP;
-    if (familyName === 'ENS' && uniqueId !== 'Unknown ENS name') {
-      return UniqueTokenType.ENS;
-    }
-    return UniqueTokenType.NFT;
-  }, [asset.isPoap, familyName, uniqueId]);
+  const uniqueTokenType = getUniqueTokenType(asset);
 
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
-  const isPoap = uniqueTokenType === UniqueTokenType.POAP;
-  const isENS = uniqueTokenType === UniqueTokenType.ENS;
-  const isNFT = uniqueTokenType === UniqueTokenType.NFT;
+  const isPoap = uniqueTokenType === 'POAP';
+  const isENS = uniqueTokenType === 'ENS';
+  const isNFT = uniqueTokenType === 'NFT';
 
   // Fetch the ENS profile if the unique token is an ENS name.
   const cleanENSName = isENS
@@ -295,7 +284,7 @@ const UniqueTokenExpandedState = ({
 
   useFocusEffect(
     useCallback(() => {
-      if (uniqueTokenType === UniqueTokenType.ENS) {
+      if (uniqueTokenType === 'ENS') {
         setOptions({ limitActiveModals: false });
       }
     }, [setOptions, uniqueTokenType])
@@ -542,6 +531,8 @@ const UniqueTokenExpandedState = ({
                             }
                             nftShadows
                             onPress={handlePressMarketplaceName}
+                            // @ts-expect-error JavaScript component
+                            testID="unique-expanded-state-send"
                             textColor={textColor}
                             weight="heavy"
                           />

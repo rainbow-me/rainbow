@@ -190,6 +190,36 @@ const executeSetName = async (
   );
 };
 
+const executeSetAddr = async (
+  name?: string,
+  records?: ENSRegistrationRecords,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    name,
+    records,
+    type: ENSRegistrationTransactionType.SET_ADDR,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.setAddr(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
 const executeSetText = async (
   name?: string,
   records?: ENSRegistrationRecords,
@@ -220,6 +250,38 @@ const executeSetText = async (
   );
 };
 
+const executeReclaim = async (
+  name?: string,
+  toAddress?: string,
+  records?: ENSRegistrationRecords,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    name,
+    records,
+    toAddress,
+    type: ENSRegistrationTransactionType.RECLAIM,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.reclaim(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
 const ensAction = async (
   wallet: Wallet,
   actionName: string,
@@ -232,7 +294,15 @@ const ensAction = async (
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
-  const { name, duration, rentPrice, records, salt, mode } = parameters;
+  const {
+    name,
+    duration,
+    rentPrice,
+    records,
+    salt,
+    toAddress,
+    mode,
+  } = parameters;
 
   logger.log(`[${actionName}] rap for`, name);
 
@@ -263,6 +333,7 @@ const ensAction = async (
       records: ensRegistrationRecords,
       rentPrice,
       salt,
+      toAddress,
       type,
     });
   } catch (e) {
@@ -377,6 +448,35 @@ const ensAction = async (
           nonce
         );
         analytics.track('Edited ENS records', {
+          category: 'profiles',
+        });
+        break;
+      case ENSRegistrationTransactionType.SET_ADDR:
+        tx = await executeSetAddr(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+        });
+        break;
+      case ENSRegistrationTransactionType.RECLAIM:
+        tx = await executeReclaim(
+          name,
+          toAddress,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        analytics.track('Transferred ENS control', {
           category: 'profiles',
         });
         break;
@@ -511,6 +611,40 @@ const setNameENS = async (
   );
 };
 
+const setAddrENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setAddrENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_ADDR,
+    baseNonce
+  );
+};
+
+const reclaimENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.reclaimENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.RECLAIM,
+    baseNonce
+  );
+};
+
 const setTextENS = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -531,8 +665,10 @@ const setTextENS = async (
 export default {
   commitENS,
   multicallENS,
+  reclaimENS,
   registerWithConfig,
   renewENS,
+  setAddrENS,
   setNameENS,
   setTextENS,
 };

@@ -15,7 +15,7 @@ export async function fetchENSAddress(
   const cachedData = await getENSData('address', name);
   if (cachedData) {
     queryClient.setQueryData(ensAddressQueryKey(name), cachedData?.address);
-    if (cacheFirst) return cachedData?.address;
+    if (cacheFirst) return cachedData?.address as string | null;
   }
 
   const data = await fetchPrimary(name);
