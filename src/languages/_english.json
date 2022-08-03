@@ -958,9 +958,13 @@
         "discord": "Discord",
         "doge": "Dogecoin",
         "email": "Email",
-        "email_message": "Please enter a valid email",
+        "email_warning": "Please enter a valid email",
         "email_placeholder": "Add your email",
-        "email_submit_message": "Please enter a valid email",
+        "twitter_warning": "Please enter a valid Twitter username",
+        "github_warning": "Please enter a valid Github username",
+        "snapchat_warning": "Please enter a valid Snapchat username",
+        "instagram_warning": "Please enter a valid Instagram username",
+        "discord_warning": "Please enter a valid Discord username",
         "eth": "Ethereum",
         "github": "GitHub",
         "instagram": "Instagram",
@@ -987,9 +991,8 @@
         "username_placeholder": "username",
         "wallet_placeholder": "Add a %{coin} address",
         "website": "Website",
-        "website_message": "Please enter a valid website URL",
-        "website_placeholder": "Add your website",
-        "website_submit_message": "Please enter a valid email"
+        "website_warning": "Please enter a valid website URL",
+        "website_placeholder": "Add your website"
       },
       "details": {
         "add_to_contacts": "Add to Contacts",

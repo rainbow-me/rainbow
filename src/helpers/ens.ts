@@ -137,7 +137,7 @@ export const textRecordFields = {
     label: lang.t('profiles.create.website'),
     placeholder: lang.t('profiles.create.website_placeholder'),
     validation: {
-      message: lang.t('profiles.create.website_submit_message'),
+      message: lang.t('profiles.create.website_warning'),
       validator: value =>
         /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
           value
@@ -154,7 +154,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.twitter_submit_message'),
+      message: lang.t('profiles.create.twitter_warning'),
       validator: value => /^\w*$/.test(value),
     },
   },
@@ -168,7 +168,7 @@ export const textRecordFields = {
     label: lang.t('profiles.create.email'),
     placeholder: lang.t('profiles.create.email_placeholder'),
     validation: {
-      message: lang.t('profiles.create.email_submit_message'),
+      message: lang.t('profiles.create.email_warning'),
       validator: value => /^\S+@\S+\.\S+$/.test(value),
     },
   },
@@ -182,7 +182,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.instagram_submit_message'),
+      message: lang.t('profiles.create.instagram_warning'),
       validator: value => /^([\w.])*$/.test(value),
     },
   },
@@ -196,7 +196,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.discord_submit_message'),
+      message: lang.t('profiles.create.discord_warning'),
       validator: value => /^([\w#.])*$/.test(value),
     },
   },
@@ -210,7 +210,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.github_submit_message'),
+      message: lang.t('profiles.create.github_warning'),
       validator: value => /^([\w.])*$/.test(value),
     },
   },
@@ -242,7 +242,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.snapchat_submit_message'),
+      message: lang.t('profiles.create.snapchat_warning'),
       validator: value => /^([\w.])*$/.test(value),
     },
   },
