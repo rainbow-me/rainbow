@@ -512,6 +512,8 @@ const UniqueTokenExpandedState = ({
                             )}`}
                             nftShadows
                             onPress={handlePressEdit}
+                            // @ts-expect-error JavaScript component
+                            testID="edit-button"
                             textColor={textColor}
                             weight="heavy"
                           />
