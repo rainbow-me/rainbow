@@ -79,14 +79,13 @@ export const parseAccountUniqueTokens = data => {
         return {
           ...pickShallow(asset, [
             'animation_url',
-            'current_price',
             'description',
             'external_link',
             'last_sale',
             'name',
             'permalink',
-            'sell_orders',
             'traits',
+            'seaport_sell_orders',
           ]),
           asset_contract: pickShallow(asset_contract, [
             'address',
@@ -110,10 +109,11 @@ export const parseAccountUniqueTokens = data => {
             'twitter_username',
             'wiki_link',
           ]),
-          currentPrice: asset.sell_orders
+          currentPrice: asset.seaport_sell_orders
             ? `${
-                Number(asset.sell_orders[0].current_price) / 1000000000000000000
-              } ${asset.sell_orders[0].payment_token_contract.symbol}`
+                Number(asset.seaport_sell_orders[0].current_price) /
+                1000000000000000000
+              } ${asset.seaport_sell_orders[0].payment_token_contract.symbol}`
             : null,
           familyImage: collection.image_url,
           familyName:
@@ -199,10 +199,11 @@ export const parseAccountUniqueTokensPolygon = data => {
           'twitter_username',
           'wiki_link',
         ]),
-        currentPrice: asset.sell_orders
+        currentPrice: asset.seaport_sell_orders
           ? `${
-              Number(asset.sell_orders[0].current_price) / 1000000000000000000
-            } ${asset.sell_orders[0].payment_token_contract.symbol}`
+              Number(asset.seaport_sell_orders[0].current_price) /
+              1000000000000000000
+            } ${asset.seaport_sell_orders[0].payment_token_contract.symbol}`
           : null,
         familyImage: collection.image_url,
         familyName:
