@@ -18,6 +18,7 @@ import { ProfileSheetConfigContext } from '../../../../screens/ProfileSheet';
 import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
 import ImagePreviewOverlay from '../../../images/ImagePreviewOverlay';
 import { StickyHeaderContext } from './StickyHeaders';
+import { useAndroidScrollViewGestureHandler } from '@/hooks';
 
 const extraPadding = { paddingBottom: 144 };
 const ExternalENSProfileScrollViewWithRef = React.forwardRef<
@@ -58,12 +59,15 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
     [yPosition]
   );
 
+  const { onScroll: onAndroidScroll } = useAndroidScrollViewGestureHandler();
+
   const handleScroll = useCallback(
     event => {
       onScroll(event);
+      android && onAndroidScroll(event);
       runOnUI(scrollHandler)(event.nativeEvent.contentOffset.y);
     },
-    [onScroll, scrollHandler]
+    [onAndroidScroll, onScroll, scrollHandler]
   );
 
   useImperativeHandle(ref, () => scrollViewRef.current!);
