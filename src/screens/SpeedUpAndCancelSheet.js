@@ -26,6 +26,7 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
+import { saveCommitRegistrationParameters } from '@/redux/ensRegistration';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   getFlashbotsProvider,
@@ -131,7 +132,7 @@ export default function SpeedUpAndCancelSheet() {
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
-    params: { type, tx, accentColor, onSendTransactionCallback },
+    params: { type, tx, accentColor },
   } = useRoute();
 
   const [ready, setReady] = useState(false);
@@ -231,6 +232,18 @@ export default function SpeedUpAndCancelSheet() {
     tx,
   ]);
 
+  const saveCommitTransactionHash = useCallback(
+    hash => {
+      dispatch(
+        saveCommitRegistrationParameters({
+          commitTransactionHash: hash,
+          name: tx?.ensRegistrationName,
+        })
+      );
+    },
+    [dispatch, tx?.ensRegistrationName]
+  );
+
   const handleSpeedUp = useCallback(async () => {
     try {
       const newGasParams = getNewTransactionGasParams();
@@ -249,7 +262,9 @@ export default function SpeedUpAndCancelSheet() {
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
-      onSendTransactionCallback?.(hash);
+      if (tx?.ensRegistrationName) {
+        saveCommitTransactionHash(hash);
+      }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -274,7 +289,7 @@ export default function SpeedUpAndCancelSheet() {
     getNewTransactionGasParams,
     goBack,
     nonce,
-    onSendTransactionCallback,
+    saveCommitTransactionHash,
     to,
     tx,
     value,
