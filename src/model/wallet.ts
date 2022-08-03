@@ -887,7 +887,11 @@ export const createWallet = async (
           ? (walletResult as Wallet)
           : new Wallet(pkey);
       setTimeout(() => {
-        dispatch(setIsWalletLoading(null));
+        // on android we need to call this logic in more specific places
+        if (ios || !isImported) {
+          // !imported = new wallet - then we use this logic for dismissing the loading state
+          dispatch(setIsWalletLoading(null));
+        }
       }, 2000);
 
       return ethersWallet;
