@@ -2,7 +2,8 @@ import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
-import { useENSRegistration } from '.';
+import { useENSRegistration, useInterval } from '.';
+import { RegistrationParameters } from '@/entities';
 import {
   getProviderForNetwork,
   isHardHat,
@@ -18,6 +19,38 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 
+const checkRegisterBlockTimestamp = async ({
+  registrationParameters,
+  secondsSinceCommitConfirmed,
+  isTestingHardhat,
+}: {
+  registrationParameters: RegistrationParameters;
+  secondsSinceCommitConfirmed: number;
+  isTestingHardhat: boolean;
+}) => {
+  try {
+    const provider = await getProviderForNetwork();
+    const block = await provider.getBlock('latest');
+    const msBlockTimestamp = getBlockMsTimestamp(block);
+    const secs = differenceInSeconds(
+      msBlockTimestamp,
+      registrationParameters?.commitTransactionConfirmedAt || msBlockTimestamp
+    );
+    if (
+      (secs > ENS_SECONDS_WAIT_WITH_PADDING &&
+        secondsSinceCommitConfirmed > ENS_SECONDS_WAIT_WITH_PADDING) ||
+      // sometimes the provider.getBlock('latest) takes a long time to update to newest block
+      secondsSinceCommitConfirmed > ENS_SECONDS_WAIT_PROVIDER_PADDING ||
+      isTestingHardhat
+    ) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+};
+
 const getBlockMsTimestamp = (block: { timestamp: number }) =>
   block.timestamp * 1000;
 
@@ -26,6 +59,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
   const { registrationParameters, mode } = useENSRegistration();
   const commitTransactionHash = registrationParameters?.commitTransactionHash;
   const prevCommitTrasactionHash = usePrevious(commitTransactionHash);
+  const [startInterval, stopInterval, timeoutRef] = useInterval();
 
   const timeout = useRef<NodeJS.Timeout>();
 
@@ -47,7 +81,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
   );
 
   const [readyToRegister, setReadyToRegister] = useState<boolean>(
-    isTestingHardhat || secondsSinceCommitConfirmed > ENS_SECONDS_WAIT
+    secondsSinceCommitConfirmed > ENS_SECONDS_WAIT
   );
 
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
@@ -150,79 +184,69 @@ export default function useENSRegistrationStepHandler(observer = true) {
   ]);
 
   useEffect(() => {
-    if (observer) return;
-    if (registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
+    if (
+      !observer &&
+      registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION
+    ) {
       startPollingWatchCommitTransaction();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observer, registrationStep]);
 
   useEffect(() => {
-    if (observer) return;
-    let interval: NodeJS.Timer;
     if (
-      (registrationParameters.commitTransactionConfirmedAt ||
-        registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) &&
-      !readyToRegister
+      !observer &&
+      !timeoutRef.current &&
+      ((registrationParameters.commitTransactionConfirmedAt &&
+        registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) ||
+        registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT)
     ) {
-      interval = setInterval(() => {
-        setSecondsSinceCommitConfirmed((seconds: any) => seconds + 1);
-      }, 1000);
+      startInterval(
+        () => setSecondsSinceCommitConfirmed((seconds: any) => seconds + 1),
+        1000
+      );
     }
-    return () => clearInterval(interval);
   }, [
     observer,
     readyToRegister,
     registrationParameters.commitTransactionConfirmedAt,
     registrationParameters.commitTransactionHash,
     registrationStep,
-    secondsSinceCommitConfirmed,
+    startInterval,
+    timeoutRef,
   ]);
 
   useEffect(() => {
-    if (observer) return;
     // we need to check from blocks if the time has passed or not
-    const checkRegisterBlockTimestamp = async () => {
-      try {
-        const provider = await getProviderForNetwork();
-        const block = await provider.getBlock('latest');
-        const msBlockTimestamp = getBlockMsTimestamp(block);
-        const secs = differenceInSeconds(
-          msBlockTimestamp,
-          registrationParameters?.commitTransactionConfirmedAt ||
-            msBlockTimestamp
-        );
-        if (
-          (secs > ENS_SECONDS_WAIT_WITH_PADDING &&
-            secondsSinceCommitConfirmed > ENS_SECONDS_WAIT_WITH_PADDING) ||
-          // sometimes the provider.getBlock('latest) takes a long time to update to newest block
-          secondsSinceCommitConfirmed > ENS_SECONDS_WAIT_PROVIDER_PADDING
-        )
-          setReadyToRegister(true);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
-    };
     if (
+      !observer &&
       secondsSinceCommitConfirmed % 2 === 0 &&
       secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT &&
       !readyToRegister
     ) {
-      checkRegisterBlockTimestamp();
+      const checkIfReadyToRegister = async () => {
+        const readyToRegister = await checkRegisterBlockTimestamp({
+          isTestingHardhat,
+          registrationParameters,
+          secondsSinceCommitConfirmed,
+        });
+        setReadyToRegister(readyToRegister);
+      };
+      checkIfReadyToRegister();
     }
   }, [
     isTestingHardhat,
     observer,
     readyToRegister,
-    registrationParameters?.commitTransactionConfirmedAt,
-    registrationStep,
+    registrationParameters,
     secondsSinceCommitConfirmed,
   ]);
 
   useEffect(
     () => () => {
-      !observer && timeout.current && clearTimeout(timeout.current);
+      !observer && stopInterval();
     },
-    [observer]
+    [observer, stopInterval]
   );
   return {
     secondsSinceCommitConfirmed,
