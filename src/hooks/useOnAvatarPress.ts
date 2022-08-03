@@ -155,53 +155,47 @@ export default () => {
 
   const callback = useCallback(
     async (buttonIndex: Number) => {
-      switch (buttonIndex) {
-        case 0:
-          if (isReadOnly) {
-            if (isENSProfile) {
+      if (hasENSAvatar) {
+        if (!isReadOnly) {
+          if (buttonIndex === 0) {
+            onAvatarEditProfile();
+          } else if (buttonIndex === 1) {
+            onAvatarViewProfile();
+          }
+        } else {
+          if (buttonIndex === 0) {
+            onAvatarViewProfile();
+          }
+        }
+      } else {
+        if (buttonIndex === 0) {
+          onAvatarChooseImage();
+        } else if (buttonIndex === 1) {
+          if (accountImage) {
+            onAvatarRemovePhoto();
+          } else {
+            onAvatarPickEmoji();
+          }
+        } else if (buttonIndex === 2) {
+          if (isENSProfile) {
+            if (!isReadOnly) {
+              onAvatarEditProfile();
+            } else {
               onAvatarViewProfile();
             }
           } else {
-            if (hasENSAvatar) {
-              onAvatarViewProfile();
-            } else {
-              onAvatarChooseImage();
-            }
-          }
-          break;
-        case 1:
-          if (!isReadOnly) {
-            if (isENSProfile && hasENSAvatar) {
-              onAvatarEditProfile();
-            } else {
-              if (accountImage) {
-                onAvatarRemovePhoto();
-              } else {
-                onAvatarPickEmoji();
-              }
-            }
-          }
-          break;
-        case 2:
-          if (!isReadOnly) {
-            if (isENSProfile) {
-              if (!hasENSAvatar) {
-                onAvatarViewProfile();
-              }
-            } else {
+            if (!isReadOnly) {
               onAvatarCreateProfile();
             }
           }
-          break;
-        case 3:
-          if (!isReadOnly) {
-            if (isENSProfile && !hasENSAvatar) {
-              onAvatarEditProfile();
-            }
+          onAvatarCreateProfile();
+        } else if (buttonIndex === 3) {
+          if (isENSProfile && !isReadOnly) {
+            onAvatarViewProfile();
+          } else {
+            onAvatarCreateProfile();
           }
-          break;
-        default:
-          break;
+        }
       }
     },
     [
@@ -218,55 +212,38 @@ export default () => {
     ]
   );
 
-  const avatarActionSheetOptions = (!isReadOnly
+  const avatarActionSheetOptions = (hasENSAvatar
     ? [
-        ...(isENSProfile
-          ? [
-              ...(!hasENSAvatar
-                ? [
-                    lang.t('profiles.profile_avatar.choose_from_library'),
-                    !accountImage
-                      ? lang.t(`profiles.profile_avatar.pick_emoji`)
-                      : lang.t(`profiles.profile_avatar.remove_photo`),
-                  ]
-                : []),
-              lang.t('profiles.profile_avatar.view_profile'),
-              lang.t('profiles.profile_avatar.edit_profile'),
-            ]
-          : [
-              lang.t('profiles.profile_avatar.choose_from_library'),
-              !accountImage
-                ? lang.t(`profiles.profile_avatar.pick_emoji`)
-                : lang.t(`profiles.profile_avatar.remove_photo`),
-              profilesEnabled &&
-                lang.t('profiles.profile_avatar.create_profile'),
-            ]),
+        !isReadOnly && lang.t('profiles.profile_avatar.edit_profile'),
+        lang.t('profiles.profile_avatar.view_profile'),
       ]
-    : [isENSProfile && lang.t('profiles.profile_avatar.view_profile')]
-  ).filter(option => Boolean(option));
-  if (ios && avatarActionSheetOptions.length) {
-    avatarActionSheetOptions.push('Cancel');
-  }
+    : [
+        lang.t('profiles.profile_avatar.choose_from_library'),
+        !accountImage
+          ? lang.t(`profiles.profile_avatar.pick_emoji`)
+          : lang.t(`profiles.profile_avatar.remove_photo`),
+        isENSProfile &&
+          !isReadOnly &&
+          lang.t('profiles.profile_avatar.edit_profile'),
+        isENSProfile && lang.t('profiles.profile_avatar.view_profile'),
+        !isENSProfile &&
+          !isReadOnly &&
+          lang.t('profiles.profile_avatar.create_profile'),
+      ]
+  )
+    .filter(option => Boolean(option))
+    .concat(ios ? ['Cancel'] : []);
 
   const onAvatarPress = useCallback(() => {
-    if (avatarActionSheetOptions.length) {
-      showActionSheetWithOptions(
-        {
-          cancelButtonIndex: avatarActionSheetOptions.length - 1,
-          destructiveButtonIndex:
-            !isReadOnly && !hasENSAvatar && accountImage ? 1 : undefined,
-          options: avatarActionSheetOptions,
-        },
-        (buttonIndex: Number) => callback(buttonIndex)
-      );
-    }
-  }, [
-    avatarActionSheetOptions,
-    isReadOnly,
-    hasENSAvatar,
-    accountImage,
-    callback,
-  ]);
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: avatarActionSheetOptions.length - 1,
+        destructiveButtonIndex: !hasENSAvatar && accountImage ? 1 : undefined,
+        options: avatarActionSheetOptions,
+      },
+      (buttonIndex: Number) => callback(buttonIndex)
+    );
+  }, [avatarActionSheetOptions, hasENSAvatar, accountImage, callback]);
 
   const avatarOptions = useMemo(
     () => [
