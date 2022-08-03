@@ -1,6 +1,5 @@
 import './languages';
 import messaging from '@react-native-firebase/messaging';
-import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
@@ -17,7 +16,6 @@ import {
 import codePush from 'react-native-code-push';
 import {
   IS_TESTING,
-  REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
@@ -73,6 +71,7 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
+import { analytics } from '@rainbow-me/analytics';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
@@ -269,14 +268,6 @@ class App extends Component {
       analytics.identify(identifier);
       analytics.track('First App Open');
     }
-
-    await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
-      ios: {
-        trackDeepLinks: true,
-      },
-      trackAppLifecycleEvents: true,
-      trackAttributionData: true,
-    });
   };
 
   handleAppStateChange = async nextAppState => {

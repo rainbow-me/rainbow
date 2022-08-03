@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { NativeModules, StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
@@ -6,6 +5,7 @@ import currentColors from '../theme/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
+import { analytics } from '@rainbow-me/analytics';
 
 let memRouteName;
 let memState;
