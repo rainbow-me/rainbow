@@ -107,6 +107,7 @@ const yOffsetAtom = atomFamily({
 const ImageOverlayConfigContext = createContext<{
   enableZoom: boolean;
   useBackgroundOverlay?: boolean;
+  yPosition?: SharedValue<number>;
 }>({
   enableZoom: false,
 });
@@ -145,7 +146,7 @@ export default function ImagePreviewOverlay({
   return (
     <RecoilRoot>
       <ImageOverlayConfigContext.Provider
-        value={{ enableZoom, useBackgroundOverlay }}
+        value={{ enableZoom, useBackgroundOverlay, yPosition }}
       >
         {children}
         {enableZoom && (
@@ -433,7 +434,9 @@ export function ImagePreviewOverlayTarget({
       uri?: never;
     }
 )) {
-  const { enableZoom: enableZoom_ } = useContext(ImageOverlayConfigContext);
+  const { enableZoom: enableZoom_, yPosition } = useContext(
+    ImageOverlayConfigContext
+  );
   const enableZoom = enableZoom_ && imageUrl;
 
   const id = useMemo(() => uniqueId(), []);
@@ -525,7 +528,8 @@ export function ImagePreviewOverlayTarget({
               const xOffset = args[4];
               const yOffset = args[5];
               typeof xOffset === 'number' && setXOffset(xOffset);
-              typeof yOffset === 'number' && setYOffset(yOffset - topOffset);
+              typeof yOffset === 'number' &&
+                setYOffset(yOffset - topOffset + (yPosition?.value ?? 0));
               hasMounted.current = true;
             });
           }
@@ -533,7 +537,7 @@ export function ImagePreviewOverlayTarget({
         android ? 500 : 0
       );
     },
-    [aspectRatio, setWidth, setXOffset, setYOffset, topOffset]
+    [aspectRatio, setWidth, setXOffset, setYOffset, topOffset, yPosition?.value]
   );
 
   const children = useMemo(() => {
