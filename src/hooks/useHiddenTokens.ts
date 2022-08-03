@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -8,6 +7,7 @@ import {
 } from '../redux/hiddenTokens';
 import useWallets from './useWallets';
 import useWebData from './useWebData';
+import { analytics } from '@rainbow-me/analytics';
 import { UniqueAsset } from '@rainbow-me/entities';
 
 export default function useHiddenTokens() {
