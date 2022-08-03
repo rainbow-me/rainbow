@@ -98,7 +98,7 @@ describe('Discover Sheet Flow', () => {
     );
   });
 
-  it('Should search and open Showcase modal for rainbowwallet.eth', async () => {
+  it('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.typeText(
       'discover-search-input',
@@ -114,7 +114,7 @@ describe('Discover Sheet Flow', () => {
     await Helpers.waitAndTap(
       'discover-currency-select-list-contact-row-rainbowwallet.eth'
     );
-    await Helpers.checkIfVisible('showcase-sheet');
+    await Helpers.checkIfVisible('profile-sheet');
   });
 
   it('Should close showcase and return to Search on swiping down', async () => {
