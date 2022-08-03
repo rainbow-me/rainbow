@@ -1,4 +1,4 @@
-platform :ios, '12.4'
+platform :ios, '11'
 install! 'cocoapods', :deterministic_uuids => false
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
@@ -6,8 +6,6 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-
-production = ENV["PRODUCTION"] == "1"
 
 target 'PriceWidgetExtension' do
   pod 'swift-vibrant'
@@ -27,7 +25,6 @@ target 'Rainbow' do
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
-    :production => production,
     :hermes_enabled => ENV['USE_HERMES'] != 'NO',
     :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
