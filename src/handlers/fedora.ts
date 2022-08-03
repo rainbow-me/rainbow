@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { Alert } from 'react-native';
 import codePush from 'react-native-code-push';
 import {
   // @ts-ignore
@@ -12,6 +11,7 @@ import {
   CODE_PUSH_DEPLOYMENT_KEY_IOS,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
+import Alert from '@/helpers/alert';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
@@ -13,6 +13,7 @@ import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
+import Alert from '@/helpers/alert';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,

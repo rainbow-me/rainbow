@@ -1,7 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import qs from 'qs';
-import { Alert } from 'react-native';
 import URL from 'url-parse';
 import { initialChartExpandedStateSheetHeight } from '../components/expanded-state/asset/ChartExpandedState';
 import store from '../redux/store';
@@ -10,6 +9,7 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
+import Alert from '@/helpers/alert';
 import { defaultConfig } from '@rainbow-me/config/experimental';
 import { PROFILES } from '@rainbow-me/config/experimentalHooks';
 import { setDeploymentKey } from '@rainbow-me/handlers/fedora';

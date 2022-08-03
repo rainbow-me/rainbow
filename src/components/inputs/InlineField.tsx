@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, TextInputProps } from 'react-native';
+import { TextInputProps } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Input from './Input';
+import Alert from '@/helpers/alert';
 import {
   Bleed,
   Column,

@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { Alert } from 'react-native';
+import Alert from '@/helpers/alert';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 

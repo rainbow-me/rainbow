@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Alert } from 'react-native';
+import Alert from '@/helpers/alert';
 
 const BaseAlert = ({ alertType, buttons, callback, message, title, type }) =>
   Alert[alertType](title, message, buttons || callback, type);
