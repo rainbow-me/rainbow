@@ -69,11 +69,7 @@ export default function DiscoverSearch() {
     // 4. unverified
     // 5. low liquidity
     let list = swapCurrencyList;
-    let listKeys = [];
-
-    list.map(item => {
-      return listKeys.push(item.key);
-    });
+    const listKeys = swapCurrencyList.map(item => item.key);
 
     const profilesSecond =
       (listKeys[0] === 'favorites' && listKeys[1] !== 'verified') ||
