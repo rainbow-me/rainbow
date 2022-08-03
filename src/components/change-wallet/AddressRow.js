@@ -154,15 +154,15 @@ export default function AddressRow({
   );
 
   const menuConfig = useMemo(() => {
-    return getEditMenuItems(address, cleanedUpLabel);
-  }, [address, cleanedUpLabel, getEditMenuItems]);
+    return getEditMenuItems();
+  }, [getEditMenuItems]);
 
   const emptyMenu = {
     menuItems: [],
   };
 
   const onMenuItemPress = useMemo(() => {
-    return getOnMenuItemPress(walletId, address);
+    return getOnMenuItemPress(walletId, address, label);
   }, [address, getOnMenuItemPress, walletId]);
 
   const handlePressMenuItem = useCallback(

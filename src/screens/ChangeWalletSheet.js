@@ -297,7 +297,7 @@ export default function ChangeWalletSheet() {
     ]
   );
 
-  const getEditMenuItems = (address, label) => {
+  const getEditMenuItems = () => {
     const buttons = [lang.t('wallet.action.edit')];
     buttons.push(lang.t('wallet.action.delete'));
 
@@ -305,18 +305,15 @@ export default function ChangeWalletSheet() {
       buttons.push(lang.t('button.cancel'));
     }
 
-    const title = `${label || abbreviations.address(address, 4, 6)}`;
-
     return {
       menuItems: buttons.map(button => ({
         actionKey: button,
         actionTitle: button,
       })),
-      menuTitle: title,
     };
   };
 
-  const getOnMenuItemPress = (walletId, address) => buttonIndex => {
+  const getOnMenuItemPress = (walletId, address, label) => buttonIndex => {
     // If there's more than 1 account
     // it's deletable
     let isLastAvailableWallet = false;
@@ -345,6 +342,7 @@ export default function ChangeWalletSheet() {
           destructiveButtonIndex: 0,
           message: lang.t('wallet.action.delete_confirm'),
           options: [lang.t('wallet.action.delete'), lang.t('button.cancel')],
+          title: `${label || abbreviations.address(address, 4, 6)}`,
         },
         async buttonIndex => {
           if (buttonIndex === 0) {
