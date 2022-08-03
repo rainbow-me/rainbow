@@ -42,7 +42,6 @@
       "@rainbow-me/styles": ["src/styles"],
       "@rainbow-me/styled-components": ["src/styled-thing"],
       "@rainbow-me/theme": ["src/theme"],
-      "@rainbow-me/services": ["src/services"],
       "@rainbow-me/utilities": ["./src/helpers/utilities"],
       "@rainbow-me/utils": ["src/utils"],
       "@rainbow-me/utils/*": ["src/utils/*"],

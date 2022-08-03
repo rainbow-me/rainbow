@@ -17,8 +17,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
+import { StatusBarHelper } from '@/helpers';
 import { useDimensions } from '@rainbow-me/hooks';
-import { StatusBarService } from '@rainbow-me/services';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -129,12 +129,12 @@ export const ZoomableWrapper = ({
   const isZoomedValue = useSharedValue(false);
 
   useEffect(() => {
-    StatusBarService.setLightContent();
+    StatusBarHelper.setLightContent();
     if (isZoomed) {
-      StatusBarService.setHidden(true);
+      StatusBarHelper.setHidden(true);
       onZoomIn?.();
     } else {
-      StatusBarService.setHidden(false);
+      StatusBarHelper.setHidden(false);
       onZoomOut?.();
     }
   }, [isZoomed, onZoomIn, onZoomOut]);

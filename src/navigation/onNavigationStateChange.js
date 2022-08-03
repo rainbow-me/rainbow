@@ -4,8 +4,8 @@ import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
+import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@rainbow-me/analytics';
-import { StatusBarService } from '@rainbow-me/services';
 import { currentColors } from '@rainbow-me/theme';
 
 let memState;
@@ -32,7 +32,7 @@ export function triggerOnSwipeLayout(newAction) {
 export function onHandleStatusBar(currentState, prevState) {
   const routeName = Navigation.getActiveRouteName();
   if (currentColors.theme === 'dark') {
-    StatusBarService.setLightContent();
+    StatusBarHelper.setLightContent();
     return;
   }
   const isFromWalletScreen = Navigation.getActiveRoute().params
@@ -50,7 +50,7 @@ export function onHandleStatusBar(currentState, prevState) {
         (routeName === Routes.EXPANDED_ASSET_SHEET_POOLS ||
           routeName === Routes.EXPANDED_ASSET_SHEET)
       ) {
-        StatusBarService.setDarkContent();
+        StatusBarHelper.setDarkContent();
         break;
       } else if (
         !android &&
@@ -58,7 +58,7 @@ export function onHandleStatusBar(currentState, prevState) {
         routeName !== Routes.EXPANDED_ASSET_SHEET_POOLS &&
         memRouteName !== Routes.WALLET_SCREEN
       ) {
-        StatusBarService.setLightContent();
+        StatusBarHelper.setLightContent();
         break;
       }
       break;
@@ -68,17 +68,17 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.SAVINGS_SHEET:
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
-      StatusBarService.setDarkContent();
+      StatusBarHelper.setDarkContent();
       break;
     case Routes.CURRENCY_SELECT_SCREEN:
-      StatusBarService.pushStackEntry({
+      StatusBarHelper.pushStackEntry({
         animated: true,
         barStyle: ios ? 'light-content' : 'dark-content',
       });
       break;
 
     default:
-      StatusBarService.setLightContent();
+      StatusBarHelper.setLightContent();
   }
 }
 

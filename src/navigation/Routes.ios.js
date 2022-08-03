@@ -69,13 +69,13 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, {
   NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@rainbow-me/helpers/utilities';
-import { StatusBarService } from '@rainbow-me/services';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
@@ -191,7 +191,7 @@ function NativeStackFallbackNavigator() {
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
         options={{
           ...sheetPreset,
-          onTransitionStart: StatusBarService.setLightContent,
+          onTransitionStart: StatusBarHelper.setLightContent,
         }}
       />
       <Stack.Screen
@@ -209,7 +209,7 @@ function NativeStackFallbackNavigator() {
         name={Routes.SEND_SHEET}
         options={{
           ...omitFlatten(sheetPreset, 'gestureResponseDistance'),
-          onTransitionStart: StatusBarService.setLightContent,
+          onTransitionStart: StatusBarHelper.setLightContent,
         }}
       />
       <Stack.Screen
