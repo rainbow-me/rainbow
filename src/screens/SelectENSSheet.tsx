@@ -31,6 +31,7 @@ export const SelectENSSheetHeight = 400;
 
 const deviceHeight = deviceUtils.dimensions.height;
 const rowHeight = 40;
+const rowPadding = 19;
 const maxListHeight = deviceHeight - 220;
 
 export default function SelectENSSheet() {
@@ -66,7 +67,7 @@ export default function SelectENSSheet() {
     return sortedNonPrimaryDomains;
   }, [primaryDomain, nonPrimaryDomains]);
 
-  let listHeight = (rowHeight + 40) * (ownedDomains?.length || 0);
+  let listHeight = (rowHeight + rowPadding) * (ownedDomains?.length || 0) + 21;
   let scrollEnabled = false;
   if (listHeight > maxListHeight) {
     listHeight = maxListHeight;
@@ -118,7 +119,9 @@ export default function SelectENSSheet() {
           {isSuccess && (
             <Bleed bottom={{ custom: scrollEnabled ? 34 : 26 }}>
               <Box
-                ItemSeparatorComponent={() => <Box height={{ custom: 19 }} />}
+                ItemSeparatorComponent={() => (
+                  <Box height={{ custom: rowPadding }} />
+                )}
                 as={FlatList}
                 contentContainerStyle={{
                   paddingBottom: 50,
