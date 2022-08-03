@@ -75,7 +75,7 @@ export default function useAccountTransactions(
   const theme = useTheme();
   const { navigate } = useNavigation();
   const onTransactionPress = useCallback(
-    () => transactionPressBuilder({ navigate }),
+    transactionPressBuilder({ navigate }),
     [navigate]
   );
 
