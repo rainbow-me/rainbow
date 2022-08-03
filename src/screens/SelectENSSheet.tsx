@@ -24,6 +24,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
+import { useTheme } from '@rainbow-me/theme';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const SelectENSSheetHeight = 400;
@@ -141,7 +142,7 @@ export default function SelectENSSheet() {
 }
 
 function ENSAvatar({ name }: { name: string }) {
-  const secondary30 = useForegroundColor('secondary30');
+  const { colors } = useTheme();
 
   const { data: avatar } = useENSAvatar(name);
 
@@ -156,8 +157,9 @@ function ENSAvatar({ name }: { name: string }) {
       />
     );
   }
+
   return (
-    <AccentColorProvider color={secondary30}>
+    <AccentColorProvider color={colors.blueGreyDark30}>
       <Text align="right" color="accent" size="20px" weight="bold">
         􀉭
       </Text>
