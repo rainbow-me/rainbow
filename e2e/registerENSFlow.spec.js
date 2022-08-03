@@ -248,6 +248,10 @@ describe('Register ENS Flow', () => {
   it('Should go to review registration and start it', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible(
+      `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
+    );
     await Helpers.delay(65000);
   });
 
