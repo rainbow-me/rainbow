@@ -188,7 +188,6 @@ export default () => {
               onAvatarCreateProfile();
             }
           }
-          onAvatarCreateProfile();
         } else if (buttonIndex === 3) {
           if (isENSProfile && !isReadOnly) {
             onAvatarViewProfile();
