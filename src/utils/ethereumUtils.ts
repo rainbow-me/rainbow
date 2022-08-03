@@ -129,9 +129,19 @@ const getNativeAssetForNetwork = async (
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
-      if (network === Network.polygon) {
-        nativeAsset.mainnet_address = mainnetAddress;
-        nativeAsset.address = MATIC_POLYGON_ADDRESS;
+      switch (network) {
+        case Network.polygon:
+          nativeAsset.mainnet_address = mainnetAddress;
+          nativeAsset.address = MATIC_POLYGON_ADDRESS;
+          break;
+        case Network.optimism:
+          nativeAsset.mainnet_address = ETH_ADDRESS;
+          nativeAsset.address = OPTIMISM_ETH_ADDRESS;
+          break;
+        case Network.arbitrum:
+          nativeAsset.mainnet_address = ETH_ADDRESS;
+          nativeAsset.address = ARBITRUM_ETH_ADDRESS;
+          break;
       }
       const balance = await getOnchainAssetBalance(
         nativeAsset,
