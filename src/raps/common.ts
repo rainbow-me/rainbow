@@ -2,7 +2,6 @@ import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
 import { Quote } from '@rainbow-me/swaps';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import {
   depositCompound,
@@ -27,6 +26,7 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
+import { analytics } from '@rainbow-me/analytics';
 import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,

@@ -9,23 +9,29 @@ export default function ContextMenuAndroid({
   handlePressMenuItem,
 }) {
   const actions = useMemo(() => {
-    return [
-      {
+    const items = [];
+
+    if (menuTitle) {
+      items.push({
         attributes: {
           disabled: true,
         },
         id: 'title',
         title: menuTitle,
-      },
-    ].concat(
-      menuItems.map(item => {
-        return {
+      });
+    }
+
+    if (menuItems) {
+      items.push(
+        ...menuItems?.map(item => ({
           id: item.actionKey,
           image: item.icon?.iconValue,
           title: item.actionTitle,
-        };
-      })
-    );
+        }))
+      );
+    }
+
+    return items;
   }, [menuItems, menuTitle]);
 
   const onPressAction = useLatestCallback(

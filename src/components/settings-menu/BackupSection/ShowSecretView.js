@@ -1,8 +1,8 @@
-import analytics from '@segment/analytics-react-native';
 import React, { useEffect } from 'react';
 import { Centered } from '../../layout';
 import { ModalHeaderHeight } from '../../modal';
 import SecretDisplaySection from '../../secret-display/SecretDisplaySection';
+import { analytics } from '@rainbow-me/analytics';
 
 export default function ShowSecretView() {
   useEffect(() => {
