@@ -751,17 +751,6 @@ const UniqueTokenExpandedState = ({
           )}
         />
       </ToastPositionContainer>
-      <ToastPositionContainer>
-        <ToggleStateToast
-          addCopy={lang.t(
-            'expanded_state.unique_expanded.toast_added_to_hidden'
-          )}
-          isAdded={isHiddenAsset}
-          removeCopy={lang.t(
-            'expanded_state.unique_expanded.toast_removed_from_hidden'
-          )}
-        />
-      </ToastPositionContainer>
     </>
   );
 };
