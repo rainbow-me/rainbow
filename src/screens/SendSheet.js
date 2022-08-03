@@ -155,6 +155,7 @@ export default function SendSheet(props) {
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
+  const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
@@ -801,8 +802,8 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
-    checkAddress(debouncedRecipient);
-  }, [checkAddress, debouncedRecipient]);
+    checkAddress(debouncedInput);
+  }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
@@ -885,6 +886,7 @@ export default function SendSheet(props) {
             key={sendContactListDataKey}
             loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient, nickname) => {
+              setIsValidAddress(true);
               setRecipient(recipient);
               setNickname(nickname);
             }}
