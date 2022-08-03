@@ -738,7 +738,10 @@ export default function SendSheet(props) {
 
   const onChangeInput = useCallback(
     text => {
-      setIsValidAddress();
+      const isValid = checkIsValidAddressOrDomainFormat(text);
+      if (!isValid) {
+        setIsValidAddress();
+      }
       setToAddress();
       setCurrentInput(text);
       setRecipient(text);
@@ -763,9 +766,9 @@ export default function SendSheet(props) {
     }
   }, [isValidAddress, selected, showAssetForm, showAssetList]);
 
-  const checkAddress = useCallback(async recipient => {
+  const checkAddress = useCallback(recipient => {
     if (recipient) {
-      const isValidFormat = await checkIsValidAddressOrDomainFormat(recipient);
+      const isValidFormat = checkIsValidAddressOrDomainFormat(recipient);
       setIsValidAddress(isValidFormat);
     }
   }, []);

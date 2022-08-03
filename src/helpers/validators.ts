@@ -69,7 +69,7 @@ export const isUnstoppableAddressFormat = memoFn(address => {
  * @param  {String} address, ENS, or Unstoppable
  * @return {Boolean}
  */
-export const checkIsValidAddressOrDomainFormat = async (address: any) => {
+export const checkIsValidAddressOrDomainFormat = (address: any) => {
   if (isENSAddressFormat(address)) {
     return true;
   }
