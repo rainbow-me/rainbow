@@ -8,13 +8,9 @@ const WrapperAlert = {
     buttons?: AlertButton[],
     options?: AlertOptions
   ) => {
-    if (
-      android &&
-      message === undefined &&
-      buttons === undefined &&
-      options === undefined
-    ) {
-      ToastAndroid.show(title, ToastAndroid.SHORT);
+    if (android && !buttons && !options) {
+      const text = message ? `${title}\n${message}` : title;
+      ToastAndroid.show(text, ToastAndroid.SHORT);
     } else {
       return Alert.alert(title, message, buttons, options);
     }
