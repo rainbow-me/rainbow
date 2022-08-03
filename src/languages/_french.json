@@ -253,7 +253,8 @@
       "unhide": "Afficher",
       "unpin": "Détacher",
       "view": "Affichage",
-      "watch_this_wallet": "Watch this Wallet :)"
+      "watch_this_wallet": "Watch this Wallet :)",
+      "hidden": "Caché"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"

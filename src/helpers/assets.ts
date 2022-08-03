@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import store from '@rainbow-me/redux/store';
@@ -402,7 +403,7 @@ export const buildBriefUniqueTokenList = (
   if (hiddenUniqueTokensIds.length > 0) {
     result.push({
       // @ts-expect-error "name" does not exist in type.
-      name: 'Hidden',
+      name: lang.t('button.hidden'),
       total: hiddenUniqueTokensIds.length,
       type: 'FAMILY_HEADER',
       uid: 'hidden',

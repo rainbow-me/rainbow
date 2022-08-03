@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
@@ -48,7 +49,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
     );
   }
 
-  if (familyName === 'Hidden') {
+  if (familyName === lang.t('button.hidden')) {
     return (
       <View
         style={[
