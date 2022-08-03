@@ -632,6 +632,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
+  - Firebase/Messaging (~> 8.14.0)
   - FLAnimatedImage
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (~> 0.11.0)
@@ -1133,6 +1134,6 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
 
-PODFILE CHECKSUM: b28f879725507f95d94adc57febf42531d6e72d1
+PODFILE CHECKSUM: 3d81d103721ac587f9cc40f9440d9afc96ce8bcf
 
 COCOAPODS: 1.11.3
