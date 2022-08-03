@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
@@ -72,7 +72,7 @@ const DevSection = () => {
       logger.log('connected to hardhat', ready);
     } catch (e) {
       await web3SetHttpProvider(networkTypes.mainnet);
-      logger.log('error connecting to hardhat');
+      logger.log('error connecting to hardhat', e);
     }
     navigate(Routes.PROFILE_SCREEN);
     dispatch(explorerInit());

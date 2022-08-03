@@ -68,7 +68,6 @@ const ExchangeCoinRow = ({
 }) => {
   const { width: deviceWidth } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
-
   const handlePress = useCallback(() => {
     if (isVerified || showBalance) {
       onPress(item);
@@ -114,6 +113,7 @@ const ExchangeCoinRow = ({
         <CoinRowInfoButton
           item={item}
           onCopySwapDetailsText={onCopySwapDetailsText}
+          showFavoriteButton={showFavoriteButton}
         />
       )}
       {showFavoriteButton && ios && (

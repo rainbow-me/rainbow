@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { toUpper } from 'lodash';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
@@ -10,6 +9,7 @@ import CoinName from '../coin-row/CoinName';
 import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
 import { PoolValue } from './PoolValue';
+import { analytics } from '@rainbow-me/analytics';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 import { useAccountSettings, useGenericAsset } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';

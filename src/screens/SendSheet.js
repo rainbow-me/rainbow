@@ -1,8 +1,7 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isEmpty, isEqual, isString, toLower } from 'lodash';
+import { isEmpty, isEqual, isString } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -24,6 +23,7 @@ import {
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
+import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
@@ -584,7 +584,7 @@ export default function SendSheet(props) {
     analytics.track('Sent transaction', {
       assetName: selected?.name || '',
       assetType: selected?.type || '',
-      isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
+      isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
     });
 
     if (submitSuccessful) {
@@ -607,7 +607,7 @@ export default function SendSheet(props) {
   const validateRecipient = useCallback(
     async toAddress => {
       // Don't allow send to known ERC20 contracts on mainnet
-      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
+      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
         return false;
       }
 
@@ -617,7 +617,8 @@ export default function SendSheet(props) {
         const found =
           currentChainAssets &&
           currentChainAssets.find(
-            item => toLower(item.asset?.asset_code) === toLower(toAddress)
+            item =>
+              item.asset?.asset_code?.toLowerCase() === toAddress.toLowerCase()
           );
         if (found) {
           return false;

@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
@@ -13,8 +12,9 @@ export default function useTotalFeeEarnedPerAsset(
     (state: AppState) => state.usersPositions
   )[accountAddress];
 
-  const fee = positions?.find(({ pair: { id } }) => id === toLower(address))
-    ?.fees?.sum;
+  const fee = positions?.find(
+    ({ pair: { id } }) => id === address.toLowerCase()
+  )?.fees?.sum;
   const rate = useNativeCurrencyToUSD();
   return fee && fee * rate;
 }

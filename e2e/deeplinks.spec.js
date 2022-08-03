@@ -11,7 +11,11 @@ const testEthereumDeeplink = async (url, coldStart = true) => {
   try {
     await Helpers.checkIfElementByTextIsVisible('􀕹 Review', 15000);
   } catch (e) {
-    await Helpers.checkIfElementByTextIsVisible('Insufficient ETH', 15000);
+    try {
+      await Helpers.checkIfElementByTextIsVisible('Insufficient ETH', 15000);
+    } catch (e) {
+      await Helpers.checkIfElementByTextIsVisible('Insufficient Funds', 15000);
+    }
   }
   await Helpers.swipe('send-sheet', 'down');
 };

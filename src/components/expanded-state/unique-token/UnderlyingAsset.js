@@ -1,13 +1,12 @@
-import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { useRemoveNextToLast } from '../../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../../animations';
-import { UnderlyingAssetCoinRow } from '../../coin-row';
+import UnderlyingAssetCoinRow from '../../coin-row/UnderlyingAssetCoinRow';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
@@ -24,6 +23,8 @@ export default function UnderlyingAsset({
   color,
   percentageAllocation,
   changeVisible,
+  asset,
+  marginRight,
 }) {
   const { nativeCurrency } = useAccountSettings();
 
@@ -39,7 +40,7 @@ export default function UnderlyingAsset({
     const asset =
       ethereumUtils.getAccountAsset(address) ||
       ethereumUtils.formatGenericAsset(
-        genericAssets[toLower(address)],
+        genericAssets[address?.toLowerCase()],
         nativeCurrency
       );
 
@@ -54,6 +55,10 @@ export default function UnderlyingAsset({
     });
   }, [address, genericAssets, nativeCurrency, push, removeNextToLastRoute]);
 
+  const colorFromAsset = useColorForAsset(asset, color);
+
+  const columnWidth = Math.max(3, percentageAllocation * 2);
+
   return (
     <Row
       as={ButtonPressAnimation}
@@ -67,13 +72,13 @@ export default function UnderlyingAsset({
           address={address}
           change={change}
           changeVisible={changeVisible}
-          color={color}
+          color={colorFromAsset}
           isPositive={isPositive}
           name={name}
           symbol={symbol}
         />
       </Column>
-      <Column aling="end">
+      <Column aling="end" marginRight={marginRight}>
         <Row key={`allocation-${symbol}`}>
           <Text
             align="right"
@@ -90,13 +95,9 @@ export default function UnderlyingAsset({
             height={30}
             marginLeft={6}
           >
-            <Column
-              height={16}
-              marginTop={android ? 8 : 3}
-              width={percentageAllocation * 2}
-            >
+            <Column height={16} marginTop={ios ? 3 : 8} width={columnWidth}>
               <ShadowStack
-                backgroundColor={color}
+                backgroundColor={colorFromAsset}
                 borderRadius={8}
                 shadows={[[0, 3, 9, isDarkMode ? colors.shadow : color, 0.2]]}
                 style={{

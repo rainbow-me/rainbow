@@ -53,11 +53,13 @@ export interface UniqueAsset {
   lastSale: UniqueAssetLastSale | undefined;
   lastSalePaymentToken: string | undefined | null;
   lowResUrl: string | null;
+  marketplaceCollectionUrl?: string | null;
+  marketplaceName: string | null;
   type: AssetType;
   uniqueId: string;
   urlSuffixForAsset: string;
   isPoap?: boolean;
-  network?: Network;
+  network: Network;
 }
 
 export interface UniqueAssetTrait {

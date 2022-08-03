@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
@@ -26,6 +25,7 @@ import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
+import { analytics } from '@rainbow-me/analytics';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -633,7 +633,11 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
           transactionDetails: request,
         });
         InteractionManager.runAfterInteractions(() => {
-          analytics.track('Showing Walletconnect signing request');
+          analytics.track('Showing Walletconnect signing request', {
+            dappName,
+            // @ts-ignore
+            dappUrl,
+          });
         });
       }
     }

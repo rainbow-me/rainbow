@@ -1,5 +1,4 @@
 import chroma from 'chroma-js';
-import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
@@ -25,6 +24,7 @@ const darkModeColors = {
   dark: '#E0E8FF',
   darkGrey: '#333333',
   darkModeDark: '#404656',
+  exchangeFallback: 'rgba(60, 66, 82, 0.8)',
   green: '#00D146',
   grey: '#333333',
   grey20: '#333333',
@@ -51,7 +51,7 @@ const darkModeColors = {
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = memoFn(
-  (color: string = '') => toLower(color).substring(0, 3) === 'rgb'
+  (color: string = '') => color.toLowerCase().substring(0, 3) === 'rgb'
 );
 
 const avatarBackgrounds = [
@@ -102,6 +102,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     dpiDark: '#8150E6', // '129, 80, 230'
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
+    exchangeFallback: '#F4F4F5', // '244, 244, 245'
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'
@@ -115,6 +116,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     neonSkyblue: '#34FFFF', // '52, 255, 255'
     offWhite: '#F8F9FA', // '248, 249, 250'
     offWhite80: '#1C1F27',
+    optimismRed: '#FF0420', // '255, 4, 32',
+    optimismRed06: 'rgba(255, 4, 32, 0.06)', // '255, 4, 32, 0.06'
     orange: '#F46E38', // '244, 110, 56'
     orangeLight: '#FEBE44', // '254, 190, 68'
     paleBlue: '#579DFF', // 87, 157, 255
@@ -123,7 +126,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     purple: '#735CFF', // '115, 92, 255'
     purpleDark: '#6F00A3', // '111, 0, 163'
     purpleLight: '#FFD9FE', // '255, 217, 254'
-    purpleUniswap: '#FF007A', // '255,0,122'
+    purpleUniswap: '#FF007A', // '255,0,122',
+    rainbowBlue: '#001E59', // '0, 30, 89',
     red: '#FF494A', // '255, 73, 74'
     rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
     rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
@@ -179,7 +183,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     arbitrum: '#2D374B',
     goerli: '#f6c343',
     kovan: '#7057ff',
-    mainnet: buildRgba('#3C4252', 0.5),
+    mainnet: '#25292E',
     optimism: '#FF4040',
     polygon: '#8247E5',
     rinkeby: '#f6c343',
@@ -348,12 +352,12 @@ const getColorsByTheme = (darkMode?: boolean) => {
     };
 
     networkColors = {
-      arbitrum: '#96BEDC',
+      arbitrum: '#ADBFE3',
       goerli: '#f6c343',
       kovan: '#7057ff',
-      mainnet: buildRgba('#E0E8FF', 0.5),
-      optimism: '#FF4040',
-      polygon: '#8247E5',
+      mainnet: '#E0E8FF',
+      optimism: '#FF6A6A',
+      polygon: '#A275EE',
       rinkeby: '#f6c343',
       ropsten: '#ff4a8d',
     };
@@ -384,7 +388,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
  * @deprecated used for safely retrieving color values in JS not needed with TypeScript anymore
  */
 const getColorForString = (colorString = '', providedThemeColors = colors) => {
-  if (!colorString) return null;
+  //FIXME: sometimes receive non string value
+  if (!colorString || typeof colorString !== 'string') return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);
   return isValidColorString

@@ -188,15 +188,17 @@
       "confirm_exchange": {
         "deposit": "Tenir pour Déposer",
         "enter_amount": "Entrez un Montant",
-        "fetching_details": "Fetching Details... :)",
+        "fetching_quote": "Fetching Quote :)",
         "insufficient_eth": "ETH Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "Insufficient Liquidity :)",
+        "insufficient_matic": "MATIC Insuffisants",
         "insufficient_token": "Insufficient %{tokenName} :)",
         "invalid_fee": "Frais Non Valides",
         "invalid_fee_lowercase": "Frais non valides",
         "loading": "Loading... :)",
         "review": "Review :)",
+        "submitting": "Submitting :)",
         "swap": "Tenir pour Swap",
         "swap_anyway": "Echanger quand Même",
         "symbol_balance_too_low": "%{symbol} balance too low :)",
@@ -205,6 +207,7 @@
       },
       "connect": "Connect :)",
       "connect_walletconnect": "Utiliser WalletConnect",
+      "continue": "Continue :)",
       "delete": "Effacer",
       "donate": "Donner de l’ETH",
       "done": "Terminé",
@@ -215,6 +218,7 @@
       "exchange_again": "Échanger encore",
       "exchange_search_placeholder": "Cherche",
       "go_back": "Retourner",
+      "go_back_undercase": "Go back :)",
       "got_it": "Got it :)",
       "hide": "Cacher",
       "hold_to_authorize": {
@@ -311,7 +315,8 @@
       },
       "search": {
         "profiles": "Profiles :)",
-        "search_ethereum": "Search all of Ethereum :)"
+        "search_ethereum": "Search all of Ethereum :)",
+        "search_ethereum_short": "Search Ethereum :)"
       },
       "strategies": {
         "strategies_title": "Strategies :)",
@@ -359,14 +364,21 @@
       },
       "price_impact": {
         "losing_prefix": "Losing :)",
-        "small_market": "Small Market :)"
+        "small_market": "Small Market :)",
+        "label": "Possible loss :)"
       },
+      "source": {
+        "rainbow": "Auto :)",
+        "0x": "0x :)",
+        "1inch": "1inch :)"
+      },
+      "settings": "Settings :)",
+      "use_defaults": "Use Defaults :)",
+      "done": "Done :)",
+      "slippage_tolerance": "Slippage Tolerance :)",
+      "route_picker": "Route Swaps via :)",
+      "use_flashbots": "Use Flashbots :)",
       "swapping_for_prefix": "Swapping for :)",
-      "unverified_token": {
-        "go_back": "Go Back :)",
-        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens! :)",
-        "unverified_token_title": "Unverified Token :)"
-      },
       "view_details": "View Details :)"
     },
     "expanded_state": {
@@ -376,6 +388,8 @@
         "get_asset": "Get %{assetSymbol} :)",
         "market_cap": "Market cap :)",
         "read_more_button": "Read more :)",
+        "available_networks": "Available on %{availableNetworks} networks :)",
+        "available_network": "Available on the %{availableNetwork} network :)",
         "social": {
           "facebook": "Facebook :)",
           "homepage": "Homepage :)",
@@ -442,6 +456,7 @@
         "unicorn_one": "that unicorn one :)",
         "uniswap_v2": "Uniswap v2 :)",
         "view_on": "View on %{blockExplorerName} :)",
+        "network_switcher": "Swapping on the %{network} network :)",
         "swap_max_alert": {
           "title": "Are you sure? :)",
           "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}? :)",
@@ -454,7 +469,18 @@
         }
       },
       "swap_details": {
-        "review": "Review :)"
+        "exchange_rate": "Exchange rate :)",
+        "rainbow_fee": "Included Rainbow fee :)",
+        "review": "Review :)",
+        "show_details": "More details :)",
+        "hide_details": "Hide details :)",
+        "price_impact": "Difference in value :)",
+        "minimum_received": "Minimum received :)",
+        "maximum_sold": "Maximum sold :)",
+        "token_contract": "%{token} contract :)",
+        "number_of_exchanges": "%{number} Exchanges :)",
+        "input_exchange_rate": "1 %{inputSymbol} pour %{executionRate} %{outputSymbol}",
+        "output_exchange_rate": "1 %{outputSymbol} pour %{executionRate} %{inputSymbol}"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol} :)",
@@ -468,8 +494,7 @@
           "image_download_permission": "Image Download Permission :)",
           "nft_image": "NFT image :)",
           "your_permission_is_required": "Your permission is required to save images to your device :)"
-        },
-        "view_on_opensea": "View on OpenSea :)"
+        }
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName} :)",
@@ -490,7 +515,6 @@
         "last_sale_price": "Last sale price :)",
         "manager": "Manager :)",
         "open_in_web_browser": "Open in Web Browser :)",
-        "opensea": "OpenSea",
         "owner": "Owner :)",
         "profile_info": "Profile Info :)",
         "properties": "Properties :)",
@@ -503,15 +527,35 @@
         "toast_added_to_showcase": "Added to showcase :)",
         "toast_removed_from_showcase": "Removed from showcase :)",
         "twitter": "Twitter",
-        "view_all_with_property": "View All With Property :)",
+        "view_all_with_property": "View All with Property :)",
         "view_collection": "View Collection :)",
         "view_on_block_explorer": "View on %{blockExplorerName} :)",
-        "view_on_opensea": "View on Opensea :)",
+        "view_on_marketplace_name": "View on %{marketplaceName} :)",
         "view_on_platform": "View on %{platform} :)",
         "view_on_web": "View on Web :)"
       }
     },
     "explain": {
+      "optimism_app_icon": {
+        "title": "You've unlocked\nRainbow 􀆄 Optimism :)",
+        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "button": "Snag the icon :)"
+      },
+      "output_disabled": {
+        "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
+        "title": "Enter %{inputToken} Instead :)",
+        "title_empty": "Choose a Token :)"
+      },
+      "available_networks": {
+        "text": "%{tokenSymbol} is also available on %{networks}. To get %{tokenSymbol} on these networks, use a Bridge like Hop. :)",
+        "title_plural": "Available on %{length} Networks :)",
+        "title_singular": "Available on the %{network} Network :)"
+      },
+      "optimism_app_icon": {
+        "title": "You've unlocked\nRainbow 􀆄 Optimism :)",
+        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "button": "Snag the icon :)"
+      },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum. :)",
         "title": "What's Arbitrum? :)"
@@ -563,6 +607,25 @@
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust. :)",
         "title": "Verified Tokens :)"
+      },
+      "insufficient_liquidity": {
+        "fragment1": "The exchanges don't have enough of the tokens you requested to complete this transaction. \n\n Still curious? :)",
+        "fragment2": "Read more :)",
+        "fragment3": " about AMMs and token liquidity. :)",
+        "title": "Insufficient Liquidity :)"
+      },
+      "unverified": {
+        "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
+        "fragment2": "token contract :)",
+        "fragment3": " and always do research to ensure that you interact with tokens you trust. :)",
+        "title": "%{symbol} is Unverified :)",
+        "go_back": "Go back :)"
+      },
+      "obtain_l2_asset": {
+        "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. \n\n Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? :)",
+        "fragment2": "Read more :)",
+        "fragment3": " about bridges. :)",
+        "title": "No Tokens on %{networkName} :)"
       }
     },
     "fedora": {

@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -21,6 +20,7 @@ import {
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
+import { analytics } from '@rainbow-me/analytics';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
@@ -110,7 +110,7 @@ const SavingsSheet = () => {
         params: {
           params: {
             cTokenBalance,
-            defaultInputAsset: underlying,
+            inputAsset: underlying,
             supplyBalanceUnderlying,
           },
           screen: Routes.MAIN_EXCHANGE_SCREEN,
@@ -138,7 +138,7 @@ const SavingsSheet = () => {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         params: {
           params: {
-            defaultInputAsset: underlying,
+            inputAsset: underlying,
           },
           screen: Routes.MAIN_EXCHANGE_SCREEN,
         },
@@ -183,6 +183,7 @@ const SavingsSheet = () => {
                 label={`􀁏 ${lang.t('savings.withdraw')}`}
                 onPress={onWithdraw}
                 radiusAndroid={24}
+                testID="withdraw"
                 weight="heavy"
               />
               <SheetActionButton
@@ -190,6 +191,7 @@ const SavingsSheet = () => {
                 label={`􀁍 ${lang.t('savings.deposit')}`}
                 onPress={onDeposit}
                 radiusAndroid={24}
+                testID="deposit"
                 weight="heavy"
               />
             </SheetActionButtonRow>

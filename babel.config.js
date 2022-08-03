@@ -11,7 +11,7 @@ function getAliasesFromTsConfig() {
   const paths = tsConfig.compilerOptions.paths;
   let alias = {};
   Object.keys(paths).forEach(key => {
-    alias[key] = `./${paths[key][0]}`;
+    alias[key.replace(/\/\*$/, '')] = `./${paths[key][0].replace(/\/\*$/, '')}`;
   });
 
   return alias;

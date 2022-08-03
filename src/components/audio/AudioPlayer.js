@@ -14,7 +14,8 @@ const StyledWebView = styled(WebView)({
   marginTop: android ? 30 : 50,
 });
 
-const formatColor = color => color.replace('#', '');
+const formatColor = color =>
+  color && typeof color === 'string' ? color.replace('#', '') : null;
 
 const buildPlayerUrl = options => {
   let qsArray = [];

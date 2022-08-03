@@ -1,13 +1,14 @@
 import lang from 'i18n-js';
-import React, { useEffect, useRef } from 'react';
-import Animated from 'react-native-reanimated';
-import {
-  bin,
-  useSpringTransition,
-  useTimingTransition,
-} from 'react-native-redash/src/v1';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
-import { ButtonPressAnimation, interpolate } from '../animations';
+import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
@@ -56,48 +57,51 @@ export default function DepositInfo({
   const prevAmount = prevAmountRef.current;
   const amountToDisplay = amount === null ? prevAmount : amount;
 
-  const animation = useSpringTransition(bin(isVisible), springConfig);
-  const animationHeight = useTimingTransition(bin(isVisible), {
-    duration: 100,
+  const animation = useSharedValue(isVisible ? 1 : 0);
+  const heightAnimation = useSharedValue(isVisible ? 1 : 0);
+
+  useLayoutEffect(() => {
+    const toValue = isVisible ? 1 : 0;
+    animation.value = withSpring(toValue, springConfig);
+    heightAnimation.value = withTiming(toValue, {
+      duration: 100,
+    });
+  }, [isVisible, animation, heightAnimation]);
+
+  const priceImpactAnimation = useSharedValue(isHighPriceImpact ? 1 : 0);
+  const priceImpactHeightAnimation = useSharedValue(isHighPriceImpact ? 1 : 0);
+
+  useLayoutEffect(() => {
+    const toValue = isHighPriceImpact ? 1 : 0;
+    priceImpactAnimation.value = withSpring(toValue, springConfig);
+    priceImpactHeightAnimation.value = withTiming(toValue, {
+      duration: 100,
+    });
+  }, [isHighPriceImpact, priceImpactHeightAnimation, priceImpactAnimation]);
+
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    const height = interpolate(heightAnimation.value, [0, 1], [20, 35]);
+    const scale = interpolate(animation.value, [0, 1], [0.8, 1]);
+    const translateY = interpolate(animation.value, [0, 1], [1, 0]);
+    return {
+      height,
+      opacity: animation.value,
+      transform: [{ scale }, { translateY }],
+    };
   });
 
-  const priceImpactAnimation = useSpringTransition(
-    bin(isHighPriceImpact),
-    springConfig
-  );
-
-  const priceImpactHeightAnimation = useTimingTransition(
-    bin(isHighPriceImpact),
-    { duration: 100 }
-  );
+  const priceImpactAnimatedStyle = useAnimatedStyle(() => {
+    const height = interpolate(
+      priceImpactHeightAnimation.value,
+      [0, 1],
+      [0, 60]
+    );
+    return { height, opacity: priceImpactAnimation.value };
+  });
 
   return (
     <Animated.View>
-      <Animated.View
-        style={{
-          height: interpolate(animationHeight, {
-            inputRange: [0, 1],
-            outputRange: [20, 35],
-          }),
-          opacity: interpolate(animation, {
-            inputRange: [0, 1],
-            outputRange: [0, 1],
-          }),
-          transform: [
-            {
-              scale: interpolate(animation, {
-                inputRange: [0, 1],
-                outputRange: [0.8, 1],
-              }),
-              translateY: interpolate(animation, {
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
-            },
-          ],
-        }}
-        testID="deposit-info"
-      >
+      <Animated.View style={animatedContainerStyle} testID="deposit-info">
         <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
           <Container>
             <CoinIcon
@@ -121,18 +125,7 @@ export default function DepositInfo({
           </Container>
         </ButtonPressAnimation>
       </Animated.View>
-      <Animated.View
-        style={{
-          height: interpolate(priceImpactHeightAnimation, {
-            inputRange: [0, 1],
-            outputRange: [0, 60],
-          }),
-          opacity: interpolate(priceImpactAnimation, {
-            inputRange: [0, 1],
-            outputRange: [0, 1],
-          }),
-        }}
-      >
+      <Animated.View style={priceImpactAnimatedStyle}>
         <PriceImpactWarning
           isHighPriceImpact={isHighPriceImpact}
           onPress={onPress}

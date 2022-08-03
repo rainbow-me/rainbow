@@ -1,12 +1,12 @@
 import Clipboard from '@react-native-community/clipboard';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { startCase, toLower } from 'lodash';
+import startCase from 'lodash/startCase';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
+import { analytics } from '@rainbow-me/analytics';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
@@ -162,7 +162,7 @@ export default function TransactionList({
         contactColor = getRandomColor();
       }
 
-      const isOutgoing = toLower(from) === toLower(accountAddress);
+      const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
       const canBeResubmitted = isOutgoing && !minedAt;
       const canBeCancelled =
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;
