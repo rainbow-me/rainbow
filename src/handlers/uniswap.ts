@@ -97,7 +97,7 @@ async function getClosestGasEstimate(estimationFn: Function) {
       (highestFailedGuess !== null &&
         highestFailedGuess + 1 === lowestSuccessfulGuess) ||
       lowestSuccessfulGuess === 0 ||
-      (lowestSuccessfulGuess != null &&
+      (lowestSuccessfulGuess !== null &&
         lowestFailureGuess === lowestSuccessfulGuess - 1)
     ) {
       return gasEstimates[lowestSuccessfulGuess];
