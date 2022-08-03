@@ -126,6 +126,7 @@ export function onNavigationStateChange(currentState) {
       routeName === Routes.QR_SCANNER_SCREEN ||
       routeName === Routes.CUSTOM_GAS_SHEET ||
       routeName === Routes.ENS_INTRO_SHEET ||
+      routeName === Routes.WALLET_SCREEN ||
       routeName === Routes.ENS_SEARCH_SHEET ||
       routeName === Routes.ENS_ASSIGN_RECORDS_SHEET ||
       (routeName === Routes.MODAL_SCREEN &&
