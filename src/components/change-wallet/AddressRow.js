@@ -248,41 +248,36 @@ export default function AddressRow({
         {!editMode && isSelected && (
           <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
         )}
-        {editMode && <OptionsIcon onPress={NOOP} />}
+        {editMode &&
+          (android ? (
+            <ContextMenuButton
+              handlePressMenuItem={handlePressMenuItem}
+              isAnchoredToRight
+              menuConfig={editMode ? menuConfig : emptyMenu}
+            >
+              <OptionsIcon onPress={NOOP} />
+            </ContextMenuButton>
+          ) : (
+            <OptionsIcon onPress={NOOP} />
+          ))}
       </Column>
     </Row>
   );
 
-  if (android) {
-    return (
-      <View style={sx.accountRow}>
-        <ContextMenuButton
-          handlePressMenuItem={handlePressMenuItem}
-          isAnchoredToRight
-          menuConfig={editMode ? menuConfig : emptyMenu}
-        >
-          <ButtonPressAnimation
-            enableHapticFeedback={!editMode}
-            onPress={editMode ? NOOP : onPress}
-            scaleTo={editMode ? 1 : 0.98}
-          >
-            {content}
-          </ButtonPressAnimation>
-        </ContextMenuButton>
-      </View>
-    );
-  }
-
   return (
     <View style={sx.accountRow}>
-      <ButtonPressAnimation
-        enableHapticFeedback={!editMode}
-        onLongPress={!watchOnly ? showIOSMenu : onPress}
-        onPress={editMode ? showIOSMenu : onPress}
-        scaleTo={editMode ? 1 : 0.98}
-      >
-        {content}
-      </ButtonPressAnimation>
+      {ios ? (
+        <ButtonPressAnimation
+          enableHapticFeedback={!editMode}
+          onLongPress={!watchOnly ? showIOSMenu : onPress}
+          onPress={editMode ? showIOSMenu : onPress}
+          scaleTo={editMode ? 1 : 0.98}
+        >
+          {content}
+        </ButtonPressAnimation>
+      ) : (
+        content
+      )}
     </View>
   );
 }
