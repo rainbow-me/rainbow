@@ -609,6 +609,8 @@ PODS:
     - Sentry/Core (= 7.11.0)
   - Sentry/Core (7.11.0)
   - Shimmer (1.0.2)
+  - SRSRadialGradient (1.0.6):
+    - React
   - SSZipArchive (2.2.3)
   - swift-vibrant (1.0.0)
   - TcpSockets (3.3.2):
@@ -724,6 +726,7 @@ DEPENDENCIES:
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNTextSize (from `../node_modules/react-native-text-size`)
   - Shimmer
+  - SRSRadialGradient (from `../node_modules/react-native-radial-gradient`)
   - swift-vibrant
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
@@ -964,6 +967,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   RNTextSize:
     :path: "../node_modules/react-native-text-size"
+  SRSRadialGradient:
+    :path: "../node_modules/react-native-radial-gradient"
   TcpSockets:
     :path: "../node_modules/react-native-tcp"
   ToolTipMenu:
@@ -1105,6 +1110,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
+  SRSRadialGradient: 931da861f761d51f9096e891874fab928b3596be
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
