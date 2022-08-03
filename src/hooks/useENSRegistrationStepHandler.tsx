@@ -1,7 +1,5 @@
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
-import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
 import { useENSRegistration } from '.';
@@ -11,7 +9,10 @@ import {
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import {
+  ENS_SECONDS_PADDING,
   ENS_SECONDS_WAIT,
+  ENS_SECONDS_WAIT_PROVIDER_PADDING,
+  ENS_SECONDS_WAIT_WITH_PADDING,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
@@ -41,12 +42,12 @@ export default function useENSRegistrationStepHandler(observer = true) {
   );
 
   const isTestingHardhat = useMemo(
-    () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
+    () => isHardHat(web3Provider.connection.url),
     []
   );
 
   const [readyToRegister, setReadyToRegister] = useState<boolean>(
-    isTestingHardhat || secondsSinceCommitConfirmed > 60
+    isTestingHardhat || secondsSinceCommitConfirmed > ENS_SECONDS_WAIT
   );
 
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
@@ -61,11 +62,17 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (!registrationParameters.commitTransactionHash)
       return REGISTRATION_STEPS.COMMIT;
     // COMMIT tx sent, but not confirmed yet
-    if (!registrationParameters.commitTransactionConfirmedAt)
+    if (
+      !registrationParameters.commitTransactionConfirmedAt ||
+      secondsSinceCommitConfirmed <= ENS_SECONDS_PADDING
+    )
       return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
     // COMMIT tx was confirmed but 60 secs haven't passed yet
     // or current block is not 60 secs ahead of COMMIT tx block
-    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT || !readyToRegister)
+    if (
+      secondsSinceCommitConfirmed < ENS_SECONDS_WAIT_WITH_PADDING ||
+      !readyToRegister
+    )
       return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
     return REGISTRATION_STEPS.REGISTER;
   }, [
@@ -90,7 +97,9 @@ export default function useENSRegistrationStepHandler(observer = true) {
       const timeDifference = isTestingHardhat ? now - msBlockTimestamp : 0;
       const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
       const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
-      setSecondsSinceCommitConfirmed(secs);
+      setSecondsSinceCommitConfirmed(
+        secondsSinceCommitConfirmed < 0 ? 0 : secs
+      );
       dispatch(
         updateTransactionRegistrationParameters({
           commitTransactionConfirmedAt,
@@ -101,7 +110,13 @@ export default function useENSRegistrationStepHandler(observer = true) {
       shouldLoopForConfirmation.current = false;
     }
     return confirmed;
-  }, [observer, dispatch, isTestingHardhat, commitTransactionHash]);
+  }, [
+    observer,
+    commitTransactionHash,
+    isTestingHardhat,
+    secondsSinceCommitConfirmed,
+    dispatch,
+  ]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
     if (observer) return;
@@ -145,13 +160,24 @@ export default function useENSRegistrationStepHandler(observer = true) {
   useEffect(() => {
     if (observer) return;
     let interval: NodeJS.Timer;
-    if (registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) {
+    if (
+      (registrationParameters.commitTransactionConfirmedAt ||
+        registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) &&
+      !readyToRegister
+    ) {
       interval = setInterval(() => {
         setSecondsSinceCommitConfirmed((seconds: any) => seconds + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [observer, registrationStep, secondsSinceCommitConfirmed]);
+  }, [
+    observer,
+    readyToRegister,
+    registrationParameters.commitTransactionConfirmedAt,
+    registrationParameters.commitTransactionHash,
+    registrationStep,
+    secondsSinceCommitConfirmed,
+  ]);
 
   useEffect(() => {
     if (observer) return;
@@ -166,16 +192,27 @@ export default function useENSRegistrationStepHandler(observer = true) {
           registrationParameters?.commitTransactionConfirmedAt ||
             msBlockTimestamp
         );
-        if (secs > ENS_SECONDS_WAIT) setReadyToRegister(true);
+        if (
+          (secs > ENS_SECONDS_WAIT_WITH_PADDING &&
+            secondsSinceCommitConfirmed > ENS_SECONDS_WAIT_WITH_PADDING) ||
+          // sometimes the provider.getBlock('latest) takes a long time to update to newest block
+          secondsSinceCommitConfirmed > ENS_SECONDS_WAIT_PROVIDER_PADDING
+        )
+          setReadyToRegister(true);
         // eslint-disable-next-line no-empty
       } catch (e) {}
     };
-    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
+    if (
+      secondsSinceCommitConfirmed % 2 === 0 &&
+      secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT &&
+      !readyToRegister
+    ) {
       checkRegisterBlockTimestamp();
     }
   }, [
     isTestingHardhat,
     observer,
+    readyToRegister,
     registrationParameters?.commitTransactionConfirmedAt,
     registrationStep,
     secondsSinceCommitConfirmed,
