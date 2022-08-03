@@ -27,6 +27,7 @@ import {
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -179,6 +180,7 @@ const UniqueTokenExpandedStateHeader = ({
     () => showcaseTokens.includes(asset.uniqueId) as boolean,
     [showcaseTokens, asset.uniqueId]
   );
+  const { goBack } = useNavigation();
 
   const formattedCollectionUrl = useMemo(() => {
     // @ts-expect-error external_link could be null or undefined?
@@ -342,6 +344,8 @@ const UniqueTokenExpandedStateHeader = ({
             removeShowcaseToken(asset.uniqueId);
           }
         }
+
+        goBack();
       }
     },
     [
@@ -352,6 +356,7 @@ const UniqueTokenExpandedStateHeader = ({
       removeShowcaseToken,
       isHiddenAsset,
       isShowcaseAsset,
+      goBack,
     ]
   );
 
@@ -470,6 +475,8 @@ const UniqueTokenExpandedStateHeader = ({
               removeShowcaseToken(asset.uniqueId);
             }
           }
+
+          goBack();
         }
       }
     );
@@ -484,6 +491,7 @@ const UniqueTokenExpandedStateHeader = ({
     addHiddenToken,
     removeHiddenToken,
     removeShowcaseToken,
+    goBack,
   ]);
 
   const overflowMenuHitSlop: Space = '15px';
