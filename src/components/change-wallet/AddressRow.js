@@ -258,6 +258,7 @@ export default function AddressRow({
       <View style={sx.accountRow}>
         <ContextMenuButton
           handlePressMenuItem={handlePressMenuItem}
+          isAnchoredToRight
           menuConfig={editMode ? menuConfig : emptyMenu}
         >
           <ButtonPressAnimation
