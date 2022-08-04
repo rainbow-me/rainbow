@@ -24,9 +24,6 @@ describe('Hidden tokens flow', () => {
 
     await waitFor(element(by.label('Hide')).atIndex(1)).toBeVisible();
     await element(by.label('Hide')).atIndex(1).tap();
-
-    await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
-    await waitFor(element(by.label('Unhide'))).toBeVisible();
   });
 
   it('NFT shows in Hidden collection', async () => {
