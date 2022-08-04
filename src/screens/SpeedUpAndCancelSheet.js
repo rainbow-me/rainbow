@@ -26,7 +26,10 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { saveCommitRegistrationParameters } from '@/redux/ensRegistration';
+import {
+  removeRegistrationByName,
+  saveCommitRegistrationParameters,
+} from '@/redux/ensRegistration';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   getFlashbotsProvider,
@@ -190,6 +193,10 @@ export default function SpeedUpAndCancelSheet() {
     minGasPrice,
   ]);
 
+  const cancelCommitTransactionHash = useCallback(() => {
+    dispatch(removeRegistrationByName(tx?.ensRegistrationName));
+  }, [dispatch, tx?.ensRegistrationName]);
+
   const handleCancellation = useCallback(async () => {
     try {
       const newGasParams = getNewTransactionGasParams();
@@ -206,6 +213,9 @@ export default function SpeedUpAndCancelSheet() {
         transaction: cancelTxPayload,
       });
 
+      if (tx?.ensRegistrationName) {
+        cancelCommitTransactionHash(tx?.ensRegistrationName);
+      }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -224,6 +234,7 @@ export default function SpeedUpAndCancelSheet() {
     }
   }, [
     accountAddress,
+    cancelCommitTransactionHash,
     currentProvider,
     dispatch,
     getNewTransactionGasParams,
