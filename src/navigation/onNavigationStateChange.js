@@ -70,12 +70,6 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.CHANGE_WALLET_SHEET:
       StatusBarHelper.setDarkContent();
       break;
-    case Routes.CURRENCY_SELECT_SCREEN:
-      StatusBarHelper.pushStackEntry({
-        animated: true,
-        barStyle: ios ? 'light-content' : 'dark-content',
-      });
-      break;
 
     default:
       StatusBarHelper.setLightContent();

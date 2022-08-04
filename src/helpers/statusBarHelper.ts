@@ -1,5 +1,5 @@
 import { StatusBar as RNStatusBar, StatusBarAnimation } from 'react-native';
-import { StatusBar, StatusBarProps } from 'react-native-bars';
+import { StatusBar } from 'react-native-bars';
 
 export const setTranslucent = (translucent: boolean): void => {
   RNStatusBar.setTranslucent(translucent);
@@ -10,10 +10,6 @@ export const setHidden = (
   animation?: StatusBarAnimation
 ): void => {
   RNStatusBar.setHidden(hidden, animation);
-};
-
-export const pushStackEntry = (props: StatusBarProps) => {
-  return StatusBar.pushStackEntry(props);
 };
 
 export const setLightContent = (isAnimated = true) => {
