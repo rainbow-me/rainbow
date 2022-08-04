@@ -47,7 +47,7 @@ const FormContainer = styled(Column).attrs(
     : {}
 )(({ isNft }) => ({
   ...(isNft ? padding.object(0) : padding.object(0, 19)),
-  ...(ios ? { flex: 1 } : {}),
+  flex: 1,
 }));
 
 const KeyboardSizeView = styled(KeyboardArea)({
