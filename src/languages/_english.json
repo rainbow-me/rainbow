@@ -1013,6 +1013,7 @@
         "create_profile": "Create your Profile",
         "edit_profile": "Edit Profile",
         "pick_emoji": "Pick an Emoji",
+        "shuffle_emoji": "Shuffle Emoji",
         "remove_photo": "Remove Photo",
         "view_profile": "View Profile"
       },
