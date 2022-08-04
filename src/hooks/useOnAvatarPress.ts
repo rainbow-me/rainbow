@@ -91,10 +91,6 @@ export default () => {
     });
   }, [accountColor, accountName, navigate]);
 
-  const onAvatarShuffleEmoji = useCallback(() => {
-    setNextEmoji();
-  }, [setNextEmoji]);
-
   const onAvatarChooseImage = useCallback(async () => {
     const image = await openPicker({
       cropperCircleOverlay: true,
@@ -149,7 +145,7 @@ export default () => {
             if (ios) {
               onAvatarPickEmoji();
             } else {
-              onAvatarShuffleEmoji();
+              setNextEmoji();
             }
           }
         } else if (buttonIndex === 2 && profilesEnabled) {
@@ -169,6 +165,7 @@ export default () => {
       onAvatarRemovePhoto,
       profilesEnabled,
       startRegistration,
+      setNextEmoji,
     ]
   );
 
