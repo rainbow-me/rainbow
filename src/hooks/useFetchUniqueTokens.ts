@@ -2,6 +2,7 @@ import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
+import { applyENSMetadataFallbackToTokens } from '@/parsers/uniqueTokens';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
@@ -63,6 +64,10 @@ export default function useFetchUniqueTokens({
         uniqueTokens = await apiGetAccountUniqueTokens(network, address, 0);
       }
 
+      // If there are any "unknown" ENS names, fallback to the ENS
+      // metadata service.
+      uniqueTokens = await applyENSMetadataFallbackToTokens(uniqueTokens);
+
       setShouldFetchMore(true);
 
       return uniqueTokens;
@@ -91,11 +96,18 @@ export default function useFetchUniqueTokens({
         uniqueTokens?.length >= page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
         uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL
       ) {
-        const moreUniqueTokens = await apiGetAccountUniqueTokens(
+        let moreUniqueTokens = await apiGetAccountUniqueTokens(
           network,
           address as string,
           page
         );
+
+        // If there are any "unknown" ENS names, fallback to the ENS
+        // metadata service.
+        moreUniqueTokens = await applyENSMetadataFallbackToTokens(
+          moreUniqueTokens
+        );
+
         if (!hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),

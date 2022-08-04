@@ -345,7 +345,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     timeAgo: { hours: 48 },
   });
   if (ensTokens.length > 0) {
-    uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
+    uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'id');
   }
 
   // NFT Fetching clean up

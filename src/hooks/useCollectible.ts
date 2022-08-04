@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import useAccountSettings from './useAccountSettings';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
 import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
 
@@ -15,17 +14,14 @@ export default function useCollectible(
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'uniqueTokens' does not exist on type 'De... Remove this comment to see the full error message
     ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
   );
-  const { accountAddress } = useAccountSettings();
-  const queryClient = useQueryClient();
-  const externalUniqueTokens = useMemo(() => {
-    return (
-      queryClient.getQueryData(
-        uniqueTokensQueryKey({ address: externalAddress })
-      ) || []
-    );
-  }, [queryClient, externalAddress]);
-  const isExternal =
-    Boolean(externalAddress) && externalAddress !== accountAddress;
+  const { data: externalUniqueTokens } = useQuery(
+    uniqueTokensQueryKey({ address: externalAddress }),
+    // We just want to watch for changes in the query key,
+    // so just supplying a noop function & staleTime of Infinity.
+    async () => [],
+    { staleTime: Infinity }
+  );
+  const isExternal = Boolean(externalAddress);
   // Use the appropriate tokens based on if the user is viewing the
   // current accounts tokens, or external tokens (e.g. ProfileSheet)
   const uniqueTokens = useMemo(
