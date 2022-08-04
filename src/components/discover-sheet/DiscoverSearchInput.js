@@ -52,7 +52,7 @@ const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
 }))({});
 
 const SearchIconWrapper = styled(Animated.View)({
-  marginTop: android ? 6 : 9,
+  marginTop: android ? 4 : 9,
 });
 
 const SearchInput = styled(Input).attrs(
