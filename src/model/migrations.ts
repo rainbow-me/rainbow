@@ -1,5 +1,5 @@
 import path from 'path';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';

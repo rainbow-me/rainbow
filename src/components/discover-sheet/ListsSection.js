@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   Fragment,
@@ -19,6 +18,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
+import { analytics } from '@rainbow-me/analytics';
 import { getTrendingAddresses } from '@rainbow-me/handlers/dispersion';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { times } from '@rainbow-me/helpers/utilities';
@@ -243,7 +243,14 @@ export default function ListSection() {
   );
 
   return (
-    <Column testID="lists-section">
+    <Column
+      style={
+        android && {
+          marginTop: -19,
+        }
+      }
+      testID="lists-section"
+    >
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
           {lang.t('discover.lists.lists_title')}

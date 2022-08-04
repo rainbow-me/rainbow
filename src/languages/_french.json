@@ -339,7 +339,8 @@
       },
       "search": {
         "profiles": "Profiles :)",
-        "search_ethereum": "Search all of Ethereum :)"
+        "search_ethereum": "Search all of Ethereum :)",
+        "search_ethereum_short": "Search Ethereum :)"
       },
       "strategies": {
         "strategies_title": "Strategies :)",

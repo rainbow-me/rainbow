@@ -1,6 +1,5 @@
 import { ChainId } from '@rainbow-me/swaps';
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
@@ -29,6 +28,7 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
+import { analytics } from '@rainbow-me/analytics';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
 import {

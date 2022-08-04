@@ -73,22 +73,6 @@ const OuterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
-function SendFlowNavigator({ route: { params } }) {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.SEND_SHEET}
-    >
-      <Stack.Screen
-        component={SendSheet}
-        initialParams={params}
-        name={Routes.SEND_SHEET}
-        options={sheetPreset}
-      />
-    </Stack.Navigator>
-  );
-}
-
 function ImportSeedPhraseFlowNavigator() {
   return (
     <Stack.Navigator
@@ -294,6 +278,11 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={expandedPreset}
       />
+      <OuterStack.Screen
+        component={SendSheet}
+        name={Routes.SEND_SHEET_NAVIGATOR}
+        options={expandedPresetWithSmallGestureResponseDistance}
+      />
     </OuterStack.Navigator>
   );
 }
@@ -306,10 +295,6 @@ function BSNavigator() {
       <BSStack.Screen
         component={MainOuterNavigator}
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
-      <BSStack.Screen
-        component={SendFlowNavigator}
-        name={Routes.SEND_SHEET_NAVIGATOR}
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}
