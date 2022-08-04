@@ -46,7 +46,7 @@ import {
 import { FLASHBOTS_WC } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,

@@ -1,6 +1,6 @@
 import { Alert, AlertButton, AlertOptions, ToastAndroid } from 'react-native';
 
-const WrapperAlert = {
+const WrappedAlert = {
   ...Alert,
   alert: (
     title: string,
@@ -17,4 +17,4 @@ const WrapperAlert = {
   },
 } as typeof Alert;
 
-export default WrapperAlert;
+export { WrappedAlert };

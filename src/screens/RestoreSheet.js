@@ -14,7 +14,7 @@ import {
   isCloudBackupAvailable,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { useDimensions } from '@rainbow-me/hooks';

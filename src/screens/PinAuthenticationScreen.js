@@ -12,7 +12,7 @@ import {
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
 import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';

@@ -26,7 +26,7 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   getFlashbotsProvider,

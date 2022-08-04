@@ -16,7 +16,7 @@ import useAppVersion from '../../hooks/useAppVersion';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import UserDevSection from './UserDevSection';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Divider } from '@rainbow-me/design-system';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import {

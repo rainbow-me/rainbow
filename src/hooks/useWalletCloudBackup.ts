@@ -13,7 +13,7 @@ import {
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   CLOUD_BACKUP_ERRORS,
   isCloudBackupAvailable,

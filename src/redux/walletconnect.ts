@@ -26,7 +26,7 @@ import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';

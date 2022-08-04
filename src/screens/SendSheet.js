@@ -24,7 +24,7 @@ import {
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';

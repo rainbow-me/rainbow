@@ -9,7 +9,7 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { defaultConfig } from '@rainbow-me/config/experimental';
 import { PROFILES } from '@rainbow-me/config/experimentalHooks';
 import { setDeploymentKey } from '@rainbow-me/handlers/fedora';

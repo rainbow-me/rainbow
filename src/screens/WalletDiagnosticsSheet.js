@@ -21,7 +21,7 @@ import { Bold, Text } from '../components/text';
 import { loadAllKeys } from '../model/keychain';
 import { useNavigation } from '../navigation/Navigation';
 import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@rainbow-me/handlers/authentication';
 import {

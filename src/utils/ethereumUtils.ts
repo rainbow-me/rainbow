@@ -25,7 +25,7 @@ import { InteractionManager, Linking, NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   EthereumAddress,
   GasFee,

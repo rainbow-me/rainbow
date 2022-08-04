@@ -31,7 +31,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';

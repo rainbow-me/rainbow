@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import { Linking, NativeModules } from 'react-native';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 const { RainbowRequestReview } = NativeModules;
 
 export const AppleReviewAddress =

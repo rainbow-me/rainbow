@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   deleteAllBackups,
   fetchAllBackups,

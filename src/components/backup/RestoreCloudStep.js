@@ -13,7 +13,7 @@ import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
-import Alert from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
