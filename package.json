@@ -388,8 +388,16 @@
   },
   "jest": {
     "preset": "react-native",
-    "moduleFileExtensions": ["ts", "js", "jsx", "json", "node"],
-    "setupFiles": ["./config/test/jest-setup.js"]
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "setupFiles": [
+      "./config/test/jest-setup.js"
+    ]
   },
   "detox": {
     "devices": {
