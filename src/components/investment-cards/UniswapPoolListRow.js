@@ -80,6 +80,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
     push(Routes.EXPANDED_ASSET_SHEET_POOLS, {
       asset: poolAsset,
       dpi: true,
+      fromDiscover: true,
       isFromWalletScreen,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,

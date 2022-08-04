@@ -34,6 +34,7 @@ export default function IntroMarquee() {
         descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(
           introMarqueeProfiles[ensName]
         ),
+        fromDiscover: true,
       });
     },
     [introMarqueeProfiles, navigate]

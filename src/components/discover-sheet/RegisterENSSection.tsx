@@ -30,7 +30,9 @@ export default function RegisterENSSection() {
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      navigate(Routes.REGISTER_ENS_NAVIGATOR);
+      navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+        fromDiscover: true,
+      });
     } else {
       watchingAlert();
     }
