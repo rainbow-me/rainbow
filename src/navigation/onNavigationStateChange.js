@@ -1,11 +1,11 @@
-import analytics from '@segment/analytics-react-native';
-import { StatusBar } from 'react-native';
+import { NativeModules, StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import currentColors from '../theme/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
+import { analytics } from '@rainbow-me/analytics';
 
 let memRouteName;
 let memState;
@@ -31,6 +31,10 @@ export function onNavigationStateChange(currentState) {
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
+  if (android) {
+    NativeModules.MenuViewModule.dismiss();
+    setTimeout(NativeModules.MenuViewModule.dismiss, 400);
+  }
 
   if (isOnSwipeScreen(routeName)) {
     action?.();

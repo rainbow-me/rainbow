@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { invert } from 'lodash';
 import React, { useMemo } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
@@ -80,7 +79,14 @@ export default function ChartExpandedStateHeader({
 
   const showPriceChange = !isNoPriceData && showChart && !isNaN(latestChange);
 
-  const timespan = invert(ChartTypes)[chartType];
+  const invertedChartTypes = Object.entries(ChartTypes).reduce(
+    (acc, [key, value]) => {
+      acc[value] = key;
+      return acc;
+    },
+    {}
+  );
+  const timespan = invertedChartTypes[chartType];
 
   const formattedTimespan =
     timespan.charAt(0).toUpperCase() + timespan.slice(1);
@@ -133,7 +139,7 @@ export default function ChartExpandedStateHeader({
         )}
 
         <Row>
-          {currentNetwork === Network.mainnet && (
+          {currentNetwork === Network.mainnet && !isPool && (
             <ChartAddToListButton asset={asset} />
           )}
           <ChartContextButton asset={asset} color={color} />

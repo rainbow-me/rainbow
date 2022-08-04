@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
+  AppIconSection,
   CurrencySection,
   DevNotificationsSection,
   DevSection,
@@ -60,6 +61,11 @@ function cardStyleInterpolator({
 }
 
 const SettingsPages = {
+  appIcon: {
+    component: AppIconSection,
+    getTitle: () => lang.t('settings.app_icon'),
+    key: 'AppIconSection',
+  },
   backup: {
     component: View,
     getTitle: () => lang.t('settings.backup'),
@@ -184,6 +190,7 @@ export default function SettingsSheet() {
           {() => (
             <SettingsSection
               onCloseModal={goBack}
+              onPressAppIcon={onPressSection(SettingsPages.appIcon)}
               onPressBackup={onPressSection(SettingsPages.backup)}
               onPressCurrency={onPressSection(SettingsPages.currency)}
               onPressDev={onPressSection(SettingsPages.dev)}

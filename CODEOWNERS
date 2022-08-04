@@ -7,7 +7,7 @@ android/ @brunobar79 @osdnk @terrysahaidak @estebanmino
 ios/ @brunobar79 @osdnk
 
 # SECURITY / APP INFRA
-patches/ @brunobar79 @osdnk @estebanmino
+patches/ @brunobar79 @osdnk @estebanmino @nickbytes
 scripts/ @brunobar79 @osdnk @estebanmino
 
 # DESIGN SYSTEM

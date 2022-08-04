@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
@@ -14,6 +14,8 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji, Text } from '../text';
+import AppIconIcon from '@rainbow-me/assets/settingsAppIcon.png';
+import AppIconIconDark from '@rainbow-me/assets/settingsAppIconDark.png';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
@@ -134,6 +136,7 @@ export default function SettingsSection({
   onPressCurrency,
   onPressDev,
   onPressIcloudBackup,
+  onPressAppIcon,
   onPressLanguage,
   onPressNetwork,
   onPressPrivacy,
@@ -312,6 +315,20 @@ export default function SettingsSection({
               <ListItemArrowGroup>
                 {supportedLanguages[language] || ''}
               </ListItemArrowGroup>
+            </ListItem>
+          )}
+          {ios && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? AppIconIconDark : AppIconIcon}
+                />
+              }
+              label={lang.t('settings.app_icon')}
+              onPress={onPressAppIcon}
+              testID="app-icon-section"
+            >
+              <ListItemArrowGroup />
             </ListItem>
           )}
         </ColumnWithDividers>

@@ -2,7 +2,11 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import AsyncStorage from '@react-native-community/async-storage';
+import {
+  ChainId,
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
+} from '@rainbow-me/swaps';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
@@ -31,6 +35,7 @@ import {
   GasFee,
   LegacySelectedGasFee,
   ParsedAddressAsset,
+  RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
 } from '@rainbow-me/entities';
@@ -112,7 +117,8 @@ const getNativeAssetForNetwork = async (
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
-  let differentWallet = address.toLowerCase() !== accountAddress.toLowerCase();
+  let differentWallet =
+    address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
@@ -297,6 +303,24 @@ const getDataString = (func: string, arrVals: string[]) => {
 };
 
 /**
+ * @desc get network string from asset type
+ * @param  {String} type
+ */
+const getNetworkFromType = (type: string) => {
+  return type === 'token' ? Network.mainnet : (type as Network);
+};
+
+/**
+ * @desc get chainId from asset type
+ * @param  {String} type
+ */
+const getChainIdFromType = (type: string) => {
+  return getChainIdFromNetwork(
+    type === 'token' ? Network.mainnet : (type as Network)
+  );
+};
+
+/**
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
@@ -320,7 +344,9 @@ const getNetworkNameFromChainId = (chainId: number): string | undefined => {
  * @param  {String} network
  */
 const getChainIdFromNetwork = (network: Network): number => {
-  const chainData = chains.find(chain => chain.network === network);
+  const chainData = chains.find(
+    chain => chain.network === network?.toLowerCase()
+  );
   return chainData?.chain_id ?? 1;
 };
 
@@ -676,6 +702,49 @@ const calculateL1FeeOptimism = async (
   }
 };
 
+const getMultichainAssetAddress = (
+  asset: RainbowToken,
+  network: Network
+): EthereumAddress => {
+  const address = asset?.mainnet_address || asset?.address;
+  let realAddress =
+    address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
+      ? ETH_ADDRESS
+      : address;
+
+  if (
+    network === Network.optimism &&
+    address.toLowerCase() === OPTIMISM_ETH_ADDRESS
+  ) {
+    realAddress = ETH_ADDRESS;
+  } else if (
+    network === Network.arbitrum &&
+    address.toLowerCase() === ARBITRUM_ETH_ADDRESS
+  ) {
+    realAddress = ETH_ADDRESS;
+  } else if (
+    network === Network.polygon &&
+    address.toLowerCase() === MATIC_POLYGON_ADDRESS
+  ) {
+    realAddress = MATIC_POLYGON_ADDRESS;
+  }
+
+  return realAddress;
+};
+
+const getBasicSwapGasLimit = (chainId: number) => {
+  switch (chainId) {
+    case ChainId.arbitrum:
+      return ethUnits.basic_swap_arbitrum;
+    case ChainId.polygon:
+      return ethUnits.basic_swap_polygon;
+    case ChainId.optimism:
+      return ethUnits.basic_swap_optimism;
+    default:
+      return ethUnits.basic_swap;
+  }
+};
+
 export default {
   calculateL1FeeOptimism,
   checkIfUrlIsAScam,
@@ -687,15 +756,19 @@ export default {
   getAsset,
   getAssetPrice,
   getBalanceAmount,
+  getBasicSwapGasLimit,
   getBlockExplorer,
   getChainIdFromNetwork,
+  getChainIdFromType,
   getDataString,
   getEtherscanHostForNetwork,
   getEthPriceUnit,
   getHash,
   getMaticPriceUnit,
+  getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
+  getNetworkFromType,
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,

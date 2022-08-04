@@ -1,7 +1,13 @@
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
+import { MMKV } from 'react-native-mmkv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
+import { EthereumAddress } from '@/entities';
+import {
+  optimismNftAppIconCheck,
+  UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
+} from '@/featuresToUnlock';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -83,4 +89,50 @@ export const runWalletBackupStatusChecks = () => {
       );
     }, BACKUP_SHEET_DELAY_MS);
   return;
+};
+
+export const runFeatureUnlockChecks = () => {
+  const {
+    wallets,
+  }: {
+    wallets: AllRainbowWallets | null;
+  } = store.getState().wallets;
+
+  // count how many visible, non-imported and non-readonly wallets are not backed up
+  if (!wallets) return;
+  const walletsToCheck: EthereumAddress[] = [];
+
+  Object.values(wallets).forEach(wallet => {
+    if (wallet.type !== WalletTypes.readOnly) {
+      wallet.addresses?.forEach(
+        (account: RainbowAccount) =>
+          account.visible && walletsToCheck.push(account.address)
+      );
+    }
+  });
+
+  logger.log('WALLETS TO CHECK', walletsToCheck);
+
+  if (!walletsToCheck.length) return;
+
+  const featuresToUnlock = [
+    {
+      check: optimismNftAppIconCheck,
+      name: UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
+    },
+  ];
+
+  const mmkv = new MMKV();
+
+  featuresToUnlock.forEach(async feature => {
+    // Check if it was handled already
+    const handled = mmkv.getBoolean(feature.name);
+    logger.log(`${feature.name} was handled?`, handled);
+    if (!handled) {
+      // if not handled yet, check again
+      logger.log(`${feature.name} being checked`);
+      const result = await feature.check(feature.name, walletsToCheck);
+      logger.log(`${feature.name} check result:`, result);
+    }
+  });
 };
