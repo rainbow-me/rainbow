@@ -123,7 +123,9 @@ export default function ENSSearchCard() {
       scaleTo={0.9}
       style={
         android && {
-          paddingHorizontal: 19,
+          paddingBottom: 19,
+          paddingLeft: 9.5,
+          paddingRight: 19,
         }
       }
       testID="ens-register-name-banner"

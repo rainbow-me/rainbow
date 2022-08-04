@@ -294,6 +294,7 @@ export default function GasCard() {
           android && {
             paddingBottom: 19,
             paddingLeft: 19,
+            paddingRight: 9.5,
           }
         }
         testID="gas-button"
