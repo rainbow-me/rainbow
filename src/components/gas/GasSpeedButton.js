@@ -1,16 +1,16 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
+import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -30,9 +30,17 @@ import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
-import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { gasUtils } from '@rainbow-me/utils';
 
-const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
+const {
+  GAS_EMOJIS,
+  GAS_ICONS,
+  GasSpeedOrder,
+  CUSTOM,
+  URGENT,
+  NORMAL,
+  FAST,
+} = gasUtils;
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
   align: 'center',
@@ -361,7 +369,8 @@ const GasSpeedButton = ({
             )} Gwei`;
       return {
         actionKey: gasOption,
-        actionTitle: upperFirst(gasOption),
+        actionTitle:
+          (android ? `${GAS_EMOJIS[gasOption]}  ` : '') + upperFirst(gasOption),
         discoverabilityTitle: gweiDisplay,
         icon: {
           iconType: 'ASSET',
@@ -393,24 +402,6 @@ const GasSpeedButton = ({
     }
   }, [canGoBack, goBack, validateGasParams]);
 
-  const onPressAndroid = useCallback(() => {
-    if (gasIsNotReady) return;
-    const uppercasedSpeedOptions = speedOptions.map(speed => upperFirst(speed));
-    const androidContractActions = [...uppercasedSpeedOptions];
-
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: androidContractActions.length,
-        options: androidContractActions,
-        showSeparators: true,
-        title: '',
-      },
-      buttonIndex => {
-        handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
-      }
-    );
-  }, [gasIsNotReady, handlePressSpeedOption, speedOptions]);
-
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
     const label = selectedGasFeeOption ?? NORMAL;
@@ -437,9 +428,9 @@ const GasSpeedButton = ({
       <ContextMenuButton
         activeOpacity={0}
         enableContextMenu
-        menuConfig={menuConfig}
-        {...(android ? { onPress: onPressAndroid } : {})}
+        isAnchoredToRight
         isMenuPrimaryAction
+        menuConfig={menuConfig}
         onPressMenuItem={handlePressMenuItem}
         useActionSheetFallback={false}
         wrapNativeComponent={false}
@@ -454,7 +445,6 @@ const GasSpeedButton = ({
     gasOptionsAvailable,
     handlePressMenuItem,
     menuConfig,
-    onPressAndroid,
     rawColorForAsset,
     selectedGasFeeOption,
     showGasOptions,
