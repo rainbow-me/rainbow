@@ -167,11 +167,6 @@ function MainNavigator() {
       {profilesEnabled && (
         <>
           <Stack.Screen
-            component={ENSConfirmRegisterSheet}
-            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
-            options={ensPreset}
-          />
-          <Stack.Screen
             component={ENSAdditionalRecordsSheet}
             name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
             options={ensPreset}
@@ -312,6 +307,10 @@ function BSNavigator() {
         options={{
           height: '95%',
         }}
+      />
+      <BSStack.Screen
+        component={ENSConfirmRegisterSheet}
+        name={Routes.ENS_CONFIRM_REGISTER_SHEET}
       />
       <BSStack.Screen
         component={SelectUniqueTokenSheet}
