@@ -31,7 +31,6 @@ describe('Hidden tokens flow', () => {
 
   it('NFT shows in Hidden collection', async () => {
     // open ENS and tap on our ENS NFT
-    await Helpers.swipe('unique-token-expanded-state', 'down', 'slow');
     await waitFor(element(by.id('token-family-header-Hidden'))).toBeVisible();
   });
 
@@ -46,7 +45,6 @@ describe('Hidden tokens flow', () => {
     await waitFor(element(by.label('Unhide')).atIndex(0)).toBeVisible();
     await element(by.label('Unhide')).atIndex(0).tap();
 
-    await Helpers.swipe('unique-token-expanded-state', 'down', 'slow');
     await waitFor(element(by.id('token-family-header-Hidden'))).toNotExist();
 
     await Helpers.checkIfVisible('wrapped-nft-rainbowtestwallet.eth');
