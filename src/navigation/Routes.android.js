@@ -165,18 +165,11 @@ function MainNavigator() {
         }}
       />
       {profilesEnabled && (
-        <>
-          <Stack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_PREVIEW_SHEET}
-            options={ensPreset}
-          />
-          <Stack.Screen
-            component={SelectENSSheet}
-            name={Routes.SELECT_ENS_SHEET}
-            options={ensPreset}
-          />
-        </>
+        <Stack.Screen
+          component={ProfileSheet}
+          name={Routes.PROFILE_PREVIEW_SHEET}
+          options={ensPreset}
+        />
       )}
       <Stack.Screen
         component={ExchangeModalNavigator}
@@ -336,6 +329,10 @@ function BSNavigator() {
           <BSStack.Screen
             component={ENSAdditionalRecordsSheet}
             name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
+          />
+          <BSStack.Screen
+            component={SelectENSSheet}
+            name={Routes.SELECT_ENS_SHEET}
           />
         </>
       )}
