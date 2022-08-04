@@ -121,6 +121,11 @@ export default function ENSSearchCard() {
     <ButtonPressAnimation
       onPress={handlePress}
       scaleTo={0.9}
+      style={
+        android && {
+          paddingHorizontal: 19,
+        }
+      }
       testID="ens-register-name-banner"
     >
       <AccentColorProvider color={shadowColor}>
