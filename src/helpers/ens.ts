@@ -137,7 +137,7 @@ export const textRecordFields = {
     label: lang.t('profiles.create.website'),
     placeholder: lang.t('profiles.create.website_placeholder'),
     validation: {
-      message: lang.t('profiles.create.website_warning'),
+      message: lang.t('profiles.create.invalid_website'),
       validator: value =>
         /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
           value
@@ -154,7 +154,9 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.twitter_warning'),
+      message: lang.t('profiles.create.invalid_username', {
+        app: lang.t('profiles.create.twitter'),
+      }),
       validator: value => /^\w*$/.test(value),
     },
   },
@@ -168,7 +170,7 @@ export const textRecordFields = {
     label: lang.t('profiles.create.email'),
     placeholder: lang.t('profiles.create.email_placeholder'),
     validation: {
-      message: lang.t('profiles.create.email_warning'),
+      message: lang.t('profiles.create.invalid_email'),
       validator: value => /^\S+@\S+\.\S+$/.test(value),
     },
   },
@@ -182,7 +184,9 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.instagram_warning'),
+      message: lang.t('profiles.create.invalid_username', {
+        app: lang.t('profiles.create.instagram'),
+      }),
       validator: value => /^([\w.])*$/.test(value),
     },
   },
@@ -196,7 +200,9 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.discord_warning'),
+      message: lang.t('profiles.create.invalid_username', {
+        app: lang.t('profiles.create.discord'),
+      }),
       validator: value => /^([\w#.])*$/.test(value),
     },
   },
@@ -210,7 +216,9 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.github_warning'),
+      message: lang.t('profiles.create.invalid_username', {
+        app: lang.t('profiles.create.github'),
+      }),
       validator: value => /^([\w.])*$/.test(value),
     },
   },
@@ -242,7 +250,9 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: lang.t('profiles.create.snapchat_warning'),
+      message: lang.t('profiles.create.invalid_username', {
+        app: lang.t('profiles.create.snapchat'),
+      }),
       validator: value => /^([\w.])*$/.test(value),
     },
   },
@@ -255,6 +265,12 @@ export const textRecordFields = {
     label: lang.t('profiles.create.telegram'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
+    validation: {
+      message: lang.t('profiles.create.invalid_username', {
+        app: lang.t('profiles.create.telegram'),
+      }),
+      validator: value => /^([\w#.])*$/.test(value),
+    },
   },
   [ENS_RECORDS.reddit]: {
     id: 'reddit',
@@ -265,6 +281,12 @@ export const textRecordFields = {
     label: lang.t('profiles.create.reddit'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
+    validation: {
+      message: lang.t('profiles.create.invalid_username', {
+        app: lang.t('profiles.create.reddit'),
+      }),
+      validator: value => /^([\w#.])*$/.test(value),
+    },
   },
   [ENS_RECORDS.pronouns]: {
     id: 'pronouns',
