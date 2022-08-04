@@ -287,6 +287,17 @@ export const isValidMnemonic = (value: string): boolean =>
   ethersIsValidMnemonic(value);
 
 /**
+ * @desc is valid mnemonic
+ * @param value The string to check.
+ * @return Whether or not the string was a valid mnemonic.
+ */
+export const isValidBluetoothDeviceId = (value: string): boolean => {
+  // TODO: figure out what the proper format is for bluetooth device ids
+  logger.debug('isValidBluetoothDeviceId', value);
+  return true;
+};
+
+/**
  * @desc Converts an address to a checksummed address.
  * @param address The address
  * @return The checksum address, or `null` if the conversion fails.

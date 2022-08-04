@@ -1213,6 +1213,7 @@
     "wallet": {
       "action": {
         "add_existing": "Add an existing wallet",
+        "connect_hw_wallet": "Connect Hardware Wallet",
         "cancel": "Cancel",
         "copy_contract_address": "Copy Contract Address",
         "create_new": "Create a new wallet",

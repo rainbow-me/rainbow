@@ -1161,6 +1161,7 @@
     "wallet": {
       "action": {
         "add_existing": "Ajouter un portefeuille existant",
+        "connect_hw_wallet": "Connect Hardware Wallet",
         "cancel": "Annuler",
         "copy_contract_address": "Copy Contract Address :)",
         "create_new": "Créez un nouveau portefeuille",

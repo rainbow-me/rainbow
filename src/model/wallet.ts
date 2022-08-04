@@ -48,6 +48,7 @@ import {
   addHexPrefix,
   isHexString,
   isHexStringIgnorePrefix,
+  isValidBluetoothDeviceId,
   isValidMnemonic,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
@@ -178,6 +179,7 @@ interface MigratedSecretsResult {
 export enum WalletLibraryType {
   ethers = 'ethers',
   bip39 = 'bip39',
+  ledgerNanoX = 'ledgerNanoX',
 }
 
 const privateKeyVersion = 1.0;
@@ -538,6 +540,10 @@ export const identifyWalletType = (
   if (isValidAddress(walletSeed)) {
     return EthereumWalletType.readOnly;
   }
+
+  if (isValidBluetoothDeviceId(walletSeed)) {
+    return EthereumWalletType.bluetoothHardware;
+  }
   // seed
   return EthereumWalletType.seed;
 };
@@ -576,6 +582,7 @@ export const createWallet = async (
       checkedWallet ||
       (await ethereumUtils.deriveAccountFromWalletInput(walletSeed));
     const isReadOnlyType = type === EthereumWalletType.readOnly;
+    const isHardwareWallet = type === EthereumWalletType.bluetoothHardware;
     let pkey = walletSeed;
     if (!walletResult) return null;
     const walletAddress = address;
@@ -583,6 +590,9 @@ export const createWallet = async (
       pkey = addHexPrefix(
         (walletResult as LibWallet).getPrivateKey().toString('hex')
       );
+    } else {
+      // Format is ${bluetooth device id}/${index}
+      pkey = `${seed}/0`;
     }
     logger.sentry('[createWallet] - getWallet from seed');
 
@@ -636,7 +646,7 @@ export const createWallet = async (
 
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
-    if (android && !isReadOnlyType) {
+    if (android && !isReadOnlyType && !isHardwareWallet) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
@@ -708,7 +718,10 @@ export const createWallet = async (
       label: name || '',
       visible: true,
     });
-    if (type !== EthereumWalletType.readOnly) {
+    if (
+      type !== EthereumWalletType.readOnly &&
+      type !== EthereumWalletType.bluetoothHardware
+    ) {
       // Creating signature for this wallet
       logger.sentry(`[createWallet] - generating signature`);
       await createSignature(walletAddress, pkey);
@@ -724,7 +737,9 @@ export const createWallet = async (
       logger.sentry(`[createWallet] - enabled web profile`);
     }
 
-    if (isHDWallet && root && isImported) {
+    // Initiate auto account discovery for imported wallets via seedphrase
+    // or for hardware wallets
+    if ((isHDWallet && root && isImported) || (isHardwareWallet && seed)) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
       let lookup = true;
@@ -732,11 +747,25 @@ export const createWallet = async (
       // for each account. If there's history we add it to the wallet.
       //(We stop once we find the first one with no history)
       while (lookup) {
-        const child = root.deriveChild(index);
-        const walletObj = child.getWallet();
-        const nextWallet = new Wallet(
-          addHexPrefix(walletObj.getPrivateKey().toString('hex'))
-        );
+        let nextWallet: any = null;
+        if (isHardwareWallet) {
+          const walletObj = await ethereumUtils.deriveAccountFromBluetoothHardwareWallet(
+            seed,
+            index
+          );
+          nextWallet = {
+            address: walletObj.wallet.address,
+            privateKey: walletObj.wallet.privateKey,
+          };
+        } else {
+          const child = root?.deriveChild(index);
+          const walletObj = child?.getWallet();
+          const pkey = walletObj?.getPrivateKey()?.toString('hex');
+          if (pkey) {
+            nextWallet = new Wallet(addHexPrefix(pkey));
+          }
+        }
+
         let hasTxHistory = false;
         try {
           hasTxHistory = await ethereumUtils.hasPreviousTransactions(
@@ -809,10 +838,12 @@ export const createWallet = async (
             visible: true,
           });
 
-          // Creating signature for this wallet
-          await createSignature(nextWallet.address, nextWallet.privateKey);
-          // Enable web profile
-          store.dispatch(updateWebDataEnabled(true, nextWallet.address));
+          if (!isHardwareWallet) {
+            // Creating signature for this wallet
+            await createSignature(nextWallet.address, nextWallet.privateKey);
+            // Enable web profile
+            store.dispatch(updateWebDataEnabled(true, nextWallet.address));
+          }
 
           // Save the color
           setPreference(

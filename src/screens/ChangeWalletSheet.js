@@ -25,7 +25,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
@@ -47,7 +47,7 @@ import {
 import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const footerHeight = 111;
+const footerHeight = 164;
 const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
@@ -384,6 +384,12 @@ export default function ChangeWalletSheet() {
     ]
   );
 
+  const onPressConnectHardwareWallet = useCallback(async () => {
+    analytics.track('Tapped "Connect Hardware Wallet"');
+    goBack();
+    navigate(Routes.HW_WALLET_SHEET);
+  }, [goBack, navigate]);
+
   const onPressAddAccount = useCallback(async () => {
     try {
       analytics.track('Tapped "Create a new wallet"');
@@ -548,6 +554,7 @@ export default function ChangeWalletSheet() {
         onChangeAccount={onChangeAccount}
         onEditWallet={onEditWallet}
         onPressAddAccount={onPressAddAccount}
+        onPressConnectHardwareWallet={onPressConnectHardwareWallet}
         onPressImportSeedPhrase={onPressImportSeedPhrase}
         scrollEnabled={scrollEnabled}
         showDividers={showDividers}

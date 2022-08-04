@@ -14,6 +14,7 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
+import HardwareWalletSheet from '../screens/HardwareWalletSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
@@ -293,6 +294,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={HardwareWalletSheet}
+        name={Routes.HW_WALLET_SHEET}
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen

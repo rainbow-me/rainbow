@@ -2,6 +2,8 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
+import AppEth from '@ledgerhq/hw-app-eth';
+import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import {
   ChainId,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
@@ -505,6 +507,29 @@ const deriveAccountFromMnemonic = async (mnemonic: string, index = 0) => {
   };
 };
 
+const deriveAccountFromBluetoothHardwareWallet = async (
+  deviceId: string,
+  index = 0
+) => {
+  const transport = await TransportBLE.open(deviceId);
+  const eth = new AppEth(transport);
+  const path = `${DEFAULT_HD_PATH.replace('m/', '')}/${index}`; // HD derivation path
+  const { address } = await eth.getAddress(path, false);
+  const wallet = {
+    address: toChecksumAddress(address),
+    privateKey: `${deviceId}/${index}`,
+  };
+
+  return {
+    address: wallet.address,
+    isHDWallet: false,
+    root: null,
+    type: WalletTypes.bluetoothHardware,
+    wallet,
+    walletType: WalletLibraryType.ledgerNanoX,
+  };
+};
+
 const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
   const ethersWallet = new Wallet(addHexPrefix(privateKey));
   return {
@@ -531,6 +556,8 @@ const deriveAccountFromWalletInput = (input: EthereumWalletSeed) => {
       wallet: ethersWallet,
       walletType: WalletLibraryType.ethers,
     };
+  } else if (type === WalletTypes.bluetoothHardware) {
+    return deriveAccountFromBluetoothHardwareWallet(input);
   }
   return deriveAccountFromMnemonic(input);
 };
@@ -748,6 +775,7 @@ const getBasicSwapGasLimit = (chainId: number) => {
 export default {
   calculateL1FeeOptimism,
   checkIfUrlIsAScam,
+  deriveAccountFromBluetoothHardwareWallet,
   deriveAccountFromMnemonic,
   deriveAccountFromPrivateKey,
   deriveAccountFromWalletInput,

@@ -101,6 +101,7 @@ export default function WalletList({
   onEditWallet,
   onPressAddAccount,
   onPressImportSeedPhrase,
+  onPressConnectHardwareWallet,
   scrollEnabled,
   showDividers,
   watchOnly,
@@ -236,15 +237,18 @@ export default function WalletList({
             <WalletListFooter>
               <WalletOption
                 editMode={editMode}
-                icon="arrowBack"
                 label={`􀁍 ${lang.t('wallet.action.create_new')}`}
                 onPress={onPressAddAccount}
               />
               <WalletOption
                 editMode={editMode}
-                icon="arrowBack"
                 label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
                 onPress={onPressImportSeedPhrase}
+              />
+              <WalletOption
+                editMode={editMode}
+                label={`􀭹 ${lang.t('wallet.action.connect_hw_wallet')}`}
+                onPress={onPressConnectHardwareWallet}
               />
             </WalletListFooter>
           )}
