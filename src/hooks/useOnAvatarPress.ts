@@ -155,44 +155,68 @@ export default () => {
 
   const callback = useCallback(
     async (buttonIndex: Number) => {
-      if (hasENSAvatar) {
-        if (!isReadOnly) {
-          if (buttonIndex === 0) {
+      if (buttonIndex === 0) {
+        if (isENSProfile) {
+          if (!isReadOnly) {
             onAvatarEditProfile();
-          } else if (buttonIndex === 1) {
+          } else {
             onAvatarViewProfile();
           }
         } else {
-          if (buttonIndex === 0) {
-            onAvatarViewProfile();
+          if (!isReadOnly) {
+            onAvatarCreateProfile();
+          } else {
+            onAvatarChooseImage();
           }
         }
-      } else {
-        if (buttonIndex === 0) {
-          onAvatarChooseImage();
-        } else if (buttonIndex === 1) {
-          if (accountImage) {
-            onAvatarRemovePhoto();
-          } else {
-            onAvatarPickEmoji();
-          }
-        } else if (buttonIndex === 2) {
-          if (isENSProfile) {
-            if (!isReadOnly) {
-              onAvatarEditProfile();
-            } else {
-              onAvatarViewProfile();
-            }
-          } else {
-            if (!isReadOnly) {
-              onAvatarCreateProfile();
-            }
-          }
-        } else if (buttonIndex === 3) {
-          if (isENSProfile && !isReadOnly) {
+      } else if (buttonIndex === 1) {
+        if (isENSProfile) {
+          if (!isReadOnly) {
             onAvatarViewProfile();
           } else {
-            onAvatarCreateProfile();
+            if (!hasENSAvatar) {
+              onAvatarChooseImage();
+            }
+          }
+        } else {
+          if (!isReadOnly) {
+            onAvatarChooseImage();
+          } else {
+            if (!accountImage) {
+              onAvatarPickEmoji();
+            } else {
+              onAvatarRemovePhoto();
+            }
+          }
+        }
+      } else if (buttonIndex === 2) {
+        if (!hasENSAvatar) {
+          if (isENSProfile) {
+            if (!isReadOnly) {
+              onAvatarChooseImage();
+            } else {
+              if (!accountImage) {
+                onAvatarPickEmoji();
+              } else {
+                onAvatarRemovePhoto();
+              }
+            }
+          } else {
+            if (!isReadOnly) {
+              if (!accountImage) {
+                onAvatarPickEmoji();
+              } else {
+                onAvatarRemovePhoto();
+              }
+            }
+          }
+        }
+      } else if (buttonIndex === 3) {
+        if (!hasENSAvatar && !isReadOnly) {
+          if (!accountImage) {
+            onAvatarPickEmoji();
+          } else {
+            onAvatarRemovePhoto();
           }
         }
       }
@@ -217,10 +241,6 @@ export default () => {
         lang.t('profiles.profile_avatar.view_profile'),
       ]
     : [
-        lang.t('profiles.profile_avatar.choose_from_library'),
-        !accountImage
-          ? lang.t(`profiles.profile_avatar.pick_emoji`)
-          : lang.t(`profiles.profile_avatar.remove_photo`),
         isENSProfile &&
           !isReadOnly &&
           lang.t('profiles.profile_avatar.edit_profile'),
@@ -228,6 +248,10 @@ export default () => {
         !isENSProfile &&
           !isReadOnly &&
           lang.t('profiles.profile_avatar.create_profile'),
+        lang.t('profiles.profile_avatar.choose_from_library'),
+        !accountImage
+          ? lang.t(`profiles.profile_avatar.pick_emoji`)
+          : lang.t(`profiles.profile_avatar.remove_photo`),
       ]
   )
     .filter(option => Boolean(option))
@@ -237,7 +261,10 @@ export default () => {
     showActionSheetWithOptions(
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
-        destructiveButtonIndex: !hasENSAvatar && accountImage ? 1 : undefined,
+        destructiveButtonIndex:
+          !hasENSAvatar && accountImage
+            ? avatarActionSheetOptions.length - 2
+            : undefined,
         options: avatarActionSheetOptions,
       },
       (buttonIndex: Number) => callback(buttonIndex)
