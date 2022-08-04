@@ -48,8 +48,7 @@
     "update-token-metadata": "./scripts/update-token-metadata.sh",
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js",
-    "prepare": "husky install",
-    "patch-rn": "patch-package react-native --exclude 'FBReactNativeSpec|/rncore/'"
+    "prepare": "husky install"
   },
   "dependencies": {
     "@apollo/client": "3.2.4",
@@ -389,16 +388,8 @@
   },
   "jest": {
     "preset": "react-native",
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "setupFiles": [
-      "./config/test/jest-setup.js"
-    ]
+    "moduleFileExtensions": ["ts", "js", "jsx", "json", "node"],
+    "setupFiles": ["./config/test/jest-setup.js"]
   },
   "detox": {
     "devices": {
