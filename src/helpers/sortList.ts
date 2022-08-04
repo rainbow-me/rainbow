@@ -6,7 +6,7 @@ import toLower from 'lodash/toLower';
 export const sortList = (
   array: any[] = [],
   sortByKey: any,
-  direction: any,
+  direction?: any,
   defaultValue?: any,
   formatter?: any
 ) =>

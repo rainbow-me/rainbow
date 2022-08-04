@@ -48,35 +48,6 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   }
 `;
 
-export const UNISWAP_24HOUR_PRICE_QUERY = (
-  tokenAddress: string,
-  block: number
-) => {
-  const queryString = `
-    query tokens {
-      tokens(${
-        block ? `block : {number: ${block}}` : ``
-      } where: {id:"${tokenAddress}"}) {
-        id
-        derivedETH
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
-export const UNISWAP_PRICES_QUERY = gql`
-  query tokens($addresses: [String]!) {
-    tokens(where: { id_in: $addresses, derivedETH_gt: 0 }) {
-      id
-      derivedETH
-      symbol
-      name
-      decimals
-    }
-  }
-`;
-
 export const UNISWAP_ADDITIONAL_POOL_DATA = gql`
   query pairs($address: String!) {
     pairs(where: { id: $address }) {

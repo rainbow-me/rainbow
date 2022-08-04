@@ -72,6 +72,8 @@ const AppIconListItem = ({ name, value, source, color, ...item }) => {
   );
 };
 
+const mmkv = new MMKV();
+
 const AppIconSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();
 
@@ -86,7 +88,6 @@ const AppIconSection = () => {
   const appIconListItemsWithUnlocked = useMemo(() => {
     // Here we gotta check if each additional icon is unlocked and add it to the list
     const list = supportedAppIcons;
-    const mmkv = new MMKV();
     Object.keys(tokenGatedIcons).forEach(key => {
       const icon = tokenGatedIcons[key];
       const unlocked = mmkv.getBoolean(icon.unlock_key);

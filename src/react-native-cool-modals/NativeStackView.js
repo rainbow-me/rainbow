@@ -40,6 +40,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
     springDamping,
     stackAnimation,
     stackPresentation = 'push',
+    relevantScrollViewDepth,
     startFromShortForm,
     topOffset,
     transitionDuration,
@@ -124,6 +125,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
         onTouchTop={onTouchTop}
         onWillDismiss={onWillDismiss}
         ref={ref}
+        relevantScrollViewDepth={relevantScrollViewDepth}
         shortFormHeight={shortFormHeight}
         showDragIndicator={showDragIndicator}
         springDamping={springDamping}

@@ -9,20 +9,32 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../../animations';
-import { TruncatedAddress } from '../../text';
-import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
+import { Text, TruncatedAddress } from '../../text';
+import SwapDetailsRow from './SwapDetailsRow';
 import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
-import { useTheme } from '@rainbow-me/theme';
+import styled from '@rainbow-me/styled-components';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
+const SwapDetailsText = styled(Text).attrs({
+  lineHeight: android ? 18 : 17,
+})();
+
+export const SwapDetailsValue = styled(SwapDetailsText).attrs(
+  ({ theme: { colors }, color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
+    color,
+  })
+)(fontWithWidth(fonts.weight.bold));
+
 const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
   TruncatedAddress
 );
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
 const ContractActionsEnum = {
   blockExplorer: 'blockExplorer',
@@ -93,16 +105,21 @@ function SwapDetailsContractRowContent({
   return (
     <Animated.View style={scaleStyle}>
       <ButtonPressAnimation scaleTo={1} {...props}>
-        <SwapDetailsRow label={`${asset?.symbol} contract`}>
+        <SwapDetailsRow
+          label={lang.t('expanded_state.swap_details.token_contract', {
+            token: asset?.symbol,
+          })}
+        >
           <SwapDetailsValue
             address={asset?.address}
             as={AnimatedTruncatedAddress}
             firstSectionLength={6}
             style={colorStyle}
           />
-          <SwapDetailsValue color={colors.alpha(colors.blueGreyDark, 0.5)}>
-            {` 􀁰`}
-          </SwapDetailsValue>
+          <SwapDetailsValue
+            as={AnimatedText}
+            style={colorStyle}
+          >{` 􀍡`}</SwapDetailsValue>
         </SwapDetailsRow>
       </ButtonPressAnimation>
     </Animated.View>
@@ -194,6 +211,11 @@ export default function SwapDetailsContractRow({
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       {...props}
+      style={{
+        // bigger tap area otherwise touch events can get ignored
+        marginVertical: -12,
+        paddingVertical: 12,
+      }}
     >
       <SwapDetailsContractRowContent asset={asset} menuVisible={menuVisible} />
     </ContextMenuButton>

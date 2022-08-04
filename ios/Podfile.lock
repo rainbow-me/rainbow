@@ -1,5 +1,4 @@
 PODS:
-  - Analytics (4.1.6)
   - appcenter-core (4.4.3):
     - AppCenterReactNativeShared (~> 4.0)
     - React-Core
@@ -389,6 +388,8 @@ PODS:
     - React-Core
   - react-native-mail (4.1.0):
     - React
+  - react-native-menu (0.5.2):
+    - React
   - react-native-minimizer (1.3.5):
     - React
   - react-native-mmkv (2.3.3):
@@ -502,12 +503,9 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNAnalytics (1.5.0):
-    - Analytics
-    - React-Core
   - RNBootSplash (4.1.0):
     - React-Core
-  - RNCAsyncStorage (1.12.1):
+  - RNCAsyncStorage (1.17.7):
     - React-Core
   - RNCClipboard (1.2.3):
     - React
@@ -606,10 +604,15 @@ PODS:
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
+  - segment-analytics-react-native (2.3.2):
+    - React-Core
+    - sovran-react-native
   - Sentry (7.11.0):
     - Sentry/Core (= 7.11.0)
   - Sentry/Core (7.11.0)
   - Shimmer (1.0.2)
+  - sovran-react-native (0.2.8):
+    - React-Core
   - SRSRadialGradient (1.0.9):
     - React
   - SSZipArchive (2.2.3)
@@ -630,6 +633,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
+  - Firebase/Messaging (~> 8.14.0)
   - FLAnimatedImage
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (~> 0.11.0)
@@ -668,6 +672,7 @@ DEPENDENCIES:
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - react-native-mail (from `../node_modules/react-native-mail`)
+  - "react-native-menu (from `../node_modules/@react-native-menu/menu`)"
   - react-native-minimizer (from `../node_modules/react-native-minimizer`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -700,9 +705,8 @@ DEPENDENCIES:
   - ReactNativeDarkMode (from `../node_modules/react-native-dark-mode`)
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
-  - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - RNBootSplash (from `../node_modules/react-native-bootsplash`)
-  - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
@@ -728,7 +732,9 @@ DEPENDENCIES:
   - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNTextSize (from `../node_modules/react-native-text-size`)
+  - "segment-analytics-react-native (from `../node_modules/@segment/analytics-react-native`)"
   - Shimmer
+  - "sovran-react-native (from `../node_modules/@segment/sovran-react-native`)"
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - swift-vibrant
   - TcpSockets (from `../node_modules/react-native-tcp`)
@@ -737,7 +743,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Analytics
     - AppCenter
     - AppCenterReactNativeShared
     - Base64
@@ -853,6 +858,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ios-context-menu"
   react-native-mail:
     :path: "../node_modules/react-native-mail"
+  react-native-menu:
+    :path: "../node_modules/@react-native-menu/menu"
   react-native-minimizer:
     :path: "../node_modules/react-native-minimizer"
   react-native-mmkv:
@@ -917,12 +924,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
-  RNAnalytics:
-    :path: "../node_modules/@segment/analytics-react-native"
   RNBootSplash:
     :path: "../node_modules/react-native-bootsplash"
   RNCAsyncStorage:
-    :path: "../node_modules/@react-native-community/async-storage"
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
     :path: "../node_modules/@react-native-community/clipboard"
   RNCMaskedView:
@@ -973,6 +978,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   RNTextSize:
     :path: "../node_modules/react-native-text-size"
+  segment-analytics-react-native:
+    :path: "../node_modules/@segment/analytics-react-native"
+  sovran-react-native:
+    :path: "../node_modules/@segment/sovran-react-native"
   SRSRadialGradient:
     :path: "../node_modules/react-native-radial-gradient/ios"
   TcpSockets:
@@ -988,7 +997,6 @@ CHECKOUT OPTIONS:
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
-  Analytics: eefe524436f904b8bb3f8c8c3425280e43b34efc
   AppCenter: b0b6f1190215b5f983c42934db718f3b46fff3c0
   appcenter-core: 6ea4754df4a3d8917a5803e2681a58179d7f7a21
   AppCenterReactNativeShared: ac6961204492735ce2507df0a14ce59b13e9c1c5
@@ -1011,7 +1019,7 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: a5d9188d8f57f602636f111eca6460ebe32b9b71
   FLAnimatedImage: 8f3e854ebf9680b71f0b6e700939687fc4d82b4b
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 5337263514dd6f09803962437687240c5dc39aa4
+  glog: 476ee3e89abb49e07f822b48323c51c57124b572
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   hermes-engine: 84e3af1ea01dd7351ac5d8689cbbea1f9903ffc3
@@ -1031,7 +1039,7 @@ SPEC CHECKSUMS:
   Permission-Notifications: 16ccd862111103378a7bab9fb1c5c71addffc348
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   Rainbow-Internals: 6e69837f173f2017e4fff07e64d77d429e5a958c
-  RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
+  RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: 00581111c53531e39e3c6346ef0d2c0cf52a5a37
   RCTTypeSafety: 07e03ee7800e7dd65cba8e52ad0c2edb06c96604
   React: e61f4bf3c573d0c61c56b53dc3eb1d9daf0768a0
@@ -1055,6 +1063,7 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
+  react-native-menu: 52089949cbe30b035c51e54f92a7d99136c2fed4
   react-native-minimizer: b94809a769ac3825b46fd081d4f0ae2560791536
   react-native-mmkv: 30297e5e2a65341b36a727c1c79b0aff0132b396
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
@@ -1087,9 +1096,8 @@ SPEC CHECKSUMS:
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNAnalytics: a6dc48511d5d99b1ecaaf7157d8b5c618d15337e
   RNBootSplash: 605c94f76180e3f8e5832bcafbe52ff5194a51d0
-  RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
+  RNCAsyncStorage: d81ee5c3db1060afd49ea7045ad460eff82d2b7d
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
@@ -1117,8 +1125,10 @@ SPEC CHECKSUMS:
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
+  segment-analytics-react-native: 7018cfede6a609175bd4f7ee70b65e170ca41875
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
+  sovran-react-native: e4064b633fd8232055d003460d5816dff87ba8cc
   SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
@@ -1127,6 +1137,6 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
 
-PODFILE CHECKSUM: b28f879725507f95d94adc57febf42531d6e72d1
+PODFILE CHECKSUM: 3d81d103721ac587f9cc40f9440d9afc96ce8bcf
 
 COCOAPODS: 1.11.2

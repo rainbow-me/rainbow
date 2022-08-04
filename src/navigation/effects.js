@@ -11,6 +11,8 @@ import { deviceUtils } from '@rainbow-me/utils';
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 
+export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 0;
+
 const backgroundInterpolator = ({
   current: { progress: current },
   layouts: { screen },
@@ -306,7 +308,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: HeaderHeightWithStatusBar,
+            top: HeaderHeightWithStatusBar + AVATAR_CIRCLE_TOP_MARGIN,
           }}
         >
           <AvatarCircle overlayStyles />
@@ -368,6 +370,17 @@ export const expandedPreset = {
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
   cardStyleInterpolator: expandStyleInterpolator(0.7),
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: openSpec },
+};
+
+export const swapSettingsPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
+  cardStyleInterpolator: expandStyleInterpolator(1),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,

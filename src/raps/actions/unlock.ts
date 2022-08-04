@@ -1,6 +1,7 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
+import { ALLOWS_PERMIT, PermitSupportedTokenList } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import isNull from 'lodash/isNull';
 import { alwaysRequireApprove } from '../../config/debug';
@@ -14,29 +15,45 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@rainbow-me/entities';
-import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
+import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
-import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
+import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export const estimateApprove = async (
   owner: string,
   tokenAddress: string,
-  spender: string
+  spender: string,
+  chainId: number = 1
 ): Promise<number | string> => {
   try {
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const provider = await getProviderForNetwork(network);
+    if (
+      ALLOWS_PERMIT[
+        tokenAddress?.toLowerCase() as keyof PermitSupportedTokenList
+      ]
+    ) {
+      return '0';
+    }
+
     logger.sentry('exchange estimate approve', {
       owner,
       spender,
       tokenAddress,
     });
-    const exchange = new Contract(tokenAddress, erc20ABI, web3Provider!);
-    const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256, {
-      from: owner,
-    });
+    const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
+    const gasLimit = await tokenContract.estimateGas.approve(
+      spender,
+      MaxUint256,
+      {
+        from: owner,
+      }
+    );
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
     logger.sentry('error estimateApproveWithExchange');
@@ -48,11 +65,14 @@ export const estimateApprove = async (
 const getRawAllowance = async (
   owner: string,
   token: Asset,
-  spender: string
+  spender: string,
+  chainId: number = 1
 ) => {
   try {
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const provider = await getProviderForNetwork(network);
     const { address: tokenAddress } = token;
-    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider!);
+    const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
     const allowance = await tokenContract.allowance(owner, spender);
     return allowance.toString();
   } catch (error) {
@@ -62,20 +82,37 @@ const getRawAllowance = async (
   }
 };
 
-const executeApprove = (
+const executeApprove = async (
   tokenAddress: string,
   spender: string,
   gasLimit: number | string,
-  maxFeePerGas: string,
-  maxPriorityFeePerGas: string,
+  gasParams:
+    | {
+        gasPrice: string;
+        maxFeePerGas?: undefined;
+        maxPriorityFeePerGas?: undefined;
+      }
+    | {
+        maxFeePerGas: string;
+        maxPriorityFeePerGas: string;
+        gasPrice?: undefined;
+      },
   wallet: Wallet,
-  nonce: number | null = null
+  nonce: number | null = null,
+  chainId: number = 1
 ) => {
-  const exchange = new Contract(tokenAddress, erc20ABI, wallet);
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  let provider = await getProviderForNetwork(network);
+  const walletToUse = new Wallet(wallet.privateKey, provider);
+
+  const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
-    maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    // In case it's an L2 with legacy gas price like arbitrum
+    gasPrice: gasParams.gasPrice || undefined,
+    // EIP-1559 like networks
+    maxFeePerGas: gasParams.maxFeePerGas || undefined,
+    maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   });
 };
@@ -96,6 +133,7 @@ const unlock = async (
   const {
     assetToUnlock,
     contractAddress,
+    chainId,
   } = parameters as UnlockActionParameters;
   const { address: assetAddress } = assetToUnlock;
 
@@ -110,7 +148,8 @@ const unlock = async (
     gasLimit = await estimateApprove(
       accountAddress,
       assetAddress,
-      contractAddress
+      contractAddress,
+      chainId
     );
   } catch (e) {
     logger.sentry(`[${actionName}] Error estimating gas`);
@@ -118,45 +157,52 @@ const unlock = async (
     throw e;
   }
   let approval;
-  let maxFeePerGas;
-  let maxPriorityFeePerGas;
-  try {
-    // approvals should always use fast gas or custom (whatever is faster)
-    maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-    maxPriorityFeePerGas =
-      selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+  let gasParams = parseGasParamsForTransaction(selectedGasFee);
+  // if swap isn't the last action, use fast gas or custom (whatever is faster)
+  if (
+    !gasParams.maxFeePerGas ||
+    !gasParams.maxPriorityFeePerGas ||
+    !gasParams.gasPrice
+  ) {
+    try {
+      // approvals should always use fast gas or custom (whatever is faster)
+      const fastMaxFeePerGas =
+        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
+      const fastMaxPriorityFeePerGas =
+        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
 
-    const fastMaxFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
-    const fastMaxPriorityFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
+      if (greaterThan(fastMaxFeePerGas, gasParams?.maxFeePerGas || 0)) {
+        gasParams.maxFeePerGas = fastMaxFeePerGas;
+      }
+      if (
+        greaterThan(
+          fastMaxPriorityFeePerGas,
+          gasParams?.maxPriorityFeePerGas || 0
+        )
+      ) {
+        gasParams.maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
+      }
 
-    if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
-      maxFeePerGas = fastMaxFeePerGas;
+      logger.sentry(`[${actionName}] about to approve`, {
+        assetAddress,
+        contractAddress,
+        gasLimit,
+      });
+      const nonce = baseNonce ? baseNonce + index : null;
+      approval = await executeApprove(
+        assetAddress,
+        contractAddress,
+        gasLimit,
+        gasParams,
+        wallet,
+        nonce,
+        chainId
+      );
+    } catch (e) {
+      logger.sentry(`[${actionName}] Error approving`);
+      captureException(e);
+      throw e;
     }
-    if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
-      maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
-    }
-
-    logger.sentry(`[${actionName}] about to approve`, {
-      assetAddress,
-      contractAddress,
-      gasLimit,
-    });
-    const nonce = baseNonce ? baseNonce + index : null;
-    approval = await executeApprove(
-      assetAddress,
-      contractAddress,
-      gasLimit,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
-      wallet,
-      nonce
-    );
-  } catch (e) {
-    logger.sentry(`[${actionName}] Error approving`);
-    captureException(e);
-    throw e;
   }
 
   const cacheKey = `${wallet.address}|${assetAddress}|${contractAddress}`.toLowerCase();
@@ -173,13 +219,13 @@ const unlock = async (
     from: accountAddress,
     gasLimit,
     hash: approval?.hash,
-    maxFeePerGas,
-    maxPriorityFeePerGas,
+    network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
     nonce: approval?.nonce,
     status: TransactionStatus.approving,
     to: approval?.to,
     type: TransactionType.authorize,
     value: toHex(approval.value),
+    ...gasParams,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
@@ -193,7 +239,8 @@ export const assetNeedsUnlocking = async (
   accountAddress: string,
   amount: string,
   assetToUnlock: Asset,
-  contractAddress: string
+  contractAddress: string,
+  chainId = 1
 ) => {
   logger.log('checking asset needs unlocking');
   const { address } = assetToUnlock;
@@ -204,24 +251,31 @@ export const assetNeedsUnlocking = async (
 
   let allowance;
   // Check on cache first
-  if (AllowancesCache.cache[cacheKey]) {
-    allowance = AllowancesCache.cache[cacheKey];
-  } else {
-    allowance = await getRawAllowance(
-      accountAddress,
-      assetToUnlock,
-      contractAddress
-    );
+  // if (AllowancesCache.cache[cacheKey]) {
+  //   allowance = AllowancesCache.cache[cacheKey];
+  // } else {
+  allowance = await getRawAllowance(
+    accountAddress,
+    assetToUnlock,
+    contractAddress,
+    chainId
+  );
 
-    // Cache that value
-    if (!isNull(allowance)) {
-      AllowancesCache.cache[cacheKey] = allowance;
-    }
+  // Cache that value
+  // if (!isNull(allowance)) {
+  //   AllowancesCache.cache[cacheKey] = allowance;
+  // }
+  //}
+
+  logger.log('raw allowance', allowance.toString());
+  // Cache that value
+  if (!isNull(allowance)) {
+    AllowancesCache.cache[cacheKey] = allowance;
   }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
   const needsUnlocking = !greaterThan(allowance, rawAmount);
-  logger.log('asset needs unlocking?', needsUnlocking);
+  logger.log('asset needs unlocking?', needsUnlocking, allowance.toString());
   return needsUnlocking;
 };
 

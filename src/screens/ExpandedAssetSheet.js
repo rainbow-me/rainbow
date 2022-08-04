@@ -8,6 +8,7 @@ import {
   CustomGasState,
   LiquidityPoolExpandedState,
   SwapDetailsState,
+  SwapSettingsState,
   TokenIndexExpandedState,
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
@@ -22,6 +23,7 @@ import { useTheme } from '@rainbow-me/theme';
 const ScreenTypes = {
   custom_gas: CustomGasState,
   swap_details: SwapDetailsState,
+  swap_settings: SwapSettingsState,
   token: ChartExpandedState,
   token_index: TokenIndexExpandedState,
   unique_token: UniqueTokenExpandedState,

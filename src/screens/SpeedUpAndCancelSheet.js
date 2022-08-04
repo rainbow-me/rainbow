@@ -7,6 +7,7 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -27,10 +28,12 @@ import {
 import { Emoji, Text } from '../components/text';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
+  getFlashbotsProvider,
   getProviderForNetwork,
   isL2Network,
   toHex,
 } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers';
 import { greaterThan } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
@@ -150,6 +153,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
+  const isL2 = isL2Network(tx.network);
 
   const getNewTransactionGasParams = useCallback(() => {
     if (txType === GasFeeTypes.eip1559) {
@@ -284,9 +288,16 @@ export default function SpeedUpAndCancelSheet() {
   // Set the provider
   useEffect(() => {
     if (currentNetwork) {
-      startPollingGasFees(currentNetwork);
+      startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
-        const provider = await getProviderForNetwork(currentNetwork);
+        let provider;
+        if (tx.network === Network.mainnet && tx.flashbots) {
+          logger.debug('using flashbots provider');
+          provider = await getFlashbotsProvider();
+        } else {
+          logger.debug('using normal provider');
+          provider = await getProviderForNetwork(currentNetwork);
+        }
         setCurrentProvider(provider);
       };
 
@@ -296,7 +307,13 @@ export default function SpeedUpAndCancelSheet() {
         stopPollingGasFees();
       };
     }
-  }, [currentNetwork, startPollingGasFees, stopPollingGasFees]);
+  }, [
+    currentNetwork,
+    startPollingGasFees,
+    stopPollingGasFees,
+    tx.flashbots,
+    tx.network,
+  ]);
 
   // Update gas limit
   useEffect(() => {
@@ -333,7 +350,7 @@ export default function SpeedUpAndCancelSheet() {
           setData(hexData);
           setTo(tx.txTo);
           setGasLimit(hexGasLimit);
-          if (!isL2Network(tx.network)) {
+          if (!isL2) {
             setTxType(GasFeeTypes.eip1559);
             const hexMaxPriorityFeePerGas = toHex(
               tx.maxPriorityFeePerGas.toString()
@@ -383,6 +400,7 @@ export default function SpeedUpAndCancelSheet() {
     currentNetwork,
     currentProvider,
     goBack,
+    isL2,
     network,
     tx,
     tx.gasLimit,
@@ -432,6 +450,13 @@ export default function SpeedUpAndCancelSheet() {
     : null;
 
   const { colors, isDarkMode } = useTheme();
+  const speeds = useMemo(() => {
+    const defaultSpeeds = [URGENT];
+    if (!isL2) {
+      defaultSpeeds.push(CUSTOM);
+    }
+    return defaultSpeeds;
+  }, [isL2]);
 
   return (
     <SheetKeyboardAnimation
@@ -561,7 +586,8 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
-                      speeds={[URGENT, CUSTOM]}
+                      flashbotTransaction={tx.flashbots}
+                      speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}
                     />
                   </GasSpeedButtonContainer>

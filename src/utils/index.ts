@@ -57,3 +57,4 @@ export { default as watchingAlert } from './watchingAlert';
 export { default as withSpeed } from './withSpeed';
 export { default as CoinIcon } from './CoinIcons/CoinIcon';
 export { default as FallbackIcon } from './CoinIcons/FallbackIcon';
+export { default as getExchangeIconUrl } from './getExchangeIconUrl';

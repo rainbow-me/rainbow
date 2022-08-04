@@ -29,16 +29,19 @@ const ExchangeNativeField = (
     address,
     editable,
     height,
+    loading,
     nativeAmount,
     nativeCurrency,
     onFocus,
     setNativeAmount,
+    updateOnFocus,
     testID,
   },
   ref
 ) => {
   const colorForAsset = useColorForAsset({ address });
-  const [isFocused, setIsFocused] = useState(false);
+  const [value, setValue] = useState(nativeAmount);
+
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
     nativeCurrency
   ];
@@ -47,15 +50,27 @@ const ExchangeNativeField = (
     ref,
   ]);
 
-  const handleBlur = useCallback(() => setIsFocused(false), []);
   const handleFocus = useCallback(
     event => {
-      setIsFocused(true);
-      if (onFocus) onFocus(event);
+      onFocus?.(event);
+      if (loading) {
+        setNativeAmount(value);
+      }
     },
-    [onFocus]
+    [loading, onFocus, setNativeAmount, value]
   );
+
+  const onChangeText = useCallback(
+    text => {
+      setNativeAmount(text);
+      setValue(text);
+    },
+    [setNativeAmount]
+  );
+
   const { colors } = useTheme();
+
+  const isFocused = ref?.current?.isFocused();
 
   const nativeAmountColor = useMemo(() => {
     const nativeAmountExists =
@@ -66,6 +81,12 @@ const ExchangeNativeField = (
 
     return colors.alpha(color, opacity);
   }, [colors, isFocused, nativeAmount]);
+
+  useEffect(() => {
+    if (!isFocused || updateOnFocus) {
+      setValue(nativeAmount);
+    }
+  }, [nativeAmount, isFocused, updateOnFocus]);
 
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
@@ -78,14 +99,13 @@ const ExchangeNativeField = (
           editable={editable}
           height={android ? height : 58}
           mask={mask}
-          onBlur={handleBlur}
-          onChangeText={setNativeAmount}
+          onChangeText={onChangeText}
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
           selectionColor={colorForAsset}
-          testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
-          value={nativeAmount}
+          testID={testID}
+          value={isFocused ? value : nativeAmount}
         />
       </Row>
     </TouchableWithoutFeedback>
