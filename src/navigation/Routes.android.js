@@ -167,11 +167,6 @@ function MainNavigator() {
       {profilesEnabled && (
         <>
           <Stack.Screen
-            component={RegisterENSNavigator}
-            name={Routes.REGISTER_ENS_NAVIGATOR}
-            options={ensPreset}
-          />
-          <Stack.Screen
             component={ENSConfirmRegisterSheet}
             name={Routes.ENS_CONFIRM_REGISTER_SHEET}
             options={ensPreset}
@@ -295,6 +290,7 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
     <BSStack.Navigator>
@@ -333,11 +329,18 @@ function BSNavigator() {
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         options={expandedPresetWithSmallGestureResponseDistance}
       />
-      <BSStack.Screen
-        component={ProfileSheet}
-        name={Routes.PROFILE_SHEET}
-        options={ensPreset}
-      />
+      {profilesEnabled && (
+        <>
+          <BSStack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_SHEET}
+          />
+          <Stack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+          />
+        </>
+      )}
       <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
