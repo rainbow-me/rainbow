@@ -20,9 +20,9 @@ export default function DiscoverHome() {
       <Inset top={{ custom: 16 }}>
         <Stack space="30px">
           {profilesEnabled ? (
-            <Inset horizontal="19px">
-              <Stack space="19px">
-                <Columns space="19px">
+            <Inset horizontal={ios && '19px'}>
+              <Stack space={ios && '19px'}>
+                <Columns space={ios && '19px'}>
                   <GasCard />
                   <ENSSearchCard />
                 </Columns>
