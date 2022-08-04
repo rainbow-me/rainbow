@@ -403,9 +403,8 @@ export const getWalletENSAvatars = async (
   walletKeys.forEach(key => {
     const wallet = wallets![key];
     const innerPromises = wallet?.addresses?.map(async account => {
-      const ens =
-        (await fetchReverseRecord(account.address)) ||
-        walletNames[account.address];
+      const ens = await fetchReverseRecord(account.address);
+      const isNewEnsName = !!ens && walletNames[account.address] !== ens;
       if (ens) {
         const avatar = await fetchENSAvatar(ens);
         const newImage =
@@ -417,12 +416,20 @@ export const getWalletENSAvatars = async (
           account: {
             ...account,
             image: newImage,
+            label: isNewEnsName ? ens : account.label,
           },
           avatarChanged: newImage !== account.image,
           key,
         };
       } else {
-        return { account, avatarChanged: false, key };
+        return {
+          account: {
+            ...account,
+            image: null,
+          },
+          avatarChanged: false,
+          key,
+        };
       }
     });
     promises = promises.concat(innerPromises);
