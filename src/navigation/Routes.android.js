@@ -309,10 +309,6 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen
-        component={ENSConfirmRegisterSheet}
-        name={Routes.ENS_CONFIRM_REGISTER_SHEET}
-      />
-      <BSStack.Screen
         component={SelectUniqueTokenSheet}
         name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
         options={{
@@ -330,6 +326,10 @@ function BSNavigator() {
       />
       {profilesEnabled && (
         <>
+          <BSStack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+          />
           <BSStack.Screen
             component={ProfileSheet}
             name={Routes.PROFILE_SHEET}
