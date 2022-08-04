@@ -117,7 +117,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           withoutStatusBar: true,
         });
       } else {
-        importWallet(name, forceColor, avatarUrl);
+        importWallet(forceColor, name, avatarUrl);
       }
     },
     [handleSetImporting, navigate, showImportModal]
