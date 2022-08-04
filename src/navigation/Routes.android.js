@@ -183,11 +183,6 @@ function MainNavigator() {
           />
           <Stack.Screen
             component={ProfileSheet}
-            name={Routes.PROFILE_SHEET}
-            options={ensPreset}
-          />
-          <Stack.Screen
-            component={ProfileSheet}
             name={Routes.PROFILE_PREVIEW_SHEET}
             options={ensPreset}
           />
@@ -337,6 +332,11 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         options={expandedPresetWithSmallGestureResponseDistance}
+      />
+      <BSStack.Screen
+        component={ProfileSheet}
+        name={Routes.PROFILE_SHEET}
+        options={ensPreset}
       />
       <BSStack.Screen
         component={ExplainSheet}
