@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { uniqBy, without } from 'lodash';
 import { Dispatch } from 'redux';
@@ -9,6 +8,7 @@ import {
 } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
+import { analytics } from '@rainbow-me/analytics';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
@@ -247,7 +247,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   }
   const { network: currentNetwork } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   let uniqueTokens: UniqueAsset[] = [];
   let errorCheck = false;
@@ -288,15 +287,20 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
 
       if (shouldStopFetching) {
-        const existingFamilies = getFamilies(existingUniqueTokens);
-        const newFamilies = getFamilies(uniqueTokens);
-        const incomingFamilies = without(newFamilies, ...existingFamilies);
-        if (incomingFamilies.length) {
-          const dedupedAssets = dedupeAssetsWithFamilies(
-            accountAssetsData,
-            incomingFamilies
-          );
-          dispatch(dataUpdateAssets(dedupedAssets));
+        const isCurrentAccountAddress =
+          accountAddress ===
+          (showcaseAddress || getState().settings.accountAddress);
+        if (isCurrentAccountAddress) {
+          const existingFamilies = getFamilies(existingUniqueTokens);
+          const newFamilies = getFamilies(uniqueTokens);
+          const incomingFamilies = without(newFamilies, ...existingFamilies);
+          if (incomingFamilies.length) {
+            const dedupedAssets = dedupeAssetsWithFamilies(
+              getState().data.accountAssetsData,
+              incomingFamilies
+            );
+            dispatch(dataUpdateAssets(dedupedAssets));
+          }
         }
       }
     } catch (error) {
@@ -331,7 +335,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     }
 
     //we only care about analytics for mainnet + L2's
-    analytics.identify(null, { NFTs: uniqueTokens.length });
+    analytics.identify(undefined, { NFTs: uniqueTokens.length });
   }
 
   // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).

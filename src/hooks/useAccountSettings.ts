@@ -5,6 +5,7 @@ import { createSelector } from 'reselect';
 import { updateLanguageLocale } from '../languages';
 import {
   settingsChangeAppIcon as changeAppIcon,
+  settingsChangeFlashbotsEnabled as changeFlashbotsEnabled,
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
@@ -32,6 +33,7 @@ export default function useAccountSettings() {
         accountAddress,
         appIcon,
         chainId,
+        flashbotsEnabled,
         nativeCurrency,
         network,
         testnetsEnabled,
@@ -40,6 +42,7 @@ export default function useAccountSettings() {
       accountAddress,
       appIcon,
       chainId,
+      flashbotsEnabled,
       language,
       nativeCurrency,
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
@@ -69,8 +72,14 @@ export default function useAccountSettings() {
     [dispatch]
   );
 
+  const settingsChangeFlashbotsEnabled = useCallback(
+    flashbotsEnabled => dispatch(changeFlashbotsEnabled(flashbotsEnabled)),
+    [dispatch]
+  );
+
   return {
     settingsChangeAppIcon,
+    settingsChangeFlashbotsEnabled,
     settingsChangeLanguage,
     settingsChangeNativeCurrency,
     settingsChangeTestnetsEnabled,

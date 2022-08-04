@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
@@ -8,12 +7,13 @@ import font from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
-import { Text } from '../text';
+import { analytics } from '@rainbow-me/analytics';
+import { Text } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { DPI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { fontWithWidth, position } from '@rainbow-me/styles';
+import { fontWithWidth } from '@rainbow-me/styles';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
@@ -83,6 +83,7 @@ const PulseIndex = () => {
         onPress={handlePress}
         overflowMargin={15}
         scaleTo={0.9}
+        style={{ marginBottom: 12 }}
         testID="dpi-button"
       >
         <View
@@ -98,83 +99,81 @@ const PulseIndex = () => {
             style={{
               height: 70,
             }}
-          />
-
-          <LinearGradient
-            colors={[colors.dpiLight, colors.dpiDark]}
-            end={{ x: 1, y: 0.5 }}
-            overflow="hidden"
-            pointerEvents="none"
-            start={{ x: 0, y: 0.5 }}
-            style={[
-              position.coverAsObject,
-              {
-                borderRadius: 24,
-                height: 70,
-                position: 'absolute',
-                zIndex: 1,
-              },
-            ]}
-          />
-          <Row position="absolute" zIndex={1}>
-            <Column margin={15} marginRight={10}>
-              <CoinIcon forcedShadowColor={colors.dpiDark} {...item} />
-            </Column>
-            <Column marginLeft={0} marginTop={ios ? 13.5 : 6}>
-              <Text color={colors.whiteLabel} size="large" weight="heavy">
-                {item.name}
-              </Text>
-              <Text
-                color={colors.alpha(colors.whiteLabel, 0.6)}
-                size="lmedium"
-                style={ios ? {} : { marginTop: -10 }}
-                weight="semibold"
-              >
-                {lang.t('discover.pulse.pulse_description')}
-              </Text>
-            </Column>
-            <Column
-              align="end"
-              flex={1}
-              marginRight={15}
-              marginTop={ios ? 13.5 : 6}
+          >
+            <LinearGradient
+              colors={[colors.dpiLight, colors.dpiDark]}
+              end={{ x: 1, y: 0.5 }}
+              overflow="hidden"
+              pointerEvents="none"
+              start={{ x: 0, y: 0.5 }}
+              style={{ flex: 1, flexDirection: 'row' }}
             >
-              <Text
-                align="right"
-                color={colors.whiteLabel}
-                letterSpacing="zero"
-                size="large"
-                weight="heavy"
+              <Column margin={15} marginRight={10}>
+                <CoinIcon forcedShadowColor={colors.dpiDark} {...item} />
+              </Column>
+              <Column
+                flex={1}
+                justify="space-between"
+                marginVertical={18}
+                paddingRight={19}
               >
-                􀯼
-              </Text>
-            </Column>
-          </Row>
+                <Text
+                  color={{ custom: colors.whiteLabel }}
+                  size="18px"
+                  weight="heavy"
+                >
+                  {item.name}
+                </Text>
+                <Text
+                  color={{ custom: colors.alpha(colors.whiteLabel, 0.6) }}
+                  numberOfLines={1}
+                  size="16px"
+                  weight="semibold"
+                >
+                  {lang.t('discover.pulse.pulse_description')}
+                </Text>
+              </Column>
+              <Column
+                margin={15}
+                marginLeft={0}
+                style={{ position: 'absolute', right: 0, top: 4 }}
+              >
+                <Text
+                  align="right"
+                  color={{ custom: colors.whiteLabel }}
+                  letterSpacing="0px"
+                  size="18px"
+                  weight="heavy"
+                >
+                  􀯼
+                </Text>
+              </Column>
+            </LinearGradient>
+          </ShadowStack>
         </View>
       </ButtonPressAnimation>
       <ButtonPressAnimation
         flex={1}
-        marginBottom={30}
-        marginTop={android ? 4 : 8}
         onPress={handlePress}
         scaleTo={0.92}
         style={{
+          marginBottom: 34,
           marginHorizontal: 34,
         }}
       >
         <Row justify="space-between">
           <Text
-            color={colors.dpiLight}
+            color={{ custom: colors.dpiLight }}
             numberOfLines={1}
-            size="smedium"
+            size="14px"
             weight="bold"
           >
             Trading at{' '}
             <Text
-              color={colors.dpiLight}
+              color={{ custom: colors.dpiLight }}
               letterSpacing="roundedMedium"
               numberOfLines={1}
-              size="smedium"
+              size="14px"
               weight="bold"
             >
               {item.price}
@@ -182,18 +181,18 @@ const PulseIndex = () => {
           </Text>
           <Text
             align="right"
-            color={item.isPositive ? colors.green : colors.red}
+            color={{ custom: item.isPositive ? colors.green : colors.red }}
             letterSpacing="roundedMedium"
             numberOfLines={1}
             {...fontWithWidth(font.weight.bold)}
-            size="smedium"
+            size="14px"
             weight="bold"
           >
             {item.isPositive ? `↑` : `↓`} {item.change}
             <Text
               align="right"
-              color={item.isPositive ? colors.green : colors.red}
-              size="smedium"
+              color={{ custom: item.isPositive ? colors.green : colors.red }}
+              size="14px"
               weight="bold"
             >
               {' '}

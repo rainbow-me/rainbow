@@ -58,6 +58,7 @@ const Routes = {
   STACK: 'Stack',
   SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',
   SWAP_DETAILS_SHEET: 'SwapDetailsSheet',
+  SWAP_SETTINGS_SHEET: 'SwapSettingsSheet',
   SWIPE_LAYOUT: 'SwipeLayout',
   TOKEN_INDEX_SCREEN: 'TokenIndexScreen',
   TOKEN_INDEX_SHEET: 'TokenIndexSheet',

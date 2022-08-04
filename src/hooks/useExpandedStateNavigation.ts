@@ -8,7 +8,10 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import { watchingAlert } from '@rainbow-me/utils';
 
-export default function useExpandedStateNavigation(inputType: any) {
+export default function useExpandedStateNavigation(
+  inputType: any,
+  fromDiscover = false
+) {
   const { goBack, navigate } = useNavigation();
   const { params } = useRoute();
   const { isReadOnlyWallet } = useWallets();
@@ -20,14 +23,18 @@ export default function useExpandedStateNavigation(inputType: any) {
     switch (inputType) {
       case AssetInputTypes.in:
         return {
+          fromDiscover,
           inputAsset: asset,
         };
       case AssetInputTypes.out:
-        return { outputAsset: asset };
+        return {
+          fromDiscover,
+          outputAsset: asset,
+        };
       default:
         return { asset };
     }
-  }, [asset, inputType]);
+  }, [asset, fromDiscover, inputType]);
 
   return useCallback(
     (routeName, traverseParams) => {

@@ -63,8 +63,6 @@ const ListEmoji = styled(Emoji).attrs({
   marginTop: android ? 4 : 1,
 });
 
-const WRITEABLE_LISTS = ['watchlist', 'favorites'];
-
 export const sheetHeight = android ? 490 - getSoftMenuBarHeight() : 394;
 
 export default function AddTokenSheet() {
@@ -74,8 +72,9 @@ export default function AddTokenSheet() {
   const { favorites, lists, updateList } = useUserLists();
   const insets = useSafeArea();
   const {
-    params: { item },
+    params: { item, isL2 },
   } = useRoute();
+  const writeableLists = isL2 ? ['watchlist'] : ['watchlist', 'favorites'];
 
   const isTokenInList = useCallback(
     listId => {
@@ -141,9 +140,9 @@ export default function AddTokenSheet() {
             <Divider color={colors.rowDividerExtraLight} inset={[0, 143.5]} />
           </Centered>
 
-          <Column align="center" marginBottom={8}>
+          <Column align="center" marginBottom={isL2 ? 63 : 8}>
             {DefaultTokenLists[network]
-              .filter(list => WRITEABLE_LISTS.indexOf(list?.id) !== -1)
+              .filter(list => writeableLists.includes(list?.id))
               .map(list => {
                 const alreadyAdded = isTokenInList(list?.id);
                 const handleAdd = () => {

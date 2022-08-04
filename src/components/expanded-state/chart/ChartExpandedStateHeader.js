@@ -139,7 +139,7 @@ export default function ChartExpandedStateHeader({
         )}
 
         <Row>
-          {currentNetwork === Network.mainnet && (
+          {currentNetwork === Network.mainnet && !isPool && (
             <ChartAddToListButton asset={asset} />
           )}
           <ChartContextButton asset={asset} color={color} />

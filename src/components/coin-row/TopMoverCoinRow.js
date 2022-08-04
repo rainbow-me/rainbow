@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -10,6 +9,7 @@ import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins, RowWithMargins } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
+import { analytics } from '@rainbow-me/analytics';
 import styled from '@rainbow-me/styled-components';
 
 const TopMoverCoinIconSize = 36;

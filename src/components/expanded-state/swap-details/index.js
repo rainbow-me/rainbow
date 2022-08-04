@@ -16,4 +16,4 @@ export {
   SwapDetailsValue,
 } from './SwapDetailsRow';
 export { default as SwapDetailsSlippageMessage } from './SwapDetailsSlippageMessage';
-export { default as SwapDetailsUniswapRow } from './SwapDetailsUniswapRow';
+export { default as SwapDetailsExchangeRow } from './SwapDetailsExchangeRow';
