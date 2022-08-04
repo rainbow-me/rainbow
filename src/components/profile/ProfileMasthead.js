@@ -1,5 +1,4 @@
 import Clipboard from '@react-native-community/clipboard';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
 import Divider from '../Divider';
@@ -11,6 +10,7 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
+import { analytics } from '@rainbow-me/analytics';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useAccountProfile,

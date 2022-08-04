@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback } from 'react';
@@ -8,12 +7,13 @@ import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
-import { magicMemo } from '../utils';
+import { deviceUtils, magicMemo } from '../utils';
 import Divider from './Divider';
 import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
+import { analytics } from '@rainbow-me/analytics';
 import {
   useAccountSettings,
   useDimensions,
@@ -121,12 +121,14 @@ const AmountText = styled(Text).attrs(({ children }) => ({
   zIndex: 1,
 }));
 
+const { isVeryNarrowPhone } = deviceUtils;
+
 const AmountButtonWrapper = styled(Row).attrs({
   justify: 'center',
-  marginLeft: 7.5,
-  marginRight: 7.5,
+  marginLeft: isVeryNarrowPhone ? 5 : 7.5,
+  marginRight: isVeryNarrowPhone ? 5 : 7.5,
 })({
-  ...(android && { width: 100 }),
+  ...(android && { width: isVeryNarrowPhone ? 95 : 100 }),
 });
 
 const onAddFromFaucet = accountAddress =>
@@ -160,7 +162,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
           shadows={shadows[backgroundColor]}
           {...(android && {
             height: 80,
-            width: 100,
+            width: isVeryNarrowPhone ? 95 : 100,
           })}
         />
         <InnerBPA

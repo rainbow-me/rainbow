@@ -1,3 +1,4 @@
+#ifndef __cplusplus
 #import <React/RCTViewManager.h>
 #import <React/RCTView.h>
 #import <React/RCTComponent.h>
@@ -88,3 +89,4 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @interface UIView (RNSScreen)
 - (UIViewController *)parentViewController;
 @end
+#endif

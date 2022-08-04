@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual, isString } from 'lodash';
@@ -23,6 +22,7 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';

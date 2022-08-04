@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ViewStyle } from 'react-native';
@@ -7,6 +6,7 @@ import { CustomShadow } from '../../design-system/layout/shadow';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
+import { analytics } from '@rainbow-me/analytics';
 import {
   AccentColorProvider,
   Bleed,
