@@ -99,7 +99,7 @@ export default function AvatarCircle({
     ios || !isAvatarPickerAvailable ? React.Fragment : ContextMenuButton;
 
   return (
-    <Wrapper handlePressMenuItem={handlePressMenuItem} menuConfig={items}>
+    <Wrapper menuConfig={items} onPressMenuItem={handlePressMenuItem}>
       <ButtonPressAnimation
         disabled={!isAvatarPickerAvailable}
         enableHapticFeedback={isAvatarPickerAvailable}
