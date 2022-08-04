@@ -100,7 +100,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   }, [params.initialAccountColor, width, colors.avatarBackgrounds.length]);
 
   return (
-    <Container {...deviceUtils.dimensions}>
+    <Container {...deviceUtils.dimensions} testID="avatar-builder">
       <TouchableBackdrop onPress={goBack} />
       <Column
         align="center"
