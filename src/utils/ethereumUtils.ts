@@ -6,7 +6,7 @@ import {
   ChainId,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
 } from '@rainbow-me/swaps';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message

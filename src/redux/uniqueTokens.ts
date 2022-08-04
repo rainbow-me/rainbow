@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import uniqBy from 'lodash/uniqBy';
 import without from 'lodash/without';
@@ -10,6 +9,7 @@ import {
 } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
+import { analytics } from '@rainbow-me/analytics';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
@@ -336,7 +336,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     }
 
     //we only care about analytics for mainnet + L2's
-    analytics.identify(null, { NFTs: uniqueTokens.length });
+    analytics.identify(undefined, { NFTs: uniqueTokens.length });
   }
 
   // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).

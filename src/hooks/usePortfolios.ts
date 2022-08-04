@@ -1,7 +1,7 @@
-import analytics from '@segment/analytics-react-native';
 import { keys } from 'lodash';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { analytics } from '@rainbow-me/analytics';
 import { isNil } from '@rainbow-me/helpers/utilities';
 import logger from 'logger';
 
@@ -33,7 +33,7 @@ export default function usePortfolios() {
     keys(total).forEach(key => {
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       const data = { [key]: total[key] };
-      analytics.identify(null, data);
+      analytics.identify(undefined, data);
     });
   }, [portfolios]);
 

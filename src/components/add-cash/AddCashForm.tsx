@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/core';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
@@ -15,6 +14,7 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
+import { analytics } from '@rainbow-me/analytics';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {

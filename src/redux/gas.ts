@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
@@ -7,6 +6,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
+import { analytics } from '@rainbow-me/analytics';
 import {
   BlocksToConfirmation,
   CurrentBlockParams,

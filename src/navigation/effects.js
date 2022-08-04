@@ -11,6 +11,8 @@ import { deviceUtils } from '@rainbow-me/utils';
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 
+export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 0;
+
 const backgroundInterpolator = ({
   current: { progress: current },
   layouts: { screen },
@@ -306,7 +308,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: HeaderHeightWithStatusBar,
+            top: HeaderHeightWithStatusBar + AVATAR_CIRCLE_TOP_MARGIN,
           }}
         >
           <AvatarCircle overlayStyles />
