@@ -1,7 +1,9 @@
+import { useRoute } from '@react-navigation/core';
 import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useQuery } from 'react-query';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
@@ -22,6 +24,7 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
+import { AppState } from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 
 export function InfoRowSkeleton() {
@@ -199,12 +202,18 @@ function ImageValue({
   value?: string;
 }) {
   const isNFTImage = isENSNFTRecord(value);
+  const {
+    params: { external },
+  } = useRoute<any>();
 
   const enableZoomOnPress = !isNFTImage;
 
   const { data: profileAddress } = useENSAddress(ensName || '');
 
-  const { data: uniqueTokens } = useQuery<UniqueAsset[]>(
+  const uniqueTokens = useSelector(
+    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
+  );
+  const { data: uniqueTokensProfile } = useQuery<UniqueAsset[]>(
     uniqueTokensQueryKey({ address: profileAddress || '' }),
     // We just want to watch for changes in the query key,
     // so just supplying a noop function & staleTime of Infinity.
@@ -217,7 +226,8 @@ function ImageValue({
     if (!isNFTImage || !value) return;
 
     const { contractAddress, tokenId } = parseENSNFTRecord(value);
-    const uniqueToken = uniqueTokens?.find(token => {
+    const localUniqueTokens = external ? uniqueTokensProfile : uniqueTokens;
+    const uniqueToken = localUniqueTokens?.find(token => {
       return (
         token.asset_contract.address?.toLowerCase() ===
           contractAddress?.toLowerCase() &&
@@ -239,7 +249,15 @@ function ImageValue({
         type: 'unique_token',
       });
     });
-  }, [goBack, isNFTImage, navigate, uniqueTokens, value]);
+  }, [
+    external,
+    goBack,
+    isNFTImage,
+    navigate,
+    uniqueTokens,
+    uniqueTokensProfile,
+    value,
+  ]);
 
   if (!url) return null;
   return (
