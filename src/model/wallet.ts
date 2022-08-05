@@ -56,7 +56,9 @@ import {
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
-import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
+import walletTypes, {
+  EthereumWalletType,
+} from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
@@ -1351,6 +1353,27 @@ export const cleanUpWalletKeys = async (): Promise<boolean> => {
   } catch (e) {
     return false;
   }
+};
+
+export const isHardwareWallet = async (
+  address: EthereumAddress
+): Promise<Boolean> => {
+  const allWalletsResult = await getAllWallets();
+  const allWallets: AllRainbowWallets = allWalletsResult?.wallets ?? {};
+  let isHardware = false;
+  Object.values(allWallets).forEach((someWallet: RainbowWallet) => {
+    if (someWallet.type === walletTypes.bluetoothHardware) {
+      someWallet.addresses.forEach(account => {
+        if (
+          toChecksumAddress(account.address) === toChecksumAddress(address) &&
+          account.visible
+        ) {
+          isHardware = true;
+        }
+      });
+    }
+  });
+  return isHardware;
 };
 
 export const loadSeedPhraseAndMigrateIfNeeded = async (
