@@ -1,11 +1,15 @@
 import React, { Fragment, useCallback, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
+import { AppState } from '@/redux/store';
+import { isENSNFTRecord, parseENSNFTRecord } from '@/utils';
 import {
   Bleed,
   Box,
@@ -63,6 +67,7 @@ export default function InfoRow({
   icon = undefined,
   isImage = false,
   label,
+  url,
   wrapValue = children => children,
   value = undefined,
   switchValue,
@@ -74,6 +79,7 @@ export default function InfoRow({
   icon?: string;
   isImage?: boolean;
   label: string;
+  url?: string;
   wrapValue?: (children: React.ReactNode) => React.ReactNode;
   value?: string;
   switchValue?: boolean;
@@ -116,16 +122,7 @@ export default function InfoRow({
       </Box>
       {wrapValue(
         isImage ? (
-          <>
-            {value ? (
-              <ImagePreviewOverlayTarget
-                aspectRatioType="cover"
-                imageUrl={value}
-              >
-                <Box as={ImgixImage} height="full" source={{ uri: value }} />
-              </ImagePreviewOverlayTarget>
-            ) : null}
-          </>
+          <ImageValue url={url} value={value} />
         ) : (
           <Box
             borderRadius={16}
@@ -185,5 +182,52 @@ export default function InfoRow({
         )
       )}
     </Inline>
+  );
+}
+
+function ImageValue({ url, value }: { url?: string; value?: string }) {
+  const isNFTImage = isENSNFTRecord(value);
+
+  const enableZoomOnPress = !isNFTImage;
+
+  const uniqueTokens = useSelector(
+    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
+  );
+
+  const { goBack, navigate } = useNavigation();
+  const onPress = useCallback(() => {
+    if (!isNFTImage || !value) return;
+
+    const { contractAddress, tokenId } = parseENSNFTRecord(value);
+    const uniqueToken = uniqueTokens?.find(
+      token =>
+        token.asset_contract.address === contractAddress && token.id === tokenId
+    );
+
+    goBack();
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset: uniqueToken,
+        backgroundOpacity: 1,
+        cornerRadius: 'device',
+        external: true,
+        springDamping: 1,
+        topOffset: 0,
+        transitionDuration: 0.25,
+        type: 'unique_token',
+      });
+    });
+  }, [goBack, isNFTImage, navigate, uniqueTokens, value]);
+
+  if (!url) return null;
+  return (
+    <ImagePreviewOverlayTarget
+      aspectRatioType="cover"
+      enableZoomOnPress={enableZoomOnPress}
+      imageUrl={url}
+      onPress={onPress}
+    >
+      <Box as={ImgixImage} height="full" source={{ uri: url }} />
+    </ImagePreviewOverlayTarget>
   );
 }

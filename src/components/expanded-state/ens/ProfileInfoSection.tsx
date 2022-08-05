@@ -11,6 +11,10 @@ const omitRecordKeys = [ENS_RECORDS.avatar];
 const topRecordKeys = [ENS_RECORDS.cover, ENS_RECORDS.description];
 
 type ImageSource = { imageUrl?: string | null };
+type ENSImages = {
+  avatar?: ImageSource;
+  cover?: ImageSource;
+};
 
 export default function ProfileInfoSection({
   allowEdit,
@@ -23,23 +27,16 @@ export default function ProfileInfoSection({
   allowEdit?: boolean;
   coinAddresses?: { [key: string]: string };
   ensName?: string;
-  images?: {
-    avatar?: ImageSource;
-    cover?: ImageSource;
-  };
+  images?: ENSImages;
   isLoading?: boolean;
   records?: Partial<Records>;
 }) {
   const recordsArray = useMemo(
     () =>
-      Object.entries(records || {})
-        .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS))
-        .map(([key, value]) =>
-          key === 'avatar' || key === 'cover'
-            ? [key, images?.[key]?.imageUrl as string]
-            : [key, value]
-        ),
-    [images, records]
+      Object.entries(records || {}).filter(
+        ([key]) => !omitRecordKeys.includes(key as ENS_RECORDS)
+      ),
+    [records]
   );
 
   const [topRecords, otherRecords] = useMemo(() => {
@@ -72,6 +69,7 @@ export default function ProfileInfoSection({
               <ProfileInfoRow
                 allowEdit={allowEdit}
                 ensName={ensName}
+                images={images}
                 key={recordKey}
                 recordKey={recordKey}
                 recordValue={recordValue}
@@ -112,12 +110,14 @@ export default function ProfileInfoSection({
 function ProfileInfoRow({
   allowEdit,
   ensName,
+  images,
   recordKey,
   recordValue,
   type,
 }: {
   allowEdit?: boolean;
   ensName?: string;
+  images?: ENSImages;
   recordKey: string;
   recordValue: string;
   type: 'address' | 'record';
@@ -132,6 +132,7 @@ function ProfileInfoRow({
   } = useENSRecordDisplayProperties({
     allowEdit,
     ensName,
+    images,
     key: recordKey,
     type,
     value: recordValue,
@@ -142,7 +143,8 @@ function ProfileInfoRow({
       icon={icon}
       isImage={isImageValue}
       label={label}
-      value={isImageValue ? url : value}
+      url={url}
+      value={value}
       wrapValue={children =>
         !isImageValue ? (
           <ContextMenuButton>
