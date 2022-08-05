@@ -13,6 +13,7 @@ import { Column, Row } from '../components/layout';
 import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
+import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { useTheme } from '@rainbow-me/theme';
@@ -105,7 +106,7 @@ const AvatarBuilder = ({ route: { params } }) => {
       <Column
         align="center"
         pointerEvents="box-none"
-        top={AvatarBuilderTopPoint}
+        top={AvatarBuilderTopPoint + AVATAR_CIRCLE_TOP_MARGIN}
       >
         <Row justify="center" paddingBottom={16} paddingTop={15} width="100%">
           <ScrollableColorPicker

@@ -102,7 +102,7 @@ export default function useENSRecordDisplayProperties({
 
   const value = useMemo(() => {
     if (isUrlRecord && displayUrl) {
-      return `􀤆 ${displayUrl}`;
+      return android ? ` 􀤆 ${displayUrl} ` : `􀤆 ${displayUrl}`;
     }
     if (isUrlValue && displayUrlUsername) {
       return displayUrlUsername;

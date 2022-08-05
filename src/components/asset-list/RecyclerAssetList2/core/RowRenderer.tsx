@@ -106,7 +106,6 @@ function rowRenderer(
       );
     }
     case CellType.LOADING_ASSETS:
-      // @ts-expect-error untyped JS component
       return <AssetListItemSkeleton />;
     default:
       assertNever(type);

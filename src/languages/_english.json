@@ -338,7 +338,8 @@
       },
       "search": {
         "profiles": "Profiles",
-        "search_ethereum": "Search all of Ethereum"
+        "search_ethereum": "Search all of Ethereum",
+        "search_ethereum_short": "Search Ethereum"
       },
       "strategies": {
         "strategies_title": "Strategies",
@@ -1038,6 +1039,7 @@
         "create_profile": "Create your Profile",
         "edit_profile": "Edit Profile",
         "pick_emoji": "Pick an Emoji",
+        "shuffle_emoji": "Shuffle Emoji",
         "remove_photo": "Remove Photo",
         "view_profile": "View Profile"
       },

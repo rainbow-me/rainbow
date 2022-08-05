@@ -1,11 +1,11 @@
 import { Wallet } from '@ethersproject/wallet';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import {
   // @ts-ignore
   IS_TESTING,
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
+import { analytics } from '@rainbow-me/analytics';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
 import {
   estimateENSTransactionGasLimit,
@@ -509,6 +509,7 @@ const ensAction = async (
     amount: 0,
     asset: nativeAsset,
     data: tx.data,
+    ensRegistrationName: name,
     from: ownerAddress,
     gasLimit,
     hash: tx?.hash,

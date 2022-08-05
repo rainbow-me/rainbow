@@ -246,6 +246,7 @@ export default function ENSConfirmRegisterSheet() {
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}
           action={() => action(accentColor)}
+          secondsSinceCommitConfirmed={secondsSinceCommitConfirmed}
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
@@ -267,6 +268,7 @@ export default function ENSConfirmRegisterSheet() {
       accountProfile.accountENS,
       ensName,
       name,
+      secondsSinceCommitConfirmed,
       onMountSecondsSinceCommitConfirmed,
       action,
     ]

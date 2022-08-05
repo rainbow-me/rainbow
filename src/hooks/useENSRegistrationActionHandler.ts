@@ -2,7 +2,6 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useNavigation } from '@react-navigation/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Image } from 'react-native-image-crop-picker';
-import { useDispatch } from 'react-redux';
 import { useRecoilValue } from 'recoil';
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
@@ -27,7 +26,6 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
-import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { labelhash, logger } from '@rainbow-me/utils';
@@ -58,7 +56,6 @@ export default function useENSRegistrationActionHandler(
     step: keyof typeof REGISTRATION_STEPS;
   } = {} as any
 ) {
-  const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const { registrationParameters } = useENSRegistration();
@@ -139,25 +136,17 @@ export default function useENSRegistrationActionHandler(
       // we want to speed up the last commit tx sent
       const commitTransactionHash =
         registrationParameters?.commitTransactionHash;
-      const saveCommitTransactionHash = (hash: string) => {
-        dispatch(
-          saveCommitRegistrationParameters({
-            commitTransactionHash: hash,
-          })
-        );
-      };
+
       const tx = getPendingTransactionByHash(commitTransactionHash || '');
       commitTransactionHash &&
         tx &&
         navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
           accentColor,
-          onSendTransactionCallback: saveCommitTransactionHash,
           tx,
           type: 'speed_up',
         });
     },
     [
-      dispatch,
       getPendingTransactionByHash,
       navigate,
       registrationParameters?.commitTransactionHash,

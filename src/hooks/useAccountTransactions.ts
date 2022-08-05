@@ -5,7 +5,6 @@ import NetworkTypes from '../helpers/networkTypes';
 import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
-import { transactionPressBuilder } from '@rainbow-me/helpers/transactionPressHandler';
 import { useNavigation } from '@rainbow-me/navigation';
 import { useTheme } from '@rainbow-me/theme';
 
@@ -74,10 +73,6 @@ export default function useAccountTransactions(
   const { accountAddress } = useAccountSettings();
   const theme = useTheme();
   const { navigate } = useNavigation();
-  const onTransactionPress = useCallback(
-    transactionPressBuilder({ navigate }),
-    [navigate]
-  );
 
   const accountState = {
     accountAddress,
@@ -85,7 +80,7 @@ export default function useAccountTransactions(
     initialized,
     isFocused,
     mainnetAddresses,
-    onTransactionPress,
+    navigate,
     requests,
     theme,
     transactions: slicedTransaction,

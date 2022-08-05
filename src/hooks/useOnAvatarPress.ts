@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
@@ -12,7 +11,9 @@ import useENSOwner from './useENSOwner';
 import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
+import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
+import { analytics } from '@rainbow-me/analytics';
 import {
   enableActionsOnReadOnlyWallet,
   PROFILES,
@@ -48,6 +49,7 @@ export default () => {
 
   const { openPicker } = useImagePicker();
   const { startRegistration } = useENSRegistration();
+  const { setNextEmoji } = useUpdateEmoji();
 
   useEffect(() => {
     if (accountENS) {
@@ -183,7 +185,11 @@ export default () => {
             onAvatarChooseImage();
           } else {
             if (!accountImage) {
-              onAvatarPickEmoji();
+              if (ios) {
+                onAvatarPickEmoji();
+              } else {
+                setNextEmoji();
+              }
             } else {
               onAvatarRemovePhoto();
             }
@@ -196,7 +202,11 @@ export default () => {
               onAvatarChooseImage();
             } else {
               if (!accountImage) {
-                onAvatarPickEmoji();
+                if (ios) {
+                  onAvatarPickEmoji();
+                } else {
+                  setNextEmoji();
+                }
               } else {
                 onAvatarRemovePhoto();
               }
@@ -214,7 +224,11 @@ export default () => {
       } else if (buttonIndex === 3) {
         if (!hasENSAvatar && !isReadOnly) {
           if (!accountImage) {
-            onAvatarPickEmoji();
+            if (ios) {
+              onAvatarPickEmoji();
+            } else {
+              setNextEmoji();
+            }
           } else {
             onAvatarRemovePhoto();
           }
@@ -232,6 +246,7 @@ export default () => {
       onAvatarPickEmoji,
       onAvatarRemovePhoto,
       onAvatarViewProfile,
+      setNextEmoji,
     ]
   );
 
