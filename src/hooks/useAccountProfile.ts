@@ -1,14 +1,45 @@
-import { useMemo } from 'react';
-import useAccountSettings from './useAccountSettings';
-import useWallets from './useWallets';
+import { useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 
-export default function useAccountProfile() {
-  const { selectedWallet, walletNames } = useWallets();
-  const {
-    accountAddress: accountsettingsAddress,
+const walletSelector = createSelector(
+  ({ wallets: { selected = {}, walletNames } }) => ({
+    selectedWallet: selected as any,
+    walletNames,
+  }),
+  ({ selectedWallet, walletNames }) => ({
+    selectedWallet,
+    walletNames,
+  })
+);
+
+const settingsSelector = createSelector(
+  ({ settings: { accountAddress, network } }) => ({
+    accountAddress,
     network,
-  } = useAccountSettings();
+  }),
+  ({ accountAddress, network }) => ({
+    accountAddress,
+    network,
+  })
+);
+
+const buildAccountProfile = (
+  wallet: { selectedWallet: any; walletNames: { [a: string]: string } },
+  account: { network: string; accountAddress: string }
+) =>
+  getAccountProfileInfo(
+    wallet.selectedWallet,
+    wallet.walletNames,
+    account.network,
+    account.accountAddress
+  );
+
+export default function useAccountProfile() {
+  const briefBalanceSectionSelector = createSelector(
+    [walletSelector, settingsSelector],
+    buildAccountProfile
+  );
 
   const {
     accountAddress,
@@ -17,16 +48,8 @@ export default function useAccountProfile() {
     accountImage,
     accountName,
     accountSymbol,
-  } = useMemo(
-    () =>
-      getAccountProfileInfo(
-        selectedWallet,
-        walletNames,
-        network,
-        accountsettingsAddress
-      ),
-    [accountsettingsAddress, network, selectedWallet, walletNames]
-  );
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'OutputParametricSelector<{ walle... Remove this comment to see the full error message
+  } = useSelector(briefBalanceSectionSelector);
 
   return {
     accountAddress,

@@ -397,28 +397,24 @@ export const getWalletENSAvatars = async (
     | undefined;
   let promises: Promise<{
     account: RainbowAccount;
-    avatarChanged: boolean;
+    ensChanged: boolean;
     key: string;
   }>[] = [];
   walletKeys.forEach(key => {
     const wallet = wallets![key];
     const innerPromises = wallet?.addresses?.map(async account => {
       const ens = await fetchReverseRecord(account.address);
-      const isNewEnsName = !!ens && walletNames[account.address] !== ens;
       if (ens) {
+        const isNewEnsName = walletNames[account.address] !== ens;
         const avatar = await fetchENSAvatar(ens);
-        const newImage =
-          typeof avatar?.imageUrl === 'string' &&
-          avatar?.imageUrl !== account?.image
-            ? avatar?.imageUrl
-            : account.image;
+        const newImage = avatar?.imageUrl || null;
         return {
           account: {
             ...account,
             image: newImage,
             label: isNewEnsName ? ens : account.label,
           },
-          avatarChanged: newImage !== account.image,
+          ensChanged: newImage !== account.image,
           key,
         };
       } else {
@@ -426,8 +422,9 @@ export const getWalletENSAvatars = async (
           account: {
             ...account,
             image: null,
+            label: '',
           },
-          avatarChanged: false,
+          ensChanged: account.image !== null,
           key,
         };
       }
@@ -436,8 +433,8 @@ export const getWalletENSAvatars = async (
   });
 
   const newAccounts = await Promise.all(promises);
-  newAccounts.forEach(({ account, key, avatarChanged }) => {
-    if (!avatarChanged) return;
+  newAccounts.forEach(({ account, key, ensChanged }) => {
+    if (!ensChanged) return;
     const addresses = wallets?.[key]?.addresses;
     const index = addresses?.findIndex(
       ({ address }) => address === account.address
