@@ -12,10 +12,7 @@ import { useMemoOne } from 'use-memo-one';
 import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
 import { AssetListType } from '..';
 import { useRecyclerAssetListPosition } from './Contexts';
-import {
-  ExternalENSProfileScrollViewWithRef,
-  ExternalSelectNFTScrollViewWithRef,
-} from './ExternalENSProfileScrollView';
+import ExternalENSProfileScrollViewWithRef from './ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
@@ -57,7 +54,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   type,
 }: {
   briefSectionsData: BaseCellType[];
-  disablePullDownToRefresh?: boolean;
+  disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   type?: AssetListType;
 }) {
@@ -158,15 +155,13 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       externalScrollView={
         type === 'ens-profile'
           ? ExternalENSProfileScrollViewWithRef
-          : type === 'select-nft'
-          ? ExternalSelectNFTScrollViewWithRef
           : ExternalScrollViewWithRef
       }
       itemAnimator={layoutItemAnimator}
       layoutProvider={layoutProvider}
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
-      refreshControl={disablePullDownToRefresh ? null : <RefreshControl />}
+      refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
     />

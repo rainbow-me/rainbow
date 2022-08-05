@@ -272,13 +272,6 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen
-        component={SelectUniqueTokenSheet}
-        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
-        options={{
-          height: '95%',
-        }}
-      />
-      <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
       />
@@ -312,6 +305,11 @@ function BSNavigator() {
           <BSStack.Screen
             component={ProfileSheet}
             name={Routes.PROFILE_PREVIEW_SHEET}
+          />
+          <BSStack.Screen
+            component={SelectUniqueTokenSheet}
+            name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
+            options={{ ...bottomSheetPreset, height: '95%' }}
           />
         </>
       )}
