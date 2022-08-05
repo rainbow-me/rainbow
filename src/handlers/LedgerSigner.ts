@@ -1,8 +1,10 @@
 'use strict';
 
-import AppEth from '@ledgerhq/hw-app-eth';
+import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { ethers } from 'ethers';
+import { logger } from '@/utils';
 
 function waiter(duration: number): Promise<void> {
   return new Promise(resolve => {
@@ -52,12 +54,14 @@ export class LedgerSigner extends ethers.Signer {
     return new Promise(async (resolve, reject) => {
       if (timeout && timeout > 0) {
         setTimeout(() => {
+          logger.debug('Timeout');
           reject(new Error('timeout'));
         }, timeout);
       }
 
       const eth = await this._eth;
       if (!eth) {
+        logger.debug('no eth');
         return reject(new Error('no eth'));
       }
 
@@ -67,6 +71,7 @@ export class LedgerSigner extends ethers.Signer {
           const result = await callback(eth);
           return resolve(result);
         } catch (error: any) {
+          logger.debug('transport error', error);
           if (error.id !== 'TransportLocked') {
             return reject(error);
           }
@@ -98,10 +103,37 @@ export class LedgerSigner extends ethers.Signer {
     return ethers.utils.joinSignature(sig);
   }
 
-  async signTypedDataMessage(message: any, legacy: boolean): Promise<string> {
-    const sig = await this._retry(eth =>
-      eth.signEIP712Message(this.path!, message, legacy)
+  async signTypedDataMessage(data: any, legacy: boolean): Promise<string> {
+    const version =
+      legacy === false ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3;
+    const { domain, types, primaryType, message } = TypedDataUtils.sanitizeData(
+      data
     );
+
+    const domainSeparatorHex = TypedDataUtils.hashStruct(
+      'EIP712Domain',
+      domain,
+      types,
+      version
+    ).toString('hex');
+
+    const hashStructMessageHex = TypedDataUtils.hashStruct(
+      // @ts-ignore
+      primaryType,
+      message,
+      types,
+      version
+    ).toString('hex');
+
+    logger.debug('Signing typed data message', message, { legacy });
+    const sig = await this._retry(eth =>
+      eth.signEIP712HashedMessage(
+        this.path!,
+        domainSeparatorHex,
+        hashStructMessageHex
+      )
+    );
+    logger.debug('got signed message!', sig);
     sig.r = '0x' + sig.r;
     sig.s = '0x' + sig.s;
     return ethers.utils.joinSignature(sig);
@@ -116,16 +148,26 @@ export class LedgerSigner extends ethers.Signer {
       data: tx.data || undefined,
       gasLimit: tx.gasLimit || undefined,
       gasPrice: tx.gasPrice || undefined,
+      maxFeePerGas: tx.maxFeePerGas || undefined,
+      maxPriorityFeePerGas: tx.maxPriorityFeePerGas || undefined,
       nonce: tx.nonce ? ethers.BigNumber.from(tx.nonce).toNumber() : undefined,
       to: tx.to || undefined,
+      type: tx.type || undefined,
       value: tx.value || undefined,
     };
 
     const unsignedTx = ethers.utils.serializeTransaction(baseTx).substring(2);
-    const sig = await this._retry(eth =>
-      eth.signTransaction(this.path!, unsignedTx)
-    );
 
+    const resolution = await this._retry(eth =>
+      ledgerService.resolveTransaction(unsignedTx, eth.loadConfig, {
+        erc20: true,
+        externalPlugins: true,
+        nft: true,
+      })
+    );
+    const sig = await this._retry(eth =>
+      eth.signTransaction(this.path!, unsignedTx, resolution)
+    );
     return ethers.utils.serializeTransaction(baseTx, {
       r: '0x' + sig.r,
       s: '0x' + sig.s,

@@ -23,10 +23,12 @@ import {
 } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
 import { loadWallet } from '../model/wallet';
+import { LedgerSigner } from './LedgerSigner';
 import {
   estimateGasWithPadding,
   getFlashbotsProvider,
   getProviderForNetwork,
+  isHexStringIgnorePrefix,
   toHex,
   toHexNoLeadingZeros,
 } from './web3';
@@ -344,7 +346,7 @@ export const executeSwap = async ({
   gasPrice: string;
   nonce?: number;
   tradeDetails: Quote | null;
-  wallet: Wallet | null;
+  wallet: Wallet | LedgerSigner | null;
   permit: boolean;
   flashbots: boolean;
 }) => {
@@ -364,7 +366,12 @@ export const executeSwap = async ({
   if (!walletToUse) {
     walletToUse = await loadWallet(undefined, true, provider);
   } else {
-    walletToUse = new Wallet(walletToUse.privateKey, provider);
+    if (
+      walletToUse?.privateKey &&
+      isHexStringIgnorePrefix(walletToUse.privateKey)
+    ) {
+      walletToUse = new Wallet(walletToUse.privateKey, provider);
+    }
   }
 
   if (!walletToUse || !tradeDetails) return null;
@@ -379,6 +386,7 @@ export const executeSwap = async ({
     maxPriorityFeePerGas: maxPriorityFeePerGas || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   };
+  const walletToUseAddress = await walletToUse.getAddress();
 
   // Wrap Eth
   if (
@@ -388,11 +396,12 @@ export const executeSwap = async ({
     logger.debug(
       'wrapping native asset',
       tradeDetails.buyAmount,
-      walletToUse.address,
+      walletToUseAddress,
       chainId
     );
     return wrapNativeAsset(
       tradeDetails.buyAmount,
+      // @ts-ignore
       walletToUse,
       chainId,
       transactionParams
@@ -405,11 +414,12 @@ export const executeSwap = async ({
     logger.debug(
       'unwrapping native asset',
       tradeDetails.sellAmount,
-      walletToUse.address,
+      walletToUseAddress,
       chainId
     );
     return unwrapNativeAsset(
       tradeDetails.sellAmount,
+      // @ts-ignore
       walletToUse,
       chainId,
       transactionParams
@@ -420,13 +430,14 @@ export const executeSwap = async ({
       'FILLQUOTE',
       tradeDetails,
       transactionParams,
-      walletToUse.address,
+      walletToUseAddress,
       permit,
       chainId
     );
     return fillQuote(
       tradeDetails,
       transactionParams,
+      // @ts-ignore
       walletToUse,
       permit,
       chainId

@@ -540,7 +540,7 @@ export default function ExchangeModal({
       setIsAuthorizing(true);
       let NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
-        const wallet = await loadWallet();
+        const wallet = await loadWallet(undefined, true, currentProvider);
         if (!wallet) {
           setIsAuthorizing(false);
           logger.sentry(`aborting ${type} due to missing wallet`);
@@ -601,6 +601,7 @@ export default function ExchangeModal({
     [
       chainId,
       currentNetwork,
+      currentProvider,
       debouncedIsHighPriceImpact,
       flashbots,
       getNextNonce,

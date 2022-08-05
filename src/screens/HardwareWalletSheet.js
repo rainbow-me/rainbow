@@ -1,5 +1,4 @@
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-// import lang from 'i18n-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { uniq } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
@@ -100,19 +99,6 @@ export default function HardwareWalletSheet() {
     loadHardwareWallets();
   }, []);
 
-  const resetConn = useCallback(async () => {
-    try {
-      logger.debug('disconnecting', hw[0]);
-      await TransportBLE.disconnect(hw[0]);
-      logger.debug('Disconnected succesfully');
-    } catch (e) {
-      logger.debug('error disconnecting', e);
-    } finally {
-      setHw([]);
-      AsyncStorage.setItem(HW_WALLET_KEY, JSON.stringify([]));
-    }
-  }, [hw]);
-
   const offset = useSharedValue(0);
 
   useEffect(() => {
@@ -120,7 +106,7 @@ export default function HardwareWalletSheet() {
   }, [offset]);
 
   const sheetHeight = ios
-    ? 442 + safeAreaInsetValues.bottom
+    ? 332 + safeAreaInsetValues.bottom
     : 850 + safeAreaInsetValues.bottom;
 
   const marginTop = android ? deviceHeight - sheetHeight + 340 : null;
@@ -299,7 +285,7 @@ export default function HardwareWalletSheet() {
                       weight="bold"
                     />
                   </SheetActionButtonRow>
-                  {hw?.length > 0 && (
+                  {/* {hw?.length > 0 && (
                     <SheetActionButtonRow ignorePaddingBottom>
                       <SheetActionButton
                         color={colors.white}
@@ -310,7 +296,7 @@ export default function HardwareWalletSheet() {
                         weight="bold"
                       />
                     </SheetActionButtonRow>
-                  )}
+                  )} */}
                 </Column>
               </Fragment>
             </Centered>

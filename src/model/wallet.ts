@@ -257,10 +257,13 @@ export const loadWallet = async (
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
+  logger.debug('Loading wallet...');
   if (isHardwareWalletKey(privateKey)) {
+    logger.debug('HW WALLET DETECTED');
     const index = privateKey?.split('/')[1];
-    const deviceId = privateKey?.split('/')[1];
+    const deviceId = privateKey?.split('/')[0];
     if (typeof index !== undefined && provider && deviceId) {
+      logger.debug('Initializing ledger with', index, deviceId);
       return new LedgerSigner(
         provider,
         `${DEFAULT_HD_PATH}/${index}`,
@@ -289,6 +292,7 @@ export const sendTransaction = async ({
     logger.sentry('about to send transaction', transaction);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    logger.debug('got wallet', wallet);
     if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
@@ -450,7 +454,7 @@ export const signTypedDataMessage = async (
       // Hardware wallets
       if (!wallet?.privateKey) {
         const result = await (wallet as LedgerSigner).signTypedDataMessage(
-          message,
+          parsedData,
           version === 'v1' ? true : false
         );
         return { result };
@@ -491,6 +495,7 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey) as Promise<string | null>;
 
+// @ts-ignore
 const loadPrivateKey = async (
   address?: EthereumAddress | undefined
 ): Promise<null | EthereumPrivateKey | -1 | -2> => {
