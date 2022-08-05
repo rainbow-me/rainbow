@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react';
-import { Keyboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
 import { ENSRegistrationState } from '@rainbow-me/entities';
@@ -71,7 +70,6 @@ export default function useENSPendingRegistrations() {
   const finishRegistration = useCallback(
     name => {
       startRegistration(name, REGISTRATION_MODES.CREATE);
-      android && Keyboard.dismiss();
       setTimeout(() => {
         navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
       }, 100);
