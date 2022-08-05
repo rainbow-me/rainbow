@@ -140,6 +140,7 @@ function ProfileInfoRow({
 
   return (
     <InfoRow
+      ensName={ensName}
       icon={icon}
       isImage={isImageValue}
       label={label}
