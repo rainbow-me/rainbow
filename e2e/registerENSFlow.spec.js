@@ -294,6 +294,12 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
   });
 
+  it('Should be able to navigate to the Edit screen', async () => {
+    await Helpers.waitAndTap('edit-button');
+    await Helpers.checkIfVisible('ens-assign-records-sheet');
+    await Helpers.swipe('ens-assign-records-sheet', 'down');
+  });
+
   it('Should use rainbowtestwallet.eth as primary name', async () => {
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
