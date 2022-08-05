@@ -19,7 +19,7 @@ const themeSelector = (state: any) => state.theme;
 const transactionsSelector = (state: any) => state.transactions;
 const focusedSelector = (state: any) => state.isFocused;
 const initializedSelector = (state: any) => state.initialized;
-const onTransactionPressSelector = (state: any) => state.onTransactionPress;
+const navigateSelector = (state: any) => state.navigate;
 
 const groupTransactionByDate = ({ pending, minedAt }: any) => {
   if (pending) return 'Pending';
@@ -56,7 +56,7 @@ const buildTransactionsSections = (
   transactions: any,
   isFocused: any,
   initialized: any,
-  onTransactionPress: any
+  navigate: any
 ) => {
   if (!isFocused && !initialized) {
     return { sections: [] };
@@ -83,7 +83,7 @@ const buildTransactionsSections = (
         renderItem: ({ item }: any) => (
           <FastTransactionCoinRow
             item={item}
-            onTransactionPress={onTransactionPress}
+            navigate={navigate}
             theme={theme}
           />
         ),
@@ -130,7 +130,7 @@ export const buildTransactionsSectionsSelector = createSelector(
     transactionsSelector,
     focusedSelector,
     initializedSelector,
-    onTransactionPressSelector,
+    navigateSelector,
   ],
   buildTransactionsSections
 );

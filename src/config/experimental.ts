@@ -20,7 +20,7 @@ export const defaultConfig = {
   [L2_TXS]: { needsRestart: true, settings: true, value: false },
   [LANGUAGE_SETTINGS]: { settings: false, value: false },
   [NOTIFICATIONS]: { needsRestart: true, settings: true, value: false },
-  [PROFILES]: { settings: true, value: true },
+  [PROFILES]: { settings: true, value: false },
   [REVIEW_ANDROID]: { settings: false, value: false },
 };
 

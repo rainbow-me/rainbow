@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
@@ -13,6 +12,7 @@ import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
+import { analytics } from '@rainbow-me/analytics';
 import {
   enableActionsOnReadOnlyWallet,
   PROFILES,

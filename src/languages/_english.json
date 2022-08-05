@@ -338,7 +338,8 @@
       },
       "search": {
         "profiles": "Profiles",
-        "search_ethereum": "Search all of Ethereum"
+        "search_ethereum": "Search all of Ethereum",
+        "search_ethereum_short": "Search Ethereum"
       },
       "strategies": {
         "strategies_title": "Strategies",
@@ -958,9 +959,9 @@
         "discord": "Discord",
         "doge": "Dogecoin",
         "email": "Email",
-        "email_message": "Please enter a valid email",
+        "invalid_email": "Invalid email",
         "email_placeholder": "Add your email",
-        "email_submit_message": "Please enter a valid email",
+        "invalid_username": "Invalid %{app} username",
         "eth": "Ethereum",
         "github": "GitHub",
         "instagram": "Instagram",
@@ -987,9 +988,8 @@
         "username_placeholder": "username",
         "wallet_placeholder": "Add a %{coin} address",
         "website": "Website",
-        "website_message": "Please enter a valid website URL",
-        "website_placeholder": "Add your website",
-        "website_submit_message": "Please enter a valid email"
+        "invalid_website": "Invalid URL",
+        "website_placeholder": "Add your website"
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
