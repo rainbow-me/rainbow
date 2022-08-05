@@ -2,10 +2,10 @@ import lang from 'i18n-js';
 import { upperFirst } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
 import useClipboard from './useClipboard';
 import useENSRegistration from './useENSRegistration';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import {
   ENS_RECORDS,
   REGISTRATION_MODES,
@@ -13,7 +13,6 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 const imageKeyMap = {
@@ -218,28 +217,12 @@ export default function useENSRecordDisplayProperties({
     ]
   );
 
-  const handleAndroidPress = useCallback(() => {
-    const actionSheetOptions = menuItems
-      .map(item => item?.actionTitle)
-      .filter(Boolean) as any;
-
-    showActionSheetWithOptions(
-      {
-        options: actionSheetOptions,
-      },
-      async (buttonIndex: number) => {
-        const actionKey = menuItems[buttonIndex]?.actionKey;
-        handlePressMenuItem({ nativeEvent: { actionKey } });
-      }
-    );
-  }, [handlePressMenuItem, menuItems]);
-
   const Button = useCallback(
     ({ children, ...props }) => (
       <ContextMenuButton
         enableContextMenu
         menuConfig={{ menuItems, menuTitle: '' }}
-        {...(android ? { onPress: handleAndroidPress } : {})}
+        {...(android ? { handlePressMenuItem } : {})}
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         style={{ flexGrow: isImageValue ? 1 : 0, flexShrink: 1 }}
@@ -249,7 +232,7 @@ export default function useENSRecordDisplayProperties({
         {children}
       </ContextMenuButton>
     ),
-    [handleAndroidPress, handlePressMenuItem, isImageValue, menuItems]
+    [handlePressMenuItem, isImageValue, menuItems]
   );
 
   return {
