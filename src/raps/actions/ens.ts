@@ -1,11 +1,11 @@
-import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
+import { Signer } from 'ethers';
 import {
   // @ts-ignore
   IS_TESTING,
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
 import {
   estimateENSTransactionGasLimit,
@@ -34,7 +34,7 @@ const executeCommit = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -70,7 +70,7 @@ const executeRegisterWithConfig = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -102,7 +102,7 @@ const executeMulticall = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -133,7 +133,7 @@ const executeRenew = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -165,7 +165,7 @@ const executeSetName = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -195,7 +195,7 @@ const executeSetText = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -220,7 +220,7 @@ const executeSetText = async (
 };
 
 const ensAction = async (
-  wallet: Wallet,
+  wallet: Signer,
   actionName: string,
   index: number,
   parameters: RapENSActionParameters,
@@ -422,7 +422,7 @@ const ensAction = async (
 };
 
 const commitENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -439,7 +439,7 @@ const commitENS = async (
 };
 
 const multicallENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -456,7 +456,7 @@ const multicallENS = async (
 };
 
 const registerWithConfig = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -473,7 +473,7 @@ const registerWithConfig = async (
 };
 
 const renewENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -490,7 +490,7 @@ const renewENS = async (
 };
 
 const setNameENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -507,7 +507,7 @@ const setNameENS = async (
 };
 
 const setTextENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,

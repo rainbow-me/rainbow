@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
-import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
+import { Signer } from 'ethers';
 import {
   Rap,
   RapExchangeActionParameters,
@@ -31,7 +31,7 @@ const CTOKEN_DECIMALS = 8;
 const actionName = 'withdrawCompound';
 
 const withdrawCompound = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,

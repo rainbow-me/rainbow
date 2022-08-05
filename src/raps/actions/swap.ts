@@ -1,6 +1,6 @@
-import { Wallet } from '@ethersproject/wallet';
 import { ChainId } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
+import { Signer } from 'ethers';
 import { toLower } from 'lodash';
 import {
   Rap,
@@ -28,7 +28,7 @@ import logger from 'logger';
 const actionName = 'swap';
 
 const swap = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,
@@ -129,9 +129,10 @@ const swap = async (
     );
 
     if (permit) {
+      const walletAddress = await wallet.getAddress();
       // Clear the allowance
       const cacheKey = toLower(
-        `${wallet.address}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`
+        `${walletAddress}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`
       );
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete AllowancesCache.cache[cacheKey];

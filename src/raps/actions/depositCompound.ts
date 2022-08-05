@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
-import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
+import { Signer } from 'ethers';
 import {
   Rap,
   RapExchangeActionParameters,
@@ -34,7 +34,7 @@ export const getDepositGasLimit = (tokenToDeposit: Asset) =>
 const actionName = 'depositCompound';
 
 const depositCompound = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,

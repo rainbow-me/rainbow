@@ -1,7 +1,6 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
-import { Wallet } from '@ethersproject/wallet';
-import { BigNumberish, Contract } from 'ethers';
+import { BigNumberish, Contract, Signer } from 'ethers';
 import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
@@ -363,7 +362,7 @@ export const textRecordFields = {
 export const ENS_DOMAIN = '.eth';
 
 const getENSRegistrarControllerContract = async (
-  wallet?: Wallet,
+  wallet?: Signer,
   registrarAddress?: string
 ) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
@@ -375,7 +374,7 @@ const getENSRegistrarControllerContract = async (
 };
 
 const getENSPublicResolverContract = async (
-  wallet?: Wallet,
+  wallet?: Signer,
   resolverAddress?: EthereumAddress
 ) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
@@ -386,7 +385,7 @@ const getENSPublicResolverContract = async (
   );
 };
 
-const getENSReverseRegistrarContract = async (wallet?: Wallet) => {
+const getENSReverseRegistrarContract = async (wallet?: Signer) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     ensReverseRegistrarAddress,
@@ -395,7 +394,7 @@ const getENSReverseRegistrarContract = async (wallet?: Wallet) => {
   );
 };
 
-const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
+const getENSBaseRegistrarImplementationContract = async (wallet?: Signer) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     ensBaseRegistrarImplementationAddress,
@@ -534,7 +533,7 @@ const getENSExecutionDetails = async ({
   rentPrice?: string;
   duration?: number;
   records?: ENSRegistrationRecords;
-  wallet?: Wallet;
+  wallet?: Signer;
   salt?: string;
   resolverAddress?: EthereumAddress;
 }): Promise<{

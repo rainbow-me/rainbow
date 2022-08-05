@@ -1,8 +1,8 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
-import { Wallet } from '@ethersproject/wallet';
 import { ALLOWS_PERMIT, PermitSupportedTokenList } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
+import { Signer } from 'ethers';
 import { isNull } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import {
@@ -97,13 +97,13 @@ const executeApprove = async (
         maxPriorityFeePerGas: string;
         gasPrice?: undefined;
       },
-  wallet: Wallet,
+  wallet: Signer,
   nonce: number | null = null,
   chainId: number = 1
 ) => {
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   let provider = await getProviderForNetwork(network);
-  const walletToUse = new Wallet(wallet.privateKey, provider);
+  const walletToUse = wallet.connect(provider);
 
   const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
   return exchange.approve(spender, MaxUint256, {
@@ -120,7 +120,7 @@ const executeApprove = async (
 const actionName = 'unlock';
 
 const unlock = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,
@@ -204,8 +204,8 @@ const unlock = async (
       throw e;
     }
   }
-
-  const cacheKey = `${wallet.address}|${assetAddress}|${contractAddress}`.toLowerCase();
+  const walletAddress = await wallet.getAddress();
+  const cacheKey = `${walletAddress}|${assetAddress}|${contractAddress}`.toLowerCase();
 
   // Cache the approved value
   AllowancesCache.cache[cacheKey] = MaxUint256.toString();
