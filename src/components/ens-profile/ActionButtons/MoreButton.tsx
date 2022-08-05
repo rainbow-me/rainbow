@@ -1,12 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import {
-  ContextMenuButton,
-  MenuActionConfig,
-} from 'react-native-ios-context-menu';
+import { MenuActionConfig } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import {
   useClipboard,
   useContacts,
@@ -16,7 +14,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 const ACTIONS = {
@@ -108,7 +106,7 @@ export default function MoreButton({
           iconValue: 'square.and.arrow.up',
         },
       },
-    ] as MenuActionConfig[];
+    ].filter(Boolean) as MenuActionConfig[];
   }, [isWatching, formattedAddress, contact]);
 
   const handlePressMenuItem = useCallback(
@@ -160,30 +158,12 @@ export default function MoreButton({
     ]
   );
 
-  const handleAndroidPress = useCallback(() => {
-    const actionSheetOptions = menuItems
-      .map(item => item?.actionTitle)
-      .filter(Boolean) as any;
-
-    showActionSheetWithOptions(
-      {
-        options: actionSheetOptions,
-      },
-      async (buttonIndex: number) => {
-        // android: filter out undefined "Open Wallet" when not available
-        // otherwise it messes up the action order index
-        const items = menuItems.filter(item => item);
-        const actionKey = items[buttonIndex]?.actionKey;
-        handlePressMenuItem({ nativeEvent: { actionKey } });
-      }
-    );
-  }, [handlePressMenuItem, menuItems]);
-
+  const menuConfig = useMemo(() => ({ menuItems }), [menuItems]);
   return (
     <ContextMenuButton
       enableContextMenu
-      menuConfig={{ menuItems, menuTitle: '' }}
-      {...(android ? { onPress: handleAndroidPress } : {})}
+      menuConfig={menuConfig}
+      {...(android ? { handlePressMenuItem } : {})}
       isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
