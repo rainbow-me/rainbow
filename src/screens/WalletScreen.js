@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/core';
-import { useIsFocused } from '@react-navigation/native';
 import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
@@ -41,6 +40,7 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
+import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -92,16 +92,17 @@ export default function WalletScreen() {
     isEmpty: isSectionsEmpty,
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
-  const isFocused = useIsFocused();
 
   useEffect(() => {
-    // This is the fix for Android wallet creation bug.
-    if (ios || !isFocused) {
+    // This is the fix for Android wallet creation problem.
+    // We need to remove the welcome screen from the stack.
+    if (ios) {
       return;
     }
-    const numberOfRoutes = dangerouslyGetParent().dangerouslyGetState().routes
-      .length;
-    if (numberOfRoutes === 2) {
+    const isWelcomeScreen =
+      dangerouslyGetParent().dangerouslyGetState().routes[0].name ===
+      Routes.WELCOME_SCREEN;
+    if (isWelcomeScreen) {
       removeFirst();
     }
   }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
