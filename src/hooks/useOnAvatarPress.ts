@@ -214,7 +214,11 @@ export default () => {
           } else {
             if (!isReadOnly) {
               if (!accountImage) {
-                onAvatarPickEmoji();
+                if (ios) {
+                  onAvatarPickEmoji();
+                } else {
+                  setNextEmoji();
+                }
               } else {
                 onAvatarRemovePhoto();
               }
