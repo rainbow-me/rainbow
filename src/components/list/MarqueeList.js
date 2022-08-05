@@ -176,7 +176,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
               simultaneousHandlers={[lpRef, tapRef]}
             >
               <Animated.View
-                style={{ height: height, width: '100%' }}
+                style={{ height, width: '100%' }}
                 testID={testID}
               >
                 <Animated.View
