@@ -8,12 +8,12 @@ import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];
-const topRecordKeys = [ENS_RECORDS.cover, ENS_RECORDS.description];
+const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.description];
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {
   avatar?: ImageSource;
-  cover?: ImageSource;
+  header?: ImageSource;
 };
 
 export default function ProfileInfoSection({
@@ -33,10 +33,14 @@ export default function ProfileInfoSection({
 }) {
   const recordsArray = useMemo(
     () =>
-      Object.entries(records || {}).filter(
-        ([key]) => !omitRecordKeys.includes(key as ENS_RECORDS)
-      ),
-    [records]
+      Object.entries(records || {})
+        .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS))
+        .map(([key, value]) =>
+          key === 'avatar' || key === 'header'
+            ? [key, images?.[key]?.imageUrl as string]
+            : [key, value]
+        ),
+    [images, records]
   );
 
   const [topRecords, otherRecords] = useMemo(() => {

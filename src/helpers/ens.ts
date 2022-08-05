@@ -60,7 +60,7 @@ export enum ENS_RECORDS {
   LTC = 'LTC',
   DOGE = 'DOGE',
   displayName = 'me.rainbow.displayName',
-  cover = 'cover',
+  header = 'header',
   content = 'content',
   url = 'url',
   email = 'email',

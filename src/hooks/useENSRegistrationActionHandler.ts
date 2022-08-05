@@ -170,7 +170,7 @@ export default function useENSRegistrationActionHandler(
         getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
         uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
-          cover: coverMetadata,
+          header: coverMetadata,
         }),
       ]);
 
@@ -274,7 +274,7 @@ export default function useENSRegistrationActionHandler(
         getNextNonce(),
         uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
-          cover: coverMetadata,
+          header: coverMetadata,
         }),
         fetchResolver(registrationParameters.name),
       ]);
@@ -382,9 +382,9 @@ export default function useENSRegistrationActionHandler(
 
 async function uploadRecordImages(
   records: Partial<Records> | undefined,
-  imageMetadata: { avatar?: Image; cover?: Image }
+  imageMetadata: { avatar?: Image; header?: Image }
 ) {
-  const uploadRecordImage = async (key: 'avatar' | 'cover') => {
+  const uploadRecordImage = async (key: 'avatar' | 'header') => {
     if (
       (records?.[key]?.startsWith('~') || records?.[key]?.startsWith('file')) &&
       imageMetadata[key]
@@ -404,14 +404,14 @@ async function uploadRecordImages(
     return records?.[key];
   };
 
-  const [avatar, cover] = await Promise.all([
+  const [avatar, header] = await Promise.all([
     uploadRecordImage('avatar'),
-    uploadRecordImage('cover'),
+    uploadRecordImage('header'),
   ]);
 
   return {
     ...records,
     avatar,
-    cover,
+    header,
   };
 }

@@ -23,7 +23,7 @@ type ENSImages = {
 
 const imageKeyMap = {
   [ENS_RECORDS.avatar]: 'avatarUrl',
-  [ENS_RECORDS.cover]: 'coverUrl',
+  [ENS_RECORDS.header]: 'coverUrl',
 } as {
   [key: string]: 'avatarUrl' | 'coverUrl';
 };

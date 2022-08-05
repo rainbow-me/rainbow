@@ -64,9 +64,9 @@ import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
 const DUMMY_RECORDS = {
-  'cover':
-    'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
   'description': 'description',
+  'header':
+    'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
   'me.rainbow.displayName': 'name',
 };
 
@@ -386,7 +386,7 @@ export const fetchAccountRegistrations = async (address: string) => {
 };
 
 export const fetchImage = async (
-  imageType: 'avatar' | 'cover',
+  imageType: 'avatar' | 'header',
   ensName: string
 ) => {
   let imageUrl;
@@ -901,7 +901,7 @@ export const formatRecordsForTransaction = (
   records &&
     Object.entries(records).forEach(([key, value]) => {
       switch (key) {
-        case ENS_RECORDS.cover:
+        case ENS_RECORDS.header:
         case ENS_RECORDS.twitter:
         case ENS_RECORDS.displayName:
         case ENS_RECORDS.email:

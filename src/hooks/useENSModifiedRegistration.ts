@@ -20,7 +20,7 @@ import {
 } from '@rainbow-me/utils';
 
 const getImageUrl = (
-  key: 'avatar' | 'cover',
+  key: 'avatar' | 'header',
   records: Records,
   changedRecords: Records,
   uniqueTokens: UniqueAsset[],
@@ -187,7 +187,7 @@ export default function useENSModifiedRegistration({
       mode
     );
     const coverUrl = getImageUrl(
-      'cover',
+      'header',
       records,
       changedRecords,
       uniqueTokens,
