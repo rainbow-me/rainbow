@@ -292,7 +292,6 @@ export const isValidMnemonic = (value: string): boolean =>
  * @return Whether or not the string was a valid bluetooth device id
  */
 export const isValidBluetoothDeviceId = (value: string): boolean => {
-  // TODO: figure out what the proper format is for bluetooth device ids
   return (
     value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
   );
