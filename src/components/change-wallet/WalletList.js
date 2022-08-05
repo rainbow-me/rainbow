@@ -96,9 +96,10 @@ export default function WalletList({
   allWallets,
   currentWallet,
   editMode,
+  getEditMenuItems,
+  getOnMenuItemPress,
   height,
   onChangeAccount,
-  onEditWallet,
   onPressAddAccount,
   onPressImportSeedPhrase,
   scrollEnabled,
@@ -206,7 +207,8 @@ export default function WalletList({
               <AddressRow
                 data={item}
                 editMode={editMode}
-                onEditWallet={onEditWallet}
+                getEditMenuItems={getEditMenuItems}
+                getOnMenuItemPress={getOnMenuItemPress}
                 onPress={item.onPress}
                 watchOnly={watchOnly}
               />
@@ -216,7 +218,7 @@ export default function WalletList({
           return null;
       }
     },
-    [editMode, onEditWallet, watchOnly]
+    [editMode, getEditMenuItems, getOnMenuItemPress, watchOnly]
   );
 
   return (
