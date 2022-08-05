@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';

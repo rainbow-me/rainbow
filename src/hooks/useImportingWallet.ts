@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { keys } from 'lodash';
@@ -16,6 +15,7 @@ import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
@@ -31,6 +31,7 @@ import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { useRemoveFirst } from '@rainbow-me/navigation/useRemoveFirst';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
@@ -237,6 +238,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const dispatch = useDispatch();
+  const removeFirst = useRemoveFirst();
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
@@ -272,17 +274,26 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image
           )
             .then(success => {
-              handleSetImporting(false);
+              ios && handleSetImporting(false);
               if (success) {
                 goBack();
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
-                    replace(Routes.SWIPE_LAYOUT, {
+                    // on Android replacing is not working well, so we navigate and then remove the screen below
+                    const action = ios ? replace : navigate;
+                    action(Routes.SWIPE_LAYOUT, {
                       params: { initialized: true },
                       screen: Routes.WALLET_SCREEN,
                     });
                   } else {
                     navigate(Routes.WALLET_SCREEN, { initialized: true });
+                  }
+                  if (android) {
+                    handleSetImporting(false);
+                    InteractionManager.runAfterInteractions(() =>
+                      setIsWalletLoading(null)
+                    );
+                    removeFirst();
                   }
 
                   setTimeout(() => {
@@ -307,6 +318,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   });
                 });
               } else {
+                if (android) {
+                  setIsWalletLoading(null);
+                  handleSetImporting(false);
+                }
                 // Wait for error messages then refocus
                 setTimeout(() => {
                   // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
@@ -318,6 +333,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             })
             .catch(error => {
               handleSetImporting(false);
+              android && handleSetImporting(false);
               logger.error('error importing seed phrase: ', error);
               setTimeout(() => {
                 // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
@@ -352,6 +368,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     dispatch,
     showImportModal,
     profilesEnabled,
+    removeFirst,
+    setIsWalletLoading,
   ]);
 
   useEffect(() => {

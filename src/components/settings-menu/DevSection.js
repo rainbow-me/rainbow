@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext } from 'react';
 import { ScrollView } from 'react-native';

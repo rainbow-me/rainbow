@@ -1,5 +1,4 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
@@ -47,6 +46,7 @@ import { FLASHBOTS_WC } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,
