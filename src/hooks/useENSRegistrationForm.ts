@@ -148,6 +148,13 @@ export default function useENSRegistrationForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEmpty(defaultRecords), updateRecords]);
 
+  // Reset errors if changedRecords is reset
+  useEffect(() => {
+    if (isEmpty(changedRecords)) {
+      setErrors({});
+    }
+  }, [changedRecords, initializeForm, setErrors]);
+
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
       setSelectedFields(selectedFields);
