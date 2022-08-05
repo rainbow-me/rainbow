@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import Animated, {
@@ -10,6 +9,7 @@ import Animated, {
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
+import { analytics } from '@rainbow-me/analytics';
 import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';

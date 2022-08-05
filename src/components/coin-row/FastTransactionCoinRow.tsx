@@ -1,11 +1,21 @@
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-import { Text } from '@rainbow-me/design-system';
-import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { Text } from '@/design-system';
+import { TransactionStatusTypes, TransactionTypes } from '@/entities';
+import {
+  getCallback,
+  getMenuItems,
+  getOnPressAndroid,
+  getOnPressIOS,
+} from '@/helpers/transactionPressHandler';
+import { useNavigation } from '@/navigation';
+import { ThemeContextProps } from '@/theme';
+
+const noop = () => {};
 
 const BottomRow = React.memo(function BottomRow({
   description,
@@ -73,59 +83,91 @@ const BottomRow = React.memo(function BottomRow({
 export default React.memo(function TransactionCoinRow({
   item,
   theme,
-  onTransactionPress,
+  navigate,
 }: {
   item: any;
   theme: ThemeContextProps;
-  onTransactionPress: (item: unknown) => void;
+  navigate: ReturnType<typeof useNavigation>['navigate'];
 }) {
   const { mainnetAddress } = item;
   const { colors } = theme;
-  const handleTransactionPress = useCallback(() => onTransactionPress(item), [
+
+  const menu = useMemo(() => {
+    return getMenuItems(item);
+  }, [item]);
+
+  const onItemSelected = useMemo(() => getCallback(navigate, item), [
+    navigate,
     item,
-    onTransactionPress,
   ]);
+  const onPressIOSCallback = useMemo(
+    () => getOnPressIOS(menu, onItemSelected),
+    [menu, onItemSelected]
+  );
+  const onPressAndroidCallback = useMemo(
+    () => getOnPressAndroid(menu, onItemSelected),
+    [menu, onItemSelected]
+  );
+
+  const menuItems = useMemo(
+    () => ({
+      menuItems: menu.buttons.map(label => ({
+        actionKey: label,
+        actionTitle: label,
+      })),
+      menuTitle: menu.title,
+    }),
+    [menu]
+  );
 
   return (
-    <ButtonPressAnimation onPress={handleTransactionPress} scaleTo={0.96}>
-      <View style={sx.wholeRow}>
-        <View style={sx.icon}>
-          <FastCoinIcon
-            address={mainnetAddress || item.address}
-            assetType={item.network}
-            mainnetAddress={mainnetAddress}
-            symbol={item.symbol}
-            theme={theme}
-          />
-        </View>
-        <View style={sx.column}>
-          <View style={sx.topRow}>
-            <FastTransactionStatusBadge
-              colors={colors}
-              pending={item.pending}
-              status={item.status}
-              title={item.title}
+    <ContextMenuButton
+      handlePressMenuItem={android ? onPressAndroidCallback : noop}
+      menuConfig={menuItems}
+    >
+      <ButtonPressAnimation
+        onPress={ios ? onPressIOSCallback : noop}
+        scaleTo={0.96}
+      >
+        <View style={sx.wholeRow}>
+          <View style={sx.icon}>
+            <FastCoinIcon
+              address={mainnetAddress || item.address}
+              assetType={item.network}
+              mainnetAddress={mainnetAddress}
+              symbol={item.symbol}
+              theme={theme}
             />
-            <View style={sx.balance}>
-              <Text
-                color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
-                numberOfLines={1}
-                size="14px"
-              >
-                {item.balance?.display ?? ''}
-              </Text>
-            </View>
           </View>
-          <BottomRow
-            description={item.description}
-            nativeDisplay={item.native?.display}
-            status={item.status}
-            theme={theme}
-            type={item.type}
-          />
+          <View style={sx.column}>
+            <View style={sx.topRow}>
+              <FastTransactionStatusBadge
+                colors={colors}
+                pending={item.pending}
+                status={item.status}
+                title={item.title}
+              />
+              <View style={sx.balance}>
+                <Text
+                  color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
+                  numberOfLines={1}
+                  size="14px"
+                >
+                  {item.balance?.display ?? ''}
+                </Text>
+              </View>
+            </View>
+            <BottomRow
+              description={item.description}
+              nativeDisplay={item.native?.display}
+              status={item.status}
+              theme={theme}
+              type={item.type}
+            />
+          </View>
         </View>
-      </View>
-    </ButtonPressAnimation>
+      </ButtonPressAnimation>
+    </ContextMenuButton>
   );
 });
 

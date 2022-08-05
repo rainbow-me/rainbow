@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import ChainLogo from '../ChainLogo';
@@ -9,6 +8,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
+import { analytics } from '@rainbow-me/analytics';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
   dappLogoOverride,

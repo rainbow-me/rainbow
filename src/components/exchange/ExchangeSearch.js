@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
@@ -21,6 +20,7 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { analytics } from '@rainbow-me/analytics';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { colors, margin, padding } from '@rainbow-me/styles';

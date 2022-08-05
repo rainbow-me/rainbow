@@ -22,6 +22,7 @@ import {
   Stack,
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
   useENSAddress,
@@ -119,7 +120,7 @@ export default function ProfileSheetHeader({
     };
   }, [enableZoomableImages, getUniqueToken, handleSelectNFT, records?.avatar]);
 
-  const coverUrl = cover?.imageUrl;
+  const coverUrl = maybeSignUri(cover?.imageUrl || undefined, { w: 400 });
 
   const { enableZoomOnPressCover, onPressCover } = useMemo(() => {
     const cover = records?.cover;

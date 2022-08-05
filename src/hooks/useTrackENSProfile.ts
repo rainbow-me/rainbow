@@ -1,8 +1,8 @@
-import analytics from '@segment/analytics-react-native';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
+import { analytics } from '@rainbow-me/analytics';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
@@ -62,7 +62,7 @@ export default function useTrackENSProfile() {
   );
 
   const trackENSProfile = useCallback(() => {
-    isSuccess && analytics.identify(null, data);
+    isSuccess && analytics.identify(undefined, data);
   }, [isSuccess, data]);
 
   return { trackENSProfile };

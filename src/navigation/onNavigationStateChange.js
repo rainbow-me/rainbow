@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { NativeModules, StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
@@ -6,6 +5,7 @@ import currentColors from '../theme/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
+import { analytics } from '@rainbow-me/analytics';
 
 let memRouteName;
 let memState;
@@ -120,11 +120,13 @@ export function onNavigationStateChange(currentState) {
       routeName === Routes.MAIN_EXCHANGE_SCREEN ||
       routeName === Routes.SAVINGS_WITHDRAW_MODAL ||
       routeName === Routes.SEND_SHEET ||
+      routeName === Routes.SEND_SHEET_NAVIGATOR ||
       routeName === Routes.SWAP_DETAILS_SCREEN ||
       routeName === Routes.SWAP_DETAILS_SHEET ||
       routeName === Routes.QR_SCANNER_SCREEN ||
       routeName === Routes.CUSTOM_GAS_SHEET ||
       routeName === Routes.ENS_INTRO_SHEET ||
+      routeName === Routes.WALLET_SCREEN ||
       routeName === Routes.ENS_SEARCH_SHEET ||
       routeName === Routes.ENS_ASSIGN_RECORDS_SHEET ||
       (routeName === Routes.MODAL_SCREEN &&

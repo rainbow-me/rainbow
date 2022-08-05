@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
@@ -15,6 +14,7 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { analytics } from '@rainbow-me/analytics';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
@@ -52,7 +52,7 @@ const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
 }))({});
 
 const SearchIconWrapper = styled(Animated.View)({
-  marginTop: android ? 6 : 9,
+  marginTop: android ? 4 : 9,
 });
 
 const SearchInput = styled(Input).attrs(

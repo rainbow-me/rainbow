@@ -41,6 +41,7 @@ function AssetListItemSkeleton({
   descendingOpacity,
   ignorePaddingHorizontal,
   colors,
+  ...rest
 }) {
   const progress = useSharedValue(0);
 
@@ -58,7 +59,7 @@ function AssetListItemSkeleton({
   }, [animated, progress]);
 
   return (
-    <Container descendingOpacity={descendingOpacity} index={index}>
+    <Container descendingOpacity={descendingOpacity} index={index} {...rest}>
       <Skeleton animated={animated}>
         <Wrapper
           ignorePaddingHorizontal={ignorePaddingHorizontal}

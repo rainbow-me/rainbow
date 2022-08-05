@@ -10,7 +10,7 @@ export default function useAndroidScrollViewGestureHandler({
   navigation: navigationOverride,
 }: {
   navigation?: NavigationProp<any, any>;
-}) {
+} = {}) {
   const inferredNavigation = useNavigation();
   const navigation = navigationOverride || inferredNavigation;
 
