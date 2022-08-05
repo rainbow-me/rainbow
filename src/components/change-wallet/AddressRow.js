@@ -251,9 +251,9 @@ export default function AddressRow({
         {editMode &&
           (android ? (
             <ContextMenuButton
-              handlePressMenuItem={handlePressMenuItem}
               isAnchoredToRight
               menuConfig={editMode ? menuConfig : emptyMenu}
+              onPressMenuItem={handlePressMenuItem}
             >
               <OptionsIcon onPress={NOOP} />
             </ContextMenuButton>
