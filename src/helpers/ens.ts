@@ -325,12 +325,6 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.wallet_placeholder', {
       coin: lang.t('profiles.create.ltc'),
     }),
-    validation: {
-      message: lang.t('profiles.create.invalid_asset', {
-        coin: ENS_RECORDS.LTC,
-      }),
-      validator: value => validateCoinRecordValue(value, ENS_RECORDS.LTC),
-    },
   },
   [ENS_RECORDS.DOGE]: {
     id: 'doge',
