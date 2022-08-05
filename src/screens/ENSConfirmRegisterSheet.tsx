@@ -2,7 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
@@ -372,6 +372,7 @@ export default function ENSConfirmRegisterSheet() {
 
   useFocusEffect(
     useCallback(() => {
+      Keyboard.dismiss();
       blurFields();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
