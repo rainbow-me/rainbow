@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { EthereumAddress } from '@/entities';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 
 const walletSelector = createSelector(
@@ -23,7 +24,10 @@ const settingsSelector = createSelector(
 );
 
 const buildAccountProfile = (
-  wallet: { selectedWallet: any; walletNames: { [a: string]: string } },
+  wallet: {
+    selectedWallet: any;
+    walletNames: { [a: EthereumAddress]: string };
+  },
   account: { accountAddress: string }
 ) =>
   getAccountProfileInfo(
