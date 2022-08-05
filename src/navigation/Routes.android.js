@@ -49,7 +49,6 @@ import {
   androidRecievePreset,
   bottomSheetPreset,
   emojiPreset,
-  ensPreset,
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
@@ -126,8 +125,6 @@ function AddCashFlowNavigator() {
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
-  const profilesEnabled = useExperimentalFlag(PROFILES);
-
   return (
     <Stack.Navigator
       initialRouteName={initialRoute}
@@ -164,13 +161,6 @@ function MainNavigator() {
           cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
         }}
       />
-      {profilesEnabled && (
-        <Stack.Screen
-          component={ProfileSheet}
-          name={Routes.PROFILE_PREVIEW_SHEET}
-          options={ensPreset}
-        />
-      )}
       <Stack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
@@ -333,6 +323,10 @@ function BSNavigator() {
           <BSStack.Screen
             component={SelectENSSheet}
             name={Routes.SELECT_ENS_SHEET}
+          />
+          <BSStack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_PREVIEW_SHEET}
           />
         </>
       )}
