@@ -45,14 +45,15 @@ const RegistrationCover = ({
   } = useENSRegistrationForm();
   const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
-  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
+  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.header);
+
   useEffect(() => {
     if (coverUpdateAllowed) {
       setCoverUrl(
-        typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.cover
+        typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.header
       );
     }
-  }, [initialCoverUrl, coverUpdateAllowed, values, coverUrl]);
+  }, [initialCoverUrl, coverUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // We want to allow cover state update when the screen is first focussed.
   useEffect(() => setCoverUpdateAllowed(true), [setCoverUpdateAllowed, name]);
@@ -89,7 +90,7 @@ const RegistrationCover = ({
         const contractAddress = asset.asset_contract?.address || '';
         const tokenId = asset.id;
         onBlurField({
-          key: 'cover',
+          key: 'header',
           value: stringifyENSNFTRecord({
             contractAddress,
             standard,
@@ -101,20 +102,20 @@ const RegistrationCover = ({
         // to avoid avatar flashing (from temp URL to uploaded URL).
         setCoverUpdateAllowed(false);
         onBlurField({
-          key: 'cover',
+          key: 'header',
           value: image.tmpPath,
         });
       }
     },
     onRemoveImage: () => {
-      onRemoveField({ key: 'cover' });
+      onRemoveField({ key: 'header' });
       setCoverUrl('');
       setCoverMetadata(undefined);
       setDisabled(false);
     },
     onUploading: () => setDisabled(true),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
-      onBlurField({ key: 'cover', value: data.url });
+      onBlurField({ key: 'header', value: data.url });
       setDisabled(false);
     },
     showRemove: Boolean(coverUrl),

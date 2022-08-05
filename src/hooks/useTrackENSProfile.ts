@@ -42,10 +42,10 @@ export default function useTrackENSProfile() {
         data.numberOfENSOwned +=
           registrations?.data?.account?.registrations?.length || 0;
         data.numberOfENSWithAvatarOrCoverSet +=
-          records?.avatar || records?.cover ? 1 : 0;
+          records?.avatar || records?.header ? 1 : 0;
 
         data.numberOfENSWithOtherMetadataSet = Object.keys(records ?? {}).some(
-          key => key !== ENS_RECORDS.cover && key !== ENS_RECORDS.avatar
+          key => key !== ENS_RECORDS.header && key !== ENS_RECORDS.avatar
         )
           ? 1
           : 0;

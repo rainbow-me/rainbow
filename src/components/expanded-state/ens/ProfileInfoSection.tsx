@@ -8,7 +8,7 @@ import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];
-const topRecordKeys = [ENS_RECORDS.cover, ENS_RECORDS.description];
+const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.description];
 
 type ImageSource = { imageUrl?: string | null };
 
@@ -25,7 +25,7 @@ export default function ProfileInfoSection({
   ensName?: string;
   images?: {
     avatar?: ImageSource;
-    cover?: ImageSource;
+    header?: ImageSource;
   };
   isLoading?: boolean;
   records?: Partial<Records>;
@@ -35,7 +35,7 @@ export default function ProfileInfoSection({
       Object.entries(records || {})
         .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS))
         .map(([key, value]) =>
-          key === 'avatar' || key === 'cover'
+          key === 'avatar' || key === 'header'
             ? [key, images?.[key]?.imageUrl as string]
             : [key, value]
         ),

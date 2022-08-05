@@ -50,7 +50,7 @@ const defaultInitialRecords = {
 const cleanFormRecords = (initialRecords: Records) => {
   // delete these to show an empty form if the user only have one of these set
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { ETH, avatar, cover, ...cleanFormRecords } = initialRecords;
+  const { ETH, avatar, header, ...cleanFormRecords } = initialRecords;
   // if ENS has some records, only show those
   if (Object.keys(cleanFormRecords).length) return initialRecords;
   return { ...defaultInitialRecords, ...initialRecords };
