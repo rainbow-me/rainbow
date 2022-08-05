@@ -56,7 +56,7 @@ const SingleElement = ({
   );
 };
 
-const SwipeableList = ({ components, speed, testID }) => {
+const SwipeableList = ({ components, height, speed, testID }) => {
   const transX = useSharedValue(0);
   const swiping = useSharedValue(0);
   const offset = useSharedValue(100000);
@@ -176,7 +176,7 @@ const SwipeableList = ({ components, speed, testID }) => {
               simultaneousHandlers={[lpRef, tapRef]}
             >
               <Animated.View
-                style={{ height: 100, width: '100%' }}
+                style={{ height: height, width: '100%' }}
                 testID={testID}
               >
                 <Animated.View
@@ -228,7 +228,7 @@ const SwipeableList = ({ components, speed, testID }) => {
   );
 };
 
-const MarqueeList = ({ items = [], renderItem, speed, testID }) => {
+const MarqueeList = ({ height, items = [], renderItem, speed, testID }) => {
   return (
     <>
       <SwipeableList
@@ -244,6 +244,7 @@ const MarqueeList = ({ items = [], renderItem, speed, testID }) => {
                   testID: item.testID,
                 }),
         }))}
+        height={height}
         speed={speed}
         testID={testID}
       />
