@@ -1,5 +1,5 @@
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import lang from 'i18n-js';
 import { uniq } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
@@ -15,7 +15,7 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useDimensions, useImportingWallet } from '@/hooks';
-
+import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { safeAreaInsetValues } from '@rainbow-me/utils';
@@ -50,20 +50,11 @@ const ExtendedSheetBackground = styled.View({
   width: '100%',
 });
 
-// const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-//   ({ theme: { colors } }) => ({
-//     color: colors.alpha(colors.blueGreyDark, 0.3),
-//     size: 'large',
-//   })
-// )({});
-
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
-const HW_WALLET_KEY = 'hw_wallets';
-
 export default function HardwareWalletSheet() {
-  // const { goBack } = useNavigation();
+  const { goBack } = useNavigation();
   const { height: deviceHeight } = useDimensions();
   const [status, setStatus] = useState('');
   const [hw, setHw] = useState([]);
@@ -77,27 +68,6 @@ export default function HardwareWalletSheet() {
       listenSubscription?.unsubscribe();
     };
   }, [listenSubscription, observeSubscription]);
-
-  // const {
-  //   params: { type },
-  // } = useRoute();
-
-  useEffect(() => {
-    const loadHardwareWallets = async () => {
-      let data = [];
-      try {
-        const dataStr = await AsyncStorage.getItem(HW_WALLET_KEY);
-        data = JSON.parse(dataStr);
-        logger.debug('HW WALLETS FOUND', data);
-      } catch (e) {
-        logger.debug('hw_wallets not found');
-      }
-      if (data.length > 0) {
-        setHw(data);
-      }
-    };
-    loadHardwareWallets();
-  }, []);
 
   const offset = useSharedValue(0);
 
@@ -116,20 +86,15 @@ export default function HardwareWalletSheet() {
 
   const importHardwareWallet = useCallback(
     async deviceId => {
-      // logger.debug('transport', transport);
       try {
-        // const eth = new AppEth(transport);
-        // const path = "44'/60'/0'/0/0"; // HD derivation path
-        // const { address } = await eth.getAddress(path, false);
-        // logger.debug('Got address', address);
         handleSetSeedPhrase(deviceId);
         handlePressImportButton(null, deviceId);
       } catch (error) {
-        logger.debug('error', error);
         Alert.alert(
-          'Failed to connect',
-          'Make sure your Ledger is unlocked and your Ethereum app is running.'
+          lang.t('hw_wallet.failed_to_connect'),
+          lang.t('hw_wallet.make_sure_ledger_unlocked')
         );
+        logger.log('error importing hw wallet', error);
         setStatus(error.message);
       }
     },
@@ -137,18 +102,12 @@ export default function HardwareWalletSheet() {
   );
 
   const handlePair = useCallback(() => {
-    setStatus('Looking for devices...');
+    setStatus(lang.t('hw_wallet.looking_for_devices'));
     setObserveSubscription(
       TransportBLE.observeState({
-        complete: () => {
-          logger.debug('BT OBSERVE COMPLETE');
-        },
-        error: () => {
-          logger.debug('BT OBSERVE ERROR');
-        },
+        complete: () => null,
+        error: () => null,
         next: e => {
-          logger.debug('BT OBSERVE NEXT', e);
-
           if (e.available) {
             setListenSubscription(
               TransportBLE.listen({
@@ -161,37 +120,34 @@ export default function HardwareWalletSheet() {
                     const device = e.descriptor;
 
                     Alert.alert(
-                      'Device found!',
-                      `Do you want to connect to ${device.name} \n
-                  (ID: ${device.id})?`,
+                      lang.t('hw_wallet.device_found'),
+                      lang.t('hw_wallet.do_u_wanna_connect', {
+                        deviceId: device.id,
+                        deviceName: device.name,
+                      }),
                       [
                         {
                           onPress: () => null,
                           style: 'cancel',
-                          text: 'NO',
+                          text: lang.t('hw_wallet.no'),
                         },
                         {
                           onPress: async () => {
-                            setStatus('Connecting...');
-
-                            logger.debug(
-                              'device ready to add',
-                              JSON.stringify(device.id, null, 2)
-                            );
+                            setStatus(lang.t('hw_wallet.connecting'));
                             const newList = uniq([...hw, device.id]);
                             setHw(newList);
-                            AsyncStorage.setItem(
-                              HW_WALLET_KEY,
-                              JSON.stringify(newList)
-                            );
+                            goBack();
                             importHardwareWallet(device.id);
                           },
-                          text: 'YES',
+                          text: lang.t('hw_wallet.yes'),
                         },
                       ]
                     );
                   } else {
-                    Alert.alert('error connecting', JSON.stringify(e, null, 2));
+                    Alert.alert(
+                      lang.t('hw_wallet.error_connecting'),
+                      JSON.stringify(e, null, 2)
+                    );
                   }
                 },
               })
@@ -202,7 +158,7 @@ export default function HardwareWalletSheet() {
         },
       })
     );
-  }, [hw, importHardwareWallet]);
+  }, [goBack, hw, importHardwareWallet]);
 
   return (
     <SheetKeyboardAnimation
@@ -228,18 +184,6 @@ export default function HardwareWalletSheet() {
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Centered direction="column">
-              {/* {!ready && (
-                <Column
-                  align="center"
-                  backgroundColor={colors.white}
-                  height={300}
-                  justify="center"
-                  marginBottom={12}
-                  marginTop={30}
-                >
-                  <LoadingSpinner />
-                </Column>
-              )} */}
               <Fragment>
                 <Column marginBottom={12} marginTop={30}>
                   <Emoji name="shield" size="biggest" />
@@ -251,7 +195,7 @@ export default function HardwareWalletSheet() {
                     size="big"
                     weight="heavy"
                   >
-                    Connect your hardware wallet
+                    {lang.t('hw_wallet.connect_your_hardware_wallet')}
                   </Text>
                 </Column>
                 <Column marginBottom={30} maxWidth={375} paddingHorizontal={42}>
@@ -262,8 +206,7 @@ export default function HardwareWalletSheet() {
                     size="large"
                     weight="regular"
                   >
-                    {status ||
-                      'Turn on your Ledger Nano X wallet and tap "Pair".'}
+                    {status || lang.t('hw_wallet.turn_on_ledger_and_open_app')}
                   </Text>
                 </Column>
                 <Centered marginBottom={24}>
@@ -279,24 +222,12 @@ export default function HardwareWalletSheet() {
                   >
                     <SheetActionButton
                       color={colors.red}
-                      label="Pair a new device"
+                      label={lang.t('hw_wallet.pair_new_device')}
                       onPress={handlePair}
                       size="big"
                       weight="bold"
                     />
                   </SheetActionButtonRow>
-                  {/* {hw?.length > 0 && (
-                    <SheetActionButtonRow ignorePaddingBottom>
-                      <SheetActionButton
-                        color={colors.white}
-                        label="Disconnect"
-                        onPress={resetConn}
-                        size="big"
-                        textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-                        weight="bold"
-                      />
-                    </SheetActionButtonRow>
-                  )} */}
                 </Column>
               </Fragment>
             </Centered>

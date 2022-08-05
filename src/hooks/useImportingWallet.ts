@@ -203,11 +203,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           setBusy(true);
           setTimeout(async () => {
-            logger.debug('Deriving');
             const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
               input
             );
-            logger.debug('Derived!', walletResult);
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
             const ens = await fetchReverseRecord(walletResult.address);

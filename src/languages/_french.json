@@ -1158,6 +1158,20 @@
       "copied": "Copied \"%{copiedText}\" :)",
       "invalid_paste": "You can't paste that here :)"
     },
+    "hw_wallet": {
+      "failed_to_connect": "Failed to connect",
+      "make_sure_ledger_unlocked": "Make sure your Ledger is unlocked and your Ethereum app is running.",
+      "looking_for_devices": "Looking for devices...",
+      "device_found": "Device found!",
+      "do_u_wanna_connect": "Do you want to connect to %{deviceName} \n (ID: %{deviceId})?",
+      "no": "NO",
+      "yes": "YES",
+      "error_connecting": "Error connecting to device",
+      "connecting": "Connecting...",
+      "connect_your_hardware_wallet": "Connect your hardware wallet",
+      "turn_on_ledger_and_open_app": "Turn on your Ledger Nano X, unlock it and open the Ethereum App",
+      "pair_new_device": "Pair new device"
+    },
     "wallet": {
       "action": {
         "add_existing": "Ajouter un portefeuille existant",
