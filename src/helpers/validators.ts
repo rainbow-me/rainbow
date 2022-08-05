@@ -57,7 +57,7 @@ export const isUnstoppableAddressFormat = memoFn(address => {
   if (
     !parts ||
     parts.length === 1 ||
-    parts[parts.length - 1].length === 0 ||
+    !parts[parts.length - 1] ||
     !supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
   ) {
     return false;
