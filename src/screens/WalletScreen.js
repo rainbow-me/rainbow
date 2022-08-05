@@ -14,6 +14,7 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
@@ -58,7 +59,12 @@ const WalletPage = styled(Page)({
 
 export default function WalletScreen() {
   const { params } = useRoute();
-  const { setParams } = useNavigation();
+  const {
+    setParams,
+    dangerouslyGetState,
+    dangerouslyGetParent,
+  } = useNavigation();
+  const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const [fetchedCharts, setFetchedCharts] = useState(false);
@@ -85,6 +91,17 @@ export default function WalletScreen() {
     isEmpty: isSectionsEmpty,
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
+
+  useEffect(() => {
+    if (ios) {
+      return;
+    }
+    const numberOfRoutes = dangerouslyGetParent().dangerouslyGetState().routes
+      .length;
+    if (numberOfRoutes === 2) {
+      removeFirst();
+    }
+  }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
 
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 
