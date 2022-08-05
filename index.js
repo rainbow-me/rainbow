@@ -4,7 +4,7 @@
 It needs to be an import statement because otherwise it doesn't load properly
 likely because of typescript.
 */
-import analytics from '@segment/analytics-react-native';
+import { analytics } from './src/analytics';
 import { StartTime } from './src/performance/start-time';
 import { PerformanceTracking } from './src/performance/tracking';
 import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';

@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
@@ -12,7 +11,9 @@ import useENSOwner from './useENSOwner';
 import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
+import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
+import { analytics } from '@rainbow-me/analytics';
 import {
   enableActionsOnReadOnlyWallet,
   PROFILES,
@@ -48,6 +49,7 @@ export default () => {
 
   const { openPicker } = useImagePicker();
   const { startRegistration } = useENSRegistration();
+  const { setNextEmoji } = useUpdateEmoji();
 
   useEffect(() => {
     if (accountENS) {
@@ -177,7 +179,11 @@ export default () => {
               if (accountImage) {
                 onAvatarRemovePhoto();
               } else {
-                onAvatarPickEmoji();
+                if (ios) {
+                  onAvatarPickEmoji();
+                } else {
+                  setNextEmoji();
+                }
               }
             }
           }
@@ -215,6 +221,7 @@ export default () => {
       onAvatarPickEmoji,
       onAvatarRemovePhoto,
       onAvatarViewProfile,
+      setNextEmoji,
     ]
   );
 
@@ -236,9 +243,12 @@ export default () => {
           : [
               lang.t('profiles.profile_avatar.choose_from_library'),
               !accountImage
-                ? lang.t(`profiles.profile_avatar.pick_emoji`)
+                ? android
+                  ? lang.t('profiles.profile_avatar.shuffle_emoji')
+                  : lang.t('profiles.profile_avatar.pick_emoji')
                 : lang.t(`profiles.profile_avatar.remove_photo`),
               profilesEnabled &&
+                !isReadOnly &&
                 lang.t('profiles.profile_avatar.create_profile'),
             ]),
       ]
