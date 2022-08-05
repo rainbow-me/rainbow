@@ -269,8 +269,10 @@ export default () => {
           lang.t('profiles.profile_avatar.create_profile'),
         lang.t('profiles.profile_avatar.choose_from_library'),
         !accountImage
-          ? lang.t(`profiles.profile_avatar.pick_emoji`)
-          : lang.t(`profiles.profile_avatar.remove_photo`),
+          ? ios
+            ? lang.t('profiles.profile_avatar.pick_emoji')
+            : lang.t('profiles.profile_avatar.shuffle_emoji')
+          : lang.t('profiles.profile_avatar.remove_photo'),
       ]
   )
     .filter(option => Boolean(option))
