@@ -20,8 +20,14 @@ import {
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
-import { useClipboard, useDimensions } from '@rainbow-me/hooks';
+import {
+  useClipboard,
+  useDimensions,
+  useHiddenTokens,
+  useShowcaseTokens,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -37,6 +43,7 @@ const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
   download: 'download',
   etherscan: 'etherscan',
+  hide: 'hide',
   rainbowWeb: 'rainbowWeb',
 } as const;
 
@@ -77,6 +84,14 @@ const getAssetActions = (network: Network) =>
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'safari.fill',
+      },
+    },
+    [AssetActionsEnum.hide]: {
+      actionKey: AssetActionsEnum.hide,
+      actionTitle: lang.t('expanded_state.unique_expanded.hide'),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'eye',
       },
     },
   } as const);
@@ -155,6 +170,17 @@ const UniqueTokenExpandedStateHeader = ({
 }: UniqueTokenExpandedStateHeaderProps) => {
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
+  const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
+  const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
+  const isHiddenAsset = useMemo(
+    () => hiddenTokens.includes(asset.fullUniqueId) as boolean,
+    [hiddenTokens, asset.fullUniqueId]
+  );
+  const isShowcaseAsset = useMemo(
+    () => showcaseTokens.includes(asset.uniqueId) as boolean,
+    [showcaseTokens, asset.uniqueId]
+  );
+  const { goBack } = useNavigation();
 
   const formattedCollectionUrl = useMemo(() => {
     // @ts-expect-error external_link could be null or undefined?
@@ -225,6 +251,16 @@ const UniqueTokenExpandedStateHeader = ({
 
     return {
       menuItems: [
+        {
+          ...AssetActions[AssetActionsEnum.hide],
+          actionTitle: isHiddenAsset
+            ? lang.t('expanded_state.unique_expanded.unhide')
+            : lang.t('expanded_state.unique_expanded.hide'),
+          icon: {
+            ...AssetActions[AssetActionsEnum.hide].icon,
+            iconValue: isHiddenAsset ? 'eye.slash' : 'eye',
+          },
+        },
         ...(isSupportedOnRainbowWeb
           ? [
               {
@@ -253,8 +289,9 @@ const UniqueTokenExpandedStateHeader = ({
     };
   }, [
     asset.id,
-    asset.network,
+    asset?.network,
     isPhotoDownloadAvailable,
+    isHiddenAsset,
     isSupportedOnRainbowWeb,
   ]);
 
@@ -297,9 +334,30 @@ const UniqueTokenExpandedStateHeader = ({
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
         saveToCameraRoll(getFullResUrl(asset.image_original_url));
+      } else if (actionKey === AssetActionsEnum.hide) {
+        if (isHiddenAsset) {
+          removeHiddenToken(asset);
+        } else {
+          addHiddenToken(asset);
+
+          if (isShowcaseAsset) {
+            removeShowcaseToken(asset.uniqueId);
+          }
+        }
+
+        goBack();
       }
     },
-    [asset, rainbowWebUrl, setClipboard]
+    [
+      asset,
+      setClipboard,
+      addHiddenToken,
+      removeHiddenToken,
+      removeShowcaseToken,
+      isHiddenAsset,
+      isShowcaseAsset,
+      goBack,
+    ]
   );
 
   const onPressAndroidFamily = useCallback(() => {
@@ -374,6 +432,9 @@ const UniqueTokenExpandedStateHeader = ({
         ? ([lang.t('expanded_state.unique_expanded.save_to_photos')] as const)
         : []),
       lang.t('expanded_state.unique_expanded.copy_token_id'),
+      isHiddenAsset
+        ? lang.t('expanded_state.unique_expanded.unhide')
+        : lang.t('expanded_state.unique_expanded.hide'),
     ] as const;
 
     const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
@@ -382,6 +443,7 @@ const UniqueTokenExpandedStateHeader = ({
       ? blockExplorerIndex + 1
       : blockExplorerIndex;
     const copyTokenIndex = photoDownloadIndex + 1;
+    const hideTokenIndex = copyTokenIndex + 1;
 
     showActionSheetWithOptions(
       {
@@ -403,6 +465,18 @@ const UniqueTokenExpandedStateHeader = ({
           saveToCameraRoll(getFullResUrl(asset.image_original_url));
         } else if (idx === copyTokenIndex) {
           setClipboard(asset.id);
+        } else if (idx === hideTokenIndex) {
+          if (isHiddenAsset) {
+            removeHiddenToken(asset);
+          } else {
+            addHiddenToken(asset);
+
+            if (isShowcaseAsset) {
+              removeShowcaseToken(asset.uniqueId);
+            }
+          }
+
+          goBack();
         }
       }
     );
@@ -412,6 +486,12 @@ const UniqueTokenExpandedStateHeader = ({
     isSupportedOnRainbowWeb,
     rainbowWebUrl,
     setClipboard,
+    isHiddenAsset,
+    isShowcaseAsset,
+    addHiddenToken,
+    removeHiddenToken,
+    removeShowcaseToken,
+    goBack,
   ]);
 
   const overflowMenuHitSlop: Space = '15px';
@@ -430,6 +510,7 @@ const UniqueTokenExpandedStateHeader = ({
               {...(android ? { onPress: onPressAndroidAsset } : {})}
               isMenuPrimaryAction
               onPressMenuItem={handlePressAssetMenuItem}
+              testID="unique-token-expanded-state-context-menu-button"
               useActionSheetFallback={false}
             >
               <ButtonPressAnimation scaleTo={0.75}>
