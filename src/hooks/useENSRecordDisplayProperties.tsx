@@ -15,6 +15,12 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
+type ImageSource = { imageUrl?: string | null };
+type ENSImages = {
+  avatar?: ImageSource;
+  cover?: ImageSource;
+};
+
 const imageKeyMap = {
   [ENS_RECORDS.avatar]: 'avatarUrl',
   [ENS_RECORDS.cover]: 'coverUrl',
@@ -46,12 +52,14 @@ const links = {
 export default function useENSRecordDisplayProperties({
   allowEdit,
   ensName,
+  images,
   key: recordKey,
   value: recordValue,
   type,
 }: {
   allowEdit?: boolean;
   ensName?: string;
+  images?: ENSImages;
   key: string;
   value: string;
   type: 'address' | 'record';
@@ -69,6 +77,9 @@ export default function useENSRecordDisplayProperties({
   const isUrlValue = useMemo(() => recordValue.match(/^http/), [recordValue]);
 
   const url = useMemo(() => {
+    if (isImageValue) {
+      return images?.[recordKey as 'avatar' | 'cover']?.imageUrl || undefined;
+    }
     if (isUrlValue || isUrlRecord) {
       return recordValue.match(/^http/)
         ? recordValue
@@ -77,7 +88,7 @@ export default function useENSRecordDisplayProperties({
     if (links[recordKey]) {
       return `${links[recordKey]}${recordValue.replace('@', '')}`;
     }
-  }, [isUrlRecord, isUrlValue, recordKey, recordValue]);
+  }, [images, isImageValue, isUrlRecord, isUrlValue, recordKey, recordValue]);
 
   const { displayUrl, displayUrlUsername } = useMemo(() => {
     const urlObj = url ? new URL(url) : { hostname: '', pathname: '' };
