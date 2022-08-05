@@ -107,6 +107,12 @@ export default function ENSCreateProfileCard() {
     <ButtonPressAnimation
       onPress={handlePress}
       scaleTo={0.92}
+      style={
+        android && {
+          paddingBottom: 19,
+          paddingHorizontal: 19,
+        }
+      }
       testID="ens-create-profile-card"
     >
       <AccentColorProvider color={shadowColor}>

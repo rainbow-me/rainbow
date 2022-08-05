@@ -348,6 +348,7 @@ export function ENSAssignRecordsBottomActions({
         as={Animated.View}
         background="body"
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+        testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
           <Box paddingBottom="19px" style={{ height: bottomActionHeight }}>

@@ -62,7 +62,31 @@ export default function DiscoverSearch() {
     searchQueryForSearch
   );
   const currencyList = useMemo(() => {
-    let list = [...swapCurrencyList, ...ensResults];
+    // order:
+    // 1. favorites
+    // 2. verified
+    // 3. profiles
+    // 4. unverified
+    // 5. low liquidity
+    let list = swapCurrencyList;
+    const listKeys = swapCurrencyList.map(item => item.key);
+
+    const profilesSecond =
+      (listKeys[0] === 'favorites' && listKeys[1] !== 'verified') ||
+      listKeys[0] === 'verified';
+    const profilesThird =
+      listKeys[1] === 'verified' ||
+      listKeys[0] === 'unfilteredFavorites' ||
+      (listKeys[0] === 'favorites' && listKeys[1] === 'verified');
+
+    if (profilesSecond) {
+      list.splice(1, 0, ...ensResults);
+    } else if (profilesThird) {
+      list.splice(2, 0, ...ensResults);
+    } else {
+      list = [...ensResults, ...swapCurrencyList];
+    }
+
     // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
     if (IS_TESTING === 'true') {
       let symbols = [];

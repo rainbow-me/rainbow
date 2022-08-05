@@ -87,6 +87,12 @@ export default function DPICard() {
     <ButtonPressAnimation
       onPress={handlePress}
       scaleTo={0.92}
+      style={
+        android && {
+          marginTop: -19,
+          padding: 19,
+        }
+      }
       testID="dpi-button"
     >
       <AccentColorProvider color={shadowColor}>

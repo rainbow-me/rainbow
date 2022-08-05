@@ -290,6 +290,13 @@ export default function GasCard() {
       <ButtonPressAnimation
         onPress={handlePress}
         scaleTo={1}
+        style={
+          android && {
+            paddingBottom: 19,
+            paddingLeft: 19,
+            paddingRight: 9.5,
+          }
+        }
         testID="gas-button"
       >
         <AccentColorProvider color={cardColor}>
