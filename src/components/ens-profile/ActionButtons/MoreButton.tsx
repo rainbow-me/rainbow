@@ -158,7 +158,7 @@ export default function MoreButton({
     ]
   );
 
-  const menuConfig = useMemo(() => ({ menuItems }), [menuItems]);
+  const menuConfig = useMemo(() => ({ menuItems, menuTitle: '' }), [menuItems]);
   return (
     <ContextMenuButton
       enableContextMenu
