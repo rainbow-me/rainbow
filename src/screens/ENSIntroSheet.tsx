@@ -3,15 +3,13 @@ import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
-import {
-  ContextMenuButton,
-  MenuActionConfig,
-} from 'react-native-ios-context-menu';
+import { MenuActionConfig } from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarquee';
 import { SheetActionButton } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import {
   Bleed,
   Box,
@@ -35,7 +33,6 @@ import {
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -136,28 +133,6 @@ export default function ENSIntroSheet() {
       menuTitle: '',
     };
   }, []);
-
-  const onPressAndroidActions = useCallback(() => {
-    const androidActions = [
-      lang.t('profiles.intro.my_ens_names'),
-      lang.t('profiles.intro.search_new_ens'),
-    ] as const;
-
-    showActionSheetWithOptions(
-      {
-        options: androidActions,
-        showSeparators: true,
-        title: '',
-      },
-      (idx: number) => {
-        if (idx === 0) {
-          handleSelectExistingName();
-        } else if (idx === 1) {
-          handleNavigateToSearch();
-        }
-      }
-    );
-  }, [handleNavigateToSearch, handleSelectExistingName]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -292,9 +267,7 @@ export default function ENSIntroSheet() {
                           {nonPrimaryDomains?.length > 0 ? (
                             <ContextMenuButton
                               menuConfig={menuConfig}
-                              {...(android
-                                ? { onPress: onPressAndroidActions }
-                                : {})}
+                              {...(android ? { handlePressMenuItem } : {})}
                               isMenuPrimaryAction
                               onPressMenuItem={handlePressMenuItem}
                               useActionSheetFallback={false}
