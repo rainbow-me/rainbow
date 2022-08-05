@@ -413,7 +413,7 @@ export const getWalletENSAvatars = async (
           account: {
             ...account,
             image: newImage,
-            label: ens,
+            label: isNewEnsName ? ens : account.label,
           },
           ensChanged: newImage !== account.image || isNewEnsName,
           key,
