@@ -1,6 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
@@ -61,15 +61,8 @@ const RegistrationCover = ({
   const accentColor = useForegroundColor('accent');
 
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
-
-  const { ContextMenu, handleSelectImage } = useSelectImageMenu({
-    imagePickerOptions: {
-      cropping: true,
-      height: 500,
-      width: 1500,
-    },
-    menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
-    onChangeImage: ({
+  const onChangeImage = useCallback(
+    ({
       asset,
       image,
     }: {
@@ -107,11 +100,26 @@ const RegistrationCover = ({
         });
       }
     },
+    [onBlurField, setCoverMetadata]
+  );
+
+  const { ContextMenu, handleSelectImage } = useSelectImageMenu({
+    imagePickerOptions: {
+      cropping: true,
+      height: 500,
+      width: 1500,
+    },
+    menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
+    onChangeImage: onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'header' });
       setCoverUrl('');
       setCoverMetadata(undefined);
       setDisabled(false);
+    },
+    onUploadError: () => {
+      onBlurField({ key: 'header', value: '' });
+      setCoverUrl('');
     },
     onUploading: () => setDisabled(true),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
