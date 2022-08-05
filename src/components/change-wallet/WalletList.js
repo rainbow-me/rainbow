@@ -147,6 +147,7 @@ export default function WalletList({
         switch (wallet.type) {
           case WalletTypes.mnemonic:
           case WalletTypes.seed:
+          case WalletTypes.bluetoothHardware:
             seedRows.push(row);
             break;
           case WalletTypes.privateKey:

@@ -544,6 +544,7 @@ const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
 
 const deriveAccountFromWalletInput = (input: EthereumWalletSeed) => {
   const type = identifyWalletType(input);
+  logger.debug('identified wallet type', type);
   if (type === WalletTypes.privateKey) {
     return deriveAccountFromPrivateKey(input);
   } else if (type === WalletTypes.readOnly) {

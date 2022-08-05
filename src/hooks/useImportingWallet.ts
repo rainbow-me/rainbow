@@ -14,7 +14,8 @@ import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
+import walletTypes from '@/helpers/walletTypes';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
@@ -202,9 +203,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           setBusy(true);
           setTimeout(async () => {
+            logger.debug('Deriving');
             const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
               input
             );
+            logger.debug('Derived!', walletResult);
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
             const ens = await fetchReverseRecord(walletResult.address);
@@ -214,6 +217,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                 const images = await fetchImages(name);
                 avatarUrl = images?.avatarUrl;
               }
+            }
+            if (!name && walletResult.type === walletTypes.bluetoothHardware) {
+              name = 'Ledger 1';
             }
             setBusy(false);
             startImportProfile(

@@ -1,6 +1,7 @@
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 // import lang from 'i18n-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { uniq } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
@@ -189,9 +190,9 @@ export default function HardwareWalletSheet() {
 
                             logger.debug(
                               'device ready to add',
-                              JSON.stringify(device, null, 2)
+                              JSON.stringify(device.id, null, 2)
                             );
-                            const newList = [...hw, device.id];
+                            const newList = uniq([...hw, device.id]);
                             setHw(newList);
                             AsyncStorage.setItem(
                               HW_WALLET_KEY,

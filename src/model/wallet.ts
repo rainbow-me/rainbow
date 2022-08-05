@@ -36,6 +36,7 @@ import profileUtils, {
 } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
@@ -239,16 +240,34 @@ export const walletInit = async (
   return { isNew, walletAddress };
 };
 
+const isHardwareWalletKey = (key: string | null) => {
+  const data = key?.split('/');
+  if (data && data.length > 1) {
+    return true;
+  }
+  return false;
+};
+
 export const loadWallet = async (
   address?: EthereumAddress | undefined,
   showErrorIfNotLoaded = true,
   provider?: Provider
-): Promise<null | Wallet> => {
+): Promise<null | Wallet | LedgerSigner> => {
   const privateKey = await loadPrivateKey(address);
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
-  if (privateKey) {
+  if (isHardwareWalletKey(privateKey)) {
+    const index = privateKey?.split('/')[1];
+    const deviceId = privateKey?.split('/')[1];
+    if (typeof index !== undefined && provider && deviceId) {
+      return new LedgerSigner(
+        provider,
+        `${DEFAULT_HD_PATH}/${index}`,
+        deviceId
+      );
+    }
+  } else if (privateKey) {
     // @ts-ignore
     return new Wallet(privateKey, provider || web3Provider);
   }
@@ -408,7 +427,6 @@ export const signTypedDataMessage = async (
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
-      const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
       let parsedData = message;
       try {
         parsedData = typeof message === 'string' && JSON.parse(message);
@@ -429,13 +447,23 @@ export const signTypedDataMessage = async (
         version = 'v4';
       }
 
-      return {
-        result: signTypedData({
-          data: parsedData as TypedMessage<TypedDataTypes>,
-          privateKey: pkeyBuffer,
-          version: version.toUpperCase() as SignTypedDataVersion,
-        }),
-      };
+      // Hardware wallets
+      if (!wallet?.privateKey) {
+        const result = await (wallet as LedgerSigner).signTypedDataMessage(
+          message,
+          version === 'v1' ? true : false
+        );
+        return { result };
+      } else {
+        const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
+        return {
+          result: signTypedData({
+            data: parsedData as TypedMessage<TypedDataTypes>,
+            privateKey: pkeyBuffer,
+            version: version.toUpperCase() as SignTypedDataVersion,
+          }),
+        };
+      }
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Error', error);
@@ -532,6 +560,10 @@ export const identifyWalletType = (
   ) {
     return EthereumWalletType.privateKey;
   }
+  // Bluetooth device id (Ledger nano x)
+  if (isValidBluetoothDeviceId(walletSeed)) {
+    return EthereumWalletType.bluetoothHardware;
+  }
   // 12 or 24 words seed phrase
   if (isValidMnemonic(walletSeed)) {
     return EthereumWalletType.mnemonic;
@@ -539,10 +571,6 @@ export const identifyWalletType = (
   // Public address (0x)
   if (isValidAddress(walletSeed)) {
     return EthereumWalletType.readOnly;
-  }
-
-  if (isValidBluetoothDeviceId(walletSeed)) {
-    return EthereumWalletType.bluetoothHardware;
   }
   // seed
   return EthereumWalletType.seed;
@@ -709,13 +737,19 @@ export const createWallet = async (
 
     const colorIndexForWallet =
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
+
+    let label = name || '';
+    if (!label && isHardwareWallet) {
+      label = `Ledger 1`;
+    }
+
     addresses.push({
       address: walletAddress,
       avatar: null,
       color: colorIndexForWallet,
       image,
       index: 0,
-      label: name || '',
+      label,
       visible: true,
     });
     if (
@@ -757,6 +791,7 @@ export const createWallet = async (
             address: walletObj.wallet.address,
             privateKey: walletObj.wallet.privateKey,
           };
+          logger.debug(`[createWallet] - nextWallet`, nextWallet);
         } else {
           const child = root?.deriveChild(index);
           const walletObj = child?.getWallet();
@@ -768,6 +803,11 @@ export const createWallet = async (
 
         let hasTxHistory = false;
         try {
+          logger.sentry(
+            '[createWallet] - checking tx history for address',
+            nextWallet.address
+          );
+
           hasTxHistory = await ethereumUtils.hasPreviousTransactions(
             nextWallet.address
           );
@@ -828,6 +868,11 @@ export const createWallet = async (
           logger.sentry(
             `[createWallet] - saved private key for next wallet ${index}`
           );
+
+          if (!label && isHardwareWallet) {
+            label = `Ledger ${index + 1}`;
+          }
+
           addresses.push({
             address: nextWallet.address,
             avatar: null,
@@ -843,23 +888,23 @@ export const createWallet = async (
             await createSignature(nextWallet.address, nextWallet.privateKey);
             // Enable web profile
             store.dispatch(updateWebDataEnabled(true, nextWallet.address));
+
+            // Save the color
+            setPreference(
+              PreferenceActionType.init,
+              'profile',
+              nextWallet.address,
+              {
+                accountColor:
+                  lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
+                accountSymbol: addressHashedEmoji(nextWallet.address),
+              }
+            );
+
+            logger.sentry(
+              `[createWallet] - enabled web profile for wallet ${index}`
+            );
           }
-
-          // Save the color
-          setPreference(
-            PreferenceActionType.init,
-            'profile',
-            nextWallet.address,
-            {
-              accountColor:
-                lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
-              accountSymbol: addressHashedEmoji(nextWallet.address),
-            }
-          );
-
-          logger.sentry(
-            `[createWallet] - enabled web profile for wallet ${index}`
-          );
 
           index++;
         } else {
@@ -914,7 +959,8 @@ export const createWallet = async (
 
     if (walletResult && walletAddress) {
       const ethersWallet =
-        walletType === WalletLibraryType.ethers
+        walletType === WalletLibraryType.ethers ||
+        walletType === WalletLibraryType.ledgerNanoX
           ? (walletResult as Wallet)
           : new Wallet(pkey);
       setTimeout(() => {
