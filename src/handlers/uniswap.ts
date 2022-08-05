@@ -54,11 +54,62 @@ export enum Field {
   OUTPUT = 'OUTPUT',
 }
 
-const MAX_GAS_LIMIT = 460000;
 const GAS_LIMIT_INCREMENT = 50000;
 const EXTRA_GAS_PADDING = 1.5;
-const SWAP_GAS_PADDING = 1.05;
+const SWAP_GAS_PADDING = 1.1;
 const CHAIN_IDS_WITH_TRACE_SUPPORT = [ChainId.mainnet];
+
+async function getClosestGasEstimate(estimationFn: Function) {
+  // From 200k to 1M
+  const gasEstimates = Array.from(Array(21).keys())
+    .filter(x => x > 3)
+    .map(x => x * GAS_LIMIT_INCREMENT);
+
+  let start = 0;
+  let end = gasEstimates.length - 1;
+
+  let highestFailedGuess = null;
+  let lowestSuccessfulGuess = null;
+  let lowestFailureGuess = null;
+  //guess is typically middle of array
+  let guessIndex = Math.floor((end - start) / 2);
+  while (end > start) {
+    const gasEstimationSucceded = await estimationFn(gasEstimates[guessIndex]);
+    if (gasEstimationSucceded) {
+      if (!lowestSuccessfulGuess || guessIndex < lowestSuccessfulGuess) {
+        lowestSuccessfulGuess = guessIndex;
+      }
+      end = guessIndex;
+      guessIndex = Math.max(
+        Math.floor((end + start) / 2) - 1,
+        highestFailedGuess || 0
+      );
+    } else if (!gasEstimationSucceded) {
+      if (!highestFailedGuess || guessIndex > highestFailedGuess) {
+        highestFailedGuess = guessIndex;
+      }
+      if (!lowestFailureGuess || guessIndex < lowestFailureGuess) {
+        lowestFailureGuess = guessIndex;
+      }
+      start = guessIndex;
+      guessIndex = Math.ceil((end + start) / 2);
+    }
+
+    if (
+      (highestFailedGuess !== null &&
+        highestFailedGuess + 1 === lowestSuccessfulGuess) ||
+      lowestSuccessfulGuess === 0 ||
+      (lowestSuccessfulGuess !== null &&
+        lowestFailureGuess === lowestSuccessfulGuess - 1)
+    ) {
+      return gasEstimates[lowestSuccessfulGuess];
+    }
+
+    if (highestFailedGuess === gasEstimates.length - 1) {
+      return -1;
+    }
+  }
+}
 
 export const getDefaultGasLimitForTrade = (
   tradeDetails: Quote,
@@ -139,7 +190,7 @@ export const getSwapGasLimitWithFakeApproval = async (
   provider: StaticJsonRpcProvider,
   tradeDetails: Quote
 ): Promise<number> => {
-  let stateDiff;
+  let stateDiff: any;
 
   try {
     stateDiff = await getStateDiff(provider, tradeDetails);
@@ -154,11 +205,7 @@ export const getSwapGasLimitWithFakeApproval = async (
       params
     );
 
-    for (
-      let gas = ethUnits.basic_swap;
-      gas < MAX_GAS_LIMIT;
-      gas += GAS_LIMIT_INCREMENT
-    ) {
+    const gasLimit = await getClosestGasEstimate(async (gas: number) => {
       const callParams = [
         {
           data,
@@ -174,12 +221,18 @@ export const getSwapGasLimitWithFakeApproval = async (
       try {
         await provider.send('eth_call', [...callParams, stateDiff]);
         logger.log(`Estimate worked with gasLimit: `, gas);
-        return gas;
+        return true;
       } catch (e) {
         logger.log(
-          `Estimate failed with gasLimit ${gas}. Might retry with higher amounts...`
+          `Estimate failed with gasLimit ${gas}. Trying with different amounts...`
         );
+        return false;
       }
+    });
+    if (gasLimit && gasLimit >= ethUnits.basic_swap) {
+      return gasLimit;
+    } else {
+      logger.log('Could not find a gas estimate');
     }
   } catch (e) {
     logger.log(`Blew up trying to get state diff. Falling back to defaults`, e);
