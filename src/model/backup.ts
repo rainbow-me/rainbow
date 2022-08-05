@@ -39,6 +39,8 @@ interface BackupUserData {
   wallets: AllRainbowWallets;
 }
 
+const empty = () => {};
+
 async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allKeys = await keychain.loadAllKeys();
   if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR);
@@ -144,7 +146,9 @@ export function findLatestBackUp(
 export async function restoreCloudBackup(
   password: BackupPassword,
   userData: BackupUserData | null,
-  backupSelected: string | null
+  backupSelected: string | null,
+  doItIfStartPINCreation = empty,
+  doItIfFinishPINCreation = empty
 ): Promise<boolean> {
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
@@ -157,8 +161,15 @@ export async function restoreCloudBackup(
       return false;
     }
     // 2- download that backup
-    // @ts-ignore
-    const data = await getDataFromCloud(password, filename);
+    const data = await getDataFromCloud(
+      password,
+      // @ts-ignore
+      filename,
+      true,
+      doItIfStartPINCreation,
+      doItIfFinishPINCreation
+    );
+
     if (!data) {
       throw new Error('Invalid password');
     }
