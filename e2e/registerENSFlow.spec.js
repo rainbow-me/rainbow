@@ -295,7 +295,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should be able to navigate to the Edit screen', async () => {
-    await Helpers.waitAndTap('edit-button');
+    await Helpers.waitAndTap('edit-action-button');
     await Helpers.checkIfVisible('ens-assign-records-sheet');
     await Helpers.swipe('ens-assign-records-sheet', 'down');
   });
