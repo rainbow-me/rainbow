@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/core';
+import { useIsFocused } from '@react-navigation/native';
 import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
@@ -91,9 +92,11 @@ export default function WalletScreen() {
     isEmpty: isSectionsEmpty,
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (ios) {
+    // This is the fix for Android wallet creation bug.
+    if (ios || !isFocused) {
       return;
     }
     const numberOfRoutes = dangerouslyGetParent().dangerouslyGetState().routes
