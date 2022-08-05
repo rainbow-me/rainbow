@@ -185,6 +185,7 @@ export default function ENSAssignRecordsSheet() {
         }}
         flexGrow={1}
         scrollEnabled={android}
+        testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
         <Stack space="19px">
           <RegistrationCover

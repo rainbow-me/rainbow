@@ -123,7 +123,7 @@ export default function ProfileSheetHeader({
   const coverUrl = maybeSignUri(cover?.imageUrl || undefined, { w: 400 });
 
   const { enableZoomOnPressCover, onPressCover } = useMemo(() => {
-    const cover = records?.cover;
+    const cover = records?.header;
 
     const isNFTCover = cover && isENSNFTRecord(cover);
     const coverUniqueToken = isNFTCover && getUniqueToken(cover);
@@ -144,7 +144,7 @@ export default function ProfileSheetHeader({
     enableZoomableImages,
     getUniqueToken,
     handleSelectNFT,
-    records?.cover,
+    records?.header,
   ]);
 
   const { data: firstTransactionTimestamp } = useENSFirstTransactionTimestamp(

@@ -1,6 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
@@ -45,14 +45,15 @@ const RegistrationCover = ({
   } = useENSRegistrationForm();
   const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
-  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
+  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.header);
+
   useEffect(() => {
     if (coverUpdateAllowed) {
       setCoverUrl(
-        typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.cover
+        typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.header
       );
     }
-  }, [initialCoverUrl, coverUpdateAllowed, values, coverUrl]);
+  }, [initialCoverUrl, coverUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // We want to allow cover state update when the screen is first focussed.
   useEffect(() => setCoverUpdateAllowed(true), [setCoverUpdateAllowed, name]);
@@ -60,15 +61,8 @@ const RegistrationCover = ({
   const accentColor = useForegroundColor('accent');
 
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
-
-  const { ContextMenu, handleSelectImage } = useSelectImageMenu({
-    imagePickerOptions: {
-      cropping: true,
-      height: 500,
-      width: 1500,
-    },
-    menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
-    onChangeImage: ({
+  const onChangeImage = useCallback(
+    ({
       asset,
       image,
     }: {
@@ -89,7 +83,7 @@ const RegistrationCover = ({
         const contractAddress = asset.asset_contract?.address || '';
         const tokenId = asset.id;
         onBlurField({
-          key: 'cover',
+          key: 'header',
           value: stringifyENSNFTRecord({
             contractAddress,
             standard,
@@ -101,20 +95,35 @@ const RegistrationCover = ({
         // to avoid avatar flashing (from temp URL to uploaded URL).
         setCoverUpdateAllowed(false);
         onBlurField({
-          key: 'cover',
+          key: 'header',
           value: image.tmpPath,
         });
       }
     },
+    [onBlurField, setCoverMetadata]
+  );
+
+  const { ContextMenu, handleSelectImage } = useSelectImageMenu({
+    imagePickerOptions: {
+      cropping: true,
+      height: 500,
+      width: 1500,
+    },
+    menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
+    onChangeImage: onChangeImage,
     onRemoveImage: () => {
-      onRemoveField({ key: 'cover' });
+      onRemoveField({ key: 'header' });
       setCoverUrl('');
       setCoverMetadata(undefined);
       setDisabled(false);
     },
+    onUploadError: () => {
+      onBlurField({ key: 'header', value: '' });
+      setCoverUrl('');
+    },
     onUploading: () => setDisabled(true),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
-      onBlurField({ key: 'cover', value: data.url });
+      onBlurField({ key: 'header', value: data.url });
       setDisabled(false);
     },
     showRemove: Boolean(coverUrl),
