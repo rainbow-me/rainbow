@@ -14,24 +14,21 @@ const walletSelector = createSelector(
 );
 
 const settingsSelector = createSelector(
-  ({ settings: { accountAddress, network } }) => ({
+  ({ settings: { accountAddress } }) => ({
     accountAddress,
-    network,
   }),
-  ({ accountAddress, network }) => ({
+  ({ accountAddress }) => ({
     accountAddress,
-    network,
   })
 );
 
 const buildAccountProfile = (
   wallet: { selectedWallet: any; walletNames: { [a: string]: string } },
-  account: { network: string; accountAddress: string }
+  account: { accountAddress: string }
 ) =>
   getAccountProfileInfo(
     wallet.selectedWallet,
     wallet.walletNames,
-    account.network,
     account.accountAddress
   );
 
