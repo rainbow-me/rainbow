@@ -239,16 +239,7 @@ function ImageValue({
         type: 'unique_token',
       });
     });
-  }, [
-    ensName,
-    external,
-    goBack,
-    isNFTImage,
-    navigate,
-    profileAddress,
-    uniqueTokens,
-    value,
-  ]);
+  }, [goBack, isNFTImage, navigate, uniqueTokens, value]);
 
   if (!url) return null;
   return (
