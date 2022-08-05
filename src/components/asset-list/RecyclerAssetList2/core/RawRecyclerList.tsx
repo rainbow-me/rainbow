@@ -12,7 +12,10 @@ import { useMemoOne } from 'use-memo-one';
 import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
 import { AssetListType } from '..';
 import { useRecyclerAssetListPosition } from './Contexts';
-import ExternalENSProfileScrollViewWithRef from './ExternalENSProfileScrollView';
+import {
+  ExternalENSProfileScrollViewWithRef,
+  ExternalSelectNFTScrollViewWithRef,
+} from './ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
@@ -155,6 +158,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       externalScrollView={
         type === 'ens-profile'
           ? ExternalENSProfileScrollViewWithRef
+          : type === 'select-nft'
+          ? ExternalSelectNFTScrollViewWithRef
           : ExternalScrollViewWithRef
       }
       itemAnimator={layoutItemAnimator}

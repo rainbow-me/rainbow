@@ -22,68 +22,79 @@ import ImagePreviewOverlay from '../../../images/ImagePreviewOverlay';
 import { StickyHeaderContext } from './StickyHeaders';
 
 const extraPadding = { paddingBottom: 144 };
-const ExternalENSProfileScrollViewWithRef = React.forwardRef<
-  BaseScrollView,
-  ScrollViewDefaultProps & {
-    children: React.ReactNode;
-    contentContainerStyle: ViewStyle;
-  }
->(function ExternalScrollView(
-  props: ScrollViewDefaultProps & {
-    children: React.ReactNode;
-    contentContainerStyle: ViewStyle;
-  },
-  ref
-) {
-  const isInsideBottomSheet = !!useContext(BottomSheetContext);
-  const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
-
-  const { scrollViewRef } = useContext(StickyHeaderContext)!;
-
-  const [scrollEnabled, setScrollEnabled] = useState(ios);
-  useEffect(() => {
-    // For Android, delay scroll until sheet has been mounted (to avoid
-    // ImagePreviewOverlay mounting issues).
-    if (android) {
-      setTimeout(() => setScrollEnabled(true), 500);
+const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
+  React.forwardRef<
+    BaseScrollView,
+    ScrollViewDefaultProps & {
+      children: React.ReactNode;
+      contentContainerStyle: ViewStyle;
     }
-  });
+  >(function ExternalScrollView(
+    props: ScrollViewDefaultProps & {
+      children: React.ReactNode;
+      contentContainerStyle: ViewStyle;
+    },
+    ref
+  ) {
+    const isInsideBottomSheet = !!useContext(BottomSheetContext);
+    const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
 
-  const yPosition = useSharedValue(0);
+    const { scrollViewRef } = useContext(StickyHeaderContext)!;
 
-  const scrollHandler = useWorkletCallback(event => {
-    yPosition.value = event.contentOffset.y;
-  });
+    const [scrollEnabled, setScrollEnabled] = useState(ios);
+    useEffect(() => {
+      // For Android, delay scroll until sheet has been mounted (to avoid
+      // ImagePreviewOverlay mounting issues).
+      if (android) {
+        setTimeout(() => setScrollEnabled(true), 500);
+      }
+    });
 
-  useImperativeHandle(ref, () => scrollViewRef.current!);
+    const yPosition = useSharedValue(0);
 
-  const ScrollView = isInsideBottomSheet
-    ? BottomSheetScrollView
-    : Animated.ScrollView;
+    const scrollHandler = useWorkletCallback(event => {
+      yPosition.value = event.contentOffset.y;
+    });
 
-  return (
-    <ScrollView
-      {...(props as ScrollViewProps)}
-      bounces={false}
-      contentContainerStyle={[extraPadding, props.contentContainerStyle]}
-      ref={scrollViewRef as RefObject<any>}
-      scrollEnabled={scrollEnabled}
-      {...(isInsideBottomSheet
-        ? {
-            onScrollWorklet: scrollHandler,
-          }
-        : {
-            onScroll: scrollHandler,
-          })}
-    >
-      <ImagePreviewOverlay
-        enableZoom={ios && enableZoomableImages}
-        yPosition={yPosition}
+    useImperativeHandle(ref, () => scrollViewRef.current!);
+
+    const ScrollView = isInsideBottomSheet
+      ? BottomSheetScrollView
+      : Animated.ScrollView;
+
+    return (
+      <ScrollView
+        {...(props as ScrollViewProps)}
+        bounces={false}
+        contentContainerStyle={[extraPadding, props.contentContainerStyle]}
+        ref={scrollViewRef as RefObject<any>}
+        scrollEnabled={scrollEnabled}
+        {...(isInsideBottomSheet
+          ? {
+              onScrollWorklet: scrollHandler,
+            }
+          : {
+              onScroll: scrollHandler,
+            })}
       >
-        <ProfileSheetHeader />
-        {props.children}
-      </ImagePreviewOverlay>
-    </ScrollView>
-  );
-});
-export default ExternalENSProfileScrollViewWithRef;
+        <ImagePreviewOverlay
+          enableZoom={ios && enableZoomableImages}
+          yPosition={yPosition}
+        >
+          {type === 'ens-profile' && <ProfileSheetHeader />}
+          {props.children}
+        </ImagePreviewOverlay>
+      </ScrollView>
+    );
+  });
+
+const ExternalENSProfileScrollViewWithRef = ExternalENSProfileScrollViewWithRefFactory(
+  'ens-profile'
+);
+const ExternalSelectNFTScrollViewWithRef = ExternalENSProfileScrollViewWithRefFactory(
+  'select-nft'
+);
+export {
+  ExternalSelectNFTScrollViewWithRef,
+  ExternalENSProfileScrollViewWithRef,
+};
