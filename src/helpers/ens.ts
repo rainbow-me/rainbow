@@ -37,6 +37,11 @@ import {
 } from '@rainbow-me/utils/contenthash';
 
 export const ENS_SECONDS_WAIT = 60;
+export const ENS_SECONDS_PADDING = 5;
+export const ENS_SECONDS_WAIT_WITH_PADDING =
+  ENS_SECONDS_WAIT + ENS_SECONDS_PADDING;
+export const ENS_SECONDS_WAIT_PROVIDER_PADDING =
+  ENS_SECONDS_WAIT + 4 * ENS_SECONDS_PADDING;
 
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',

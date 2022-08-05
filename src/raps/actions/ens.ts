@@ -509,6 +509,7 @@ const ensAction = async (
     amount: 0,
     asset: nativeAsset,
     data: tx.data,
+    ensRegistrationName: name,
     from: ownerAddress,
     gasLimit,
     hash: tx?.hash,
