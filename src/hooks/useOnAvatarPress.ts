@@ -9,6 +9,7 @@ import useENSProfile from './useENSProfile';
 import { prefetchENSProfileImages } from './useENSProfileImages';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
+import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
 import { analytics } from '@rainbow-me/analytics';
 import {
@@ -36,6 +37,7 @@ export default () => {
   const profileEnabled = Boolean(accountENS);
   const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });
   const { openPicker } = useImagePicker();
+  const { setNextEmoji } = useUpdateEmoji();
 
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets = {
@@ -140,7 +142,11 @@ export default () => {
           if (accountImage) {
             onAvatarRemovePhoto();
           } else {
-            onAvatarPickEmoji();
+            if (ios) {
+              onAvatarPickEmoji();
+            } else {
+              setNextEmoji();
+            }
           }
         } else if (buttonIndex === 2 && profilesEnabled) {
           onAvatarCreateProfile();
@@ -159,6 +165,7 @@ export default () => {
       onAvatarRemovePhoto,
       profilesEnabled,
       startRegistration,
+      setNextEmoji,
     ]
   );
 
@@ -173,7 +180,9 @@ export default () => {
         : [
             lang.t('profiles.profile_avatar.choose_from_library'),
             !accountImage
-              ? lang.t('profiles.profile_avatar.pick_emoji')
+              ? android
+                ? lang.t('profiles.profile_avatar.shuffle_emoji')
+                : lang.t('profiles.profile_avatar.pick_emoji')
               : lang.t('profiles.profile_avatar.remove_photo'),
             profilesEnabled &&
               (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
