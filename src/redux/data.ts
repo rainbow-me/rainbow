@@ -23,7 +23,7 @@ import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
-import { fetchWalletENSAvatars } from './wallets';
+import { fetchWalletENSAvatars, fetchWalletNames } from './wallets';
 import {
   AssetTypes,
   NativeCurrencyKeys,
@@ -1380,7 +1380,11 @@ export const dataWatchPendingTransactions = (
             });
           }
           if (tx?.ensRegistration) {
-            dispatch(fetchWalletENSAvatars());
+            const fetchWalletENSData = async () => {
+              await dispatch(fetchWalletNames());
+              await dispatch(fetchWalletENSAvatars());
+            };
+            fetchWalletENSData();
           }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;

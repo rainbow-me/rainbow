@@ -404,8 +404,9 @@ export const getWalletENSAvatars = async (
     const wallet = wallets![key];
     const innerPromises = wallet?.addresses?.map(async account => {
       const ens = await fetchReverseRecord(account.address);
+      const currentENSName = walletNames[account.address];
       if (ens) {
-        const isNewEnsName = walletNames[account.address] !== ens;
+        const isNewEnsName = currentENSName !== ens;
         const avatar = await fetchENSAvatar(ens);
         const newImage = avatar?.imageUrl || null;
         return {
@@ -414,10 +415,11 @@ export const getWalletENSAvatars = async (
             image: newImage,
             label: isNewEnsName ? ens : account.label,
           },
-          ensChanged: newImage !== account.image,
+          ensChanged: newImage !== account.image || isNewEnsName,
           key,
         };
-      } else {
+      } else if (currentENSName && !ens) {
+        // if user had an ENS but now is gone
         return {
           account: {
             ...account,
@@ -425,6 +427,12 @@ export const getWalletENSAvatars = async (
             label: '',
           },
           ensChanged: account.image !== null,
+          key,
+        };
+      } else {
+        return {
+          account,
+          ensChanged: false,
           key,
         };
       }
