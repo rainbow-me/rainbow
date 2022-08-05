@@ -146,9 +146,8 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
-    !isEmpty(changedRecords) ||
-      !accountProfile.accountENS ||
-      mode === REGISTRATION_MODES.EDIT
+    accountProfile.accountENS !== ensName &&
+      (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
   );
   const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
     false

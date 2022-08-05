@@ -232,14 +232,13 @@ export default function TransactionConfirmationScreen() {
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
       walletNames,
-      currentNetwork,
       address
     );
     return {
       ...profileInfo,
       address,
     };
-  }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
+  }, [walletConnector?._accounts, walletNames, wallets]);
 
   const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 

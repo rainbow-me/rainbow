@@ -397,40 +397,56 @@ export const getWalletENSAvatars = async (
     | undefined;
   let promises: Promise<{
     account: RainbowAccount;
-    avatarChanged: boolean;
+    ensChanged: boolean;
     key: string;
   }>[] = [];
   walletKeys.forEach(key => {
     const wallet = wallets![key];
     const innerPromises = wallet?.addresses?.map(async account => {
-      const ens =
-        (await fetchReverseRecord(account.address)) ||
-        walletNames[account.address];
+      const ens = await fetchReverseRecord(account.address);
+      const currentENSName = walletNames[account.address];
       if (ens) {
+        const isNewEnsName = currentENSName !== ens;
         const avatar = await fetchENSAvatar(ens);
-        const newImage =
-          typeof avatar?.imageUrl === 'string' &&
-          avatar?.imageUrl !== account?.image
-            ? avatar?.imageUrl
-            : account.image;
+        const newImage = avatar?.imageUrl || null;
         return {
           account: {
             ...account,
             image: newImage,
+            label: isNewEnsName ? ens : account.label,
           },
-          avatarChanged: newImage !== account.image,
+          ensChanged: newImage !== account.image || isNewEnsName,
+          key,
+        };
+      } else if (currentENSName) {
+        // if user had an ENS but now is gone
+        return {
+          account: {
+            ...account,
+            image:
+              account.image?.startsWith('~') ||
+              account.image?.startsWith('file')
+                ? account.image
+                : null, // if the user had an ens but the image it was a local image
+            label: '',
+          },
+          ensChanged: true,
           key,
         };
       } else {
-        return { account, avatarChanged: false, key };
+        return {
+          account,
+          ensChanged: false,
+          key,
+        };
       }
     });
     promises = promises.concat(innerPromises);
   });
 
   const newAccounts = await Promise.all(promises);
-  newAccounts.forEach(({ account, key, avatarChanged }) => {
-    if (!avatarChanged) return;
+  newAccounts.forEach(({ account, key, ensChanged }) => {
+    if (!ensChanged) return;
     const addresses = wallets?.[key]?.addresses;
     const index = addresses?.findIndex(
       ({ address }) => address === account.address
