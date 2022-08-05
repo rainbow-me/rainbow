@@ -1381,8 +1381,8 @@ export const dataWatchPendingTransactions = (
           }
           if (tx?.ensRegistration) {
             const fetchWalletENSData = async () => {
-              await dispatch(fetchWalletNames());
               await dispatch(fetchWalletENSAvatars());
+              dispatch(fetchWalletNames());
             };
             fetchWalletENSData();
           }

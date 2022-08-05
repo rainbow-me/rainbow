@@ -413,20 +413,19 @@ export const getWalletENSAvatars = async (
           account: {
             ...account,
             image: newImage,
-            label: isNewEnsName ? ens : account.label,
+            label: ens,
           },
           ensChanged: newImage !== account.image || isNewEnsName,
           key,
         };
-      } else if (currentENSName && !ens) {
+      } else if (currentENSName) {
         // if user had an ENS but now is gone
         return {
           account: {
             ...account,
-            image: null,
             label: '',
           },
-          ensChanged: account.image !== null,
+          ensChanged: true,
           key,
         };
       } else {
