@@ -29,7 +29,6 @@ const renderTabBar = () => null;
 const renderPager = (props: any) => (
   <ScrollPagerWrapper
     {...props}
-    initialScrollPosition={1}
     {...(android && {
       style: { height: Dimensions.get('window').height },
     })}
