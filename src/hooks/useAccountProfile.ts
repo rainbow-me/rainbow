@@ -33,7 +33,7 @@ const buildAccountProfile = (
   );
 
 export default function useAccountProfile() {
-  const briefBalanceSectionSelector = createSelector(
+  const accountProfileSelector = createSelector(
     [walletSelector, settingsSelector],
     buildAccountProfile
   );
@@ -46,7 +46,7 @@ export default function useAccountProfile() {
     accountName,
     accountSymbol,
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'OutputParametricSelector<{ walle... Remove this comment to see the full error message
-  } = useSelector(briefBalanceSectionSelector);
+  } = useSelector(accountProfileSelector);
 
   return {
     accountAddress,
