@@ -12,7 +12,7 @@ import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,7 +35,7 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import Logger from '@rainbow-me/utils/logger';
 
-const SWAP_POLLING_INTERVAL = 5000;
+const SWAP_POLLING_INTERVAL = 50000;
 enum DisplayValue {
   input = 'inputAmountDisplay',
   output = 'outputAmountDisplay',

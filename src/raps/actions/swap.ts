@@ -129,6 +129,7 @@ const swap = async (
     );
 
     if (permit) {
+      logger.debug('GETTING ADDRESS HERE 1');
       const walletAddress = await wallet.getAddress();
       // Clear the allowance
       const cacheKey = toLower(

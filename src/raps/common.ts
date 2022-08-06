@@ -27,6 +27,7 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { analytics } from '@/analytics';
+import { isHexStringIgnorePrefix } from '@/handlers/web3';
 import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
@@ -388,7 +389,22 @@ export const executeRap = async (
 
   let rap: Rap = { actions: [] };
   if (rapType === RAP_TYPE.EXCHANGE) {
-    rap = await createSwapRapByType(type, parameters as SwapActionParameters);
+    const allowsPermit =
+      (parameters as SwapActionParameters).permit &&
+      //  @ts-ignore
+      wallet?.privateKey &&
+      //  @ts-ignore
+      isHexStringIgnorePrefix(wallet.privateKey)
+        ? true
+        : false;
+
+    logger.debug('??????? ?? ?? ? ? ? ? ?? EARLY PERMIT CHECK!', allowsPermit);
+
+    if (wallet)
+      rap = await createSwapRapByType(type, {
+        ...(parameters as SwapActionParameters),
+        permit: allowsPermit,
+      });
   } else if (rapType === RAP_TYPE.ENS) {
     rap = await createENSRapByType(type, parameters as ENSActionParameters);
   }

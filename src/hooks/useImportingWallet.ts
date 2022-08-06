@@ -19,6 +19,7 @@ import walletTypes from '@/helpers/walletTypes';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
+  isValidBluetoothDeviceId,
   resolveUnstoppableDomain,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
@@ -300,12 +301,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   }
 
                   setTimeout(() => {
-                    // If it's not read only, show the backup sheet
+                    // If it's not read only or hw wallet, show the backup sheet
                     if (
                       !(
                         isENSAddressFormat(input) ||
                         isUnstoppableAddressFormat(input) ||
-                        isValidAddress(input)
+                        isValidAddress(input) ||
+                        isValidBluetoothDeviceId(input)
                       )
                     ) {
                       IS_TESTING !== 'true' &&

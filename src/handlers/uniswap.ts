@@ -22,11 +22,9 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
-import { loadWallet } from '../model/wallet';
 import { LedgerSigner } from './LedgerSigner';
 import {
   estimateGasWithPadding,
-  getFlashbotsProvider,
   getProviderForNetwork,
   isHexStringIgnorePrefix,
   toHex,
@@ -390,7 +388,6 @@ export const executeSwap = async ({
   tradeDetails,
   wallet,
   permit = false,
-  flashbots = false,
 }: {
   chainId: ChainId;
   gasLimit: string | number;
@@ -401,33 +398,18 @@ export const executeSwap = async ({
   tradeDetails: Quote | null;
   wallet: Wallet | LedgerSigner | null;
   permit: boolean;
-  flashbots: boolean;
 }) => {
-  let walletToUse = wallet;
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
   let provider;
 
-  // Switch to the flashbots provider if enabled
-  if (flashbots && network === Network.mainnet) {
-    logger.debug('flashbots provider being set on mainnet');
-    provider = await getFlashbotsProvider();
+  let permitAllowed = permit;
+  if (wallet?.privateKey && isHexStringIgnorePrefix(wallet.privateKey)) {
+    wallet = new Wallet(wallet.privateKey, provider);
   } else {
-    logger.debug('normal provider being set', network);
-    provider = await getProviderForNetwork(network);
+    logger.debug('DISABLING PERMIT BC OF HW WALLET!!!!!');
+    permitAllowed = false;
   }
 
-  if (!walletToUse) {
-    walletToUse = await loadWallet(undefined, true, provider);
-  } else {
-    if (
-      walletToUse?.privateKey &&
-      isHexStringIgnorePrefix(walletToUse.privateKey)
-    ) {
-      walletToUse = new Wallet(walletToUse.privateKey, provider);
-    }
-  }
-
-  if (!walletToUse || !tradeDetails) return null;
+  if (!wallet || !tradeDetails) return null;
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
   const transactionParams = {
@@ -439,7 +421,7 @@ export const executeSwap = async ({
     maxPriorityFeePerGas: maxPriorityFeePerGas || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   };
-  const walletToUseAddress = await walletToUse.getAddress();
+  const walletAddress = await wallet.getAddress();
 
   // Wrap Eth
   if (
@@ -449,13 +431,13 @@ export const executeSwap = async ({
     logger.debug(
       'wrapping native asset',
       tradeDetails.buyAmount,
-      walletToUseAddress,
+      walletAddress,
       chainId
     );
     return wrapNativeAsset(
       tradeDetails.buyAmount,
       // @ts-ignore
-      walletToUse,
+      wallet,
       chainId,
       transactionParams
     );
@@ -467,13 +449,13 @@ export const executeSwap = async ({
     logger.debug(
       'unwrapping native asset',
       tradeDetails.sellAmount,
-      walletToUseAddress,
+      walletAddress,
       chainId
     );
     return unwrapNativeAsset(
       tradeDetails.sellAmount,
       // @ts-ignore
-      walletToUse,
+      wallet,
       chainId,
       transactionParams
     );
@@ -483,16 +465,16 @@ export const executeSwap = async ({
       'FILLQUOTE',
       tradeDetails,
       transactionParams,
-      walletToUseAddress,
-      permit,
+      walletAddress,
+      permitAllowed,
       chainId
     );
     return fillQuote(
       tradeDetails,
       transactionParams,
       // @ts-ignore
-      walletToUse,
-      permit,
+      wallet,
+      permitAllowed,
       chainId
     );
   }

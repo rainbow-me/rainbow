@@ -28,12 +28,14 @@ export const estimateApprove = async (
   owner: string,
   tokenAddress: string,
   spender: string,
+  permitAllowed: boolean = true,
   chainId: number = 1
 ): Promise<number | string> => {
   try {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
     const provider = await getProviderForNetwork(network);
     if (
+      permitAllowed &&
       ALLOWS_PERMIT[
         tokenAddress?.toLowerCase() as keyof PermitSupportedTokenList
       ]
@@ -98,14 +100,9 @@ const executeApprove = async (
         gasPrice?: undefined;
       },
   wallet: Signer,
-  nonce: number | null = null,
-  chainId: number = 1
+  nonce: number | null = null
 ) => {
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  let provider = await getProviderForNetwork(network);
-  const walletToUse = wallet.connect(provider);
-
-  const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
+  const exchange = new Contract(tokenAddress, erc20ABI, wallet);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
@@ -145,10 +142,15 @@ const unlock = async (
       assetAddress,
       contractAddress,
     });
+    const permitAllowed =
+      // @ts-ignore
+      wallet?.privateKey && isHexStringIgnorePrefix(wallet.privateKey);
+
     gasLimit = await estimateApprove(
       accountAddress,
       assetAddress,
       contractAddress,
+      permitAllowed,
       chainId
     );
   } catch (e) {
@@ -195,8 +197,7 @@ const unlock = async (
         gasLimit,
         gasParams,
         wallet,
-        nonce,
-        chainId
+        nonce
       );
     } catch (e) {
       logger.sentry(`[${actionName}] Error approving`);
@@ -204,6 +205,8 @@ const unlock = async (
       throw e;
     }
   }
+
+  logger.debug('GETTING ADDRESS HERE 2');
   const walletAddress = await wallet.getAddress();
   const cacheKey = `${walletAddress}|${assetAddress}|${contractAddress}`.toLowerCase();
 

@@ -38,7 +38,10 @@ import config from '../model/config';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import {
+  getFlashbotsProvider,
+  getProviderForNetwork,
+} from '@rainbow-me/handlers/web3';
 import {
   ExchangeModalTypes,
   isKeyboardOpen,
@@ -540,7 +543,13 @@ export default function ExchangeModal({
       setIsAuthorizing(true);
       let NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
-        const wallet = await loadWallet(undefined, true, currentProvider);
+        let providerToUse = currentProvider;
+        // Switch to the flashbots provider if enabled
+        if (flashbots && currentNetwork === Network.mainnet) {
+          logger.debug('flashbots provider being set on mainnet');
+          providerToUse = await getFlashbotsProvider();
+        }
+        const wallet = await loadWallet(undefined, true, providerToUse);
         if (!wallet) {
           setIsAuthorizing(false);
           logger.sentry(`aborting ${type} due to missing wallet`);

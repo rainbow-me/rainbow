@@ -15,7 +15,6 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useDimensions, useImportingWallet } from '@/hooks';
-import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { safeAreaInsetValues } from '@rainbow-me/utils';
@@ -54,7 +53,6 @@ const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
 export default function HardwareWalletSheet() {
-  const { goBack } = useNavigation();
   const { height: deviceHeight } = useDimensions();
   const [status, setStatus] = useState('');
   const [hw, setHw] = useState([]);
@@ -136,7 +134,6 @@ export default function HardwareWalletSheet() {
                             setStatus(lang.t('hw_wallet.connecting'));
                             const newList = uniq([...hw, device.id]);
                             setHw(newList);
-                            goBack();
                             importHardwareWallet(device.id);
                           },
                           text: lang.t('hw_wallet.yes'),
@@ -158,7 +155,7 @@ export default function HardwareWalletSheet() {
         },
       })
     );
-  }, [goBack, hw, importHardwareWallet]);
+  }, [hw, importHardwareWallet]);
 
   return (
     <SheetKeyboardAnimation
