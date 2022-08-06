@@ -206,7 +206,6 @@ const unlock = async (
     }
   }
 
-  logger.debug('GETTING ADDRESS HERE 2');
   const walletAddress = await wallet.getAddress();
   const cacheKey = `${walletAddress}|${assetAddress}|${contractAddress}`.toLowerCase();
 

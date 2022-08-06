@@ -63,7 +63,9 @@ import {
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
+  getHdPath,
   identifyWalletType,
+  LEDGER_LIVE,
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
 import type {
@@ -513,7 +515,7 @@ const deriveAccountFromBluetoothHardwareWallet = async (
 ) => {
   const transport = await TransportBLE.open(deviceId);
   const eth = new AppEth(transport);
-  const path = `${DEFAULT_HD_PATH.replace('m/', '')}/${index}`; // HD derivation path
+  const path = getHdPath(LEDGER_LIVE, Number(index));
   const { address } = await eth.getAddress(path, false);
   const wallet = {
     address: toChecksumAddress(address),
@@ -544,7 +546,6 @@ const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
 
 const deriveAccountFromWalletInput = (input: EthereumWalletSeed) => {
   const type = identifyWalletType(input);
-  logger.debug('identified wallet type', type);
   if (type === WalletTypes.privateKey) {
     return deriveAccountFromPrivateKey(input);
   } else if (type === WalletTypes.readOnly) {

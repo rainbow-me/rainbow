@@ -405,7 +405,6 @@ export const executeSwap = async ({
   if (wallet?.privateKey && isHexStringIgnorePrefix(wallet.privateKey)) {
     wallet = new Wallet(wallet.privateKey, provider);
   } else {
-    logger.debug('DISABLING PERMIT BC OF HW WALLET!!!!!');
     permitAllowed = false;
   }
 

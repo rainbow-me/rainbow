@@ -546,7 +546,7 @@ export default function ExchangeModal({
         let providerToUse = currentProvider;
         // Switch to the flashbots provider if enabled
         if (flashbots && currentNetwork === Network.mainnet) {
-          logger.debug('flashbots provider being set on mainnet');
+          logger.log('flashbots provider being set on mainnet');
           providerToUse = await getFlashbotsProvider();
         }
         const wallet = await loadWallet(undefined, true, providerToUse);

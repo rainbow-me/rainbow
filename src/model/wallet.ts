@@ -188,6 +188,7 @@ const seedPhraseVersion = 1.0;
 const selectedWalletVersion = 1.0;
 export const allWalletsVersion = 1.0;
 
+export const LEDGER_LIVE = `ledgerLive`;
 export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
@@ -248,6 +249,15 @@ const isHardwareWalletKey = (key: string | null) => {
   return false;
 };
 
+export const getHdPath = (key: string, index: number): string => {
+  switch (key) {
+    case LEDGER_LIVE:
+      return `m/44'/60'/${index}'/0/0`;
+    default:
+      return `${DEFAULT_HD_PATH}/${index}`;
+  }
+};
+
 export const loadWallet = async (
   address?: EthereumAddress | undefined,
   showErrorIfNotLoaded = true,
@@ -263,7 +273,7 @@ export const loadWallet = async (
     if (typeof index !== undefined && provider && deviceId) {
       return new LedgerSigner(
         provider,
-        `${DEFAULT_HD_PATH}/${index}`,
+        getHdPath(LEDGER_LIVE, Number(index)),
         deviceId
       );
     }
@@ -1273,7 +1283,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
 
     if (!existingAccount && hdnode) {
       logger.sentry('No existing account, so we have to derive it');
-      node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
+      node = hdnode.derivePath(getHdPath('default', 0));
       existingAccount = new Wallet(node.privateKey);
       logger.sentry('Got existing account');
     }

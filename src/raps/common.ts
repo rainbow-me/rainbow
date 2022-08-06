@@ -341,7 +341,6 @@ const executeAction = async (
       return { baseNonce: nonce, errorMessage: null };
     }
   } catch (error: any) {
-    logger.debug('Rap blew up', error);
     logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
     analytics.track('Rap failed', {
@@ -397,8 +396,6 @@ export const executeRap = async (
       isHexStringIgnorePrefix(wallet.privateKey)
         ? true
         : false;
-
-    logger.debug('??????? ?? ?? ? ? ? ? ?? EARLY PERMIT CHECK!', allowsPermit);
 
     if (wallet)
       rap = await createSwapRapByType(type, {

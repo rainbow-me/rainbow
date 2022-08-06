@@ -125,7 +125,6 @@ export class LedgerSigner extends ethers.Signer {
       version
     ).toString('hex');
 
-    logger.debug('Signing typed data message', message, { legacy });
     const sig = await this._retry(eth =>
       eth.signEIP712HashedMessage(
         this.path!,
@@ -133,7 +132,6 @@ export class LedgerSigner extends ethers.Signer {
         hashStructMessageHex
       )
     );
-    logger.debug('got signed message!', sig);
     sig.r = '0x' + sig.r;
     sig.s = '0x' + sig.s;
     return ethers.utils.joinSignature(sig);
