@@ -1,8 +1,5 @@
-import { useRoute } from '@react-navigation/core';
 import React, { Fragment, useCallback, useState } from 'react';
-import { InteractionManager } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
-import { useQuery } from 'react-query';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
@@ -10,10 +7,13 @@ import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
-import { UniqueAsset } from '@/entities';
-import { useENSAddress } from '@/hooks';
-import { uniqueTokensQueryKey } from '@/hooks/useFetchUniqueTokens';
-import { isENSNFTRecord, parseENSNFTRecord } from '@/utils';
+import {
+  useAccountSettings,
+  useENSAddress,
+  useFetchUniqueTokens,
+  useOpenENSNFTHandler,
+} from '@/hooks';
+import { AppState } from '@/redux/store';
 import {
   Bleed,
   Box,
@@ -24,7 +24,6 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
-import { AppState } from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 
 export function InfoRowSkeleton() {
@@ -201,63 +200,21 @@ function ImageValue({
   url?: string;
   value?: string;
 }) {
-  const isNFTImage = isENSNFTRecord(value);
-  const {
-    params: { external },
-  } = useRoute<any>();
+  const { accountAddress } = useAccountSettings();
 
-  const enableZoomOnPress = !isNFTImage;
+  const { data: address } = useENSAddress(ensName || '');
 
-  const { data: profileAddress } = useENSAddress(ensName || '');
-
-  const uniqueTokens = useSelector(
+  const uniqueTokensAccount = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
-  const { data: uniqueTokensProfile } = useQuery<UniqueAsset[]>(
-    uniqueTokensQueryKey({ address: profileAddress || '' }),
-    // We just want to watch for changes in the query key,
-    // so just supplying a noop function & staleTime of Infinity.
-    async () => [],
-    { staleTime: Infinity }
-  );
+  const { data: uniqueTokensProfile } = useFetchUniqueTokens({
+    address: address ?? '',
+  });
+  const isSelf = address === accountAddress;
+  const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;
 
-  const { goBack, navigate } = useNavigation();
-  const onPress = useCallback(() => {
-    if (!isNFTImage || !value) return;
-
-    const { contractAddress, tokenId } = parseENSNFTRecord(value);
-    const localUniqueTokens = external ? uniqueTokensProfile : uniqueTokens;
-    const uniqueToken = localUniqueTokens?.find(token => {
-      return (
-        token.asset_contract.address?.toLowerCase() ===
-          contractAddress?.toLowerCase() &&
-        token.id?.toLowerCase() === tokenId?.toLowerCase()
-      );
-    });
-
-    if (!uniqueToken) return;
-    goBack();
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.EXPANDED_ASSET_SHEET, {
-        asset: uniqueToken,
-        backgroundOpacity: 1,
-        cornerRadius: 'device',
-        external: true,
-        springDamping: 1,
-        topOffset: 0,
-        transitionDuration: 0.25,
-        type: 'unique_token',
-      });
-    });
-  }, [
-    external,
-    goBack,
-    isNFTImage,
-    navigate,
-    uniqueTokens,
-    uniqueTokensProfile,
-    value,
-  ]);
+  const { onPress } = useOpenENSNFTHandler({ uniqueTokens, value });
+  const enableZoomOnPress = !onPress;
 
   if (!url) return null;
   return (

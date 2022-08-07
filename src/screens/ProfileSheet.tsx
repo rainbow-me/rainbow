@@ -62,6 +62,7 @@ export default function ProfileSheet() {
     briefSectionsData,
   } = useExternalWalletSectionsData({
     address: profileAddress || undefined,
+    fetchInBackground: true,
   });
 
   const colorIndex = useMemo(

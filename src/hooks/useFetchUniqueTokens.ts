@@ -26,12 +26,14 @@ const STALE_TIME = 10000;
 
 export default function useFetchUniqueTokens({
   address,
+  fetchInBackground = false,
 }: {
   address?: string;
+  fetchInBackground?: boolean;
 }) {
   const { network } = useAccountSettings();
 
-  const [shouldFetchMore, setShouldFetchMore] = useState(false);
+  const [shouldFetchMore, setShouldFetchMore] = useState<boolean>();
 
   // Get unique tokens from device storage
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
@@ -68,12 +70,12 @@ export default function useFetchUniqueTokens({
       // metadata service.
       uniqueTokens = await applyENSMetadataFallbackToTokens(uniqueTokens);
 
-      setShouldFetchMore(true);
-
       return uniqueTokens;
     },
     {
       enabled: Boolean(address),
+      onSuccess: () =>
+        shouldFetchMore === undefined ? setShouldFetchMore(true) : null,
       staleTime: STALE_TIME,
     }
   );
@@ -125,7 +127,12 @@ export default function useFetchUniqueTokens({
     }
 
     // We have already fetched the first page of results – so let's fetch more!
-    if (shouldFetchMore && uniqueTokens && uniqueTokens.length > 0) {
+    if (
+      fetchInBackground &&
+      shouldFetchMore &&
+      uniqueTokens &&
+      uniqueTokens.length > 0
+    ) {
       setShouldFetchMore(false);
       (async () => {
         // Fetch more Ethereum tokens until all have fetched
@@ -154,7 +161,7 @@ export default function useFetchUniqueTokens({
           timeAgo: { hours: 48 },
         });
         if (ensTokens.length > 0) {
-          tokens = uniqBy([...tokens, ...ensTokens], 'id');
+          tokens = uniqBy([...tokens, ...ensTokens], 'uniqueId');
         }
 
         if (hasStoredTokens) {
@@ -174,6 +181,7 @@ export default function useFetchUniqueTokens({
     uniqueTokens,
     queryClient,
     hasStoredTokens,
+    fetchInBackground,
   ]);
 
   return uniqueTokensQuery;
