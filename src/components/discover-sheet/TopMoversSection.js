@@ -106,6 +106,7 @@ export default function TopMoversSection() {
         <Column>
           {gainerItems?.length !== 0 && (
             <MarqueeList
+              height={53}
               items={gainerItems}
               renderItem={renderItem}
               speed={IS_TESTING !== 'true' ? 40 : 0}
@@ -114,6 +115,7 @@ export default function TopMoversSection() {
           )}
           {loserItems?.length !== 0 && (
             <MarqueeList
+              height={53}
               items={loserItems}
               renderItem={renderItem}
               speed={IS_TESTING !== 'true' ? -40 : 0}

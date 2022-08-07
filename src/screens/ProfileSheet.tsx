@@ -103,7 +103,7 @@ export default function ProfileSheet() {
       <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
         <StatusBar barStyle="light-content" />
         <AccentColorProvider color={accentColor}>
-          <Box background="body">
+          <Box background="body" testID="profile-sheet">
             <Box style={wrapperStyle}>
               {!isPreview &&
               (!isAddressSuccess ||

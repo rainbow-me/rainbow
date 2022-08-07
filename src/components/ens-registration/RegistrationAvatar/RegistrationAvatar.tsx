@@ -129,6 +129,8 @@ const RegistrationAvatar = ({
     imagePickerOptions: {
       cropperCircleOverlay: true,
       cropping: true,
+      height: 400,
+      width: 400,
     },
     menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage,
