@@ -29,22 +29,6 @@ describe('Wallet avatar options', () => {
     await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
   });
 
-  it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
-    await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-sheet');
-  });
-
-  it('Should navigate to Developer Settings after tapping Developer Section', async () => {
-    await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-sheet');
-  });
-
-  it('Should make ENS Profiles available', async () => {
-    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
-    await Helpers.tapByText('ENS Profiles');
-    await Helpers.tapByText('Done');
-  });
-
   it('import wallet without ens', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
     await Helpers.tapByText('􀁍 Create a new wallet');

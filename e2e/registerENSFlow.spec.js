@@ -169,11 +169,6 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('developer-settings-sheet');
   });
 
-  it('Should make ENS Profiles available', async () => {
-    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
-    await Helpers.tapByText('ENS Profiles');
-  });
-
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
