@@ -5,12 +5,8 @@ import RNCloudFs from 'react-native-cloud-fs';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
-import { getSupportedBiometryType } from 'react-native-keychain';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger } from '../utils';
-import { saveNewAuthenticatePIN } from './authentication';
-import { saveSeedPhrase } from '@/model/wallet';
-import { seedPhraseKey } from '@/utils/keychainConstants';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -26,14 +22,6 @@ export const CLOUD_BACKUP_ERRORS = {
   UKNOWN_ERROR: 'Unknown Error',
   WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
 };
-
-const empty = () => {};
-
-function findSimilarKeyInObject(object: any, value: string) {
-  const key = Object.keys(object).find(key => key.includes(value));
-  const parsedSeedPhraseInfo = JSON.parse(object[key!]);
-  return { ...parsedSeedPhraseInfo, objectKey: key };
-}
 
 export function logoutFromGoogleDrive() {
   android && RNCloudFs.logout();
@@ -138,13 +126,7 @@ export function syncCloud() {
   return true;
 }
 
-export async function getDataFromCloud(
-  backupPassword: any,
-  filename = null,
-  createPINIfNeeded = false,
-  doItIfStartPINCreation = empty,
-  doItIfFinishPINCreation = empty
-) {
+export async function getDataFromCloud(backupPassword: any, filename = null) {
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -195,42 +177,6 @@ export async function getDataFromCloud(
       backupPassword,
       encryptedData
     );
-    const hasBiometricsEnabled = await getSupportedBiometryType();
-    if (createPINIfNeeded && !hasBiometricsEnabled) {
-      const backedUpData = JSON.parse(backedUpDataStringified);
-
-      const { id, seedphrase, objectKey } = findSimilarKeyInObject(
-        backedUpData.secrets,
-        seedPhraseKey
-      );
-      //avoid picking the word 'cipher' from seed too
-      const isBackupWasSavedWithPIN =
-        typeof seedphrase !== 'string' && seedphrase?.includes('cipher');
-
-      if (!isBackupWasSavedWithPIN) {
-        //need create PIN and connect seed to it
-        doItIfStartPINCreation();
-        const userPIN = await saveNewAuthenticatePIN();
-        doItIfFinishPINCreation();
-        const encryptedSeed = await encryptor.encrypt(userPIN, seedphrase);
-
-        await saveSeedPhrase(seedphrase, id);
-        if (encryptedSeed) {
-          // as the wallet was backuped with faceId in `seedphrase` we have
-          // a seed(as a words), so we need to store this seed with PIN
-          // and put that encrypted data instead this seed
-          backedUpData.secrets[objectKey] = JSON.stringify({
-            ...JSON.parse(backedUpData.secrets[objectKey]),
-            seedphrase: encryptedSeed,
-          });
-
-          logger.sentry(
-            'This wallet was backuped with faceId and now additionally safe seed with PIN '
-          );
-          return backedUpData;
-        }
-      }
-    }
 
     if (backedUpDataStringified) {
       const backedUpData = JSON.parse(backedUpDataStringified);
