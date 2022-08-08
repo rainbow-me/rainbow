@@ -246,6 +246,7 @@ export default function SendHeader({
           address={recipient}
           autoFocus={!showAssetList}
           editable={!fromProfile}
+          isValid={isValidAddress}
           name={name}
           onChangeText={onChange}
           onFocus={onFocus}

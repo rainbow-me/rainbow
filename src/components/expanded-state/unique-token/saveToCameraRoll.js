@@ -1,7 +1,8 @@
 import CameraRoll from '@react-native-community/cameraroll';
 import lang from 'i18n-js';
-import { Alert, PermissionsAndroid, Platform } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 
 const getPermissionAndroid = async () => {
   try {

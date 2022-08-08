@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { Alert, InteractionManager, StatusBar } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
@@ -13,6 +13,7 @@ import {
   isCloudBackupAvailable,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';

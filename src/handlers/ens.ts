@@ -107,6 +107,7 @@ const buildEnsToken = ({
     familyImage:
       'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
     familyName: 'ENS',
+    fullUniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}`,
     id: tokenId,
     image_original_url: imageUrl,
     image_thumbnail_url: lowResUrl,

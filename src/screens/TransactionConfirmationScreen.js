@@ -10,7 +10,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ActivityIndicator, Alert, InteractionManager } from 'react-native';
+import { ActivityIndicator, InteractionManager } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -43,6 +43,7 @@ import {
 import { FLASHBOTS_WC } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@rainbow-me/design-system';
 import {

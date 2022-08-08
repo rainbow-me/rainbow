@@ -253,7 +253,8 @@
       "unhide": "Afficher",
       "unpin": "Détacher",
       "view": "Affichage",
-      "watch_this_wallet": "Watch this Wallet :)"
+      "watch_this_wallet": "Watch this Wallet :)",
+      "hidden": "Caché"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -532,7 +533,9 @@
         "view_on_block_explorer": "View on %{blockExplorerName} :)",
         "view_on_marketplace_name": "View on %{marketplaceName} :)",
         "view_on_platform": "View on %{platform} :)",
-        "view_on_web": "View on Web :)"
+        "view_on_web": "View on Web :)",
+        "hide": "Hide",
+        "unhide": "Unhide"
       }
     },
     "explain": {
@@ -958,6 +961,7 @@
         "create_profile": "Create your Profile :)",
         "edit_profile": "Edit Profile :)",
         "pick_emoji": "Pick an Emoji :)",
+        "shuffle_emoji": "Shuffle Emoji :)",
         "remove_photo": "Remove Photo :)",
         "view_profile": "View Profile :)"
       },

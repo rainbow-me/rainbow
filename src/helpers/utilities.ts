@@ -11,11 +11,13 @@ type nativeCurrencyType = typeof supportedNativeCurrencies;
 
 export const isNil = (value: unknown): value is null | undefined =>
   value == null;
+
 export const isNull = (value: unknown): value is null => value == null;
 
 export const isEmpty = (obj: any): boolean =>
   [Object, Array].includes((obj || {}).constructor) &&
   !Object.entries(obj || {}).length;
+
 export const isString = (str: any): str is string => {
   if (str != null && typeof str.valueOf() === 'string') {
     return true;
