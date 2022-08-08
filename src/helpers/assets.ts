@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,
@@ -325,7 +326,7 @@ export const buildBriefUniqueTokenList = (
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
   hiddenTokens: string[] = [],
-  listType: any
+  listType: AssetListType = 'wallet'
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
@@ -414,7 +415,7 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
-  if (hiddenUniqueTokensIds.length > 0) {
+  if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet') {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: lang.t('button.hidden'),
