@@ -31,8 +31,8 @@ const MAX_ATTEMPTS = 10;
 const TIMELOCK_INTERVAL_MINUTES = 5;
 
 const PinAuthenticationScreen = () => {
-  useBlockBackButton();
   const { params } = useRoute();
+  useBlockBackButton(!params.validPin);
   const { goBack, setParams } = useNavigation();
   const [errorAnimation, onShake] = useShakeAnimation();
 
