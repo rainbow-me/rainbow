@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import store from '@rainbow-me/redux/store';
@@ -323,12 +324,20 @@ export const buildBriefUniqueTokenList = (
   uniqueTokens: any,
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
+  hiddenTokens: string[] = [],
   listType: any
 ) => {
-  const uniqueTokensInShowcase = uniqueTokens
+  const hiddenUniqueTokensIds = uniqueTokens
+    .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
+    .map(({ uniqueId }: any) => uniqueId);
+  const nonHiddenUniqueTokens = uniqueTokens.filter(
+    ({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId)
+  );
+  const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-  const filteredUniqueTokens = uniqueTokens.filter((token: any) => {
+
+  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: any) => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
       const type = getUniqueTokenType(token);
@@ -345,16 +354,16 @@ export const buildBriefUniqueTokenList = (
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcase.length > 0 && listType !== 'select-nft') {
+  if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: 'Showcase',
-      total: uniqueTokensInShowcase.length,
+      total: uniqueTokensInShowcaseIds.length,
       type: 'FAMILY_HEADER',
       uid: 'showcase',
     });
-    for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
-      const uniqueId = uniqueTokensInShowcase[index];
+    for (let index = 0; index < uniqueTokensInShowcaseIds.length; index++) {
+      const uniqueId = uniqueTokensInShowcaseIds[index];
       result.push({
         // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         index,
@@ -404,6 +413,27 @@ export const buildBriefUniqueTokenList = (
     }
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
+  }
+  if (hiddenUniqueTokensIds.length > 0) {
+    result.push({
+      // @ts-expect-error "name" does not exist in type.
+      name: lang.t('button.hidden'),
+      total: hiddenUniqueTokensIds.length,
+      type: 'FAMILY_HEADER',
+      uid: 'hidden',
+    });
+    for (let index = 0; index < hiddenUniqueTokensIds.length; index++) {
+      const uniqueId = hiddenUniqueTokensIds[index];
+      result.push({
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+        index,
+        type: 'NFT',
+        uid: `hidden-${uniqueId}`,
+        uniqueId,
+      });
+    }
+
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
   return result;
 };
