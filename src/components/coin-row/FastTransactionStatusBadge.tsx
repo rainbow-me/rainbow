@@ -40,7 +40,7 @@ const StatusProps = {
   },
   [TransactionStatusTypes.swapping]: {
     marginRight: 4,
-    marginTop: ios ? 1 : -2,
+    marginTop: ios ? 1 : 0,
   },
   [TransactionStatusTypes.speeding_up]: {
     marginRight: 4,
