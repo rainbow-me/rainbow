@@ -28,23 +28,21 @@ export default function SelectUniqueTokenSheet() {
   });
 
   return (
-    <Box paddingTop="30px">
-      <Box
-        background="body"
-        flexGrow={1}
-        height="full"
-        {...(android && { borderTopRadius: 30 })}
-      >
-        <Box alignItems="center" justifyContent="center" paddingVertical="10px">
-          {/* @ts-expect-error JavaScript component */}
-          <SheetHandle />
-        </Box>
-        <RecyclerAssetList2
-          onPressUniqueToken={handlePressUniqueToken}
-          type="select-nft"
-          walletBriefSectionsData={walletBriefSectionsData}
-        />
+    <Box
+      background="body"
+      height="full"
+      paddingTop={android ? undefined : '34px'}
+      {...(android && { borderTopRadius: 30 })}
+    >
+      <Box alignItems="center" justifyContent="center" paddingVertical="10px">
+        {/* @ts-expect-error JavaScript component */}
+        <SheetHandle />
       </Box>
+      <RecyclerAssetList2
+        onPressUniqueToken={handlePressUniqueToken}
+        type="select-nft"
+        walletBriefSectionsData={walletBriefSectionsData}
+      />
     </Box>
   );
 }
