@@ -178,7 +178,7 @@ export default function ENSConfirmRegisterSheet() {
 
   const stepLabel = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT)
-      return lang.t('profiles.confirm.confirm_update');
+      return lang.t('profiles.confirm.confirm_updates');
     if (mode === REGISTRATION_MODES.RENEW)
       return lang.t('profiles.confirm.extend_registration');
     if (step === REGISTRATION_STEPS.COMMIT)
@@ -287,7 +287,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.start_registration')}
+          label={lang.t('profiles.confirm.hold_to_begin')}
           testID={step}
         />
       ),
@@ -302,7 +302,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.confirm_registration')}
+          label={lang.t('profiles.confirm.hold_to_register')}
           testID={step}
         />
       ),
@@ -321,7 +321,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.confirm_renew')}
+          label={lang.t('profiles.confirm.hold_to_extend')}
           testID={step}
         />
       ),
@@ -336,7 +336,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.confirm_update')}
+          label={lang.t('profiles.confirm.hold_to_confirm')}
           testID={step}
         />
       ),
@@ -351,7 +351,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.confirm_set_name')}
+          label={lang.t('profiles.confirm.hold_to_confirm')}
           testID={step}
         />
       ),
