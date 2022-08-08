@@ -14,6 +14,7 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
@@ -39,6 +40,7 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
+import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -58,7 +60,12 @@ const WalletPage = styled(Page)({
 
 export default function WalletScreen() {
   const { params } = useRoute();
-  const { setParams } = useNavigation();
+  const {
+    setParams,
+    dangerouslyGetState,
+    dangerouslyGetParent,
+  } = useNavigation();
+  const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const [fetchedCharts, setFetchedCharts] = useState(false);
@@ -85,6 +92,20 @@ export default function WalletScreen() {
     isEmpty: isSectionsEmpty,
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
+
+  useEffect(() => {
+    // This is the fix for Android wallet creation problem.
+    // We need to remove the welcome screen from the stack.
+    if (ios) {
+      return;
+    }
+    const isWelcomeScreen =
+      dangerouslyGetParent().dangerouslyGetState().routes[0].name ===
+      Routes.WELCOME_SCREEN;
+    if (isWelcomeScreen) {
+      removeFirst();
+    }
+  }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
 
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 

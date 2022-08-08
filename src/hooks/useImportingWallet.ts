@@ -31,7 +31,6 @@ import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import { useRemoveFirst } from '@rainbow-me/navigation/useRemoveFirst';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
@@ -238,7 +237,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const dispatch = useDispatch();
-  const removeFirst = useRemoveFirst();
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
@@ -293,7 +291,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                     InteractionManager.runAfterInteractions(() =>
                       setIsWalletLoading(null)
                     );
-                    removeFirst();
                   }
 
                   setTimeout(() => {
@@ -368,7 +365,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     dispatch,
     showImportModal,
     profilesEnabled,
-    removeFirst,
     setIsWalletLoading,
   ]);
 
