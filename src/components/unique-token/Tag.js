@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { upperCase, upperFirst } from 'lodash';
+import { upperCase } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
@@ -8,6 +8,7 @@ import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Inline } from '@rainbow-me/design-system';
+import { upperFirst } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo, showActionSheetWithOptions } from '@rainbow-me/utils';

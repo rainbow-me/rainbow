@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, startCase } from 'lodash';
+import startCase from 'lodash/startCase';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';
@@ -64,7 +64,7 @@ const BottomRow = ({ description, native, status, type }) => {
 
   const nativeDisplay = native?.display;
   const balanceText = nativeDisplay
-    ? compact([isFailed || isSent ? '-' : null, nativeDisplay]).join(' ')
+    ? [isFailed || isSent ? '-' : null, nativeDisplay].filter(Boolean).join(' ')
     : '';
 
   return (

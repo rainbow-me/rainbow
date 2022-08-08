@@ -1,5 +1,4 @@
 import { differenceInDays, differenceInYears } from 'date-fns';
-import { sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
@@ -13,17 +12,21 @@ const findRemainingAmount = (
   index: any
 ) => {
   const transactionsInTimeline =
-    index >= 0 ? take(purchaseTransactions, index) : purchaseTransactions;
-  const purchasedAmount = sumBy(transactionsInTimeline, txn =>
-    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-    txn.status === TransactionStatusTypes.failed
-      ? 0
-      : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      txn.sourceAmount
-      ? // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-        Number(txn.sourceAmount)
-      : 0
+    index >= 0 ? purchaseTransactions.slice(0, index) : purchaseTransactions;
+
+  const purchasedAmount = transactionsInTimeline.reduce(
+    (acc: number, txn: any) => {
+      const amount =
+        txn.status === TransactionStatusTypes.failed
+          ? 0
+          : txn.sourceAmount
+          ? Number(txn.sourceAmount)
+          : 0;
+      return acc + amount;
+    },
+    0
   );
+
   return limit - purchasedAmount;
 };
 

@@ -1,12 +1,4 @@
-import {
-  compact,
-  isEmpty,
-  reverse,
-  slice,
-  toUpper,
-  uniqBy,
-  upperFirst,
-} from 'lodash';
+import { isEmpty, reverse, slice, toUpper, uniqBy } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
@@ -35,6 +27,7 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   partition,
+  upperFirst,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
@@ -145,7 +138,7 @@ const transformTradeRefund = (
       value: txnOut.value - refund.value,
     };
   }
-  return compact([updatedOut, txnIn]);
+  return [updatedOut, txnIn].filter(Boolean) as ZerionTransactionChange[];
 };
 
 const overrideFailedCompound = (

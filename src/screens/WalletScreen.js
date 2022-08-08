@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, isEmpty, keys } from 'lodash';
+import { isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
@@ -162,9 +162,9 @@ export default function WalletScreen() {
   useEffect(() => {
     if (initialized && assetsSocket && !fetchedCharts) {
       const balancesSection = sections.find(({ name }) => name === 'balances');
-      const assetCodes = compact(
-        balancesSection?.data.map(({ address }) => address)
-      );
+      const assetCodes = balancesSection?.data
+        .map(({ address }) => address)
+        .filter(Boolean);
 
       if (!isEmpty(assetCodes)) {
         dispatch(emitChartsRequest(assetCodes));

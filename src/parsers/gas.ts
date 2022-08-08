@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import zipObject from 'lodash/zipObject';
 import { gasUtils } from '../utils';
 import {
   BlocksToConfirmation,
@@ -260,7 +259,12 @@ export const parseLegacyGasFeesBySpeed = (
       estimatedFee,
     };
   });
-  return zipObject(GasSpeedOrder, gasFeesBySpeed);
+
+  const zipObject = GasSpeedOrder.reduce(
+    (prev, prop, i) => Object.assign(prev, { [prop]: gasFeesBySpeed[i] }),
+    {} as LegacyGasFeesBySpeed
+  );
+  return zipObject;
 };
 
 export const parseGasFees = (
@@ -317,7 +321,12 @@ export const parseGasFeesBySpeed = (
       nativeCurrency
     )
   );
-  return zipObject(GasSpeedOrder, gasFeesBySpeed);
+
+  const zipObject = GasSpeedOrder.reduce(
+    (prev, prop, i) => Object.assign(prev, { [prop]: gasFeesBySpeed[i] }),
+    {} as GasFeesBySpeed
+  );
+  return zipObject;
 };
 
 const getTxFee = (

@@ -1,6 +1,6 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
+import { isEmpty, isNaN, isNil } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
@@ -18,6 +18,7 @@ import {
   add,
   greaterThan,
   toFixedDecimals,
+  upperFirst,
 } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,

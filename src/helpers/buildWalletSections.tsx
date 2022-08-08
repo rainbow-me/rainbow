@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, groupBy, property } from 'lodash';
+import { groupBy, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -444,7 +444,7 @@ const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
 };
 
 const sortImagesToPreload = (images: any) => {
-  const filtered = compact(flattenDeep(images));
+  const filtered = flattenDeep(images).filter(Boolean);
   const grouped = groupBy(filtered, property('priority'));
   return [
     ...(grouped?.high ?? []),

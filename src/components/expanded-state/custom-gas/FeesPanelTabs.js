@@ -1,10 +1,11 @@
-import { isEmpty, upperFirst } from 'lodash';
+import { isEmpty } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
 import { ButtonPressAnimation } from '../../animations';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
+import { upperFirst } from '@rainbow-me/helpers/utilities';
 import { useGas } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';

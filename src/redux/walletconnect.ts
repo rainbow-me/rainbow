@@ -2,7 +2,7 @@ import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
-import { clone, isEmpty, mapValues, values } from 'lodash';
+import { isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
 import {
   // @ts-ignore
@@ -856,7 +856,7 @@ export const walletConnectUpdateSessionConnectorByDappUrl = (
     saveWalletConnectSession(connector.peerId, connector.session);
   });
   dispatch({
-    payload: clone(walletConnectors),
+    payload: Object.assign({}, walletConnectors),
     type: WALLETCONNECT_UPDATE_CONNECTORS,
   });
 };
