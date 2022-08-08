@@ -10,16 +10,18 @@ import { UniqueAsset } from '@rainbow-me/entities';
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
 function RecyclerAssetList({
-  walletBriefSectionsData,
+  disablePullDownToRefresh,
   externalAddress,
   onPressUniqueToken,
   type = 'wallet',
+  walletBriefSectionsData,
 }: {
-  walletBriefSectionsData: any[];
+  disablePullDownToRefresh?: boolean;
   /** An "external address" is an address that is not the current account address. */
   externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
+  walletBriefSectionsData: any[];
 }) {
   const {
     memoizedResult: briefSectionsData,
@@ -42,6 +44,7 @@ function RecyclerAssetList({
       <StickyHeaderManager>
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
+          disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
           type={type}
         />
