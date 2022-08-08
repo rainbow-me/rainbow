@@ -62,6 +62,7 @@ import {
   useDimensions,
   useENSProfile,
   useENSRegistration,
+  useHiddenTokens,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
@@ -267,6 +268,7 @@ const UniqueTokenExpandedState = ({
     marketplaceName,
     traits,
     uniqueId,
+    fullUniqueId,
     urlSuffixForAsset,
   } = asset;
 
@@ -300,6 +302,7 @@ const UniqueTokenExpandedState = ({
     removeShowcaseToken,
     showcaseTokens,
   } = useShowcaseTokens();
+  const { hiddenTokens, removeHiddenToken } = useHiddenTokens();
 
   const [
     contentFocused,
@@ -329,6 +332,10 @@ const UniqueTokenExpandedState = ({
     });
   }, [asset.network, navigate]);
 
+  const isHiddenAsset = useMemo(
+    () => hiddenTokens.includes(fullUniqueId) as boolean,
+    [hiddenTokens, fullUniqueId]
+  );
   const isShowcaseAsset = useMemo(
     () => showcaseTokens.includes(uniqueId) as boolean,
     [showcaseTokens, uniqueId]
@@ -358,11 +365,22 @@ const UniqueTokenExpandedState = ({
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
-      removeShowcaseToken(uniqueId);
+      removeShowcaseToken(asset.uniqueId);
     } else {
-      addShowcaseToken(uniqueId);
+      addShowcaseToken(asset.uniqueId);
+
+      if (isHiddenAsset) {
+        removeHiddenToken(asset);
+      }
     }
-  }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
+  }, [
+    addShowcaseToken,
+    isHiddenAsset,
+    isShowcaseAsset,
+    removeHiddenToken,
+    removeShowcaseToken,
+    asset,
+  ]);
 
   const handlePressShare = useCallback(() => {
     const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.permalink;

@@ -18,7 +18,6 @@ import {
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
@@ -36,6 +35,7 @@ import profileUtils, {
 } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
