@@ -135,7 +135,9 @@ const getUpdatedL2AssetBalance = async (
   );
   const uniqueId = `${asset.address?.toLowerCase()}_${network}`;
   const fallbackAsset =
+    ethereumUtils.getAccountAsset(uniqueId) ||
     ethereumUtils.getAccountAsset(mainnet_address) ||
+    genericAssets[asset?.address] ||
     genericAssets[mainnet_address];
   return {
     ...fallbackAsset,

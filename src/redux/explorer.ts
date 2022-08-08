@@ -872,9 +872,11 @@ const l2AddressAssetsReceived = (
     | undefined = message?.payload?.assets?.map(asset => {
     const mainnetAddress = toLower(asset?.asset?.mainnet_address);
     const fallbackAsset =
-      mainnetAddress &&
-      (ethereumUtils.getAccountAsset(mainnetAddress) ||
-        genericAssets[mainnetAddress]);
+      (mainnetAddress &&
+        (ethereumUtils.getAccountAsset(mainnetAddress) ||
+          genericAssets[mainnetAddress])) ||
+      ethereumUtils.getAccountAsset(asset?.asset?.asset_code) ||
+      genericAssets[asset?.asset?.asset_code];
 
     if (fallbackAsset) {
       return {
