@@ -67,7 +67,7 @@ describe('Deeplinks spec', () => {
     await Helpers.tapAlertWithButton('OK');
   });
 
-  it('should show the Showcase Sheet for rainbow.me universal links with ENS names', async () => {
+  it('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
     await Helpers.openDeeplinkFromBackground(
       'https://rainbow.me/rainbowwallet.eth'
     );
@@ -76,7 +76,7 @@ describe('Deeplinks spec', () => {
     await Helpers.swipe('profile-sheet', 'down');
   });
 
-  it('should show the Showcase Sheet for rainbow.me universal links with 0x addresses', async () => {
+  xit('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
     await Helpers.openDeeplinkFromBackground(
       'https://rainbow.me/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
     );

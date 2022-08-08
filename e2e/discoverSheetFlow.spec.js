@@ -117,8 +117,8 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('profile-sheet');
   });
 
-  it('Should close showcase and return to Search on swiping down', async () => {
-    await Helpers.swipe('showcase-header-wrapper', 'down');
+  it('Should close profile and return to Search on swiping down', async () => {
+    await Helpers.swipe('profile-sheet', 'down');
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.checkIfVisible(
       'discover-currency-select-list-exchange-coin-row-ETH-token'
