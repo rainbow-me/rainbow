@@ -509,8 +509,9 @@ const ensAction = async (
     amount: 0,
     asset: nativeAsset,
     data: tx.data,
+    ensCommitRegistrationName:
+      type === ENSRegistrationTransactionType.COMMIT ? name : undefined,
     ensRegistration: true,
-    ensRegistrationName: name,
     from: ownerAddress,
     gasLimit,
     hash: tx?.hash,

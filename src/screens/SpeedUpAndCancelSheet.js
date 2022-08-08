@@ -195,8 +195,8 @@ export default function SpeedUpAndCancelSheet() {
   ]);
 
   const cancelCommitTransactionHash = useCallback(() => {
-    dispatch(removeRegistrationByName(tx?.ensRegistrationName));
-  }, [dispatch, tx?.ensRegistrationName]);
+    dispatch(removeRegistrationByName(tx?.ensCommitRegistrationName));
+  }, [dispatch, tx?.ensCommitRegistrationName]);
 
   const handleCancellation = useCallback(async () => {
     try {
@@ -214,8 +214,8 @@ export default function SpeedUpAndCancelSheet() {
         transaction: cancelTxPayload,
       });
 
-      if (tx?.ensRegistrationName) {
-        cancelCommitTransactionHash(tx?.ensRegistrationName);
+      if (tx?.ensCommitRegistrationName) {
+        cancelCommitTransactionHash();
       }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
@@ -249,11 +249,11 @@ export default function SpeedUpAndCancelSheet() {
       dispatch(
         saveCommitRegistrationParameters({
           commitTransactionHash: hash,
-          name: tx?.ensRegistrationName,
+          name: tx?.ensCommitRegistrationName,
         })
       );
     },
-    [dispatch, tx?.ensRegistrationName]
+    [dispatch, tx?.ensCommitRegistrationName]
   );
 
   const handleSpeedUp = useCallback(async () => {
@@ -274,7 +274,7 @@ export default function SpeedUpAndCancelSheet() {
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
-      if (tx?.ensRegistrationName) {
+      if (tx?.ensCommitRegistrationName) {
         saveCommitTransactionHash(hash);
       }
       const updatedTx = { ...tx };
