@@ -39,6 +39,7 @@ export default function SelectUniqueTokenSheet() {
         <SheetHandle />
       </Box>
       <RecyclerAssetList2
+        disablePullDownToRefresh
         onPressUniqueToken={handlePressUniqueToken}
         type="select-nft"
         walletBriefSectionsData={walletBriefSectionsData}
