@@ -159,7 +159,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       layoutProvider={layoutProvider}
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
-      refreshControl={<RefreshControl />}
+      refreshControl={type === 'select-nft' ? null : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
     />
