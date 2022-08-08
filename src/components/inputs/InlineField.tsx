@@ -143,7 +143,7 @@ export default function InlineField({
       <Column>
         <Inline alignVertical="center" space="2px" wrap={false}>
           {startsWith && (
-            <Inset top={ios ? '2px' : undefined}>
+            <Inset top={ios ? '2px' : '1px'}>
               <Text color="secondary30" weight="heavy">
                 {startsWith}
               </Text>

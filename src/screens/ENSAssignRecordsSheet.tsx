@@ -461,9 +461,11 @@ function HideKeyboardButton({ color }: { color: string }) {
             width={{ custom: 30 }}
           >
             <Cover alignHorizontal="center" alignVertical="center">
-              <Text align="center" color="primary" size="14px" weight="heavy">
-                􀆈
-              </Text>
+              <Box paddingTop={android ? '4px' : '2px'}>
+                <Text align="center" color="primary" size="14px" weight="heavy">
+                  􀆈
+                </Text>
+              </Box>
             </Cover>
           </Box>
         </AccentColorProvider>
