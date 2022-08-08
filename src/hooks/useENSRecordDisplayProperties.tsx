@@ -2,10 +2,10 @@ import lang from 'i18n-js';
 import { upperFirst } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
 import useClipboard from './useClipboard';
 import useENSRegistration from './useENSRegistration';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import {
   ENS_RECORDS,
   REGISTRATION_MODES,
@@ -13,12 +13,17 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+
+type ImageSource = { imageUrl?: string | null };
+type ENSImages = {
+  avatar?: ImageSource;
+  cover?: ImageSource;
+};
 
 const imageKeyMap = {
   [ENS_RECORDS.avatar]: 'avatarUrl',
-  [ENS_RECORDS.cover]: 'coverUrl',
+  [ENS_RECORDS.header]: 'coverUrl',
 } as {
   [key: string]: 'avatarUrl' | 'coverUrl';
 };
@@ -47,12 +52,14 @@ const links = {
 export default function useENSRecordDisplayProperties({
   allowEdit,
   ensName,
+  images,
   key: recordKey,
   value: recordValue,
   type,
 }: {
   allowEdit?: boolean;
   ensName?: string;
+  images?: ENSImages;
   key: string;
   value: string;
   type: 'address' | 'record';
@@ -70,6 +77,9 @@ export default function useENSRecordDisplayProperties({
   const isUrlValue = useMemo(() => recordValue.match(/^http/), [recordValue]);
 
   const url = useMemo(() => {
+    if (isImageValue) {
+      return images?.[recordKey as 'avatar' | 'cover']?.imageUrl || undefined;
+    }
     if (isUrlValue || isUrlRecord) {
       return recordValue.match(/^http/)
         ? recordValue
@@ -78,7 +88,7 @@ export default function useENSRecordDisplayProperties({
     if (links[recordKey]) {
       return `${links[recordKey]}${recordValue.replace('@', '')}`;
     }
-  }, [isUrlRecord, isUrlValue, recordKey, recordValue]);
+  }, [images, isImageValue, isUrlRecord, isUrlValue, recordKey, recordValue]);
 
   const { displayUrl, displayUrlUsername } = useMemo(() => {
     const urlObj = url ? new URL(url) : { hostname: '', pathname: '' };
@@ -102,7 +112,7 @@ export default function useENSRecordDisplayProperties({
 
   const value = useMemo(() => {
     if (isUrlRecord && displayUrl) {
-      return `􀤆 ${displayUrl}`;
+      return android ? ` 􀤆 ${displayUrl} ` : `􀤆 ${displayUrl}`;
     }
     if (isUrlValue && displayUrlUsername) {
       return displayUrlUsername;
@@ -218,28 +228,12 @@ export default function useENSRecordDisplayProperties({
     ]
   );
 
-  const handleAndroidPress = useCallback(() => {
-    const actionSheetOptions = menuItems
-      .map(item => item?.actionTitle)
-      .filter(Boolean) as any;
-
-    showActionSheetWithOptions(
-      {
-        options: actionSheetOptions,
-      },
-      async (buttonIndex: number) => {
-        const actionKey = menuItems[buttonIndex]?.actionKey;
-        handlePressMenuItem({ nativeEvent: { actionKey } });
-      }
-    );
-  }, [handlePressMenuItem, menuItems]);
-
   const Button = useCallback(
     ({ children, ...props }) => (
       <ContextMenuButton
         enableContextMenu
         menuConfig={{ menuItems, menuTitle: '' }}
-        {...(android ? { onPress: handleAndroidPress } : {})}
+        {...(android ? { handlePressMenuItem } : {})}
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         style={{ flexGrow: isImageValue ? 1 : 0, flexShrink: 1 }}
@@ -249,7 +243,7 @@ export default function useENSRecordDisplayProperties({
         {children}
       </ContextMenuButton>
     ),
-    [handleAndroidPress, handlePressMenuItem, isImageValue, menuItems]
+    [handlePressMenuItem, isImageValue, menuItems]
   );
 
   return {

@@ -4,7 +4,7 @@ import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 
-export const ensCoverQueryKey = (name: string) => ['ens-cover', name];
+export const ensCoverQueryKey = (name: string) => ['ens-header', name];
 
 const STALE_TIME = 10000;
 
@@ -12,13 +12,13 @@ export async function fetchENSCover(
   name: string,
   { cacheFirst }: { cacheFirst?: boolean } = {}
 ) {
-  const cachedCover = await getENSData('cover', name);
+  const cachedCover = await getENSData('header', name);
   if (cachedCover) {
     queryClient.setQueryData(ensCoverQueryKey(name), cachedCover);
     if (cacheFirst) return cachedCover as { imageUrl?: string | null };
   }
-  const cover = await fetchImage('cover', name);
-  saveENSData('cover', name, cover);
+  const cover = await fetchImage('header', name);
+  saveENSData('header', name, cover);
   return cover;
 }
 

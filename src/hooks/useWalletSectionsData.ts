@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
+import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useShowcaseTokens from './useShowcaseTokens';
@@ -31,6 +32,7 @@ export default function useWalletSectionsData({
   );
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
+  const { hiddenTokens } = useHiddenTokens();
 
   const {
     hiddenCoinsObj: hiddenCoins,
@@ -64,6 +66,7 @@ export default function useWalletSectionsData({
       ...uniswap,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
+      hiddenTokens,
       listType: type,
       showcaseTokens,
     };
@@ -83,6 +86,7 @@ export default function useWalletSectionsData({
   }, [
     allUniqueTokens,
     hiddenCoins,
+    hiddenTokens,
     isCoinListEdited,
     isWalletEthZero,
     language,

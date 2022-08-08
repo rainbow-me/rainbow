@@ -30,6 +30,7 @@ export default function useExternalWalletSectionsData({
             uniqueTokens,
             showcaseTokens,
             sellingTokens,
+            [],
             type
           )
         : [],

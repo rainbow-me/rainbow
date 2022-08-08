@@ -90,5 +90,6 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
     </ShadowStack>
   );
 };
+const arePropsEqual = (prev, next) => prev.image === next.image;
 
-export default React.memo(ImageAvatar);
+export default React.memo(ImageAvatar, arePropsEqual);

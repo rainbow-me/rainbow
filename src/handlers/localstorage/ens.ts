@@ -2,7 +2,7 @@ import { getGlobal, saveGlobal } from './common';
 
 export type ENSDataType =
   | 'avatar'
-  | 'cover'
+  | 'header'
   | 'registrant'
   | 'owner'
   | 'address'

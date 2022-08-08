@@ -185,6 +185,7 @@ export default function ENSAssignRecordsSheet() {
         }}
         flexGrow={1}
         scrollEnabled={android}
+        testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
         <Stack space="19px">
           <RegistrationCover
@@ -347,6 +348,7 @@ export function ENSAssignRecordsBottomActions({
         as={Animated.View}
         background="body"
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+        testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
           <Box paddingBottom="19px" style={{ height: bottomActionHeight }}>

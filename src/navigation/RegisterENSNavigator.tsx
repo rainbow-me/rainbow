@@ -11,6 +11,7 @@ import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
+import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box } from '@rainbow-me/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
@@ -29,7 +30,6 @@ const renderTabBar = () => null;
 const renderPager = (props: any) => (
   <ScrollPagerWrapper
     {...props}
-    initialScrollPosition={1}
     {...(android && {
       style: { height: Dimensions.get('window').height },
     })}
@@ -59,6 +59,7 @@ export default function RegisterENSNavigator() {
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
   const setAccentColor = useSetRecoilState(accentColorAtom);
+  const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 
   const { colors } = useTheme();
 
@@ -114,6 +115,7 @@ export default function RegisterENSNavigator() {
   useEffect(
     () => () => {
       removeRecordByKey('avatar');
+      setAvatarMetadata(undefined);
       setAccentColor(colors.purple);
       clearValues();
       clearCurrentRegistrationName();
@@ -124,6 +126,7 @@ export default function RegisterENSNavigator() {
       colors.purple,
       removeRecordByKey,
       setAccentColor,
+      setAvatarMetadata,
     ]
   );
 

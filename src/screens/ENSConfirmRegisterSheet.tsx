@@ -146,9 +146,8 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
-    !isEmpty(changedRecords) ||
-      !accountProfile.accountENS ||
-      mode === REGISTRATION_MODES.EDIT
+    accountProfile.accountENS !== ensName &&
+      (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
   );
   const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
     false
@@ -246,6 +245,7 @@ export default function ENSConfirmRegisterSheet() {
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}
           action={() => action(accentColor)}
+          secondsSinceCommitConfirmed={secondsSinceCommitConfirmed}
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
@@ -267,6 +267,7 @@ export default function ENSConfirmRegisterSheet() {
       accountProfile.accountENS,
       ensName,
       name,
+      secondsSinceCommitConfirmed,
       onMountSecondsSinceCommitConfirmed,
       action,
     ]

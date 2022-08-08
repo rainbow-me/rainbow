@@ -64,6 +64,7 @@ export default function IntroMarquee() {
   return (
     <Box height={{ custom: 100 }}>
       <MarqueeList
+        height={100}
         items={items}
         renderItem={renderItem}
         speed={-15}

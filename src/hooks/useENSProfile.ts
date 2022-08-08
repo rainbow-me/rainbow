@@ -37,7 +37,7 @@ async function fetchENSProfile(
   const [
     address,
     avatar,
-    cover,
+    header,
     owner,
     { coinAddresses, records },
     { registration, registrant },
@@ -65,7 +65,7 @@ async function fetchENSProfile(
     coinAddresses,
     images: {
       avatar,
-      cover,
+      header,
     },
     owner,
     records,
