@@ -67,7 +67,7 @@ export default function WalletScreen() {
   const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network } = useAccountSettings();
+  const { network, accountAddress } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
@@ -202,7 +202,8 @@ export default function WalletScreen() {
     [network]
   );
 
-  const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
+  const isLoadingAssets =
+    useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
 
   return (
     <WalletPage testID="wallet-screen">
