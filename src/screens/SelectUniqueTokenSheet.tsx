@@ -24,7 +24,7 @@ export default function SelectUniqueTokenSheet() {
     [goBack, params]
   );
   const { briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({
-    withVideos: false,
+    type: 'select-nft',
   });
 
   return (
