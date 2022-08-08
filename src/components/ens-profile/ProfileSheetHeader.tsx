@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
 import { ProfileSheetConfigContext } from '../../screens/ProfileSheet';
 import Skeleton from '../skeleton/Skeleton';
@@ -21,7 +21,6 @@ import {
   Inset,
   Stack,
 } from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
@@ -31,10 +30,8 @@ import {
   useENSFirstTransactionTimestamp,
   useENSRecords,
   useFetchUniqueTokens,
+  useOpenENSNFTHandler,
 } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { isENSNFTRecord, parseENSNFTRecord } from '@rainbow-me/utils';
 import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
 
 export default function ProfileSheetHeader({
@@ -66,86 +63,25 @@ export default function ProfileSheetHeader({
   });
   const isImagesFetched = isAvatarFetched && isCoverFetched;
 
-  const { navigate } = useNavigation();
   const { data: uniqueTokens } = useFetchUniqueTokens({
     address: profileAddress ?? '',
+    // Don't want to refetch tokens if we already have them.
+    staleTime: Infinity,
   });
 
-  const handleSelectNFT = useCallback(
-    (uniqueToken: UniqueAsset) => {
-      navigate(Routes.EXPANDED_ASSET_SHEET, {
-        asset: uniqueToken,
-        backgroundOpacity: 1,
-        cornerRadius: 'device',
-        external: true,
-        springDamping: 1,
-        topOffset: 0,
-        transitionDuration: 0.25,
-        type: 'unique_token',
-      });
-    },
-    [navigate]
-  );
-
-  const getUniqueToken = useCallback(
-    (avatarOrCover: string) => {
-      const { contractAddress, tokenId } = parseENSNFTRecord(avatarOrCover);
-      const uniqueToken = uniqueTokens?.find(
-        token =>
-          token.asset_contract.address === contractAddress &&
-          token.id === tokenId
-      );
-      return uniqueToken;
-    },
-    [uniqueTokens]
-  );
-
   const avatarUrl = avatar?.imageUrl;
-
-  const { enableZoomOnPressAvatar, onPressAvatar } = useMemo(() => {
-    const avatar = records?.avatar;
-
-    const isNFTAvatar = avatar && isENSNFTRecord(avatar);
-    const avatarUniqueToken = isNFTAvatar && getUniqueToken(avatar);
-
-    const onPressAvatar = avatarUniqueToken
-      ? () => handleSelectNFT(avatarUniqueToken)
-      : undefined;
-
-    const enableZoomOnPressAvatar = enableZoomableImages && !onPressAvatar;
-
-    return {
-      enableZoomOnPressAvatar,
-      onPressAvatar,
-    };
-  }, [enableZoomableImages, getUniqueToken, handleSelectNFT, records?.avatar]);
+  const { onPress: onPressAvatar } = useOpenENSNFTHandler({
+    uniqueTokens,
+    value: records?.avatar,
+  });
+  const enableZoomOnPressAvatar = enableZoomableImages && !onPressAvatar;
 
   const coverUrl = maybeSignUri(cover?.imageUrl || undefined, { w: 400 });
-
-  const { enableZoomOnPressCover, onPressCover } = useMemo(() => {
-    const cover = records?.header;
-
-    const isNFTCover = cover && isENSNFTRecord(cover);
-    const coverUniqueToken = isNFTCover && getUniqueToken(cover);
-
-    const onPressCover = coverUniqueToken
-      ? () => handleSelectNFT(coverUniqueToken)
-      : undefined;
-
-    const enableZoomOnPressCover = enableZoomableImages && !onPressCover;
-
-    return {
-      coverUrl,
-      enableZoomOnPressCover,
-      onPressCover,
-    };
-  }, [
-    coverUrl,
-    enableZoomableImages,
-    getUniqueToken,
-    handleSelectNFT,
-    records?.header,
-  ]);
+  const { onPress: onPressCover } = useOpenENSNFTHandler({
+    uniqueTokens,
+    value: records?.header,
+  });
+  const enableZoomOnPressCover = enableZoomableImages && !onPressCover;
 
   const { data: firstTransactionTimestamp } = useENSFirstTransactionTimestamp(
     ensName

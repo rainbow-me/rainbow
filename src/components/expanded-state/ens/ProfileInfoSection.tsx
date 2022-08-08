@@ -33,14 +33,10 @@ export default function ProfileInfoSection({
 }) {
   const recordsArray = useMemo(
     () =>
-      Object.entries(records || {})
-        .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS))
-        .map(([key, value]) =>
-          key === 'avatar' || key === 'header'
-            ? [key, images?.[key]?.imageUrl as string]
-            : [key, value]
-        ),
-    [images, records]
+      Object.entries(records || {}).filter(
+        ([key]) => !omitRecordKeys.includes(key as ENS_RECORDS)
+      ),
+    [records]
   );
 
   const [topRecords, otherRecords] = useMemo(() => {
