@@ -53,7 +53,9 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
     const yPosition = useSharedValue(0);
 
     const scrollHandler = useWorkletCallback(event => {
-      yPosition.value = event.contentOffset.y;
+      yPosition.value = isInsideBottomSheet
+        ? event.contentOffset.y
+        : event.nativeEvent.contentOffset.y;
     });
 
     useImperativeHandle(ref, () => scrollViewRef.current!);
