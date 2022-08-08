@@ -311,7 +311,7 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
-    await Helpers.waitAndTap('ens-family-header');
+    await Helpers.waitAndTap('token-family-header-ENS');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
   });
