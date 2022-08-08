@@ -68,6 +68,7 @@ export { default as useENSRegistrationStepHandler } from './useENSRegistrationSt
 export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
 export { default as useENSRegistrationForm } from './useENSRegistrationForm';
 export { default as useENSSearch } from './useENSSearch';
+export { default as useENSUniqueToken } from './useENSUniqueToken';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useExternalWalletSectionsData } from './useExternalWalletSectionsData';
 export { default as useFetchUniqueTokens } from './useFetchUniqueTokens';
@@ -96,6 +97,7 @@ export { default as useMagicAutofocus } from './useMagicAutofocus';
 export { default as useManageCloudBackups } from './useManageCloudBackups';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useUniqueToken } from './useUniqueToken';
+export { default as useOpenENSNFTHandler } from './useOpenENSNFTHandler';
 export { default as useOpenInvestmentCards } from './useOpenInvestmentCards';
 export { default as useOpenSavings } from './useOpenSavings';
 export { default as useOpenSmallBalances } from './useOpenSmallBalances';

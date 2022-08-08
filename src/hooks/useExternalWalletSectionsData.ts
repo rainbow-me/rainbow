@@ -6,16 +6,18 @@ import { buildBriefUniqueTokenList } from '@rainbow-me/helpers/assets';
 
 export default function useExternalWalletSectionsData({
   address,
+  infinite = false,
   type,
 }: {
   address?: string;
+  infinite?: boolean;
   type?: AssetListType;
 }) {
   const {
     data: uniqueTokens,
     isLoading: isUniqueTokensLoading,
     isSuccess: isUniqueTokensSuccess,
-  } = useFetchUniqueTokens({ address });
+  } = useFetchUniqueTokens({ address, infinite });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
   const sellingTokens = useMemo(
