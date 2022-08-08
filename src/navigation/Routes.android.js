@@ -49,6 +49,7 @@ import {
   androidRecievePreset,
   bottomSheetPreset,
   emojiPreset,
+  ensPreset,
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
@@ -109,6 +110,8 @@ function AddCashFlowNavigator() {
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
+
   return (
     <Stack.Navigator
       initialRouteName={initialRoute}
@@ -145,6 +148,40 @@ function MainNavigator() {
           cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
         }}
       />
+      {profilesEnabled && (
+        <>
+          <Stack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={ENSAdditionalRecordsSheet}
+            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_SHEET}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_PREVIEW_SHEET}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={SelectENSSheet}
+            name={Routes.SELECT_ENS_SHEET}
+            options={ensPreset}
+          />
+        </>
+      )}
       <Stack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
@@ -252,7 +289,6 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
     <BSStack.Navigator>
@@ -272,6 +308,13 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen
+        component={SelectUniqueTokenSheet}
+        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
+        options={{
+          height: '95%',
+        }}
+      />
+      <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
       />
@@ -280,39 +323,6 @@ function BSNavigator() {
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         options={expandedPresetWithSmallGestureResponseDistance}
       />
-      {profilesEnabled && (
-        <>
-          <BSStack.Screen
-            component={ENSConfirmRegisterSheet}
-            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
-          />
-          <BSStack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_SHEET}
-          />
-          <BSStack.Screen
-            component={RegisterENSNavigator}
-            name={Routes.REGISTER_ENS_NAVIGATOR}
-          />
-          <BSStack.Screen
-            component={ENSAdditionalRecordsSheet}
-            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
-          />
-          <BSStack.Screen
-            component={SelectENSSheet}
-            name={Routes.SELECT_ENS_SHEET}
-          />
-          <BSStack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_PREVIEW_SHEET}
-          />
-          <BSStack.Screen
-            component={SelectUniqueTokenSheet}
-            name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
-            options={{ ...bottomSheetPreset, height: '95%' }}
-          />
-        </>
-      )}
       <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
