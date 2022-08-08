@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useEffect } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import Divider from '../Divider';
@@ -6,6 +5,7 @@ import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
+import { analytics } from '@rainbow-me/analytics';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import { ImgixImage } from '@rainbow-me/images';

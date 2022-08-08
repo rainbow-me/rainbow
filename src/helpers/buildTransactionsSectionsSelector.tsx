@@ -1,8 +1,8 @@
 import { format } from 'date-fns';
 import { groupBy, isEmpty } from 'lodash';
-import { createElement } from 'react';
+import React from 'react';
 import { createSelector } from 'reselect';
-import { RequestCoinRow, TransactionCoinRow } from '../components/coin-row';
+import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
 import {
   thisMonthTimestamp,
   thisYearTimestamp,
@@ -11,16 +11,16 @@ import {
 } from './transactions';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 
+const mainnetAddressesSelector = (state: any) => state.mainnetAddresses;
+const accountAddressSelector = (state: any) => state.accountAddress;
 const contactsSelector = (state: any) => state.contacts;
 const requestsSelector = (state: any) => state.requests;
+const themeSelector = (state: any) => state.theme;
 const transactionsSelector = (state: any) => state.transactions;
 const focusedSelector = (state: any) => state.isFocused;
 const initializedSelector = (state: any) => state.initialized;
+const navigateSelector = (state: any) => state.navigate;
 
-const renderItemElement = (renderItem: any) =>
-  function InternarSectionListRender(renderItemProps: any) {
-    return createElement(renderItem, renderItemProps);
-  };
 const groupTransactionByDate = ({ pending, minedAt }: any) => {
   if (pending) return 'Pending';
 
@@ -48,11 +48,15 @@ const addContactInfo = (contacts: any) => (txn: any) => {
 };
 
 const buildTransactionsSections = (
+  accountAddress: any,
+  mainnetAddresses: any,
   contacts: any,
   requests: any,
+  theme: any,
   transactions: any,
   isFocused: any,
-  initialized: any
+  initialized: any,
+  navigate: any
 ) => {
   if (!isFocused && !initialized) {
     return { sections: [] };
@@ -67,13 +71,25 @@ const buildTransactionsSections = (
       transactionsWithContacts,
       groupTransactionByDate
     );
+
     sectionedTransactions = Object.keys(transactionsByDate)
       .filter(section => section !== 'Dropped')
       .map(section => ({
-        data: transactionsByDate[section],
-        renderItem: renderItemElement(TransactionCoinRow),
+        data: transactionsByDate[section].map(txn => ({
+          ...txn,
+          accountAddress,
+          mainnetAddress: mainnetAddresses[`${txn.address}_${txn.network}`],
+        })),
+        renderItem: ({ item }: any) => (
+          <FastTransactionCoinRow
+            item={item}
+            navigate={navigate}
+            theme={theme}
+          />
+        ),
         title: section,
       }));
+
     const pendingSectionIndex = sectionedTransactions.findIndex(
       // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'title' implicitly has an 'any' ty... Remove this comment to see the full error message
       ({ title }) => title === 'Pending'
@@ -92,7 +108,9 @@ const buildTransactionsSections = (
     requestsToApprove = [
       {
         data: requests,
-        renderItem: renderItemElement(RequestCoinRow),
+        renderItem: ({ item }: any) => (
+          <RequestCoinRow item={item} theme={theme} />
+        ),
         title: 'Requests',
       },
     ];
@@ -104,11 +122,15 @@ const buildTransactionsSections = (
 
 export const buildTransactionsSectionsSelector = createSelector(
   [
+    accountAddressSelector,
+    mainnetAddressesSelector,
     contactsSelector,
     requestsSelector,
+    themeSelector,
     transactionsSelector,
     focusedSelector,
     initializedSelector,
+    navigateSelector,
   ],
   buildTransactionsSections
 );

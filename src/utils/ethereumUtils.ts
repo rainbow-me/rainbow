@@ -6,7 +6,7 @@ import {
   ChainId,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
 } from '@rainbow-me/swaps';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
@@ -20,16 +20,12 @@ import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
 import lang from 'i18n-js';
 import { isEmpty, isString, replace } from 'lodash';
-import {
-  Alert,
-  InteractionManager,
-  Linking,
-  NativeModules,
-} from 'react-native';
+import { InteractionManager, Linking, NativeModules } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   EthereumAddress,
   GasFee,

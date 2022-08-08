@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Alert } from '../components/alerts';
@@ -18,6 +17,7 @@ import {
 import useAccountSettings from './useAccountSettings';
 import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
+import { analytics } from '@rainbow-me/analytics';
 import { getTokenMetadata } from '@rainbow-me/utils';
 import logger from 'logger';
 

@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert } from 'react-native';
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
@@ -13,6 +12,7 @@ import {
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
 import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';

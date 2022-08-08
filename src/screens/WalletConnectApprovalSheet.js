@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -24,6 +23,7 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
 } from '../components/sheet';
+import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@rainbow-me/design-system';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
