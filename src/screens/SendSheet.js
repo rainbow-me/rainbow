@@ -9,10 +9,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -23,6 +24,7 @@ import {
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';
@@ -41,6 +43,7 @@ import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import Network from '@rainbow-me/helpers/networkTypes';
 import {
   checkIsValidAddressOrDomain,
+  checkIsValidAddressOrDomainFormat,
   isENSAddressFormat,
 } from '@rainbow-me/helpers/validators';
 import {
@@ -152,6 +155,9 @@ export default function SendSheet(props) {
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+
+  const [debouncedInput] = useDebounce(currentInput, 500);
+  const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState();
@@ -413,15 +419,17 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
-      let realAddress = recipient;
-      const isValid = await checkIsValidAddressOrDomain(recipient);
+      let realAddress = debouncedRecipient;
+      const isValid = await checkIsValidAddressOrDomain(debouncedRecipient);
       if (isValid) {
-        realAddress = await resolveNameOrAddress(recipient);
+        realAddress = await resolveNameOrAddress(debouncedRecipient);
+        setToAddress(realAddress);
+      } else {
+        setIsValidAddress(false);
       }
-      setToAddress(realAddress);
     };
-    recipient && resolveAddressIfNeeded();
-  }, [recipient]);
+    debouncedRecipient && resolveAddressIfNeeded();
+  }, [debouncedRecipient]);
 
   const updateTxFeeForOptimism = useCallback(
     async updatedGasLimit => {
@@ -642,7 +650,8 @@ export default function SendSheet(props) {
     if (
       isEmpty(gasFeeParamsBySpeed) ||
       !selectedGasFee ||
-      isEmpty(selectedGasFee?.gasFee)
+      isEmpty(selectedGasFee?.gasFee) ||
+      !toAddress
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -671,6 +680,7 @@ export default function SendSheet(props) {
     selectedGasFee,
     isSufficientGas,
     isValidGas,
+    toAddress,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -730,6 +740,11 @@ export default function SendSheet(props) {
 
   const onChangeInput = useCallback(
     text => {
+      const isValid = checkIsValidAddressOrDomainFormat(text);
+      if (!isValid) {
+        setIsValidAddress();
+      }
+      setToAddress();
       setCurrentInput(text);
       setRecipient(text);
       setNickname(text);
@@ -753,10 +768,10 @@ export default function SendSheet(props) {
     }
   }, [isValidAddress, selected, showAssetForm, showAssetList]);
 
-  const checkAddress = useCallback(async recipient => {
+  const checkAddress = useCallback(recipient => {
     if (recipient) {
-      const validAddress = await checkIsValidAddressOrDomain(recipient);
-      setIsValidAddress(validAddress);
+      const isValidFormat = checkIsValidAddressOrDomainFormat(recipient);
+      setIsValidAddress(isValidFormat);
     }
   }, []);
 
@@ -788,8 +803,8 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
-    checkAddress(recipient);
-  }, [checkAddress, recipient]);
+    checkAddress(debouncedInput);
+  }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
@@ -871,6 +886,7 @@ export default function SendSheet(props) {
             key={sendContactListDataKey}
             loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient, nickname) => {
+              setIsValidAddress(true);
               setRecipient(recipient);
               setNickname(nickname);
             }}

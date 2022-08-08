@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
 import { addCashLoadState } from '../redux/addCash';
 import { dataLoadState } from '../redux/data';
+import { hiddenTokensLoadState } from '../redux/hiddenTokens';
 import { requestsLoadState } from '../redux/requests';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
@@ -20,6 +21,7 @@ export default function useLoadAccountData() {
     async network => {
       logger.sentry('Load wallet account data');
       await dispatch(showcaseTokensLoadState());
+      await dispatch(hiddenTokensLoadState());
       const promises = [];
       if (network === networkTypes.mainnet) {
         const p1 = dispatch(dataLoadState());

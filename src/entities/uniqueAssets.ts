@@ -57,6 +57,10 @@ export interface UniqueAsset {
   marketplaceName: string | null;
   type: AssetType;
   uniqueId: string;
+  /**
+   * @description a computed unique value comprised of <network>_<address>_<token_id>
+   */
+  fullUniqueId: string;
   urlSuffixForAsset: string;
   isPoap?: boolean;
   network: Network;
