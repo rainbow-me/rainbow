@@ -3,6 +3,7 @@
 require('dotenv').config({ path: '.env' });
 
 beforeAll(async () => {
+  await device.reverseTcpPort(8081); //TODO: WIP for android connecting in dev
   await device.clearKeychain();
 
   await device.launchApp();
