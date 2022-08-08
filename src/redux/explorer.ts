@@ -871,11 +871,12 @@ const l2AddressAssetsReceived = (
     | { asset: ZerionAsseWithL2Fields }[]
     | undefined = message?.payload?.assets?.map(asset => {
     const mainnetAddress = toLower(asset?.asset?.mainnet_address);
+    const uniqueId = `${asset?.asset?.asset_code}_${asset?.asset?.network}`;
     const fallbackAsset =
       (mainnetAddress &&
         (ethereumUtils.getAccountAsset(mainnetAddress) ||
           genericAssets[mainnetAddress])) ||
-      ethereumUtils.getAccountAsset(asset?.asset?.asset_code) ||
+      ethereumUtils.getAccountAsset(uniqueId) ||
       genericAssets[asset?.asset?.asset_code];
 
     if (fallbackAsset) {
