@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { AssetListType } from '../components/asset-list/RecyclerAssetList2';
+import useFetchHiddenTokens from './useFetchHiddenTokens';
 import useFetchShowcaseTokens from './useFetchShowcaseTokens';
 import useFetchUniqueTokens from './useFetchUniqueTokens';
 import { buildBriefUniqueTokenList } from '@rainbow-me/helpers/assets';
@@ -18,6 +19,7 @@ export default function useExternalWalletSectionsData({
     isLoading: isUniqueTokensLoading,
     isSuccess: isUniqueTokensSuccess,
   } = useFetchUniqueTokens({ address, infinite });
+  const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
   const sellingTokens = useMemo(
@@ -32,11 +34,11 @@ export default function useExternalWalletSectionsData({
             uniqueTokens,
             showcaseTokens,
             sellingTokens,
-            [],
+            hiddenTokens,
             type
           )
         : [],
-    [uniqueTokens, showcaseTokens, sellingTokens, type]
+    [uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type]
   );
 
   return {
