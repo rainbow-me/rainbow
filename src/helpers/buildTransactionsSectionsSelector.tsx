@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import groupBy from 'lodash/groupBy';
 import React from 'react';
 import { createSelector } from 'reselect';
 import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
@@ -9,7 +8,7 @@ import {
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
-import { isEmpty } from './utilities';
+import { groupBy, isEmpty } from './utilities';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 
 const mainnetAddressesSelector = (state: any) => state.mainnetAddresses;

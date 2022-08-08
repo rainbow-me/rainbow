@@ -1,4 +1,3 @@
-import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useENSProfileRecords from './useENSProfileRecords';
@@ -103,10 +102,17 @@ export default function useENSModifiedRegistration({
   // (these should be used for SET_TEXT txns instead of `records` to save
   // gas).
   const changedRecords = useMemo(() => {
-    const entriesToChange = differenceWith(
-      Object.entries(records),
-      Object.entries(initialRecords),
-      isEqual
+    //get element from  Object.entries(records) with values which not included in Object.entries(initialRecords)
+    const entriesToChange = Object.entries(records).filter(
+      ([recordKey, recordValue]) => {
+        return !Object.entries(initialRecords).some(
+          ([initRecordKey, initRecordValue]) => {
+            return (
+              recordKey === initRecordKey && recordValue === initRecordValue
+            );
+          }
+        );
+      }
     ) as [keyof Records, string][];
 
     const changedRecords = entriesToChange.reduce(
@@ -123,11 +129,11 @@ export default function useENSModifiedRegistration({
       return Boolean(records[key]);
     });
 
-    const keysToRemove = differenceWith(
-      Object.keys(initialRecords),
-      recordKeysWithValue,
-      isEqual
-    ) as (keyof Records)[];
+    const keysToRemove = (Object.keys(
+      initialRecords
+    ) as (keyof Records)[]).filter(
+      (recordKey: keyof Records) => !recordKeysWithValue.includes(recordKey)
+    );
 
     const removedRecords = keysToRemove.reduce(
       (recordsToAdd: Partial<Records>, key) => ({

@@ -6,6 +6,7 @@ type BigNumberish = number | string | BigNumber;
 interface Dictionary<T> {
   [index: string]: T;
 }
+
 type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
 type nativeCurrencyType = typeof supportedNativeCurrencies;
 
@@ -439,7 +440,38 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-export const flattenDeep = (arr: unknown[]): unknown[] =>
+export const sortByKeyHelper = (key: string) => {
+  return (a: any, b: any) => (a[key] > b[key] ? 1 : b[key] > a[key] ? -1 : 0);
+};
+export const reversedSortByKeyHelper = (key: string) => {
+  return (a: any, b: any) => (a[key] > b[key] ? -1 : b[key] > a[key] ? 1 : 0);
+};
+
+/**
+ * @desc Creates an object composed of keys generated from
+ * the results of running each element of `array` thru `keyOrMapper`.
+ * If `keyOrMapper` is a string then it should be shallow
+ */
+export const groupBy = <
+  T extends Record<PropertyKey, any>,
+  Func extends (arg: T) => string
+>(
+  arr: T[],
+  keyOrMapper: string | Func
+): Dictionary<T[]> => {
+  return arr.reduce<Dictionary<T[]>>((acc, val) => {
+    const groupedKey =
+      typeof keyOrMapper === 'function' ? keyOrMapper(val) : val[keyOrMapper];
+    if (!acc[groupedKey]) {
+      acc[groupedKey] = [val];
+      return acc;
+    }
+    acc[groupedKey].push(val);
+    return acc;
+  }, {});
+};
+
+export const flattenDeep = <T>(arr: T[]): T[] =>
   arr.flatMap(subArray =>
     Array.isArray(subArray) ? flattenDeep(subArray) : subArray
   );

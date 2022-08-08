@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react-native';
-import { sortBy } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RNCloudFs from 'react-native-cloud-fs';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
@@ -7,6 +6,7 @@ import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger } from '../utils';
+import { reversedSortByKeyHelper } from '@rainbow-me/helpers/utilities';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -164,7 +164,9 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
       throw error;
     }
   } else {
-    const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
+    const sortedBackups = backups.files
+      .slice()
+      .sort(reversedSortByKeyHelper('lastModified'));
     document = sortedBackups[0];
   }
   const encryptedData = ios

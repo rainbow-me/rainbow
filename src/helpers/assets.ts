@@ -1,12 +1,15 @@
 import lang from 'i18n-js';
-import { groupBy, slice, sortBy } from 'lodash';
+import slice from 'lodash/slice';
+import sortBy from 'lodash/sortBy';
 import {
   add,
   chunk,
   convertAmountToNativeDisplay,
   greaterThan,
+  groupBy,
   isEmpty,
 } from './utilities';
+import { UniqueAsset } from '@rainbow-me/entities';
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,
@@ -236,15 +239,17 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
+const regex = RegExp(/\s*(the)\s/, 'i');
+
 export const buildUniqueTokenList = (
-  uniqueTokens: any[],
+  uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any[] = []
 ) => {
   let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
+  const grouped = groupBy(uniqueTokens, 'familyName');
 
-  const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
   for (let family of families) {
@@ -280,7 +285,9 @@ export const buildUniqueTokenList = (
       });
     });
   }
-  const regex = RegExp(/\s*(the)\s/, 'i');
+
+  //JS sort doing twice as much replace in each loop here
+  //so basically we have better stay with lodash one in this case
   rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
@@ -320,10 +327,8 @@ export const buildUniqueTokenList = (
   return rows;
 };
 
-const regex = RegExp(/\s*(the)\s/, 'i');
-
 export const buildBriefUniqueTokenList = (
-  uniqueTokens: any,
+  uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
   hiddenTokens: string[] = []
@@ -337,10 +342,12 @@ export const buildBriefUniqueTokenList = (
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-  const grouped2 = groupBy(nonHiddenUniqueTokens, token => token.familyName);
+
+  const grouped2 = groupBy(nonHiddenUniqueTokens, 'familyName');
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
+
   const result = [
     { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
