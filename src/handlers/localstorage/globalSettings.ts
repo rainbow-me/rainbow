@@ -4,6 +4,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
+const APP_ICON = 'appIcon';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
@@ -12,6 +13,7 @@ const AUTH_TIMELOCK = 'authTimelock';
 const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
 const TRANSACTION_SIGNATURES = 'transactionSignatures';
 const TESTNETS_ENABLED = 'testnetsEnabled';
+const FLASHBOTS_ENABLED = 'flashbotsEnabled';
 
 export const getKeychainIntegrityState = () =>
   getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
@@ -45,6 +47,8 @@ export const setKeyboardHeight = (height: any) =>
 export const getNativeCurrency = () =>
   getGlobal(NATIVE_CURRENCY, NativeCurrencyKeys.USD);
 
+export const getAppIcon = () => getGlobal(APP_ICON, 'og');
+
 export const saveNativeCurrency = (nativeCurrency: any) =>
   saveGlobal(NATIVE_CURRENCY, nativeCurrency);
 
@@ -77,4 +81,25 @@ export const getTestnetsEnabled = () => getGlobal(TESTNETS_ENABLED, false);
  */
 export const saveTestnetsEnabled = (preference: boolean) => {
   saveGlobal(TESTNETS_ENABLED, preference);
+};
+
+/**
+ * @desc get flashbots preference
+ */
+export const getFlashbotsEnabled = () => getGlobal(FLASHBOTS_ENABLED, false);
+
+/**
+ * @desc save flashbots preference
+ * @param  {Boolean}  [value]
+ */
+export const saveFlashbotsEnabled = (preference: boolean) => {
+  saveGlobal(FLASHBOTS_ENABLED, preference);
+};
+
+/**
+ * @desc save app icon  preference
+ * @param  {string}  [value]
+ */
+export const saveAppIcon = (appIcon: string) => {
+  saveGlobal(APP_ICON, appIcon);
 };

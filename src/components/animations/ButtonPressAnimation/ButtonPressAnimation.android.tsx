@@ -20,6 +20,7 @@ import {
   RawButtonProps,
 } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   AnimateProps,
   Easing,
@@ -33,6 +34,7 @@ import Animated, {
 import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { BaseButtonAnimationProps } from './types';
+import { HapticFeedbackType } from '@/utils/haptics';
 import { useLongPressEvents } from '@rainbow-me/hooks';
 
 interface BaseProps extends BaseButtonAnimationProps {
@@ -46,6 +48,8 @@ interface BaseProps extends BaseButtonAnimationProps {
   shouldLongPressHoldPress?: boolean;
   skipTopMargin?: boolean;
   wrapperStyle: StyleProp<ViewStyle>;
+  hapticType: HapticFeedbackType;
+  enableHapticFeedback: boolean;
 }
 
 type Props = PropsWithChildren<BaseProps>;
@@ -179,6 +183,8 @@ const SimpleScaleButton = ({
   shouldLongPressHoldPress,
   isLongPress,
   onLayout,
+  hapticType,
+  enableHapticFeedback,
   onPress,
   overflowMargin,
   scaleTo,
@@ -194,10 +200,18 @@ const SimpleScaleButton = ({
       } else if (shouldLongPressHoldPress && type === 'longPressEnded') {
         onLongPressEnded?.();
       } else {
+        enableHapticFeedback && ReactNativeHapticFeedback.trigger(hapticType);
         onPress?.();
       }
     },
-    [onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
+    [
+      enableHapticFeedback,
+      hapticType,
+      onLongPress,
+      onLongPressEnded,
+      onPress,
+      shouldLongPressHoldPress,
+    ]
   );
 
   // we won't guess if there are any animated styles in there but we can
@@ -225,6 +239,8 @@ const SimpleScaleButton = ({
       >
         <ZoomableButton
           duration={duration}
+          enableHapticFeedback={enableHapticFeedback}
+          hapticType={hapticType}
           hitSlop={-overflowMargin}
           isLongPress={isLongPress}
           minLongPressDuration={minLongPressDuration}
@@ -272,6 +288,8 @@ export default function ButtonPressAnimation({
   testID,
   transformOrigin,
   wrapperStyle,
+  hapticType = 'selection',
+  enableHapticFeedback = true,
 }: Props) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
@@ -289,6 +307,8 @@ export default function ButtonPressAnimation({
       borderRadius={borderRadius}
       contentContainerStyle={contentContainerStyle}
       duration={duration}
+      enableHapticFeedback={enableHapticFeedback}
+      hapticType={hapticType}
       isLongPress={!!onLongPress}
       minLongPressDuration={minLongPressDuration}
       onLayout={onLayout}

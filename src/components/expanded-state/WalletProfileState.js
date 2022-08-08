@@ -1,9 +1,9 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
+import { analytics } from '@rainbow-me/analytics';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { delay } from '@rainbow-me/helpers/utilities';
 import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';

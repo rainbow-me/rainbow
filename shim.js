@@ -1,6 +1,6 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';

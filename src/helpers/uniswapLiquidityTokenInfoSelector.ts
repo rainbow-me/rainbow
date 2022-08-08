@@ -1,5 +1,5 @@
-import { ChainId, WETH } from '@uniswap/sdk';
-import { compact, isEmpty, join, orderBy, sumBy } from 'lodash';
+import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { compact, isEmpty, orderBy, sumBy } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -56,7 +56,7 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
-  if (token.address.toLowerCase() === WETH[chainId].address.toLowerCase()) {
+  if (token?.address?.toLowerCase() === WRAPPED_ASSET[chainId]?.toLowerCase()) {
     return {
       ...token,
       address: ETH_ADDRESS,
@@ -123,10 +123,7 @@ const transformPool = (
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
-  const tokenNames = join(
-    formattedTokens.map(token => token.symbol),
-    '-'
-  );
+  const tokenNames = formattedTokens.map(token => token.symbol).join('-');
 
   return {
     ...liquidityTokenWithNative,

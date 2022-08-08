@@ -1,14 +1,10 @@
-import { ObservableQuery } from '@apollo/client';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
   find,
   isEmpty,
   isNil,
-  keyBy,
   keys,
-  mapKeys,
   mapValues,
   partition,
   toUpper,
@@ -17,11 +13,6 @@ import {
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { uniswapClient } from '../apollo/client';
-import {
-  UNISWAP_24HOUR_PRICE_QUERY,
-  UNISWAP_PRICES_QUERY,
-} from '../apollo/queries';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import { addCashUpdatePurchases } from './addCash';
 import {
@@ -49,12 +40,10 @@ import {
 import appEvents from '@rainbow-me/handlers/appEvents';
 import {
   getAccountAssetsData,
-  getAssetPricesFromUniswap,
   getLocalPendingTransactions,
   getLocalTransactions,
   saveAccountAssetsData,
   saveAccountEmptyState,
-  saveAssetPricesFromUniswap,
   saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
@@ -84,10 +73,9 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, multiply, pickBy } from '@rainbow-me/utilities';
+import { delay, isZero, pickBy } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
-  getBlocksFromTimestamps,
   isLowerCaseMatch,
   TokensListenedCache,
 } from '@rainbow-me/utils';
@@ -139,8 +127,6 @@ export const COINGECKO_IDS_ENDPOINT =
 const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
-const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
-  'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
 
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST';
@@ -152,9 +138,6 @@ const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE';
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED';
-
-const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS =
-  'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS';
 
 const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
@@ -178,13 +161,6 @@ export interface DataState {
    */
   accountAssetsData: {
     [uniqueId: string]: ParsedAddressAsset;
-  };
-
-  /**
-   * Uniswap price data for assets.
-   */
-  assetPricesFromUniswap: {
-    [assetAddress: string]: UniswapAssetPriceData;
   };
 
   /**
@@ -230,26 +206,12 @@ export interface DataState {
    * Transactions for this account.
    */
   transactions: RainbowTransaction[];
-
-  /**
-   * A GraphQL query for Uniswap data.
-   */
-  uniswapPricesQuery: ObservableQuery<
-    UniswapPricesQueryData,
-    UniswapPricesQueryVariables
-  > | null;
-
-  /**
-   * An active subscription for data from `uniswapPricesQuery`.
-   */
-  uniswapPricesSubscription: ZenObservable.Subscription | null;
 }
 
 /**
  * An action for the `data` reducer.
  */
 type DataAction =
-  | DataUpdateUniswapPricesSubscriptionAction
   | DataUpdateRefetchSavingsAction
   | DataUpdateGenericAssetsAction
   | DataUpdatePortfoliosAction
@@ -258,24 +220,12 @@ type DataAction =
   | DataLoadTransactionSuccessAction
   | DataLoadTransactionsFailureAction
   | DataLoadAccountAssetsDataRequestAction
-  | DataLoadAssetPricesFromUniswapSuccessAction
   | DataLoadAccountAssetsDataReceivedAction
   | DataLoadAccountAssetsDataSuccessAction
   | DataLoadAccountAssetsDataFailureAction
   | DataLoadAccountAssetsDataFinalizedAction
   | DataUpdatePendingTransactionSuccessAction
   | DataClearStateAction;
-
-/**
- * The action to update the Uniswap prices query and subscription.
- */
-interface DataUpdateUniswapPricesSubscriptionAction {
-  type: typeof DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION;
-  payload: {
-    uniswapPricesQuery: DataState['uniswapPricesQuery'];
-    uniswapPricesSubscription: DataState['uniswapPricesSubscription'];
-  };
-}
 
 /**
  * The action to change `shouldRefetchSavings`.
@@ -349,15 +299,6 @@ interface DataLoadAccountAssetsDataReceivedAction {
 }
 
 /**
- * The action to update `assetPricesFromUniswap` and indicate data has been
- * fetched successfully.
- */
-interface DataLoadAssetPricesFromUniswapSuccessAction {
-  type: typeof DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS;
-  payload: DataState['assetPricesFromUniswap'];
-}
-
-/**
  * The action to update `accountAssetsData` and indicate that loading was
  * successful.
  */
@@ -394,37 +335,6 @@ interface DataUpdatePendingTransactionSuccessAction {
  */
 interface DataClearStateAction {
   type: typeof DATA_CLEAR_STATE;
-}
-
-// Uniswap types:
-
-/**
- * Price data loaded from a Uniswap query.
- */
-interface UniswapPricesQueryData {
-  tokens: {
-    id: string;
-    derivedETH: string;
-    symbol: string;
-    name: string;
-    decimals: string;
-  }[];
-}
-
-/**
- * Variables included in the Uniswap price query.
- */
-interface UniswapPricesQueryVariables {
-  addresses: string[];
-}
-
-/**
- * Data stored following a successful Uniswap query.
- */
-interface UniswapAssetPriceData {
-  price: string;
-  relativePriceChange: number;
-  tokenAddress: string;
 }
 
 // Coingecko types:
@@ -562,7 +472,6 @@ export const dataLoadState = () => async (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
-    | DataLoadAssetPricesFromUniswapSuccessAction
     | DataLoadAccountAssetsDataRequestAction
     | DataLoadAccountAssetsDataSuccessAction
     | DataLoadAccountAssetsDataFailureAction
@@ -575,22 +484,15 @@ export const dataLoadState = () => async (
 ) => {
   const { accountAddress, network } = getState().settings;
   try {
-    const assetPricesFromUniswap = await getAssetPricesFromUniswap(
-      accountAddress,
-      network
-    );
-    dispatch({
-      payload: assetPricesFromUniswap,
-      type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
-  try {
     dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST });
     const accountAssetsData = await getAccountAssetsData(
       accountAddress,
       network
     );
+
+    const isCurrentAccountAddress =
+      accountAddress === getState().settings.accountAddress;
+    if (!isCurrentAccountAddress) return;
 
     if (!isEmpty(accountAssetsData)) {
       dispatch({
@@ -608,6 +510,10 @@ export const dataLoadState = () => async (
       accountAddress,
       network
     );
+    const isCurrentAccountAddress =
+      accountAddress === getState().settings.accountAddress;
+    if (!isCurrentAccountAddress) return;
+
     dispatch({
       payload: pendingTransactions,
       type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
@@ -783,11 +689,8 @@ export const disableGenericAssetsFallbackIfNeeded = () => {
  * from listeners and timeouts.
  */
 export const dataResetState = () => (
-  dispatch: Dispatch<DataClearStateAction>,
-  getState: AppGetState
+  dispatch: Dispatch<DataClearStateAction>
 ) => {
-  const { uniswapPricesSubscription } = getState().data;
-  uniswapPricesSubscription?.unsubscribe?.();
   // cancel any debounced updates so we won't override any new data with stale debounced ones
   cancelDebouncedUpdateGenericAssets();
 
@@ -895,15 +798,20 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
   if (transactionData.length) {
     const { accountAddress, network } = getState().settings;
     const txSortedByDescendingNonce = transactionData
-      .filter(
-        ({ address_from }) =>
-          address_from?.toLowerCase() === accountAddress.toLowerCase()
-      )
+      .filter(tx => {
+        const addressFrom = tx?.address_from;
+        return (
+          addressFrom &&
+          addressFrom.toLowerCase() === accountAddress.toLowerCase()
+        );
+      })
       .sort(({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0));
     const [latestTx] = txSortedByDescendingNonce;
-    const { address_from, nonce } = latestTx;
-    if (nonce) {
-      dispatch(incrementNonce(address_from!, nonce, network));
+    const addressFrom = latestTx?.address_from;
+    const nonce = latestTx?.nonce;
+    if (addressFrom && nonce) {
+      // @ts-ignore-next-line
+      dispatch(incrementNonce(addressFrom!, nonce, network));
     }
   }
 };
@@ -925,6 +833,7 @@ const checkForRemovedNonce = (removedTransactions: RainbowTransaction[]) => (
       .sort(({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0));
     const [lowestNonceTx] = txSortedByAscendingNonce;
     const { nonce } = lowestNonceTx;
+    // @ts-ignore-next-line
     dispatch(decrementNonce(accountAddress, nonce!, network));
   }
 };
@@ -1006,6 +915,11 @@ export const transactionsReceived = (
     currentNetwork,
     appended
   );
+
+  const isCurrentAccountAddress =
+    accountAddress === getState().settings.accountAddress;
+  if (!isCurrentAccountAddress) return;
+
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
       dispatch(uniqueTokensRefreshState());
@@ -1015,6 +929,7 @@ export const transactionsReceived = (
   const updatedPendingTransactions = pendingTransactions.filter(
     tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
+
   dispatch({
     payload: updatedPendingTransactions,
     type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
@@ -1152,6 +1067,7 @@ export const addressAssetsReceived = (
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
     dispatch(
+      // @ts-ignore
       uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
     );
   }
@@ -1173,166 +1089,24 @@ export const addressAssetsReceived = (
     saveAccountEmptyState(false, accountAddress, network);
   }
 
-  dispatch({
-    payload: parsedAssets,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
-  });
-  if (!change) {
-    const missingPriceAssetAddresses: string[] = Object.values(parsedAssets)
-      .filter(asset => isNil(asset?.price))
-      .map(asset => asset.address);
-
-    dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
-  }
-
   const assetsWithScamURL: string[] = Object.values(parsedAssets)
     .filter(
       asset =>
-        (isValidDomain(asset.name.replaceAll(' ', '')) ||
-          isValidDomain(asset.symbol)) &&
+        ((asset?.name && isValidDomain(asset?.name.replaceAll(' ', ''))) ||
+          (asset?.symbol && isValidDomain(asset.symbol))) &&
         !asset.isVerified
     )
     .map(asset => asset.uniqueId);
 
+  // we need to store hidden coins before storing parsedAssets
+  // so all the selectors that depend on both will have hidden coins by that time
+  // to be able to filter them
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
-};
 
-/**
- * Subscribes to asset prices on Uniswap and updates state and local storage
- * when price data is loaded.
- *
- * @param addresses The asset addresses to subscribe to.
- */
-const subscribeToMissingPrices = (addresses: string[]) => (
-  dispatch: Dispatch<
-    | DataLoadAssetPricesFromUniswapSuccessAction
-    | DataUpdateUniswapPricesSubscriptionAction
-  >,
-  getState: AppGetState
-) => {
-  const { accountAddress, network } = getState().settings;
-  const { uniswapPricesQuery } = getState().data;
-
-  if (uniswapPricesQuery) {
-    uniswapPricesQuery.refetch({ addresses });
-  } else {
-    const newQuery = uniswapClient.watchQuery<
-      UniswapPricesQueryData,
-      UniswapPricesQueryVariables
-    >({
-      fetchPolicy: 'no-cache',
-      pollInterval: 30000, // 30 seconds
-      query: UNISWAP_PRICES_QUERY,
-      variables: {
-        addresses,
-      },
-    });
-
-    const newSubscription = newQuery.subscribe({
-      next: async ({ data }) => {
-        try {
-          if (data?.tokens) {
-            const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
-            const tokenAddresses: string[] = data.tokens.map(token => token.id);
-
-            const yesterday = getUnixTime(
-              startOfMinute(sub(Date.now(), { days: 1 }))
-            );
-            const [{ number: yesterdayBlock }] = await getBlocksFromTimestamps([
-              yesterday,
-            ]);
-
-            const historicalPriceCalls = tokenAddresses.map(address =>
-              get24HourPrice(address, yesterdayBlock)
-            );
-            const historicalPriceResults = await Promise.all(
-              historicalPriceCalls
-            );
-            const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
-            const { chartsEthUSDDay } = getState().charts;
-            const ethereumPriceOneDayAgo = chartsEthUSDDay?.[0]?.[1];
-
-            const missingHistoricalPrices = mapValues(
-              mappedHistoricalData,
-              value => multiply(ethereumPriceOneDayAgo, value?.derivedETH!)
-            );
-
-            const mappedPricingData = keyBy(data.tokens, 'id');
-            const missingPrices = mapValues(mappedPricingData, token =>
-              multiply(nativePriceOfEth, token.derivedETH)
-            );
-            const missingPriceInfo = mapValues(
-              missingPrices,
-              (currentPrice, key) => {
-                const historicalPrice = missingHistoricalPrices?.[key];
-                // mappedPricingData[key].id will be a `string`, assuming `key`
-                // is present, but `get` resolves to an incorrect type, so must
-                // be casted.
-                const tokenAddress: string = mappedPricingData?.[key]
-                  ?.id as any;
-                const relativePriceChange = historicalPrice
-                  ? // @ts-expect-error TypeScript disallows string arithmetic,
-                    // even though it works correctly.
-                    ((currentPrice - historicalPrice) / currentPrice) * 100
-                  : 0;
-                return {
-                  price: currentPrice,
-                  relativePriceChange,
-                  tokenAddress,
-                };
-              }
-            );
-            const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
-
-            saveAssetPricesFromUniswap(
-              tokenPricingInfo,
-              accountAddress,
-              network
-            );
-            dispatch({
-              payload: tokenPricingInfo,
-              type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
-            });
-          }
-        } catch (error) {
-          logger.log(
-            'Error fetching historical prices from the subgraph',
-            error
-          );
-        }
-      },
-    });
-    dispatch({
-      payload: {
-        uniswapPricesQuery: newQuery,
-        uniswapPricesSubscription: newSubscription,
-      },
-      type: DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION,
-    });
-  }
-};
-
-/**
- * Fetches a single asset's 24-hour price data from Uniswap.
- *
- * @param address The asset address.
- * @param yesterday The numerical representation of yesterday's date.
- * @returns The loaded price data, or null on failure.
- */
-const get24HourPrice = async (
-  address: string,
-  yesterday: number
-): Promise<UniswapPricesQueryData['tokens'][0] | null> => {
-  try {
-    const result = await uniswapClient.query({
-      fetchPolicy: 'no-cache',
-      query: UNISWAP_24HOUR_PRICE_QUERY(address, yesterday),
-    });
-    return result?.data?.tokens?.[0];
-  } catch (error) {
-    logger.log('Error getting missing 24hour price', error);
-    return null;
-  }
+  dispatch({
+    payload: parsedAssets,
+    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
+  });
 };
 
 const callbacksOnAssetReceived: {
@@ -1504,6 +1278,7 @@ export const dataAddNewTransaction = (
     saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
     if (parsedTransaction.from && parsedTransaction.nonce) {
       dispatch(
+        // @ts-ignore-next-line
         incrementNonce(
           parsedTransaction.from,
           parsedTransaction.nonce,
@@ -1598,12 +1373,30 @@ export const dataWatchPendingTransactions = (
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
           if (!nonceAlreadyIncluded) {
-            appEvents.emit('transactionConfirmed', txObj);
+            appEvents.emit('transactionConfirmed', {
+              ...txObj,
+              internalType: tx.type,
+            });
           }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          // @ts-expect-error `txObj` is not typed as having a `status` field.
-          if (txObj && !isZero(txObj.status)) {
+          let receipt;
+          try {
+            if (txObj) {
+              receipt = await txObj.wait();
+            }
+          } catch (e: any) {
+            // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
+            if (e.transaction) {
+              // if a transaction field exists, it was confirmed but failed
+              updatedPending.status = TransactionStatus.failed;
+            } else {
+              // cancelled or replaced
+              updatedPending.status = TransactionStatus.cancelled;
+            }
+          }
+          const status = receipt?.status || 0;
+          if (!isZero(status)) {
             const isSelf = tx?.from!.toLowerCase() === tx?.to!.toLowerCase();
             const newStatus = getTransactionLabel({
               direction: isSelf
@@ -1631,6 +1424,34 @@ export const dataWatchPendingTransactions = (
           updatedPending.title = title;
           updatedPending.pending = false;
           updatedPending.minedAt = minedAt;
+        } else {
+          if (tx.flashbots) {
+            const fbStatus = await fetch(
+              `https://protect.flashbots.net/tx/${txHash}`
+            );
+            const fbResponse = await fbStatus.json();
+            logger.debug('Flashbots response', fbResponse);
+            // Make sure it wasn't dropped after 25 blocks or never made it
+            if (
+              fbResponse.status === 'FAILED' ||
+              fbResponse.status === 'CANCELLED'
+            ) {
+              txStatusesDidChange = true;
+              updatedPending.status = TransactionStatus.dropped;
+              const title = getTitle({
+                protocol: tx.protocol,
+                status: updatedPending.status,
+                type: tx.type,
+              });
+              updatedPending.title = title;
+              updatedPending.pending = false;
+              const minedAt = Math.floor(Date.now() / 1000);
+              updatedPending.minedAt = minedAt;
+              // decrement the nonce since it was dropped
+              // @ts-ignore-next-line
+              dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
+            }
+          }
         }
       } catch (error) {
         logger.log('Error watching pending txn', error);
@@ -1814,7 +1635,6 @@ export const updateRefetchSavings = (fetch: boolean) => (
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: DataState = {
   accountAssetsData: {}, // for account-specific assets
-  assetPricesFromUniswap: {},
   ethUSDPrice: null,
   genericAssets: {},
   isLoadingAssets: true,
@@ -1823,18 +1643,10 @@ const INITIAL_STATE: DataState = {
   portfolios: {},
   shouldRefetchSavings: false,
   transactions: [],
-  uniswapPricesQuery: null,
-  uniswapPricesSubscription: null,
 };
 
 export default (state: DataState = INITIAL_STATE, action: DataAction) => {
   switch (action.type) {
-    case DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION:
-      return {
-        ...state,
-        uniswapPricesQuery: action.payload.uniswapPricesQuery,
-        uniswapPricesSubscription: action.payload.uniswapPricesSubscription,
-      };
     case DATA_UPDATE_REFETCH_SAVINGS:
       return { ...state, shouldRefetchSavings: action.payload };
     case DATA_UPDATE_GENERIC_ASSETS:
@@ -1869,11 +1681,6 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return {
         ...state,
         isLoadingAssets: true,
-      };
-    case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS:
-      return {
-        ...state,
-        assetPricesFromUniswap: action.payload,
       };
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED: {
       return {

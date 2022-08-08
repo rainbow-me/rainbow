@@ -1,4 +1,3 @@
-import { flatten } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
 import {
@@ -284,7 +283,7 @@ export const Box = forwardRef(function Box(
 
     // We flatten the styles array in case it's passed to Animated.View.
     // This won't be needed with v2.3+ of react-native-reanimated.
-    return Component === View ? stylesArray : flatten(stylesArray);
+    return Component === View ? stylesArray : stylesArray.flat();
   }, [styles, styleProp, Component]);
 
   return background ? (

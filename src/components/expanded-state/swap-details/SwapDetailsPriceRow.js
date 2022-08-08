@@ -2,43 +2,70 @@ import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
+import {
+  convertRawAmountToDecimalFormat,
+  divide,
+  handleSignificantDecimals,
+} from '@rainbow-me/helpers/utilities';
 import { useStepper, useSwapCurrencies } from '@rainbow-me/hooks';
 
 export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
-  const inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
-  let outputExecutionRate = '0';
-  if (!tradeDetails?.executionPrice?.equalTo('0')) {
-    outputExecutionRate = tradeDetails?.executionPrice
-      ?.invert()
-      ?.toSignificant();
-  }
-
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
+  const convertedSellAmount = convertRawAmountToDecimalFormat(
+    tradeDetails?.sellAmount,
+    inputCurrency.decimals
+  );
+
+  const convertedBuyAmount = convertRawAmountToDecimalFormat(
+    tradeDetails?.buyAmount,
+    outputCurrency.decimals
+  );
+
+  const outputExecutionRateRaw = divide(
+    convertedSellAmount,
+    convertedBuyAmount
+  );
+
+  const inputExecutionRateRaw = divide(convertedBuyAmount, convertedSellAmount);
+
+  const inputExecutionRate = handleSignificantDecimals(
+    inputExecutionRateRaw,
+    2
+  );
+
+  const outputExecutionRate = handleSignificantDecimals(
+    outputExecutionRateRaw,
+    2
+  );
 
   const steps = useMemo(
     () => [
-      `${inputExecutionRate} ${outputCurrency?.symbol} ${lang.t(
-        'expanded_state.swap.price_row_per_token'
-      )} ${inputCurrency?.symbol}`,
-      `${outputExecutionRate} ${inputCurrency?.symbol} ${lang.t(
-        'expanded_state.swap.price_row_per_token'
-      )} ${outputCurrency?.symbol}`,
+      lang.t('expanded_state.swap_details.output_exchange_rate', {
+        executionRate: outputExecutionRate,
+        inputSymbol: inputCurrency?.symbol,
+        outputSymbol: outputCurrency?.symbol,
+      }),
+      lang.t('expanded_state.swap_details.input_exchange_rate', {
+        executionRate: inputExecutionRate,
+        inputSymbol: inputCurrency?.symbol,
+        outputSymbol: outputCurrency?.symbol,
+      }),
     ],
     [inputCurrency, inputExecutionRate, outputCurrency, outputExecutionRate]
   );
 
   const [step, nextStep] = useStepper(steps.length);
-  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation {...props} onPress={nextStep} scaleTo={1.06}>
-      <SwapDetailsRow label={lang.t('modal.helper_rate')}>
+      <SwapDetailsRow
+        label={lang.t('expanded_state.swap_details.exchange_rate')}
+      >
         <SwapDetailsValue letterSpacing="roundedTight">
           {steps[step]}
         </SwapDetailsValue>
-        <SwapDetailsValue color={colors.alpha(colors.blueGreyDark, 0.5)}>
-          {` 􀅌`}
-        </SwapDetailsValue>
+        <SwapDetailsValue>{` 􀅌`}</SwapDetailsValue>
       </SwapDetailsRow>
     </ButtonPressAnimation>
   );

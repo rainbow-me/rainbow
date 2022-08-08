@@ -1,4 +1,3 @@
-import { castArray } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, View } from 'react-native';
@@ -30,7 +29,10 @@ const FloatingEmojis = ({
   wiggleFactor,
   ...props
 }) => {
-  const emojisArray = useMemo(() => castArray(emojis), [emojis]);
+  const emojisArray = useMemo(
+    () => (Array.isArray(emojis) ? emojis : [emojis]),
+    [emojis]
+  );
   const [floatingEmojis, setEmojis] = useState(EMPTY_ARRAY);
   const [startTimeout, stopTimeout] = useTimeout();
   const clearEmojis = useCallback(() => setEmojis(EMPTY_ARRAY), []);

@@ -8,6 +8,7 @@ type Props = {
   total?: number;
   image?: string;
   theme: ThemeContextProps;
+  testID?: string;
 };
 
 export default React.memo(function WrappedTokenFamilyHeader({
@@ -15,6 +16,7 @@ export default React.memo(function WrappedTokenFamilyHeader({
   total,
   image,
   theme,
+  testID,
 }: Props) {
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
@@ -31,6 +33,7 @@ export default React.memo(function WrappedTokenFamilyHeader({
       familyImage={image}
       isOpen={isFamilyOpen}
       onPress={handleToggle}
+      testID={testID}
       theme={theme}
       title={name}
     />
