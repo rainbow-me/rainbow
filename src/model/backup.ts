@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react-native';
-import { endsWith } from 'lodash';
 import {
   Options,
   requestSharedWebCredentials,
@@ -204,7 +203,7 @@ async function restoreSpecificBackupIntoKeychain(
   try {
     // Re-import all the seeds (and / or pkeys) one by one
     for (const key of Object.keys(backedUpData)) {
-      if (endsWith(key, seedPhraseKey)) {
+      if (key.endsWith(seedPhraseKey)) {
         const valueStr = backedUpData[key];
         const { seedphrase } = JSON.parse(valueStr);
         await createWallet(seedphrase, null, null, true);
@@ -229,7 +228,7 @@ async function restoreCurrentBackupIntoKeychain(
       Object.keys(backedUpData).map(async key => {
         const value = backedUpData[key];
         let accessControl: Options = keychain.publicAccessControlOptions;
-        if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
+        if (key.endsWith(seedPhraseKey) || key.endsWith(privateKeyKey)) {
           accessControl = privateAccessControlOptions;
         }
         if (typeof value === 'string') {

@@ -1,5 +1,4 @@
 import produce from 'immer';
-import { isArray, without } from 'lodash';
 import uniq from 'lodash/uniq';
 import { InteractionManager } from 'react-native';
 import { Dispatch } from 'redux';
@@ -11,6 +10,7 @@ import {
   saveSelectedUserList,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
+import { excludeSpecifiedStrings } from '@rainbow-me/helpers/utilities';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import { AppGetState, AppState } from '@rainbow-me/redux/store';
 import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';
@@ -170,7 +170,7 @@ export const userListsClearList = (listId: string) => (
 };
 
 export const userListsUpdateList = (
-  assetAddress: string,
+  assetAddress: string | string[],
   listId: string,
   add = true
 ) => (
@@ -197,9 +197,8 @@ export const userListsUpdateList = (
     if (listIndex !== null) {
       const updatedListTokens = add
         ? uniq(allNewLists[listIndex].tokens.concat(assetAddress))
-        : isArray(assetAddress)
-        ? without(allNewLists[listIndex].tokens, ...assetAddress)
-        : without(allNewLists[listIndex].tokens, assetAddress);
+        : excludeSpecifiedStrings(allNewLists[listIndex].tokens, assetAddress);
+
       if (add) {
         dispatch(emitAssetRequest(assetAddress));
       }

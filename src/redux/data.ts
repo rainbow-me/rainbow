@@ -1,15 +1,6 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import {
-  find,
-  isEmpty,
-  isNil,
-  keys,
-  mapValues,
-  partition,
-  toUpper,
-  uniqBy,
-} from 'lodash';
+import { find, isEmpty, isNil, keys, mapValues, toUpper, uniqBy } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -73,7 +64,7 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, pickBy } from '@rainbow-me/utilities';
+import { delay, isZero, partition, pickBy } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   isLowerCaseMatch,

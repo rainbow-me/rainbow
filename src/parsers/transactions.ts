@@ -1,14 +1,13 @@
 import {
   compact,
   isEmpty,
-  orderBy,
-  partition,
   reverse,
   slice,
   toUpper,
   uniqBy,
   upperFirst,
 } from 'lodash';
+import orderBy from 'lodash/orderBy';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -35,6 +34,7 @@ import {
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
+  partition,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 

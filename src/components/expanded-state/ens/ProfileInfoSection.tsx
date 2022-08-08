@@ -1,10 +1,10 @@
-import { partition } from 'lodash';
 import React, { useMemo } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@rainbow-me/design-system';
 import { Records } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { partition } from '@rainbow-me/helpers/utilities';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];
@@ -48,10 +48,10 @@ export default function ProfileInfoSection({
   );
 
   const [topRecords, otherRecords] = useMemo(() => {
-    const [topRecords, otherRecords] = partition(
-      recordsArray,
-      ([key]: [ENS_RECORDS]) => topRecordKeys.includes(key)
-    );
+    const [topRecords, otherRecords] = partition(recordsArray, ([key]) => {
+      return topRecordKeys.includes(key as ENS_RECORDS);
+    });
+
     const orderedTopRecords = topRecordKeys
       .map(key => topRecords.find(([k]: any) => k === key))
       .filter(Boolean) as [ENS_RECORDS, string][];
