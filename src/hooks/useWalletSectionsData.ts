@@ -5,6 +5,7 @@ import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
+import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
 import { AppState } from '@/redux/store';
@@ -14,18 +15,15 @@ import {
 } from '@rainbow-me/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
-interface Props {
-  type?: string;
-  withVideos?: boolean;
-}
 export default function useWalletSectionsData({
+  // @ts-expect-error
   type,
-  withVideos = true,
-}: Props = {}) {
+} = {}) {
   const sortedAccountData = useSortedAccountAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
   const { language, network, nativeCurrency } = useAccountSettings();
+  const sendableUniqueTokens = useSendableUniqueTokens();
   const allUniqueTokens = useSelector(
     (state: AppState) => state.uniqueTokens.uniqueTokens
   );
@@ -43,13 +41,6 @@ export default function useWalletSectionsData({
 
   const { isCoinListEdited } = useCoinListEdited();
 
-  const isImage = (uniqueToken: any) => !uniqueToken.animation_url;
-
-  const uniqueImageTokens = useMemo(
-    () => allUniqueTokens.filter((uniqueToken: any) => isImage(uniqueToken)),
-    [allUniqueTokens]
-  );
-
   const walletSections = useMemo(() => {
     const accountInfo = {
       hiddenCoins,
@@ -59,8 +50,8 @@ export default function useWalletSectionsData({
       network,
       pinnedCoins,
       savings,
-      uniqueTokens: withVideos ? allUniqueTokens : uniqueImageTokens,
       ...sortedAccountData,
+      ...sendableUniqueTokens,
       ...uniswap,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
@@ -95,9 +86,8 @@ export default function useWalletSectionsData({
     showcaseTokens,
     sortedAccountData,
     type,
-    uniqueImageTokens,
+    sendableUniqueTokens,
     uniswap,
-    withVideos,
   ]);
   return walletSections;
 }

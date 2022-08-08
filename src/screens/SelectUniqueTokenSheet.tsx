@@ -23,9 +23,9 @@ export default function SelectUniqueTokenSheet() {
     },
     [goBack, params]
   );
-  const { briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({
-    withVideos: false,
-  });
+  const {
+    briefSectionsData: walletBriefSectionsData,
+  } = useWalletSectionsData();
 
   return (
     <Box background="body" height="full" paddingTop="34px">
