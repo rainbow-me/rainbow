@@ -26,6 +26,7 @@ import {
   ENSConfirmRegisterSheetHeight,
   ENSConfirmUpdateSheetHeight,
 } from './ENSConfirmRegisterSheet';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import {
   AccentColorProvider,
   Bleed,
@@ -206,8 +207,13 @@ export default function ENSAssignRecordsSheet() {
           <Inset horizontal="19px">
             <Stack space="30px">
               <Stack alignHorizontal="center" space="15px">
-                <Heading align="center" size="26px" weight="heavy">
-                  {name}
+                <Heading
+                  align="center"
+                  numberOfLines={1}
+                  size="26px"
+                  weight="heavy"
+                >
+                  {abbreviateEnsForDisplay(name, 15)}
                 </Heading>
                 <Text align="center" color="accent" size="16px" weight="heavy">
                   {displayTitleLabel

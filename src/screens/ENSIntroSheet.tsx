@@ -10,6 +10,7 @@ import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarqu
 import { SheetActionButton } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import {
   Bleed,
   Box,
@@ -248,7 +249,10 @@ export default function ENSIntroSheet() {
                                   ? 'profiles.intro.edit_name'
                                   : 'profiles.intro.use_name',
                                 {
-                                  name: uniqueDomain?.name,
+                                  name: abbreviateEnsForDisplay(
+                                    uniqueDomain?.name,
+                                    15
+                                  ),
                                 }
                               )}
                               lightShadows

@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import {
   Box,
   Column,
@@ -48,7 +49,7 @@ const PendingRegistration = ({
         <Column>
           <Box>
             <Text color="primary" numberOfLines={1} size="16px" weight="heavy">
-              {registration.name}
+              {abbreviateEnsForDisplay(registration.name, 15)}
             </Text>
           </Box>
         </Column>
