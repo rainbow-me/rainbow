@@ -150,6 +150,7 @@ export default function ENSIntroSheet() {
       background="body"
       paddingTop={{ custom: topPadding }}
       style={{ height: contentHeight }}
+      {...(android && { paddingBottom: { custom: 20 } })}
       testID="ens-intro-sheet"
     >
       <Inset top={isSmallPhone ? '15px' : '36px'}>
