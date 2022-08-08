@@ -177,7 +177,6 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
       backupPassword,
       encryptedData
     );
-
     if (backedUpDataStringified) {
       const backedUpData = JSON.parse(backedUpDataStringified);
       return backedUpData;

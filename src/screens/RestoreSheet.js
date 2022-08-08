@@ -65,7 +65,6 @@ export default function RestoreSheet() {
           await RNCloudFs.logout();
         }
       }
-      // }
     } else {
       proceed = true;
     }
