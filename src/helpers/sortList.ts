@@ -1,4 +1,5 @@
-import { get, isFunction, isString, toLower } from 'lodash';
+import { get, isFunction, toLower } from 'lodash';
+import { isString } from './utilities';
 
 export const sortList = (
   array: any[] = [],

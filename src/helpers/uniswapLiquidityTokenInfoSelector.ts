@@ -1,5 +1,4 @@
 import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
-import isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -14,6 +13,7 @@ import {
   divide,
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
+  isEmpty,
   multiply,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';

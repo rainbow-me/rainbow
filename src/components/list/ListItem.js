@@ -1,9 +1,9 @@
-import { isString } from 'lodash';
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
+import { isString } from '@rainbow-me/helpers/utilities';
 import { padding, position } from '@rainbow-me/styles';
 
 const ListItemHeight = 56;

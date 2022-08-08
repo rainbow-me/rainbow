@@ -19,7 +19,7 @@ import {
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
 import lang from 'i18n-js';
-import { isEmpty, isString, replace } from 'lodash';
+import replace from 'lodash/replace';
 import { InteractionManager, Linking, NativeModules } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -51,6 +51,8 @@ import {
   delay,
   fromWei,
   greaterThan,
+  isEmpty,
+  isString,
   isZero,
   subtract,
 } from '@rainbow-me/helpers/utilities';

@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, mapValues, uniqBy } from 'lodash';
+import { keyBy, mapValues, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import {
   // @ts-ignore
@@ -37,7 +37,7 @@ import {
   ETH_COINGECKO_ID,
   migratedTokens,
 } from '@rainbow-me/references';
-import { delay } from '@rainbow-me/utilities';
+import { delay, isEmpty } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

@@ -1,6 +1,5 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, {
@@ -50,6 +49,7 @@ import {
   TextRecordField,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {
   useDimensions,
   useENSModifiedRegistration,

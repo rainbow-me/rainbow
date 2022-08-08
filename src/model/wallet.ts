@@ -17,7 +17,7 @@ import {
   default as LibWallet,
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
-import { findKey, isEmpty } from 'lodash';
+import findKey from 'lodash/findKey';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
@@ -53,6 +53,7 @@ import {
 } from '@rainbow-me/handlers/web3';
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';

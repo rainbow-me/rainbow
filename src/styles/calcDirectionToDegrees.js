@@ -1,4 +1,4 @@
-import { isString } from 'lodash';
+import { isString } from '@rainbow-me/helpers/utilities';
 
 export default (directionValue = 'right') => {
   const direction = isString(directionValue)
