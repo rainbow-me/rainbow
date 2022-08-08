@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
@@ -23,6 +23,7 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';

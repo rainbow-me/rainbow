@@ -11,7 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import Divider from '../components/Divider';
@@ -26,6 +26,7 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   removeRegistrationByName,
   saveCommitRegistrationParameters,

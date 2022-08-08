@@ -2,7 +2,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
@@ -15,6 +15,7 @@ import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
@@ -31,7 +32,6 @@ import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import { useRemoveFirst } from '@rainbow-me/navigation/useRemoveFirst';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
@@ -242,7 +242,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const dispatch = useDispatch();
-  const removeFirst = useRemoveFirst();
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
@@ -297,7 +296,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                     InteractionManager.runAfterInteractions(() =>
                       setIsWalletLoading(null)
                     );
-                    removeFirst();
                   }
 
                   setTimeout(() => {
@@ -372,7 +370,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     dispatch,
     showImportModal,
     profilesEnabled,
-    removeFirst,
     setIsWalletLoading,
   ]);
 
