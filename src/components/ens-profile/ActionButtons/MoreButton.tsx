@@ -117,7 +117,7 @@ export default function MoreButton({
       if (actionKey === ACTIONS.OPEN_WALLET) {
         if (!isSelectedWallet) {
           setIsSearchModeEnabled?.(false);
-          switchToWalletWithAddress(address);
+          switchToWalletWithAddress(address!);
         }
         navigate(Routes.WALLET_SCREEN);
       }
