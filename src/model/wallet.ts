@@ -629,7 +629,7 @@ export const createWallet = async (
       pkey = addHexPrefix(
         (walletResult as LibWallet).getPrivateKey().toString('hex')
       );
-    } else {
+    } else if (isHardwareWallet) {
       // Format is ${bluetooth device id}/${index}
       pkey = `${seed}/0`;
     }
@@ -986,6 +986,7 @@ export const createWallet = async (
     return null;
   } catch (error) {
     logger.sentry('Error in createWallet');
+    logger.log('Error: ', error);
     captureException(error);
     return null;
   }
