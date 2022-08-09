@@ -86,6 +86,21 @@ export function stringifyENSNFTRecord({
   return `eip155:1/${standard.toLowerCase()}:${contractAddress}/${tokenId}`;
 }
 
+const SPECIAL_CHARACTERS = [`’`];
+const validateSpecialCharacters = (domainName: string) => {
+  try {
+    uts46.toUnicode(domainName, { useStd3ASCII: true });
+  } catch (err) {
+    return false;
+  }
+  return SPECIAL_CHARACTERS.some(element => {
+    if (domainName.includes(element)) {
+      return false;
+    }
+    return true;
+  });
+};
+
 /**
  * @description Checks if an ENS name is valid
  */
@@ -117,7 +132,7 @@ export function validateENS(
     };
   }
 
-  if (!includeSubdomains && subDomainName) {
+  if (!includeSubdomains && (subDomainName || subDomainName === '')) {
     return {
       code: ERROR_CODES.SUBDOMAINS_NOT_SUPPORTED,
       hint: 'Subdomains are not supported',
@@ -143,10 +158,19 @@ export function validateENS(
     };
   }
 
+  const validDomainName = validateSpecialCharacters(domainName);
+
+  if (!validDomainName) {
+    return {
+      code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
+      hint: 'Your subdomain cannot include special characters',
+      valid: false,
+    };
+  }
+
   if (subDomainName) {
-    try {
-      uts46.toUnicode(subDomainName, { useStd3ASCII: true });
-    } catch (err) {
+    const validSubDomainName = validateSpecialCharacters(subDomainName);
+    if (!validSubDomainName) {
       return {
         code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
         hint: 'Your subdomain cannot include special characters',
