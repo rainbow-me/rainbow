@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types';
 import React, { Fragment, useMemo } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { PressableProps, TouchableWithoutFeedback } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils, magicMemo } from '../../utils';
+import { deviceUtils, getUniqueTokenType, magicMemo } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -11,6 +10,8 @@ import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { UniqueAsset } from '@rainbow-me/entities';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { padding } from '@rainbow-me/styles';
 
 const dividerHeight = 22;
@@ -27,7 +28,13 @@ const selectedStyles = {
     : padding.object(15)),
 };
 
-const BottomRow = ({ selected, subtitle }) => {
+const BottomRow = ({
+  selected,
+  subtitle,
+}: {
+  selected: boolean;
+  subtitle: string;
+}) => {
   const { colors } = useTheme();
 
   return (
@@ -46,7 +53,15 @@ const BottomRow = ({ selected, subtitle }) => {
   );
 };
 
-const TopRow = ({ id, name, selected }) => {
+const TopRow = ({
+  id,
+  name,
+  selected,
+}: {
+  id: number;
+  name: string;
+  selected: boolean;
+}) => {
   const { colors } = useTheme();
 
   return (
@@ -61,22 +76,25 @@ const TopRow = ({ id, name, selected }) => {
 };
 
 const UniqueTokenCoinIcon = magicMemo(
-  ({
-    collection: { name },
-    background,
-    image_thumbnail_url,
-    selected,
-    shouldPrioritizeImageLoading,
-    ...props
-  }) => {
+  asset => {
+    const {
+      collection: { name },
+      background,
+      image_thumbnail_url,
+      image_url,
+      selected,
+      shouldPrioritizeImageLoading,
+      ...props
+    } = asset;
     const { colors } = useTheme();
+    const imageUrl = svgToPngIfNeeded(image_thumbnail_url || image_url, true);
     return (
       <Centered>
         <RequestVendorLogoIcon
           backgroundColor={background || colors.lightestGrey}
           borderRadius={10}
           dappName={name}
-          imageUrl={image_thumbnail_url}
+          imageUrl={imageUrl}
           noShadow={selected}
           shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
           {...props}
@@ -87,18 +105,6 @@ const UniqueTokenCoinIcon = magicMemo(
   ['background', 'image_thumbnail_url']
 );
 
-UniqueTokenCoinIcon.propTypes = {
-  asset_contract: PropTypes.shape({ name: PropTypes.string }),
-  background: PropTypes.string,
-  image_thumbnail_url: PropTypes.string,
-  shouldPrioritizeImageLoading: PropTypes.bool,
-};
-
-const arePropsEqual = (props, nextProps) =>
-  buildAssetUniqueIdentifier(props.item) !==
-  buildAssetUniqueIdentifier(nextProps.item);
-
-// eslint-disable-next-line react/display-name
 const CollectiblesSendRow = React.memo(
   ({
     disablePressAnimation,
@@ -108,15 +114,26 @@ const CollectiblesSendRow = React.memo(
     selected,
     testID,
     ...props
+  }: {
+    disablePressAnimation?: boolean;
+    item: UniqueAsset;
+    isFirstRow?: boolean;
+    onPress: PressableProps['onPress'];
+    selected?: boolean;
+    testID: string;
   }) => {
     const { colors } = useTheme();
+
+    const uniqueTokenType = getUniqueTokenType(item);
+    const isENS = uniqueTokenType === 'ENS';
+
     const subtitle = useMemo(
       () =>
-        item.name
+        item.name && !isENS
           ? `${item.collection.name} #${item.id}`
           : item.collection.name,
 
-      [item.collection.name, item.id, item.name]
+      [isENS, item.collection.name, item.id, item.name]
     );
 
     const Wrapper = disablePressAnimation
@@ -127,10 +144,12 @@ const CollectiblesSendRow = React.memo(
       <Fragment>
         {isFirstRow && (
           <Centered height={dividerHeight}>
+            {/* @ts-expect-error JavaScript component */}
             <Divider color={colors.rowDividerLight} />
           </Centered>
         )}
         <Wrapper onPress={onPress} scaleTo={0.96}>
+          {/* @ts-expect-error JavaScript component */}
           <CoinRow
             {...props}
             {...item}
@@ -146,18 +165,15 @@ const CollectiblesSendRow = React.memo(
       </Fragment>
     );
   },
-  arePropsEqual
+  (props, nextProps) =>
+    buildAssetUniqueIdentifier(props.item) !==
+    buildAssetUniqueIdentifier(nextProps.item)
 );
 
-CollectiblesSendRow.propTypes = {
-  isFirstRow: PropTypes.bool,
-  item: PropTypes.object,
-  onPress: PropTypes.func,
-  selected: PropTypes.bool,
-  subtitle: PropTypes.string,
-};
-
+CollectiblesSendRow.displayName = 'CollectiblesSendRow';
+// @ts-expect-error
 CollectiblesSendRow.dividerHeight = dividerHeight;
+// @ts-expect-error
 CollectiblesSendRow.selectedHeight = selectedHeight;
 
 export default CollectiblesSendRow;

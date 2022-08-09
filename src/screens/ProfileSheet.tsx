@@ -18,11 +18,10 @@ import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
-  useENSProfile,
-  useENSProfileImages,
-  useENSResolveName,
+  useENSAddress,
+  useENSAvatar,
+  useENSFirstTransactionTimestamp,
   useExternalWalletSectionsData,
-  useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
@@ -45,25 +44,25 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const { isSuccess } = useENSProfile(ensName);
-  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
+  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress(
     ensName
   );
-  const avatarUrl = images?.avatarUrl;
+  const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
-  const { data: profileAddress } = useENSResolveName(ensName);
+  const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
 
-  // Prefetch first transaction timestamp
-  useFirstTransactionTimestamp({
-    ensName,
-  });
+  // Prefetch first transaction timestamp unless already fetched for intro marquee
+  const {
+    isSuccess: hasFirstTxTimestampFetched,
+  } = useENSFirstTransactionTimestamp(name, { enabled: !isPreview });
 
   // Prefetch asset list
   const {
     isSuccess: hasListFetched,
     briefSectionsData,
   } = useExternalWalletSectionsData({
-    address: profileAddress,
+    address: profileAddress || undefined,
+    infinite: true,
   });
 
   const colorIndex = useMemo(
@@ -72,7 +71,7 @@ export default function ProfileSheet() {
   );
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatarUrl || '') || ''
+    maybeSignUri(avatar?.imageUrl ?? '') ?? ''
   );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
@@ -82,14 +81,13 @@ export default function ProfileSheet() {
   const accentColor =
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
-    isImagesFetched && state !== 1 && typeof colorIndex === 'number'
+    isAvatarFetched && state !== 1 && typeof colorIndex === 'number'
       ? dominantColor ||
         colors.avatarBackgrounds[colorIndex] ||
         colors.appleBlue
       : colors.skeleton;
 
-  const enableZoomableImages =
-    !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
+  const enableZoomableImages = !isPreview;
 
   useEffect(() => {
     if (profileAddress && accountAddress) {
@@ -105,21 +103,22 @@ export default function ProfileSheet() {
     <AndroidWrapper>
       <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
         <AccentColorProvider color={accentColor}>
-          <Box background="body">
+          <Box background="body" testID="profile-sheet">
             <Box style={wrapperStyle}>
-              {!isSuccess || !hasListFetched ? (
+              {!isPreview &&
+              (!isAddressSuccess ||
+                !hasListFetched ||
+                !hasFirstTxTimestampFetched) ? (
                 <Stack space="19px">
-                  <ProfileSheetHeader isLoading isPreview={params.isPreview} />
+                  <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
-              ) : !params.isPreview ? (
+              ) : (
                 <RecyclerAssetList2
-                  externalAddress={profileAddress}
+                  externalAddress={profileAddress || ''}
                   type="ens-profile"
                   walletBriefSectionsData={briefSectionsData}
                 />
-              ) : (
-                <ProfileSheetHeader ensName={params?.ensName} isPreview />
               )}
             </Box>
           </Box>

@@ -9,6 +9,7 @@ import { useAccountProfile, useRequests } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 export default function ProfileHeaderButton() {
+  const { colors } = useTheme();
   const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
@@ -20,8 +21,6 @@ export default function ProfileHeaderButton() {
   const onLongPress = useCallback(() => navigate(Routes.CHANGE_WALLET_SHEET), [
     navigate,
   ]);
-
-  const { colors } = useTheme();
 
   return (
     <HeaderButton

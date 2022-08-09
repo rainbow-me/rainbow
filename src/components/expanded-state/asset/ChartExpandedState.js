@@ -468,6 +468,7 @@ export default function ChartExpandedState({ asset }) {
             forceShowAll={delayedMorePoolsVisible}
             hideIfEmpty
             initialPageAmount={3}
+            marginTop={24}
             token={asset?.address}
           />
         )}
