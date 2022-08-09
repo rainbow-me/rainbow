@@ -81,6 +81,7 @@ export default function useWebData() {
   const wipeWebData = useCallback(async () => {
     if (!webDataEnabled) return;
     await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
+    await setPreference(PreferenceActionType.wipe, 'hidden', accountAddress);
     await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
     dispatch(updateWebDataEnabled(false, accountAddress));
   }, [accountAddress, dispatch, webDataEnabled]);
@@ -134,6 +135,33 @@ export default function useWebData() {
     [accountAddress, initWebData, webDataEnabled]
   );
 
+  const updateWebHidden = useCallback(
+    async assetIds => {
+      if (!webDataEnabled) return;
+      const response = await getPreference('hidden', accountAddress);
+      // If the showcase is populated, just updated it
+      // @ts-expect-error
+      if (response?.ids?.length > 0) {
+        setPreference(
+          PreferenceActionType.update,
+          'hidden',
+          accountAddress,
+          assetIds
+        );
+      } else {
+        await setPreference(
+          PreferenceActionType.init,
+          'hidden',
+          accountAddress,
+          assetIds
+        );
+
+        logger.log('hidden initialized!');
+      }
+    },
+    [accountAddress, webDataEnabled]
+  );
+
   const initializeShowcaseIfNeeded = useCallback(async () => {
     try {
       // If local showcase is not empty
@@ -161,6 +189,7 @@ export default function useWebData() {
     getWebProfile,
     initializeShowcaseIfNeeded,
     initWebData,
+    updateWebHidden,
     updateWebProfile,
     updateWebShowcase,
     webDataEnabled,

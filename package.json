@@ -162,6 +162,7 @@
     "mnemonist": "0.38.1",
     "multiformats": "9.6.2",
     "nanoid": "3.2.0",
+    "p-queue": "7.2.0",
     "p-wait-for": "4.1.0",
     "pako": "2.0.4",
     "parse-domain": "4.1.0",
@@ -389,7 +390,7 @@
     "**/minimist": "1.2.6",
     "react-native/react-devtools-core": "4.24.0",
     "cross-fetch": "3.1.5",
-    "**/undici": "5.5.1"
+    "**/undici": "5.8.1"
   },
   "jest": {
     "preset": "react-native",

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -155,16 +156,27 @@ const TokenFamilyHeader = ({
             />
           )}
         </View>
-        <View
-          style={[sx.title, { paddingLeft: title === 'Showcase' ? 1 : 10 }]}
-        >
-          <Text numberOfLines={1} size="18px" weight="heavy">
+        <View style={[sx.title, { paddingLeft: 10 }]}>
+          <Text
+            color={
+              title === lang.t('button.hidden') ? 'secondary60' : 'primary'
+            }
+            numberOfLines={1}
+            size="18px"
+            weight="heavy"
+          >
             {title}
           </Text>
         </View>
         <View style={[sx.center, sx.amountContainer]}>
           <Animated.View style={amountAnimatedStyles}>
-            <Text align="right" size="18px">
+            <Text
+              align="right"
+              color={
+                title === lang.t('button.hidden') ? 'secondary60' : 'primary'
+              }
+              size="18px"
+            >
               {childrenAmount}
             </Text>
           </Animated.View>
@@ -174,7 +186,11 @@ const TokenFamilyHeader = ({
               // @ts-expect-error static image source
               source={CaretImageSource}
               style={sx.chevron}
-              tintColor={colors.dark}
+              tintColor={
+                title === lang.t('button.hidden')
+                  ? colors.blueGreyDark60
+                  : colors.dark
+              }
             />
           </Animated.View>
         </View>
