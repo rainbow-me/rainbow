@@ -57,7 +57,7 @@ export default function useScanner(enabled: any, onSuccess: any) {
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
 
-      // And then navigate to Showcase sheet
+      // And then navigate to Profile sheet
       InteractionManager.runAfterInteractions(() => {
         Navigation.handleAction(
           profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
@@ -85,17 +85,21 @@ export default function useScanner(enabled: any, onSuccess: any) {
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
 
-        // And then navigate to Showcase sheet
+        // And then navigate to Profile sheet
         InteractionManager.runAfterInteractions(() => {
-          Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-            address: addressOrENS,
-          });
+          Navigation.handleAction(
+            profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
+            {
+              address: addressOrENS,
+              fromRoute: 'QR Code',
+            }
+          );
 
           setTimeout(onSuccess, 500);
         });
       }
     },
-    [navigate, onSuccess]
+    [navigate, onSuccess, profilesEnabled]
   );
 
   const handleScanWalletConnect = useCallback(
