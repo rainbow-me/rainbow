@@ -987,6 +987,7 @@
         "telegram": "Telegram",
         "twitter": "Twitter",
         "upload_photo": "Upload a Photo",
+        "uploading": "Uploading",
         "username_placeholder": "username",
         "wallet_placeholder": "Add a %{coin} address",
         "website": "Website",
