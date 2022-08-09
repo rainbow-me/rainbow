@@ -57,7 +57,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   type,
 }: {
   briefSectionsData: BaseCellType[];
-  disablePullDownToRefresh?: boolean;
+  disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   type?: AssetListType;
 }) {
@@ -166,7 +166,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       layoutProvider={layoutProvider}
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
-      refreshControl={disablePullDownToRefresh ? null : <RefreshControl />}
+      refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
     />
