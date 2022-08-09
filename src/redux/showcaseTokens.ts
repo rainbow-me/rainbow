@@ -93,23 +93,19 @@ export const showcaseTokensLoadState = () => async (
   getState: AppGetState
 ) => {
   try {
-    const account = getState().wallets.selected!;
-    const isReadOnlyWallet = account.type === WalletTypes.readOnly;
-    const visibleAddress = account.addresses.find(a => a.visible)!;
-    const { network } = getState().settings;
+    const account = getState().wallets?.selected;
+    const isReadOnlyWallet = account?.type === WalletTypes.readOnly;
+    const { accountAddress, network } = getState().settings;
 
-    let showcaseTokens = await getShowcaseTokens(
-      visibleAddress.address,
-      network
-    );
+    let showcaseTokens = await getShowcaseTokens(accountAddress, network);
 
     // if web data is enabled, fetch values from cloud
-    const pref = await getWebDataEnabled(visibleAddress.address, network);
+    const pref = await getWebDataEnabled(accountAddress, network);
 
     if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
       const showcaseTokensFromCloud = (await getPreference(
         'showcase',
-        visibleAddress.address
+        accountAddress
       )) as any | undefined;
       if (
         showcaseTokensFromCloud?.showcase?.ids &&
