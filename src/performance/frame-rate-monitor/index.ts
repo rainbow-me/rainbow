@@ -3,18 +3,21 @@ import {
   AppStateStatus,
   NativeEventSubscription,
 } from 'react-native';
+import { MMKV } from 'react-native-mmkv';
 import { FrameRateMonitorModule } from './FrameRateMonitorModule';
 
 type FrameRateMonitorType = {
   startMonitoring: () => void;
   stopMonitoring: () => void;
-  registerAppStateChangeListener: () => void;
-  removeAppStateChangeListener: () => void;
+  registerListeners: () => void;
+  removeListeners: () => void;
+  flushStats: () => void;
 };
 
+const kv = new MMKV({ id: 'frameratemonitor' });
 let isMonitoring = false;
 let previousAppState: AppStateStatus | undefined;
-let appStateChangeSubscription: NativeEventSubscription | undefined;
+let appStateChangeSubscription: NativeEventSubscription | null = null;
 
 function startMonitoring() {
   if (!isMonitoring) {
@@ -45,22 +48,29 @@ function onAppStateChange(state: AppStateStatus) {
   previousAppState = state;
 }
 
-function registerAppStateChangeListener() {
+function registerListeners() {
   appStateChangeSubscription = AppState.addEventListener(
     'change',
     onAppStateChange
   );
 }
 
-function removeAppStateChangeListener() {
+function removeListeners() {
   if (appStateChangeSubscription) {
     appStateChangeSubscription.remove();
+    appStateChangeSubscription = null;
   }
 }
 
+function flushStats() {
+  const keys = kv.getAllKeys();
+  global.console.log('MMKV KEYS FOR FRAMERATE: ', keys);
+}
+
 export const FrameRateMonitor: FrameRateMonitorType = {
-  registerAppStateChangeListener,
-  removeAppStateChangeListener,
+  flushStats,
+  registerListeners,
+  removeListeners,
   startMonitoring,
   stopMonitoring,
 };

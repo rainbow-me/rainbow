@@ -30,6 +30,7 @@ import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
 import com.microsoft.codepush.react.CodePush;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.tencent.mmkv.MMKV;
 
 class RainbowJSIModulePackage extends ReanimatedJSIModulePackage {
     @Override
@@ -100,6 +101,7 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     RNBranchModule.getAutoInstance(this);
+    MMKV.initialize(this);
   }
 
   /**

@@ -199,7 +199,8 @@ class App extends Component {
       PerformanceMetrics.loadRootAppComponent
     );
     analytics.track('React component tree finished initial mounting');
-    FrameRateMonitor.registerAppStateChangeListener();
+    FrameRateMonitor.registerListeners();
+    FrameRateMonitor.flushStats();
   }
 
   componentDidUpdate(prevProps) {
@@ -222,7 +223,7 @@ class App extends Component {
     this.foregroundNotificationListener?.();
     this.backgroundNotificationListener?.();
     this.branchListener?.();
-    FrameRateMonitor.removeAppStateChangeListener();
+    FrameRateMonitor.removeListeners();
   }
 
   identifyFlow = async () => {

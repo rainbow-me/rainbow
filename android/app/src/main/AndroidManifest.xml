@@ -30,6 +30,7 @@
         android:resource="@color/primary_dark"
         tools:replace="android:resource"
       />
+      <service android:name=".NativeModules.RNFrameRateMonitor.RNFrameRateMonitorKillListenerService" />
       <activity
         android:name=".MainActivity"
         android:icon="@mipmap/og"

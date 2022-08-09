@@ -2,6 +2,7 @@ package me.rainbow.NativeModules.RNFrameRateMonitor;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.google.gson.Gson;
 
 public class RNFrameRateMonitorFrameDropStats {
   private long sessionDuration;
@@ -34,5 +35,10 @@ public class RNFrameRateMonitorFrameDropStats {
     map.putDouble("framesDrawnRate", framesDrawnRate);
 
     return map;
+  }
+
+  public String toJSON() {
+    Gson gson = new Gson();
+    return gson.toJson(this);
   }
 }
