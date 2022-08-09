@@ -322,7 +322,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   if (currentNetwork === Network.mainnet) {
     const poaps = (await fetchPoaps(accountAddress)) ?? [];
     if (poaps.length > 0) {
-      analytics.identify(undefined, { poaps: uniqueTokens.length });
+      analytics.identify(undefined, { poaps: poaps.length });
       uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
       uniqueTokens = uniqueTokens.concat(poaps);
     }
