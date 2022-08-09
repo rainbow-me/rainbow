@@ -44,6 +44,11 @@ export const blockClient = new ApolloClient({
 export const ensClient = new ApolloClient({
   ...defaultOptions,
   cache: new InMemoryCache(),
+  defaultOptions: {
+    query: {
+      fetchPolicy: 'no-cache',
+    },
+  },
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens',
   }),

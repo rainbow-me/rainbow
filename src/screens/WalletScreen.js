@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,9 +15,11 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
+import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -29,7 +32,6 @@ import {
   usePortfolios,
   useTrackENSProfile,
   useUserAccounts,
-  useWalletENSAvatar,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
@@ -39,6 +41,7 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
+import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -58,7 +61,12 @@ const WalletPage = styled(Page)({
 
 export default function WalletScreen() {
   const { params } = useRoute();
-  const { setParams } = useNavigation();
+  const {
+    setParams,
+    dangerouslyGetState,
+    dangerouslyGetParent,
+  } = useNavigation();
+  const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const [fetchedCharts, setFetchedCharts] = useState(false);
@@ -73,7 +81,7 @@ export default function WalletScreen() {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
+
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
@@ -85,6 +93,20 @@ export default function WalletScreen() {
     isEmpty: isSectionsEmpty,
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
+
+  useEffect(() => {
+    // This is the fix for Android wallet creation problem.
+    // We need to remove the welcome screen from the stack.
+    if (ios) {
+      return;
+    }
+    const isWelcomeScreen =
+      dangerouslyGetParent().dangerouslyGetState().routes[0].name ===
+      Routes.WELCOME_SCREEN;
+    if (isWelcomeScreen) {
+      removeFirst();
+    }
+  }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
 
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 
@@ -144,12 +166,6 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    if (profilesEnabled) {
-      trackENSProfile();
-    }
-  }, [profilesEnabled, trackENSProfile]);
-
-  useEffect(() => {
     if (
       !isEmpty(portfolios) &&
       portfoliosFetched &&
@@ -188,9 +204,17 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    if (walletReady) updateWalletENSAvatars();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletReady]);
+    if (walletReady && profilesEnabled) {
+      InteractionManager.runAfterInteractions(() => {
+        // We are not prefetching intro profiles data on Android
+        // as the RPC call queue is considerably slower.
+        if (ios) {
+          prefetchENSIntroData();
+        }
+        trackENSProfile();
+      });
+    }
+  }, [profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)

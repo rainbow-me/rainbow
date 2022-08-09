@@ -17,7 +17,7 @@ describe('Hidden tokens flow', () => {
   it('NFT is hideable', async () => {
     // open ENS and tap on our ENS NFT
     await Helpers.swipe('wallet-screen', 'up', 'slow');
-    await Helpers.tapByText('ENS');
+    await Helpers.tap('token-family-header-ENS');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');

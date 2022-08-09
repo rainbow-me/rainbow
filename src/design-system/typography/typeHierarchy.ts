@@ -12,7 +12,7 @@ export const typeHierarchy = {
     '20px': {
       fontSize: 20,
       letterSpacing: 0.6,
-      lineHeight: 24,
+      lineHeight: 22,
       marginCorrection: {
         android: 0,
         ios: -0.5,
@@ -58,6 +58,15 @@ export const typeHierarchy = {
       fontSize: 34,
       letterSpacing: 0.6,
       lineHeight: 41,
+      marginCorrection: {
+        android: 0,
+        ios: 0.5,
+      },
+    },
+    '44px': {
+      fontSize: 44,
+      letterSpacing: 0.4,
+      lineHeight: 53,
       marginCorrection: {
         android: 0,
         ios: 0.5,
@@ -136,6 +145,51 @@ export const typeHierarchy = {
       marginCorrection: {
         android: -0.3,
         ios: -0.3,
+      },
+    },
+    'icon 12px': {
+      fontSize: 12,
+      letterSpacing: 0,
+      lineHeight: 14,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
+    'icon 14px': {
+      fontSize: 14,
+      letterSpacing: 0,
+      lineHeight: 19,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
+    'icon 16px': {
+      fontSize: 16,
+      letterSpacing: 0,
+      lineHeight: 22,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
+    'icon 19px': {
+      fontSize: 19,
+      letterSpacing: 0,
+      lineHeight: 24,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
+    'icon 20px': {
+      fontSize: 20,
+      letterSpacing: 0,
+      lineHeight: 24,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
       },
     },
   },
