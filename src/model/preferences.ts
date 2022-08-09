@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress } from '@rainbow-me/entities';
 import {
@@ -63,6 +64,10 @@ export async function setPreference(
     });
     return responseData?.success;
   } catch (e) {
+    Sentry.captureMessage(
+      `Preferences API failed to set preference`,
+      Sentry.Severity.Error
+    );
     logger.log('☁️  error setting pref', e);
     return false;
   }
@@ -83,6 +88,10 @@ export async function getPreference(
     });
     return responseData?.data || null;
   } catch (e) {
+    Sentry.captureMessage(
+      `Preferences API failed to get preference`,
+      Sentry.Severity.Error
+    );
     logger.log('☁️  error getting pref', e);
     return null;
   }
