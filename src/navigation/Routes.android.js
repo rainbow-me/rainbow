@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
+import { StatusBar } from 'react-native';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -64,6 +65,7 @@ import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import { deviceUtils } from '@/utils';
 import useExperimentalFlag, {
   NOTIFICATIONS,
   PROFILES,
@@ -357,7 +359,10 @@ function BSNavigator() {
       <BSStack.Screen
         component={SettingsSheet}
         name={Routes.SETTINGS_SHEET}
-        options={{ ...bottomSheetPreset, height: '97%' }}
+        options={{
+          ...bottomSheetPreset,
+          height: deviceUtils.dimensions.height - StatusBar.currentHeight,
+        }}
       />
       {notificationsEnabled && (
         <BSStack.Screen

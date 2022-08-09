@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainBadge, CoinIcon } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins, Row } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
@@ -658,7 +658,7 @@ export const explainers = (params, colors) => ({
 
 const ExplainSheet = () => {
   const { height: deviceHeight } = useDimensions();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { params } = useRoute();
   const type = params.type;
 
