@@ -35,6 +35,8 @@ export default class ERC721 {
       return null;
     }
 
+    let image;
+
     const { uri: resolvedURI, isOnChain, isEncoded } = resolveURI(tokenURI);
     let _resolvedUri = resolvedURI;
     if (isOnChain) {
@@ -44,10 +46,10 @@ export default class ERC721 {
           'base64'
         ).toString();
       }
-      return JSON.parse(_resolvedUri);
+      const data = JSON.parse(_resolvedUri);
+      image = svgToPngIfNeeded(data?.image, false);
     }
 
-    let image;
     try {
       const data: UniqueAsset = await apiGetAccountUniqueToken(
         NetworkTypes.mainnet,
@@ -57,7 +59,7 @@ export default class ERC721 {
       image = svgToPngIfNeeded(data?.image_url, false) || data?.lowResUrl;
     } catch (error) {
       const data = await getNFTByTokenId({ contractAddress, tokenId: tokenID });
-      image = data?.previews?.image_medium_url;
+      image = svgToPngIfNeeded(data?.previews?.image_medium_url, false);
       if (!image) throw new Error('no image found');
     }
     return { image };
