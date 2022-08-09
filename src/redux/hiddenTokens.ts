@@ -72,6 +72,9 @@ export const hiddenTokensLoadState = () => async (
     let hiddenTokens = await getHiddenTokens(accountAddress, network);
 
     // if web data is enabled, fetch values from cloud
+    // This will be `null` if it is a watched wallet, in
+    // which case we will use `useFetchHiddenTokens` within
+    // `useHiddenTokens` instead of local storage.
     const pref = await getWebDataEnabled(accountAddress, network);
     if (pref) {
       const hiddenTokensFromCloud = (await getPreference(

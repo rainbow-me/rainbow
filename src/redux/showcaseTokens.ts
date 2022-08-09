@@ -97,6 +97,9 @@ export const showcaseTokensLoadState = () => async (
     let showcaseTokens = await getShowcaseTokens(accountAddress, network);
 
     // if web data is enabled, fetch values from cloud
+    // This will be `null` if it is a watched wallet, in
+    // which case we will use `useFetchShowcaseTokens` within
+    // `useShowcaseTokens` instead of local storage.
     const pref = await getWebDataEnabled(accountAddress, network);
 
     if (pref) {
