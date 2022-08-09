@@ -10,6 +10,7 @@ import ProfileDescription from './ProfileDescription/ProfileDescription';
 import RecordTags, {
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import {
   Bleed,
@@ -130,7 +131,7 @@ export default function ProfileSheetHeader({
         </Bleed>
         <Inset horizontal="19px">
           <Stack space="19px">
-            <Heading size="23px">{ensName}</Heading>
+            <Heading size="23px">{abbreviateEnsForDisplay(ensName)}</Heading>
             <>
               {isLoading ? (
                 <DescriptionPlaceholder />

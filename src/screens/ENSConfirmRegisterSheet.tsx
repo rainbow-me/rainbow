@@ -17,6 +17,7 @@ import {
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import {
   AccentColorProvider,
   Box,
@@ -431,8 +432,8 @@ export default function ENSConfirmRegisterSheet() {
                     </Box>
                   )}
                   <Inset horizontal="30px">
-                    <Heading align="center" size="26px">
-                      {ensName}
+                    <Heading align="center" numberOfLines={1} size="26px">
+                      {abbreviateEnsForDisplay(ensName, 15)}
                     </Heading>
                   </Inset>
                   <Text

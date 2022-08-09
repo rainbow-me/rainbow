@@ -4,6 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { Sheet } from '../components/sheet';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import {
   AccentColorProvider,
   Bleed,
@@ -95,8 +96,8 @@ export default function SelectENSSheet() {
                   <ENSAvatar name={item.name} />
                 </Box>
                 <Box paddingLeft="10px">
-                  <Text size="16px" weight="bold">
-                    {item.name}
+                  <Text numberOfLines={1} size="16px" weight="bold">
+                    {abbreviateEnsForDisplay(item.name, 25)}
                   </Text>
                 </Box>
               </AccentColorProvider>
