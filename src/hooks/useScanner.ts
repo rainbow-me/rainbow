@@ -5,6 +5,7 @@ import { useCallback, useEffect } from 'react';
 import { InteractionManager } from 'react-native';
 import URL from 'url-parse';
 import { Alert } from '../components/alerts';
+import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
@@ -20,6 +21,7 @@ import logger from 'logger';
 export default function useScanner(enabled: any, onSuccess: any) {
   const { navigate } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const enabledVar = useRef();
 
@@ -57,14 +59,18 @@ export default function useScanner(enabled: any, onSuccess: any) {
 
       // And then navigate to Showcase sheet
       InteractionManager.runAfterInteractions(() => {
-        Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-          address,
-        });
+        Navigation.handleAction(
+          profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
+          {
+            address: address,
+            fromRoute: 'QR Code',
+          }
+        );
 
         setTimeout(onSuccess, 500);
       });
     },
-    [navigate, onSuccess]
+    [navigate, onSuccess, profilesEnabled]
   );
 
   const handleScanRainbowProfile = useCallback(
