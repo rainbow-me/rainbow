@@ -223,17 +223,21 @@ export default function ENSIntroSheet() {
                   {isFetched && (
                     <>
                       {ownedDomains?.length === 0 ? (
-                        <SheetActionButton
-                          color={colors.appleBlue}
-                          // @ts-expect-error JavaScript component
-                          label={'􀠎 ' + lang.t('profiles.intro.find_your_name')}
-                          lightShadows
-                          marginBottom={15}
-                          onPress={handleNavigateToSearch}
-                          // @ts-expect-error
-                          testID="ens-intro-sheet-find-your-name-button"
-                          weight="heavy"
-                        />
+                        <Inset bottom={android ? '10px' : undefined}>
+                          <SheetActionButton
+                            color={colors.appleBlue}
+                            // @ts-expect-error JavaScript component
+                            label={
+                              '􀠎 ' + lang.t('profiles.intro.find_your_name')
+                            }
+                            lightShadows
+                            marginBottom={15}
+                            onPress={handleNavigateToSearch}
+                            // @ts-expect-error
+                            testID="ens-intro-sheet-find-your-name-button"
+                            weight="heavy"
+                          />
+                        </Inset>
                       ) : (
                         <Stack space="12px">
                           {uniqueDomain ? (
