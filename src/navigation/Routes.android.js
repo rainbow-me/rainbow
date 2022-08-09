@@ -54,7 +54,6 @@ import {
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
   overlayExpandedPreset,
-  selectUniquePreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
   speedUpAndCancelStyleInterpolator,
@@ -181,11 +180,6 @@ function MainNavigator() {
             name={Routes.SELECT_ENS_SHEET}
             options={ensPreset}
           />
-          <Stack.Screen
-            component={SelectUniqueTokenSheet}
-            name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
-            options={selectUniquePreset}
-          />
         </>
       )}
       <Stack.Screen
@@ -309,6 +303,13 @@ function BSNavigator() {
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
+        options={{
+          height: '95%',
+        }}
+      />
+      <BSStack.Screen
+        component={SelectUniqueTokenSheet}
+        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
         options={{
           height: '95%',
         }}

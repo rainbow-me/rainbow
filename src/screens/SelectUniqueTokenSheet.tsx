@@ -28,18 +28,12 @@ export default function SelectUniqueTokenSheet() {
   });
 
   return (
-    <Box
-      background="body"
-      height="full"
-      paddingTop={android ? undefined : '34px'}
-      {...(android && { borderTopRadius: 30 })}
-    >
+    <Box background="body" height="full" paddingTop="34px">
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">
         {/* @ts-expect-error JavaScript component */}
         <SheetHandle />
       </Box>
       <RecyclerAssetList2
-        disablePullDownToRefresh
         onPressUniqueToken={handlePressUniqueToken}
         type="select-nft"
         walletBriefSectionsData={walletBriefSectionsData}

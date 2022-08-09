@@ -21,89 +21,78 @@ import { StickyHeaderContext } from './StickyHeaders';
 import { useAndroidScrollViewGestureHandler } from '@/hooks';
 
 const extraPadding = { paddingBottom: 144 };
-const ExternalENSScrollViewWithRefFactory = (type: string) =>
-  React.forwardRef<
-    BaseScrollView,
-    ScrollViewDefaultProps & {
-      children: React.ReactNode;
-      contentContainerStyle: ViewStyle;
+const ExternalENSProfileScrollViewWithRef = React.forwardRef<
+  BaseScrollView,
+  ScrollViewDefaultProps & {
+    children: React.ReactNode;
+    contentContainerStyle: ViewStyle;
+  }
+>(function ExternalScrollView(
+  props: ScrollViewDefaultProps & {
+    children: React.ReactNode;
+    contentContainerStyle: ViewStyle;
+  },
+  ref
+) {
+  const isInsideBottomSheet = !!useContext(BottomSheetContext);
+  const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
+
+  const { onScroll, ...rest } = props;
+  const { scrollViewRef } = useContext(StickyHeaderContext)!;
+
+  const [scrollEnabled, setScrollEnabled] = useState(ios);
+  useEffect(() => {
+    // For Android, delay scroll until sheet has been mounted (to avoid
+    // ImagePreviewOverlay mounting issues).
+    if (android) {
+      setTimeout(() => setScrollEnabled(true), 500);
     }
-  >(function ExternalScrollView(
-    props: ScrollViewDefaultProps & {
-      children: React.ReactNode;
-      contentContainerStyle: ViewStyle;
-    },
-    ref
-  ) {
-    const isInsideBottomSheet = !!useContext(BottomSheetContext);
-    const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
-
-    const { onScroll, ...rest } = props;
-    const { scrollViewRef } = useContext(StickyHeaderContext)!;
-
-    const [scrollEnabled, setScrollEnabled] = useState(ios);
-    useEffect(() => {
-      // For Android, delay scroll until sheet has been mounted (to avoid
-      // ImagePreviewOverlay mounting issues).
-      if (android) {
-        setTimeout(() => setScrollEnabled(true), 500);
-      }
-    });
-
-    const yPosition = useSharedValue(0);
-
-    const scrollHandler = useCallback(
-      y => {
-        'worklet';
-        yPosition.value = y;
-      },
-      [yPosition]
-    );
-
-    const { onScroll: onAndroidScroll } = useAndroidScrollViewGestureHandler();
-
-    const handleScroll = useCallback(
-      event => {
-        onScroll(event);
-        android && onAndroidScroll(event);
-        runOnUI(scrollHandler)(event.nativeEvent.contentOffset.y);
-      },
-      [onAndroidScroll, onScroll, scrollHandler]
-    );
-
-    useImperativeHandle(ref, () => scrollViewRef.current!);
-
-    const ScrollView = isInsideBottomSheet
-      ? BottomSheetScrollView
-      : Animated.ScrollView;
-
-    return (
-      <ScrollView
-        {...(rest as ScrollViewProps)}
-        bounces={false}
-        contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
-        onScroll={handleScroll}
-        ref={scrollViewRef as RefObject<any>}
-        scrollEnabled={scrollEnabled}
-      >
-        <ImagePreviewOverlay
-          enableZoom={ios && enableZoomableImages}
-          yPosition={yPosition}
-        >
-          {type === 'ens-profile' && <ProfileSheetHeader />}
-          {props.children}
-        </ImagePreviewOverlay>
-      </ScrollView>
-    );
   });
 
-const ExternalENSProfileScrollViewWithRef = ExternalENSScrollViewWithRefFactory(
-  'ens-profile'
-);
-const ExternalSelectNFTScrollViewWithRef = ExternalENSScrollViewWithRefFactory(
-  'select-nft'
-);
-export {
-  ExternalSelectNFTScrollViewWithRef,
-  ExternalENSProfileScrollViewWithRef,
-};
+  const yPosition = useSharedValue(0);
+
+  const scrollHandler = useCallback(
+    y => {
+      'worklet';
+      yPosition.value = y;
+    },
+    [yPosition]
+  );
+
+  const { onScroll: onAndroidScroll } = useAndroidScrollViewGestureHandler();
+
+  const handleScroll = useCallback(
+    event => {
+      onScroll(event);
+      android && onAndroidScroll(event);
+      runOnUI(scrollHandler)(event.nativeEvent.contentOffset.y);
+    },
+    [onAndroidScroll, onScroll, scrollHandler]
+  );
+
+  useImperativeHandle(ref, () => scrollViewRef.current!);
+
+  const ScrollView = isInsideBottomSheet
+    ? BottomSheetScrollView
+    : Animated.ScrollView;
+
+  return (
+    <ScrollView
+      {...(rest as ScrollViewProps)}
+      bounces={false}
+      contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
+      onScroll={handleScroll}
+      ref={scrollViewRef as RefObject<any>}
+      scrollEnabled={scrollEnabled}
+    >
+      <ImagePreviewOverlay
+        enableZoom={ios && enableZoomableImages}
+        yPosition={yPosition}
+      >
+        <ProfileSheetHeader />
+        {props.children}
+      </ImagePreviewOverlay>
+    </ScrollView>
+  );
+});
+export default ExternalENSProfileScrollViewWithRef;

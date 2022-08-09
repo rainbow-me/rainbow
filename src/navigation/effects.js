@@ -443,18 +443,6 @@ export const sheetPreset = ({ route }) => {
     transitionSpec: { close: closeSpec, open: sheetOpenSpec },
   };
 };
-export const selectUniquePreset = () => {
-  return {
-    cardOverlayEnabled: true,
-    cardShadowEnabled: true,
-    cardStyle: { backgroundColor: 'transparent' },
-    cardStyleInterpolator: sheetStyleInterpolator(0.7),
-    cardTransparent: true,
-    gestureDirection: 'vertical',
-    gestureResponseDistance: gestureResponseDistanceFactory(300),
-    transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-  };
-};
 
 export const settingsPreset = ({ route }) => ({
   ...sheetPreset({ route }),
