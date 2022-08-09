@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { upperFirst } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import URL from 'url-parse';
@@ -11,6 +10,7 @@ import {
   REGISTRATION_MODES,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
+import { upperFirst } from '@rainbow-me/helpers/utilities';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';

@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, isEmpty, keys } from 'lodash';
+import keys from 'lodash/keys';
 import React, { useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -21,6 +21,7 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {
   useAccountEmptyState,
   useAccountSettings,
@@ -178,9 +179,9 @@ export default function WalletScreen() {
   useEffect(() => {
     if (initialized && assetsSocket && !fetchedCharts) {
       const balancesSection = sections.find(({ name }) => name === 'balances');
-      const assetCodes = compact(
-        balancesSection?.data.map(({ address }) => address)
-      );
+      const assetCodes = balancesSection?.data
+        .map(({ address }) => address)
+        .filter(Boolean);
 
       if (!isEmpty(assetCodes)) {
         dispatch(emitChartsRequest(assetCodes));

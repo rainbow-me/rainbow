@@ -3,7 +3,6 @@ import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { ALLOWS_PERMIT, PermitSupportedTokenList } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
-import { isNull } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import {
   Rap,
@@ -20,7 +19,11 @@ import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
-import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
+import {
+  convertAmountToRawAmount,
+  greaterThan,
+  isNull,
+} from '@rainbow-me/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

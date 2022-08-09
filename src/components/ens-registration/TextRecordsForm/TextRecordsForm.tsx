@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/core';
-import { debounce, isEmpty } from 'lodash';
+import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
@@ -12,6 +12,7 @@ import {
   Stack,
 } from '@rainbow-me/design-system';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
 export default function TextRecordsForm({

@@ -1,5 +1,4 @@
 import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
-import { compact, isEmpty, orderBy, sumBy } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -14,6 +13,7 @@ import {
   divide,
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
+  isEmpty,
   multiply,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';
@@ -143,31 +143,31 @@ const buildUniswapCards = (
   allUniswapLiquidityPositions: PositionsState
 ): UniswapCard => {
   const uniswapLiquidityPositions =
-    allUniswapLiquidityPositions?.[accountAddress];
-  const uniswapPools = compact(
-    uniswapLiquidityPositions?.map(position => {
+    allUniswapLiquidityPositions?.[accountAddress] || [];
+  const uniswapPools = uniswapLiquidityPositions
+    ?.map(position => {
       const liquidityToken = uniswapLiquidityTokens.find(
         token => token.address === position?.pair?.id
       );
       return transformPool(liquidityToken, position, nativeCurrency, chainId);
     })
-  );
-  const orderedUniswapPools = orderBy(
-    uniswapPools,
-    [({ totalBalancePrice }) => Number(totalBalancePrice)],
-    ['desc']
-  );
+    .filter(Boolean) as UniswapPool[];
+
+  const orderedUniswapPools = uniswapPools
+    .slice()
+    .sort((a, b) => (a.totalBalancePrice > b.totalBalancePrice ? -1 : 1));
 
   let uniswapTotal = 0;
 
   if (Array.isArray(orderedUniswapPools) && orderedUniswapPools.length) {
-    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalancePrice }) =>
-      Number(totalBalancePrice)
+    uniswapTotal = orderedUniswapPools.reduce(
+      (acc, { totalBalancePrice }) => acc + Number(totalBalancePrice),
+      0
     );
   }
 
   return {
-    uniswap: orderedUniswapPools,
+    uniswap: orderedUniswapPools.filter(Boolean) as UniswapPool[],
     uniswapTotal,
   };
 };

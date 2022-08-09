@@ -1,7 +1,16 @@
 import lang from 'i18n-js';
-import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
-import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import slice from 'lodash/slice';
+import sortBy from 'lodash/sortBy';
+import {
+  add,
+  chunk,
+  convertAmountToNativeDisplay,
+  greaterThan,
+  groupBy,
+  isEmpty,
+} from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { UniqueAsset } from '@rainbow-me/entities';
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,
@@ -21,7 +30,7 @@ export const buildAssetUniqueIdentifier = (item: any) => {
   const nativePrice = item?.native?.price?.display ?? '';
   const uniqueId = item?.uniqueId;
 
-  return compact([balance, nativePrice, uniqueId]).join('_');
+  return [balance, nativePrice, uniqueId].filter(Boolean).join('_');
 };
 
 const addEthPlaceholder = (
@@ -235,19 +244,21 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
+const regex = RegExp(/\s*(the)\s/, 'i');
+
 export const buildUniqueTokenList = (
-  uniqueTokens: any,
+  uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any[] = []
 ) => {
   let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
+  const grouped = groupBy(uniqueTokens, 'familyName');
 
-  const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
   for (let family of families) {
-    const tokensRow: any = [];
+    const tokensRow: any[] = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
       if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
         showcaseTokens.push(grouped[family][j]);
@@ -261,7 +272,7 @@ export const buildUniqueTokenList = (
         tokensRow.push([grouped[family][j]]);
       }
     }
-    let tokens = compact(tokensRow);
+    let tokens = tokensRow.filter(Boolean);
     tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
@@ -279,7 +290,9 @@ export const buildUniqueTokenList = (
       });
     });
   }
-  const regex = RegExp(/\s*(the)\s/, 'i');
+
+  //JS sort doing twice as much replace in each loop here
+  //so basically we have better stay with lodash one in this case
   rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
@@ -319,10 +332,8 @@ export const buildUniqueTokenList = (
   return rows;
 };
 
-const regex = RegExp(/\s*(the)\s/, 'i');
-
 export const buildBriefUniqueTokenList = (
-  uniqueTokens: any,
+  uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
   hiddenTokens: string[] = [],
@@ -346,10 +357,11 @@ export const buildBriefUniqueTokenList = (
     }
     return true;
   });
-  const grouped2 = groupBy(filteredUniqueTokens, token => token.familyName);
+  const grouped2 = groupBy(filteredUniqueTokens, token => token?.familyName!);
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
+
   const result = [
     { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
     { type: 'NFTS_HEADER', uid: 'nfts-header' },

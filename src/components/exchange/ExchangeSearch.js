@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -21,6 +20,7 @@ import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { analytics } from '@rainbow-me/analytics';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { colors, margin, padding } from '@rainbow-me/styles';

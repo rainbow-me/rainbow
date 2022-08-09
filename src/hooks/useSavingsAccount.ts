@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { isEmpty, isNil, keyBy, orderBy } from 'lodash';
+import keyBy from 'lodash/keyBy';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ import { useGenericAssets } from './useGenericAsset';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
 import { AssetTypes } from '@rainbow-me/entities';
-import { multiply } from '@rainbow-me/helpers/utilities';
+import { isEmpty, isNil, multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {
@@ -199,13 +199,14 @@ export default function useSavingsAccount(includeDefaultDai: any) {
       getUnderlyingPrice(token, genericAssets)
     );
 
-    const orderedAccountTokens = orderBy(
-      accountTokensWithPrices,
-      ['underlyingBalanceNativeValue'],
-      ['desc']
-    );
+    const orderedAccountTokens = accountTokensWithPrices
+      .slice()
+      .sort((a: any, b: any) =>
+        a.underlyingBalanceNativeValue > b.underlyingBalanceNativeValue ? -1 : 1
+      );
 
     const accountHasCDAI = orderedAccountTokens.find(
+      // @ts-expect-error FIXME: Parameter 'token' implicitly has an 'any' type.
       token => token.underlying.address === DAI_ADDRESS
     );
 

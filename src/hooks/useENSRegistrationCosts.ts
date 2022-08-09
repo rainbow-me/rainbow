@@ -1,5 +1,4 @@
 import { BigNumberish } from 'ethers';
-import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries } from 'react-query';
 import useENSRegistration from './useENSRegistration';
@@ -32,6 +31,7 @@ import {
   addDisplay,
   fromWei,
   greaterThanOrEqualTo,
+  isEmpty,
   multiply,
 } from '@rainbow-me/helpers/utilities';
 import { ethUnits, timeUnits } from '@rainbow-me/references';

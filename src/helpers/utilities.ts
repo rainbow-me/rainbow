@@ -1,14 +1,33 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
 interface Dictionary<T> {
   [index: string]: T;
 }
+
 type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
 type nativeCurrencyType = typeof supportedNativeCurrencies;
+
+export const isNil = (value: unknown): value is null | undefined =>
+  value == null;
+
+export const isNull = (value: unknown): value is null => value == null;
+
+export const isEmpty = (obj: any): boolean =>
+  [Object, Array].includes((obj || {}).constructor) &&
+  !Object.entries(obj || {}).length;
+
+export const isString = (str: any): str is string => {
+  if (str != null && typeof str.valueOf() === 'string') {
+    return true;
+  }
+  return false;
+};
+
+export const isNumber = (value: any) =>
+  typeof value === 'number' && !Number.isNaN(value);
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
@@ -421,7 +440,38 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-export const flattenDeep = (arr: unknown[]): unknown[] =>
+export const sortByKeyHelper = (key: string) => {
+  return (a: any, b: any) => (a[key] > b[key] ? 1 : b[key] > a[key] ? -1 : 0);
+};
+export const reversedSortByKeyHelper = (key: string) => {
+  return (a: any, b: any) => (a[key] > b[key] ? -1 : b[key] > a[key] ? 1 : 0);
+};
+
+/**
+ * @desc Creates an object composed of keys generated from
+ * the results of running each element of `array` thru `keyOrMapper`.
+ * If `keyOrMapper` is a string then it should be shallow
+ */
+export const groupBy = <
+  T extends Record<PropertyKey, any>,
+  Func extends (arg: T) => string
+>(
+  arr: T[],
+  keyOrMapper: string | Func
+): Dictionary<T[]> => {
+  return arr.reduce<Dictionary<T[]>>((acc, val) => {
+    const groupedKey =
+      typeof keyOrMapper === 'function' ? keyOrMapper(val) : val[keyOrMapper];
+    if (!acc[groupedKey]) {
+      acc[groupedKey] = [val];
+      return acc;
+    }
+    acc[groupedKey].push(val);
+    return acc;
+  }, {});
+};
+
+export const flattenDeep = <T>(arr: T[]): T[] =>
   arr.flatMap(subArray =>
     Array.isArray(subArray) ? flattenDeep(subArray) : subArray
   );
@@ -464,6 +514,32 @@ export const omitFlatten = <T extends object, K extends keyof T>(
 };
 
 /**
+ * @desc Converts the first character of string to upper case and the remaining to lower case
+ */
+export const capitalize = (string?: string | undefined) => {
+  if (!string) return '';
+  return string
+    ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+    : '';
+};
+
+export const chunk = <T>(input: T[], size: number): T[][] => {
+  return input.reduce<T[][]>((arr, item, idx) => {
+    return idx % size === 0
+      ? [...arr, [item]]
+      : [...arr.slice(0, -1), [...arr.slice(-1)[0], item]];
+  }, []);
+};
+
+export const isObjectLike = (val: any) =>
+  val !== null && typeof val === 'object';
+
+export const upperFirst = (string?: string | undefined): string => {
+  if (!string) return '';
+  return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
+};
+
+/**
  * Creates an object composed of the picked object properties.
  * @param obj The source object
  * @param paths The property paths to pick
@@ -496,4 +572,45 @@ export const pickBy = <T>(
       acc[key] = obj[key];
       return acc;
     }, {} as Dictionary<T>);
+};
+
+/**
+ * Creates an array of elements split into two groups, the first of which contains elements predicate returns truthy for,
+ * while the second of which contains elements predicate returns falsey for.
+ *
+ * @param arr The array to iterate over.
+ * @param predicate The function called per iteration.
+ * @return Returns the array of grouped elements.
+ */
+export const partition = <
+  T extends Record<PropertyKey, any>,
+  Func extends (arg: T) => boolean
+>(
+  arr: T[],
+  predicate: Func
+): [T[], T[]] =>
+  arr.reduce<[T[], T[]]>(
+    (acc, val) => {
+      if (predicate(val)) {
+        acc[0].push(val);
+      } else {
+        acc[1].push(val);
+      }
+      return acc;
+    },
+    [[], []]
+  );
+
+/**
+ * Creates an array excluding all provided strings.
+ *
+ * @param arr The array to filter.
+ * @param values The values to exclude.
+ * @return Returns the new array of filtered values.
+ */
+export const excludeSpecifiedStrings = <T>(arr: T[], values: T | T[]): T[] => {
+  if (Array.isArray(values)) {
+    return arr.filter(e => !values.includes(e));
+  }
+  return arr.filter(e => e !== values);
 };

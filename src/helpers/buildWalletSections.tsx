@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { compact, groupBy, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -20,11 +19,18 @@ import {
   add,
   convertAmountToNativeDisplay,
   flattenDeep,
+  groupBy,
   multiply,
 } from './utilities';
 import { Network } from '.';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
+
+interface PreloadImage {
+  id: any;
+  priority: keyof typeof ImgixImage.priority;
+  uri: any;
+}
 
 const LOADING_ASSETS_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -411,7 +417,11 @@ const largeFamilyThreshold = 4;
 const jumboFamilyThreshold = largeFamilyThreshold * 2;
 const minTopFoldThreshold = 10;
 
-const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
+const buildImagesToPreloadArray = (
+  family: any,
+  index: any,
+  families: any
+): PreloadImage[] | null => {
   const isLargeFamily = family.tokens.length > largeFamilyThreshold;
   const isJumboFamily = family.tokens.length >= jumboFamilyThreshold;
   const isTopFold = index < Math.max(families.length / 2, minTopFoldThreshold);
@@ -445,9 +455,10 @@ const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
   });
 };
 
-const sortImagesToPreload = (images: any) => {
-  const filtered = compact(flattenDeep(images));
-  const grouped = groupBy(filtered, property('priority'));
+const sortImagesToPreload = (images: PreloadImage[]) => {
+  const filtered = flattenDeep(images).filter(Boolean);
+  const grouped = groupBy(filtered, 'priority');
+
   return [
     ...(grouped?.high ?? []),
     ...(grouped?.normal ?? []),
@@ -462,7 +473,6 @@ const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
       data.map(buildImagesToPreloadArray)
     );
     isPreloadComplete = !!imagesToPreload.length;
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(false | "" | 0 | null | undefin... Remove this comment to see the full error message
     ImgixImage.preload(imagesToPreload, 200);
   }
 

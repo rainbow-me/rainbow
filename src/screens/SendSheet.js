@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isEmpty, isEqual, isString } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -9,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import isEqual from 'react-fast-compare';
 import { InteractionManager, Keyboard } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
@@ -77,6 +77,8 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
+  isEmpty,
+  isString,
   lessThan,
 } from '@rainbow-me/utilities';
 import {
