@@ -9,9 +9,13 @@ import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
+import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { analytics } from '@rainbow-me/analytics';
 import { handleQRScanner } from '@rainbow-me/handlers/fedora';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import {
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -50,10 +54,12 @@ export default function useScanner(enabled: any, onSuccess: any) {
   }, []);
 
   const handleScanAddress = useCallback(
-    address => {
+    async address => {
       haptics.notificationSuccess();
       analytics.track('Scanned address QR code');
-
+      const ensName = isENSAddressFormat(address)
+        ? address
+        : await fetchReverseRecordWithRetry(address);
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
 
@@ -62,7 +68,7 @@ export default function useScanner(enabled: any, onSuccess: any) {
         Navigation.handleAction(
           profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
           {
-            address: address,
+            address: ensName || address,
             fromRoute: 'QR Code',
           }
         );
@@ -82,6 +88,9 @@ export default function useScanner(enabled: any, onSuccess: any) {
       const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
       const isValid = await checkIsValidAddressOrDomain(addressOrENS);
       if (isValid) {
+        const ensName = isENSAddressFormat(addressOrENS)
+          ? addressOrENS
+          : await fetchReverseRecordWithRetry(addressOrENS);
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
 
@@ -90,7 +99,7 @@ export default function useScanner(enabled: any, onSuccess: any) {
           Navigation.handleAction(
             profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
             {
-              address: addressOrENS,
+              address: ensName,
               fromRoute: 'QR Code',
             }
           );
