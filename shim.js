@@ -5,6 +5,7 @@ import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
+import { mmkvStorageBackend } from '@rainbow-me/handlers/localstorage/mmkvStorageBackend';
 import toLocaleStringPolyfill from '@rainbow-me/helpers/toLocaleStringPolyfill';
 import logger from 'logger';
 
@@ -36,9 +37,10 @@ ReactNative.Platform.OS === 'ios' &&
 
 const storage = new Storage({
   defaultExpires: null,
-  enableCache: ReactNative.Platform.OS === 'ios',
   size: 10000,
-  storageBackend: AsyncStorage,
+  // TODO (RNBW-3969): Migrate to mmkv on iOS too
+  storageBackend:
+    ReactNative.Platform.OS === 'ios' ? AsyncStorage : mmkvStorageBackend,
 });
 
 if (ReactNative.Platform.OS === 'android') {
