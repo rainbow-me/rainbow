@@ -86,7 +86,7 @@ const EditButtonLabel = styled(Text).attrs(
 
 const Whitespace = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,
-  bottom: -400,
+  bottom: -398,
   height: 400,
   position: 'absolute',
   width: '100%',
@@ -518,7 +518,9 @@ export default function ChangeWalletSheet() {
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <Centered>
-          <SheetTitle>{lang.t('wallet.label')}</SheetTitle>
+          <SheetTitle testID="change-wallet-sheet-title">
+            {lang.t('wallet.label')}
+          </SheetTitle>
 
           {!watchOnly && (
             <Row style={{ position: 'absolute', right: 0 }}>

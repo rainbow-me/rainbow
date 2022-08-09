@@ -564,6 +564,7 @@ export const getTransferNftTransaction = async (
     | 'gasPrice'
     | 'gasLimit'
     | 'network'
+    | 'nonce'
     | 'maxFeePerGas'
     | 'maxPriorityFeePerGas'
   >
@@ -574,7 +575,7 @@ export const getTransferNftTransaction = async (
     throw new Error(`Invalid recipient "${transaction.to}"`);
   }
 
-  const { from } = transaction;
+  const { from, nonce } = transaction;
   const contractAddress = transaction.asset.asset_contract?.address;
   const data = await getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
@@ -583,6 +584,7 @@ export const getTransferNftTransaction = async (
     from,
     gasLimit: transaction.gasLimit?.toString(),
     network: transaction.network,
+    nonce,
     to: contractAddress,
     ...gasParams,
   };
