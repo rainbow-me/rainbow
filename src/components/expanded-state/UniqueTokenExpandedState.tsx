@@ -240,7 +240,7 @@ const UniqueTokenExpandedState = ({
 }: UniqueTokenExpandedStateProps) => {
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
 
-  const { accountAddress, accountENS } = useAccountProfile();
+  const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
@@ -343,7 +343,7 @@ const UniqueTokenExpandedState = ({
     [showcaseTokens, uniqueId]
   );
 
-  const rainbowWebUrl = buildRainbowUrl(asset, accountENS, accountAddress);
+  const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
