@@ -1,15 +1,18 @@
 import lang from 'i18n-js';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
-import useENSProfile from './useENSProfile';
-import { prefetchENSProfileImages } from './useENSProfileImages';
+import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';
+import { prefetchENSCover } from './useENSCover';
+import useENSOwner from './useENSOwner';
+import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
+import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
 import { analytics } from '@rainbow-me/analytics';
 import {
@@ -35,8 +38,27 @@ export default () => {
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const profileEnabled = Boolean(accountENS);
-  const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });
+
+  const { isOwner } = useENSOwner(accountENS, {
+    enabled: profileEnabled && profilesEnabled,
+  });
+
+  const { data: avatar } = useENSAvatar(accountENS, {
+    enabled: profileEnabled && profilesEnabled,
+  });
+  const hasENSAvatar = Boolean(avatar?.imageUrl);
+
   const { openPicker } = useImagePicker();
+  const { startRegistration } = useENSRegistration();
+  const { setNextEmoji } = useUpdateEmoji();
+
+  useEffect(() => {
+    if (accountENS) {
+      prefetchENSAvatar(accountENS);
+      prefetchENSCover(accountENS);
+      prefetchENSRecords(accountENS);
+    }
+  }, [accountENS]);
 
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets: typeof wallets = {
@@ -110,111 +132,166 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
-  const { startRegistration } = useENSRegistration();
+  const onAvatarViewProfile = useCallback(() => {
+    analytics.track('Viewed ENS profile', {
+      category: 'profiles',
+      ens: accountENS,
+      from: 'Transaction list',
+    });
+    navigate(Routes.PROFILE_SHEET, {
+      address: accountENS,
+      fromRoute: 'ProfileAvatar',
+    });
+  }, [accountENS, navigate]);
 
-  const isENSProfile = profilesEnabled && profileEnabled && ensProfile?.isOwner;
+  const onAvatarEditProfile = useCallback(() => {
+    startRegistration(accountENS, REGISTRATION_MODES.EDIT);
+    navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+      ensName: accountENS,
+      mode: REGISTRATION_MODES.EDIT,
+    });
+  }, [accountENS, navigate, startRegistration]);
+
+  const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
+
+  const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
   const callback = useCallback(
     async (buttonIndex: Number) => {
-      if (isENSProfile) {
-        if (buttonIndex === 0) {
-          analytics.track('Viewed ENS profile', {
-            category: 'profiles',
-            ens: accountENS,
-            from: 'Transaction list',
-          });
-          navigate(Routes.PROFILE_SHEET, {
-            address: accountENS,
-            fromRoute: 'ProfileAvatar',
-          });
-        } else if (buttonIndex === 1 && !isReadOnlyWallet) {
-          startRegistration(accountENS, REGISTRATION_MODES.EDIT);
-          navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-            ensName: accountENS,
-            mode: REGISTRATION_MODES.EDIT,
-          });
-        }
-      } else {
-        if (buttonIndex === 0) {
-          onAvatarChooseImage();
-        } else if (buttonIndex === 1) {
-          if (accountImage) {
-            onAvatarRemovePhoto();
+      if (buttonIndex === 0) {
+        if (isENSProfile) {
+          if (!isReadOnly) {
+            onAvatarEditProfile();
           } else {
-            onAvatarPickEmoji();
+            onAvatarViewProfile();
           }
-        } else if (buttonIndex === 2 && profilesEnabled) {
-          onAvatarCreateProfile();
+        } else {
+          if (!isReadOnly) {
+            onAvatarCreateProfile();
+          } else {
+            onAvatarChooseImage();
+          }
+        }
+      } else if (buttonIndex === 1) {
+        if (isENSProfile) {
+          if (!isReadOnly) {
+            onAvatarViewProfile();
+          } else {
+            if (!hasENSAvatar) {
+              onAvatarChooseImage();
+            }
+          }
+        } else {
+          if (!isReadOnly) {
+            onAvatarChooseImage();
+          } else {
+            if (!accountImage) {
+              if (ios) {
+                onAvatarPickEmoji();
+              } else {
+                setNextEmoji();
+              }
+            } else {
+              onAvatarRemovePhoto();
+            }
+          }
+        }
+      } else if (buttonIndex === 2) {
+        if (!hasENSAvatar) {
+          if (isENSProfile) {
+            if (!isReadOnly) {
+              onAvatarChooseImage();
+            } else {
+              if (!accountImage) {
+                if (ios) {
+                  onAvatarPickEmoji();
+                } else {
+                  setNextEmoji();
+                }
+              } else {
+                onAvatarRemovePhoto();
+              }
+            }
+          } else {
+            if (!isReadOnly) {
+              if (!accountImage) {
+                if (ios) {
+                  onAvatarPickEmoji();
+                } else {
+                  setNextEmoji();
+                }
+              } else {
+                onAvatarRemovePhoto();
+              }
+            }
+          }
+        }
+      } else if (buttonIndex === 3) {
+        if (!hasENSAvatar && !isReadOnly) {
+          if (!accountImage) {
+            if (ios) {
+              onAvatarPickEmoji();
+            } else {
+              setNextEmoji();
+            }
+          } else {
+            onAvatarRemovePhoto();
+          }
         }
       }
     },
     [
-      accountENS,
       accountImage,
+      hasENSAvatar,
       isENSProfile,
-      isReadOnlyWallet,
-      navigate,
+      isReadOnly,
       onAvatarChooseImage,
       onAvatarCreateProfile,
+      onAvatarEditProfile,
       onAvatarPickEmoji,
       onAvatarRemovePhoto,
-      profilesEnabled,
-      startRegistration,
+      onAvatarViewProfile,
+      setNextEmoji,
     ]
   );
 
-  const avatarActionSheetOptions = useMemo(
-    () =>
-      (isENSProfile
-        ? [
-            lang.t('profiles.profile_avatar.view_profile'),
-            (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
-              lang.t('profiles.profile_avatar.edit_profile'),
-          ]
-        : [
-            lang.t('profiles.profile_avatar.choose_from_library'),
-            !accountImage
-              ? lang.t('profiles.profile_avatar.pick_emoji')
-              : lang.t('profiles.profile_avatar.remove_photo'),
-            profilesEnabled &&
-              (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
-              lang.t('profiles.profile_avatar.create_profile'),
-          ]
-      )
-        .filter(option => Boolean(option))
-        .concat(ios ? ['Cancel'] : []),
-    [accountImage, isENSProfile, isReadOnlyWallet, profilesEnabled]
-  );
+  const avatarActionSheetOptions = (hasENSAvatar
+    ? [
+        !isReadOnly && lang.t('profiles.profile_avatar.edit_profile'),
+        lang.t('profiles.profile_avatar.view_profile'),
+      ]
+    : [
+        isENSProfile &&
+          !isReadOnly &&
+          lang.t('profiles.profile_avatar.edit_profile'),
+        isENSProfile && lang.t('profiles.profile_avatar.view_profile'),
+        !isENSProfile &&
+          !isReadOnly &&
+          lang.t('profiles.profile_avatar.create_profile'),
+        lang.t('profiles.profile_avatar.choose_from_library'),
+        !accountImage
+          ? ios
+            ? lang.t('profiles.profile_avatar.pick_emoji')
+            : lang.t('profiles.profile_avatar.shuffle_emoji')
+          : lang.t('profiles.profile_avatar.remove_photo'),
+      ]
+  )
+    .filter(option => Boolean(option))
+    .concat(ios ? ['Cancel'] : []);
 
   const onAvatarPress = useCallback(() => {
-    if (profileEnabled && !ensProfile?.isSuccess) return;
-
-    if (isENSProfile) {
-      // Prefetch profile images
-      prefetchENSProfileImages({ name: accountENS });
-    }
-
     showActionSheetWithOptions(
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
         destructiveButtonIndex:
-          !isENSProfile && accountImage
-            ? avatarActionSheetOptions.length - (profilesEnabled ? 3 : 2)
+          !hasENSAvatar && accountImage
+            ? avatarActionSheetOptions.length - 2
             : undefined,
         options: avatarActionSheetOptions,
       },
       (buttonIndex: Number) => callback(buttonIndex)
     );
-  }, [
-    profileEnabled,
-    ensProfile?.isSuccess,
-    isENSProfile,
-    avatarActionSheetOptions,
-    accountImage,
-    profilesEnabled,
-    accountENS,
-    callback,
-  ]);
+  }, [avatarActionSheetOptions, hasENSAvatar, accountImage, callback]);
 
   const avatarOptions = useMemo(
     () => [

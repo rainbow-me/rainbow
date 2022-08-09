@@ -113,7 +113,7 @@ export default function MiniButton({
     >
       <View style={{ borderRadius }}>
         <ShadowStack
-          {...(ios ? position.coverAsObject : {})}
+          {...position.coverAsObject}
           backgroundColor={
             android
               ? 'none'
@@ -131,10 +131,8 @@ export default function MiniButton({
               : shadows.default
           }
           width={width}
-        >
-          {android && content}
-        </ShadowStack>
-        {ios && content}
+        />
+        {content}
       </View>
     </ButtonPressAnimation>
   );

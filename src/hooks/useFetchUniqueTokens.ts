@@ -2,6 +2,8 @@ import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
+import useIsMounted from './useIsMounted';
+import { applyENSMetadataFallbackToTokens } from '@/parsers/uniqueTokens';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
@@ -13,6 +15,7 @@ import {
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
+import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
@@ -20,16 +23,19 @@ export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   address,
 ];
 
-const STALE_TIME = 10000;
-
 export default function useFetchUniqueTokens({
   address,
+  infinite = false,
+  staleTime = 10000,
 }: {
   address?: string;
+  infinite?: boolean;
+  staleTime?: number;
 }) {
   const { network } = useAccountSettings();
+  const mounted = useIsMounted();
 
-  const [shouldFetchMore, setShouldFetchMore] = useState(false);
+  const [shouldFetchMore, setShouldFetchMore] = useState<boolean>();
 
   // Get unique tokens from device storage
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
@@ -62,13 +68,17 @@ export default function useFetchUniqueTokens({
         uniqueTokens = await apiGetAccountUniqueTokens(network, address, 0);
       }
 
-      setShouldFetchMore(true);
+      // If there are any "unknown" ENS names, fallback to the ENS
+      // metadata service.
+      uniqueTokens = await applyENSMetadataFallbackToTokens(uniqueTokens);
 
       return uniqueTokens;
     },
     {
       enabled: Boolean(address),
-      staleTime: STALE_TIME,
+      onSuccess: () =>
+        shouldFetchMore === undefined ? setShouldFetchMore(true) : null,
+      staleTime,
     }
   );
   const uniqueTokens = uniqueTokensQuery.data;
@@ -87,19 +97,29 @@ export default function useFetchUniqueTokens({
       page?: number;
     }): Promise<UniqueAsset[]> {
       if (
+        mounted.current &&
         uniqueTokens?.length >= page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
         uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL
       ) {
-        const moreUniqueTokens = await apiGetAccountUniqueTokens(
+        let moreUniqueTokens = await apiGetAccountUniqueTokens(
           network,
           address as string,
           page
         );
+
+        // If there are any "unknown" ENS names, fallback to the ENS
+        // metadata service.
+        moreUniqueTokens = await applyENSMetadataFallbackToTokens(
+          moreUniqueTokens
+        );
+
         if (!hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),
             tokens =>
-              tokens ? [...tokens, ...moreUniqueTokens] : moreUniqueTokens
+              tokens
+                ? uniqBy([...tokens, ...moreUniqueTokens], 'uniqueId')
+                : moreUniqueTokens
           );
         }
         return fetchMore({
@@ -112,17 +132,28 @@ export default function useFetchUniqueTokens({
     }
 
     // We have already fetched the first page of results – so let's fetch more!
-    if (shouldFetchMore && uniqueTokens && uniqueTokens.length > 0) {
+    if (
+      infinite &&
+      shouldFetchMore &&
+      uniqueTokens &&
+      uniqueTokens.length > 0
+    ) {
       setShouldFetchMore(false);
       (async () => {
         // Fetch more Ethereum tokens until all have fetched
-        let tokens = await fetchMore({
-          network,
-          // If there are stored tokens in storage, then we want
-          // to do a background refresh.
-          page: hasStoredTokens ? 0 : 1,
-          uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
-        });
+        let tokens = (
+          await fetchMore({
+            network,
+            // If there are stored tokens in storage, then we want
+            // to do a background refresh.
+            page: hasStoredTokens ? 0 : 1,
+            uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
+          })
+        ).filter((token: any) => token.familyName !== 'POAP');
+
+        // Fetch poaps
+        const poaps = (await fetchPoaps(address)) || [];
+        tokens = [...tokens, ...poaps];
 
         // Fetch Polygon tokens until all have fetched
         const polygonTokens = await fetchMore({ network: Network.polygon });
@@ -135,7 +166,7 @@ export default function useFetchUniqueTokens({
           timeAgo: { hours: 48 },
         });
         if (ensTokens.length > 0) {
-          tokens = uniqBy([...tokens, ...ensTokens], 'id');
+          tokens = uniqBy([...tokens, ...ensTokens], 'uniqueId');
         }
 
         if (hasStoredTokens) {
@@ -155,6 +186,8 @@ export default function useFetchUniqueTokens({
     uniqueTokens,
     queryClient,
     hasStoredTokens,
+    infinite,
+    mounted,
   ]);
 
   return uniqueTokensQuery;

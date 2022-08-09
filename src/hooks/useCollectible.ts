@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import useAccountSettings from './useAccountSettings';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
 import { ParsedAddressAsset, UniqueAsset } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
@@ -16,17 +15,14 @@ export default function useCollectible(
   const selfUniqueTokens = useSelector(
     ({ uniqueTokens: { uniqueTokens } }: AppState) => uniqueTokens
   );
-  const { accountAddress } = useAccountSettings();
-  const queryClient = useQueryClient();
-  const externalUniqueTokens = useMemo(() => {
-    return (
-      queryClient.getQueryData<UniqueAsset[]>(
-        uniqueTokensQueryKey({ address: externalAddress })
-      ) || []
-    );
-  }, [queryClient, externalAddress]);
-  const isExternal =
-    Boolean(externalAddress) && externalAddress !== accountAddress;
+  const { data: externalUniqueTokens } = useQuery<UniqueAsset[]>(
+    uniqueTokensQueryKey({ address: externalAddress }),
+    // We just want to watch for changes in the query key,
+    // so just supplying a noop function & staleTime of Infinity.
+    async () => [],
+    { staleTime: Infinity }
+  );
+  const isExternal = Boolean(externalAddress);
   // Use the appropriate tokens based on if the user is viewing the
   // current accounts tokens, or external tokens (e.g. ProfileSheet)
   const uniqueTokens = useMemo(
@@ -35,7 +31,7 @@ export default function useCollectible(
   );
 
   const asset = useMemo(() => {
-    let matched = uniqueTokens.find(
+    let matched = uniqueTokens!.find(
       (uniqueToken: UniqueAsset) =>
         uniqueToken.uniqueId === initialAsset?.uniqueId
     );

@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
-import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   deleteAllBackups,
   fetchAllBackups,

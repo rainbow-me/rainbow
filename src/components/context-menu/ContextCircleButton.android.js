@@ -47,9 +47,9 @@ export default function ContextCircleButton(props) {
 
   return (
     <ContextMenuButton
-      handlePressMenuItem={handlePressMenuItem}
       isAnchoredToRight
       menuConfig={androidItems}
+      onPressMenuItem={handlePressMenuItem}
     >
       <CircleButton {...props}>
         <ContextIcon>􀍠</ContextIcon>
