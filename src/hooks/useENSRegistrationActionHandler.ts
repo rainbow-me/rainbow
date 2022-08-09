@@ -140,11 +140,16 @@ export default function useENSRegistrationActionHandler(
       const tx = getPendingTransactionByHash(commitTransactionHash || '');
       commitTransactionHash &&
         tx &&
-        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-          accentColor,
-          tx,
-          type: 'speed_up',
-        });
+        navigate(
+          ios
+            ? Routes.SPEED_UP_AND_CANCEL_SHEET
+            : Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET,
+          {
+            accentColor,
+            tx,
+            type: 'speed_up',
+          }
+        );
     },
     [
       getPendingTransactionByHash,

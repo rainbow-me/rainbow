@@ -311,6 +311,10 @@ function BSNavigator() {
             name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
             options={{ ...bottomSheetPreset, height: '95%' }}
           />
+          <BSStack.Screen
+            component={SpeedUpAndCancelSheet}
+            name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET}
+          />
         </>
       )}
       <BSStack.Screen
