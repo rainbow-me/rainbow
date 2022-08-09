@@ -64,9 +64,8 @@ export async function setPreference(
     });
     return responseData?.success;
   } catch (e) {
-    Sentry.captureMessage(
-      `Preferences API failed to set preference`,
-      Sentry.Severity.Error
+    Sentry.captureException(
+      new Error(`Preferences API failed to set preference`)
     );
     logger.log('☁️  error setting pref', e);
     return false;
@@ -88,9 +87,8 @@ export async function getPreference(
     });
     return responseData?.data || null;
   } catch (e) {
-    Sentry.captureMessage(
-      `Preferences API failed to get preference`,
-      Sentry.Severity.Error
+    Sentry.captureException(
+      new Error(`Preferences API failed to get preference`)
     );
     logger.log('☁️  error getting pref', e);
     return null;
