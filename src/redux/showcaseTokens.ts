@@ -10,6 +10,7 @@ import {
   saveWebDataEnabled,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
 
 // -- Constants --------------------------------------- //
 
@@ -92,20 +93,23 @@ export const showcaseTokensLoadState = () => async (
   getState: AppGetState
 ) => {
   try {
-    const { accountAddress, network } = getState().settings;
+    const account = getState().wallets.selected!;
+    const isReadOnlyWallet = account.type === WalletTypes.readOnly;
+    const visibleAddress = account.addresses.find(a => a.visible)!;
+    const { network } = getState().settings;
 
-    let showcaseTokens = await getShowcaseTokens(accountAddress, network);
+    let showcaseTokens = await getShowcaseTokens(
+      visibleAddress.address,
+      network
+    );
 
     // if web data is enabled, fetch values from cloud
-    // This will be `null` if it is a watched wallet, in
-    // which case we will use `useFetchShowcaseTokens` within
-    // `useShowcaseTokens` instead of local storage.
-    const pref = await getWebDataEnabled(accountAddress, network);
+    const pref = await getWebDataEnabled(visibleAddress.address, network);
 
-    if (pref) {
+    if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
       const showcaseTokensFromCloud = (await getPreference(
         'showcase',
-        accountAddress
+        visibleAddress.address
       )) as any | undefined;
       if (
         showcaseTokensFromCloud?.showcase?.ids &&
@@ -136,6 +140,10 @@ export const addShowcaseToken = (tokenId: string) => (
   dispatch: Dispatch<ShowcaseTokensUpdateAction>,
   getState: AppGetState
 ) => {
+  const account = getState().wallets.selected!;
+
+  if (account.type === WalletTypes.readOnly) return;
+
   const { accountAddress, network } = getState().settings;
   const { showcaseTokens = [] } = getState().showcaseTokens;
   const updatedShowcaseTokens = showcaseTokens.concat(tokenId);
@@ -155,6 +163,10 @@ export const removeShowcaseToken = (tokenId: string) => (
   dispatch: Dispatch<ShowcaseTokensUpdateAction>,
   getState: AppGetState
 ) => {
+  const account = getState().wallets.selected!;
+
+  if (account.type === WalletTypes.readOnly) return;
+
   const { accountAddress, network } = getState().settings;
   const { showcaseTokens } = getState().showcaseTokens;
 
