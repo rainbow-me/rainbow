@@ -43,8 +43,8 @@ const SearchInput = ({
     undefined,
     // On Android, should show keyboard upon navigation focus.
     true,
-    // On iOS, defer keyboard display until interactions finished (screen transition).
-    ios
+    // On iOS, don’t defer keyboard display until interactions finished (screen transition).
+    false
   );
 
   const height = 64;
