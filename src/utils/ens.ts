@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import uts46 from 'idna-uts46-hx';
 import { UniqueAsset } from '@rainbow-me/entities';
 
@@ -86,6 +87,21 @@ export function stringifyENSNFTRecord({
   return `eip155:1/${standard.toLowerCase()}:${contractAddress}/${tokenId}`;
 }
 
+const SPECIAL_CHARACTERS = [`’`];
+const validateSpecialCharacters = (domainName: string) => {
+  try {
+    uts46.toUnicode(domainName, { useStd3ASCII: true });
+  } catch (err) {
+    return false;
+  }
+  return SPECIAL_CHARACTERS.some(element => {
+    if (domainName.includes(element)) {
+      return false;
+    }
+    return true;
+  });
+};
+
 /**
  * @description Checks if an ENS name is valid
  */
@@ -102,7 +118,7 @@ export function validateENS(
   if (splitDomain.length < 2) {
     return {
       code: ERROR_CODES.INVALID_DOMAIN,
-      hint: 'This is an invalid domain',
+      hint: lang.t('profiles.search_validation.invalid_domain'),
       valid: false,
     };
   }
@@ -112,15 +128,15 @@ export function validateENS(
   if (!supportedTLDs.includes(tld)) {
     return {
       code: ERROR_CODES.INVALID_TLD,
-      hint: 'This TLD is not supported',
+      hint: lang.t('profiles.search_validation.tld_not_supported'),
       valid: false,
     };
   }
 
-  if (!includeSubdomains && subDomainName) {
+  if (!includeSubdomains && (subDomainName || subDomainName === '')) {
     return {
       code: ERROR_CODES.SUBDOMAINS_NOT_SUPPORTED,
-      hint: 'Subdomains are not supported',
+      hint: lang.t('profiles.search_validation.subdomains_not_supported'),
       valid: false,
     };
   }
@@ -128,28 +144,27 @@ export function validateENS(
   if (domainName.length < 3) {
     return {
       code: ERROR_CODES.INVALID_LENGTH,
-      hint: 'Your name must be at least 3 characters',
+      hint: lang.t('profiles.search_validation.invalid_length'),
       valid: false,
     };
   }
 
-  try {
-    uts46.toUnicode(domainName, { useStd3ASCII: true });
-  } catch (err) {
+  const validDomainName = validateSpecialCharacters(domainName);
+
+  if (!validDomainName) {
     return {
-      code: ERROR_CODES.INVALID_DOMAIN_NAME,
-      hint: 'Your name cannot include special characters',
+      code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
+      hint: lang.t('profiles.search_validation.invalid_special_characters'),
       valid: false,
     };
   }
 
   if (subDomainName) {
-    try {
-      uts46.toUnicode(subDomainName, { useStd3ASCII: true });
-    } catch (err) {
+    const validSubDomainName = validateSpecialCharacters(subDomainName);
+    if (!validSubDomainName) {
       return {
         code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
-        hint: 'Your subdomain cannot include special characters',
+        hint: lang.t('profiles.search_validation.invalid_special_characters'),
         valid: false,
       };
     }
