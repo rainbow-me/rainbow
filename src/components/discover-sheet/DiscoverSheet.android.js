@@ -108,6 +108,7 @@ const DiscoverSheet = (_, forwardedRef) => {
     <AndroidWrapper
       style={{
         bottom: -StatusBar.currentHeight,
+        top: 24,
       }}
     >
       <DiscoverSheetContext.Provider value={value}>

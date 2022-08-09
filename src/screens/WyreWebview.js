@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Spinner from '../components/Spinner';
 import { Centered, FlexItem } from '../components/layout';
@@ -20,12 +19,6 @@ export default function WyreWebview() {
   const { params } = useRoute();
   const [url, setUrl] = useState(null);
   const { accountAddress, network } = useAccountSettings();
-
-  useEffect(() => {
-    StatusBar.setBackgroundColor('transparent', false);
-    StatusBar.setTranslucent(true);
-    StatusBar.setBarStyle('dark-content', true);
-  }, []);
 
   useEffect(() => {
     const getReservationId = async () => {

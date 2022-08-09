@@ -5,7 +5,9 @@ import { PerformanceContextMap } from '../performance/PerformanceContextMap';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
+import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@rainbow-me/analytics';
+import { onHandleStatusBar } from '@rainbow-me/navigation/onNavigationStateChange';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
@@ -22,15 +24,12 @@ export default function useHideSplashScreen() {
         SplashScreen.hide();
       }
     }
-    if (android) {
-      StatusBar.setBackgroundColor('transparent', false);
-      StatusBar.setTranslucent(true);
-      StatusBar.setBarStyle('dark-content', true);
-    }
-    // show the StatusBar
-    (ios && StatusBar.setHidden(false, 'fade')) ||
+    StatusBar.setTranslucent(true);
+
+    onHandleStatusBar();
+    (ios && StatusBarHelper.setHidden(false, 'fade')) ||
       InteractionManager.runAfterInteractions(() => {
-        StatusBar.setHidden(false, 'fade');
+        StatusBarHelper.setHidden(false, 'fade');
       });
 
     if (!alreadyLoggedPerformance.current) {

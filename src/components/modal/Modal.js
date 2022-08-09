@@ -36,9 +36,7 @@ export default function Modal({
   height,
   onCloseModal,
   radius = 12,
-  statusBarStyle = 'light-content',
   fullScreenOnAndroid,
-  skipStatusBar,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
@@ -52,7 +50,6 @@ export default function Modal({
       insetTop={insetTop}
       shadowColor={colors.shadowBlack}
     >
-      {skipStatusBar || <StatusBar barStyle={statusBarStyle} />}
       {ios && <TouchableBackdrop onPress={onCloseModal} />}
       <Content
         {...props}
