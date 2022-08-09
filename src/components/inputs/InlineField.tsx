@@ -28,6 +28,7 @@ export type InlineFieldProps = {
   onFocus?: TextInputProps['onFocus'];
   onEndEditing?: TextInputProps['onEndEditing'];
   selectionColor?: string;
+  shouldFormatText?: boolean;
   startsWith?: string;
   validations?: {
     onChange?: {
@@ -48,9 +49,9 @@ export default function InlineField({
   onFocus,
   placeholder,
   inputProps,
-  validations,
   onEndEditing,
   selectionColor,
+  shouldFormatText,
   startsWith,
   value,
   testID,
@@ -71,25 +72,6 @@ export default function InlineField({
       setInputHeight(textSize);
     }
   }, []);
-
-  const handleChangeText = useCallback(
-    text => {
-      const { onChange: { match = null } = {} } = validations || {};
-      if (!match) {
-        onChangeText(text);
-        return;
-      }
-      if (text === '') {
-        onChangeText(text);
-        return;
-      }
-      if (match?.test(text)) {
-        onChangeText(text);
-        return;
-      }
-    },
-    [onChangeText, validations]
-  );
 
   const valueRef = useRef(value);
   const style = useMemo(
@@ -120,6 +102,11 @@ export default function InlineField({
     }),
     [textStyle, inputHeight, inputProps?.multiline, startsWith, width]
   );
+
+  let keyboardType = inputProps?.keyboardType;
+  if (android) {
+    keyboardType = shouldFormatText ? 'default' : 'visible-password';
+  }
 
   return (
     <Columns>
@@ -163,9 +150,11 @@ export default function InlineField({
             </Inset>
           )}
           <Input
+            autoCapitalize={shouldFormatText ? 'sentences' : 'none'}
+            autoCorrect={shouldFormatText}
             autoFocus={autoFocus}
             defaultValue={defaultValue}
-            onChangeText={handleChangeText}
+            onChangeText={onChangeText}
             onContentSizeChange={
               android && inputProps?.multiline
                 ? handleContentSizeChange
@@ -180,9 +169,7 @@ export default function InlineField({
             style={style}
             value={value}
             {...inputProps}
-            keyboardType={
-              android ? 'visible-password' : inputProps?.keyboardType
-            }
+            keyboardType={keyboardType}
             testID={testID}
           />
         </Inline>

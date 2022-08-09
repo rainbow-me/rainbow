@@ -51,8 +51,10 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
+  useAccountProfile,
   useDimensions,
   useENSModifiedRegistration,
+  useENSRecords,
   useENSRegistration,
   useENSRegistrationCosts,
   useENSRegistrationForm,
@@ -60,17 +62,20 @@ import {
   useENSSearch,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
+  useWalletSectionsData,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
+const ExtraBottomPadding = 55;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<any>();
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
+  const { hasNFTs } = useWalletSectionsData();
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
@@ -93,14 +98,17 @@ export default function ENSAssignRecordsSheet() {
       ].map(fieldName => textRecordFields[fieldName] as TextRecordField),
     []
   );
-  const { profileQuery, isLoading } = useENSRegistrationForm({
+
+  const { isLoading } = useENSRegistrationForm({
     defaultFields,
     initializeForm: true,
   });
 
+  const { data: { records } = {} } = useENSRecords(name);
+  const isEmptyProfile = isEmpty(records);
+
   const displayTitleLabel =
     params.mode !== REGISTRATION_MODES.EDIT || !isLoading;
-  const isEmptyProfile = isEmpty(profileQuery.data?.records);
 
   useENSRegistrationCosts({
     name,
@@ -173,19 +181,22 @@ export default function ENSAssignRecordsSheet() {
         as={ScrollView}
         background="body"
         contentContainerStyle={{
-          paddingBottom: bottomActionHeight + 20,
+          paddingBottom: bottomActionHeight + ExtraBottomPadding,
         }}
         flexGrow={1}
         scrollEnabled={android}
+        testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
         <Stack space="19px">
           <RegistrationCover
+            enableNFTs={hasNFTs}
             hasSeenExplainSheet={hasSeenExplainSheet}
             onShowExplainSheet={handleFocus}
           />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
               <RegistrationAvatar
+                enableNFTs={hasNFTs}
                 hasSeenExplainSheet={hasSeenExplainSheet}
                 onChangeAvatarUrl={setAvatarUrl}
                 onShowExplainSheet={handleFocus}
@@ -214,6 +225,7 @@ export default function ENSAssignRecordsSheet() {
               <Box flexGrow={1}>
                 <TextRecordsForm
                   autoFocusKey={params?.autoFocusKey}
+                  key={name}
                   onAutoFocusLayout={handleAutoFocusLayout}
                   onError={handleError}
                   onFocus={handleFocus}
@@ -240,20 +252,23 @@ export function ENSAssignRecordsBottomActions({
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
+  const { accountENS } = useAccountProfile();
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const { mode } = useENSRegistration();
+  const { mode, name } = useENSRegistration();
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
-    isEmpty,
+    errors,
+    isValidating,
+    isEmpty: isEmptyForm,
     selectedFields,
     onAddField,
     onRemoveField,
     submit,
     values,
   } = useENSRegistrationForm();
-  const { profileQuery } = useENSModifiedRegistration();
+  const { isSuccess } = useENSModifiedRegistration();
   const handlePressBack = useCallback(() => {
     delayNext();
     navigate(fromRoute);
@@ -279,11 +294,13 @@ export function ENSAssignRecordsBottomActions({
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         longFormHeight:
           mode === REGISTRATION_MODES.EDIT
-            ? ENSConfirmUpdateSheetHeight
+            ? ENSConfirmUpdateSheetHeight +
+              (accountENS !== name ? 50 : 0) +
+              (values.avatar ? 70 : 0)
             : ENSConfirmRegisterSheetHeight + (values.avatar ? 70 : 0),
       });
     });
-  }, [mode, navigate, submit, values.avatar]);
+  }, [accountENS, mode, name, navigate, submit, values.avatar]);
 
   const navigateToAdditionalRecords = useCallback(() => {
     android && Keyboard.dismiss();
@@ -293,11 +310,11 @@ export function ENSAssignRecordsBottomActions({
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(profileQuery.isSuccess), 200);
+      setTimeout(() => setVisible(isSuccess), 200);
     } else {
       setVisible(defaultVisible);
     }
-  }, [defaultVisible, mode, profileQuery.isSuccess]);
+  }, [defaultVisible, mode, isSuccess]);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
@@ -331,6 +348,7 @@ export function ENSAssignRecordsBottomActions({
         as={Animated.View}
         background="body"
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+        testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
           <Box paddingBottom="19px" style={{ height: bottomActionHeight }}>
@@ -364,7 +382,7 @@ export function ENSAssignRecordsBottomActions({
                       {lang.t('profiles.create.back')}
                     </TintButton>
                   )}
-                  {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
+                  {isEmptyForm && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
                       disabled={disabled}
                       onPress={handlePressContinue}
@@ -377,6 +395,7 @@ export function ENSAssignRecordsBottomActions({
                       {!disabled ? (
                         <SheetActionButton
                           color={accentColor}
+                          disabled={isValidating || !isEmpty(errors)}
                           // @ts-expect-error JavaScript component
                           label={lang.t('profiles.create.review')}
                           onPress={handlePressContinue}

@@ -1,4 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
+import { useFocusEffect } from '@react-navigation/core';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
@@ -9,9 +10,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import URL from 'url-parse';
-import { CardSize } from '../../components/unique-token/CardSize';
 import useWallets from '../../hooks/useWallets';
-import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
@@ -25,7 +24,7 @@ import {
 } from '../sheet';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import AdvancedSection from './ens/AdvancedSection';
+import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
 import {
@@ -69,10 +68,11 @@ import {
 import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { lightModeThemeColors, position } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 import {
   buildRainbowUrl,
+  getUniqueTokenType,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
@@ -210,12 +210,6 @@ const Markdown = ({
   );
 };
 
-export enum UniqueTokenType {
-  NFT = 'NFT',
-  ENS = 'ENS',
-  POAP = 'POAP',
-}
-
 interface UniqueTokenExpandedStateProps {
   asset: UniqueAsset;
   external: boolean;
@@ -248,7 +242,7 @@ const UniqueTokenExpandedState = ({
 
   const { accountAddress, accountENS } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
@@ -272,23 +266,31 @@ const UniqueTokenExpandedState = ({
     urlSuffixForAsset,
   } = asset;
 
-  const uniqueTokenType = useMemo(() => {
-    if (asset.isPoap) return UniqueTokenType.POAP;
-    if (familyName === 'ENS' && uniqueId !== 'Unknown ENS name') {
-      return UniqueTokenType.ENS;
-    }
-    return UniqueTokenType.NFT;
-  }, [asset.isPoap, familyName, uniqueId]);
+  const uniqueTokenType = getUniqueTokenType(asset);
 
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
-  const isPoap = uniqueTokenType === UniqueTokenType.POAP;
-  const isENS = uniqueTokenType === UniqueTokenType.ENS;
-  const isNFT = uniqueTokenType === UniqueTokenType.NFT;
+  const isPoap = uniqueTokenType === 'POAP';
+  const isENS = uniqueTokenType === 'ENS';
+  const isNFT = uniqueTokenType === 'NFT';
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS && uniqueId ? uniqueId?.split(' ')?.[0] : uniqueId;
-  const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
+  const cleanENSName = isENS
+    ? uniqueId
+      ? uniqueId?.split(' ')?.[0]
+      : uniqueId
+    : '';
+  const ensProfile = useENSProfile(cleanENSName, {
+    enabled: isENS,
+  });
   const ensData = ensProfile.data;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (uniqueTokenType === 'ENS') {
+        setOptions({ limitActiveModals: false });
+      }
+    }, [setOptions, uniqueTokenType])
+  );
 
   const profileInfoSectionAvailable = useMemo(() => {
     const available = Object.keys(ensData?.records || {}).some(
@@ -528,6 +530,8 @@ const UniqueTokenExpandedState = ({
                             )}`}
                             nftShadows
                             onPress={handlePressEdit}
+                            // @ts-expect-error JavaScript component
+                            testID="edit"
                             textColor={textColor}
                             weight="heavy"
                           />
@@ -547,6 +551,8 @@ const UniqueTokenExpandedState = ({
                             }
                             nftShadows
                             onPress={handlePressMarketplaceName}
+                            // @ts-expect-error JavaScript component
+                            testID="unique-expanded-state-send"
                             textColor={textColor}
                             weight="heavy"
                           />
@@ -596,10 +602,10 @@ const UniqueTokenExpandedState = ({
                             <ENSBriefTokenInfoRow
                               color={imageColor}
                               ensName={uniqueId}
-                              expiryDate={ensData?.registration.expiryDate}
+                              expiryDate={ensData?.registration?.expiryDate}
                               externalAvatarUrl={asset?.lowResUrl}
                               registrationDate={
-                                ensData?.registration.registrationDate
+                                ensData?.registration?.registrationDate
                               }
                               showExtendDuration={hasExtendDurationButton}
                             />
@@ -691,15 +697,6 @@ const UniqueTokenExpandedState = ({
                               owner={ensData?.owner}
                               registrant={ensData?.registrant}
                             />
-                          </Section>
-                          <Section
-                            paragraphSpace={{ custom: 22 }}
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.advanced'
-                            )}`}
-                            titleEmoji="👽"
-                          >
-                            <AdvancedSection resolver={ensData?.resolver} />
                           </Section>
                         </>
                       )}

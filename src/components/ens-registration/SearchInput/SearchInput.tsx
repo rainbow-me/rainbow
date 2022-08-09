@@ -102,6 +102,7 @@ const SearchInput = ({
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
               <MaskedView
+                androidRenderingMode="software"
                 maskElement={
                   <Box height={`${height}px`} paddingTop={{ custom: 22 }}>
                     {isLoading ? (
@@ -127,7 +128,7 @@ const SearchInput = ({
             </Column>
             <Input
               autoCorrect={false}
-              keyboardType="visible-password"
+              keyboardType={android ? 'visible-password' : 'default'}
               onChangeText={onChangeText}
               onFocus={handleFocus}
               ref={inputRef}

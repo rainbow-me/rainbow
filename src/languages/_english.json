@@ -304,6 +304,30 @@
       "sync_codepush": "Sync codepush, current: %{codePushVersion}"
     },
     "discover": {
+      "dpi": {
+        "title": "DeFi Pulse Index",
+        "body": "All the top decentralized finance tokens in one. Track the industry.",
+        "view": "View"
+      },
+      "ens_create_profile": {
+        "title": "Create your ENS profile",
+        "body": "Replace your wallet address with a profile owned entirely by you."
+      },
+      "ens_search": {
+        "mini_title": "ENS",
+        "title_part_1": "Register a ",
+        "title_part_2": ".eth name"
+      },
+      "gas": {
+        "average": "Average",
+        "gwei": "Gwei",
+        "high": "High",
+        "loading": "Loading…",
+        "low": "Low",
+        "network_fees": "Network fees",
+        "surging": "Surging",
+        "very_low": "Very low"
+      },
       "lists": {
         "lists_title": "Lists",
         "this_list_is_empty": "This list is empty!"
@@ -499,7 +523,6 @@
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName}",
-        "advanced": "Advanced",
         "attributes": "Attributes",
         "collection_website": "Collection Website",
         "configuration": "Configuration",
@@ -889,9 +912,10 @@
         "watching": "Watching"
       },
       "banner": {
-        "and_create_ens_profile": "Search available .eth names",
-        "register_name": "Create Your ENS Profile"
+        "register_name": "Create Your ENS Profile",
+        "and_create_ens_profile": "Search available .eth names"
       },
+      "select_ens_name": "My ENS Names",
       "confirm": {
         "commit_button": "Hold to Commit",
         "confirm_purchase": "Confirm purchase",
@@ -938,9 +962,9 @@
         "discord": "Discord",
         "doge": "Dogecoin",
         "email": "Email",
-        "email_message": "Please enter a valid email",
+        "invalid_email": "Invalid email",
         "email_placeholder": "Add your email",
-        "email_submit_message": "Please enter a valid email",
+        "invalid_username": "Invalid %{app} username",
         "eth": "Ethereum",
         "github": "GitHub",
         "instagram": "Instagram",
@@ -967,14 +991,15 @@
         "username_placeholder": "username",
         "wallet_placeholder": "Add a %{coin} address",
         "website": "Website",
-        "website_message": "Please enter a valid website URL",
-        "website_placeholder": "Add your website",
-        "website_submit_message": "Please enter a valid email"
+        "invalid_website": "Invalid URL",
+        "website_placeholder": "Add your website"
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
         "copy_address": "Copy Address",
+        "open_wallet": "Open Wallet",
         "remove_from_contacts": "Remove from Contacts",
+        "share": "Share",
         "view_on_etherscan": "View on Etherscan"
       },
       "edit": {
@@ -996,6 +1021,7 @@
           "description": "Your profile is stored directly on Ethereum and owned by you.",
           "title": "Stored on Ethereum"
         },
+        "edit_name": "Edit %{name}",
         "use_existing_name": "Use an existing ENS name",
         "use_name": "Use %{name}",
         "wallet_address_info": {
@@ -1021,21 +1047,27 @@
         "view_profile": "View Profile"
       },
       "search": {
-        "3_char_min": "Minimum 3 characters",
-        "available": "🥳 Available",
-        "clear": "􀅉 Clear",
-        "continue": "Continue 􀆊",
+        "header": "Find your name",
         "description": "Search available ENS names",
+        "available": "🥳 Available",
+        "taken": "😭 Taken",
+        "registered_on": "This name was last registered on %{content}",
+        "price": "%{content} / Year",
+        "expiration": "Til %{content}",
+        "3_char_min": "Minimum 3 characters",
+        "already_registering_name": "You are already registering this name",
         "estimated_total_cost_1": "Estimated total cost of",
         "estimated_total_cost_2": "with current network fees",
-        "expiration": "Til %{content}",
-        "header": "Find your name",
         "loading_fees": "Loading network fees…",
-        "price": "%{content} / Year",
-        "registered_on": "This name was last registered on %{content}",
-        "taken": "😭 Taken"
+        "clear": "􀅉 Clear",
+        "continue": "Continue 􀆊",
+        "finish": "Finish 􀆊",
+        "and_create_ens_profile": "Search available .eth names",
+        "register_name": "Create Your ENS Profile"
       },
-      "select_ens_name": "My ENS Names"
+      "records": {
+        "since": "Since"
+      }
     },
     "review": {
       "alert": {
@@ -1414,10 +1446,14 @@
           "transaction_status": "Failed to send transaction status"
         },
         "checkboxes": {
+          "clear_profile_information": "Clear profile information",
+          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "transfer_control": "Transfer control to the recipient",
           "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
           "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
         },
         "complete_checks": "Complete checks",
+        "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",
         "placeholder_title": "Placeholder",

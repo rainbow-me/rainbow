@@ -27,6 +27,10 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import {
+  removeRegistrationByName,
+  saveCommitRegistrationParameters,
+} from '@/redux/ensRegistration';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   getFlashbotsProvider,
@@ -132,7 +136,7 @@ export default function SpeedUpAndCancelSheet() {
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
-    params: { type, tx, accentColor, onSendTransactionCallback },
+    params: { type, tx, accentColor },
   } = useRoute();
 
   const [ready, setReady] = useState(false);
@@ -190,6 +194,10 @@ export default function SpeedUpAndCancelSheet() {
     minGasPrice,
   ]);
 
+  const cancelCommitTransactionHash = useCallback(() => {
+    dispatch(removeRegistrationByName(tx?.ensRegistrationName));
+  }, [dispatch, tx?.ensRegistrationName]);
+
   const handleCancellation = useCallback(async () => {
     try {
       const newGasParams = getNewTransactionGasParams();
@@ -206,6 +214,9 @@ export default function SpeedUpAndCancelSheet() {
         transaction: cancelTxPayload,
       });
 
+      if (tx?.ensRegistrationName) {
+        cancelCommitTransactionHash(tx?.ensRegistrationName);
+      }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -224,6 +235,7 @@ export default function SpeedUpAndCancelSheet() {
     }
   }, [
     accountAddress,
+    cancelCommitTransactionHash,
     currentProvider,
     dispatch,
     getNewTransactionGasParams,
@@ -231,6 +243,18 @@ export default function SpeedUpAndCancelSheet() {
     nonce,
     tx,
   ]);
+
+  const saveCommitTransactionHash = useCallback(
+    hash => {
+      dispatch(
+        saveCommitRegistrationParameters({
+          commitTransactionHash: hash,
+          name: tx?.ensRegistrationName,
+        })
+      );
+    },
+    [dispatch, tx?.ensRegistrationName]
+  );
 
   const handleSpeedUp = useCallback(async () => {
     try {
@@ -250,7 +274,9 @@ export default function SpeedUpAndCancelSheet() {
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
-      onSendTransactionCallback?.(hash);
+      if (tx?.ensRegistrationName) {
+        saveCommitTransactionHash(hash);
+      }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -275,7 +301,7 @@ export default function SpeedUpAndCancelSheet() {
     getNewTransactionGasParams,
     goBack,
     nonce,
-    onSendTransactionCallback,
+    saveCommitTransactionHash,
     to,
     tx,
     value,

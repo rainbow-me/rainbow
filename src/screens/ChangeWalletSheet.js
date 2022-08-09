@@ -512,7 +512,9 @@ export default function ChangeWalletSheet() {
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <Centered>
-          <SheetTitle>{lang.t('wallet.label')}</SheetTitle>
+          <SheetTitle testID="change-wallet-sheet-title">
+            {lang.t('wallet.label')}
+          </SheetTitle>
 
           {!watchOnly && (
             <Row style={{ position: 'absolute', right: 0 }}>

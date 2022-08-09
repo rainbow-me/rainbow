@@ -156,7 +156,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
-  it('Should deposit DAI (via Compound)', async () => {
+  xit('Should deposit DAI (via Compound)', async () => {
     await Helpers.tap('Savings-list-header');
     await Helpers.waitAndTap('savings-list-row-DAI');
     await Helpers.waitAndTap('deposit-action-button');
@@ -171,7 +171,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should withdraw DAI (via Compound)', async () => {
+  xit('Should withdraw DAI (via Compound)', async () => {
     await Helpers.waitAndTap('savings-list-row-DAI');
     await Helpers.waitAndTap('withdraw-action-button');
     await Helpers.typeText('withdraw-modal-input', '1', true);

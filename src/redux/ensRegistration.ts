@@ -381,15 +381,18 @@ export const saveCommitRegistrationParameters = (
     ensRegistration: { registrations, currentRegistrationName },
     settings: { accountAddress },
   } = getState();
+  const registrationName =
+    (registrationParameters as RegistrationParameters)?.name ||
+    currentRegistrationName;
   const lcAccountAddress = accountAddress.toLowerCase();
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
-  const registration = accountRegistrations[currentRegistrationName] || {};
+  const registration = accountRegistrations[registrationName] || {};
   const updatedEnsRegistrationManager = {
     registrations: {
       ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [currentRegistrationName]: {
+        [registrationName]: {
           ...registration,
           ...registrationParameters,
         },

@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +19,7 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
+import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -30,7 +32,6 @@ import {
   usePortfolios,
   useTrackENSProfile,
   useUserAccounts,
-  useWalletENSAvatar,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
@@ -80,7 +81,7 @@ export default function WalletScreen() {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
+
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
@@ -165,12 +166,6 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    if (profilesEnabled) {
-      trackENSProfile();
-    }
-  }, [profilesEnabled, trackENSProfile]);
-
-  useEffect(() => {
     if (
       !isEmpty(portfolios) &&
       portfoliosFetched &&
@@ -209,9 +204,17 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    if (walletReady) updateWalletENSAvatars();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletReady]);
+    if (walletReady && profilesEnabled) {
+      InteractionManager.runAfterInteractions(() => {
+        // We are not prefetching intro profiles data on Android
+        // as the RPC call queue is considerably slower.
+        if (ios) {
+          prefetchENSIntroData();
+        }
+        trackENSProfile();
+      });
+    }
+  }, [profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
