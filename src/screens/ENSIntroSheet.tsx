@@ -151,7 +151,6 @@ export default function ENSIntroSheet() {
       background="body"
       paddingTop={{ custom: topPadding }}
       style={{ height: contentHeight }}
-      {...(android && { paddingBottom: { custom: 20 } })}
       testID="ens-intro-sheet"
     >
       <Inset top={isSmallPhone ? '15px' : '36px'}>
@@ -169,7 +168,7 @@ export default function ENSIntroSheet() {
                 </Stack>
                 <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
                   <Bleed left="10px">
-                    <IntroMarquee />
+                    <IntroMarquee isSmallPhone={isSmallPhone} />
                   </Bleed>
                   <Inset horizontal="34px">
                     <Divider color="divider60" />
@@ -178,7 +177,7 @@ export default function ENSIntroSheet() {
                 <Stack alignHorizontal="center">
                   <Box width={{ custom: contentWidth }}>
                     <Inset top="6px">
-                      <Stack space={isSmallPhone ? '30px' : '36px'}>
+                      <Stack space={isSmallPhone ? '24px' : '36px'}>
                         <InfoRow
                           description={lang.t(
                             'profiles.intro.wallet_address_info.description'
@@ -214,10 +213,7 @@ export default function ENSIntroSheet() {
             </Row>
             <Row height="content">
               <Box paddingBottom="4px">
-                <Inset
-                  space="19px"
-                  {...(isSmallPhone ? { bottom: '8px' } : {})}
-                >
+                <Inset space="19px" {...(isSmallPhone && { bottom: '8px' })}>
                   {isLoading && (
                     <Box alignItems="center" paddingBottom="15px">
                       {/* @ts-expect-error JavaScript component */}
