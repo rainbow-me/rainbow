@@ -2,9 +2,8 @@ import Clipboard from '@react-native-community/clipboard';
 import { useRoute } from '@react-navigation/core';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { Alert, StatusBar, TextInput, View } from 'react-native';
+import { StatusBar, TextInput, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Divider from '../components/Divider';
@@ -22,6 +21,7 @@ import { Bold, Text } from '../components/text';
 import { loadAllKeys } from '../model/keychain';
 import { useNavigation } from '../navigation/Navigation';
 import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@rainbow-me/handlers/authentication';
 import {
@@ -240,7 +240,10 @@ const WalletDiagnosticsSheet = () => {
                 Object.keys(walletsWithBalancesAndNames).some(k => {
                   const found = walletsWithBalancesAndNames[k].addresses.some(
                     account => {
-                      if (toLower(account.address) === toLower(address)) {
+                      if (
+                        account?.address?.toLowerCase() ===
+                        address.toLowerCase()
+                      ) {
                         label = account.label || account.ens;
                         return true;
                       }

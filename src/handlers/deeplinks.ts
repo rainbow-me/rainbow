@@ -1,8 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import qs from 'qs';
-import { Alert } from 'react-native';
 import URL from 'url-parse';
 import { initialChartExpandedStateSheetHeight } from '../components/expanded-state/asset/ChartExpandedState';
 import store from '../redux/store';
@@ -11,6 +9,7 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { defaultConfig } from '@rainbow-me/config/experimental';
 import { PROFILES } from '@rainbow-me/config/experimentalHooks';
 import { setDeploymentKey } from '@rainbow-me/handlers/fedora';
@@ -52,17 +51,17 @@ export default async function handleDeeplink(
         const { dispatch } = store;
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { addr } = qs.parse(urlObj.query?.substring(1));
-        const address = toLower(addr as string);
+        const address = (addr as string)?.toLowerCase() ?? '';
         if (address && address.length > 0) {
           // @ts-expect-error FIXME: Property 'assets' does not exist on type...
           const { assets: allAssets, genericAssets } = store.getState().data;
           const asset =
             Object.values(genericAssets).find(
-              (asset: any) => address === toLower(asset.address)
+              (asset: any) => address === asset.address.toLowerCase()
             ) ||
             (address !== ETH_ADDRESS &&
               allAssets.find(
-                (asset: any) => address === toLower(asset.address)
+                (asset: any) => address === asset.address.toLowerCase()
               ));
 
           // First go back to home to dismiss any open shit

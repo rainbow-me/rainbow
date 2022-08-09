@@ -1,16 +1,28 @@
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
+import { useSelector } from 'react-redux';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
-import { UniswapPoolListRow } from '../investment-cards';
+import FastUniswapPoolRow from '../asset-list/RecyclerAssetList2/FastComponents/FastUniswapPoolRow';
+import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
+import { analytics } from '@rainbow-me/analytics';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 import { times } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useLatestCallback,
+  useUniswapPools,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import { useRemoveNextToLast } from '@rainbow-me/navigation/useRemoveNextToLast';
+import { parseAssetNative } from '@rainbow-me/parsers';
+import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 
 const INITIAL_PAGE_AMOUNT = 15;
@@ -99,13 +111,14 @@ const listData = [
 ];
 
 const renderUniswapPoolListRow = ({ item }) => (
-  <UniswapPoolListRow assetType="uniswap" item={item} key={item.address} />
+  <FastUniswapPoolRow assetType="uniswap" item={item} />
 );
 
 export default function UniswapPools({
   token,
   hideIfEmpty,
   initialPageAmount = INITIAL_PAGE_AMOUNT,
+  marginTop,
   ShowMoreButton = DefaultShowMoreButton,
   forceShowAll,
   alwaysShowMoreButton,
@@ -184,6 +197,43 @@ export default function UniswapPools({
     [colors, sortDirection]
   );
 
+  const { push } = useNavigation();
+  const removeNextToLastRoute = useRemoveNextToLast();
+  const { nativeCurrency } = useAccountSettings();
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }) => genericAssets
+  );
+  const { uniswap } = useSelector(readableUniswapSelector);
+
+  const handleOpenExpandedState = useLatestCallback(item => {
+    let poolAsset = uniswap.find(pool => pool.address === item.address);
+    if (!poolAsset) {
+      poolAsset = parseAssetNative(
+        { ...item, ...genericAssets[item.address] },
+        nativeCurrency
+      );
+    }
+
+    analytics.track('Pressed Pools Item', {
+      category: 'discover',
+      symbol: poolAsset.tokenNames,
+      type: item.attribute,
+    });
+
+    // on iOS we handle this on native side
+    android && removeNextToLastRoute();
+
+    push(Routes.EXPANDED_ASSET_SHEET_POOLS, {
+      asset: poolAsset,
+      dpi: true,
+      fromDiscover: true,
+      longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
+      type: 'uniswap',
+    });
+  });
+
+  const theme = useTheme();
+
   const allPairs = useMemo(() => {
     if (!pairs) return [];
 
@@ -196,10 +246,14 @@ export default function UniswapPools({
       .map(item => ({
         ...item,
         attribute: selectedList,
+        nativeCurrency,
+        onPress: () => handleOpenExpandedState(item),
+        theme,
+        value: item[selectedList],
       }));
 
     return sortedPairs;
-  }, [pairs, selectedList]);
+  }, [handleOpenExpandedState, nativeCurrency, pairs, selectedList, theme]);
 
   const pairsSorted = useMemo(() => {
     if (sortDirection === SORT_DIRECTION.ASC) {
@@ -253,7 +307,7 @@ export default function UniswapPools({
   }
 
   return (
-    <Column marginTop={32}>
+    <Column marginTop={marginTop}>
       <Row marginBottom={12} paddingHorizontal={19}>
         <PoolEmoji>🐋</PoolEmoji>
         <Text size="larger" testID="pools-section" weight="heavy">
@@ -293,7 +347,7 @@ export default function UniswapPools({
           <FlatList
             contentContainerStyle={flatListContainerStyle}
             data={pairsSorted}
-            keyExtractor={(item, index) => index}
+            keyExtractor={item => item?.address}
             renderItem={renderUniswapPoolListRow}
             scrollsToTop={false}
           />

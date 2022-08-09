@@ -88,6 +88,7 @@ function rowRenderer(
         <WrappedTokenFamilyHeader
           image={image}
           name={name}
+          testID={`token-family-header-${name}`}
           theme={extendedState.theme}
           total={total}
         />
@@ -106,7 +107,6 @@ function rowRenderer(
       );
     }
     case CellType.LOADING_ASSETS:
-      // @ts-expect-error untyped JS component
       return <AssetListItemSkeleton />;
     default:
       assertNever(type);

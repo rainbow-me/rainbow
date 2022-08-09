@@ -189,15 +189,17 @@
       "confirm_exchange": {
         "deposit": "Hold to Deposit",
         "enter_amount": "Enter an Amount",
-        "fetching_details": "Fetching Details...",
+        "fetching_quote": "Fetching Quote",
         "insufficient_eth": "Insufficient ETH",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
+        "insufficient_matic": "Insufficient MATIC",
         "insufficient_token": "Insufficient %{tokenName}",
         "invalid_fee": "Invalid Fee",
         "invalid_fee_lowercase": "Invalid fee",
         "loading": "Loading...",
         "review": "Review",
+        "submitting": "Submitting",
         "swap": "Hold to Swap",
         "swap_anyway": "Swap Anyway",
         "symbol_balance_too_low": "%{symbol} balance too low",
@@ -206,6 +208,7 @@
       },
       "connect": "Connect",
       "connect_walletconnect": "Use WalletConnect",
+      "continue": "Continue",
       "delete": "Delete",
       "disconnect_account": "Log Out",
       "donate": "Donate ETH",
@@ -213,8 +216,9 @@
       "edit": "Edit",
       "exchange": "Exchange",
       "exchange_again": "Exchange Again",
-      "exchange_search_placeholder": "Search",
+      "exchange_search_placeholder": "Search tokens",
       "go_back": "Go Back",
+      "go_back_lowercase": "Go back",
       "got_it": "Got it",
       "hide": "Hide",
       "hold_to_authorize": {
@@ -248,7 +252,8 @@
       "unhide": "Unhide",
       "unpin": "Unpin",
       "view": "View",
-      "watch_this_wallet": "Watch this Wallet"
+      "watch_this_wallet": "Watch this Wallet",
+      "hidden": "Hidden"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -299,6 +304,30 @@
       "sync_codepush": "Sync codepush, current: %{codePushVersion}"
     },
     "discover": {
+      "dpi": {
+        "title": "DeFi Pulse Index",
+        "body": "All the top decentralized finance tokens in one. Track the industry.",
+        "view": "View"
+      },
+      "ens_create_profile": {
+        "title": "Create your ENS profile",
+        "body": "Replace your wallet address with a profile owned entirely by you."
+      },
+      "ens_search": {
+        "mini_title": "ENS",
+        "title_part_1": "Register a ",
+        "title_part_2": ".eth name"
+      },
+      "gas": {
+        "average": "Average",
+        "gwei": "Gwei",
+        "high": "High",
+        "loading": "Loading…",
+        "low": "Low",
+        "network_fees": "Network fees",
+        "surging": "Surging",
+        "very_low": "Very low"
+      },
       "lists": {
         "lists_title": "Lists",
         "this_list_is_empty": "This list is empty!"
@@ -310,7 +339,8 @@
       },
       "search": {
         "profiles": "Profiles",
-        "search_ethereum": "Search all of Ethereum"
+        "search_ethereum": "Search all of Ethereum",
+        "search_ethereum_short": "Search Ethereum"
       },
       "strategies": {
         "strategies_title": "Strategies",
@@ -357,14 +387,24 @@
       },
       "price_impact": {
         "losing_prefix": "Losing",
-        "small_market": "Small Market"
+        "small_market": "Small Market",
+        "label": "Possible loss"
       },
+      "source": {
+        "rainbow": "Auto",
+        "0x": "0x",
+        "1inch": "1inch"
+      },
+      "settings": "Settings",
+      "use_defaults": "Use Defaults",
+      "done": "Done",
+      "losing": "Losing",
+      "high": "High",
+      "slippage_tolerance": "Max Slippage",
+      "source_picker": "Route Swaps via",
+      "use_flashbots": "Use Flashbots",
+      "flashbots_protected": "Flashbots Protect enabled",
       "swapping_for_prefix": "Swapping for",
-      "unverified_token": {
-        "go_back": "Go Back",
-        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!",
-        "unverified_token_title": "Unverified Token"
-      },
       "view_details": "View Details"
     },
     "expanded_state": {
@@ -374,6 +414,8 @@
         "get_asset": "Get %{assetSymbol}",
         "market_cap": "Market cap",
         "read_more_button": "Read more",
+        "available_networks": "Available on %{availableNetworks} networks",
+        "available_network": "Available on the %{availableNetwork} network",
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
@@ -439,6 +481,7 @@
         "unicorn_one": "that unicorn one",
         "uniswap_v2": "Uniswap v2",
         "view_on": "View on %{blockExplorerName}",
+        "network_switcher": "Swapping on the %{network} network",
         "swap_max_alert": {
           "title": "Are you sure?",
           "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}?",
@@ -451,7 +494,18 @@
         }
       },
       "swap_details": {
-        "review": "Review"
+        "exchange_rate": "Exchange rate",
+        "rainbow_fee": "Included Rainbow fee",
+        "review": "Review",
+        "show_details": "More details",
+        "hide_details": "Hide details",
+        "price_impact": "Difference in value",
+        "minimum_received": "Minimum received",
+        "maximum_sold": "Maximum sold",
+        "token_contract": "%{token} contract",
+        "number_of_exchanges": "%{number} Exchanges",
+        "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
+        "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol}",
@@ -465,12 +519,10 @@
           "image_download_permission": "Image Download Permission",
           "nft_image": "NFT image",
           "your_permission_is_required": "Your permission is required to save images to your device"
-        },
-        "view_on_opensea": "View on OpenSea"
+        }
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName}",
-        "advanced": "Advanced",
         "attributes": "Attributes",
         "collection_website": "Collection Website",
         "configuration": "Configuration",
@@ -487,7 +539,6 @@
         "last_sale_price": "Last sale price",
         "manager": "Manager",
         "open_in_web_browser": "Open in Web Browser",
-        "opensea": "OpenSea",
         "owner": "Owner",
         "profile_info": "Profile Info",
         "properties": "Properties",
@@ -500,15 +551,37 @@
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
         "twitter": "Twitter",
-        "view_all_with_property": "View All With Property",
+        "view_all_with_property": "View All with Property",
         "view_collection": "View Collection",
         "view_on_block_explorer": "View on %{blockExplorerName}",
-        "view_on_opensea": "View on Opensea",
+        "view_on_marketplace_name": "View on %{marketplaceName}",
         "view_on_platform": "View on %{platform}",
-        "view_on_web": "View on Web"
+        "view_on_web": "View on Web",
+        "hide": "Hide",
+        "unhide": "Unhide"
       }
     },
     "explain": {
+      "optimism_app_icon": {
+        "title": "You've unlocked\nRainbow 􀆄 Optimism",
+        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+        "button": "Snag the icon"
+      },
+      "output_disabled": {
+        "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
+        "title": "Enter %{inputToken} Instead",
+        "title_empty": "Choose a Token"
+      },
+      "available_networks": {
+        "text": "%{tokenSymbol} is available on %{networks}. To move %{tokenSymbol} between networks, use a Bridge like Hop.",
+        "title_plural": "Available on %{length} Networks",
+        "title_singular": "Available on the %{network} Network"
+      },
+      "optimism_app_icon": {
+        "title": "You've unlocked\nRainbow 􀆄 Optimism",
+        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+        "button": "Snag the icon"
+      },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Arbitrum?"
@@ -553,6 +626,7 @@
         "title": "What's Polygon?"
       },
       "read_more": "Read More",
+      "learn_more": "Learn More",
       "sending_to_contract": {
         "text": "The address you entered is for a smart contract.\n\nExcept for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.\n\nDouble check the address, verify it with the recipient, or contact support first.",
         "title": "Hold your horses!"
@@ -560,6 +634,58 @@
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust.",
         "title": "Verified Tokens"
+      },
+      "unverified": {
+        "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the ",
+        "fragment2": "token contract",
+        "fragment3": " and always do research to ensure that you interact with tokens you trust.",
+        "title": "%{symbol} is Unverified",
+        "go_back": "Go back"
+      },
+      "obtain_l2_asset": {
+        "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. \n\n Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? ",
+        "fragment2": "Read more",
+        "fragment3": " about bridges.",
+        "title": "No Tokens on %{networkName}"
+      },
+      "insufficient_liquidity": {
+        "fragment1": "The exchanges don't have enough of the tokens you requested to complete this transaction. \n\n Still curious? ",
+        "fragment2": "Read more",
+        "fragment3": " about AMMs and token liquidity.",
+        "title": "Insufficient Liquidity"
+      },
+      "go_to_hop_with_icon": {
+        "text": "Go to the Hop Bridge 􀮶"
+      },
+      "rainbow_fee": {
+        "text": "Rainbow takes a %{feePercentage} fee from swaps. It’s part of what enables us to give you the best Ethereum experience possible."
+      },
+      "swap_routing": {
+        "text": "By default, Rainbow chooses the cheapest route possible for your swap. If you prefer to specifically use either 0x or 1inch, you can do that too.",
+        "title": "Swap Routing",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about our approach to routing swaps."
+        }
+      },
+      "slippage": {
+        "text": "Slippage occurs when the price of a swap changes during the time between you submitting your transaction and its confirmation. \n\nSetting a higher slippage tolerance increases the likelihood your swap will be successful, but may result in you getting a worse price.",
+        "title": "Slippage",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about slippage and how it affects swaps."
+        }
+      },
+      "flashbots": {
+        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing.",
+        "title": "Flashbots",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about Flashbots and the protection it offers."
+        }
       }
     },
     "fedora": {
@@ -786,16 +912,13 @@
         "watching": "Watching"
       },
       "banner": {
-        "and_create_ens_profile": "Search available .eth names",
-        "register_name": "Create Your ENS Profile"
+        "register_name": "Create Your ENS Profile",
+        "and_create_ens_profile": "Search available .eth names"
       },
+      "select_ens_name": "My ENS Names",
       "confirm": {
-        "commit_button": "Hold to Commit",
-        "confirm_purchase": "Confirm purchase",
         "confirm_registration": "Confirm Registration",
-        "confirm_renew": "Hold to Extend",
-        "confirm_set_name": "Confirm Set Primary Name",
-        "confirm_update": "Confirm Update",
+        "confirm_updates": "Confirm Updates",
         "duration_plural": "%{content} years",
         "duration_singular": "1 year",
         "estimated_fees": "Estimated network fees",
@@ -803,6 +926,10 @@
         "estimated_total_eth": "Estimated total in ETH",
         "extend_by": "Extend by",
         "extend_registration": "Extend Registration",
+        "hold_to_begin": "Hold to Begin",
+        "hold_to_confirm": "Hold to Confirm",
+        "hold_to_extend": "Hold to Extend",
+        "hold_to_register": "Hold to Register",
         "insufficient_eth": "Insufficient ETH",
         "last_step": "One last step",
         "last_step_description": "Confirm below to register your name and configure your profile",
@@ -815,7 +942,6 @@
         "set_ens_name": "Set as my primary ENS name",
         "set_name_registration": "Set as Primary Name",
         "speed_up": "Speed Up",
-        "start_registration": "Start Registration",
         "suggestion": "Buy more years now to save on fees",
         "transaction_pending": "Transaction pending",
         "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain",
@@ -835,9 +961,9 @@
         "discord": "Discord",
         "doge": "Dogecoin",
         "email": "Email",
-        "email_message": "Please enter a valid email",
+        "invalid_email": "Invalid email",
         "email_placeholder": "Add your email",
-        "email_submit_message": "Please enter a valid email",
+        "invalid_username": "Invalid %{app} username",
         "eth": "Ethereum",
         "github": "GitHub",
         "instagram": "Instagram",
@@ -861,17 +987,19 @@
         "telegram": "Telegram",
         "twitter": "Twitter",
         "upload_photo": "Upload a Photo",
+        "uploading": "Uploading",
         "username_placeholder": "username",
         "wallet_placeholder": "Add a %{coin} address",
         "website": "Website",
-        "website_message": "Please enter a valid website URL",
-        "website_placeholder": "Add your website",
-        "website_submit_message": "Please enter a valid email"
+        "invalid_website": "Invalid URL",
+        "website_placeholder": "Add your website"
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
         "copy_address": "Copy Address",
+        "open_wallet": "Open Wallet",
         "remove_from_contacts": "Remove from Contacts",
+        "share": "Share",
         "view_on_etherscan": "View on Etherscan"
       },
       "edit": {
@@ -893,6 +1021,7 @@
           "description": "Your profile is stored directly on Ethereum and owned by you.",
           "title": "Stored on Ethereum"
         },
+        "edit_name": "Edit %{name}",
         "use_existing_name": "Use an existing ENS name",
         "use_name": "Use %{name}",
         "wallet_address_info": {
@@ -913,25 +1042,32 @@
         "create_profile": "Create your Profile",
         "edit_profile": "Edit Profile",
         "pick_emoji": "Pick an Emoji",
+        "shuffle_emoji": "Shuffle Emoji",
         "remove_photo": "Remove Photo",
         "view_profile": "View Profile"
       },
       "search": {
-        "3_char_min": "Minimum 3 characters",
-        "available": "🥳 Available",
-        "clear": "􀅉 Clear",
-        "continue": "Continue 􀆊",
+        "header": "Find your name",
         "description": "Search available ENS names",
+        "available": "🥳 Available",
+        "taken": "😭 Taken",
+        "registered_on": "This name was last registered on %{content}",
+        "price": "%{content} / Year",
+        "expiration": "Til %{content}",
+        "3_char_min": "Minimum 3 characters",
+        "already_registering_name": "You are already registering this name",
         "estimated_total_cost_1": "Estimated total cost of",
         "estimated_total_cost_2": "with current network fees",
-        "expiration": "Til %{content}",
-        "header": "Find your name",
         "loading_fees": "Loading network fees…",
-        "price": "%{content} / Year",
-        "registered_on": "This name was last registered on %{content}",
-        "taken": "😭 Taken"
+        "clear": "􀅉 Clear",
+        "continue": "Continue 􀆊",
+        "finish": "Finish 􀆊",
+        "and_create_ens_profile": "Search available .eth names",
+        "register_name": "Create Your ENS Profile"
       },
-      "select_ens_name": "My ENS Names"
+      "records": {
+        "since": "Since"
+      }
     },
     "review": {
       "alert": {
@@ -977,6 +1113,7 @@
     "settings": {
       "backup": "Backup",
       "currency": "Currency",
+      "app_icon": "App Icon",
       "dev": "Dev",
       "developer": "Developer Settings",
       "done": "Done",
@@ -1021,7 +1158,9 @@
       "modal_types": {
         "confirm": "Confirm",
         "deposit": "Deposit",
+        "receive": "Receive",
         "swap": "Swap",
+        "get_symbol_with": "Get %{symbol} with",
         "withdraw": "Withdraw",
         "withdraw_symbol": "Withdraw %{symbol}"
       },
@@ -1307,10 +1446,14 @@
           "transaction_status": "Failed to send transaction status"
         },
         "checkboxes": {
+          "clear_profile_information": "Clear profile information",
+          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "transfer_control": "Transfer control to the recipient",
           "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
           "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
         },
         "complete_checks": "Complete checks",
+        "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",
         "placeholder_title": "Placeholder",

@@ -1,6 +1,6 @@
 import { AnyAction, applyMiddleware, createStore } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { loadingAssetsMiddleware } from './data';
+import { loadingAssetsMiddleware } from './helpers/middlewares';
 import reducers from './reducers';
 
 const store = createStore(

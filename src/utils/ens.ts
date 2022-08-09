@@ -44,8 +44,8 @@ export function getENSNFTAvatarUrl(
   return avatarUrl;
 }
 
-export function isENSNFTRecord(avatar: string) {
-  return avatar.includes('eip155:1');
+export function isENSNFTRecord(avatar?: string) {
+  return avatar?.includes('eip155:1');
 }
 
 export function normalizeENS(name: string) {

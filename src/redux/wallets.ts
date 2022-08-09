@@ -1,11 +1,8 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-// <<<<<<< HEAD:src/redux/wallets.js
 import { isEmpty, keys } from 'lodash';
-// =======
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-// >>>>>>> cbbe0a35ee40fa90a6e8f5d0ea24fce7bc4ec878:src/redux/wallets.ts
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
@@ -14,6 +11,7 @@ import {
 } from '../handlers/localstorage/walletNames';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
+import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { hasKey } from '../model/keychain';
 import { PreferenceActionType, setPreference } from '../model/preferences';
 import {
@@ -42,7 +40,7 @@ import {
 import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
-import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { WalletLoadingState } from '@rainbow-me/helpers/walletLoadingStates';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
@@ -399,40 +397,56 @@ export const getWalletENSAvatars = async (
     | undefined;
   let promises: Promise<{
     account: RainbowAccount;
-    avatarChanged: boolean;
+    ensChanged: boolean;
     key: string;
   }>[] = [];
   walletKeys.forEach(key => {
     const wallet = wallets![key];
     const innerPromises = wallet?.addresses?.map(async account => {
-      const ens =
-        (await fetchReverseRecord(account.address)) ||
-        walletNames[account.address];
+      const ens = await fetchReverseRecord(account.address);
+      const currentENSName = walletNames[account.address];
       if (ens) {
-        const images = await fetchImages(ens);
-        const newImage =
-          typeof images?.avatarUrl === 'string' &&
-          images?.avatarUrl !== account?.image
-            ? images?.avatarUrl
-            : account.image;
+        const isNewEnsName = currentENSName !== ens;
+        const avatar = await fetchENSAvatar(ens);
+        const newImage = avatar?.imageUrl || null;
         return {
           account: {
             ...account,
             image: newImage,
+            label: isNewEnsName ? ens : account.label,
           },
-          avatarChanged: newImage !== account.image,
+          ensChanged: newImage !== account.image || isNewEnsName,
+          key,
+        };
+      } else if (currentENSName) {
+        // if user had an ENS but now is gone
+        return {
+          account: {
+            ...account,
+            image:
+              account.image?.startsWith('~') ||
+              account.image?.startsWith('file')
+                ? account.image
+                : null, // if the user had an ens but the image it was a local image
+            label: '',
+          },
+          ensChanged: true,
           key,
         };
       } else {
-        return { account, avatarChanged: false, key };
+        return {
+          account,
+          ensChanged: false,
+          key,
+        };
       }
     });
     promises = promises.concat(innerPromises);
   });
 
   const newAccounts = await Promise.all(promises);
-  newAccounts.forEach(({ account, key, avatarChanged }) => {
-    if (!avatarChanged) return;
+  newAccounts.forEach(({ account, key, ensChanged }) => {
+    if (!ensChanged) return;
     const addresses = wallets?.[key]?.addresses;
     const index = addresses?.findIndex(
       ({ address }) => address === account.address

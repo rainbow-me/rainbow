@@ -1,11 +1,11 @@
-import analytics from '@segment/analytics-react-native';
-import { toLower, values } from 'lodash';
+import { values } from 'lodash';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import networkInfo from '../../helpers/networkInfo';
 import { settingsUpdateNetwork } from '../../redux/settings';
 import { RadioList, RadioListItem } from '../radio-list';
+import { analytics } from '@rainbow-me/analytics';
 import {
   useAccountSettings,
   useInitializeAccountData,
@@ -42,7 +42,7 @@ const NetworkSection = props => {
         disabled: (!testnetsEnabled && testnet) || disabled,
         key: value,
         label: name,
-        selected: toLower(network) === toLower(value),
+        selected: network.toLowerCase() === value.toLowerCase(),
         testID: `${value}-network`,
         value,
       }))}

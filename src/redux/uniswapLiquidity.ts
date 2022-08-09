@@ -1,4 +1,4 @@
-import { concat, isEmpty, uniqBy } from 'lodash';
+import { isEmpty, uniqBy } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
@@ -31,7 +31,7 @@ interface UniswapPoolToken {
 /**
  * Fully loaded details for a Uniswap pool from the dispersion API.
  */
-interface UniswapPoolAddressDetailsFull {
+export interface UniswapPoolAddressDetailsFull {
   address: string | undefined;
   annualized_fees: number;
   liquidity: number;
@@ -168,8 +168,9 @@ export const uniswapUpdateLiquidityTokens = (
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
+
     updatedLiquidityTokens = uniqBy(
-      concat(updatedLiquidityTokens, existingLiquidityTokens),
+      updatedLiquidityTokens.concat(existingLiquidityTokens),
       token => token.address
     ).filter(token => !!Number(token?.balance?.amount ?? 0));
   } else {

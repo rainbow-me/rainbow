@@ -41,6 +41,7 @@ const getHTML = (svgContent, style) =>
         height: 100%;
         width: 100%;
         overflow: hidden;
+        user-select: none;
       }
     </style>
   </head>
@@ -112,12 +113,15 @@ class SvgImage extends Component {
       setTimeout(() => this.setState({ trulyLoaded: true }), 1000);
     }
   };
+
   render() {
     const props = this.props;
     const { svgContent } = this.state;
+
+    let html;
+    let isSVGAnimated = false;
     if (svgContent) {
       const flattenedStyle = StyleSheet.flatten(props.style) || {};
-      let html;
       if (svgContent.includes('viewBox')) {
         html = getHTML(svgContent, flattenedStyle);
       } else {
@@ -140,51 +144,46 @@ class SvgImage extends Component {
         html = getHTML(patchedSvgContent, flattenedStyle);
       }
 
-      const isSVGAnimated = html?.indexOf('<animate') !== -1;
-
-      return (
-        <View style={[props.style, props.containerStyle]}>
-          {!this.state.trulyLoaded && props.lowResFallbackUri && (
-            <ImageTile
-              resizeMode={ImgixImage.resizeMode.cover}
-              source={{ uri: props.lowResFallbackUri }}
-              style={position.coverAsObject}
-            />
-          )}
-          {!this.state.trulyLoaded && props.fallbackUri && (
-            <ImageTile
-              resizeMode={ImgixImage.resizeMode.cover}
-              source={{ uri: props.fallbackUri }}
-              style={position.coverAsObject}
-            />
-          )}
-          {(!props.fallbackIfNonAnimated || isSVGAnimated) && (
-            <WebView
-              onMessage={this.onLoad}
-              originWhitelist={['*']}
-              pointerEvents="none"
-              scalesPageToFit
-              scrollEnabled={false}
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-              source={{ html }}
-              style={[
-                styles,
-                props.style,
-                { display: this.state.loaded || android ? 'flex' : 'none' },
-              ]}
-            />
-          )}
-        </View>
-      );
-    } else {
-      return (
-        <View
-          pointerEvents="none"
-          style={[props.containerStyle, props.style]}
-        />
-      );
+      isSVGAnimated = html?.indexOf('<animate') !== -1;
     }
+
+    return (
+      <View style={[props.containerStyle, props.style]}>
+        {!this.state.trulyLoaded && props.lowResFallbackUri && (
+          <ImageTile
+            fm="png"
+            resizeMode={ImgixImage.resizeMode.cover}
+            source={{ uri: props.lowResFallbackUri }}
+            style={position.coverAsObject}
+          />
+        )}
+        {!this.state.trulyLoaded && props.fallbackUri && (
+          <ImageTile
+            fm="png"
+            resizeMode={ImgixImage.resizeMode.cover}
+            source={{ uri: props.fallbackUri }}
+            style={position.coverAsObject}
+          />
+        )}
+        {(!props.fallbackIfNonAnimated || isSVGAnimated) && (
+          <WebView
+            onMessage={this.onLoad}
+            originWhitelist={['*']}
+            pointerEvents="none"
+            scalesPageToFit
+            scrollEnabled={false}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            source={{ html }}
+            style={[
+              styles,
+              props.style,
+              { display: this.state.loaded || android ? 'flex' : 'none' },
+            ]}
+          />
+        )}
+      </View>
+    );
   }
 }
 

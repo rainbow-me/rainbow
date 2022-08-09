@@ -53,11 +53,17 @@ export interface UniqueAsset {
   lastSale: UniqueAssetLastSale | undefined;
   lastSalePaymentToken: string | undefined | null;
   lowResUrl: string | null;
+  marketplaceCollectionUrl?: string | null;
+  marketplaceName: string | null;
   type: AssetType;
   uniqueId: string;
+  /**
+   * @description a computed unique value comprised of <network>_<address>_<token_id>
+   */
+  fullUniqueId: string;
   urlSuffixForAsset: string;
   isPoap?: boolean;
-  network?: Network;
+  network: Network;
 }
 
 export interface UniqueAssetTrait {

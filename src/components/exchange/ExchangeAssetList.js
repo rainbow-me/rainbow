@@ -1,5 +1,4 @@
 import { useIsFocused } from '@react-navigation/native';
-import lang from 'i18n-js';
 import React, {
   forwardRef,
   Fragment,
@@ -10,7 +9,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Keyboard, SectionList, StyleSheet, View } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  SectionList,
+  StyleSheet,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '../../components/animations';
 import useAccountSettings from '../../hooks/useAccountSettings';
@@ -22,7 +27,11 @@ import { GradientText, Text } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';
 import { TokenSectionTypes } from '@rainbow-me/helpers';
-import { usePrevious } from '@rainbow-me/hooks';
+import {
+  useAndroidScrollViewGestureHandler,
+  usePrevious,
+  useUserLists,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
@@ -152,12 +161,13 @@ const ExchangeAssetList = (
   const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
   useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
-  const { navigate } = useNavigation();
+  const { dangerouslyGetParent, navigate } = useNavigation();
   const {
     copiedText,
     copyCount,
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
+  const { updateList } = useUserLists();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
@@ -172,26 +182,28 @@ const ExchangeAssetList = (
 
   const handleUnverifiedTokenPress = useCallback(
     item => {
-      Alert.alert(
-        lang.t('exchange.unverified_token.unverified_token_title'),
-        lang.t('exchange.unverified_token.token_not_verified'),
-        [
-          {
-            onPress: () => itemProps.onPress(item),
-            text: lang.t('button.proceed_anyway'),
-          },
-          {
-            style: 'cancel',
-            text: lang.t('exchange.unverified_token.go_back'),
-          },
-        ]
-      );
+      Keyboard.dismiss();
+      navigate(Routes.EXPLAIN_SHEET, {
+        asset: item,
+        onClose: () => {
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(() => {
+              itemProps.onPress(item);
+            }, 250);
+          });
+        },
+        type: 'unverified',
+      });
     },
-    [itemProps]
+    [itemProps, navigate]
   );
 
+  const { onScroll } = useAndroidScrollViewGestureHandler({
+    navigation: dangerouslyGetParent(),
+  });
+
   const openVerifiedExplainer = useCallback(() => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
   }, [navigate]);
 
@@ -245,23 +257,28 @@ const ExchangeAssetList = (
         data: data.map(rowData => ({
           ...rowData,
           contextMenuProps: contextMenuProps(
-            store.getState().data.genericAssets?.[rowData.address],
+            rowData ?? store.getState().data.genericAssets?.[rowData.uniqueId],
             onCopySwapDetailsText
           ),
           nativeCurrency,
           nativeCurrencySymbol,
+          onAddPress: () => {
+            itemProps.onActionAsset(
+              rowData ?? store.getState().data.genericAssets?.[rowData.uniqueId]
+            );
+          },
           onCopySwapDetailsText,
           onPress: givenItem => {
             if (rowData.ens) {
               return itemProps.onPress(givenItem);
             }
             const asset = store.getState().data.genericAssets?.[
-              rowData.address
+              rowData.uniqueId
             ];
             if (rowData.isVerified || itemProps.showBalance) {
-              itemProps.onPress(asset || rowData);
+              itemProps.onPress(rowData ?? asset);
             } else {
-              handleUnverifiedTokenPress(asset || rowData);
+              handleUnverifiedTokenPress(rowData || asset);
             }
           },
           showAddButton: itemProps.showAddButton,
@@ -272,7 +289,7 @@ const ExchangeAssetList = (
           toggleFavorite: onNewEmoji => {
             setLocalFavorite(prev => {
               const newValue = !prev[rowData.address];
-
+              updateList(rowData?.address, 'favorites', newValue);
               if (newValue) {
                 ios && onNewEmoji();
                 haptics.notificationSuccess();
@@ -280,11 +297,6 @@ const ExchangeAssetList = (
                 haptics.selection();
               }
 
-              itemProps.onActionAsset(
-                store.getState().data.genericAssets?.[rowData.address] ||
-                  rowData,
-                newValue
-              );
               return {
                 ...prev,
                 [rowData.address]: newValue,
@@ -302,6 +314,7 @@ const ExchangeAssetList = (
       onCopySwapDetailsText,
       testID,
       theme,
+      updateList,
     ]
   );
 
@@ -325,6 +338,7 @@ const ExchangeAssetList = (
           ListFooterComponent={FooterSpacer}
           keyboardDismissMode={keyboardDismissMode}
           onLayout={onLayout}
+          onScroll={android ? onScroll : undefined}
           ref={sectionListRef}
           renderItem={renderItem}
           renderSectionHeader={ExchangeAssetSectionListHeader}

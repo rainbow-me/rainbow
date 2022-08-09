@@ -20,6 +20,7 @@ import {
   RawButtonProps,
 } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   AnimateProps,
   Easing,
@@ -33,6 +34,7 @@ import Animated, {
 import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { BaseButtonAnimationProps } from './types';
+import { HapticFeedbackType } from '@/utils/haptics';
 import { useLongPressEvents } from '@rainbow-me/hooks';
 
 interface BaseProps extends BaseButtonAnimationProps {
@@ -46,6 +48,8 @@ interface BaseProps extends BaseButtonAnimationProps {
   shouldLongPressHoldPress?: boolean;
   skipTopMargin?: boolean;
   wrapperStyle: StyleProp<ViewStyle>;
+  hapticType: HapticFeedbackType;
+  enableHapticFeedback: boolean;
 }
 
 type Props = PropsWithChildren<BaseProps>;
@@ -145,15 +149,15 @@ const ScaleButton = ({
   );
 
   return (
-    <View style={[cx.overflow, wrapperStyle]}>
+    <View style={[sx.overflow, wrapperStyle]}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
           hitSlop={-overflowMargin}
           onGestureEvent={gestureHandler}
           rippleColor={transparentColor}
-          style={cx.overflow}
+          style={sx.overflow}
         >
-          <View style={cx.transparentBackground}>
+          <View style={sx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>
                 {children}
@@ -178,6 +182,8 @@ const SimpleScaleButton = ({
   shouldLongPressHoldPress,
   isLongPress,
   onLayout,
+  hapticType,
+  enableHapticFeedback,
   onPress,
   overflowMargin,
   scaleTo,
@@ -192,10 +198,18 @@ const SimpleScaleButton = ({
       } else if (shouldLongPressHoldPress && type === 'longPressEnded') {
         onLongPressEnded?.();
       } else {
+        enableHapticFeedback && ReactNativeHapticFeedback.trigger(hapticType);
         onPress?.();
       }
     },
-    [onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
+    [
+      enableHapticFeedback,
+      hapticType,
+      onLongPress,
+      onLongPressEnded,
+      onPress,
+      shouldLongPressHoldPress,
+    ]
   );
 
   // we won't guess if there are any animated styles in there but we can
@@ -222,6 +236,8 @@ const SimpleScaleButton = ({
       >
         <ZoomableButton
           duration={duration}
+          enableHapticFeedback={enableHapticFeedback}
+          hapticType={hapticType}
           hitSlop={-overflowMargin}
           isLongPress={isLongPress}
           minLongPressDuration={minLongPressDuration}
@@ -229,10 +245,10 @@ const SimpleScaleButton = ({
           rippleColor={transparentColor}
           scaleTo={scaleTo}
           shouldLongPressHoldPress={shouldLongPressHoldPress}
-          style={cx.overflow}
+          style={sx.overflow}
           transformOrigin={transformOrigin}
         >
-          <View style={cx.transparentBackground}>
+          <View style={sx.transparentBackground}>
             <View
               style={{
                 padding: overflowMargin,
@@ -269,6 +285,8 @@ export default function ButtonPressAnimation({
   testID,
   transformOrigin,
   wrapperStyle,
+  hapticType = 'selection',
+  enableHapticFeedback = true,
 }: Props) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
@@ -277,7 +295,7 @@ export default function ButtonPressAnimation({
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
-    <View onLayout={onLayout} style={[cx.overflow, style]}>
+    <View onLayout={onLayout} style={[sx.overflow, style]}>
       {children}
     </View>
   ) : (
@@ -286,6 +304,8 @@ export default function ButtonPressAnimation({
       borderRadius={borderRadius}
       contentContainerStyle={contentContainerStyle}
       duration={duration}
+      enableHapticFeedback={enableHapticFeedback}
+      hapticType={hapticType}
       isLongPress={!!onLongPress}
       minLongPressDuration={minLongPressDuration}
       onLayout={onLayout}
@@ -300,14 +320,14 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
-      <View pointerEvents="box-only" style={[cx.overflow, style]}>
+      <View pointerEvents="box-only" style={[sx.overflow, style]}>
         {children}
       </View>
     </ButtonElement>
   );
 }
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   overflow: {
     overflow: 'visible',
   },

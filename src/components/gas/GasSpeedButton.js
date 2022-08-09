@@ -1,16 +1,16 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
+import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -30,9 +30,17 @@ import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
-import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { gasUtils } from '@rainbow-me/utils';
 
-const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
+const {
+  GAS_EMOJIS,
+  GAS_ICONS,
+  GasSpeedOrder,
+  CUSTOM,
+  URGENT,
+  NORMAL,
+  FAST,
+} = gasUtils;
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
   align: 'center',
@@ -86,8 +94,8 @@ const Container = styled(Column).attrs({
   alignItems: 'center',
   hapticType: 'impactHeavy',
   justifyContent: 'center',
-})(({ marginBottom, horizontalPadding }) => ({
-  ...margin.object(18, 0, marginBottom),
+})(({ marginBottom, marginTop, horizontalPadding }) => ({
+  ...margin.object(marginTop, 0, marginBottom),
   ...padding.object(0, horizontalPadding),
   width: '100%',
 }));
@@ -99,6 +107,10 @@ const Label = styled(Text).attrs(({ size }) => ({
 
 const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
+}))({});
+
+const TextContainer = styled(Column).attrs(() => ({
+  marginBottom: ios ? 0 : 11,
 }))({});
 
 const TransactionTimeLabel = ({ formatter, theme }) => {
@@ -121,16 +133,17 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 
 const GasSpeedButton = ({
   asset,
-  bottom = 0,
   currentNetwork,
   horizontalPadding = 19,
   marginBottom = 20,
+  marginTop = 18,
   speeds = null,
   showGasOptions = false,
   testID,
   theme = 'dark',
   canGoBack = true,
   validateGasParams,
+  flashbotTransaction = false,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -208,6 +221,7 @@ const GasSpeedButton = ({
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
+      flashbotTransaction,
       focusTo: shouldOpenCustomGasSheet.focusTo,
       openCustomOptions: focusTo => openCustomOptionsRef.current(focusTo),
       speeds: speeds ?? GasSpeedOrder,
@@ -218,6 +232,7 @@ const GasSpeedButton = ({
     navigate,
     asset,
     shouldOpenCustomGasSheet.focusTo,
+    flashbotTransaction,
     speeds,
   ]);
 
@@ -279,7 +294,7 @@ const GasSpeedButton = ({
   );
 
   const formatTransactionTime = useCallback(() => {
-    if (!gasPriceReady) return '';
+    if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
       ' '
     );
@@ -287,14 +302,14 @@ const GasSpeedButton = ({
     const time = parseFloat(estimatedTimeValue).toFixed(0);
 
     let timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
-    if (time === '0' && estimatedTimeUnit === 'min') {
+    if (!estimatedTime || (time === '0' && estimatedTimeUnit === 'min')) {
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
 
   const openGasHelper = useCallback(() => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     const network = currentNetwork ?? networkTypes.mainnet;
     const networkName = networkInfo[network].name;
     navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
@@ -354,7 +369,8 @@ const GasSpeedButton = ({
             )} Gwei`;
       return {
         actionKey: gasOption,
-        actionTitle: upperFirst(gasOption),
+        actionTitle:
+          (android ? `${GAS_EMOJIS[gasOption]}  ` : '') + upperFirst(gasOption),
         discoverabilityTitle: gweiDisplay,
         icon: {
           iconType: 'ASSET',
@@ -375,7 +391,7 @@ const GasSpeedButton = ({
   ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
-    speedOptions,
+    speedOptions.length,
   ]);
 
   const onDonePress = useCallback(() => {
@@ -386,26 +402,9 @@ const GasSpeedButton = ({
     }
   }, [canGoBack, goBack, validateGasParams]);
 
-  const onPressAndroid = useCallback(() => {
-    if (gasIsNotReady) return;
-    const uppercasedSpeedOptions = speedOptions.map(speed => upperFirst(speed));
-    const androidContractActions = [...uppercasedSpeedOptions];
-
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: androidContractActions.length,
-        options: androidContractActions,
-        showSeparators: true,
-        title: '',
-      },
-      buttonIndex => {
-        handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
-      }
-    );
-  }, [gasIsNotReady, handlePressSpeedOption, speedOptions]);
-
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
+    const label = selectedGasFeeOption ?? NORMAL;
     const pager = (
       <GasSpeedLabelPager
         colorForAsset={
@@ -418,7 +417,7 @@ const GasSpeedButton = ({
         }
         currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
-        label={selectedGasFeeOption ?? NORMAL}
+        label={label}
         showGasOptions={showGasOptions}
         showPager
         theme={theme}
@@ -429,9 +428,9 @@ const GasSpeedButton = ({
       <ContextMenuButton
         activeOpacity={0}
         enableContextMenu
-        menuConfig={menuConfig}
-        {...(android ? { onPress: onPressAndroid } : {})}
+        isAnchoredToRight
         isMenuPrimaryAction
+        menuConfig={menuConfig}
         onPressMenuItem={handlePressMenuItem}
         useActionSheetFallback={false}
         wrapNativeComponent={false}
@@ -446,7 +445,6 @@ const GasSpeedButton = ({
     gasOptionsAvailable,
     handlePressMenuItem,
     menuConfig,
-    onPressAndroid,
     rawColorForAsset,
     selectedGasFeeOption,
     showGasOptions,
@@ -482,9 +480,9 @@ const GasSpeedButton = ({
 
   return (
     <Container
-      bottom={bottom}
       horizontalPadding={horizontalPadding}
       marginBottom={marginBottom}
+      marginTop={marginTop}
       testID={testID}
     >
       <Row justify="space-between">
@@ -501,27 +499,25 @@ const GasSpeedButton = ({
                 symbol={nativeFeeCurrency.symbol}
               />
             </NativeCoinIconWrapper>
-            <Column>
-              <AnimateNumber
-                formatter={formatGasPrice}
-                interval={6}
-                renderContent={renderGasPriceText}
-                steps={6}
-                timing="linear"
-                value={price}
-              />
-            </Column>
-            <Column>
-              <Text letterSpacing="one" size="lmedium" weight="heavy">
-                {' '}
+            <TextContainer>
+              <Text>
+                <AnimateNumber
+                  formatter={formatGasPrice}
+                  interval={6}
+                  renderContent={renderGasPriceText}
+                  steps={6}
+                  timing="linear"
+                  value={price}
+                />
+                <Text letterSpacing="one" size="lmedium" weight="heavy">
+                  {' '}
+                </Text>
+                <TransactionTimeLabel
+                  formatter={formatTransactionTime}
+                  theme={theme}
+                />
               </Text>
-            </Column>
-            <Column>
-              <TransactionTimeLabel
-                formatter={formatTransactionTime}
-                theme={theme}
-              />
-            </Column>
+            </TextContainer>
           </Row>
           <Row justify="space-between">
             <Label
@@ -552,6 +548,7 @@ const GasSpeedButton = ({
           <GasSpeedPagerCentered testID="gas-speed-pager">
             {renderGasSpeedPager}
           </GasSpeedPagerCentered>
+
           <Centered>
             {isL2 ? (
               <ChainBadgeContainer>
@@ -576,7 +573,7 @@ const GasSpeedButton = ({
                         )
                   }
                 >
-                  {lang.t('button.done')}
+                  Done
                 </DoneCustomGas>
               </CustomGasButton>
             ) : (

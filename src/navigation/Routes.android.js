@@ -54,6 +54,7 @@ import {
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
   overlayExpandedPreset,
+  selectUniquePreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
   speedUpAndCancelStyleInterpolator,
@@ -64,6 +65,7 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, {
+  NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 
@@ -71,22 +73,6 @@ const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
-
-function SendFlowNavigator({ route: { params } }) {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.SEND_SHEET}
-    >
-      <Stack.Screen
-        component={SendSheet}
-        initialParams={params}
-        name={Routes.SEND_SHEET}
-        options={sheetPreset}
-      />
-    </Stack.Navigator>
-  );
-}
 
 function ImportSeedPhraseFlowNavigator() {
   return (
@@ -195,6 +181,11 @@ function MainNavigator() {
             name={Routes.SELECT_ENS_SHEET}
             options={ensPreset}
           />
+          <Stack.Screen
+            component={SelectUniqueTokenSheet}
+            name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
+            options={selectUniquePreset}
+          />
         </>
       )}
       <Stack.Screen
@@ -293,20 +284,23 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={expandedPreset}
       />
+      <OuterStack.Screen
+        component={SendSheet}
+        name={Routes.SEND_SHEET_NAVIGATOR}
+        options={expandedPresetWithSmallGestureResponseDistance}
+      />
     </OuterStack.Navigator>
   );
 }
 
 function BSNavigator() {
+  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
+
   return (
     <BSStack.Navigator>
       <BSStack.Screen
         component={MainOuterNavigator}
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
-      <BSStack.Screen
-        component={SendFlowNavigator}
-        name={Routes.SEND_SHEET_NAVIGATOR}
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}
@@ -315,13 +309,6 @@ function BSNavigator() {
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
-        options={{
-          height: '95%',
-        }}
-      />
-      <BSStack.Screen
-        component={SelectUniqueTokenSheet}
-        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
         options={{
           height: '95%',
         }}
@@ -372,6 +359,13 @@ function BSNavigator() {
         name={Routes.SETTINGS_SHEET}
         options={{ ...bottomSheetPreset, height: '97%' }}
       />
+      {notificationsEnabled && (
+        <BSStack.Screen
+          component={SettingsSheet}
+          name={Routes.SETTINGS_SHEET_V2}
+          options={{ ...bottomSheetPreset, height: '97%' }}
+        />
+      )}
     </BSStack.Navigator>
   );
 }

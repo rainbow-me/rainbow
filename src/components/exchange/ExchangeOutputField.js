@@ -3,24 +3,28 @@ import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import styled from '@rainbow-me/styled-components';
 
-const paddingTop = android ? 15 : 32;
-
 const Container = styled(Row).attrs({ align: 'center' })({
   overflow: 'hidden',
-  paddingBottom: 21,
-  paddingTop,
+  paddingBottom: android ? 8 : 21,
+  paddingTop: android ? 22 : 32,
   width: '100%',
 });
 
 export default function ExchangeOutputField({
   editable,
+  loading,
+  network,
   onFocus,
   onPressSelectOutputCurrency,
+  onTapWhileDisabled,
   outputAmount,
   outputCurrencyAddress,
+  outputCurrencyMainnetAddress,
+  outputCurrencyAssetType,
   outputCurrencySymbol,
   outputFieldRef,
   setOutputAmount,
+  updateAmountOnFocus,
   testID,
 }) {
   return (
@@ -29,12 +33,18 @@ export default function ExchangeOutputField({
         address={outputCurrencyAddress}
         amount={outputAmount}
         editable={editable}
+        loading={loading}
+        mainnetAddress={outputCurrencyMainnetAddress}
+        network={network}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectOutputCurrency}
+        onTapWhileDisabled={onTapWhileDisabled}
         ref={outputFieldRef}
         setAmount={setOutputAmount}
         symbol={outputCurrencySymbol}
         testID={testID}
+        type={outputCurrencyAssetType}
+        updateOnFocus={updateAmountOnFocus}
         useCustomAndroidMask={android}
       />
     </Container>

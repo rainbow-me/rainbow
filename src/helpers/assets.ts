@@ -1,21 +1,18 @@
-import {
-  chunk,
-  compact,
-  concat,
-  groupBy,
-  isEmpty,
-  reduce,
-  slice,
-  sortBy,
-} from 'lodash';
+import lang from 'i18n-js';
+import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
+import {
+  ethereumUtils,
+  getUniqueTokenFormat,
+  getUniqueTokenType,
+} from '@rainbow-me/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -76,22 +73,17 @@ const addEthPlaceholder = (
       type: 'token',
       uniqueId: 'eth',
     };
-
-    return { addedEth: true, assets: concat([zeroEth], assets) };
+    return { addedEth: true, assets: [zeroEth].concat(assets) };
   }
   return { addedEth: false, assets };
 };
 
 const getTotal = (assets: any) =>
-  reduce(
-    assets,
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-    (acc, asset) => {
-      const balance = asset?.native?.balance?.amount ?? 0;
-      return add(acc, balance);
-    },
-    0
-  );
+  // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+  assets.reduce((acc, asset) => {
+    const balance = asset?.native?.balance?.amount ?? 0;
+    return add(acc, balance);
+  }, 0);
 
 export const buildCoinsList = (
   sortedAssets: any,
@@ -145,7 +137,8 @@ export const buildCoinsList = (
   });
 
   // decide which assets to show above or below the coin divider
-  const nonHidden = concat(pinnedAssets, standardAssets);
+  // FIXME: Parameter 'allAssets' implicitly has an 'any' type.
+  const nonHidden = pinnedAssets.concat(standardAssets) as any[];
   const dividerIndex = Math.max(pinnedAssets.length, COINS_TO_SHOW);
 
   let assetsAboveDivider = slice(nonHidden, 0, dividerIndex);
@@ -156,7 +149,7 @@ export const buildCoinsList = (
     assetsBelowDivider = slice(smallAssets, COINS_TO_SHOW);
   } else {
     const remainderBelowDivider = slice(nonHidden, dividerIndex);
-    assetsBelowDivider = concat(remainderBelowDivider, smallAssets);
+    assetsBelowDivider = remainderBelowDivider.concat(smallAssets);
   }
 
   // calculate small balance and overall totals
@@ -167,7 +160,7 @@ export const buildCoinsList = (
   const defaultToEditButton = assetsBelowDivider.length === 0;
   // include hidden assets if in edit mode
   if (isCoinListEdited) {
-    assetsBelowDivider = concat(assetsBelowDivider, hiddenAssets);
+    assetsBelowDivider = assetsBelowDivider.concat(hiddenAssets);
   }
   const allAssets = assetsAboveDivider;
 
@@ -331,12 +324,29 @@ const regex = RegExp(/\s*(the)\s/, 'i');
 export const buildBriefUniqueTokenList = (
   uniqueTokens: any,
   selectedShowcaseTokens: any,
-  sellingTokens: any[] = []
+  sellingTokens: any[] = [],
+  hiddenTokens: string[] = [],
+  listType: AssetListType = 'wallet'
 ) => {
-  const uniqueTokensInShowcase = uniqueTokens
+  const hiddenUniqueTokensIds = uniqueTokens
+    .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
+    .map(({ uniqueId }: any) => uniqueId);
+  const nonHiddenUniqueTokens = uniqueTokens.filter(
+    ({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId)
+  );
+  const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-  const grouped2 = groupBy(uniqueTokens, token => token.familyName);
+
+  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: any) => {
+    if (listType === 'select-nft') {
+      const format = getUniqueTokenFormat(token);
+      const type = getUniqueTokenType(token);
+      return format === 'image' && type === 'NFT';
+    }
+    return true;
+  });
+  const grouped2 = groupBy(filteredUniqueTokens, token => token.familyName);
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
@@ -345,16 +355,16 @@ export const buildBriefUniqueTokenList = (
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcase.length > 0) {
+  if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: 'Showcase',
-      total: uniqueTokensInShowcase.length,
+      total: uniqueTokensInShowcaseIds.length,
       type: 'FAMILY_HEADER',
       uid: 'showcase',
     });
-    for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
-      const uniqueId = uniqueTokensInShowcase[index];
+    for (let index = 0; index < uniqueTokensInShowcaseIds.length; index++) {
+      const uniqueId = uniqueTokensInShowcaseIds[index];
       result.push({
         // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         index,
@@ -405,8 +415,37 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
+  if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet') {
+    result.push({
+      // @ts-expect-error "name" does not exist in type.
+      name: lang.t('button.hidden'),
+      total: hiddenUniqueTokensIds.length,
+      type: 'FAMILY_HEADER',
+      uid: 'hidden',
+    });
+    for (let index = 0; index < hiddenUniqueTokensIds.length; index++) {
+      const uniqueId = hiddenUniqueTokensIds[index];
+      result.push({
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+        index,
+        type: 'NFT',
+        uid: `hidden-${uniqueId}`,
+        uniqueId,
+      });
+    }
+
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
+  }
   return result;
 };
 
-export const buildUniqueTokenName = ({ collection, id, name }: any) =>
-  name || `${collection?.name} #${id}`;
+export const buildUniqueTokenName = ({
+  collection,
+  id,
+  name,
+  uniqueId,
+}: any) => {
+  if (name) return name;
+  if (id) return `${collection?.name} #${id}`;
+  return uniqueId;
+};

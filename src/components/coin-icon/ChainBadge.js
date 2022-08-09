@@ -64,7 +64,6 @@ export default function ChainBadge({
   size = 'small',
 }) {
   const { isDarkMode } = useTheme();
-
   const { containerSize, iconSize } = sizeConfigs[size];
 
   const source = useMemo(() => {

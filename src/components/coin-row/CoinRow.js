@@ -66,7 +66,10 @@ export default function CoinRow({
         })
       )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
-        <Row align="center" testID={`${testID}-${symbol || ''}`}>
+        <Row
+          align="center"
+          testID={`${testID}-${symbol || ''}-${type || 'token'}`}
+        >
           {topRowRender({
             name,
             nativeCurrency,

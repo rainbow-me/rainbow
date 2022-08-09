@@ -1,11 +1,19 @@
-import React, { useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
+import {
+  useAccountSettings,
+  useENSAddress,
+  useFetchUniqueTokens,
+  useOpenENSNFTHandler,
+} from '@/hooks';
+import { AppState } from '@/redux/store';
 import {
   Bleed,
   Box,
@@ -59,10 +67,12 @@ export function InfoRowSkeleton() {
 }
 
 export default function InfoRow({
+  ensName,
   explainSheetType,
   icon = undefined,
   isImage = false,
   label,
+  url,
   wrapValue = children => children,
   value = undefined,
   switchValue,
@@ -70,10 +80,12 @@ export default function InfoRow({
   useAccentColor,
   onSwitchChange,
 }: {
+  ensName?: string;
   explainSheetType?: string;
   icon?: string;
   isImage?: boolean;
   label: string;
+  url?: string;
   wrapValue?: (children: React.ReactNode) => React.ReactNode;
   value?: string;
   switchValue?: boolean;
@@ -93,6 +105,14 @@ export default function InfoRow({
     navigate(Routes.EXPLAIN_SHEET, { type: explainSheetType });
   }, [explainSheetType, navigate]);
 
+  const explainer = explainSheetType ? (
+    <ButtonPressAnimation onPress={handlePressExplain}>
+      <Text color="secondary25" size="16px" weight="bold">
+        􀅵
+      </Text>
+    </ButtonPressAnimation>
+  ) : null;
+
   return (
     <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
       <Box style={{ minWidth: 60, opacity: show ? 1 : 0 }}>
@@ -100,29 +120,15 @@ export default function InfoRow({
           <Inline space="4px">
             <Text color="secondary60" size="16px" weight="bold">
               {label}
+              {android && <Fragment> {explainer}</Fragment>}
             </Text>
-            {explainSheetType && (
-              <ButtonPressAnimation onPress={handlePressExplain}>
-                <Text color="secondary25" size="16px" weight="bold">
-                  􀅵
-                </Text>
-              </ButtonPressAnimation>
-            )}
+            {ios && explainer}
           </Inline>
         </Inset>
       </Box>
       {wrapValue(
         isImage ? (
-          <>
-            {value && (
-              <ImagePreviewOverlayTarget
-                aspectRatioType="cover"
-                imageUrl={value}
-              >
-                <Box as={ImgixImage} height="full" source={{ uri: value }} />
-              </ImagePreviewOverlayTarget>
-            )}
-          </>
+          <ImageValue ensName={ensName} url={url} value={value} />
         ) : (
           <Box
             borderRadius={16}
@@ -148,7 +154,7 @@ export default function InfoRow({
             }}
           >
             <Inline alignVertical="center" space="6px">
-              {icon && (
+              {icon ? (
                 <Bleed vertical="6px">
                   <Icon
                     color={colors.whiteLabel}
@@ -157,8 +163,8 @@ export default function InfoRow({
                     width="18"
                   />
                 </Bleed>
-              )}
-              {value && (
+              ) : null}
+              {value ? (
                 <Text
                   align={isMultiline ? 'left' : 'center'}
                   color={useAccentColor ? 'accent' : undefined}
@@ -167,7 +173,7 @@ export default function InfoRow({
                 >
                   {value}
                 </Text>
-              )}
+              ) : null}
               {isSwitch && (
                 <Switch
                   disabled={switchDisabled || switchValue}
@@ -182,5 +188,45 @@ export default function InfoRow({
         )
       )}
     </Inline>
+  );
+}
+
+function ImageValue({
+  ensName,
+  url,
+  value,
+}: {
+  ensName?: string;
+  url?: string;
+  value?: string;
+}) {
+  const { accountAddress } = useAccountSettings();
+
+  const { data: address } = useENSAddress(ensName || '');
+
+  const uniqueTokensAccount = useSelector(
+    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
+  );
+  const { data: uniqueTokensProfile } = useFetchUniqueTokens({
+    address: address ?? '',
+    // Don't want to refetch tokens if we already have them.
+    staleTime: Infinity,
+  });
+  const isSelf = address === accountAddress;
+  const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;
+
+  const { onPress } = useOpenENSNFTHandler({ uniqueTokens, value });
+  const enableZoomOnPress = !onPress;
+
+  if (!url) return null;
+  return (
+    <ImagePreviewOverlayTarget
+      aspectRatioType="cover"
+      enableZoomOnPress={enableZoomOnPress}
+      imageUrl={url}
+      onPress={onPress}
+    >
+      <Box as={ImgixImage} height="full" source={{ uri: url }} />
+    </ImagePreviewOverlayTarget>
   );
 }
