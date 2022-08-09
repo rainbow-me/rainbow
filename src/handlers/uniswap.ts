@@ -1,6 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
 import {
   ALLOWS_PERMIT,
   ChainId,
@@ -15,14 +14,13 @@ import {
   wrapNativeAsset,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
-import { ethers } from 'ethers';
+import { ethers, Signer } from 'ethers';
 import { mapKeys, mapValues } from 'lodash';
 import {
   // @ts-ignore
   IS_TESTING,
 } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
-import { LedgerSigner } from './LedgerSigner';
 import {
   estimateGasWithPadding,
   getProviderForNetwork,
@@ -396,15 +394,12 @@ export const executeSwap = async ({
   gasPrice: string;
   nonce?: number;
   tradeDetails: Quote | null;
-  wallet: Wallet | LedgerSigner | null;
+  wallet: Signer;
   permit: boolean;
 }) => {
-  let provider;
-
   let permitAllowed = permit;
-  if (wallet?.privateKey && isHexStringIgnorePrefix(wallet.privateKey)) {
-    wallet = new Wallet(wallet.privateKey, provider);
-  } else {
+  // @ts-ignore
+  if (!(wallet?.privateKey && isHexStringIgnorePrefix(wallet.privateKey))) {
     permitAllowed = false;
   }
 

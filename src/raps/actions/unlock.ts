@@ -15,7 +15,11 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@rainbow-me/entities';
-import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isHexStringIgnorePrefix,
+  toHex,
+} from '@rainbow-me/handlers/web3';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
@@ -154,6 +158,7 @@ const unlock = async (
       chainId
     );
   } catch (e) {
+    logger.debug('Error estimating gas', e);
     logger.sentry(`[${actionName}] Error estimating gas`);
     captureException(e);
     throw e;

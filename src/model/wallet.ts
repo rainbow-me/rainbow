@@ -986,7 +986,6 @@ export const createWallet = async (
     return null;
   } catch (error) {
     logger.sentry('Error in createWallet');
-    logger.log('Error: ', error);
     captureException(error);
     return null;
   }
