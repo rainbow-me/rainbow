@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import uts46 from 'idna-uts46-hx';
 import { UniqueAsset } from '@rainbow-me/entities';
 
@@ -117,7 +118,7 @@ export function validateENS(
   if (splitDomain.length < 2) {
     return {
       code: ERROR_CODES.INVALID_DOMAIN,
-      hint: 'This is an invalid domain',
+      hint: lang.t('profiles.search_validation.invalid_domain'),
       valid: false,
     };
   }
@@ -127,7 +128,7 @@ export function validateENS(
   if (!supportedTLDs.includes(tld)) {
     return {
       code: ERROR_CODES.INVALID_TLD,
-      hint: 'This TLD is not supported',
+      hint: lang.t('profiles.search_validation.tld_not_supported'),
       valid: false,
     };
   }
@@ -135,7 +136,7 @@ export function validateENS(
   if (!includeSubdomains && (subDomainName || subDomainName === '')) {
     return {
       code: ERROR_CODES.SUBDOMAINS_NOT_SUPPORTED,
-      hint: 'Subdomains are not supported',
+      hint: lang.t('profiles.search_validation.subdomains_not_supported'),
       valid: false,
     };
   }
@@ -143,17 +144,7 @@ export function validateENS(
   if (domainName.length < 3) {
     return {
       code: ERROR_CODES.INVALID_LENGTH,
-      hint: 'Your name must be at least 3 characters',
-      valid: false,
-    };
-  }
-
-  try {
-    uts46.toUnicode(domainName, { useStd3ASCII: true });
-  } catch (err) {
-    return {
-      code: ERROR_CODES.INVALID_DOMAIN_NAME,
-      hint: 'Your name cannot include special characters',
+      hint: lang.t('profiles.search_validation.invalid_length'),
       valid: false,
     };
   }
@@ -163,7 +154,7 @@ export function validateENS(
   if (!validDomainName) {
     return {
       code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
-      hint: 'Your subdomain cannot include special characters',
+      hint: lang.t('profiles.search_validation.invalid_special_characters'),
       valid: false,
     };
   }
@@ -173,7 +164,7 @@ export function validateENS(
     if (!validSubDomainName) {
       return {
         code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
-        hint: 'Your subdomain cannot include special characters',
+        hint: lang.t('profiles.search_validation.invalid_special_characters'),
         valid: false,
       };
     }
