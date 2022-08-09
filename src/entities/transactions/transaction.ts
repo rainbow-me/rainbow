@@ -33,7 +33,7 @@ export interface RainbowTransaction {
   pending: boolean;
   protocol?: ProtocolType | null;
   flashbots?: boolean;
-  ensRegistrationName?: string;
+  ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
   status: TransactionStatus;
@@ -62,7 +62,7 @@ export interface NewTransaction {
   nonce: number | null;
   protocol?: ProtocolType | null;
   flashbots?: boolean;
-  ensRegistrationName?: string;
+  ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
   status?: TransactionStatus;
