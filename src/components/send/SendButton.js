@@ -5,9 +5,11 @@ import { HoldToAuthorizeButton } from '../buttons';
 export default function SendButton({
   backgroundColor,
   disabled,
+  insufficientEth,
   isAuthorizing,
   isNft,
   onLongPress,
+  requiresChecks,
   testID,
   ...props
 }) {
@@ -34,8 +36,10 @@ export default function SendButton({
       hideInnerBorder
       isAuthorizing={isAuthorizing}
       label={
-        disabled
+        disabled && requiresChecks
           ? `􀄨 ${lang.t('wallet.transaction.complete_checks')}`
+          : insufficientEth
+          ? lang.t('button.confirm_exchange.insufficient_funds')
           : lang.t('button.hold_to_send')
       }
       onLongPress={onLongPress}

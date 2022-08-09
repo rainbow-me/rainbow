@@ -3,25 +3,35 @@ import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
+import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
+import { AppState } from '@/redux/store';
 import {
   buildBriefWalletSectionsSelector,
   buildWalletSectionsSelector,
 } from '@rainbow-me/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
-export default function useWalletSectionsData() {
+export default function useWalletSectionsData({
+  type,
+}: {
+  type?: string;
+} = {}) {
   const sortedAccountData = useSortedAccountAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
   const { language, network, nativeCurrency } = useAccountSettings();
-  const uniqueTokens = useSendableUniqueTokens();
+  const sendableUniqueTokens = useSendableUniqueTokens();
+  const allUniqueTokens = useSelector(
+    (state: AppState) => state.uniqueTokens.uniqueTokens
+  );
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
+  const { hiddenTokens } = useHiddenTokens();
 
   const {
     hiddenCoinsObj: hiddenCoins,
@@ -44,17 +54,21 @@ export default function useWalletSectionsData() {
       pinnedCoins,
       savings,
       ...sortedAccountData,
-      ...uniqueTokens,
+      ...sendableUniqueTokens,
       ...uniswap,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
+      hiddenTokens,
+      listType: type,
       showcaseTokens,
     };
 
     const sectionsData = buildWalletSectionsSelector(accountInfo);
     const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
+    const hasNFTs = allUniqueTokens.length > 0;
 
     return {
+      hasNFTs,
       isWalletEthZero,
       refetchSavings,
       shouldRefetchSavings,
@@ -62,7 +76,9 @@ export default function useWalletSectionsData() {
       briefSectionsData,
     };
   }, [
+    allUniqueTokens,
     hiddenCoins,
+    hiddenTokens,
     isCoinListEdited,
     isWalletEthZero,
     language,
@@ -74,7 +90,8 @@ export default function useWalletSectionsData() {
     shouldRefetchSavings,
     showcaseTokens,
     sortedAccountData,
-    uniqueTokens,
+    type,
+    sendableUniqueTokens,
     uniswap,
   ]);
   return walletSections;

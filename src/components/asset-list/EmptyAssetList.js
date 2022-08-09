@@ -64,7 +64,7 @@ const EmptyAssetList = ({
               <Column cover>
                 {times(skeletonCount, index => (
                   <AssetListItemSkeleton
-                    animated={!isWalletEthZero}
+                    animated
                     descendingOpacity={descendingOpacity || isWalletEthZero}
                     index={index}
                     key={`skeleton${index}`}
