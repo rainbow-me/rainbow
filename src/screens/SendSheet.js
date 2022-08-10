@@ -22,6 +22,7 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
@@ -769,12 +770,21 @@ export default function SendSheet(props) {
       });
       return;
     }
-
+    const uniqueTokenType = getUniqueTokenType(selected);
+    const isENS = uniqueTokenType === 'ENS';
+    const checkboxes = getDefaultCheckboxes({
+      ensProfile,
+      isENS: true,
+      network,
+      toAddress: recipient,
+    });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
+      checkboxes,
       ensProfile,
+      isENS,
       isL2,
       isNft,
       network: currentNetwork,
@@ -792,6 +802,7 @@ export default function SendSheet(props) {
     isNft,
     nativeCurrencyInputRef,
     navigate,
+    network,
     profilesEnabled,
     recipient,
     selected,
