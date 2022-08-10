@@ -165,12 +165,6 @@ export type TokenListsExtendedRecord = Record<
 
 export const DefaultUniswapFavorites = {
   mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],
-  rinkeby: [
-    // Ethereum
-    ETH_ADDRESS,
-    // DAI
-    '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea',
-  ],
 };
 
 export const DefaultUniswapFavoritesMeta: Record<

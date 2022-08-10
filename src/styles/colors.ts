@@ -182,12 +182,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
   let networkColors = {
     arbitrum: '#2D374B',
     goerli: '#f6c343',
-    kovan: '#7057ff',
     mainnet: '#25292E',
     optimism: '#FF4040',
     polygon: '#8247E5',
-    rinkeby: '#f6c343',
-    ropsten: '#ff4a8d',
   };
 
   let gradients = {
@@ -362,12 +359,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
     networkColors = {
       arbitrum: '#ADBFE3',
       goerli: '#f6c343',
-      kovan: '#7057ff',
       mainnet: '#E0E8FF',
       optimism: '#FF6A6A',
       polygon: '#A275EE',
-      rinkeby: '#f6c343',
-      ropsten: '#ff4a8d',
     };
   }
 
