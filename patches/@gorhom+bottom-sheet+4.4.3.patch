@@ -1,0 +1,46 @@
+diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetScrollable/createBottomSheetScrollableComponent.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetScrollable/createBottomSheetScrollableComponent.tsx
+index 49237cb..e900e41 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetScrollable/createBottomSheetScrollableComponent.tsx
++++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetScrollable/createBottomSheetScrollableComponent.tsx
+@@ -39,6 +39,7 @@ export function createBottomSheetScrollableComponent<T, P>(
+       refreshControl,
+       // events
+       onScroll,
++      onScrollWorklet,
+       onScrollBeginDrag,
+       onScrollEndDrag,
+       ...rest
+@@ -55,7 +56,8 @@ export function createBottomSheetScrollableComponent<T, P>(
+         scrollEventsHandlersHook,
+         onScroll,
+         onScrollBeginDrag,
+-        onScrollEndDrag
++        onScrollEndDrag,
++        onScrollWorklet
+       );
+     const {
+       enableContentPanningGesture,
+diff --git a/node_modules/@gorhom/bottom-sheet/src/hooks/useScrollHandler.ts b/node_modules/@gorhom/bottom-sheet/src/hooks/useScrollHandler.ts
+index b82d3b9..0951985 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/hooks/useScrollHandler.ts
++++ b/node_modules/@gorhom/bottom-sheet/src/hooks/useScrollHandler.ts
+@@ -12,7 +12,8 @@ export const useScrollHandler = (
+   useScrollEventsHandlers = useScrollEventsHandlersDefault,
+   onScroll?: ScrollableEvent,
+   onScrollBeginDrag?: ScrollableEvent,
+-  onScrollEndDrag?: ScrollableEvent
++  onScrollEndDrag?: ScrollableEvent,
++  onScrollWorklet?: any
+ ) => {
+   // refs
+   const scrollableRef = useAnimatedRef<Scrollable>();
+@@ -38,6 +39,9 @@ export const useScrollHandler = (
+         if (onScroll) {
+           runOnJS(onScroll)({ nativeEvent: event });
+         }
++        if (typeof onScroll === 'function') {
++          onScrollWorklet(event, context)
++        }
+       },
+       onBeginDrag: (event, context) => {
+         handleOnBeginDrag(event, context);
