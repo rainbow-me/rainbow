@@ -75,7 +75,7 @@ export default function HardwareWalletSheet() {
 
   const sheetHeight = ios
     ? 332 + safeAreaInsetValues.bottom
-    : 850 + safeAreaInsetValues.bottom;
+    : 735 + safeAreaInsetValues.bottom;
 
   const marginTop = android ? deviceHeight - sheetHeight + 340 : null;
 
