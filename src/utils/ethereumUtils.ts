@@ -640,7 +640,7 @@ async function parseEthereumUrl(data: string) {
 
   InteractionManager.runAfterInteractions(() => {
     const params = { address, asset: assetWithPrice, nativeAmount };
-    if (isNativeStackAvailable || android) {
+    if (isNativeStackAvailable) {
       Navigation.handleAction(Routes.SEND_FLOW, {
         params,
         screen: Routes.SEND_SHEET,
