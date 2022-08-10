@@ -191,7 +191,7 @@ const RegistrationCover = ({
             </Text>
           )}
         </Box>
-        {coverUrl && !isUploading && (
+        {!!coverUrl && !isUploading && (
           <Cover>
             <Box
               as={ImgixImage}
