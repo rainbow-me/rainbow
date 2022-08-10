@@ -582,7 +582,7 @@ export const explorerInit = () => async (
   // if we're not on mainnnet
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
-  await checkForTheMerge(provider);
+  await checkForTheMerge(provider, network);
   if (
     isHardHat(providerUrl) ||
     network !== Network.mainnet ||

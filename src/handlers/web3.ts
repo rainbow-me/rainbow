@@ -837,24 +837,61 @@ export const estimateGasLimit = async (
   }
 };
 
+const HAS_MERGED_DEFAULTS: { [key: string]: boolean } = {
+  [Network.mainnet]: false,
+  [Network.goerli]: false,
+  [Network.ropsten]: false,
+  [Network.rinkeby]: false,
+  [Network.kovan]: false,
+};
 const hasMergedStorage = new MMKV();
-export const getHasMerged = () =>
-  hasMergedStorage.getBoolean(STORAGE_IDS.HAS_MERGED);
-export const setHasMerged = () =>
-  hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, true);
-export const setHasNotMerged = () =>
-  hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, false);
-export const checkForTheMerge = async (provider: JsonRpcProvider) => {
+export const getHasMerged = (network: Network) => {
+  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
+  if (storage) {
+    const data = JSON.parse(storage);
+    logger.debug('GET HAS MERGED DATA: ', data);
+    const hasMerged = data[network];
+    if (hasMerged === undefined) {
+      data[network] = HAS_MERGED_DEFAULTS[network];
+      hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
+    }
+    return data[network];
+  } else {
+    hasMergedStorage.set(
+      STORAGE_IDS.HAS_MERGED,
+      JSON.stringify(HAS_MERGED_DEFAULTS)
+    );
+  }
+};
+const getSetMergeStorageKey = (setting: boolean) => (network: Network) => {
+  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
+  if (storage) {
+    const data = JSON.parse(storage);
+    data[network] = setting;
+    hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
+    logger.debug('NEW DATA IN STORAGE: ', data);
+  }
+};
+export const setHasMerged = (network: Network) => {
+  getSetMergeStorageKey(true)(network);
+};
+export const setHasNotMerged = (network: Network) => {
+  getSetMergeStorageKey(false)(network);
+};
+export const checkForTheMerge = async (
+  provider: JsonRpcProvider,
+  network: Network
+) => {
   const block = await provider.getBlock('latest');
   logger.debug('LATEST BLOCK: ', block);
   const { _difficulty } = block;
   logger.debug('_DIFFICULTY: ', _difficulty.toString());
-  const currentHasMerged = getHasMerged();
+  const currentHasMerged = getHasMerged(network);
   logger.debug('CURRENT HAS MERGED: ', currentHasMerged);
   if (_difficulty.toString() === '0') {
-    setHasMerged();
+    setHasMerged(network);
   } else if (currentHasMerged) {
-    setHasNotMerged();
+    setHasNotMerged(network);
   }
-  logger.debug('GET HAS MERGED FINAL: ', getHasMerged());
+  logger.debug('GET HAS MERGED FINAL: ', getHasMerged(network));
 };
