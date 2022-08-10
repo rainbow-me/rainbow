@@ -7,6 +7,7 @@ import {
   toUpper,
   uniqBy,
 } from 'lodash';
+import upperFirst from 'lodash/upperFirst';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -33,7 +34,6 @@ import {
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
-  upperFirst,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
