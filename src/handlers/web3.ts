@@ -882,16 +882,18 @@ export const checkForTheMerge = async (
   provider: JsonRpcProvider,
   network: Network
 ) => {
-  const block = await provider.getBlock('latest');
-  logger.debug('LATEST BLOCK: ', block);
-  const { _difficulty } = block;
-  logger.debug('_DIFFICULTY: ', _difficulty.toString());
   const currentHasMerged = getHasMerged(network);
   logger.debug('CURRENT HAS MERGED: ', currentHasMerged);
-  if (_difficulty.toString() === '0') {
-    setHasMerged(network);
-  } else if (currentHasMerged) {
-    setHasNotMerged(network);
+  if (currentHasMerged !== true) {
+    const block = await provider.getBlock('latest');
+    logger.debug('LATEST BLOCK: ', block);
+    const { _difficulty } = block;
+    logger.debug('_DIFFICULTY: ', _difficulty.toString());
+    if (_difficulty.toString() === '0') {
+      setHasMerged(network);
+    } else if (currentHasMerged) {
+      setHasNotMerged(network);
+    }
+    logger.debug('GET HAS MERGED FINAL: ', getHasMerged(network));
   }
-  logger.debug('GET HAS MERGED FINAL: ', getHasMerged(network));
 };
