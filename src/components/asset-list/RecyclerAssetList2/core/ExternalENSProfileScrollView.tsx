@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { ScrollViewProps, ViewStyle } from 'react-native';
 import Animated, {
+  runOnJS,
   useSharedValue,
   useWorkletCallback,
 } from 'react-native-reanimated';
@@ -57,7 +58,7 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
         ? event.contentOffset.y
         : event.nativeEvent.contentOffset.y;
       if (!isInsideBottomSheet) {
-        props.onScroll(event);
+        runOnJS(props.onScroll)(event);
       }
     });
 
