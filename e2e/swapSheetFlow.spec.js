@@ -559,8 +559,8 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should display warning on invalid custom gas price', async () => {
     await Helpers.waitAndTap('gas-speed-custom');
-    await Helpers.checkIfElementByTextIsVisible('Fast');
-    await Helpers.checkIfElementByTextIsVisible('Custom');
+    await Helpers.checkIfVisible('speed-pill-fast');
+    await Helpers.checkIfVisible('speed-pill-custom');
     await Helpers.clearField('max-base-fee-input');
     await Helpers.typeText('max-base-fee-input', '\n', false);
     await Helpers.checkIfElementByTextIsVisible('Low · likely to fail');
