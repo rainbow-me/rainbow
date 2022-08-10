@@ -225,7 +225,7 @@ function ImageValue({
   return (
     <ImagePreviewOverlayTarget
       aspectRatioType="cover"
-      enableZoomOnPress={enableZoomOnPress}
+      enableZoomOnPress={ios && enableZoomOnPress}
       imageUrl={url}
       onPress={onPress}
     >
