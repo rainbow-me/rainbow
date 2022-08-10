@@ -55,6 +55,7 @@ const Routes = {
   SETTINGS_SHEET: 'SettingsSheet',
   SETTINGS_SHEET_V2: 'SettingsSheetV2',
   SHOWCASE_SHEET: 'ShowcaseSheet',
+  SPEED_UP_AND_CANCEL_BOTTOM_SHEET: 'SpeedUpAndCancelBootomSheet',
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',
   SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',

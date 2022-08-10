@@ -18,7 +18,11 @@ const estimateDescriptionProfilePreviewHeight = (description?: string) => {
   return description ? Math.ceil(description.length / 50) * lineHeight : 0;
 };
 
-export default function IntroMarquee() {
+export default function IntroMarquee({
+  isSmallPhone,
+}: {
+  isSmallPhone: boolean;
+}) {
   const { navigate } = useNavigation();
 
   const handlePressENS = useCallback(
@@ -62,9 +66,9 @@ export default function IntroMarquee() {
   );
 
   return (
-    <Box height={{ custom: 100 }}>
+    <Box height={{ custom: isSmallPhone ? 90 : 100 }}>
       <MarqueeList
-        height={100}
+        height={isSmallPhone ? 90 : 100}
         items={items}
         renderItem={renderItem}
         speed={-15}
