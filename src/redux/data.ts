@@ -14,6 +14,7 @@ import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
+import { fetchWalletENSAvatars, fetchWalletNames } from './wallets';
 import {
   AssetTypes,
   NativeCurrencyKeys,
@@ -1375,6 +1376,13 @@ export const dataWatchPendingTransactions = (
               ...txObj,
               internalType: tx.type,
             });
+          }
+          if (tx?.ensRegistration) {
+            const fetchWalletENSData = async () => {
+              await dispatch(fetchWalletENSAvatars());
+              dispatch(fetchWalletNames());
+            };
+            fetchWalletENSData();
           }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;

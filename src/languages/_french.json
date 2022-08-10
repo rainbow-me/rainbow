@@ -305,6 +305,30 @@
       "sync_codepush": "Sync codepush, current: %{codePushVersion} :)"
     },
     "discover": {
+      "dpi": {
+        "title": "DeFi Pulse Index :)",
+        "body": "All the top decentralized finance tokens in one. Track the industry. :)",
+        "view": "View :)"
+      },
+      "ens_create_profile": {
+        "title": "Create your ENS profile :)",
+        "body": "Replace your wallet address with a profile owned entirely by you. :)"
+      },
+      "ens_search": {
+        "mini_title": "ENS :)",
+        "title_part_1": "Register a  :)",
+        "title_part_2": ".eth name :)"
+      },
+      "gas": {
+        "average": "Average :)",
+        "gwei": "Gwei :)",
+        "high": "High :)",
+        "loading": "Loading… :)",
+        "low": "Low :)",
+        "network_fees": "Network fees :)",
+        "surging": "Surging :)",
+        "very_low": "Very low :)"
+      },
       "lists": {
         "lists_title": "Lists :)",
         "this_list_is_empty": "This list is empty! :)"
@@ -499,7 +523,6 @@
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName} :)",
-        "advanced": "Advanced :)",
         "attributes": "Attributes :)",
         "collection_website": "Collection Website :)",
         "configuration": "Configuration :)",
@@ -837,13 +860,33 @@
         "and_create_ens_profile": "Search available .eth names :)",
         "register_name": "Create Your ENS Profile :)"
       },
+      "select_ens_name": "My ENS Names :)",
+      "search": {
+        "header": "Find your name :)",
+        "description": "Search available ENS names :)",
+        "available": "🥳 Available :)",
+        "taken": "😭 Taken :)",
+        "registered_on": "This name was last registered on %{content} :)",
+        "price": "%{content} / Year :)",
+        "expiration": "Til %{content} :)",
+        "3_char_min": "Minimum 3 characters :)",
+        "already_registering_name": "You are already registering this name :)",
+        "estimated_total_cost_1": "Estimated total cost of :)",
+        "estimated_total_cost_2": "with current network fees :)",
+        "loading_fees": "Loading network fees… :)",
+        "clear": "􀅉 Clear :)",
+        "continue": "Continue 􀆊 :)"
+      },
+      "search_validation": {
+        "invalid_domain": "This is an invalid domain :)",
+        "tld_not_supported": "This TLD is not supported :)",
+        "subdomains_not_supported": "Subdomains are not supported :)",
+        "invalid_length": "Your name must be at least 3 characters :)",
+        "invalid_special_characters": "Your name cannot include special characters :)"
+      },
       "confirm": {
-        "commit_button": "Hold to Commit :)",
-        "confirm_purchase": "Confirm purchase :)",
         "confirm_registration": "Confirm Registration :)",
-        "confirm_renew": "Hold to Extend :)",
-        "confirm_set_name": "Confirm Set Primary Name :)",
-        "confirm_update": "Confirm Update :)",
+        "confirm_updates": "Confirm Updates :)",
         "duration_plural": "%{content} years :)",
         "duration_singular": "1 year :)",
         "estimated_fees": "Estimated network fees :)",
@@ -851,6 +894,10 @@
         "estimated_total_eth": "Estimated total in ETH :)",
         "extend_by": "Extend by :)",
         "extend_registration": "Extend Registration :)",
+        "hold_to_begin": "Hold to Begin :)",
+        "hold_to_confirm": "Hold to Confirm :)",
+        "hold_to_extend": "Hold to Extend :)",
+        "hold_to_register": "Hold to Register :)",
         "insufficient_eth": "Insufficient ETH :)",
         "last_step": "One last step :)",
         "last_step_description": "Confirm below to register your name and configure your profile :)",
@@ -863,7 +910,6 @@
         "set_ens_name": "Set as my primary ENS name :)",
         "set_name_registration": "Set as Primary Name :)",
         "speed_up": "Speed Up :)",
-        "start_registration": "Start Registration :)",
         "suggestion": "Buy more years now to save on fees :)",
         "transaction_pending": "Transaction pending :)",
         "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain :)",
@@ -883,9 +929,9 @@
         "discord": "Discord :)",
         "doge": "Dogecoin :)",
         "email": "Email :)",
-        "email_message": "Please enter a valid email :)",
+        "invalid_email": "Invalid email :)",
         "email_placeholder": "Add your email :)",
-        "email_submit_message": "Please enter a valid email :)",
+        "invalid_username": "Invalid %{app} username :)",
         "eth": "Ethereum :)",
         "github": "GitHub :)",
         "instagram": "Instagram :)",
@@ -909,12 +955,12 @@
         "telegram": "Telegram :)",
         "twitter": "Twitter :)",
         "upload_photo": "Upload a Photo :)",
+        "uploading": "Uploading :)",
         "username_placeholder": "username :)",
         "wallet_placeholder": "Add a %{coin} address :)",
         "website": "Website :)",
-        "website_message": "Please enter a valid website URL :)",
-        "website_placeholder": "Add your website :)",
-        "website_submit_message": "Please enter a valid email :)"
+        "invalid_website": "Invalid URL :)",
+        "website_placeholder": "Add your website :)"
       },
       "details": {
         "add_to_contacts": "Add to Contacts :)",
@@ -965,22 +1011,9 @@
         "remove_photo": "Remove Photo :)",
         "view_profile": "View Profile :)"
       },
-      "search": {
-        "3_char_min": "Minimum 3 characters :)",
-        "available": "🥳 Available :)",
-        "clear": "􀅉 Clear :)",
-        "continue": "Continue 􀆊 :)",
-        "description": "Search available ENS names :)",
-        "estimated_total_cost_1": "Estimated total cost of :)",
-        "estimated_total_cost_2": "with current network fees :)",
-        "expiration": "Til %{content} :)",
-        "header": "Find your name :)",
-        "loading_fees": "Loading network fees… :)",
-        "price": "%{content} / Year :)",
-        "registered_on": "This name was last registered on %{content} :)",
-        "taken": "😭 Taken :)"
-      },
-      "select_ens_name": "My ENS Names :)"
+      "records": {
+        "since": "Since :)"
+      }
     },
     "review": {
       "alert": {

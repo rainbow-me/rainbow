@@ -1,4 +1,5 @@
-import { debounce } from 'lodash';
+import { useFocusEffect } from '@react-navigation/core';
+import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
@@ -10,6 +11,7 @@ import {
   Divider,
   Stack,
 } from '@rainbow-me/design-system';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
@@ -77,15 +79,7 @@ export default function TextRecordsForm({
       ) : (
         <>
           {selectedFields.map(
-            ({
-              label,
-              inputProps,
-              placeholder,
-              startsWith,
-              validations,
-              id,
-              key,
-            }) => (
+            ({ label, inputProps, placeholder, startsWith, id, key }) => (
               <Box key={id} onLayout={e => handleLayout(e, key)}>
                 <Field
                   autoFocus={autoFocusKey === key}
@@ -104,9 +98,15 @@ export default function TextRecordsForm({
                   onFocus={onFocus}
                   placeholder={placeholder}
                   selectionColor={selectionColor}
+                  shouldFormatText={
+                    key === ENS_RECORDS.displayName ||
+                    key === ENS_RECORDS.description ||
+                    key === ENS_RECORDS.notice ||
+                    key === ENS_RECORDS.keywords ||
+                    key === ENS_RECORDS.pronouns
+                  }
                   startsWith={startsWith}
                   testID={`ens-text-record-${key}`}
-                  validations={validations}
                 />
               </Box>
             )
@@ -119,11 +119,17 @@ export default function TextRecordsForm({
 
 function Field({ defaultValue, ...props }: InlineFieldProps) {
   const [value, setValue] = useState(defaultValue);
+  const [isTouched, setIsTouched] = useState(false);
 
-  // Set / clear values when the screen comes to focus / unfocus.
   useEffect(() => {
+    // If the field is touched, we don't want to set the default value again.
+    if (isTouched) return;
+
     setValue(defaultValue);
-  }, [defaultValue]);
+  }, [defaultValue, isTouched]);
+
+  // Set fields to be not touched when screen gets out of focus.
+  useFocusEffect(useCallback(() => () => setIsTouched(false), []));
 
   return (
     <>
@@ -132,6 +138,7 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
         {...props}
         onChangeText={text => {
           props.onChangeText(text);
+          setIsTouched(true);
           setValue(text);
         }}
         value={value}
