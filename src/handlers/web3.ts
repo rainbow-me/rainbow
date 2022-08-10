@@ -7,6 +7,7 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import {
   Block,
   Network as EthersNetwork,
+  JsonRpcProvider,
   StaticJsonRpcProvider,
   TransactionRequest,
   TransactionResponse,
@@ -16,7 +17,9 @@ import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 // @ts-expect-error – No TS definitions
 import { IS_TESTING } from 'react-native-dotenv';
+import { MMKV } from 'react-native-mmkv';
 import { RainbowConfig } from '../model/config';
+import { STORAGE_IDS } from '@/model/mmkv';
 import {
   AssetType,
   NewTransaction,
@@ -832,4 +835,26 @@ export const estimateGasLimit = async (
   } else {
     return estimateGas(estimateGasData, provider);
   }
+};
+
+const hasMergedStorage = new MMKV();
+export const getHasMerged = () =>
+  hasMergedStorage.getBoolean(STORAGE_IDS.HAS_MERGED);
+export const setHasMerged = () =>
+  hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, true);
+export const setHasNotMerged = () =>
+  hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, false);
+export const checkForTheMerge = async (provider: JsonRpcProvider) => {
+  const block = await provider.getBlock('latest');
+  logger.debug('LATEST BLOCK: ', block);
+  const { _difficulty } = block;
+  logger.debug('_DIFFICULTY: ', _difficulty.toString());
+  const currentHasMerged = getHasMerged();
+  logger.debug('CURRENT HAS MERGED: ', currentHasMerged);
+  if (_difficulty.toString() === '0') {
+    setHasMerged();
+  } else if (currentHasMerged) {
+    setHasNotMerged();
+  }
+  logger.debug('GET HAS MERGED FINAL: ', getHasMerged());
 };
