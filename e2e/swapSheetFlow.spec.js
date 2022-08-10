@@ -62,10 +62,10 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
   });
 
   it('Should display currency selection screen on swap-fab press', async () => {
-    await Helpers.checkIfVisible('wallet-screen');
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
   });
