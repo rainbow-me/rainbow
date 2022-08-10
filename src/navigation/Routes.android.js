@@ -356,7 +356,7 @@ function BSNavigator() {
         name={Routes.SETTINGS_SHEET}
         options={{
           ...bottomSheetPreset,
-          height: deviceUtils.dimensions.height - StatusBar.currentHeight,
+          height: deviceUtils.screen.height - StatusBar.currentHeight,
         }}
       />
       {notificationsEnabled && (

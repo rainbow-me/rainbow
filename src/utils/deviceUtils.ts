@@ -1,6 +1,7 @@
 import { Dimensions, Platform } from 'react-native';
 
 const { height, width } = Dimensions.get('window');
+const { height: screenHeight, width: screenWidth } = Dimensions.get('screen'); //works better for Android
 
 const deviceUtils = (function () {
   const iPhone6Height = 667,
@@ -25,6 +26,7 @@ const deviceUtils = (function () {
     isTallPhone: height >= iPhoneXHeight,
     isTinyPhone: height <= iphoneSEHeight,
     isVeryNarrowPhone: width < veryNarrowPhoneThreshold,
+    screen: { height: screenHeight, width: screenWidth },
   };
 })();
 
