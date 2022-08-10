@@ -2,6 +2,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, {
   RefObject,
+  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -9,6 +10,7 @@ import React, {
 } from 'react';
 import { ScrollViewProps, ViewStyle } from 'react-native';
 import Animated, {
+  runOnUI,
   useSharedValue,
   useWorkletCallback,
 } from 'react-native-reanimated';
@@ -36,6 +38,7 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
     },
     ref
   ) {
+    const { onScroll, ...rest } = props;
     const isInsideBottomSheet = !!useContext(BottomSheetContext);
     const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
 
@@ -52,11 +55,21 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
 
     const yPosition = useSharedValue(0);
 
-    const scrollHandler = useWorkletCallback(event => {
-      yPosition.value = isInsideBottomSheet
-        ? event.contentOffset.y
-        : event.nativeEvent.contentOffset.y;
+    const scrollHandler = useWorkletCallback(y => {
+      yPosition.value = y;
     });
+
+    const handleScroll = useCallback(
+      event => {
+        onScroll(event);
+        runOnUI(scrollHandler)(
+          isInsideBottomSheet
+            ? event.contentOffset.y
+            : event.nativeEvent.contentOffset.y
+        );
+      },
+      [isInsideBottomSheet, onScroll, scrollHandler]
+    );
 
     useImperativeHandle(ref, () => scrollViewRef.current!);
 
@@ -66,17 +79,17 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
 
     return (
       <ScrollView
-        {...(props as ScrollViewProps)}
+        {...(rest as ScrollViewProps)}
         bounces={false}
         contentContainerStyle={[extraPadding, props.contentContainerStyle]}
         ref={scrollViewRef as RefObject<any>}
         scrollEnabled={scrollEnabled}
         {...(isInsideBottomSheet
           ? {
-              onScrollWorklet: scrollHandler,
+              onScrollWorklet: handleScroll,
             }
           : {
-              onScroll: scrollHandler,
+              onScroll: handleScroll,
             })}
       >
         <ImagePreviewOverlay
