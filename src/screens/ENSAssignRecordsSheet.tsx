@@ -1,6 +1,14 @@
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -77,6 +85,8 @@ export default function ENSAssignRecordsSheet() {
   const { isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
+  const isInsideBottomSheet = !!useContext(BottomSheetContext);
+
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
@@ -179,7 +189,11 @@ export default function ENSAssignRecordsSheet() {
   return (
     <AccentColorProvider color={accentColor}>
       <Box
-        as={ScrollView}
+        as={
+          (isInsideBottomSheet
+            ? BottomSheetScrollView
+            : ScrollView) as typeof ScrollView
+        }
         background="body"
         contentContainerStyle={{
           paddingBottom: bottomActionHeight + ExtraBottomPadding,

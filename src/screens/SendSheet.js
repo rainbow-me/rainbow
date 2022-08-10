@@ -946,7 +946,10 @@ export default function SendSheet(props) {
           isValidAddress={isValidAddress}
           nickname={nickname}
           onChangeAddressInput={onChangeInput}
-          onPressPaste={setRecipient}
+          onPressPaste={recipient => {
+            checkAddress(recipient);
+            setRecipient(recipient);
+          }}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}

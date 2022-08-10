@@ -513,16 +513,6 @@ export const omitFlatten = <T extends object, K extends keyof T>(
   return newObj;
 };
 
-/**
- * @desc Converts the first character of string to upper case and the remaining to lower case
- */
-export const capitalize = (string?: string | undefined) => {
-  if (!string) return '';
-  return string
-    ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
-    : '';
-};
-
 export const chunk = <T>(input: T[], size: number): T[][] => {
   return input.reduce<T[][]>((arr, item, idx) => {
     return idx % size === 0
@@ -533,11 +523,6 @@ export const chunk = <T>(input: T[], size: number): T[][] => {
 
 export const isObjectLike = (val: any) =>
   val !== null && typeof val === 'object';
-
-export const upperFirst = (string?: string | undefined): string => {
-  if (!string) return '';
-  return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
-};
 
 /**
  * Creates an object composed of the picked object properties.

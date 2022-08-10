@@ -1,3 +1,4 @@
+import capitalize from 'lodash/capitalize';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from './Divider';
@@ -7,7 +8,6 @@ import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
 import { isL2Asset } from '@rainbow-me/handlers/assets';
-import { capitalize } from '@rainbow-me/helpers/utilities';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
 import { darkModeThemeColors } from '@rainbow-me/styles/colors';

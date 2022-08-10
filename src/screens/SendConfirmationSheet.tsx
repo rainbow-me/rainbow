@@ -2,7 +2,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { capitalize, isEmpty } from 'lodash';
+import capitalize from 'lodash/capitalize';
 import React, {
   Fragment,
   useCallback,
@@ -56,6 +56,7 @@ import {
 import {
   add,
   convertAmountToNativeDisplay,
+  isEmpty,
 } from '@rainbow-me/helpers/utilities';
 import {
   isENSAddressFormat,

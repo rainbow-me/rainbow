@@ -357,7 +357,8 @@ export const buildBriefUniqueTokenList = (
     }
     return true;
   });
-  const grouped2 = groupBy(filteredUniqueTokens, token => token?.familyName!);
+  const grouped2 = groupBy(filteredUniqueTokens, 'familyName');
+
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );

@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/core';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';

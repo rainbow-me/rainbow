@@ -179,7 +179,10 @@ export default function InfoRow({
                   disabled={switchDisabled || switchValue}
                   onValueChange={onSwitchChange}
                   testID="ens-reverse-record-switch"
-                  trackColor={{ false: colors.white, true: accentColor }}
+                  trackColor={{
+                    false: android ? colors.lightGrey : colors.white,
+                    true: accentColor,
+                  }}
                   value={switchValue}
                 />
               )}
