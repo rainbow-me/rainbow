@@ -56,6 +56,9 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
       yPosition.value = isInsideBottomSheet
         ? event.contentOffset.y
         : event.nativeEvent.contentOffset.y;
+      if (!isInsideBottomSheet) {
+        props.onScroll(event);
+      }
     });
 
     useImperativeHandle(ref, () => scrollViewRef.current!);
