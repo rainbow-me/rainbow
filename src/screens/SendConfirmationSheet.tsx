@@ -40,7 +40,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
-import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
@@ -116,7 +116,7 @@ const isRegistrant = (ensProfile?: ENSProfile) => ensProfile?.isRegistrant;
 const gasOffset = 120;
 const checkboxOffset = 44;
 
-function getDefaultCheckboxes({
+export function getDefaultCheckboxes({
   isENS,
   ensProfile,
   network,
@@ -176,41 +176,22 @@ function getDefaultCheckboxes({
 }
 
 export function getSheetHeight({
-  asset,
-  ensProfile,
-  profilesEnabled,
   shouldShowChecks,
   isL2,
-  toAddress,
+  isENS,
+  checkboxes,
 }: {
-  asset?: UniqueAsset;
-  ensProfile?: ENSProfile;
-  profilesEnabled: boolean;
   shouldShowChecks: boolean;
   isL2: boolean;
-  toAddress: string;
+  isENS: boolean;
+  checkboxes: Checkbox[];
 }) {
-  let height = android ? 440 : 377;
-  if (shouldShowChecks) height = height + 104;
-  if (isL2) height = height + 59;
-  if (profilesEnabled && asset && getUniqueTokenType(asset) === 'ENS') {
-    height = height + gasOffset;
-    if (!hasClearProfileInfo(ensProfile) && ensProfile?.isOwner) {
-      height = height + checkboxOffset;
-    }
-    if (
-      !doesNamePointToRecipient(ensProfile, toAddress) &&
-      ensProfile?.isOwner
-    ) {
-      height = height + checkboxOffset;
-    }
-    if (
-      isRegistrant(ensProfile) &&
-      ensProfile?.data?.owner?.address?.toLowerCase() !==
-        toAddress.toLowerCase()
-    ) {
-      height = height + checkboxOffset;
-    }
+  let height = android ? 400 : 377;
+  if (isL2) height = height + 70;
+  if (shouldShowChecks) height = height + 80;
+  if (isENS) {
+    height = height + gasOffset + 20;
+    height = height + checkboxes?.length * checkboxOffset || 0;
   }
   return height;
 }
@@ -545,20 +526,12 @@ export default function SendConfirmationSheet() {
     true
   );
 
-  let contentHeight =
-    getSheetHeight({
-      ensProfile,
-      isL2,
-      profilesEnabled,
-      shouldShowChecks,
-      toAddress,
-    }) - 30;
-  if (shouldShowChecks) contentHeight = contentHeight + 150;
-  if (isL2) contentHeight = contentHeight + 60;
-  if (isENS) {
-    contentHeight =
-      contentHeight + checkboxes.length * checkboxOffset + gasOffset;
-  }
+  const contentHeight = getSheetHeight({
+    checkboxes,
+    isENS,
+    isL2,
+    shouldShowChecks,
+  });
 
   return (
     <Container
