@@ -141,7 +141,7 @@ const RegistrationAvatar = ({
       setDisabled(false);
       setTimeout(() => {
         setAvatarUrl('');
-      }, 500);
+      }, 100);
     },
     onUploadError: () => {
       onBlurField({ key: 'avatar', value: '' });
