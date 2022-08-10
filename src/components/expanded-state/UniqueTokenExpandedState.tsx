@@ -465,6 +465,7 @@ const UniqueTokenExpandedState = ({
         <ColorModeProvider value="darkTinted">
           <AccentColorProvider color={imageColor}>
             <ImagePreviewOverlay
+              enableZoom={ios}
               opacity={ensCoverOpacity}
               yPosition={yPosition}
             >
