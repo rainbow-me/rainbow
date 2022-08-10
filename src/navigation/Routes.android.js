@@ -64,6 +64,7 @@ import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import HardwareWalletSheet from '@/screens/HardwareWalletSheet';
 import useExperimentalFlag, {
   NOTIFICATIONS,
   PROFILES,
@@ -305,6 +306,10 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
+      />
+      <BSStack.Screen
+        component={HardwareWalletSheet}
+        name={Routes.HW_WALLET_SHEET}
       />
       <BSStack.Screen
         component={ShowcaseSheet}
