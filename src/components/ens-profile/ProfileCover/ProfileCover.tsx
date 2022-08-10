@@ -77,6 +77,7 @@ export default function ProfileCover({
             imageUrl={coverUrl || ''}
             onPress={handleOnPress}
             topOffset={imagePreviewOverlayTopOffset}
+            zIndex={1}
           >
             <Box
               as={ImgixImage}

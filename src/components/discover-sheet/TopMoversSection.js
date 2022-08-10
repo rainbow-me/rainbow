@@ -89,7 +89,7 @@ export default function TopMoversSection() {
   );
 
   return (
-    <Column marginBottom={16} marginTop={16} testID="top-movers-section">
+    <Column testID="top-movers-section">
       {(gainerItems?.length > 0 || loserItems?.length > 0) && (
         <Flex marginBottom={12} paddingHorizontal={19}>
           <Text size="larger" weight="heavy">
@@ -106,6 +106,7 @@ export default function TopMoversSection() {
         <Column>
           {gainerItems?.length !== 0 && (
             <MarqueeList
+              height={53}
               items={gainerItems}
               renderItem={renderItem}
               speed={IS_TESTING !== 'true' ? 40 : 0}
@@ -114,6 +115,7 @@ export default function TopMoversSection() {
           )}
           {loserItems?.length !== 0 && (
             <MarqueeList
+              height={53}
               items={loserItems}
               renderItem={renderItem}
               speed={IS_TESTING !== 'true' ? -40 : 0}

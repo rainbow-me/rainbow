@@ -1,5 +1,8 @@
 import lang from 'i18n-js';
-import { chunk, compact, isEmpty, slice } from 'lodash';
+import chunk from 'lodash/chunk';
+import compact from 'lodash/compact';
+import isEmpty from 'lodash/isEmpty';
+import slice from 'lodash/slice';
 import sortBy from 'lodash/sortBy';
 import {
   add,
@@ -7,6 +10,7 @@ import {
   greaterThan,
   groupBy,
 } from './utilities';
+import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { UniqueAsset } from '@rainbow-me/entities';
 import store from '@rainbow-me/redux/store';
 import {
@@ -14,7 +18,11 @@ import {
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
+import {
+  ethereumUtils,
+  getUniqueTokenFormat,
+  getUniqueTokenType,
+} from '@rainbow-me/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -329,7 +337,8 @@ export const buildBriefUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
-  hiddenTokens: string[] = []
+  hiddenTokens: string[] = [],
+  listType: AssetListType = 'wallet'
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
@@ -341,7 +350,16 @@ export const buildBriefUniqueTokenList = (
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
 
-  const grouped2 = groupBy(nonHiddenUniqueTokens, 'familyName');
+  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: any) => {
+    if (listType === 'select-nft') {
+      const format = getUniqueTokenFormat(token);
+      const type = getUniqueTokenType(token);
+      return format === 'image' && type === 'NFT';
+    }
+    return true;
+  });
+  const grouped2 = groupBy(filteredUniqueTokens, 'familyName');
+
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
@@ -351,7 +369,7 @@ export const buildBriefUniqueTokenList = (
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcaseIds.length > 0) {
+  if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: 'Showcase',
@@ -411,7 +429,7 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
-  if (hiddenUniqueTokensIds.length > 0) {
+  if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet') {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: lang.t('button.hidden'),
@@ -435,5 +453,13 @@ export const buildBriefUniqueTokenList = (
   return result;
 };
 
-export const buildUniqueTokenName = ({ collection, id, name }: any) =>
-  name || `${collection?.name} #${id}`;
+export const buildUniqueTokenName = ({
+  collection,
+  id,
+  name,
+  uniqueId,
+}: any) => {
+  if (name) return name;
+  if (id) return `${collection?.name} #${id}`;
+  return uniqueId;
+};
