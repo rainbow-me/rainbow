@@ -2,7 +2,7 @@ import { Dimensions } from 'react-native';
 
 const ACTIONS = {};
 
-const CONTAINER_HEIGHT = Dimensions.get('screen').height;
+const CONTAINER_HEIGHT = Math.ceil(Dimensions.get('screen').height) + 1;
 
 const DEFAULT_ANIMATION_DURATION = 250;
 const DEFAULT_BACKDROP_COLOR = 'black';

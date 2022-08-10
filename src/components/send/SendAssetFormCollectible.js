@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
@@ -16,7 +15,7 @@ const ButtonWrapper = styled(Column).attrs({
   ...padding.object(0, 19, 15),
   marginBottom: 21,
   width: '100%',
-  ...(ios ? { zIndex: 3 } : {}),
+  ...(ios ? { zIndex: 3 } : { elevation: 3 }),
 });
 
 const Footer = styled(Column).attrs({ justify: 'end' })({
@@ -108,32 +107,30 @@ export default function SendAssetFormCollectible({
   );
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <Column align="end" flex={1} width="100%">
-        <NFTWrapper onLayout={handleLayout}>
-          {!!containerHeight && !!containerWidth && (
-            <UniqueTokenExpandedStateContent
-              {...props}
-              asset={asset}
-              borderRadius={20}
-              disablePreview
-              height={imageHeight}
-              horizontalPadding={24}
-              resizeMode="cover"
-              width={imageWidth}
-            />
-          )}
-        </NFTWrapper>
-        <Footer>
-          <ButtonWrapper isTallPhone={isTallPhone}>
-            {buttonRenderer}
-            {txSpeedRenderer}
-          </ButtonWrapper>
-          <GradientToggler isVisible={!isGradientVisible}>
-            <Gradient isTallPhone={isTallPhone} />
-          </GradientToggler>
-        </Footer>
-      </Column>
-    </TouchableWithoutFeedback>
+    <Column align="end" flex={1} width="100%">
+      <NFTWrapper onLayout={handleLayout}>
+        {!!containerHeight && !!containerWidth && (
+          <UniqueTokenExpandedStateContent
+            {...props}
+            asset={asset}
+            borderRadius={20}
+            disablePreview
+            height={imageHeight}
+            horizontalPadding={24}
+            resizeMode="cover"
+            width={imageWidth}
+          />
+        )}
+      </NFTWrapper>
+      <Footer>
+        <ButtonWrapper isTallPhone={isTallPhone}>
+          {buttonRenderer}
+          {txSpeedRenderer}
+        </ButtonWrapper>
+        <GradientToggler isVisible={!isGradientVisible}>
+          <Gradient isTallPhone={isTallPhone} />
+        </GradientToggler>
+      </Footer>
+    </Column>
   );
 }

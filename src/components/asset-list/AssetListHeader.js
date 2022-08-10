@@ -55,19 +55,33 @@ const TotalAmountSkeleton = styled(Skeleton)({
 });
 
 const WalletSelectButton = ({
-  truncatedAccountName,
+  accountName,
   onChangeWallet,
   deviceWidth,
   textWidth,
   maxWidth,
 }) => {
   const { colors } = useTheme();
+
+  const truncated = textWidth > maxWidth - 6;
+
+  const truncatedAccountName = useMemo(() => {
+    if (textWidth > 0) {
+      if (truncated && accountName?.endsWith('.eth')) {
+        return accountName.slice(0, -4);
+      }
+      return accountName;
+    }
+    return '';
+  }, [accountName, textWidth, truncated]);
+
   return (
     <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.9}>
       <Row>
         <AccountName
           deviceWidth={deviceWidth}
           maxWidth={maxWidth}
+          testID={`wallet-screen-account-name-${accountName || ''}`}
           textWidth={textWidth}
         >
           {truncatedAccountName}
@@ -127,18 +141,6 @@ const AssetListHeader = ({
     measure();
   }, [accountName]);
 
-  const truncated = textWidth > maxWidth - 6;
-
-  const truncatedAccountName = useMemo(() => {
-    if (textWidth > 0) {
-      if (truncated && accountName?.endsWith('.eth')) {
-        return accountName.slice(0, -4);
-      }
-      return accountName;
-    }
-    return '';
-  }, [accountName, textWidth, truncated]);
-
   return (
     <StickyHeader name={title}>
       <ListHeader
@@ -151,11 +153,11 @@ const AssetListHeader = ({
         {!title && (
           <WalletSelectButtonWrapper>
             <WalletSelectButton
+              accountName={accountName}
               deviceWidth={deviceWidth}
               maxWidth={maxWidth}
               onChangeWallet={onChangeWallet}
               textWidth={textWidth}
-              truncatedAccountName={truncatedAccountName}
             />
           </WalletSelectButtonWrapper>
         )}

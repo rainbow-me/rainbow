@@ -350,13 +350,14 @@ const UniqueTokenExpandedStateHeader = ({
     },
     [
       asset,
+      rainbowWebUrl,
       setClipboard,
-      addHiddenToken,
-      removeHiddenToken,
-      removeShowcaseToken,
       isHiddenAsset,
-      isShowcaseAsset,
       goBack,
+      removeHiddenToken,
+      addHiddenToken,
+      isShowcaseAsset,
+      removeShowcaseToken,
     ]
   );
 

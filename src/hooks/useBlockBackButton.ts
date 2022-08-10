@@ -3,8 +3,11 @@ import { NativeModules } from 'react-native';
 
 const { RNBackHandler } = NativeModules;
 
-export function useBlockBackButton() {
+export function useBlockBackButton(block: boolean) {
   useEffect(() => {
+    if (!block) {
+      return;
+    }
     RNBackHandler.setBlockBackButton(true);
     return () => RNBackHandler.setBlockBackButton(false);
   }, []);

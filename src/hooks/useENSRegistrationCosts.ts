@@ -75,6 +75,7 @@ export default function useENSRegistrationCosts({
     isValidGas: useGasIsValidGas,
     gasLimit: useGasGasLimit,
     selectedGasFeeOption,
+    isGasReady,
   } = useGas();
 
   const [gasFeeParams, setGasFeeParams] = useState({
@@ -151,9 +152,10 @@ export default function useENSRegistrationCosts({
       ownerAddress:
         mode === REGISTRATION_MODES.EDIT ? accountAddress : undefined,
       records: changedRecords,
+      setReverseRecord: sendReverseRecord,
     });
     return newSetRecordsGasLimit || '';
-  }, [changedRecords, name, accountAddress, mode]);
+  }, [name, mode, accountAddress, changedRecords, sendReverseRecord]);
 
   const getSetNameGasLimit = useCallback(async () => {
     const newSetNameGasLimit = await estimateENSSetNameGasLimit({
@@ -199,16 +201,21 @@ export default function useENSRegistrationCosts({
       enabled:
         step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT,
       queryFn: getSetRecordsGasLimit,
-      queryKey: [QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT, name, changedRecords],
+      queryKey: [
+        QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT,
+        name,
+        changedRecords,
+        sendReverseRecord,
+      ],
       staleTime: QUERY_STALE_TIME,
     },
     {
       enabled:
         (step === REGISTRATION_STEPS.COMMIT ||
           step === REGISTRATION_STEPS.REGISTER) &&
-        nameUpdated,
+        Boolean(accountAddress),
       queryFn: getReverseRecord,
-      queryKey: [QUERY_KEYS.GET_REVERSE_RECORD, name],
+      queryKey: [QUERY_KEYS.GET_REVERSE_RECORD, accountAddress],
       staleTime: QUERY_STALE_TIME,
     },
     {
@@ -229,6 +236,7 @@ export default function useENSRegistrationCosts({
         sendReverseRecord,
         nameUpdated,
         changedRecords,
+        name,
       ],
       staleTime: QUERY_STALE_TIME,
     },
@@ -278,6 +286,7 @@ export default function useENSRegistrationCosts({
       [REGISTRATION_STEPS.EDIT]: setRecordsGasLimit,
       [REGISTRATION_STEPS.REGISTER]: registerRapGasLimit,
       [REGISTRATION_STEPS.SET_NAME]: setNameGasLimit,
+      [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
@@ -357,15 +366,16 @@ export default function useENSRegistrationCosts({
   }, [prevIsSufficientGas, prevIsValidGas, setIsValidGas, useGasIsValidGas]);
 
   useEffect(() => {
-    if (!currentStepGasLimit) startPollingGasFees();
-  }, [currentStepGasLimit, startPollingGasFees, step]);
+    startPollingGasFees();
+  }, [startPollingGasFees, step]);
 
   useEffect(() => {
     if (
       !isEmpty(useGasGasFeeParamsBySpeed) &&
-      gasFeeParams.gasFeeParamsBySpeed !== useGasGasFeeParamsBySpeed &&
-      gasFeeParams.currentBaseFee !== useGasCurrentBlockParams.baseFeePerGas &&
-      useGasCurrentBlockParams.baseFeePerGas
+      gasFeeParams?.gasFeeParamsBySpeed !== useGasGasFeeParamsBySpeed &&
+      gasFeeParams?.currentBaseFee !==
+        useGasCurrentBlockParams?.baseFeePerGas &&
+      useGasCurrentBlockParams?.baseFeePerGas
     ) {
       setGasFeeParams({
         currentBaseFee: useGasCurrentBlockParams.baseFeePerGas,
@@ -477,27 +487,21 @@ export default function useENSRegistrationCosts({
     yearsDuration,
   ]);
 
-  const gasFeeReady = useMemo(
-    () =>
-      !isEmpty(useGasGasFeeParamsBySpeed) && !isEmpty(useGasCurrentBlockParams),
-    [useGasCurrentBlockParams, useGasGasFeeParamsBySpeed]
-  );
-
   const { isSuccess, isLoading, isIdle } = useMemo(() => {
     const statusQueries = queries.slice(0, 2);
     const isSuccess =
       !statusQueries.some(a => a.status !== 'success') &&
       !!data?.estimatedRentPrice &&
-      gasFeeReady;
+      isGasReady;
     const isLoading =
       statusQueries
         .map(({ isLoading }) => isLoading)
-        .reduce((a, b) => a || b) && !gasFeeReady;
+        .reduce((a, b) => a || b) && !isGasReady;
     const isIdle = statusQueries
       .map(({ isIdle }) => ({ isIdle }))
       .reduce((a, b) => a && b);
     return { isIdle, isLoading, isSuccess };
-  }, [data?.estimatedRentPrice, gasFeeReady, queries]);
+  }, [data?.estimatedRentPrice, isGasReady, queries]);
 
   return {
     data,
