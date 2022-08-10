@@ -1,5 +1,7 @@
 import { reverse, slice, toUpper, uniqBy } from 'lodash';
 import orderBy from 'lodash/orderBy';
+import upperFirst from 'lodash/upperFirst';
+
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -28,7 +30,6 @@ import {
   convertRawAmountToNativeDisplay,
   isEmpty,
   partition,
-  upperFirst,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 

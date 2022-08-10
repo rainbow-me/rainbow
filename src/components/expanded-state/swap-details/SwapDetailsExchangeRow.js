@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 import React, { Fragment, useMemo } from 'react';
 import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
 import Pill from '../../Pill';
