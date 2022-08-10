@@ -222,14 +222,15 @@ function ImageValue({
   const enableZoomOnPress = !onPress;
 
   if (!url) return null;
+  const ImageWrapper = android ? Box : ImagePreviewOverlayTarget;
   return (
-    <ImagePreviewOverlayTarget
+    <ImageWrapper
       aspectRatioType="cover"
       enableZoomOnPress={enableZoomOnPress}
       imageUrl={url}
       onPress={onPress}
     >
       <Box as={ImgixImage} height="full" source={{ uri: url }} />
-    </ImagePreviewOverlayTarget>
+    </ImageWrapper>
   );
 }
