@@ -29,6 +29,9 @@ src/model/wallet.ts @brunobar79 @estebanmino
 src/redux/gas.ts @brunobar79 @estebanmino
 src/redux/nonceManager.ts @derHowie @brunobar79 @estebanmino
 
+# navigation
+src/navigation @osdnk @terrysahaidak
+
 # APP INFRA
 .eslintignore @brunobar79 @osdnk @estebanmino
 .eslintrc.js @brunobar79 @osdnk @estebanmino
