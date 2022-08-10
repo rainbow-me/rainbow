@@ -29,7 +29,6 @@ const NOOP = () => undefined;
 
 const sx = StyleSheet.create({
   accountLabel: {
-    fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
@@ -282,13 +281,19 @@ export default function AddressRow({
           {content}
         </ButtonPressAnimation>
       ) : !editMode ? (
-        <ButtonPressAnimation
-          enableHapticFeedback={!editMode}
-          onPress={onPress}
-          scaleTo={0.98}
+        <ContextMenuButton
+          menuConfig={menuConfig}
+          onPressMenuItem={handlePressMenuItem}
+          shouldOpenOnLongPress
         >
-          {content}
-        </ButtonPressAnimation>
+          <ButtonPressAnimation
+            enableHapticFeedback={!editMode}
+            onPress={onPress}
+            scaleTo={0.98}
+          >
+            {content}
+          </ButtonPressAnimation>
+        </ContextMenuButton>
       ) : (
         content
       )}

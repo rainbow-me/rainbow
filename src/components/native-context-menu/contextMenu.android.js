@@ -7,6 +7,7 @@ export default function ContextMenuAndroid({
   menuConfig: { menuItems, menuTitle },
   isAnchoredToRight,
   onPressMenuItem,
+  shouldOpenOnLongPress,
 }) {
   const actions = useMemo(() => {
     const items = [];
@@ -45,6 +46,7 @@ export default function ContextMenuAndroid({
       actions={actions}
       isAnchoredToRight={isAnchoredToRight}
       onPressAction={onPressAction}
+      shouldOpenOnLongPress={shouldOpenOnLongPress}
     >
       {children}
     </MenuView>
