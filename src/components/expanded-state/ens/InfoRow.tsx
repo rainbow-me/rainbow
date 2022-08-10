@@ -150,6 +150,7 @@ export default function InfoRow({
                 : useAccentColor
                 ? accentColor + '10'
                 : 'rgba(255, 255, 255, 0.08)',
+              maxWidth: android ? 250 : undefined,
               opacity: show ? 1 : 0,
             }}
           >
