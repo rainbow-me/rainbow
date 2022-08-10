@@ -10,6 +10,7 @@ import React, {
 import { ScrollViewProps, ViewStyle } from 'react-native';
 import Animated, {
   runOnJS,
+  useAnimatedScrollHandler,
   useSharedValue,
   useWorkletCallback,
 } from 'react-native-reanimated';
@@ -53,13 +54,13 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
 
     const yPosition = useSharedValue(0);
 
-    const scrollHandler = useWorkletCallback(event => {
-      yPosition.value = isInsideBottomSheet
-        ? event.contentOffset.y
-        : event.nativeEvent.contentOffset.y;
-      if (!isInsideBottomSheet) {
-        runOnJS(props.onScroll)(event);
-      }
+    const scrollHandler = useAnimatedScrollHandler(nativeEvent => {
+      yPosition.value = nativeEvent.contentOffset.y;
+      runOnJS(props.onScroll)({ nativeEvent });
+    });
+
+    const scrollWorklet = useWorkletCallback(event => {
+      yPosition.value = event.contentOffset.y;
     });
 
     useImperativeHandle(ref, () => scrollViewRef.current!);
@@ -77,7 +78,7 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
         scrollEnabled={scrollEnabled}
         {...(isInsideBottomSheet
           ? {
-              onScrollWorklet: scrollHandler,
+              onScrollWorklet: scrollWorklet,
             }
           : {
               onScroll: scrollHandler,
