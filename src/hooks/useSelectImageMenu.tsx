@@ -176,6 +176,7 @@ export default function useSelectImageMenu({
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'library') {
+        isRemoved.current = false;
         handleSelectImage();
       }
       if (actionKey === 'nft') {
@@ -200,6 +201,7 @@ export default function useSelectImageMenu({
       },
       async (buttonIndex: Number) => {
         if (buttonIndex === 0) {
+          isRemoved.current = false;
           handleSelectImage();
         } else if (buttonIndex === 1) {
           handleSelectNFT();
