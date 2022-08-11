@@ -1,13 +1,13 @@
-import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
+import { fetchENSAvatar } from './useENSAvatar';
 import useInitializeWallet from './useInitializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
@@ -15,8 +15,10 @@ import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   resolveUnstoppableDomain,
   web3Provider,
@@ -115,7 +117,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           withoutStatusBar: true,
         });
       } else {
-        importWallet(name, forceColor, avatarUrl);
+        importWallet(forceColor, name, avatarUrl);
       }
     },
     [handleSetImporting, navigate, showImportModal]
@@ -136,9 +138,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const [address, images] = await Promise.all([
+          const [address, avatar] = await Promise.all([
             web3Provider.resolveName(input),
-            !avatarUrl && profilesEnabled && fetchImages(input),
+            !avatarUrl &&
+              profilesEnabled &&
+              fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
             Alert.alert(lang.t('wallet.invalid_ens_name'));
@@ -147,7 +151,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          avatarUrl = avatarUrl || images?.avatarUrl;
+          avatarUrl = avatarUrl || avatar?.imageUrl;
           startImportProfile(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
@@ -180,12 +184,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       } else if (isValidAddress(input)) {
         try {
-          const ens = await web3Provider.lookupAddress(input);
+          const ens = await fetchReverseRecord(input);
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             if (!avatarUrl && profilesEnabled) {
-              const images = await fetchImages(name);
-              avatarUrl = images?.avatarUrl;
+              const avatar = await fetchENSAvatar(name, { swallowError: true });
+              avatarUrl = avatar?.imageUrl;
             }
           }
           analytics.track('Show wallet profile modal for read only wallet', {
@@ -210,8 +214,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
               if (!avatarUrl && profilesEnabled) {
-                const images = await fetchImages(name);
-                avatarUrl = images?.avatarUrl;
+                const avatar = await fetchENSAvatar(name, {
+                  swallowError: true,
+                });
+                avatarUrl = avatar?.imageUrl;
               }
             }
             setBusy(false);
@@ -271,17 +277,25 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image
           )
             .then(success => {
-              handleSetImporting(false);
+              ios && handleSetImporting(false);
               if (success) {
                 goBack();
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
-                    replace(Routes.SWIPE_LAYOUT, {
+                    // on Android replacing is not working well, so we navigate and then remove the screen below
+                    const action = ios ? replace : navigate;
+                    action(Routes.SWIPE_LAYOUT, {
                       params: { initialized: true },
                       screen: Routes.WALLET_SCREEN,
                     });
                   } else {
                     navigate(Routes.WALLET_SCREEN, { initialized: true });
+                  }
+                  if (android) {
+                    handleSetImporting(false);
+                    InteractionManager.runAfterInteractions(() =>
+                      setIsWalletLoading(null)
+                    );
                   }
 
                   setTimeout(() => {
@@ -306,6 +320,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   });
                 });
               } else {
+                if (android) {
+                  setIsWalletLoading(null);
+                  handleSetImporting(false);
+                }
                 // Wait for error messages then refocus
                 setTimeout(() => {
                   // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
@@ -317,6 +335,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             })
             .catch(error => {
               handleSetImporting(false);
+              android && handleSetImporting(false);
               logger.error('error importing seed phrase: ', error);
               setTimeout(() => {
                 // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
@@ -351,6 +370,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     dispatch,
     showImportModal,
     profilesEnabled,
+    setIsWalletLoading,
   ]);
 
   useEffect(() => {

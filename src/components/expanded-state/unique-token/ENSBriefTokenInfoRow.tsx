@@ -6,9 +6,10 @@ import { InteractionManager } from 'react-native';
 import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { Column, Columns, Inset } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useENSProfile, useENSRegistration } from '@rainbow-me/hooks';
+import { useENSAvatar, useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 
@@ -30,7 +31,8 @@ export default function ENSBriefTokenInfoRow({
   const { colors } = useTheme();
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
-  const { data } = useENSProfile(ensName);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { data: avatar } = useENSAvatar(ensName, { enabled: profilesEnabled });
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);
@@ -44,7 +46,7 @@ export default function ENSBriefTokenInfoRow({
         ensName: cleanENSName,
         externalAvatarUrl,
         longFormHeight:
-          ENSConfirmRenewSheetHeight + (data?.images?.avatarUrl ? 70 : 0),
+          ENSConfirmRenewSheetHeight + (avatar?.imageUrl ? 70 : 0),
         mode: REGISTRATION_MODES.RENEW,
       });
     });
@@ -53,7 +55,7 @@ export default function ENSBriefTokenInfoRow({
     startRegistration,
     navigate,
     externalAvatarUrl,
-    data?.images?.avatarUrl,
+    avatar?.imageUrl,
   ]);
 
   return (

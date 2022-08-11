@@ -1,5 +1,4 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
@@ -13,7 +12,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ActivityIndicator, Alert, InteractionManager } from 'react-native';
+import { ActivityIndicator, InteractionManager } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -46,6 +45,8 @@ import {
 import { FLASHBOTS_WC } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,
@@ -232,14 +233,13 @@ export default function TransactionConfirmationScreen() {
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
       walletNames,
-      currentNetwork,
       address
     );
     return {
       ...profileInfo,
       address,
     };
-  }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
+  }, [walletConnector?._accounts, walletNames, wallets]);
 
   const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 

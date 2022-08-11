@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual } from 'lodash';
 import React, {
@@ -10,12 +9,7 @@ import React, {
   useState,
 } from 'react';
 import equal from 'react-fast-compare';
-import {
-  Alert,
-  InteractionManager,
-  Keyboard,
-  NativeModules,
-} from 'react-native';
+import { InteractionManager, Keyboard, NativeModules } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
@@ -36,6 +30,8 @@ import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@rainbow-me/analytics';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
@@ -287,13 +283,14 @@ export default function ExchangeModal({
     type,
   });
 
-  const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
-
-  const defaultGasLimit = isDeposit
-    ? ethUnits.basic_deposit
-    : isWithdrawal
-    ? ethUnits.basic_withdrawal
-    : basicSwap;
+  const defaultGasLimit = useMemo(() => {
+    const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
+    return isDeposit
+      ? ethUnits.basic_deposit
+      : isWithdrawal
+      ? ethUnits.basic_withdrawal
+      : basicSwap;
+  }, [chainId, isDeposit, isWithdrawal]);
 
   const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
@@ -386,15 +383,6 @@ export default function ExchangeModal({
 
   const updateGasLimit = useCallback(async () => {
     try {
-      if (
-        ((type === ExchangeModalTypes.swap ||
-          type === ExchangeModalTypes.deposit) &&
-          !(inputCurrency && outputCurrency)) ||
-        type === ExchangeModalTypes.withdraw ||
-        loading
-      ) {
-        return;
-      }
       const swapParams = {
         chainId,
         inputAmount,
@@ -438,10 +426,7 @@ export default function ExchangeModal({
     currentProvider,
     defaultGasLimit,
     inputAmount,
-    inputCurrency,
-    loading,
     outputAmount,
-    outputCurrency,
     tradeDetails,
     type,
     updateTxFee,

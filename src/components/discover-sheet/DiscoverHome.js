@@ -1,12 +1,15 @@
 import React from 'react';
 import useExperimentalFlag, { PROFILES } from '../../config/experimentalHooks';
 import BottomSpacer from './BottomSpacer';
+import DPICard from './DPICard';
+import ENSCreateProfileCard from './ENSCreateProfileCard';
+import ENSSearchCard from './ENSSearchCard';
+import GasCard from './GasCard';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
-import RegisterENS from './RegisterENSSection';
-// import Strategies from './StrategiesSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
+import { Columns, Inset, Stack } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 
 export default function DiscoverHome() {
@@ -14,12 +17,31 @@ export default function DiscoverHome() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   return (
     <React.Fragment>
-      <TopMoversSection />
-      {profilesEnabled && <RegisterENS />}
-      <PulseIndex />
-      <Lists />
-      {/* <Strategies /> */}
-      {accountAddress ? <UniswapPools /> : null}
+      <Inset top={{ custom: 16 }}>
+        <Stack space="30px">
+          {profilesEnabled ? (
+            <Inset horizontal={ios && '19px'}>
+              <Stack space={ios && '19px'}>
+                <Columns space={ios && '19px'}>
+                  <GasCard />
+                  <ENSSearchCard />
+                </Columns>
+                <ENSCreateProfileCard />
+                <DPICard />
+              </Stack>
+            </Inset>
+          ) : (
+            <Stack space={{ custom: 21 }}>
+              <TopMoversSection />
+              <PulseIndex />
+            </Stack>
+          )}
+          <Stack space="30px">
+            <Lists />
+            {accountAddress ? <UniswapPools /> : null}
+          </Stack>
+        </Stack>
+      </Inset>
       <BottomSpacer />
     </React.Fragment>
   );

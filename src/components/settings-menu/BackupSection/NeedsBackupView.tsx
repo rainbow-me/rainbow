@@ -1,10 +1,10 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { SheetActionButton } from '../../sheet';
+import { analytics } from '@rainbow-me/analytics';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import { Box, Stack, Text } from '@rainbow-me/design-system';

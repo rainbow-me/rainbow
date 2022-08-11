@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
-import { Alert, InteractionManager, Switch } from 'react-native';
+import { InteractionManager, Switch } from 'react-native';
 import codePush from 'react-native-code-push';
 import {
   // @ts-ignore
@@ -21,6 +21,7 @@ import NetworkSection from './NetworkSection';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import {
   getProviderForNetwork,
@@ -219,14 +220,22 @@ const DevSection = () => {
           }
           size={52}
           testID="testnet-switch"
-          titleComponent={<MenuItem.Title text="Enable Testnets" />}
+          titleComponent={
+            <MenuItem.Title
+              text={lang.t('developer_settings.enable_testnets')}
+            />
+          }
         />
         {testnetsEnabled && <NetworkSection inDevSection />}
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="💥" />}
           onPress={clearLocalStorage}
           size={52}
-          titleComponent={<MenuItem.Title text="Clear local storage" />}
+          titleComponent={
+            <MenuItem.Title
+              text={lang.t('developer_settings.clear_local_storage')}
+            />
+          }
         />
       </Menu>
       {(IS_DEV || isTestFlight) && (

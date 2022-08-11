@@ -53,6 +53,7 @@ const Routes = {
   SEND_SHEET_NAVIGATOR: 'SendSheetNavigator',
   SETTINGS_SHEET: 'SettingsSheet',
   SHOWCASE_SHEET: 'ShowcaseSheet',
+  SPEED_UP_AND_CANCEL_BOTTOM_SHEET: 'SpeedUpAndCancelBootomSheet',
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',
   SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',

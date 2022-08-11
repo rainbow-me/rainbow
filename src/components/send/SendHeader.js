@@ -19,7 +19,6 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -176,9 +175,7 @@ export default function SendHeader({
         destructiveButtonIndex: 0,
         options: [
           lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
-          profilesEnabled && isENSAddressFormat(recipient)
-            ? lang.t('contacts.options.view')
-            : lang.t('contacts.options.edit'),
+          lang.t('contacts.options.edit'),
           lang.t('wallet.settings.copy_address_capitalized'),
           lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
@@ -194,15 +191,8 @@ export default function SendHeader({
             removeContact: removeContact,
           });
         } else if (buttonIndex === 1) {
-          if (profilesEnabled && isENSAddressFormat(recipient)) {
-            navigate(Routes.PROFILE_SHEET, {
-              address: recipient,
-              fromRoute: 'SendHeader',
-            });
-          } else {
-            handleNavigateToContact();
-            onRefocusInput();
-          }
+          handleNavigateToContact();
+          onRefocusInput();
         } else if (buttonIndex === 2) {
           setClipboard(hexAddress);
           onRefocusInput();
@@ -213,10 +203,7 @@ export default function SendHeader({
     contact?.ens,
     handleNavigateToContact,
     hexAddress,
-    navigate,
     onRefocusInput,
-    profilesEnabled,
-    recipient,
     removeContact,
     setClipboard,
     name,
@@ -246,6 +233,7 @@ export default function SendHeader({
           address={recipient}
           autoFocus={!showAssetList}
           editable={!fromProfile}
+          isValid={isValidAddress}
           name={name}
           onChangeText={onChange}
           onFocus={onFocus}

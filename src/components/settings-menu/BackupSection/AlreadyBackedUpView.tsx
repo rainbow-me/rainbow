@@ -1,12 +1,11 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import { useTheme } from '../../../theme/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
+import { analytics } from '@rainbow-me/analytics';
 import { AccentColorProvider, Box, Text } from '@rainbow-me/design-system';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
@@ -20,6 +19,7 @@ import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { colors, position, shadow } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,

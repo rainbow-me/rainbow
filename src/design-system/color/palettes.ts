@@ -10,6 +10,7 @@ export const colors = {
   grey: 'rgb(60, 66, 82)',
   grey06: 'rgba(60, 66, 82, 0.06)',
   grey10: 'rgba(60, 66, 82, 0.1)',
+  grey15: 'rgba(60, 66, 82, 0.15)',
   grey20: 'rgba(60, 66, 82, 0.2)',
   grey25: 'rgba(60, 66, 82, 0.25)',
   grey30: 'rgba(60, 66, 82, 0.3)',
@@ -24,6 +25,7 @@ export const colors = {
   sky: '#E0E8FF',
   sky06: 'rgba(224, 232, 255, 0.06)',
   sky10: 'rgba(224, 232, 255, 0.1)',
+  sky15: 'rgba(224, 232, 255, 0.15)',
   sky20: 'rgba(224, 232, 255, 0.2)',
   sky25: 'rgba(224, 232, 255, 0.25)',
   sky30: 'rgba(224, 232, 255, 0.3)',
@@ -36,6 +38,7 @@ export const colors = {
   white: '#FFFFFF',
   white06: 'rgba(255, 255, 255, 0.06)',
   white10: 'rgba(255, 255, 255, 0.1)',
+  white15: 'rgba(255, 255, 255, 0.15)',
   white20: 'rgba(255, 255, 255, 0.2)',
   white25: 'rgba(255, 255, 255, 0.25)',
   white30: 'rgba(255, 255, 255, 0.3)',
@@ -142,6 +145,7 @@ export type ForegroundColor =
   | 'secondary'
   | 'secondary06'
   | 'secondary10'
+  | 'secondary15'
   | 'secondary20'
   | 'secondary25'
   | 'secondary30'
@@ -206,6 +210,11 @@ export const foregroundColors: Record<
     dark: colors.sky10,
     darkTinted: colors.white10,
     light: colors.grey10,
+  },
+  secondary15: {
+    dark: colors.sky15,
+    darkTinted: colors.white15,
+    light: colors.grey15,
   },
   secondary20: {
     dark: colors.sky20,

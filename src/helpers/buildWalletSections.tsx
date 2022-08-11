@@ -47,10 +47,13 @@ const networkSelector = (state: any) => state.network;
 const nativeCurrencySelector = (state: any) => state.nativeCurrency;
 const pinnedCoinsSelector = (state: any) => state.pinnedCoins;
 const savingsSelector = (state: any) => state.savings;
+const sellingTokensSelector = (state: any) => state.sellingTokens;
 const showcaseTokensSelector = (state: any) => state.showcaseTokens;
+const hiddenTokensSelector = (state: any) => state.hiddenTokens;
 const uniqueTokensSelector = (state: any) => state.uniqueTokens;
 const uniswapSelector = (state: any) => state.uniswap;
 const uniswapTotalSelector = (state: any) => state.uniswapTotal;
+const listTypeSelector = (state: any) => state.listType;
 
 const enhanceRenderItem = compose(
   withNavigation,
@@ -483,7 +486,13 @@ const uniqueTokenDataSelector = createSelector(
 );
 
 const briefUniqueTokenDataSelector = createSelector(
-  [uniqueTokensSelector, showcaseTokensSelector],
+  [
+    uniqueTokensSelector,
+    showcaseTokensSelector,
+    sellingTokensSelector,
+    hiddenTokensSelector,
+    listTypeSelector,
+  ],
   buildBriefUniqueTokenList
 );
 

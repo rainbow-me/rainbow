@@ -1,9 +1,9 @@
-import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
 import { resources, supportedLanguages } from '../../languages';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import { analytics } from '@rainbow-me/analytics';
 import { pickBy } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 

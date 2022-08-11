@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
@@ -8,6 +7,7 @@ import font from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
+import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -154,6 +154,7 @@ const PulseIndex = () => {
       </ButtonPressAnimation>
       <ButtonPressAnimation
         flex={1}
+        marginTop={android ? 4 : 8}
         onPress={handlePress}
         scaleTo={0.92}
         style={{

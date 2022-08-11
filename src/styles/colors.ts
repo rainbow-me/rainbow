@@ -25,7 +25,7 @@ const darkModeColors = {
   darkGrey: '#333333',
   darkModeDark: '#404656',
   exchangeFallback: 'rgba(60, 66, 82, 0.8)',
-  green: '#00D146',
+  green: '#4BD166',
   grey: '#333333',
   grey20: '#333333',
   lighterGrey: '#12131A',
@@ -194,7 +194,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     appleBlueTintToAppleBlue: ['#15B1FE', base.appleBlue],
     blueToGreen: ['#4764F7', '#23D67F'],
     checkmarkAnimation: ['#1FC24A10', '#1FC24A10', '#1FC24A00'],
-    ens: ['#513eff', '#3e80ff'],
+    ens: ['#456AFF', '#5FA9EE'],
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
     lightestGreyReverse: ['#F2F4F7', '#FFFFFF'],
@@ -228,6 +228,10 @@ const getColorsByTheme = (darkMode?: boolean) => {
     vividRainbowTint: ['#FFFAF1', '#FFF5FB', '#F0FEFF'],
     warning: ['#FFD963', '#FFB200'],
     warningTint: ['#FFFDF6', '#FFFBF2'],
+    white80ToTransparent: [
+      buildRgba(base.whiteLabel, 0.8),
+      buildRgba(base.whiteLabel, 0),
+    ],
     whiteButton: ['#FFFFFF', '#F7F9FA'],
   };
 
@@ -302,7 +306,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       appleBlueTintToAppleBlue: ['#2FC3FF', base.appleBlue],
       blueToGreen: ['#4764F7', '#23D67F'],
       checkmarkAnimation: ['#1FC24A10', '#1FC24A10', '#1FC24A00'],
-      ens: ['#513eff', '#3e80ff'],
+      ens: ['#456AFF', '#5FA9EE'],
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
       lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
       lightestGreyReverse: [
@@ -342,6 +346,10 @@ const getColorsByTheme = (darkMode?: boolean) => {
       vividRainbowTint: ['#201C19', '#201723', '#112028'],
       warning: ['#FFD963', '#FFB200'],
       warningTint: ['#201F1E', '#201C18'],
+      white80ToTransparent: [
+        buildRgba(base.whiteLabel, 0.8),
+        buildRgba(base.whiteLabel, 0),
+      ],
       whiteButton: ['#404656', buildRgba('#404656', 0.8)],
     };
 

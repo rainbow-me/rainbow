@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { values } from 'lodash';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
@@ -8,6 +7,7 @@ import { settingsUpdateNetwork } from '../../redux/settings';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import { analytics } from '@rainbow-me/analytics';
 import { Divider, Stack } from '@rainbow-me/design-system';
 import {
   useAccountSettings,

@@ -6,7 +6,7 @@ export default function ContextMenuAndroid({
   children,
   menuConfig: { menuItems, menuTitle },
   isAnchoredToRight,
-  handlePressMenuItem,
+  onPressMenuItem,
 }) {
   const actions = useMemo(() => {
     const items = [];
@@ -36,8 +36,8 @@ export default function ContextMenuAndroid({
 
   const onPressAction = useLatestCallback(
     ({ nativeEvent: { event } }) =>
-      handlePressMenuItem({ nativeEvent: { actionKey: event } }),
-    [handlePressMenuItem]
+      onPressMenuItem({ nativeEvent: { actionKey: event } }),
+    [onPressMenuItem]
   );
 
   return (

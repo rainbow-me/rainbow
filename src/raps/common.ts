@@ -2,7 +2,6 @@ import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
 import { Quote } from '@rainbow-me/swaps';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import {
   depositCompound,
@@ -17,6 +16,7 @@ import {
   createRenewENSRap,
   createSetNameENSRap,
   createSetRecordsENSRap,
+  createTransferENSRap,
 } from './registerENS';
 import {
   createSwapAndDepositCompoundRap,
@@ -27,6 +27,7 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
+import { analytics } from '@rainbow-me/analytics';
 import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
@@ -36,12 +37,15 @@ import {
   estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import logger from 'logger';
 
 const {
   commitENS,
   registerWithConfig,
   multicallENS,
+  setAddrENS,
+  reclaimENS,
   setTextENS,
   setNameENS,
   renewENS,
@@ -56,6 +60,8 @@ export enum RapActionType {
   registerENS = 'registerENS',
   multicallENS = 'multicallENS',
   renewENS = 'renewENS',
+  setAddrENS = 'setAddrENS',
+  reclaimENS = 'reclaimENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
 }
@@ -80,6 +86,8 @@ export interface RapENSActionParameters {
   rentPrice: string;
   records?: Records;
   salt: string;
+  toAddress?: string;
+  mode?: keyof typeof REGISTRATION_MODES;
 }
 
 export interface UnlockActionParameters {
@@ -107,10 +115,15 @@ export interface ENSActionParameters {
   name: string;
   rentPrice: string;
   ownerAddress: string;
+  toAddress?: string;
   salt: string;
   records?: Records;
   setReverseRecord?: boolean;
   resolverAddress?: EthereumAddress;
+  clearRecords?: boolean;
+  setAddress?: boolean;
+  transferControl?: boolean;
+  mode?: keyof typeof REGISTRATION_MODES;
 }
 
 export interface RapActionTransaction {
@@ -159,13 +172,16 @@ export const RapActionTypes = {
   commitENS: 'commitENS' as RapActionType,
   depositCompound: 'depositCompound' as RapActionType,
   multicallENS: 'multicallENS' as RapActionType,
+  reclaimENS: 'reclaimENS' as RapActionType,
   registerENS: 'registerENS' as RapActionType,
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
   renewENS: 'renewENS' as RapActionType,
+  setAddrENS: 'setAddrENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
+  transferENS: 'transferENS' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
@@ -209,6 +225,8 @@ const createENSRapByType = (
       return createSetNameENSRap(ensRegistrationParameters);
     case RapActionTypes.setRecordsENS:
       return createSetRecordsENSRap(ensRegistrationParameters);
+    case RapActionTypes.transferENS:
+      return createTransferENSRap(ensRegistrationParameters);
     case RapActionTypes.commitENS:
     default:
       return createCommitENSRap(ensRegistrationParameters);
@@ -276,10 +294,14 @@ const findENSActionByType = (type: RapActionType) => {
       return registerWithConfig;
     case RapActionTypes.multicallENS:
       return multicallENS;
+    case RapActionTypes.setAddrENS:
+      return setAddrENS;
     case RapActionTypes.setTextENS:
       return setTextENS;
     case RapActionTypes.setNameENS:
       return setNameENS;
+    case RapActionTypes.reclaimENS:
+      return reclaimENS;
     case RapActionTypes.renewENS:
       return renewENS;
     default:
@@ -371,8 +393,11 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.multicallENS:
     case RapActionTypes.renewENS:
     case RapActionTypes.setNameENS:
+    case RapActionTypes.setAddrENS:
+    case RapActionTypes.reclaimENS:
     case RapActionTypes.setTextENS:
     case RapActionTypes.setRecordsENS:
+    case RapActionTypes.transferENS:
       return RAP_TYPE.ENS;
   }
   return '';
@@ -401,10 +426,11 @@ export const executeRap = async (
     label: rapName,
   });
 
+  let nonce = parameters?.nonce;
+
   logger.log('[common - executing rap]: actions', actions);
   if (actions.length) {
     const firstAction = actions[0];
-    const nonce = parameters?.nonce;
     const { baseNonce, errorMessage } = await executeAction(
       firstAction,
       wallet,
@@ -418,6 +444,7 @@ export const executeRap = async (
         const action = actions[index];
         await executeAction(action, wallet, rap, index, rapName, baseNonce);
       }
+      nonce = baseNonce + actions.length - 1;
       callback(true);
     } else {
       // Callback with failure state
@@ -430,6 +457,8 @@ export const executeRap = async (
     label: rapName,
   });
   logger.log('[common - executing rap] finished execute rap function');
+
+  return { nonce };
 };
 
 export const createNewRap = (actions: RapAction[]) => {

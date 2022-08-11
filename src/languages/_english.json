@@ -252,7 +252,8 @@
       "unhide": "Unhide",
       "unpin": "Unpin",
       "view": "View",
-      "watch_this_wallet": "Watch this Wallet"
+      "watch_this_wallet": "Watch this Wallet",
+      "hidden": "Hidden"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -288,9 +289,11 @@
       "clear_async_storage": "Clear async storage",
       "clear_image_cache": "Clear Image Cache",
       "clear_image_metadata_cache": "Clear Image Metadata Cache",
+      "clear_local_storage": "Clear local storage",
       "clear_mmkv_storage": "Clear MMKV storage",
       "connect_to_hardhat": "Connect to hardhat",
       "crash_app_render_error": "Crash app (render error)",
+      "enable_testnets": "Enable Testnets",
       "installing_update": "Installing update",
       "no_update": "No update",
       "not_applied": "NOT APPLIED",
@@ -303,6 +306,30 @@
       "sync_codepush": "Sync codepush, current: %{codePushVersion}"
     },
     "discover": {
+      "dpi": {
+        "title": "DeFi Pulse Index",
+        "body": "All the top decentralized finance tokens in one. Track the industry.",
+        "view": "View"
+      },
+      "ens_create_profile": {
+        "title": "Create your ENS profile",
+        "body": "Replace your wallet address with a profile owned entirely by you."
+      },
+      "ens_search": {
+        "mini_title": "ENS",
+        "title_part_1": "Register a ",
+        "title_part_2": ".eth name"
+      },
+      "gas": {
+        "average": "Average",
+        "gwei": "Gwei",
+        "high": "High",
+        "loading": "Loading…",
+        "low": "Low",
+        "network_fees": "Network fees",
+        "surging": "Surging",
+        "very_low": "Very low"
+      },
       "lists": {
         "lists_title": "Lists",
         "this_list_is_empty": "This list is empty!"
@@ -314,7 +341,8 @@
       },
       "search": {
         "profiles": "Profiles",
-        "search_ethereum": "Search all of Ethereum"
+        "search_ethereum": "Search all of Ethereum",
+        "search_ethereum_short": "Search Ethereum"
       },
       "strategies": {
         "strategies_title": "Strategies",
@@ -497,7 +525,6 @@
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName}",
-        "advanced": "Advanced",
         "attributes": "Attributes",
         "collection_website": "Collection Website",
         "configuration": "Configuration",
@@ -531,7 +558,9 @@
         "view_on_block_explorer": "View on %{blockExplorerName}",
         "view_on_marketplace_name": "View on %{marketplaceName}",
         "view_on_platform": "View on %{platform}",
-        "view_on_web": "View on Web"
+        "view_on_web": "View on Web",
+        "hide": "Hide",
+        "unhide": "Unhide"
       }
     },
     "explain": {
@@ -885,16 +914,13 @@
         "watching": "Watching"
       },
       "banner": {
-        "and_create_ens_profile": "Search available .eth names",
-        "register_name": "Create Your ENS Profile"
+        "register_name": "Create Your ENS Profile",
+        "and_create_ens_profile": "Search available .eth names"
       },
+      "select_ens_name": "My ENS Names",
       "confirm": {
-        "commit_button": "Hold to Commit",
-        "confirm_purchase": "Confirm purchase",
         "confirm_registration": "Confirm Registration",
-        "confirm_renew": "Hold to Extend",
-        "confirm_set_name": "Confirm Set Primary Name",
-        "confirm_update": "Confirm Update",
+        "confirm_updates": "Confirm Updates",
         "duration_plural": "%{content} years",
         "duration_singular": "1 year",
         "estimated_fees": "Estimated network fees",
@@ -902,6 +928,10 @@
         "estimated_total_eth": "Estimated total in ETH",
         "extend_by": "Extend by",
         "extend_registration": "Extend Registration",
+        "hold_to_begin": "Hold to Begin",
+        "hold_to_confirm": "Hold to Confirm",
+        "hold_to_extend": "Hold to Extend",
+        "hold_to_register": "Hold to Register",
         "insufficient_eth": "Insufficient ETH",
         "last_step": "One last step",
         "last_step_description": "Confirm below to register your name and configure your profile",
@@ -914,7 +944,6 @@
         "set_ens_name": "Set as my primary ENS name",
         "set_name_registration": "Set as Primary Name",
         "speed_up": "Speed Up",
-        "start_registration": "Start Registration",
         "suggestion": "Buy more years now to save on fees",
         "transaction_pending": "Transaction pending",
         "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain",
@@ -934,9 +963,9 @@
         "discord": "Discord",
         "doge": "Dogecoin",
         "email": "Email",
-        "email_message": "Please enter a valid email",
+        "invalid_email": "Invalid email",
         "email_placeholder": "Add your email",
-        "email_submit_message": "Please enter a valid email",
+        "invalid_username": "Invalid %{app} username",
         "eth": "Ethereum",
         "github": "GitHub",
         "instagram": "Instagram",
@@ -960,17 +989,19 @@
         "telegram": "Telegram",
         "twitter": "Twitter",
         "upload_photo": "Upload a Photo",
+        "uploading": "Uploading",
         "username_placeholder": "username",
         "wallet_placeholder": "Add a %{coin} address",
         "website": "Website",
-        "website_message": "Please enter a valid website URL",
-        "website_placeholder": "Add your website",
-        "website_submit_message": "Please enter a valid email"
+        "invalid_website": "Invalid URL",
+        "website_placeholder": "Add your website"
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
         "copy_address": "Copy Address",
+        "open_wallet": "Open Wallet",
         "remove_from_contacts": "Remove from Contacts",
+        "share": "Share",
         "view_on_etherscan": "View on Etherscan"
       },
       "edit": {
@@ -992,6 +1023,7 @@
           "description": "Your profile is stored directly on Ethereum and owned by you.",
           "title": "Stored on Ethereum"
         },
+        "edit_name": "Edit %{name}",
         "use_existing_name": "Use an existing ENS name",
         "use_name": "Use %{name}",
         "wallet_address_info": {
@@ -1012,25 +1044,39 @@
         "create_profile": "Create your Profile",
         "edit_profile": "Edit Profile",
         "pick_emoji": "Pick an Emoji",
+        "shuffle_emoji": "Shuffle Emoji",
         "remove_photo": "Remove Photo",
         "view_profile": "View Profile"
       },
       "search": {
-        "3_char_min": "Minimum 3 characters",
-        "available": "🥳 Available",
-        "clear": "􀅉 Clear",
-        "continue": "Continue 􀆊",
+        "header": "Find your name",
         "description": "Search available ENS names",
+        "available": "🥳 Available",
+        "taken": "😭 Taken",
+        "registered_on": "This name was last registered on %{content}",
+        "price": "%{content} / Year",
+        "expiration": "Til %{content}",
+        "3_char_min": "Minimum 3 characters",
+        "already_registering_name": "You are already registering this name",
         "estimated_total_cost_1": "Estimated total cost of",
         "estimated_total_cost_2": "with current network fees",
-        "expiration": "Til %{content}",
-        "header": "Find your name",
         "loading_fees": "Loading network fees…",
-        "price": "%{content} / Year",
-        "registered_on": "This name was last registered on %{content}",
-        "taken": "😭 Taken"
+        "clear": "􀅉 Clear",
+        "continue": "Continue 􀆊",
+        "finish": "Finish 􀆊",
+        "and_create_ens_profile": "Search available .eth names",
+        "register_name": "Create Your ENS Profile"
       },
-      "select_ens_name": "My ENS Names"
+      "search_validation": {
+        "invalid_domain": "This is an invalid domain",
+        "tld_not_supported": "This TLD is not supported",
+        "subdomains_not_supported": "Subdomains are not supported",
+        "invalid_length": "Your name must be at least 3 characters",
+        "invalid_special_characters": "Your name cannot include special characters"
+      },
+      "records": {
+        "since": "Since"
+      }
     },
     "review": {
       "alert": {
@@ -1433,10 +1479,14 @@
           "transaction_status": "Failed to send transaction status"
         },
         "checkboxes": {
+          "clear_profile_information": "Clear profile information",
+          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "transfer_control": "Transfer control to the recipient",
           "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
           "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
         },
         "complete_checks": "Complete checks",
+        "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",
         "placeholder_title": "Placeholder",

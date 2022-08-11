@@ -1,9 +1,8 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { values } from 'lodash';
 import { useCallback } from 'react';
-import { Alert, Linking } from 'react-native';
+import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import {
   addWalletToCloudBackup,
@@ -13,6 +12,8 @@ import {
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@rainbow-me/analytics';
 import {
   CLOUD_BACKUP_ERRORS,
   isCloudBackupAvailable,

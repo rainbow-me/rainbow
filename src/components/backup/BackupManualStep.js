@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -8,6 +7,7 @@ import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Nbsp, Text } from '../text';
+import { analytics } from '@rainbow-me/analytics';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useDimensions,
