@@ -34,7 +34,6 @@ import {
   onMainnetAssetDiscoveryResponse,
 } from './fallbackExplorer';
 import { optimismExplorerInit } from './optimismExplorer';
-import { settingsUpdateNetwork } from './settings';
 import { AppGetState, AppState } from './store';
 import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
@@ -568,11 +567,6 @@ export const explorerInit = () => async (
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
   const { addressSocket, assetsSocket } = getState().explorer;
-  const supportedNetworks = [Network.mainnet, Network.goerli];
-
-  if (!supportedNetworks.includes(network)) {
-    settingsUpdateNetwork(Network.mainnet);
-  }
 
   // if there is another socket unsubscribe first
   if (addressSocket || assetsSocket) {
