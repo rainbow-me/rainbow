@@ -387,9 +387,9 @@ export default function useENSRegistrationActionHandler(
   );
 
   return {
-    action: !testnetNetwork
-      ? (actions[registrationStep] as (...args: any) => void)
-      : () => null,
+    action: testnetNetwork
+      ? () => null
+      : (actions[registrationStep] as (...args: any) => void),
   };
 }
 
