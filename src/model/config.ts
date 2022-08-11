@@ -40,10 +40,7 @@ export interface RainbowConfig extends Record<string, any> {
   data_origin?: string;
   default_slippage_bips?: string;
   ethereum_goerli_rpc?: string;
-  ethereum_kovan_rpc?: string;
   ethereum_mainnet_rpc?: string;
-  ethereum_rinkeby_rpc?: string;
-  ethereum_ropsten_rpc?: string;
   op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;

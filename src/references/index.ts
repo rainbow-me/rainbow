@@ -108,10 +108,6 @@ export const TRANSFER_EVENT_KECCAK =
 export const AddCashCurrencies: {
   [key in Network]?: { [currency: string]: string };
 } = {
-  kovan: {
-    DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',
-    ETH: ETH_ADDRESS,
-  },
   mainnet: {
     DAI: DAI_ADDRESS,
     ETH: ETH_ADDRESS,
@@ -125,18 +121,6 @@ export const AddCashCurrencyInfo: {
     [currency: string]: AddCashCurrencyAsset;
   };
 } = {
-  kovan: {
-    '0xc4375b7de8af5a38a93548eb8453a498222c4ff2': {
-      decimals: 18,
-      name: 'Dai',
-      symbol: 'DAI',
-    },
-    'eth': {
-      decimals: 18,
-      name: 'Ethereum',
-      symbol: 'ETH',
-    },
-  },
   mainnet: {
     [DAI_ADDRESS]: {
       decimals: 18,

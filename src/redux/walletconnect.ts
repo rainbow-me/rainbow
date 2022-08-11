@@ -527,8 +527,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       );
       const supportedChains = [
         networkTypes.mainnet,
-        networkTypes.ropsten,
-        networkTypes.kovan,
         networkTypes.goerli,
         networkTypes.polygon,
         networkTypes.optimism,
