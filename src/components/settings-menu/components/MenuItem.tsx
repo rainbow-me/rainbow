@@ -209,7 +209,7 @@ const MenuItem = ({
           {hasChevron && (
             <Box
               as={ImgixImage}
-              height={{ custom: 16 }}
+              height={{ custom: 17 }}
               source={Chevron as Source}
               tintColor={colors.blueGreyDark60}
               width={{ custom: 16 }}
