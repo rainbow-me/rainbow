@@ -120,9 +120,11 @@ const RegistrationCover = ({
     onChangeImage: onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'header' });
-      setCoverUrl('');
       setCoverMetadata(undefined);
       setDisabled(false);
+      setTimeout(() => {
+        setCoverUrl('');
+      }, 100);
     },
     onUploadError: () => {
       onBlurField({ key: 'header', value: '' });
