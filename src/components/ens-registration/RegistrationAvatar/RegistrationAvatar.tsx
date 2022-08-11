@@ -136,10 +136,12 @@ const RegistrationAvatar = ({
     onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'avatar' });
-      setAvatarUrl('');
       onChangeAvatarUrl('');
       setAvatarMetadata(undefined);
       setDisabled(false);
+      setTimeout(() => {
+        setAvatarUrl('');
+      }, 100);
     },
     onUploadError: () => {
       onBlurField({ key: 'avatar', value: '' });

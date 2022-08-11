@@ -11,7 +11,6 @@ import React, {
 import isEqual from 'react-fast-compare';
 import { InteractionManager, Keyboard } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
@@ -23,6 +22,7 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
@@ -105,12 +105,6 @@ const SheetContainer = styled(Column).attrs({
   ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
   backgroundColor: ({ theme: { colors } }) => colors.white,
   height: isNativeStackAvailable || android ? sheetHeight : '100%',
-  width: '100%',
-});
-
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ showAssetForm, theme: { colors } }) =>
-    showAssetForm ? colors.lighterGrey : colors.white,
   width: '100%',
 });
 
@@ -778,12 +772,21 @@ export default function SendSheet(props) {
       });
       return;
     }
-
+    const uniqueTokenType = getUniqueTokenType(selected);
+    const isENS = uniqueTokenType === 'ENS';
+    const checkboxes = getDefaultCheckboxes({
+      ensProfile,
+      isENS: true,
+      network,
+      toAddress: recipient,
+    });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
+      checkboxes,
       ensProfile,
+      isENS,
       isL2,
       isNft,
       network: currentNetwork,
@@ -801,6 +804,7 @@ export default function SendSheet(props) {
     isNft,
     nativeCurrencyInputRef,
     navigate,
+    network,
     profilesEnabled,
     recipient,
     selected,
@@ -1025,9 +1029,6 @@ export default function SendSheet(props) {
             }
           />
         )}
-        {android && showAssetForm ? (
-          <KeyboardSizeView showAssetForm={showAssetForm} />
-        ) : null}
       </SheetContainer>
     </Container>
   );
