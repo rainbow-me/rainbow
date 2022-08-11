@@ -15,7 +15,9 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
+import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
@@ -25,11 +27,14 @@ import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  useInitializeAccountData,
   useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadAccountData,
   useLoadAccountLateData,
   useLoadGlobalLateData,
   usePortfolios,
+  useResetAccountState,
   useTrackENSProfile,
   useUserAccounts,
   useWallets,
@@ -81,6 +86,27 @@ export default function WalletScreen() {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
+  const dispatch = useDispatch();
+  const resetAccountState = useResetAccountState();
+  const loadAccountData = useLoadAccountData();
+  const initializeAccountData = useInitializeAccountData();
+
+  const revertToMainnet = useCallback(async () => {
+    await resetAccountState();
+    await dispatch(settingsUpdateNetwork(Network.mainnet));
+    InteractionManager.runAfterInteractions(async () => {
+      await loadAccountData(Network.mainnet);
+      initializeAccountData();
+    });
+  }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
+
+  useEffect(() => {
+    const revertFn = async () => await revertToMainnet();
+    const supportedNetworks = [Network.mainnet, Network.goerli];
+    if (!supportedNetworks.includes(network)) {
+      revertFn();
+    }
+  }, [network, revertToMainnet]);
 
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
@@ -109,8 +135,6 @@ export default function WalletScreen() {
   }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
 
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
-
-  const dispatch = useDispatch();
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
