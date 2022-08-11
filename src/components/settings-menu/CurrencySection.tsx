@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 import { reloadTimelines } from 'react-native-widgetkit';
@@ -6,6 +5,7 @@ import { CoinIcon } from '../coin-icon';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import { analytics } from '@rainbow-me/analytics';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { emojis, supportedNativeCurrencies } from '@rainbow-me/references';
 

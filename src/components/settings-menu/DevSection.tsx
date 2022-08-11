@@ -211,7 +211,7 @@ const DevSection = () => {
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
         <MenuItem
           disabled
-          leftComponent={<MenuItem.TextIcon icon="🕹️" />}
+          leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
           rightComponent={
             <Switch
               onValueChange={toggleTestnetsEnabled}
@@ -228,7 +228,7 @@ const DevSection = () => {
         />
         {testnetsEnabled && <NetworkSection inDevSection />}
         <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="💥" />}
+          leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
           onPress={clearLocalStorage}
           size={52}
           titleComponent={
@@ -242,7 +242,7 @@ const DevSection = () => {
         <>
           <Menu header="Rainbow Developer Settings">
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💥" />}
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={AsyncStorage.clear}
               size={52}
               titleComponent={
@@ -252,7 +252,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💥" />}
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={clearAllStorages}
               size={52}
               titleComponent={
@@ -262,7 +262,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="📷️" />}
+              leftComponent={<MenuItem.TextIcon icon="📷️" isEmoji />}
               onPress={clearImageMetadataCache}
               size={52}
               titleComponent={
@@ -272,7 +272,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="📷️" />}
+              leftComponent={<MenuItem.TextIcon icon="📷️" isEmoji />}
               onPress={clearImageCache}
               size={52}
               titleComponent={
@@ -282,7 +282,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💣" />}
+              leftComponent={<MenuItem.TextIcon icon="💣" isEmoji />}
               onPress={wipeKeychain}
               size={52}
               testID="reset-keychain-section"
@@ -293,7 +293,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🔄" />}
+              leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
               onPress={() => Restart.Restart()}
               size={52}
               titleComponent={
@@ -303,7 +303,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💥" />}
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={throwRenderError}
               size={52}
               testID="crash-app-section"
@@ -315,7 +315,7 @@ const DevSection = () => {
             />
             {errorObj}
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🗑️" />}
+              leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
               onPress={removeBackups}
               size={52}
               titleComponent={
@@ -325,7 +325,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🤷" />}
+              leftComponent={<MenuItem.TextIcon icon="🤷" isEmoji />}
               onPress={() => AsyncStorage.removeItem('experimentalConfig')}
               size={52}
               titleComponent={
@@ -335,7 +335,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="👷" />}
+              leftComponent={<MenuItem.TextIcon icon="👷" isEmoji />}
               onPress={connectToHardhat}
               size={52}
               testID="hardhat-section"
@@ -346,7 +346,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🏖️" />}
+              leftComponent={<MenuItem.TextIcon icon="🏖️" isEmoji />}
               onPress={checkAlert}
               size={52}
               testID="alert-section"
@@ -355,7 +355,7 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🔔" />}
+              leftComponent={<MenuItem.TextIcon icon="🔔" isEmoji />}
               onPress={navToDevNotifications}
               size={52}
               testID="notifications-section"
@@ -367,7 +367,7 @@ const DevSection = () => {
             />
 
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="⏩" />}
+              leftComponent={<MenuItem.TextIcon icon="⏩" isEmoji />}
               onPress={syncCodepush}
               size={52}
               titleComponent={
