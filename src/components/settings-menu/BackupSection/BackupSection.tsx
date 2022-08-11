@@ -134,7 +134,7 @@ const BackupSection = () => {
       {cloudBackedUpWallets > 0 && (
         <Menu>
           <MenuItem
-            isSfSymbol
+            hasSfSymbol
             leftComponent={<MenuItem.TextIcon icon="􀡜" isLink />}
             onPress={manageCloudBackups}
             size={52}

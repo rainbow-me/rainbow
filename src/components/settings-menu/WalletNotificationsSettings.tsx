@@ -40,7 +40,7 @@ const WalletNotificationsSettings = () => {
         <Menu>
           <MenuItem
             disabled
-            isSfSymbol
+            hasSfSymbol
             leftComponent={
               <MenuItem.TextIcon colorOverride={colors.appleBlue} icon="􀈟" />
             }
@@ -54,7 +54,7 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
-            isSfSymbol
+            hasSfSymbol
             leftComponent={
               <MenuItem.TextIcon colorOverride={colors.green} icon="􀅀" />
             }
@@ -68,7 +68,7 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
-            isSfSymbol
+            hasSfSymbol
             leftComponent={
               <MenuItem.TextIcon colorOverride={colors.pink} icon="􀑉" />
             }
@@ -82,7 +82,7 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
-            isSfSymbol
+            hasSfSymbol
             leftComponent={
               <MenuItem.TextIcon colorOverride={colors.orange} icon="􀋡" />
             }
@@ -96,7 +96,7 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
-            isSfSymbol
+            hasSfSymbol
             leftComponent={
               <MenuItem.TextIcon colorOverride={colors.yellowOrange} icon="􀆿" />
             }
@@ -110,7 +110,7 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
-            isSfSymbol
+            hasSfSymbol
             leftComponent={
               <MenuItem.TextIcon colorOverride={colors.swapPurple} icon="􀖅" />
             }
@@ -124,7 +124,7 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
-            isSfSymbol
+            hasSfSymbol
             leftComponent={
               <MenuItem.TextIcon colorOverride={colors.green} icon="􀁢" />
             }
@@ -138,7 +138,7 @@ const WalletNotificationsSettings = () => {
           />
           <MenuItem
             disabled
-            isSfSymbol
+            hasSfSymbol
             leftComponent={
               <MenuItem.TextIcon
                 colorOverride={colors.blueGreyDark60}

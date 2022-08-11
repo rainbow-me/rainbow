@@ -58,7 +58,7 @@ const PrivacySection = () => {
       <Menu description={lang.t('settings.privacy_section.when_public')}>
         <MenuItem
           disabled
-          isSfSymbol
+          hasSfSymbol
           leftComponent={<MenuItem.TextIcon icon="􀏅" isLink />}
           rightComponent={
             <Switch onValueChange={toggleWebData} value={publicShowCase} />
@@ -75,7 +75,7 @@ const PrivacySection = () => {
       {profilesEnabled && accountENS && (
         <Menu>
           <MenuItem
-            isSfSymbol
+            hasSfSymbol
             leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
             onPress={viewProfile}
             size={52}
