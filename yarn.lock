@@ -3250,21 +3250,22 @@
   resolved "https://registry.yarnpkg.com/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz#d7ebd21b19f1c6b0395e50d78da4416941c57f7c"
   integrity sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==
 
-"@gorhom/bottom-sheet@4.1.5":
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.1.5.tgz#35341d45799de28082c380db6639537b04fa0b26"
-  integrity sha512-3F5P8jK3NXwT2lGwkAdkdLwDVHaRvMZalUTXjK6Ogf0Tki6idffJ3TNlQZlg8k6+OnXAx0+i80f4XaI+J4GFrA==
+"@gorhom/bottom-sheet@4.4.3":
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.4.3.tgz#4c31f214342faa0ba9cd453a98f8c1e0e780c428"
+  integrity sha512-ZEbCLbvLaEVNa9c+om/o9Le0q7o9GkEM7smhuoFkqj9CIjv3XbpZof7uEKV86yyta+ONAInNYrCdVSpYQ1Rjkg==
   dependencies:
-    "@gorhom/portal" "^1.0.11"
+    "@gorhom/portal" "1.0.13"
     invariant "^2.2.4"
-    nanoid "^3.1.20"
+    nanoid "^3.3.3"
     react-native-redash "^16.1.1"
 
-"@gorhom/portal@^1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@gorhom/portal/-/portal-1.0.11.tgz#4224d45fea25e70d7e55af3b67249bad0ac9359b"
+"@gorhom/portal@1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@gorhom/portal/-/portal-1.0.13.tgz#da3af4d427e1fa68d264107de4b3072a4adf35ce"
+  integrity sha512-ViClKPkyGnj8HVMW45OGQSnGbWBVh8i3tgMOkGqpm6Cv0WVcDfUL7SER6zyGQy8Wdoj3GUDpAJFMqVOxpmRpzw==
   dependencies:
-    nanoid "^3.1.23"
+    nanoid "^3.3.1"
 
 "@graphql-typed-document-node/core@^3.0.0":
   version "3.1.0"
@@ -9607,6 +9608,11 @@ eventemitter3@4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.4.tgz#b5463ace635a083d018bdc7c917b4c5f10a85384"
 
+eventemitter3@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
+  integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
+
 events@1.1.1, events@^1.0.2:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
@@ -13953,7 +13959,7 @@ nano-time@1.0.0:
   dependencies:
     big-integer "^1.6.16"
 
-nanoid@3.2.0, nanoid@3.3.1, nanoid@^3.1.12, nanoid@^3.1.20, nanoid@^3.1.22, nanoid@^3.1.23, nanoid@^3.1.25:
+nanoid@3.2.0, nanoid@3.3.1, nanoid@^3.1.12, nanoid@^3.1.22, nanoid@^3.1.25, nanoid@^3.3.1, nanoid@^3.3.3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.2.0.tgz#62667522da6673971cca916a6d3eff3f415ff80c"
   integrity sha512-fmsZYa9lpn69Ad5eDn7FMcnnSR+8R34W9qJEijxYhTbfOWzr22n1QxCMzXLK+ODyW2973V3Fux959iQoUxzUIA==
@@ -14575,10 +14581,23 @@ p-map@^4.0.0:
   dependencies:
     aggregate-error "^3.0.0"
 
+p-queue@7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/p-queue/-/p-queue-7.2.0.tgz#e1430e4432f09b43aa8b4913d4c2ff7fdd685479"
+  integrity sha512-Kvv7p13M46lTYLQ/PsZdaj/1Vj6u/8oiIJgyQyx4oVkOfHdd7M2EZvXigDvcsSzRwanCzQirV5bJPQFoSQt5MA==
+  dependencies:
+    eventemitter3 "^4.0.7"
+    p-timeout "^5.0.2"
+
 p-timeout@^5.0.0:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/p-timeout/-/p-timeout-5.0.2.tgz#d12964c4b2f988e15f72b455c2c428d82a0ec0a0"
   integrity sha512-sEmji9Yaq+Tw+STwsGAE56hf7gMy9p0tQfJojIAamB7WHJYJKf1qlsg9jqBWG8q9VCxKPhZaP/AcXwEoBcYQhQ==
+
+p-timeout@^5.0.2:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/p-timeout/-/p-timeout-5.1.0.tgz#b3c691cf4415138ce2d9cfe071dba11f0fee085b"
+  integrity sha512-auFDyzzzGZZZdHz3BtET9VEz0SE/uMEAx7uWfGPucfzEwwe/xH0iVeZibQmANYE/hp9T2+UUZT5m+BKyrDp3Ew==
 
 p-try@^1.0.0:
   version "1.0.0"

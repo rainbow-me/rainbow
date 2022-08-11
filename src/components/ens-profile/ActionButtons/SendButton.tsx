@@ -7,7 +7,7 @@ import Routes from '@rainbow-me/routes';
 export default function SendButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();
   const handlePressSend = useCallback(async () => {
-    if (isNativeStackAvailable || android) {
+    if (isNativeStackAvailable) {
       navigate(Routes.SEND_FLOW, {
         params: {
           address: ensName,

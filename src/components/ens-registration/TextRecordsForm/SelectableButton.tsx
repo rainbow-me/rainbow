@@ -42,7 +42,11 @@ export default function SelectableButton({
           height={`${height}px`}
           justifyContent="center"
           paddingHorizontal="8px"
-          style={{ borderColor: borderColor, borderWidth: 2 }}
+          style={{
+            borderColor: borderColor,
+            borderWidth: 2,
+            paddingBottom: android ? 2 : 0,
+          }}
         >
           <Text align="center" color="accent" size="16px" weight="heavy">
             {children}

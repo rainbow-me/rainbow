@@ -66,6 +66,17 @@ describe('invalid names', () => {
     `);
   });
 
+  it('domain with empty subdomain fails when `includeSubdomains` is falsy', () => {
+    expect(validateENS('.lol.eth', { includeSubdomains: false }))
+      .toMatchInlineSnapshot(`
+      Object {
+        "code": "subdomains-not-supported",
+        "hint": "Subdomains are not supported",
+        "valid": false,
+      }
+    `);
+  });
+
   it('domain with invalid length', () => {
     expect(validateENS('no.eth')).toMatchInlineSnapshot(`
       Object {

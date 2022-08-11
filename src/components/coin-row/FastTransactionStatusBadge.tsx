@@ -96,9 +96,6 @@ const StatusProps = {
       marginTop: ios ? -3 : -5,
     },
   },
-  [TransactionStatusTypes.swapping]: {
-    marginRight: 4,
-  },
   [TransactionStatusTypes.withdrawing]: {
     marginRight: 4,
   },
@@ -156,6 +153,7 @@ export default React.memo(function FastTransactionStatusBadge({
         <Spinner
           color={isSwapping ? colors.swapPurple : colors.appleBlue}
           size={12}
+          style={{ marginTop: ios ? 0 : -2 }}
         />
       )}
       {showIcon && (
