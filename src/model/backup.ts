@@ -25,10 +25,12 @@ import {
   allWalletsVersion,
   createWallet,
   RainbowWallet,
-  saveSeedPhrase,
 } from './wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { saveNewAuthenticatePIN } from '@/handlers/authentication';
+import {
+  authenticateWithPIN,
+  saveNewAuthenticatePIN,
+} from '@/handlers/authentication';
 import { analytics } from '@rainbow-me/analytics';
 import logger from 'logger';
 
@@ -88,11 +90,47 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
 
 export async function backupWalletToCloud(
   password: BackupPassword,
-  wallet: RainbowWallet
+  wallet: RainbowWallet,
+  doItIfStartPINCreation = empty,
+  doItIfFinishPINCreation = empty
 ) {
   const now = Date.now();
 
-  const secrets = await extractSecretsForWallet(wallet);
+  let secrets = await extractSecretsForWallet(wallet);
+
+  const hasBiometricsEnabled = await getSupportedBiometryType();
+  if (android && !hasBiometricsEnabled) {
+    let userPIN;
+    let privateKey: string;
+
+    await Promise.all(
+      Object.keys(secrets).map(async key => {
+        const value = secrets[key];
+
+        if (endsWith(key, seedPhraseKey)) {
+          const parsedValue = JSON.parse(value);
+          const { seedphrase } = parsedValue;
+
+          try {
+            doItIfStartPINCreation();
+            userPIN = await authenticateWithPIN();
+            doItIfFinishPINCreation();
+          } catch (error) {
+            return; //SOME ERROR
+          }
+
+          if (userPIN && seedphrase) {
+            privateKey = await encryptor.decrypt(userPIN, seedphrase);
+          }
+
+          secrets[key] = JSON.stringify({
+            ...parsedValue,
+            seedphrase: privateKey,
+          });
+        }
+      })
+    );
+  }
   const data = {
     createdAt: now,
     secrets,
@@ -201,7 +239,11 @@ export async function restoreCloudBackup(
         doItIfFinishPINCreation
       );
     } else {
-      return restoreSpecificBackupIntoKeychain(dataToRestore);
+      return restoreSpecificBackupIntoKeychain(
+        dataToRestore,
+        doItIfStartPINCreation,
+        doItIfFinishPINCreation
+      );
     }
   } catch (e) {
     logger.sentry('Error while restoring back up');
@@ -211,15 +253,41 @@ export async function restoreCloudBackup(
 }
 
 async function restoreSpecificBackupIntoKeychain(
-  backedUpData: BackedUpData
+  backedUpData: BackedUpData,
+  doItIfStartPINCreation = empty,
+  doItIfFinishPINCreation = empty
 ): Promise<boolean> {
   try {
     // Re-import all the seeds (and / or pkeys) one by one
     for (const key of Object.keys(backedUpData)) {
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
+
         const { seedphrase } = JSON.parse(valueStr);
-        await createWallet(seedphrase, null, null, true);
+
+        let userPIN;
+        let privateKey = seedphrase;
+        const hasBiometricsEnabled = await getSupportedBiometryType();
+        if (
+          hasBiometricsEnabled &&
+          android &&
+          seedphrase?.includes('salt') &&
+          seedphrase?.includes('cipher')
+        ) {
+          try {
+            doItIfStartPINCreation();
+            userPIN = await authenticateWithPIN();
+            doItIfFinishPINCreation();
+          } catch (error) {
+            return false;
+          }
+
+          if (userPIN) {
+            privateKey = await encryptor.decrypt(userPIN, seedphrase);
+          }
+        }
+
+        await createWallet(privateKey, null, null, true);
       }
     }
     return true;
@@ -246,15 +314,16 @@ async function restoreCurrentBackupIntoKeychain(
         if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
           accessControl = privateAccessControlOptions;
         }
-
         const hasBiometricsEnabled = await getSupportedBiometryType();
+
         if (!hasBiometricsEnabled && android && endsWith(key, seedPhraseKey)) {
           const parsedValue = JSON.parse(value);
-          const { id, seedphrase } = parsedValue;
+          const { seedphrase } = parsedValue;
 
           //avoid picking the word 'cipher' from seed too
           const isBackupWasSavedWithPIN =
-            typeof seedphrase !== 'string' && seedphrase?.includes('cipher');
+            seedphrase?.includes('salt') && seedphrase?.includes('cipher');
+
           if (!isBackupWasSavedWithPIN) {
             //interrupt loader
             doItIfStartPINCreation();
@@ -263,7 +332,6 @@ async function restoreCurrentBackupIntoKeychain(
             doItIfFinishPINCreation();
 
             const encryptedSeed = await encryptor.encrypt(userPIN, seedphrase);
-            await saveSeedPhrase(seedphrase, id);
 
             if (encryptedSeed) {
               // as the wallet was backuped with faceId in `seedphrase` we have

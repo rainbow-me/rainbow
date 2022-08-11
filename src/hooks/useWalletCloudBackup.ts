@@ -128,7 +128,9 @@ export default function useWalletCloudBackup() {
           logger.log(`backing up to ${cloudPlatform}`, wallets[walletId]);
           updatedBackupFile = await backupWalletToCloud(
             fetchedPassword,
-            wallets[walletId]
+            wallets[walletId],
+            () => setIsWalletLoading(null),
+            () => setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET)
           );
         } else {
           logger.log(
