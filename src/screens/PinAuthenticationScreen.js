@@ -40,6 +40,7 @@ const PinAuthenticationScreen = () => {
 
   const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS);
   const [value, setValue] = useState('');
+  const [isLoading, setLoading] = useState(false);
   const [initialPin, setInitialPin] = useState('');
   const [actionType, setActionType] = useState(
     params.validPin ? 'authentication' : 'creation'
@@ -165,6 +166,7 @@ const PinAuthenticationScreen = () => {
               }, 300);
             }
           } else if (actionType === 'creation') {
+            setLoading(true);
             // Ask for confirmation
             setActionType('confirmation');
             // Store the pin in state so we can compare with the conf.
@@ -173,9 +175,11 @@ const PinAuthenticationScreen = () => {
             // Clear the pin
             setTimeout(() => {
               setValue('');
+              setLoading(false);
               return;
             }, 300);
           } else {
+            if (isLoading) return '';
             // Confirmation
             const valid = initialPin === nextValue;
             if (!valid) {
@@ -193,7 +197,7 @@ const PinAuthenticationScreen = () => {
         return nextValue;
       });
     },
-    [actionType, attemptsLeft, goBack, initialPin, onShake, params]
+    [actionType, attemptsLeft, goBack, initialPin, onShake, params, isLoading]
   );
 
   const { colors } = useTheme();

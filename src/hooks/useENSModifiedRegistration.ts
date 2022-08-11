@@ -1,10 +1,15 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import useENSProfileRecords from './useENSProfileRecords';
-import useENSRegistration from './useENSRegistration';
-import { usePrevious } from '.';
+import {
+  useENSAvatar,
+  useENSCover,
+  useENSRecords,
+  useENSRegistration,
+  usePrevious,
+} from '.';
 import { Records, UniqueAsset } from '@rainbow-me/entities';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
@@ -15,7 +20,7 @@ import {
 } from '@rainbow-me/utils';
 
 const getImageUrl = (
-  key: 'avatar' | 'cover',
+  key: 'avatar' | 'header',
   records: Records,
   changedRecords: Records,
   uniqueTokens: UniqueAsset[],
@@ -41,7 +46,9 @@ const getImageUrl = (
           token.id === tokenId
       );
       if (uniqueToken?.image_url) {
-        imageUrl = uniqueToken?.image_url;
+        imageUrl = svgToPngIfNeeded(uniqueToken?.image_url, false);
+      } else if (uniqueToken?.lowResUrl) {
+        imageUrl = uniqueToken?.lowResUrl;
       } else if (uniqueToken?.image_thumbnail_url) {
         imageUrl = uniqueToken?.image_thumbnail_url;
       }
@@ -71,31 +78,44 @@ export default function useENSModifiedRegistration({
   const uniqueTokens = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
-  const profileQuery = useENSProfileRecords(name, {
-    enabled:
-      mode === REGISTRATION_MODES.EDIT ||
-      mode === REGISTRATION_MODES.RENEW ||
-      mode === REGISTRATION_MODES.SET_NAME,
+
+  const fetchEnabled =
+    mode === REGISTRATION_MODES.EDIT ||
+    mode === REGISTRATION_MODES.RENEW ||
+    mode === REGISTRATION_MODES.SET_NAME;
+  const { data: avatar, isSuccess: isAvatarSuccess } = useENSAvatar(name, {
+    enabled: fetchEnabled,
   });
+  const { data: cover, isSuccess: isCoverSuccess } = useENSCover(name, {
+    enabled: fetchEnabled,
+  });
+  const {
+    data: { coinAddresses: fetchedCoinAddresses, records: fetchedRecords } = {},
+    isSuccess: isRecordsSuccess,
+  } = useENSRecords(name, {
+    enabled: fetchEnabled,
+  });
+
+  const isSuccess = isAvatarSuccess && isCoverSuccess && isRecordsSuccess;
 
   useEffect(() => {
     if (
       setInitialRecordsWhenInEditMode &&
       mode === REGISTRATION_MODES.EDIT &&
-      profileQuery.isSuccess
+      isSuccess
     ) {
       const initialRecords = {
-        ...profileQuery.data?.records,
-        ...profileQuery.data?.coinAddresses,
+        ...fetchedRecords,
+        ...fetchedCoinAddresses,
       } as Records;
       dispatch(ensRedux.setInitialRecords(initialRecords));
     }
   }, [
     dispatch,
     mode,
-    profileQuery.data?.coinAddresses,
-    profileQuery.data?.records,
-    profileQuery.isSuccess,
+    fetchedCoinAddresses,
+    fetchedRecords,
+    isSuccess,
     setInitialRecordsWhenInEditMode,
   ]);
 
@@ -163,15 +183,15 @@ export default function useENSModifiedRegistration({
       records,
       changedRecords,
       uniqueTokens,
-      profileQuery.data?.images.avatarUrl,
+      avatar?.imageUrl,
       mode
     );
     const coverUrl = getImageUrl(
-      'cover',
+      'header',
       records,
       changedRecords,
       uniqueTokens,
-      profileQuery.data?.images.coverUrl,
+      cover?.imageUrl,
       mode
     );
 
@@ -180,17 +200,17 @@ export default function useENSModifiedRegistration({
       coverUrl,
     };
   }, [
-    profileQuery.data?.images.avatarUrl,
-    profileQuery.data?.images.coverUrl,
     records,
-    uniqueTokens,
     changedRecords,
+    uniqueTokens,
+    avatar?.imageUrl,
     mode,
+    cover?.imageUrl,
   ]);
 
   return {
     changedRecords,
     images,
-    profileQuery,
+    isSuccess,
   };
 }

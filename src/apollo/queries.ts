@@ -1,3 +1,4 @@
+import { AddressZero } from '@ethersproject/constants';
 import gql from 'graphql-tag';
 
 export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (
@@ -170,7 +171,7 @@ export const ENS_SUGGESTIONS = gql`
   query lookup($name: String!, $amount: Int!) {
     domains(
       first: $amount
-      where: { name_starts_with: $name, resolvedAddress_not: null }
+      where: { name_starts_with: $name, resolvedAddress_not: \"${AddressZero}\" }
       orderBy: labelName
       orderDirection: asc
     ) {

@@ -643,26 +643,6 @@
             },
             {
                 "internalType": "address",
-                "name": "a",
-                "type": "address"
-            }
-        ],
-        "name": "setAddr",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "node",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "address",
                 "name": "target",
                 "type": "address"
             },

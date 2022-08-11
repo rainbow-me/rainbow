@@ -21,7 +21,7 @@ export const specs: { [key: string]: new () => Spec } = Object.freeze({
 
 export interface AvatarRequestOpts {
   allowNonOwnerNFTs?: boolean;
-  type?: 'avatar' | 'cover';
+  type?: 'avatar' | 'header';
 }
 
 interface AvatarResolverOpts {

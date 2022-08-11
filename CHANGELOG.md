@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.7.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.23)
+### Changed
+* Profiles release
+* Android improvements
+* Bug fixes
+
 ## [1.6.23](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.23)
 ### Changed
 * Bug fixes
