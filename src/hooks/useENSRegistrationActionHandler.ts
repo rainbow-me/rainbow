@@ -17,7 +17,10 @@ import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
 import { saveNameFromLabelhash } from '@rainbow-me/handlers/localstorage/ens';
 import { uploadImage } from '@rainbow-me/handlers/pinata';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isTestnetNetwork,
+} from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
@@ -64,6 +67,7 @@ export default function useENSRegistrationActionHandler(
   const { navigate } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
+  const testnetNetwork = isTestnetNetwork(network);
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
@@ -383,7 +387,9 @@ export default function useENSRegistrationActionHandler(
   );
 
   return {
-    action: actions[registrationStep] as (...args: any) => void,
+    action: !testnetNetwork
+      ? (actions[registrationStep] as (...args: any) => void)
+      : () => null,
   };
 }
 
