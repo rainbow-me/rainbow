@@ -150,7 +150,7 @@ interface MenuItemProps {
   labelComponent?: React.ReactNode;
   disabled?: boolean;
   hasChevron?: boolean;
-  isSfSymbol?: boolean;
+  hasSfSymbol?: boolean;
   testID?: string;
 }
 
@@ -164,7 +164,7 @@ const MenuItem = ({
   labelComponent,
   disabled,
   hasChevron,
-  isSfSymbol,
+  hasSfSymbol,
   testID,
 }: MenuItemProps) => {
   const { colors } = useTheme();
@@ -180,8 +180,8 @@ const MenuItem = ({
       <Inline alignHorizontal="justify" alignVertical="center">
         <Inline alignVertical="center">
           {leftComponent && (
-            <Box width={{ custom: isSfSymbol ? 34 : 46 }}>
-              {isSfSymbol ? (
+            <Box width={{ custom: hasSfSymbol ? 34 : 46 }}>
+              {hasSfSymbol ? (
                 <Box alignItems="center" width={{ custom: 28 }}>
                   {leftComponent}
                 </Box>

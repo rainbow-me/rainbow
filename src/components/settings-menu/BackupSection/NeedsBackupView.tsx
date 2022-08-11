@@ -106,10 +106,11 @@ export default function NeedsBackupView() {
           />
           <SheetActionButton
             color={colors.white}
-            // @ts-ignore
             label={`🤓 ${lang.t('modal.back_up.default.button.manual')}`}
+            // @ts-ignore
             onPress={onManualBackup}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            width={ios ? 221 : 270}
           />
         </Stack>
       </Box>
