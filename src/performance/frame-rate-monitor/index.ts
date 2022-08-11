@@ -3,18 +3,18 @@ import {
   AppStateStatus,
   NativeEventSubscription,
 } from 'react-native';
-import { MMKV } from 'react-native-mmkv';
 import { FrameRateMonitorModule } from './FrameRateMonitorModule';
+import { analytics } from '@/analytics';
 
 type FrameRateMonitorType = {
   startMonitoring: () => void;
   stopMonitoring: () => void;
   registerListeners: () => void;
   removeListeners: () => void;
-  flushStats: () => void;
 };
 
-const kv = new MMKV({ id: 'frameratemonitor' });
+const EVENT_NAME = 'Performance Tracked Base Frame Rate Stats';
+
 let isMonitoring = false;
 let previousAppState: AppStateStatus | undefined;
 let appStateChangeSubscription: NativeEventSubscription | null = null;
@@ -31,6 +31,8 @@ async function stopMonitoring() {
     isMonitoring = false;
     await FrameRateMonitorModule.stopMonitoring();
     const stats = await FrameRateMonitorModule.getStats();
+    // TODO: Remove TEST prefix before releasing to broader audience
+    analytics.track(`$TEST ${EVENT_NAME}`, { frameRateStats: stats });
     global.console.log(JSON.stringify(stats, null, 2));
   }
 }
@@ -62,13 +64,7 @@ function removeListeners() {
   }
 }
 
-function flushStats() {
-  const keys = kv.getAllKeys();
-  global.console.log('MMKV KEYS FOR FRAMERATE: ', keys);
-}
-
 export const FrameRateMonitor: FrameRateMonitorType = {
-  flushStats,
   registerListeners,
   removeListeners,
   startMonitoring,

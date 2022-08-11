@@ -2,35 +2,36 @@ package me.rainbow;
 
 import android.app.Application;
 import android.content.Context;
+
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleSpec;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.ReactNativeHost;
-import com.facebook.react.ReactPackage;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
+import com.microsoft.codepush.react.CodePush;
 import com.oblador.keychain.KeychainModuleBuilder;
 import com.oblador.keychain.KeychainPackage;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
 import io.branch.rnbranch.RNBranchModule;
 import me.rainbow.NativeModules.Haptics.RNHapticsPackage;
-import me.rainbow.NativeModules.Haptics.RNRainbowHapticsModule;
 import me.rainbow.NativeModules.Internals.InternalPackage;
-import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
+import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNFrameRateMonitor.RNFrameRateMonitorPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
 import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage;
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
-import com.microsoft.codepush.react.CodePush;
-import com.facebook.react.config.ReactFeatureFlags;
-import com.tencent.mmkv.MMKV;
 
 class RainbowJSIModulePackage extends ReanimatedJSIModulePackage {
     @Override
@@ -101,7 +102,6 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     RNBranchModule.getAutoInstance(this);
-    MMKV.initialize(this);
   }
 
   /**
