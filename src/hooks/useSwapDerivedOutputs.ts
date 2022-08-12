@@ -334,6 +334,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         result: {
           derivedValues,
           displayValues,
+          tradeDetails,
         },
       };
     }
