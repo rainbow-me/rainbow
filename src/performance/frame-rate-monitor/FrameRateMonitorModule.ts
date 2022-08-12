@@ -11,6 +11,7 @@ type FrameRateMonitorModuleInterface = {
   }>;
 };
 
+// TODO: Remove when iOS implementation is done
 const dummyModule: FrameRateMonitorModuleInterface = {
   getStats: () =>
     new Promise(resolve =>
@@ -24,6 +25,8 @@ const dummyModule: FrameRateMonitorModuleInterface = {
   startMonitoring: () => new Promise(resolve => resolve()),
   stopMonitoring: () => new Promise(resolve => resolve()),
 };
+
+// TODO: Use only native module when iOS implementation is ready
 export const FrameRateMonitorModule: FrameRateMonitorModuleInterface = android
   ? NativeModules.RNFrameRateMonitorModule
   : dummyModule;
