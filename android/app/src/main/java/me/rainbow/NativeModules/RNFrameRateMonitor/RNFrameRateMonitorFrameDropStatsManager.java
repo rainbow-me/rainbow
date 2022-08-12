@@ -1,7 +1,6 @@
 package me.rainbow.NativeModules.RNFrameRateMonitor;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.WindowManager;
 
 import com.facebook.react.bridge.ReactContext;
@@ -18,9 +17,7 @@ public class RNFrameRateMonitorFrameDropStatsManager {
   public RNFrameRateMonitorFrameDropStatsManager(ReactContext context) {
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     SCREEN_REFRESH_RATE = wm.getDefaultDisplay().getRefreshRate();
-    Log.d(TAG, "RATE: " + SCREEN_REFRESH_RATE);
     DEFAULT_FRAME_DURATION = 1000 / SCREEN_REFRESH_RATE;
-    Log.d(TAG, "DURATION: " + DEFAULT_FRAME_DURATION);
   }
 
   public boolean isStarted() {
@@ -42,9 +39,6 @@ public class RNFrameRateMonitorFrameDropStatsManager {
 
   public RNFrameRateMonitorFrameDropStats getStats() {
     long sessionDuration = finishTimeMillis - startTimeMillis;
-    Log.d(TAG, "sessionDuration: " + sessionDuration);
-    Log.d(TAG, "finishTimeMillis: " + finishTimeMillis);
-    Log.d(TAG, "startTimeMillis: " + startTimeMillis);
     int expectedFramesToBeDrawn = (int) (sessionDuration / DEFAULT_FRAME_DURATION);
     int totalFramesDropped = expectedFramesToBeDrawn - totalFramesDrawn;
     double framesDroppedRate = (double) totalFramesDropped / expectedFramesToBeDrawn * 100;

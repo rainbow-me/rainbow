@@ -37,7 +37,6 @@ async function stopMonitoring() {
     const stats = await FrameRateMonitorModule.getStats();
     // TODO: Remove TEST prefix before releasing to broader audience
     analytics.track(`TEST ${EVENT_NAME}`, { frameRateStats: stats });
-    global.console.log(JSON.stringify(stats, null, 2));
   }
 }
 

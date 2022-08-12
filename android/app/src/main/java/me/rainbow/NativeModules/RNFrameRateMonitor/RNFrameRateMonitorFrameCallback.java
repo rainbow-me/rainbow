@@ -36,11 +36,6 @@ public class RNFrameRateMonitorFrameCallback extends ChoreographerCompat.FrameCa
   }
 
   public void start() {
-    Log.d("FRAMERARTE", "START");
-
-    // Resetting the state of the callback object
-    shouldStop = false;
-
     reactContext
         .getCatalystInstance()
         .addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector);
@@ -66,21 +61,19 @@ public class RNFrameRateMonitorFrameCallback extends ChoreographerCompat.FrameCa
 
   @Override
   public void doFrame(long frameTimeNanos) {
+    // Prevents next callbacks from being scheduled and cleans up after itself
     if (shouldStop) {
+      shouldStop = false;
       return;
     }
-
     if (!frameDropStatsManager.isStarted()) {
       frameDropStatsManager.start();
     }
-
     long lastFrameStartTime = lastFrameTime;
     lastFrameTime = frameTimeNanos;
-
     if (didJSUpdateUiDuringFrameDetector.getDidJSHitFrameAndCleanup(lastFrameStartTime, frameTimeNanos)) {
       frameDropStatsManager.recordFrameDrawn();
     }
-
     // schedules new frame callbacks for continuous calls post each frame
     if (choreographer != null) {
       choreographer.postFrameCallback(this);
