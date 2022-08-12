@@ -36,6 +36,7 @@ public class RNFrameRateMonitorFrameCallback extends ChoreographerCompat.FrameCa
   }
 
   public void start() {
+    shouldStop = false;
     reactContext
         .getCatalystInstance()
         .addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector);
@@ -61,9 +62,7 @@ public class RNFrameRateMonitorFrameCallback extends ChoreographerCompat.FrameCa
 
   @Override
   public void doFrame(long frameTimeNanos) {
-    // Prevents next callbacks from being scheduled and cleans up after itself
     if (shouldStop) {
-      shouldStop = false;
       return;
     }
     if (!frameDropStatsManager.isStarted()) {

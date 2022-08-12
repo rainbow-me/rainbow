@@ -8,6 +8,9 @@ type FrameRateMonitorModuleInterface = {
     screenFrameRate: number;
     totalFramesDrawn: number;
     totalFramesDropped: number;
+    expectedFramesToBeDrawn: number;
+    framesDrawnRate: number;
+    framesDroppedRate: number;
   }>;
 };
 
@@ -16,6 +19,9 @@ const dummyModule: FrameRateMonitorModuleInterface = {
   getStats: () =>
     new Promise(resolve =>
       resolve({
+        expectedFramesToBeDrawn: 0,
+        framesDrawnRate: 0,
+        framesDroppedRate: 0,
         screenFrameRate: 0,
         sessionDuration: 0,
         totalFramesDrawn: 0,

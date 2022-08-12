@@ -38,13 +38,14 @@ public class RNFrameRateMonitorFrameDropStatsManager {
   }
 
   public RNFrameRateMonitorFrameDropStats getStats() {
+    int adjustedFramesDrawn = totalFramesDrawn - 1;
     long sessionDuration = finishTimeMillis - startTimeMillis;
     int expectedFramesToBeDrawn = (int) (sessionDuration / DEFAULT_FRAME_DURATION);
-    int totalFramesDropped = expectedFramesToBeDrawn - totalFramesDrawn;
+    int totalFramesDropped = expectedFramesToBeDrawn - adjustedFramesDrawn;
     double framesDroppedRate = (double) totalFramesDropped / expectedFramesToBeDrawn * 100;
-    double framesDrawnRate = (double) totalFramesDrawn / expectedFramesToBeDrawn * 100;
+    double framesDrawnRate = (double) adjustedFramesDrawn / expectedFramesToBeDrawn * 100;
 
 
-    return new RNFrameRateMonitorFrameDropStats(sessionDuration, SCREEN_REFRESH_RATE, expectedFramesToBeDrawn, totalFramesDropped, totalFramesDrawn, framesDroppedRate, framesDrawnRate);
+    return new RNFrameRateMonitorFrameDropStats(sessionDuration, SCREEN_REFRESH_RATE, expectedFramesToBeDrawn, totalFramesDropped, adjustedFramesDrawn, framesDroppedRate, framesDrawnRate);
   }
 }

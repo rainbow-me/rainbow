@@ -37,6 +37,19 @@ async function stopMonitoring() {
     const stats = await FrameRateMonitorModule.getStats();
     // TODO: Remove TEST prefix before releasing to broader audience
     analytics.track(`TEST ${EVENT_NAME}`, { frameRateStats: stats });
+    if (__DEV__) {
+      global.console.log(
+        `FRAMERATE STATS\nEXPECTED FRAMES DRAWN: ${
+          stats.expectedFramesToBeDrawn
+        }\nFRAMES DRAWN: ${stats.totalFramesDrawn}\nFRAMES DROPPED: ${
+          stats.totalFramesDropped
+        }\nFRAMES DRAWN RATE: ${
+          Math.round(stats.framesDrawnRate * 100) / 100
+        }%\nFRAMES DROPPED RATE: ${
+          Math.round(stats.framesDroppedRate * 100) / 100
+        }%`
+      );
+    }
   }
 }
 
