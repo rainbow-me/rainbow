@@ -1,3 +1,4 @@
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual } from 'lodash';
@@ -265,7 +266,10 @@ export default function ExchangeModal({
   } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [currentProvider, setCurrentProvider] = useState(null);
+  const [
+    currentProvider,
+    setCurrentProvider,
+  ] = useState<StaticJsonRpcProvider>();
 
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
   const prevTxNetwork = usePrevious(txNetwork);
