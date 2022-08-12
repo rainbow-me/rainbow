@@ -11,12 +11,12 @@ import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 
+const STALE_TIME = 10000;
+
 export const rainbowProfileQueryKey = (address: EthereumAddress) => [
   'rainbow-profiles',
   address,
 ];
-
-const STALE_TIME = 10000;
 
 export default function useRainbowProfile(
   address: EthereumAddress,

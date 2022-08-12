@@ -14,7 +14,11 @@ import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import { useClipboard, useDimensions } from '@rainbow-me/hooks';
+import {
+  useClipboard,
+  useDimensions,
+  useRainbowProfile,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
@@ -87,6 +91,7 @@ export default function SendHeader({
   const { navigate } = useNavigation();
   const { colors } = useTheme();
   const [hexAddress, setHexAddress] = useState('');
+  useRainbowProfile(hexAddress);
 
   useEffect(() => {
     if (isValidAddress) {
