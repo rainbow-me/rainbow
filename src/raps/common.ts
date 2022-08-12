@@ -101,7 +101,7 @@ export interface UnlockActionParameters {
 
 export interface SwapActionParameters {
   inputAmount: string;
-  nonce: number;
+  nonce?: number;
   outputAmount: string;
   tradeDetails: Quote;
   permit?: boolean;

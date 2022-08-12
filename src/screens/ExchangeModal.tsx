@@ -1,8 +1,9 @@
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { Provider } from '@ethersproject/providers';
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual } from 'lodash';
 import React, {
+  MutableRefObject,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -11,7 +12,12 @@ import React, {
   useState,
 } from 'react';
 import equal from 'react-fast-compare';
-import { InteractionManager, Keyboard, NativeModules } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  NativeModules,
+  TextInput,
+} from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
@@ -266,10 +272,7 @@ export default function ExchangeModal({
   } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [
-    currentProvider,
-    setCurrentProvider,
-  ] = useState<StaticJsonRpcProvider>();
+  const [currentProvider, setCurrentProvider] = useState<Provider>();
 
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
   const prevTxNetwork = usePrevious(txNetwork);
@@ -422,7 +425,7 @@ export default function ExchangeModal({
     if (ios) {
       return;
     }
-    dismissingScreenListener.current = () => {
+    ((dismissingScreenListener.current as unknown) as () => void) = () => {
       Keyboard.dismiss();
       isDismissing.current = true;
     };
@@ -431,7 +434,7 @@ export default function ExchangeModal({
     )('transitionEnd', ({ data: { closing } }) => {
       if (!closing && isDismissing.current) {
         isDismissing.current = false;
-        lastFocusedInputHandle?.current?.focus();
+        ((lastFocusedInputHandle as unknown) as MutableRefObject<TextInput>)?.current?.focus();
       }
     });
     return () => {
@@ -457,17 +460,17 @@ export default function ExchangeModal({
   }, []);
 
   const handleCustomGasBlur = useCallback(() => {
-    lastFocusedInputHandle?.current?.focus();
+    ((lastFocusedInputHandle as unknown) as MutableRefObject<TextInput>)?.current?.focus();
   }, [lastFocusedInputHandle]);
 
   const updateGasLimit = useCallback(async () => {
     try {
       const swapParams = {
         chainId,
-        inputAmount,
-        outputAmount,
-        provider: currentProvider,
-        tradeDetails,
+        inputAmount: inputAmount!,
+        outputAmount: outputAmount!,
+        provider: currentProvider!,
+        tradeDetails: tradeDetails!,
       };
 
       const rapType = getSwapRapTypeByExchangeType(type);
@@ -479,10 +482,10 @@ export default function ExchangeModal({
               {
                 data: tradeDetails.data,
                 from: tradeDetails.from,
-                to: tradeDetails.to,
+                to: tradeDetails.to ?? null,
                 value: tradeDetails.value,
               },
-              currentProvider
+              currentProvider!
             );
             updateTxFee(gasLimit, null, l1GasFeeOptimism);
           } else {
@@ -493,11 +496,11 @@ export default function ExchangeModal({
             );
           }
         } else {
-          updateTxFee(gasLimit);
+          updateTxFee(gasLimit, null);
         }
       }
     } catch (error) {
-      updateTxFee(defaultGasLimit);
+      updateTxFee(defaultGasLimit, null);
     }
   }, [
     chainId,
@@ -520,7 +523,7 @@ export default function ExchangeModal({
   // Set default gas limit
   useEffect(() => {
     if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
-      updateTxFee(defaultGasLimit);
+      updateTxFee(defaultGasLimit, null);
     }
   }, [
     defaultGasLimit,
@@ -570,7 +573,7 @@ export default function ExchangeModal({
     updateMaxInputAmount();
   }, [updateMaxInputAmount]);
 
-  const checkGasVsOutput = async (gasPrice, outputPrice) => {
+  const checkGasVsOutput = async (gasPrice: number, outputPrice: number) => {
     if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
       const res = new Promise(resolve => {
         Alert.alert(
