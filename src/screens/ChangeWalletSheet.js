@@ -38,7 +38,6 @@ import {
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import {
-  abbreviations,
   deviceUtils,
   doesWalletsContainAddress,
   showActionSheetWithOptions,
@@ -297,52 +296,49 @@ export default function ChangeWalletSheet() {
     ]
   );
 
-  const getEditMenuItems = () => {
-    const buttons = [lang.t('wallet.action.edit')];
-    buttons.push(lang.t('wallet.action.delete'));
-
-    if (ios) {
-      buttons.push(lang.t('button.cancel'));
-    }
-
-    return {
-      menuItems: buttons.map(button => ({
-        actionKey: button,
-        actionTitle: button,
-      })),
-    };
-  };
-
-  const getOnMenuItemPress = (walletId, address, label) => buttonIndex => {
-    // If there's more than 1 account
-    // it's deletable
-    let isLastAvailableWallet = false;
-    for (let i = 0; i < Object.keys(wallets).length; i++) {
-      const key = Object.keys(wallets)[i];
-      const someWallet = wallets[key];
-      const otherAccount = someWallet.addresses.find(
-        account => account.visible && account.address !== address
-      );
-      if (otherAccount) {
-        isLastAvailableWallet = true;
-        break;
-      }
-    }
-
-    if (buttonIndex === 0) {
-      // Edit wallet
+  const onPressEdit = useCallback(
+    (walletId, address) => {
       analytics.track('Tapped "Edit Wallet"');
       renameWallet(walletId, address);
-    } else if (buttonIndex === 1) {
+    },
+    [renameWallet]
+  );
+
+  const onPressNotifications = useCallback(
+    walletName => {
+      analytics.track('Tapped "Notification Settings"');
+      navigate(Routes.SETTINGS_SHEET, {
+        params: { title: walletName },
+        screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
+      });
+    },
+    [navigate]
+  );
+
+  const onPressRemove = useCallback(
+    (walletId, address) => {
       analytics.track('Tapped "Delete Wallet"');
+      // If there's more than 1 account
+      // it's deletable
+      let isLastAvailableWallet = false;
+      for (let i = 0; i < Object.keys(wallets).length; i++) {
+        const key = Object.keys(wallets)[i];
+        const someWallet = wallets[key];
+        const otherAccount = someWallet.addresses.find(
+          account => account.visible && account.address !== address
+        );
+        if (otherAccount) {
+          isLastAvailableWallet = true;
+          break;
+        }
+      }
       // Delete wallet with confirmation
       showActionSheetWithOptions(
         {
           cancelButtonIndex: 1,
           destructiveButtonIndex: 0,
-          message: lang.t('wallet.action.delete_confirm'),
-          options: [lang.t('wallet.action.delete'), lang.t('button.cancel')],
-          title: `${label || abbreviations.address(address, 4, 6)}`,
+          message: lang.t('wallet.action.remove_confirm'),
+          options: [lang.t('wallet.action.remove'), lang.t('button.cancel')],
         },
         async buttonIndex => {
           if (buttonIndex === 0) {
@@ -370,8 +366,9 @@ export default function ChangeWalletSheet() {
           }
         }
       );
-    }
-  };
+    },
+    [currentAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
+  );
 
   const onPressAddAccount = useCallback(async () => {
     try {
@@ -533,10 +530,13 @@ export default function ChangeWalletSheet() {
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
+        contextMenuActions={{
+          edit: onPressEdit,
+          notifications: onPressNotifications,
+          remove: onPressRemove,
+        }}
         currentWallet={currentSelectedWallet}
         editMode={editMode}
-        getEditMenuItems={getEditMenuItems}
-        getOnMenuItemPress={getOnMenuItemPress}
         height={listHeight}
         onChangeAccount={onChangeAccount}
         onPressAddAccount={onPressAddAccount}

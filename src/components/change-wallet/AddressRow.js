@@ -12,6 +12,9 @@ import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import useExperimentalFlag, {
+  NOTIFICATIONS,
+} from '@rainbow-me/config/experimentalHooks';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -19,6 +22,7 @@ import {
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import {
+  abbreviations,
   deviceUtils,
   profileUtils,
   showActionSheetWithOptions,
@@ -108,14 +112,15 @@ const OptionsIcon = ({ onPress }) => {
   );
 };
 
-export default function AddressRow({
-  data,
-  editMode,
-  getEditMenuItems,
-  getOnMenuItemPress,
-  onPress,
-  watchOnly,
-}) {
+const ContextMenuKeys = {
+  Edit: 'edit',
+  Notifications: 'notifications',
+  Remove: 'remove',
+};
+
+export default function AddressRow({ contextMenuActions, data, editMode }) {
+  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
+
   const {
     address,
     balance,
@@ -135,10 +140,11 @@ export default function AddressRow({
     cleanedUpBalance = '0';
   }
 
-  let cleanedUpLabel = null;
-  if (label) {
-    cleanedUpLabel = removeFirstEmojiFromString(label);
-  }
+  const cleanedUpLabel = useMemo(
+    () =>
+      removeFirstEmojiFromString(label) || abbreviations.address(address, 4, 6),
+    [address, label]
+  );
 
   const linearGradientProps = useMemo(
     () => ({
@@ -154,143 +160,177 @@ export default function AddressRow({
   );
 
   const menuConfig = useMemo(() => {
-    return getEditMenuItems();
-  }, [getEditMenuItems]);
+    return {
+      menuItems: [
+        {
+          actionKey: ContextMenuKeys.Remove,
+          actionTitle: lang.t('wallet.action.remove'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'trash.fill',
+          },
+          menuAttributes: ['destructive'],
+        },
+        notificationsEnabled && {
+          actionKey: ContextMenuKeys.Notifications,
+          actionTitle: lang.t('wallet.action.notifications'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'bell.fill',
+          },
+        },
+        {
+          actionKey: ContextMenuKeys.Edit,
+          actionTitle: lang.t('wallet.action.edit'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'pencil',
+          },
+        },
+      ],
+      menuTitle: cleanedUpLabel,
+    };
+  }, [cleanedUpLabel, notificationsEnabled]);
 
-  const emptyMenu = {
-    menuItems: [],
-  };
-
-  const onMenuItemPress = useMemo(() => {
-    return getOnMenuItemPress(walletId, address, label);
-  }, [address, getOnMenuItemPress, label, walletId]);
-
-  const handlePressMenuItem = useCallback(
-    e => {
-      if (!android) {
-        return;
-      }
-
-      const buttonIndex = menuConfig.menuItems.findIndex(
-        item => item.actionKey === e.nativeEvent.actionKey
-      );
-      onMenuItemPress(buttonIndex);
-    },
-    [menuConfig, onMenuItemPress]
-  );
-
-  const showIOSMenu = useCallback(() => {
-    if (!ios) {
-      return;
-    }
+  const onPressAndroidActions = useCallback(() => {
+    const androidActions = notificationsEnabled
+      ? [
+          lang.t('wallet.action.edit'),
+          lang.t('wallet.action.notifications'),
+          lang.t('wallet.action.remove'),
+        ]
+      : [lang.t('wallet.action.edit'), lang.t('wallet.action.remove')];
 
     showActionSheetWithOptions(
       {
-        cancelButtonIndex: 2,
-        destructiveButtonIndex: 1,
-        options: menuConfig.menuItems.map(item => item.actionTitle),
-        title: menuConfig.menuTitle,
+        destructiveButtonIndex: notificationsEnabled ? 2 : 1,
+        options: androidActions,
+        showSeparators: true,
+        title: cleanedUpLabel,
       },
-      onMenuItemPress
+      idx => {
+        if (idx === 0) {
+          contextMenuActions?.edit(walletId, address);
+        } else if (idx === 1) {
+          if (notificationsEnabled) {
+            contextMenuActions?.notifications(cleanedUpLabel);
+          } else {
+            contextMenuActions?.remove(walletId, address);
+          }
+        } else if (idx === 2) {
+          if (notificationsEnabled) {
+            contextMenuActions?.remove(walletId, address);
+          }
+        }
+      }
     );
-  }, [menuConfig, onMenuItemPress]);
+  }, [
+    cleanedUpLabel,
+    contextMenuActions,
+    walletId,
+    address,
+    notificationsEnabled,
+  ]);
 
-  const content = (
-    <Row align="center">
-      <Row align="center" flex={1} height={59}>
-        {accountImage ? (
-          <ImageAvatar image={accountImage} marginRight={10} size="medium" />
-        ) : (
-          <ContactAvatar
-            color={accountColor}
-            marginRight={10}
-            size="medium"
-            value={
-              returnStringFirstEmoji(label) ||
-              profileUtils.addressHashedEmoji(address) ||
-              label ||
-              ens
-            }
-          />
-        )}
-        <ColumnWithMargins margin={android ? -6 : 3}>
-          {cleanedUpLabel || ens ? (
-            <StyledTruncatedText
-              color={colors.dark}
-              testID={`change-wallet-address-row-label-${
-                cleanedUpLabel || ens
-              }`}
-            >
-              {cleanedUpLabel || ens}
-            </StyledTruncatedText>
+  const handleSelectMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      switch (actionKey) {
+        case ContextMenuKeys.Remove:
+          contextMenuActions?.remove(walletId, address);
+          break;
+        case ContextMenuKeys.Notifications:
+          contextMenuActions?.notifications(cleanedUpLabel);
+          break;
+        case ContextMenuKeys.Edit:
+          contextMenuActions?.edit(walletId, address);
+          break;
+        default:
+          break;
+      }
+    },
+    [address, contextMenuActions, cleanedUpLabel, walletId]
+  );
+
+  const WalletRow = () => (
+    <ButtonPressAnimation
+      disabled={!editMode}
+      enableHapticFeedback
+      onPress={android && onPressAndroidActions}
+      scaleTo={0.98}
+    >
+      <Row align="center">
+        <Row align="center" flex={1} height={59}>
+          {accountImage ? (
+            <ImageAvatar image={accountImage} marginRight={10} size="medium" />
           ) : (
-            <TruncatedAddress
-              address={address}
-              color={colors.dark}
-              firstSectionLength={6}
-              size="smaller"
-              style={sx.accountLabel}
-              testID={`change-wallet-address-row-address-${address}`}
-              truncationLength={4}
-              weight="medium"
+            <ContactAvatar
+              color={accountColor}
+              marginRight={10}
+              size="medium"
+              value={
+                returnStringFirstEmoji(cleanedUpLabel) ||
+                profileUtils.addressHashedEmoji(address) ||
+                cleanedUpLabel ||
+                ens
+              }
             />
           )}
-          <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-            {cleanedUpBalance || 0} ETH
-          </StyledBottomRowText>
-        </ColumnWithMargins>
-      </Row>
-      <Column style={sx.rightContent}>
-        {isReadOnly && (
-          <LinearGradient
-            {...linearGradientProps}
-            marginRight={editMode || isSelected ? -9 : 19}
-          >
-            <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-              {lang.t('wallet.change_wallet.watching')}
-            </ReadOnlyText>
-          </LinearGradient>
-        )}
-        {!editMode && isSelected && (
-          <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
-        )}
-        {editMode &&
-          (android ? (
-            <ContextMenuButton
-              isAnchoredToRight
-              menuConfig={editMode ? menuConfig : emptyMenu}
-              onPressMenuItem={handlePressMenuItem}
+          <ColumnWithMargins margin={android ? -6 : 3}>
+            {cleanedUpLabel || ens ? (
+              <StyledTruncatedText color={colors.dark}>
+                {cleanedUpLabel || ens}
+              </StyledTruncatedText>
+            ) : (
+              <TruncatedAddress
+                address={address}
+                color={colors.dark}
+                firstSectionLength={6}
+                size="smaller"
+                style={sx.accountLabel}
+                truncationLength={4}
+                weight="medium"
+              />
+            )}
+            <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+              {cleanedUpBalance || 0} ETH
+            </StyledBottomRowText>
+          </ColumnWithMargins>
+        </Row>
+        <Column style={sx.rightContent}>
+          {isReadOnly && (
+            <LinearGradient
+              {...linearGradientProps}
+              marginRight={editMode || isSelected ? -9 : 19}
             >
-              <OptionsIcon onPress={NOOP} />
-            </ContextMenuButton>
-          ) : (
-            <OptionsIcon onPress={NOOP} />
-          ))}
-      </Column>
-    </Row>
+              <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+                {lang.t('wallet.change_wallet.watching')}
+              </ReadOnlyText>
+            </LinearGradient>
+          )}
+          {!editMode && isSelected && (
+            <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
+          )}
+          {editMode && <OptionsIcon onPress={NOOP} />}
+        </Column>
+      </Row>
+    </ButtonPressAnimation>
   );
 
   return (
     <View style={sx.accountRow}>
-      {ios ? (
-        <ButtonPressAnimation
-          enableHapticFeedback={!editMode}
-          onLongPress={!watchOnly ? showIOSMenu : onPress}
-          onPress={editMode ? showIOSMenu : onPress}
-          scaleTo={editMode ? 1 : 0.98}
+      {editMode && ios ? (
+        <ContextMenuButton
+          isMenuPrimaryAction
+          // @ts-ignore
+          menuAlignmentOverride="right"
+          menuConfig={menuConfig}
+          onPressMenuItem={handleSelectMenuItem}
+          useActionSheetFallback={false}
         >
-          {content}
-        </ButtonPressAnimation>
-      ) : !editMode ? (
-        <ButtonPressAnimation
-          enableHapticFeedback={!editMode}
-          onPress={onPress}
-          scaleTo={0.98}
-        >
-          {content}
-        </ButtonPressAnimation>
+          <WalletRow />
+        </ContextMenuButton>
       ) : (
-        content
+        <WalletRow />
       )}
     </View>
   );
