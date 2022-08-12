@@ -8,7 +8,7 @@ import { getNextEmojiWithColor } from '@rainbow-me/utils/profileUtils';
 
 export default function useUpdateAvatar() {
   const { accountSymbol } = useAccountProfile();
-  const { wallets, selectedWallet } = useWallets();
+  const { isReadOnlyWallet, wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
@@ -36,9 +36,18 @@ export default function useUpdateAvatar() {
 
       await dispatch(walletsSetSelected(newWallets[walletId]));
       await dispatch(walletsUpdate(newWallets));
-      updateWebProfile(accountAddress, color, emoji);
+      if (!isReadOnlyWallet) {
+        updateWebProfile(accountAddress, color, emoji);
+      }
     },
-    [accountAddress, dispatch, selectedWallet.id, updateWebProfile, wallets]
+    [
+      accountAddress,
+      dispatch,
+      isReadOnlyWallet,
+      selectedWallet.id,
+      updateWebProfile,
+      wallets,
+    ]
   );
 
   const setNextEmoji = useCallback(() => {
