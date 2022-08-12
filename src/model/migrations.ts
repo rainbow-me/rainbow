@@ -713,7 +713,6 @@ export default async function runMigrations() {
         const wallet = wallets[walletKeys[i]];
         const newAddresses = await Promise.all(
           wallet.addresses.map(async (account: RainbowAccount) => {
-            updateWebDataEnabled(true, account?.address);
             const rainbowProfile = await fetchRainbowProfile(account?.address);
             queryClient.setQueryData(
               rainbowProfileQueryKey(account?.address),
