@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@rainbow-me/analytics';
-import { useRainbowProfile } from '@rainbow-me/hooks';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -15,8 +14,7 @@ export default function WalletProfileState({
   profile,
 }) {
   const { goBack, navigate } = useNavigation();
-  const { rainbowProfile } = useRainbowProfile(address);
-  const { name, image } = profile;
+  const { name, image, color, emoji } = profile;
 
   const [value, setValue] = useState(name || '');
 
@@ -31,8 +29,6 @@ export default function WalletProfileState({
   const handleSubmit = useCallback(() => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     onCloseModal({
-      color: rainbowProfile?.color,
-      emoji: rainbowProfile?.emoji,
       image: image,
       name: value,
     });
@@ -47,22 +43,13 @@ export default function WalletProfileState({
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
     }
-  }, [
-    actionType,
-    goBack,
-    isNewProfile,
-    navigate,
-    onCloseModal,
-    rainbowProfile,
-    image,
-    value,
-  ]);
+  }, [actionType, goBack, isNewProfile, navigate, onCloseModal, image, value]);
 
   return (
     <ProfileModal
-      accentColor={rainbowProfile?.color}
+      accentColor={color}
       address={address}
-      emojiAvatar={rainbowProfile?.emoji}
+      emojiAvatar={emoji}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       imageAvatar={image}

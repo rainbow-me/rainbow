@@ -19,6 +19,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
 import {
   resolveUnstoppableDomain,
   web3Provider,
@@ -92,13 +93,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const startImportProfile = useCallback(
-    (name, address = null, avatarUrl = null) => {
-      const importWallet = (color: any, emoji: any, image: any, name: any) =>
+    async (name, address = null, avatarUrl = null) => {
+      const rainbowProfile = await fetchRainbowProfile(address);
+      setColor(rainbowProfile?.color);
+      setEmoji(rainbowProfile?.emoji);
+      const importWallet = (name: any, image: any) =>
         InteractionManager.runAfterInteractions(() => {
           if (name) setName(name);
           if (image) setImage(image);
-          if (color) setColor(color);
-          if (emoji) setEmoji(emoji);
           handleSetImporting(true);
         });
       if (showImportModal) {
@@ -109,18 +111,23 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           address,
           asset: [],
           isNewProfile: true,
-          onCloseModal: ({ color, emoji, name, image }: any) => {
-            importWallet(color, emoji, name, image);
+          onCloseModal: ({ name, image }: any) => {
+            importWallet(name, image);
           },
-          profile: { image: avatarUrl, name },
+          profile: {
+            color: rainbowProfile?.color,
+            emoji: rainbowProfile?.emoji,
+            image: avatarUrl,
+            name,
+          },
           type: 'wallet_profile',
           withoutStatusBar: true,
         });
       } else {
-        importWallet(color, emoji, name, avatarUrl);
+        importWallet(name, avatarUrl);
       }
     },
-    [color, emoji, handleSetImporting, navigate, showImportModal]
+    [handleSetImporting, navigate, showImportModal]
   );
 
   const handlePressImportButton = useCallback(
@@ -147,7 +154,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           avatarUrl = avatarUrl || avatar?.imageUrl;
-          startImportProfile(input, address, avatarUrl);
+          await startImportProfile(input, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
             input,
@@ -167,7 +174,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = input;
-          startImportProfile(name, address);
+          await startImportProfile(name, address);
           analytics.track('Show wallet profile modal for Unstoppable address', {
             address,
             input,
@@ -193,7 +200,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (e) {
           logger.log(`Error resolving ENS during wallet import`, e);
         }
-        startImportProfile(name, input, avatarUrl);
+        await startImportProfile(name, input, avatarUrl);
       } else {
         try {
           setBusy(true);
@@ -215,7 +222,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               }
             }
             setBusy(false);
-            startImportProfile(name, walletResult.address, avatarUrl);
+            await startImportProfile(name, walletResult.address, avatarUrl);
             analytics.track('Show wallet profile modal for imported wallet', {
               address: walletResult.address,
               type: walletResult.type,
