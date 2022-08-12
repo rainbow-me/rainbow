@@ -139,16 +139,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               profilesEnabled &&
               fetchENSAvatar(input, { swallowError: true }),
           ]);
+
           if (!address) {
             Alert.alert(lang.t('wallet.invalid_ens_name'));
             return;
           }
           // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
-          name = input;
-          avatarUrl = avatarUrl || avatar?.avatarUrl;
-
-          startImportProfile(name, address, avatarUrl);
+          avatarUrl = avatarUrl || avatar?.imageUrl;
+          startImportProfile(input, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
             input,
@@ -194,7 +193,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (e) {
           logger.log(`Error resolving ENS during wallet import`, e);
         }
-        startImportProfile(name, input);
+        startImportProfile(name, input, avatarUrl);
       } else {
         try {
           setBusy(true);
