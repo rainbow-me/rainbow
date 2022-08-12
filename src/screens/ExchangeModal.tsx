@@ -573,7 +573,7 @@ export default function ExchangeModal({
     updateMaxInputAmount();
   }, [updateMaxInputAmount]);
 
-  const checkGasVsOutput = async (gasPrice: number, outputPrice: number) => {
+  const checkGasVsOutput = async (gasPrice: number, outputPrice: string) => {
     if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
       const res = new Promise(resolve => {
         Alert.alert(
@@ -648,7 +648,7 @@ export default function ExchangeModal({
           inputTokenSymbol: inputCurrency?.symbol || '',
           isHighPriceImpact: debouncedIsHighPriceImpact,
           legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
-          liquiditySources: tradeDetails?.protocols || [],
+          liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
           maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
           network: currentNetwork,
           networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
@@ -694,13 +694,13 @@ export default function ExchangeModal({
   );
 
   const handleSubmit = useCallback(async () => {
-    let amountInUSD = 0;
+    let amountInUSD = '0';
     const NotificationManager = ios ? NativeModules.NotificationManager : null;
     try {
       // Tell iOS we're running a rap (for tracking purposes)
       NotificationManager?.postNotification('rapInProgress');
       if (nativeCurrency === 'usd') {
-        amountInUSD = nativeAmount;
+        amountInUSD = nativeAmount!;
       } else {
         const ethPriceInNativeCurrency =
           genericAssets[ETH_ADDRESS]?.price?.value ?? 0;
@@ -710,7 +710,7 @@ export default function ExchangeModal({
           tokenPriceInNativeCurrency,
           ethPriceInNativeCurrency
         );
-        const inputTokensInEth = multiply(tokensPerEth, inputAmount);
+        const inputTokensInEth = multiply(tokensPerEth, inputAmount!);
         amountInUSD = multiply(priceOfEther, inputTokensInEth);
       }
     } catch (e) {
@@ -726,7 +726,7 @@ export default function ExchangeModal({
         inputTokenSymbol: inputCurrency?.symbol || '',
         isHighPriceImpact: debouncedIsHighPriceImpact,
         legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
-        liquiditySources: tradeDetails?.protocols || [],
+        liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
         maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
         network: currentNetwork,
         networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
@@ -739,7 +739,7 @@ export default function ExchangeModal({
       });
     }
 
-    const outputInUSD = multiply(outputPriceValue, outputAmount);
+    const outputInUSD = multiply(outputPriceValue!, outputAmount!);
     const gasPrice = selectedGasFee?.gasFee?.maxFee?.native?.value?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
@@ -931,99 +931,101 @@ export default function ExchangeModal({
         isSmallPhone={isSmallPhone || (android && isSmallAndroidPhone)}
       >
         <FloatingPanels>
-          <FloatingPanel
-            overflow="visible"
-            paddingBottom={showOutputField ? 0 : 26}
-            radius={39}
-            style={
-              android && {
-                left: -1,
-              }
-            }
-            testID={testID}
-          >
-            {showOutputField && <ExchangeNotch testID={testID} />}
-            <ExchangeHeader testID={testID} title={title} />
-            <ExchangeInputField
-              disableInputCurrencySelection={isWithdrawal}
-              editable={!!inputCurrency}
-              inputAmount={inputAmountDisplay}
-              inputCurrencyAddress={inputCurrency?.address}
-              inputCurrencyAssetType={inputCurrency?.type}
-              inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
-              inputCurrencySymbol={inputCurrency?.symbol}
-              inputFieldRef={inputFieldRef}
-              loading={loading}
-              nativeAmount={nativeAmountDisplay}
-              nativeCurrency={nativeCurrency}
-              nativeFieldRef={nativeFieldRef}
-              network={currentNetwork}
-              onFocus={handleFocus}
-              onPressMaxBalance={handlePressMaxBalance}
-              onPressSelectInputCurrency={navigateToSelectInputCurrency}
-              setInputAmount={updateInputAmount}
-              setNativeAmount={updateNativeAmount}
-              testID={`${testID}-input`}
-              updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
-            />
-            {showOutputField && (
-              <ExchangeOutputField
-                editable={
-                  !!outputCurrency && currentNetwork !== Network.arbitrum
-                }
+          <>
+            <FloatingPanel
+              borderRadius={39}
+              overflow="visible"
+              paddingBottom={{ custom: showOutputField ? 0 : 24 }}
+              style={{
+                ...(android && {
+                  left: -1,
+                }),
+              }}
+              testID={testID}
+            >
+              {showOutputField && <ExchangeNotch testID={testID} />}
+              <ExchangeHeader testID={testID} title={title} />
+              <ExchangeInputField
+                disableInputCurrencySelection={isWithdrawal}
+                editable={!!inputCurrency}
+                inputAmount={inputAmountDisplay}
+                inputCurrencyAddress={inputCurrency?.address}
+                inputCurrencyAssetType={inputCurrency?.type}
+                inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
+                inputCurrencySymbol={inputCurrency?.symbol}
+                inputFieldRef={inputFieldRef}
+                loading={loading}
+                nativeAmount={nativeAmountDisplay}
+                nativeCurrency={nativeCurrency}
+                nativeFieldRef={nativeFieldRef}
                 network={currentNetwork}
                 onFocus={handleFocus}
-                onPressSelectOutputCurrency={() =>
-                  navigateToSelectOutputCurrency(chainId)
-                }
-                {...(currentNetwork === Network.arbitrum &&
-                  !!outputCurrency && {
-                    onTapWhileDisabled: handleTapWhileDisabled,
-                  })}
-                loading={loading}
-                outputAmount={outputAmountDisplay}
-                outputCurrencyAddress={outputCurrency?.address}
-                outputCurrencyAssetType={outputCurrency?.type}
-                outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
-                outputCurrencySymbol={outputCurrency?.symbol}
-                outputFieldRef={outputFieldRef}
-                setOutputAmount={updateOutputAmount}
-                testID={`${testID}-output`}
+                onPressMaxBalance={handlePressMaxBalance}
+                onPressSelectInputCurrency={navigateToSelectInputCurrency}
+                setInputAmount={updateInputAmount}
+                setNativeAmount={updateNativeAmount}
+                testID={`${testID}-input`}
                 updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
               />
+              {showOutputField && (
+                <ExchangeOutputField
+                  editable={
+                    !!outputCurrency && currentNetwork !== Network.arbitrum
+                  }
+                  network={currentNetwork}
+                  onFocus={handleFocus}
+                  onPressSelectOutputCurrency={() =>
+                    navigateToSelectOutputCurrency(chainId)
+                  }
+                  {...(currentNetwork === Network.arbitrum &&
+                    !!outputCurrency && {
+                      onTapWhileDisabled: handleTapWhileDisabled,
+                    })}
+                  loading={loading}
+                  outputAmount={outputAmountDisplay}
+                  outputCurrencyAddress={outputCurrency?.address}
+                  outputCurrencyAssetType={outputCurrency?.type}
+                  outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
+                  outputCurrencySymbol={outputCurrency?.symbol}
+                  outputFieldRef={outputFieldRef}
+                  setOutputAmount={updateOutputAmount}
+                  testID={`${testID}-output`}
+                  updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
+                />
+              )}
+            </FloatingPanel>
+            {isDeposit && (
+              <DepositInfo
+                amount={(Number(inputAmount) > 0 && outputAmount) || null}
+                asset={outputCurrency}
+                isHighPriceImpact={debouncedIsHighPriceImpact}
+                onPress={navigateToSwapDetailsModal}
+                priceImpactColor={priceImpactColor}
+                priceImpactNativeAmount={priceImpactNativeAmount}
+                priceImpactPercentDisplay={priceImpactPercentDisplay}
+                testID="deposit-info-button"
+              />
             )}
-          </FloatingPanel>
-          {isDeposit && (
-            <DepositInfo
-              amount={(Number(inputAmount) > 0 && outputAmount) || null}
-              asset={outputCurrency}
-              isHighPriceImpact={debouncedIsHighPriceImpact}
-              onPress={navigateToSwapDetailsModal}
-              priceImpactColor={priceImpactColor}
-              priceImpactNativeAmount={priceImpactNativeAmount}
-              priceImpactPercentDisplay={priceImpactPercentDisplay}
-              testID="deposit-info-button"
-            />
-          )}
-          {!isSavings && showConfirmButton && (
-            <ExchangeDetailsRow
-              isHighPriceImpact={
-                !confirmButtonProps.disabled &&
-                !confirmButtonProps.loading &&
-                debouncedIsHighPriceImpact &&
-                isSufficientBalance
-              }
-              onFlipCurrencies={loading ? NOOP : flipCurrencies}
-              onPressImpactWarning={navigateToSwapDetailsModal}
-              onPressSettings={navigateToSwapSettingsSheet}
-              priceImpactColor={priceImpactColor}
-              priceImpactNativeAmount={priceImpactNativeAmount}
-              priceImpactPercentDisplay={priceImpactPercentDisplay}
-              type={type}
-            />
-          )}
+            {!isSavings && showConfirmButton && (
+              <ExchangeDetailsRow
+                isHighPriceImpact={
+                  !confirmButtonProps.disabled &&
+                  !confirmButtonProps.loading &&
+                  debouncedIsHighPriceImpact &&
+                  isSufficientBalance
+                }
+                onFlipCurrencies={loading ? NOOP : flipCurrencies}
+                onPressImpactWarning={navigateToSwapDetailsModal}
+                onPressSettings={navigateToSwapSettingsSheet}
+                priceImpactColor={priceImpactColor}
+                priceImpactNativeAmount={priceImpactNativeAmount}
+                priceImpactPercentDisplay={priceImpactPercentDisplay}
+                type={type}
+              />
+            )}
 
-          {isWithdrawal && <Box height="30px" />}
+            {isWithdrawal && <Box height="30px" />}
+          </>
         </FloatingPanels>
         <Box>
           <Rows alignVertical="bottom" space="19px (Deprecated)">

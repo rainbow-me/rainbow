@@ -6,7 +6,7 @@ import { KeyboardType } from '@rainbow-me/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 
 interface KeyboardFixedOpenLayoutProps {
-  additionalPadding: number;
+  additionalPadding?: number;
   keyboardType: KeyboardType;
   position?: 'absolute';
   children?: ReactNode;
