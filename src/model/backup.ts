@@ -28,7 +28,7 @@ import {
 } from './wallet';
 
 import AesEncryptor from '@/handlers/aesEncryption';
-import { saveNewAuthenticatePIN } from '@/handlers/authentication';
+import { saveNewAuthenticationPIN } from '@/handlers/authentication';
 import { analytics } from '@rainbow-me/analytics';
 import logger from 'logger';
 
@@ -42,7 +42,7 @@ interface BackupUserData {
   wallets: AllRainbowWallets;
 }
 
-const empty = () => {};
+const NOOP = () => {};
 const encryptor = new AesEncryptor();
 
 async function extractSecretsForWallet(wallet: RainbowWallet) {
@@ -151,8 +151,8 @@ export async function restoreCloudBackup(
   password: BackupPassword,
   userData: BackupUserData | null,
   backupSelected: string | null,
-  doItIfStartPINCreation = empty,
-  doItIfFinishPINCreation = empty
+  onBeforePINCreated = NOOP,
+  onAfterPINCreated = NOOP
 ): Promise<boolean> {
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
@@ -197,8 +197,8 @@ export async function restoreCloudBackup(
       };
       return restoreCurrentBackupIntoKeychain(
         dataToRestore,
-        doItIfStartPINCreation,
-        doItIfFinishPINCreation
+        onBeforePINCreated,
+        onAfterPINCreated
       );
     } else {
       return restoreSpecificBackupIntoKeychain(dataToRestore);
@@ -232,8 +232,8 @@ async function restoreSpecificBackupIntoKeychain(
 
 async function restoreCurrentBackupIntoKeychain(
   backedUpData: BackedUpData,
-  doItIfStartPINCreation = empty,
-  doItIfFinishPINCreation = empty
+  onBeforePINCreated = NOOP,
+  onAfterPINCreated = NOOP
 ): Promise<boolean> {
   try {
     // Access control config per each type of key
@@ -253,21 +253,19 @@ async function restoreCurrentBackupIntoKeychain(
           const parsedValue = JSON.parse(value);
           const { seedphrase } = parsedValue;
 
-          const isBackupWasSavedWithPIN =
+          const wasBackupSavedWithPIN =
             seedphrase?.includes('salt') && seedphrase?.includes('cipher');
 
-          if (!isBackupWasSavedWithPIN) {
+          if (!wasBackupSavedWithPIN) {
             //interrupt loader
-            doItIfStartPINCreation();
-            const userPIN = await saveNewAuthenticatePIN();
-            doItIfFinishPINCreation();
+            onBeforePINCreated();
+            const userPIN = await saveNewAuthenticationPIN();
+            onAfterPINCreated();
 
             const encryptedSeed = await encryptor.encrypt(userPIN, seedphrase);
 
             if (encryptedSeed) {
-              // as the wallet was backuped with faceId in `seedphrase` we have
-              // a seed(as a words), so we need to store this seed with PIN
-              // and put that encrypted data instead this seed
+              // in the PIN flow, we must manually encrypt the seedphrase with PIN
               const valueWithPINInfo = JSON.stringify({
                 ...parsedValue,
                 seedphrase: encryptedSeed,

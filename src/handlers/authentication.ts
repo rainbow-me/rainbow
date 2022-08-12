@@ -61,7 +61,7 @@ export async function authenticateWithPINAndCreateIfNeeded() {
   });
 }
 
-export async function saveNewAuthenticatePIN() {
+export async function saveNewAuthenticationPIN() {
   return new Promise((resolve, reject) => {
     return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
       onCancel: () => reject(),

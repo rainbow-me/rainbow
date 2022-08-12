@@ -161,9 +161,9 @@ export default function RestoreCloudStep({
         password,
         userData,
         backupSelected?.name,
-        //doItIfStartPINCreation
+        //onBeforePINCreated
         () => setIsWalletLoading(null),
-        //doItIfFinishPINCreation
+        //onAfterPINCreated
         () => setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET)
       );
       if (success) {
