@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { usePagerPosition } from '../../navigation/ScrollPositionContext';
 
@@ -6,8 +6,16 @@ import ExchangeFloatingPanels from './ExchangeFloatingPanels';
 
 const AnimatedPanels = Animated.createAnimatedComponent(ExchangeFloatingPanels);
 
-export default function AnimatedExchangeFloatingPanels(props) {
-  const scrollPosition = usePagerPosition();
+interface AnimatedExchangeFloatingPanelsProps {
+  children: ReactElement;
+}
+
+export default function AnimatedExchangeFloatingPanels(
+  props: AnimatedExchangeFloatingPanelsProps
+) {
+  const scrollPosition = (usePagerPosition() as unknown) as {
+    [key: string]: number;
+  };
   const style = useAnimatedStyle(() => {
     return {
       flexGrow: 1,

@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -62,6 +63,7 @@ import {
 } from '@/raps';
 import {
   swapClearState,
+  TypeSpecificParameters,
   updateSwapSlippage,
   updateSwapTypeDetails,
 } from '@/redux/swap';
@@ -78,13 +80,18 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.polygon]: 200,
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
+  [Network.goerli]: 100,
+  [Network.ropsten]: 100,
+  [Network.rinkeby]: 100,
+  [Network.kovan]: 100,
 };
 
-export const getDefaultSlippageFromConfig = network => {
+export const getDefaultSlippageFromConfig = (network: Network) => {
+  const configSlippage = (config.default_slippage_bips as unknown) as {
+    [network: string]: number;
+  };
   const slippage =
-    config.default_slippage_bips?.[network] ??
-    DEFAULT_SLIPPAGE_BIPS[network] ??
-    100;
+    (configSlippage?.[network] as {}) ?? DEFAULT_SLIPPAGE_BIPS[network] ?? 100;
   return slippage;
 };
 const NOOP = () => null;
@@ -99,11 +106,10 @@ const InnerWrapper = styled(Column).attrs({
   ...position.sizeAsObject('100%'),
 });
 
-const Spacer = styled.View({
-  height: 20,
-});
-
-const getInputHeaderTitle = (type, defaultInputAsset) => {
+const getInputHeaderTitle = (
+  type: 'deposit' | 'swap' | 'withdrawal',
+  defaultInputAsset: Asset
+) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
       return lang.t('swap.modal_types.deposit');
@@ -116,7 +122,7 @@ const getInputHeaderTitle = (type, defaultInputAsset) => {
   }
 };
 
-const getShowOutputField = type => {
+const getShowOutputField = (type: 'deposit' | 'swap' | 'withdrawal') => {
   switch (type) {
     case ExchangeModalTypes.deposit:
     case ExchangeModalTypes.withdrawal:
@@ -126,13 +132,47 @@ const getShowOutputField = type => {
   }
 };
 
+interface Asset {
+  address: string;
+  balance: { amount: string; display: string };
+  decimals: number;
+  icon_url: string;
+  id: string;
+  implementations: {
+    [network: string]: { address: string; decimals: number };
+  }[];
+  isNativeAsset: boolean;
+  isRainbowCurated: boolean;
+  isVerified: boolean;
+  is_displayable: boolean;
+  is_verified: boolean;
+  name: string;
+  native: {
+    balance: { amount: string; display: string };
+    change: string;
+    price: { amount: number; display: string };
+  };
+  price: { changed_at: number; relative_change_24h: number; value: number };
+  symbol: string;
+  type: string;
+  uniqueId: string;
+}
+
+interface ExchangeModalProps {
+  fromDiscover: boolean;
+  ignoreInitialTypeCheck?: boolean;
+  testID: string;
+  type: 'deposit' | 'swap' | 'withdrawal';
+  typeSpecificParams: TypeSpecificParameters;
+}
+
 export default function ExchangeModal({
   fromDiscover,
   ignoreInitialTypeCheck,
   testID,
   type,
   typeSpecificParams,
-}) {
+}: ExchangeModalProps) {
   const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
   const {
@@ -142,7 +182,11 @@ export default function ExchangeModal({
   } = useSwapSettings();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
-  } = useRoute();
+  } = useRoute<{
+    key: string;
+    name: string;
+    params: { inputAsset: Asset; outputAsset: Asset };
+  }>();
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
@@ -151,9 +195,10 @@ export default function ExchangeModal({
   const title = getInputHeaderTitle(type, defaultInputAsset);
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
-  const genericAssets = useSelector(
-    ({ data: { genericAssets } }) => genericAssets
-  );
+  const genericAssets = useSelector<
+    { data: { genericAssets: Asset[] } },
+    Asset[]
+  >(({ data: { genericAssets } }) => genericAssets);
 
   const {
     navigate,
@@ -248,16 +293,18 @@ export default function ExchangeModal({
     updateOutputAmount,
   } = useSwapInputHandlers();
 
-  const chainId = useMemo(
-    () =>
-      ethereumUtils.getChainIdFromType(
-        inputCurrency?.type || outputCurrency?.type
-      ),
-    [inputCurrency, outputCurrency]
-  );
+  const chainId = useMemo(() => {
+    if (inputCurrency?.type || outputCurrency?.type) {
+      return ethereumUtils.getChainIdFromType(
+        inputCurrency?.type! ?? outputCurrency?.type!
+      );
+    }
+
+    return 1;
+  }, [inputCurrency, outputCurrency]);
 
   const currentNetwork = useMemo(
-    () => ethereumUtils.getNetworkFromChainId(chainId || 1),
+    () => ethereumUtils.getNetworkFromChainId(chainId),
     [chainId]
   );
 
@@ -336,8 +383,9 @@ export default function ExchangeModal({
     },
     loading,
     resetSwapInputs,
+    insufficientLiquidity,
     quoteError,
-  } = useSwapDerivedOutputs(chainId, type);
+  } = useSwapDerivedOutputs(Number(chainId), type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
@@ -873,7 +921,7 @@ export default function ExchangeModal({
     : !!inputCurrency && !!outputCurrency;
 
   return (
-    <Wrapper keyboardType={KeyboardTypes.numpad}>
+    <Wrapper keyboardType={KeyboardType.numpad}>
       <InnerWrapper
         isSmallPhone={isSmallPhone || (android && isSmallAndroidPhone)}
       >
@@ -942,7 +990,7 @@ export default function ExchangeModal({
           </FloatingPanel>
           {isDeposit && (
             <DepositInfo
-              amount={(inputAmount > 0 && outputAmount) || null}
+              amount={(Number(inputAmount) > 0 && outputAmount) || null}
               asset={outputCurrency}
               isHighPriceImpact={debouncedIsHighPriceImpact}
               onPress={navigateToSwapDetailsModal}
@@ -970,9 +1018,9 @@ export default function ExchangeModal({
             />
           )}
 
-          {isWithdrawal && <Spacer />}
+          {isWithdrawal && <Box height="30px" />}
         </FloatingPanels>
-        <Box height="content">
+        <Box>
           <Rows alignVertical="bottom" space="19px (Deprecated)">
             <Row height="content">
               {showConfirmButton && (

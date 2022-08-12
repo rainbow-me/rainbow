@@ -41,6 +41,7 @@ export default function DepositInfo({
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
+  testID,
 }) {
   const { colors } = useTheme();
   const isVisible = !!(asset && amount);
