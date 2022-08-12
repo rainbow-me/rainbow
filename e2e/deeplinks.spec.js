@@ -11,7 +11,11 @@ const testEthereumDeeplink = async (url, coldStart = true) => {
   try {
     await Helpers.checkIfElementByTextIsVisible('􀕹 Review', 15000);
   } catch (e) {
-    await Helpers.checkIfElementByTextIsVisible('Insufficient ETH', 15000);
+    try {
+      await Helpers.checkIfElementByTextIsVisible('Insufficient ETH', 15000);
+    } catch (e) {
+      await Helpers.checkIfElementByTextIsVisible('Insufficient Funds', 15000);
+    }
   }
   await Helpers.swipe('send-sheet', 'down');
 };
@@ -63,21 +67,25 @@ describe('Deeplinks spec', () => {
     await Helpers.tapAlertWithButton('OK');
   });
 
-  it('should show the Showcase Sheet for rainbow.me universal links with ENS names', async () => {
+  it('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
     await Helpers.openDeeplinkFromBackground(
       'https://rainbow.me/rainbowwallet.eth'
     );
-    await Helpers.checkIfVisible('showcase-sheet', 30000);
+    await Helpers.checkIfVisible('profile-sheet', 30000);
     await Helpers.checkIfElementByTextIsVisible('rainbowwallet.eth', 30000);
-    await Helpers.swipe('showcase-sheet', 'down');
+    await Helpers.swipe('profile-sheet', 'down');
   });
-  it('should show the Showcase Sheet for rainbow.me universal links with 0x addresses', async () => {
+
+  it('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
     await Helpers.openDeeplinkFromBackground(
       'https://rainbow.me/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
     );
-    await Helpers.checkIfVisible('showcase-sheet', 30000);
-    await Helpers.checkIfElementByTextIsVisible('0xE46aBAf7...27f1', 30000);
-    await Helpers.swipe('showcase-sheet', 'down');
+    await Helpers.checkIfVisible('profile-sheet', 30000);
+    await Helpers.checkIfElementByTextIsVisible(
+      '0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1',
+      30000
+    );
+    await Helpers.swipe('profile-sheet', 'down');
   });
 
   it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {

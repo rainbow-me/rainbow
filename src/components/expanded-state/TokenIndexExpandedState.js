@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { sortBy, times, toLower } from 'lodash';
+import sortBy from 'lodash/sortBy';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -14,6 +14,7 @@ import {
 import { Text } from '../text';
 import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
+import { isTestnetNetwork } from '@/handlers/web3';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
@@ -28,6 +29,7 @@ import {
   divide,
   handleSignificantDecimals,
   multiply,
+  times,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -68,12 +70,12 @@ export default function TokenIndexExpandedState({ asset }) {
   const underlying = useMemo(() => {
     if (!dpi) return [];
     const baseAsset = ethereumUtils.formatGenericAsset(
-      genericAssets[toLower(dpi?.base?.address)],
+      genericAssets[dpi?.base?.address?.toLowerCase()],
       nativeCurrency
     );
 
     const underlyingAssets = dpi?.underlying.map(asset => {
-      const genericAsset = genericAssets[toLower(asset?.address)];
+      const genericAsset = genericAssets[asset?.address?.toLowerCase()];
       if (!genericAsset) return null;
       const assetWithPrice = ethereumUtils.formatGenericAsset(
         genericAsset,
@@ -96,6 +98,7 @@ export default function TokenIndexExpandedState({ asset }) {
 
       return {
         ...formatItem(assetWithPrice, nativeCurrencySymbol),
+        asset: assetWithPrice,
         color: assetWithPrice.color,
         percentageAllocation,
         pricePerUnitFormatted,
@@ -146,6 +149,8 @@ export default function TokenIndexExpandedState({ asset }) {
     duration.current = 300;
   }
   const { height: screenHeight } = useDimensions();
+  const { network } = useAccountSettings();
+  const isTestnet = isTestnetNetwork(network);
 
   return (
     <Fragment>
@@ -179,14 +184,17 @@ export default function TokenIndexExpandedState({ asset }) {
         ) : (
           <SheetActionButtonRow>
             <Column marginTop={5}>
-              <SwapActionButton
-                color={color}
-                inputType={AssetInputTypes.out}
-                label={`􀖅 ${lang.t('expanded_state.token_index.get_token', {
-                  assetSymbol: asset?.symbol,
-                })}`}
-                weight="heavy"
-              />
+              {!isTestnet && (
+                <SwapActionButton
+                  asset={assetWithPrice}
+                  color={color}
+                  inputType={AssetInputTypes.out}
+                  label={`􀖅 ${lang.t('expanded_state.token_index.get_token', {
+                    assetSymbol: asset?.symbol,
+                  })}`}
+                  weight="heavy"
+                />
+              )}
             </Column>
           </SheetActionButtonRow>
         )}
@@ -216,10 +224,15 @@ export default function TokenIndexExpandedState({ asset }) {
             </Text>
           </Column>
         </Row>
-        <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
+        <Column marginBottom={55} marginLeft={19} marginTop={12}>
           {underlying?.length
             ? underlying.map(item => (
-                <UnderlyingAsset {...item} changeVisible key={item.address} />
+                <UnderlyingAsset
+                  {...item}
+                  changeVisible
+                  key={item.address}
+                  marginRight={19}
+                />
               ))
             : times(3, index => (
                 <AssetListItemSkeleton
@@ -227,6 +240,7 @@ export default function TokenIndexExpandedState({ asset }) {
                   descendingOpacity
                   ignorePaddingHorizontal
                   key={`underlying-assets-skeleton-${index}`}
+                  paddingRight={19}
                 />
               ))}
         </Column>

@@ -61,6 +61,7 @@ export default function ProfileAvatar({
           imageUrl={avatarUrl || ''}
           onPress={handleOnPress}
           topOffset={imagePreviewOverlayTopOffset}
+          zIndex={2}
         >
           <>
             {showSkeleton && (

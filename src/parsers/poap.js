@@ -1,14 +1,15 @@
 import { AssetTypes } from '@rainbow-me/entities';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
+import { Network } from '@rainbow-me/helpers';
+
 /**
  * @desc parse poaps
  * @param  {Object}
  * @return {Array}
  */
-
 export const parsePoaps = data => {
   const poaps = data?.data ?? null;
-  return poaps.map(({ event }) => {
+  return poaps.map(({ event, chain }) => {
     return {
       animation_url: event.image_url,
       asset_contract: {
@@ -33,6 +34,12 @@ export const parsePoaps = data => {
       familyImage:
         'https://lh3.googleusercontent.com/FwLriCvKAMBBFHMxcjqvxjTlmROcDIabIFKRp87NS3u_QfSLxcNThgAzOJSbphgQqnyZ_v2fNgMZQkdCYHUliJwH-Q=s60',
       familyName: 'POAP',
+      /**
+       * See also `parseAccountUniqueTokens`. We want `chain` here to match the
+       * response from the POAP API so that it will match up with what we fetch
+       * on the web.
+       */
+      fullUniqueId: `${chain}_0x22c1f6050e56d2876009903609a2cc3fef83b415_${event.id}`,
       id: event.id,
       image_original_url: event.image_url,
       image_url: imageToPng(event.image_url, 300),
@@ -42,6 +49,7 @@ export const parsePoaps = data => {
       lastSalePaymentToken: null,
       lowResUrl: imageToPng(event.image_url, 300),
       name: event.name,
+      network: Network.mainnet,
       permalink: event.event_url,
       traits: [
         {

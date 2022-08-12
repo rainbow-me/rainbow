@@ -54,5 +54,5 @@ export const signUrl = memoFn(
 );
 
 export function isCloudinaryStorageLink(url: string): boolean {
-  return url.includes('rainbowme-res.cloudinary.com');
+  return url.startsWith('https://rainbowme-res.cloudinary.com/');
 }

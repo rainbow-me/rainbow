@@ -22,7 +22,7 @@ export default function WatchButton({ ensName }: { ensName?: string }) {
 
   return (
     <ActionButton onPress={handlePressEdit} variant="outlined">
-      {lang.t(`profiles.actions.edit_profile`)}
+      {lang.t('profiles.actions.edit_profile')}
     </ActionButton>
   );
 }

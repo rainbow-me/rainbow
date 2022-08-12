@@ -15,6 +15,7 @@ export default function ConfigurationSection({
   registrant,
   isOwner,
   isPrimary,
+  isProfilesEnabled,
   isExternal,
   isSetNameEnabled,
   isReadOnlyWallet,
@@ -27,6 +28,7 @@ export default function ConfigurationSection({
   isExternal?: boolean;
   isOwner?: boolean;
   isPrimary?: boolean;
+  isProfilesEnabled?: boolean;
   isSetNameEnabled?: boolean;
   isReadOnlyWallet?: boolean;
   name: string;
@@ -44,24 +46,31 @@ export default function ConfigurationSection({
         </>
       ) : (
         <>
-          {!isReadOnlyWallet && !isExternal && isSetNameEnabled && (
-            <InfoRow
-              explainSheetType="ens_primary_name"
-              label={lang.t('expanded_state.unique_expanded.set_primary_name')}
-              onSwitchChange={() => {
-                startRegistration(name, REGISTRATION_MODES.SET_NAME);
-                navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-                  externalAvatarUrl,
-                  longFormHeight: ENSConfirmUpdateSheetHeight,
-                  mode: REGISTRATION_MODES.SET_NAME,
-                  name,
-                });
-              }}
-              switchDisabled={!isOwner}
-              switchValue={isPrimary}
-              useAccentColor
-            />
-          )}
+          {isProfilesEnabled &&
+            !isReadOnlyWallet &&
+            !isExternal &&
+            isSetNameEnabled && (
+              <InfoRow
+                explainSheetType="ens_primary_name"
+                label={lang.t(
+                  'expanded_state.unique_expanded.set_primary_name'
+                )}
+                onSwitchChange={() => {
+                  startRegistration(name, REGISTRATION_MODES.SET_NAME);
+                  navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+                    externalAvatarUrl,
+                    longFormHeight:
+                      ENSConfirmUpdateSheetHeight +
+                      (externalAvatarUrl ? 70 : 0),
+                    mode: REGISTRATION_MODES.SET_NAME,
+                    name,
+                  });
+                }}
+                switchDisabled={!isOwner}
+                switchValue={isPrimary}
+                useAccentColor
+              />
+            )}
           {registrant && (
             <InfoRow
               explainSheetType="ens_owner"

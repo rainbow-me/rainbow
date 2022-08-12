@@ -1,4 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
+import { useFocusEffect } from '@react-navigation/core';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
@@ -9,9 +10,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import URL from 'url-parse';
-import { CardSize } from '../../components/unique-token/CardSize';
 import useWallets from '../../hooks/useWallets';
-import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
@@ -25,7 +24,7 @@ import {
 } from '../sheet';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import AdvancedSection from './ens/AdvancedSection';
+import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
 import {
@@ -52,7 +51,8 @@ import {
   Text,
   TextProps,
 } from '@rainbow-me/design-system';
-import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
@@ -61,16 +61,18 @@ import {
   useDimensions,
   useENSProfile,
   useENSRegistration,
+  useHiddenTokens,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { lightModeThemeColors, position } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 import {
   buildRainbowUrl,
+  getUniqueTokenType,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
@@ -208,29 +210,48 @@ const Markdown = ({
   );
 };
 
-export enum UniqueTokenType {
-  NFT = 'NFT',
-  ENS = 'ENS',
-  POAP = 'POAP',
-}
-
 interface UniqueTokenExpandedStateProps {
   asset: UniqueAsset;
   external: boolean;
 }
 
+const getIsSupportedOnRainbowWeb = (network: Network) => {
+  switch (network) {
+    case Network.mainnet:
+    case Network.polygon:
+      return true;
+    default:
+      return false;
+  }
+};
+
+const getIsSaleInfoSupported = (network: Network) => {
+  switch (network) {
+    case Network.mainnet:
+      return true;
+    default:
+      return false;
+  }
+};
+
 const UniqueTokenExpandedState = ({
   asset,
   external,
 }: UniqueTokenExpandedStateProps) => {
-  const { accountAddress, accountENS } = useAccountProfile();
+  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
+
+  const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
   const {
-    collection: { description: familyDescription, external_url: familyLink },
+    collection: {
+      description: familyDescription,
+      external_url: familyLink,
+      slug,
+    },
     currentPrice,
     description,
     familyImage,
@@ -238,28 +259,38 @@ const UniqueTokenExpandedState = ({
     isSendable,
     lastPrice,
     lastSalePaymentToken,
+    marketplaceName,
     traits,
     uniqueId,
+    fullUniqueId,
     urlSuffixForAsset,
   } = asset;
 
-  const uniqueTokenType = useMemo(() => {
-    if (asset.isPoap) return UniqueTokenType.POAP;
-    if (familyName === 'ENS' && uniqueId !== 'Unknown ENS name') {
-      return UniqueTokenType.ENS;
-    }
-    return UniqueTokenType.NFT;
-  }, [asset.isPoap, familyName, uniqueId]);
+  const uniqueTokenType = getUniqueTokenType(asset);
 
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
-  const isPoap = uniqueTokenType === UniqueTokenType.POAP;
-  const isENS = uniqueTokenType === UniqueTokenType.ENS;
-  const isNFT = uniqueTokenType === UniqueTokenType.NFT;
+  const isPoap = uniqueTokenType === 'POAP';
+  const isENS = uniqueTokenType === 'ENS';
+  const isNFT = uniqueTokenType === 'NFT';
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS && uniqueId ? uniqueId?.split(' ')?.[0] : uniqueId;
-  const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
+  const cleanENSName = isENS
+    ? uniqueId
+      ? uniqueId?.split(' ')?.[0]
+      : uniqueId
+    : '';
+  const ensProfile = useENSProfile(cleanENSName, {
+    enabled: isENS,
+  });
   const ensData = ensProfile.data;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (uniqueTokenType === 'ENS') {
+        setOptions({ limitActiveModals: false });
+      }
+    }, [setOptions, uniqueTokenType])
+  );
 
   const profileInfoSectionAvailable = useMemo(() => {
     const available = Object.keys(ensData?.records || {}).some(
@@ -273,6 +304,7 @@ const UniqueTokenExpandedState = ({
     removeShowcaseToken,
     showcaseTokens,
   } = useShowcaseTokens();
+  const { hiddenTokens, removeHiddenToken } = useHiddenTokens();
 
   const [
     contentFocused,
@@ -302,10 +334,16 @@ const UniqueTokenExpandedState = ({
     });
   }, [asset.network, navigate]);
 
+  const isHiddenAsset = useMemo(
+    () => hiddenTokens.includes(fullUniqueId) as boolean,
+    [hiddenTokens, fullUniqueId]
+  );
   const isShowcaseAsset = useMemo(
     () => showcaseTokens.includes(uniqueId) as boolean,
     [showcaseTokens, uniqueId]
   );
+
+  const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
@@ -322,28 +360,39 @@ const UniqueTokenExpandedState = ({
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressOpensea = useCallback(
+  const handlePressMarketplaceName = useCallback(
     () => Linking.openURL(asset.permalink),
     [asset.permalink]
   );
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
-      removeShowcaseToken(uniqueId);
+      removeShowcaseToken(asset.uniqueId);
     } else {
-      addShowcaseToken(uniqueId);
+      addShowcaseToken(asset.uniqueId);
+
+      if (isHiddenAsset) {
+        removeHiddenToken(asset);
+      }
     }
-  }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
+  }, [
+    addShowcaseToken,
+    isHiddenAsset,
+    isShowcaseAsset,
+    removeHiddenToken,
+    removeShowcaseToken,
+    asset,
+  ]);
 
   const handlePressShare = useCallback(() => {
+    const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.permalink;
+
     Share.share({
-      message: android
-        ? buildRainbowUrl(asset, accountENS, accountAddress)
-        : undefined,
+      message: android ? shareUrl : undefined,
       title: `Share ${buildUniqueTokenName(asset)} Info`,
-      url: buildRainbowUrl(asset, accountENS, accountAddress),
+      url: shareUrl,
     });
-  }, [accountAddress, accountENS, asset]);
+  }, [asset, isSupportedOnRainbowWeb, rainbowWebUrl]);
 
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
@@ -375,6 +424,9 @@ const UniqueTokenExpandedState = ({
       familyLink ? new URL(familyLink).hostname.replace(/^www\./, '') : null,
     [familyLink]
   );
+
+  const hideNftMarketplaceAction = isPoap || !slug;
+  const isSaleInfoSupported = getIsSaleInfoSupported(asset.network);
 
   return (
     <>
@@ -413,6 +465,7 @@ const UniqueTokenExpandedState = ({
         <ColorModeProvider value="darkTinted">
           <AccentColorProvider color={imageColor}>
             <ImagePreviewOverlay
+              enableZoom={ios}
               opacity={ensCoverOpacity}
               yPosition={yPosition}
             >
@@ -437,6 +490,7 @@ const UniqueTokenExpandedState = ({
                 // @ts-expect-error JavaScript component
                 sheetRef={sheetRef}
                 textColor={textColor}
+                uniqueId={asset.uniqueId}
                 yPosition={yPosition}
               />
               <Animated.View style={opacityStyle}>
@@ -453,11 +507,18 @@ const UniqueTokenExpandedState = ({
                                 'expanded_state.unique_expanded.showcase'
                               )}`}
                         </TextButton>
-                        <TextButton align="right" onPress={handlePressShare}>
-                          􀈂 {lang.t('button.share')}
-                        </TextButton>
+                        {isSupportedOnRainbowWeb || asset.permalink ? (
+                          <TextButton align="right" onPress={handlePressShare}>
+                            􀈂 {lang.t('button.share')}
+                          </TextButton>
+                        ) : null}
                       </Inline>
-                      <UniqueTokenExpandedStateHeader asset={asset} />
+                      <UniqueTokenExpandedStateHeader
+                        asset={asset}
+                        hideNftMarketplaceAction={hideNftMarketplaceAction}
+                        isSupportedOnRainbowWeb={isSupportedOnRainbowWeb}
+                        rainbowWebUrl={rainbowWebUrl}
+                      />
                     </Stack>
                     {isNFT || isENS ? (
                       <Columns space="15px">
@@ -470,6 +531,8 @@ const UniqueTokenExpandedState = ({
                             )}`}
                             nftShadows
                             onPress={handlePressEdit}
+                            // @ts-expect-error JavaScript component
+                            testID="edit"
                             textColor={textColor}
                             weight="heavy"
                           />
@@ -479,15 +542,18 @@ const UniqueTokenExpandedState = ({
                             // @ts-expect-error JavaScript component
                             label={
                               hasSendButton
-                                ? `􀮶 ${lang.t(
-                                    'expanded_state.unique_expanded.opensea'
-                                  )}`
+                                ? `􀮶 ${marketplaceName}`
                                 : `􀮶 ${lang.t(
-                                    'expanded_state.unique_expanded.view_on_opensea'
+                                    'expanded_state.unique_expanded.view_on_marketplace_name',
+                                    {
+                                      marketplaceName,
+                                    }
                                   )}`
                             }
                             nftShadows
-                            onPress={handlePressOpensea}
+                            onPress={handlePressMarketplaceName}
+                            // @ts-expect-error JavaScript component
+                            testID="unique-expanded-state-send"
                             textColor={textColor}
                             weight="heavy"
                           />
@@ -502,10 +568,10 @@ const UniqueTokenExpandedState = ({
                         ) : null}
                       </Columns>
                     ) : null}
-                    {asset.network === AssetTypes.polygon ? (
+                    {asset.network !== Network.mainnet ? (
                       // @ts-expect-error JavaScript component
                       <L2Disclaimer
-                        assetType={AssetTypes.polygon}
+                        assetType={asset.network}
                         colors={colors}
                         hideDivider
                         isNft
@@ -519,8 +585,7 @@ const UniqueTokenExpandedState = ({
                       separator={<Divider color="divider20" />}
                       space={sectionSpace}
                     >
-                      {(isNFT || isENS) &&
-                      asset.network !== AssetTypes.polygon ? (
+                      {(isNFT || isENS) && isSaleInfoSupported ? (
                         <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                           bottom={android ? '15px' : '6px'}
                           top={android ? '10px' : '4px'}
@@ -538,10 +603,10 @@ const UniqueTokenExpandedState = ({
                             <ENSBriefTokenInfoRow
                               color={imageColor}
                               ensName={uniqueId}
-                              expiryDate={ensData?.registration.expiryDate}
+                              expiryDate={ensData?.registration?.expiryDate}
                               externalAvatarUrl={asset?.lowResUrl}
                               registrationDate={
-                                ensData?.registration.registrationDate
+                                ensData?.registration?.registrationDate
                               }
                               showExtendDuration={hasExtendDurationButton}
                             />
@@ -570,8 +635,10 @@ const UniqueTokenExpandedState = ({
                               <UniqueTokenAttributes
                                 {...asset}
                                 color={imageColor}
-                                hideOpenSeaAction={isPoap}
-                                slug={asset.collection.slug}
+                                hideNftMarketplaceAction={
+                                  hideNftMarketplaceAction
+                                }
+                                slug={slug}
                               />
                             </Section>
                           ) : null}
@@ -624,21 +691,13 @@ const UniqueTokenExpandedState = ({
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}
                               isPrimary={ensProfile?.isPrimaryName}
+                              isProfilesEnabled={profilesEnabled}
                               isReadOnlyWallet={isReadOnlyWallet}
                               isSetNameEnabled={ensProfile?.isSetNameEnabled}
                               name={cleanENSName}
                               owner={ensData?.owner}
                               registrant={ensData?.registrant}
                             />
-                          </Section>
-                          <Section
-                            paragraphSpace={{ custom: 22 }}
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.advanced'
-                            )}`}
-                            titleEmoji="👽"
-                          >
-                            <AdvancedSection resolver={ensData?.resolver} />
                           </Section>
                         </>
                       )}

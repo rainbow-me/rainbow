@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
-import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { times } from '@rainbow-me/helpers/utilities';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, padding, position } from '@rainbow-me/styles';

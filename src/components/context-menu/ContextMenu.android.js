@@ -1,8 +1,8 @@
-import { omit } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import { padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
@@ -60,7 +60,9 @@ export default function ContextMenu({
           onPress={handleShowActionSheet}
           radiusAndroid={20}
         >
-          {children || <ContextButton {...omit(props, ActionSheetProps)} />}
+          {children || (
+            <ContextButton {...omitFlatten(props, ActionSheetProps)} />
+          )}
         </TouchableWithoutFeedback>
       )}
     </Fragment>

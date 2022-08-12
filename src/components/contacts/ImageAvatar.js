@@ -45,6 +45,11 @@ const sizeConfigs = (colors, isDarkMode) => ({
     dimensions: 20,
     textSize: 'small',
   },
+  smedium: {
+    dimensions: 36,
+    shadow: [[0, 4, android ? 5 : 12, colors.shadow, 0.4]],
+    textSize: 'large',
+  },
 });
 
 const Avatar = styled(ImgixImage)(({ dimensions }) => ({
@@ -85,5 +90,6 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
     </ShadowStack>
   );
 };
+const arePropsEqual = (prev, next) => prev.image === next.image;
 
-export default React.memo(ImageAvatar);
+export default React.memo(ImageAvatar, arePropsEqual);

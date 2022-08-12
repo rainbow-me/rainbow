@@ -12,45 +12,40 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { ENS_SECONDS_WAIT } from '@rainbow-me/helpers/ens';
-import { useDimensions } from '@rainbow-me/hooks';
 
 const WaitENSConfirmationContent = ({
   seconds,
 }: {
   seconds: number | undefined;
-}) => {
-  const { isSmallPhone } = useDimensions();
-
-  return (
-    <>
-      <Box paddingTop="24px">
-        <StepIndicator currentStep={2} steps={3} />
-      </Box>
-      <Rows alignHorizontal="center">
-        <Row>
-          <Box flexGrow={1} justifyContent="center">
-            <Inset horizontal={isSmallPhone ? '34px' : '42px'}>
-              <Stack space="34px">
-                <LargeCountdownClock
-                  initialSeconds={ENS_SECONDS_WAIT}
-                  onFinished={() => {}}
-                  seconds={seconds || ENS_SECONDS_WAIT}
-                />
-                <Stack alignHorizontal="center" space="19px">
-                  <Heading size="23px">
-                    {lang.t('profiles.confirm.wait_one_minute')}
-                  </Heading>
-                  <Text align="center" color="secondary60" weight="semibold">
-                    {lang.t('profiles.confirm.wait_one_minute_description')}
-                  </Text>
-                </Stack>
+}) => (
+  <>
+    <Box paddingTop="24px">
+      <StepIndicator currentStep={2} steps={3} />
+    </Box>
+    <Rows alignHorizontal="center">
+      <Row>
+        <Box flexGrow={1} justifyContent="center">
+          <Inset horizontal="34px">
+            <Stack space="34px">
+              <LargeCountdownClock
+                initialSeconds={ENS_SECONDS_WAIT}
+                onFinished={() => {}}
+                seconds={seconds || ENS_SECONDS_WAIT}
+              />
+              <Stack alignHorizontal="center" space="19px">
+                <Heading size="23px">
+                  {lang.t('profiles.confirm.wait_one_minute')}
+                </Heading>
+                <Text align="center" color="secondary60" weight="semibold">
+                  {lang.t('profiles.confirm.wait_one_minute_description')}
+                </Text>
               </Stack>
-            </Inset>
-          </Box>
-        </Row>
-      </Rows>
-    </>
-  );
-};
+            </Stack>
+          </Inset>
+        </Box>
+      </Row>
+    </Rows>
+  </>
+);
 
 export default WaitENSConfirmationContent;

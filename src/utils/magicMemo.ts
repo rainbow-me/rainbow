@@ -12,7 +12,7 @@ type DeepPartial<T> = {
 
 export default function magicMemo<C extends ComponentType<any>>(
   Component: C,
-  deps: string | string[], // This type should ideally be constrained to prop keys, but we sometimes pass in path strings like `"prop.object.key"`
+  deps: string | string[], // This type should be constrained to prop keys
   customComparisonFunc?: (props: DeepPartial<ComponentProps<C>>) => boolean
 ): MemoExoticComponent<C> {
   return React.memo(Component, (prev, next) => {
@@ -24,10 +24,6 @@ export default function magicMemo<C extends ComponentType<any>>(
       return (
         customComparisonFunc(magicPrev) === customComparisonFunc(magicNext)
       );
-    }
-
-    if (magicDeps.length === 1) {
-      return magicPrev === magicNext;
     }
 
     return isEqual(magicPrev, magicNext);

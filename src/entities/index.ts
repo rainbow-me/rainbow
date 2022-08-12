@@ -34,9 +34,10 @@ export type {
   SavingsAsset,
   ParsedAddressAsset,
   RainbowToken,
-  UniswapCurrency,
+  SwappableAsset,
   ZerionAsset,
   ZerionAssetFallback,
+  ZerionAssetPrice,
 } from './tokens';
 export type {
   GasFeeType,

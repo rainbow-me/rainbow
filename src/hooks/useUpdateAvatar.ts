@@ -1,10 +1,13 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import { useWallets, useWebData } from './index';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
+import { getNextEmojiWithColor } from '@rainbow-me/utils/profileUtils';
 
 export default function useUpdateAvatar() {
+  const { accountSymbol } = useAccountProfile();
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
@@ -38,5 +41,10 @@ export default function useUpdateAvatar() {
     [accountAddress, dispatch, selectedWallet.id, updateWebProfile, wallets]
   );
 
-  return { saveInfo };
+  const setNextEmoji = useCallback(() => {
+    const { emoji, color } = getNextEmojiWithColor(accountSymbol);
+    saveInfo(color, emoji);
+  }, [accountSymbol, saveInfo]);
+
+  return { saveInfo, setNextEmoji };
 }

@@ -354,6 +354,7 @@ export default class SendAssetList extends React.Component {
             this.changeOpenTab(item.familyId);
           }}
           testID={`${item.name}-family-header`}
+          theme={this.props.theme}
           title={item.name}
         />
         {this.state.openCards[item.familyId] && this.mapTokens(item.data)}

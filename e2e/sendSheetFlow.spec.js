@@ -66,9 +66,9 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-modal');
+    await Helpers.checkIfVisible('settings-sheet');
     await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-modal');
+    await Helpers.checkIfVisible('developer-settings-sheet');
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -116,7 +116,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should do nothing on typing jibberish send address', async () => {
     await Helpers.typeText('send-asset-form-field', 'gvuabefhiwdnomks', false);
-    await Helpers.checkIfNotVisible('send-asset-ETH');
+    await Helpers.checkIfNotVisible('send-asset-ETH-token');
   });
 
   it('Should show show Contact Button & Asset List on valid public address', async () => {
@@ -159,13 +159,13 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should go back to Asset List after tapping on savings asset', async () => {
-    await Helpers.waitAndTap('send-asset-form-cDAI');
+    await Helpers.waitAndTap('send-asset-form-cDAI-token');
     await Helpers.checkIfVisible('send-asset-list');
   });*/
 
   it('Should display Asset Form after tapping on asset', async () => {
-    await Helpers.checkIfVisible('send-asset-DAI');
-    await Helpers.waitAndTap('send-asset-DAI');
+    await Helpers.checkIfVisible('send-asset-DAI-token');
+    await Helpers.waitAndTap('send-asset-DAI-token');
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
@@ -193,8 +193,8 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should prepend a 0 to quantity field on input of .', async () => {
-    await Helpers.waitAndTap('send-asset-form-DAI');
-    await Helpers.waitAndTap('send-asset-DAI');
+    await Helpers.waitAndTap('send-asset-form-DAI-token');
+    await Helpers.waitAndTap('send-asset-DAI-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText('selected-asset-quantity-field-input', '.', true);
@@ -202,8 +202,8 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should only show a max of 2 decimals in quantity field', async () => {
-    await Helpers.waitAndTap('send-asset-form-DAI');
-    await Helpers.waitAndTap('send-asset-ETH');
+    await Helpers.waitAndTap('send-asset-form-DAI-token');
+    await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText(
@@ -212,12 +212,12 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.waitAndTap('send-asset-form-ETH');
+    await Helpers.waitAndTap('send-asset-form-ETH-token');
   });
 
   it('Should display Asset Form after tapping on asset ETH', async () => {
-    await Helpers.checkIfVisible('send-asset-ETH');
-    await Helpers.waitAndTap('send-asset-ETH');
+    await Helpers.checkIfVisible('send-asset-ETH-token');
+    await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
@@ -241,8 +241,8 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should prepend a 0 to quantity field on input of . ETH', async () => {
-    await Helpers.waitAndTap('send-asset-form-ETH');
-    await Helpers.waitAndTap('send-asset-ETH');
+    await Helpers.waitAndTap('send-asset-form-ETH-token');
+    await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText('selected-asset-quantity-field-input', '.', true);
@@ -250,8 +250,8 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should only show a max of 2 decimals in quantity field ETH', async () => {
-    await Helpers.waitAndTap('send-asset-form-ETH');
-    await Helpers.waitAndTap('send-asset-ETH');
+    await Helpers.waitAndTap('send-asset-form-ETH-token');
+    await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText(
@@ -260,7 +260,7 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.waitAndTap('send-asset-form-ETH');
+    await Helpers.waitAndTap('send-asset-form-ETH-token');
   });
 
   it('Should show Add Contact Screen after tapping Add Contact Button', async () => {

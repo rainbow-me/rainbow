@@ -1,17 +1,11 @@
 import Clipboard from '@react-native-community/clipboard';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { pick, startCase, toLower } from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import startCase from 'lodash/startCase';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { FloatingEmojis } from '../floating-emojis';
+import { analytics } from '@rainbow-me/analytics';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
@@ -20,6 +14,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
@@ -175,7 +170,7 @@ export default function TransactionList({
           : abbreviations.address(contactAddress, 4, 10);
       }
 
-      const isOutgoing = toLower(from) === toLower(accountAddress);
+      const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
       const canBeResubmitted = isOutgoing && !minedAt;
       const canBeCancelled =
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;
@@ -309,15 +304,19 @@ export default function TransactionList({
   );
 
   const data = useMemo(() => {
-    const requestsNative = requests.map(request =>
-      pick(request, [
+    const requestsNative = requests.map(request => {
+      const { displayDetails: { timestampInMs } = {} } = request;
+      const pickProps = pickShallow(request, [
         'clientId',
         'dappName',
         'imageUrl',
         'payloadId',
-        'displayDetails.timestampInMs',
-      ])
-    );
+      ]);
+      if (timestampInMs) {
+        Object.assign(pickProps, { displayDetails: { timestampInMs } });
+      }
+      return pickProps;
+    });
     return {
       requests: requestsNative,
       transactions,

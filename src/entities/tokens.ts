@@ -1,7 +1,8 @@
+import { ChainId } from '@rainbow-me/swaps';
 import { AssetType } from './assetTypes';
 import { EthereumAddress } from '.';
 
-interface ZerionAssetPrice {
+export interface ZerionAssetPrice {
   value: number;
   relative_change_24h: number | null;
   changed_at: number;
@@ -12,6 +13,10 @@ export interface Asset {
   decimals: number;
   name: string;
   symbol: string;
+}
+
+export interface Token extends Asset {
+  chainId: ChainId;
 }
 
 export interface ZerionAsset {
@@ -80,7 +85,7 @@ export interface ParsedAddressAsset
   isNativeAsset?: boolean;
 }
 
-export interface UniswapCurrency extends ParsedAddressAsset {
+export interface SwappableAsset extends ParsedAddressAsset {
   native?: {
     price?: {
       amount?: string;
@@ -97,6 +102,9 @@ export interface RainbowToken extends Asset {
   isVerified?: boolean;
   shadowColor?: string;
   uniqueId: string;
+  type: string;
+  mainnet_address?: EthereumAddress;
+  networks?: any;
 }
 
 export interface IndexToken extends Asset {

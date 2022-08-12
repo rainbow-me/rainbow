@@ -12,7 +12,7 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
-import UnstoppableResolution from '@unstoppabledomains/resolution';
+import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 // @ts-expect-error – No TS definitions
 import { IS_TESTING } from 'react-native-dotenv';
@@ -183,6 +183,13 @@ export const isTestnetNetwork = (network: Network): boolean => {
   }
 };
 
+export const getFlashbotsProvider = async () => {
+  return new StaticJsonRpcProvider(
+    'https://rpc.flashbots.net',
+    Network.mainnet
+  );
+};
+
 /**
  * @desc Gets or constructs a web3 provider for the specified network.
  * @param network The network as a `Network` or string.
@@ -242,6 +249,14 @@ export const isHexString = (value: string): boolean => isEthersHexString(value);
  */
 export const toHex = (value: BigNumberish): string =>
   BigNumber.from(value).toHexString();
+
+/**
+ * Converts a number to a hex string without leading zeros.
+ * @param value The number.
+ * @return The hex string.
+ */
+export const toHexNoLeadingZeros = (value: BigNumberish): string =>
+  toHex(value).replace(/^0x0*/, '0x');
 
 /**
  * @desc Checks if a hex string, ignoring prefixes and suffixes.
@@ -395,7 +410,7 @@ export async function estimateGasWithPadding(
     logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
     return lastBlockGasLimit;
   } catch (error) {
-    logger.error('Error calculating gas limit with padding', error);
+    logger.debug('Error calculating gas limit with padding', error);
     return null;
   }
 }
@@ -492,15 +507,7 @@ export const resolveUnstoppableDomain = async (
   // This parameter doesn't line up with the `Resolution` type declaration,
   // but it can be casted to `any` as it does match the documentation here:
   // https://unstoppabledomains.github.io/resolution/v2.2.0/classes/resolution.html.
-  const resolution = new UnstoppableResolution({
-    blockchain: {
-      cns: {
-        network: 'mainnet',
-        url: rpcEndpoints[Network.mainnet],
-      },
-    },
-  } as any);
-
+  const resolution = new Resolution();
   const res = resolution
     .addr(domain, 'ETH')
     .then((address: string) => {
@@ -546,6 +553,7 @@ export const getTransferNftTransaction = async (
     | 'gasPrice'
     | 'gasLimit'
     | 'network'
+    | 'nonce'
     | 'maxFeePerGas'
     | 'maxPriorityFeePerGas'
   >
@@ -556,7 +564,7 @@ export const getTransferNftTransaction = async (
     throw new Error(`Invalid recipient "${transaction.to}"`);
   }
 
-  const { from } = transaction;
+  const { from, nonce } = transaction;
   const contractAddress = transaction.asset.asset_contract?.address;
   const data = await getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
@@ -565,6 +573,7 @@ export const getTransferNftTransaction = async (
     from,
     gasLimit: transaction.gasLimit?.toString(),
     network: transaction.network,
+    nonce,
     to: contractAddress,
     ...gasParams,
   };

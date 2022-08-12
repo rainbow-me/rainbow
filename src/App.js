@@ -1,6 +1,5 @@
 import './languages';
 import messaging from '@react-native-firebase/messaging';
-import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
@@ -11,14 +10,12 @@ import {
   InteractionManager,
   Linking,
   LogBox,
-  StatusBar,
   View,
 } from 'react-native';
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import {
   IS_TESTING,
-  REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
@@ -42,9 +39,13 @@ import {
 } from './config/debug';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
+import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
-import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
+import {
+  runFeatureUnlockChecks,
+  runWalletBackupStatusChecks,
+} from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
@@ -54,9 +55,11 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
+import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
@@ -65,8 +68,10 @@ import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { MainThemeProvider } from './theme/ThemeContext';
+import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
+import { analytics } from '@rainbow-me/analytics';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
@@ -76,11 +81,10 @@ import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
-
-StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 // We need to disable React Navigation instrumentation for E2E tests
 // because detox doesn't like setTimeout calls that are used inside
@@ -131,6 +135,7 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
+
   initSentryAndCheckForFedoraMode();
 }
 
@@ -200,6 +205,11 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runWalletBackupStatusChecks();
+      if (ios) {
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => runFeatureUnlockChecks(), 2000);
+        });
+      }
     }
   }
 
@@ -214,11 +224,9 @@ class App extends Component {
 
   identifyFlow = async () => {
     const address = await loadAddress();
-    if (address) {
-      this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-    } else {
-      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
-    }
+    const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
+    this.setState({ initialRoute });
+    PerformanceContextMap.set('initialRoute', initialRoute);
   };
 
   async handleTokenListUpdate() {
@@ -260,14 +268,6 @@ class App extends Component {
       analytics.identify(identifier);
       analytics.track('First App Open');
     }
-
-    await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
-      ios: {
-        trackDeepLinks: true,
-      },
-      trackAppLifecycleEvents: true,
-      trackAttributionData: true,
-    });
   };
 
   handleAppStateChange = async nextAppState => {
@@ -292,13 +292,20 @@ class App extends Component {
   };
 
   handleTransactionConfirmed = tx => {
-    const network = tx.network || networkTypes.mainnet;
+    const network = tx.chainId
+      ? ethereumUtils.getNetworkFromChainId(tx.chainId)
+      : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
     const updateBalancesAfter = (timeout, isL2, network) => {
       setTimeout(() => {
         logger.log('Reloading balances for network', network);
         if (isL2) {
-          store.dispatch(explorerInitL2(network));
+          if (tx.internalType === TransactionType.trade) {
+            store.dispatch(additionalDataUpdateL2AssetBalance(tx));
+          } else if (tx.internalType !== TransactionType.authorize) {
+            // for swaps, we don't want to trigger update balances on unlock txs
+            store.dispatch(explorerInitL2(network));
+          }
         } else {
           store.dispatch(
             fetchOnchainBalances({ keepPolling: false, withPrices: false })

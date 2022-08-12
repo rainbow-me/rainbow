@@ -2,7 +2,11 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import AsyncStorage from '@react-native-community/async-storage';
+import {
+  ChainId,
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
+} from '@rainbow-me/swaps';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
@@ -14,22 +18,20 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
-import { isEmpty, isString, replace, toLower } from 'lodash';
-import {
-  Alert,
-  InteractionManager,
-  Linking,
-  NativeModules,
-} from 'react-native';
+import lang from 'i18n-js';
+import { isEmpty, isString, replace } from 'lodash';
+import { InteractionManager, Linking, NativeModules } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
   ParsedAddressAsset,
+  RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
 } from '@rainbow-me/entities';
@@ -111,7 +113,8 @@ const getNativeAssetForNetwork = async (
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
-  let differentWallet = toLower(address) !== toLower(accountAddress);
+  let differentWallet =
+    address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
@@ -122,9 +125,19 @@ const getNativeAssetForNetwork = async (
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
-      if (network === Network.polygon) {
-        nativeAsset.mainnet_address = mainnetAddress;
-        nativeAsset.address = MATIC_POLYGON_ADDRESS;
+      switch (network) {
+        case Network.polygon:
+          nativeAsset.mainnet_address = mainnetAddress;
+          nativeAsset.address = MATIC_POLYGON_ADDRESS;
+          break;
+        case Network.optimism:
+          nativeAsset.mainnet_address = ETH_ADDRESS;
+          nativeAsset.address = OPTIMISM_ETH_ADDRESS;
+          break;
+        case Network.arbitrum:
+          nativeAsset.mainnet_address = ETH_ADDRESS;
+          nativeAsset.address = ARBITRUM_ETH_ADDRESS;
+          break;
       }
       const balance = await getOnchainAssetBalance(
         nativeAsset,
@@ -149,14 +162,14 @@ const getAsset = (
   accountAssets: Record<string, ParsedAddressAsset>,
   uniqueId: EthereumAddress = ETH_ADDRESS
 ) => {
-  const loweredUniqueId = toLower(uniqueId);
+  const loweredUniqueId = uniqueId.toLowerCase();
   return accountAssets[loweredUniqueId];
 };
 
 const getAccountAsset = (
-  uniqueId: EthereumAddress
+  uniqueId: EthereumAddress | undefined
 ): ParsedAddressAsset | undefined => {
-  const loweredUniqueId = toLower(uniqueId);
+  const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
   const accountAsset = store.getState().data?.accountAssetsData?.[
     loweredUniqueId
   ];
@@ -267,7 +280,7 @@ export const checkWalletEthZero = () => {
  * @param  {String} hex
  * @return {String}
  */
-const removeHexPrefix = (hex: string) => replace(toLower(hex), '0x', '');
+const removeHexPrefix = (hex: string) => replace(hex.toLowerCase(), '0x', '');
 
 /**
  * @desc pad string to specific width and padding
@@ -296,6 +309,24 @@ const getDataString = (func: string, arrVals: string[]) => {
 };
 
 /**
+ * @desc get network string from asset type
+ * @param  {String} type
+ */
+const getNetworkFromType = (type: string) => {
+  return type === 'token' ? Network.mainnet : (type as Network);
+};
+
+/**
+ * @desc get chainId from asset type
+ * @param  {String} type
+ */
+const getChainIdFromType = (type: string) => {
+  return getChainIdFromNetwork(
+    type === 'token' ? Network.mainnet : (type as Network)
+  );
+};
+
+/**
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
@@ -319,7 +350,9 @@ const getNetworkNameFromChainId = (chainId: number): string | undefined => {
  * @param  {String} network
  */
 const getChainIdFromNetwork = (network: Network): number => {
-  const chainData = chains.find(chain => chain.network === network);
+  const chainData = chains.find(
+    chain => chain.network === network?.toLowerCase()
+  );
   return chainData?.chain_id ?? 1;
 };
 
@@ -438,13 +471,13 @@ const checkIfUrlIsAScam = async (url: string) => {
   try {
     const { hostname } = new URL(url);
     const exceptions = ['twitter.com'];
-    if (exceptions.includes(toLower(hostname))) {
+    if (exceptions.includes(hostname?.toLowerCase())) {
       return false;
     }
     const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
     const { result } = await request.json();
     const found = result.find(
-      (s: any) => toLower(s.name) === toLower(hostname)
+      (s: any) => s?.name?.toLowerCase() === hostname?.toLowerCase()
     );
     if (found) {
       return true;
@@ -560,7 +593,7 @@ async function parseEthereumUrl(data: string) {
   try {
     ethUrl = parse(data);
   } catch (e) {
-    Alert.alert('Invalid ethereum url');
+    Alert.alert(lang.t('wallet.alerts.invalid_ethereum_url'));
     return;
   }
 
@@ -582,8 +615,8 @@ async function parseEthereumUrl(data: string) {
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
-        'Ooops!',
-        `Looks like you don't have that asset in your wallet...`
+        lang.t('wallet.alerts.ooops'),
+        lang.t('wallet.alerts.dont_have_asset_in_wallet')
       );
       return;
     }
@@ -596,8 +629,8 @@ async function parseEthereumUrl(data: string) {
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
-        'Ooops!',
-        `Looks like you don't have that asset in your wallet...`
+        lang.t('wallet.alerts.ooops'),
+        lang.t('wallet.alerts.dont_have_asset_in_wallet')
       );
       return;
     }
@@ -609,7 +642,7 @@ async function parseEthereumUrl(data: string) {
         asset.decimals
       );
   } else {
-    Alert.alert('This action is currently not supported :(');
+    Alert.alert(lang.t('wallet.alerts.this_action_not_supported'));
     return;
   }
 
@@ -617,7 +650,7 @@ async function parseEthereumUrl(data: string) {
 
   InteractionManager.runAfterInteractions(() => {
     const params = { address, asset: assetWithPrice, nativeAmount };
-    if (isNativeStackAvailable || android) {
+    if (isNativeStackAvailable) {
       Navigation.handleAction(Routes.SEND_FLOW, {
         params,
         screen: Routes.SEND_SHEET,
@@ -675,6 +708,49 @@ const calculateL1FeeOptimism = async (
   }
 };
 
+const getMultichainAssetAddress = (
+  asset: RainbowToken,
+  network: Network
+): EthereumAddress => {
+  const address = asset?.mainnet_address || asset?.address;
+  let realAddress =
+    address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
+      ? ETH_ADDRESS
+      : address;
+
+  if (
+    network === Network.optimism &&
+    address.toLowerCase() === OPTIMISM_ETH_ADDRESS
+  ) {
+    realAddress = ETH_ADDRESS;
+  } else if (
+    network === Network.arbitrum &&
+    address.toLowerCase() === ARBITRUM_ETH_ADDRESS
+  ) {
+    realAddress = ETH_ADDRESS;
+  } else if (
+    network === Network.polygon &&
+    address.toLowerCase() === MATIC_POLYGON_ADDRESS
+  ) {
+    realAddress = MATIC_POLYGON_ADDRESS;
+  }
+
+  return realAddress;
+};
+
+const getBasicSwapGasLimit = (chainId: number) => {
+  switch (chainId) {
+    case ChainId.arbitrum:
+      return ethUnits.basic_swap_arbitrum;
+    case ChainId.polygon:
+      return ethUnits.basic_swap_polygon;
+    case ChainId.optimism:
+      return ethUnits.basic_swap_optimism;
+    default:
+      return ethUnits.basic_swap;
+  }
+};
+
 export default {
   calculateL1FeeOptimism,
   checkIfUrlIsAScam,
@@ -686,15 +762,19 @@ export default {
   getAsset,
   getAssetPrice,
   getBalanceAmount,
+  getBasicSwapGasLimit,
   getBlockExplorer,
   getChainIdFromNetwork,
+  getChainIdFromType,
   getDataString,
   getEtherscanHostForNetwork,
   getEthPriceUnit,
   getHash,
   getMaticPriceUnit,
+  getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
+  getNetworkFromType,
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,

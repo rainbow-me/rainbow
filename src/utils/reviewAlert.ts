@@ -1,5 +1,7 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import { Alert, Linking, NativeModules } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import lang from 'i18n-js';
+import { Linking, NativeModules } from 'react-native';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 const { RainbowRequestReview } = NativeModules;
 
 export const AppleReviewAddress =
@@ -29,8 +31,8 @@ export default async function maybeReviewAlert() {
   AsyncStorage.setItem(REVIEW_ASKED_KEY, Date.now().toString());
 
   Alert.alert(
-    `Are you enjoying Rainbow? 🥰`,
-    'Leave a review on the App Store!',
+    lang.t('review.alert.are_you_enjoying_rainbow'),
+    lang.t('review.alert.leave_a_review'),
     [
       {
         onPress: () => {
@@ -44,10 +46,10 @@ export default async function maybeReviewAlert() {
             }
           });
         },
-        text: 'Yes',
+        text: lang.t('review.alert.yes'),
       },
       {
-        text: 'No',
+        text: lang.t('review.alert.no'),
       },
     ]
   );

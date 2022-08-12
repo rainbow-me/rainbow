@@ -18,7 +18,7 @@ import {
 import {
   useContacts,
   useDimensions,
-  useENSProfileImages,
+  useENSAvatar,
   useRainbowProfile,
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
@@ -100,7 +100,7 @@ const ContactRow = (
 
   const [ensName, setENSName] = useState(initialENSName);
 
-  const { data: images } = useENSProfileImages(ensName, {
+  const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: profilesEnabled && Boolean(ensName),
   });
 
@@ -145,7 +145,7 @@ const ContactRow = (
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 
-  const imageAvatar = profilesEnabled ? images?.avatarUrl : image;
+  const imageAvatar = profilesEnabled ? ensAvatar?.imageUrl : image;
 
   return (
     <ButtonPressAnimation

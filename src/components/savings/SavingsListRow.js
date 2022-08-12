@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
@@ -14,6 +13,7 @@ import { Centered, Row } from '../layout';
 import APYPill from './APYPill';
 import SavingsListRowAnimatedNumber from './SavingsListRowAnimatedNumber';
 import SavingsListRowEmptyState from './SavingsListRowEmptyState';
+import { analytics } from '@rainbow-me/analytics';
 import {
   calculateAPY,
   calculateCompoundInterestInDays,
@@ -154,6 +154,7 @@ const SavingsListRow = ({
       onPress={onButtonPress}
       overflowMargin={10}
       scaleTo={0.96}
+      testID={`savings-list-row-${underlying?.symbol}`}
     >
       <Centered direction="column" marginBottom={15}>
         <SavingsListRowShadowStack deviceWidth={deviceWidth}>

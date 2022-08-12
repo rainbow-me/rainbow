@@ -1,6 +1,5 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { findIndex } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -324,7 +323,7 @@ function RecyclerAssetList({
   const coinDividerIndex = useMemo<number>(() => {
     const hasCoinDivider = items.some(({ item }) => item?.coinDivider);
     if (hasCoinDivider) {
-      return findIndex(items, ({ item }) => item?.coinDivider);
+      return items.findIndex(({ item }) => item?.coinDivider);
     }
     return -1;
   }, [items]);
@@ -449,15 +448,13 @@ function RecyclerAssetList({
 
         // Index is type index not some single row index so should describe one kind of object
 
-        const balancesIndex = findIndex(
-          sections,
+        const balancesIndex = sections.findIndex(
           ({ name }) => name === 'balances'
         );
-        const collectiblesIndex = findIndex(
-          sections,
+        const collectiblesIndex = sections.findIndex(
           ({ name }) => name === 'collectibles'
         );
-        const poolsIndex = findIndex(sections, ({ name }) => name === 'pools');
+        const poolsIndex = sections.findIndex(({ name }) => name === 'pools');
 
         if (sectionsIndices.includes(index)) {
           if (index === sectionsIndices[poolsIndex]) {

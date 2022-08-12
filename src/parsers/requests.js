@@ -23,10 +23,7 @@ export const getRequestDisplayDetails = (
   nativeCurrency,
   dappNetwork
 ) => {
-  let timestampInMs = Date.now();
-  if (payload.id) {
-    timestampInMs = getTimestampFromPayload(payload);
-  }
+  const timestampInMs = Date.now();
   if (
     payload.method === SEND_TRANSACTION ||
     payload.method === SIGN_TRANSACTION
@@ -190,6 +187,3 @@ const getTransactionDisplayDetails = (
 
   return null;
 };
-
-const getTimestampFromPayload = payload =>
-  parseInt(payload?.id.toString().slice(0, -3), 10);

@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { isHexString } from '../../handlers/web3';
-import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
@@ -48,14 +47,23 @@ const formatValue = value =>
     : value;
 
 const AddressField = (
-  { address, autoFocus, editable, name, onChange, onFocus, testID, ...props },
+  {
+    address,
+    autoFocus,
+    editable,
+    name,
+    isValid,
+    onChangeText,
+    onFocus,
+    testID,
+    ...props
+  },
   ref
 ) => {
   const { isTinyPhone } = useDimensions();
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
-  const [inputValue, setInputValue] = useState(address || '');
-  const [isValid, setIsValid] = useState(false);
+  const [inputValue, setInputValue] = useState(address ?? '');
 
   const expandAbbreviatedClipboard = useCallback(() => {
     if (clipboard === abbreviations.formatAddressForDisplay(address)) {
@@ -63,26 +71,21 @@ const AddressField = (
     }
   }, [address, clipboard, setClipboard]);
 
-  const validateAddress = useCallback(async address => {
-    const newIsValid = await checkIsValidAddressOrDomain(address);
-    return setIsValid(newIsValid);
-  }, []);
-
-  const handleChange = useCallback(
-    ({ nativeEvent: { text } }) => {
-      onChange(text);
-      validateAddress(text);
+  const handleChangeText = useCallback(
+    text => {
       expandAbbreviatedClipboard();
+      setInputValue(text);
+      onChangeText(text);
     },
-    [expandAbbreviatedClipboard, onChange, validateAddress]
+    [setInputValue, expandAbbreviatedClipboard, onChangeText]
   );
 
   useEffect(() => {
     if (name !== inputValue || name !== address) {
       setInputValue(name);
-      validateAddress(address);
     }
-  }, [address, editable, inputValue, name, validateAddress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, editable, name]);
 
   return (
     <Row flex={1}>
@@ -92,8 +95,7 @@ const AddressField = (
         color={isValid ? colors.appleBlue : colors.dark}
         editable={editable}
         onBlur={expandAbbreviatedClipboard}
-        onChange={handleChange}
-        onChangeText={setInputValue}
+        onChangeText={handleChangeText}
         onFocus={onFocus}
         ref={ref}
         testID={testID}

@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -11,6 +10,7 @@ import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
+import { analytics } from '@rainbow-me/analytics';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
@@ -86,7 +86,7 @@ export default function BackupConfirmPasswordStep() {
   const walletId = params?.walletId || selectedWallet.id;
 
   const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_MODAL
+    Routes.SETTINGS_SHEET
   );
 
   useEffect(() => {

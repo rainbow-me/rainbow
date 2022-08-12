@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext } from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import {
@@ -16,6 +16,7 @@ import useAppVersion from '../../hooks/useAppVersion';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import UserDevSection from './UserDevSection';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Divider } from '@rainbow-me/design-system';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import {
@@ -72,7 +73,7 @@ const DevSection = () => {
       logger.log('connected to hardhat', ready);
     } catch (e) {
       await web3SetHttpProvider(networkTypes.mainnet);
-      logger.log('error connecting to hardhat');
+      logger.log('error connecting to hardhat', e);
     }
     navigate(Routes.PROFILE_SCREEN);
     dispatch(explorerInit());
@@ -93,11 +94,11 @@ const DevSection = () => {
   const syncCodepush = useCallback(async () => {
     const isUpdate = !!(await codePush.checkForUpdate());
     if (!isUpdate) {
-      Alert.alert('No update');
+      Alert.alert(lang.t('developer_settings.no_update'));
     } else {
       // dismissing not to fuck up native nav structure
       navigate(Routes.PROFILE_SCREEN);
-      Alert.alert('Installing update');
+      Alert.alert(lang.t('developer_settings.installing_update'));
 
       const result = await codePush.sync({
         installMode: codePush.InstallMode.IMMEDIATE,
@@ -165,7 +166,7 @@ const DevSection = () => {
   const codePushVersion = useAppVersion()[1];
 
   return (
-    <ScrollView testID="developer-settings-modal">
+    <ScrollView testID="developer-settings-sheet">
       <ListItem
         label={`💥 ${lang.t('developer_settings.clear_async_storage')}`}
         onPress={AsyncStorage.clear}

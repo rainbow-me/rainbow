@@ -1,5 +1,4 @@
 import { subDays } from 'date-fns';
-import { omit } from 'lodash';
 import { Dispatch } from 'react';
 import { AppDispatch, AppGetState } from './store';
 import {
@@ -14,7 +13,8 @@ import {
   saveLocalENSRegistrations,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { NetworkTypes } from '@rainbow-me/helpers';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 
 const ENS_REGISTRATION_SET_CHANGED_RECORDS =
   'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';
@@ -351,7 +351,7 @@ export const removeRecordByKey = (key: string) => async (
   const registration = accountRegistrations[currentRegistrationName] || {};
   const registrationRecords = registration?.records || {};
 
-  const newRecords = omit(registrationRecords, key) as Records;
+  const newRecords = omitFlatten(registrationRecords, key as ENS_RECORDS);
 
   const updatedEnsRegistrationManagerForAccount = {
     registrations: {
@@ -381,15 +381,18 @@ export const saveCommitRegistrationParameters = (
     ensRegistration: { registrations, currentRegistrationName },
     settings: { accountAddress },
   } = getState();
+  const registrationName =
+    (registrationParameters as RegistrationParameters)?.name ||
+    currentRegistrationName;
   const lcAccountAddress = accountAddress.toLowerCase();
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
-  const registration = accountRegistrations[currentRegistrationName] || {};
+  const registration = accountRegistrations[registrationName] || {};
   const updatedEnsRegistrationManager = {
     registrations: {
       ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [currentRegistrationName]: {
+        [registrationName]: {
           ...registration,
           ...registrationParameters,
         },

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
-import { compact, startCase, toLower } from 'lodash';
-import React, { useCallback, useEffect } from 'react';
+import { compact, startCase } from 'lodash';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
@@ -31,6 +31,14 @@ import {
 const containerStyles = {
   paddingLeft: 19,
 };
+
+export const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 7;
+
+const contentStyles = android
+  ? {
+      height: CoinIconSize + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
+    }
+  : {};
 
 const BottomRow = ({ description, native, status, type }) => {
   const { colors } = useTheme();
@@ -98,7 +106,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       status === TransactionStatusTypes.sent;
     const showContactInfo = hasAddableContact(status, type);
 
-    const isOutgoing = toLower(from) === toLower(accountAddress);
+    const isOutgoing = from?.toLowerCase() === accountAddress.toLowerCase();
     const canBeResubmitted = isOutgoing && !minedAt;
     const canBeCancelled =
       canBeResubmitted && status !== TransactionStatusTypes.cancelling;
@@ -213,13 +221,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         address={mainnetAddress || item.address}
         bottomRowRender={BottomRow}
         containerStyles={containerStyles}
-        {...(android
-          ? {
-              contentStyles: {
-                height: CoinIconSize + 14,
-              },
-            }
-          : {})}
+        contentStyles={contentStyles}
         topRowRender={TopRow}
         type={item.network}
       />

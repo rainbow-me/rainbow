@@ -26,6 +26,7 @@ const fallbackTextStyles = {
 const FallbackImage = styled(ImageWithCachedMetadata)(
   ({
     size,
+    layoutSize,
     theme: { colors },
     shadowColor: color,
     shadowOffset: { height: y, width: x },
@@ -33,8 +34,8 @@ const FallbackImage = styled(ImageWithCachedMetadata)(
     shadowRadius: radius,
     showImage,
   }) => ({
-    height: size,
-    width: size,
+    height: layoutSize ?? size,
+    width: layoutSize ?? size,
     ...position.coverAsObject,
     ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
     backgroundColor: showImage ? colors.white : colors.transparent,
@@ -135,6 +136,7 @@ const CoinIconFallback = fallbackProps => {
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
         showImage={showImage}
+        {...(ios && { layoutSize: width })}
         size={ios ? getIconSize(width) : width}
       />
     </Centered>

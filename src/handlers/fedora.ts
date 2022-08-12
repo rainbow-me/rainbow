@@ -1,4 +1,4 @@
-import { Alert } from 'react-native';
+import lang from 'i18n-js';
 import codePush from 'react-native-code-push';
 import {
   // @ts-ignore
@@ -11,6 +11,7 @@ import {
   CODE_PUSH_DEPLOYMENT_KEY_IOS,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -61,20 +62,17 @@ export async function setDeploymentKey(key: string) {
   const isRainbowRelease = await checkIfRainbowRelease(key);
 
   if (!isRainbowRelease) {
-    Alert.alert(
-      'Fedora',
-      'Cannot verify the bundle! This might be a scam. Installation blocked.'
-    );
+    Alert.alert(lang.t('fedora.fedora'), lang.t('fedora.cannot_verify_bundle'));
     return;
   }
 
   Alert.alert(
-    'Fedora',
-    `This will override your bundle. Be careful. Are you a Rainbow employee?`,
+    lang.t('fedora.fedora'),
+    lang.t('fedora.this_will_override_bundle'),
     [
       {
         onPress: async () => {
-          Alert.alert('wait');
+          Alert.alert(lang.t('fedora.wait'));
 
           const result = await codePush.sync({
             deploymentKey: key,
@@ -86,14 +84,14 @@ export async function setDeploymentKey(key: string) {
             e => e[1] === result
           )?.[0];
 
-          Alert.alert(resultString || 'ERROR');
+          Alert.alert(resultString || lang.t('fedora.error'));
         },
-        text: 'Ok',
+        text: lang.t('button.ok'),
       },
       {
         onPress: () => {},
         style: 'cancel',
-        text: 'Cancel',
+        text: lang.t('button.cancel'),
       },
     ]
   );
@@ -101,7 +99,7 @@ export async function setDeploymentKey(key: string) {
 
 export function setOriginalDeploymentKey() {
   Navigation.handleAction(Routes.WALLET_SCREEN, {});
-  Alert.alert('wait');
+  Alert.alert(lang.t('fedora.wait'));
   codePush.clearUpdates();
   setTimeout(codePush.restartApp, 1000);
 }
@@ -112,7 +110,7 @@ const COPEPUSH_ANDROID_PREFFIX = 'update-android-';
 export function handleQRScanner(data: string): boolean {
   if (data.startsWith(COPEPUSH_IOS_PREFFIX)) {
     if (android) {
-      Alert.alert('Tried to use Android bundle');
+      Alert.alert(lang.t('deeplinks.tried_to_use_android'));
       return false;
     } else {
       setDeploymentKey(data.substring(COPEPUSH_IOS_PREFFIX.length));
@@ -122,7 +120,7 @@ export function handleQRScanner(data: string): boolean {
 
   if (data.startsWith(COPEPUSH_ANDROID_PREFFIX)) {
     if (ios) {
-      Alert.alert('Tried to use iOS bundle');
+      Alert.alert(lang.t('deeplinks.tried_to_use_ios'));
       return false;
     } else {
       setDeploymentKey(data.substring(COPEPUSH_ANDROID_PREFFIX.length));

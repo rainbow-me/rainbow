@@ -1,4 +1,6 @@
+import { useNavigation } from '@react-navigation/core';
 import { useCallback, useMemo } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import {
   useAccountProfile,
@@ -7,10 +9,12 @@ import {
   useInitializeWallet,
   useWallets,
 } from '@rainbow-me/hooks';
+import { cleanUpWalletKeys } from '@rainbow-me/model/wallet';
 import {
   addressSetSelected,
   walletsSetSelected,
 } from '@rainbow-me/redux/wallets';
+import Routes from '@rainbow-me/routes';
 import { doesWalletsContainAddress, logger } from '@rainbow-me/utils';
 
 export default function useWatchWallet({
@@ -25,7 +29,7 @@ export default function useWatchWallet({
   showImportModal?: boolean;
 }) {
   const dispatch = useDispatch();
-
+  const { goBack, navigate } = useNavigation();
   const { wallets } = useWallets();
 
   const watchingWallet = useMemo(() => {
@@ -45,7 +49,6 @@ export default function useWatchWallet({
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
-
         initializeWallet(null, null, false, false, null, null, null, true);
       } catch (e) {
         logger.log('error while switching account', e);
@@ -67,17 +70,37 @@ export default function useWatchWallet({
       handleSetSeedPhrase(ensName);
       handlePressImportButton(ensName, avatarUrl);
     } else {
-      deleteWallet();
-      // If we're deleting the selected wallet
-      // we need to switch to another one
-      if (primaryAddress && primaryAddress === accountAddress) {
-        const { wallet: foundWallet, key } =
-          doesWalletsContainAddress({
-            address: primaryAddress,
-            wallets,
-          }) || {};
-        if (foundWallet) {
-          await changeAccount(key, foundWallet.address);
+      // If there's more than 1 account
+      // it's deletable
+      const isLastAvailableWallet = Object.keys(wallets).find(key => {
+        const someWallet = wallets[key];
+        const otherAccount = someWallet.addresses.find(
+          (account: any) =>
+            account.visible && account.address !== accountAddress
+        );
+        if (otherAccount) {
+          return true;
+        }
+        return false;
+      });
+      await deleteWallet();
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
+      if (!isLastAvailableWallet) {
+        await cleanUpWalletKeys();
+        goBack();
+        navigate(Routes.WELCOME_SCREEN);
+      } else {
+        // If we're deleting the selected wallet
+        // we need to switch to another one
+        if (primaryAddress && primaryAddress === accountAddress) {
+          const { wallet: foundWallet, key } =
+            doesWalletsContainAddress({
+              address: primaryAddress,
+              wallets,
+            }) || {};
+          if (foundWallet) {
+            await changeAccount(key, foundWallet.address);
+          }
         }
       }
     }
@@ -88,9 +111,11 @@ export default function useWatchWallet({
     handlePressImportButton,
     avatarUrl,
     deleteWallet,
+    wallets,
+    goBack,
+    navigate,
     primaryAddress,
     accountAddress,
-    wallets,
     changeAccount,
   ]);
 

@@ -4,6 +4,10 @@ import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
+interface Dictionary<T> {
+  [index: string]: T;
+}
+type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
 type nativeCurrencyType = typeof supportedNativeCurrencies;
 
 export const abs = (value: BigNumberish): string =>
@@ -99,8 +103,9 @@ export const updatePrecisionToDisplay = (
   roundUp: boolean = false
 ): string => {
   if (!amount) return '0';
-  if (!nativePrice) return new BigNumber(amount).toFixed();
   const roundingMode = roundUp ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN;
+  if (!nativePrice)
+    return new BigNumber(amount).decimalPlaces(6, roundingMode).toFixed();
   const bnAmount = new BigNumber(amount);
   const significantDigitsOfNativePriceInteger = new BigNumber(nativePrice)
     .decimalPlaces(0, BigNumber.ROUND_DOWN)
@@ -337,9 +342,15 @@ export const convertAmountToBalanceDisplay = (
 export const convertAmountToPercentageDisplay = (
   value: BigNumberish,
   decimals: number = 2,
-  buffer?: number
+  buffer?: number,
+  skipDecimals?: boolean
 ): string => {
-  const display = handleSignificantDecimals(value, decimals, buffer);
+  const display = handleSignificantDecimals(
+    value,
+    decimals,
+    buffer,
+    skipDecimals
+  );
   return `${display}%`;
 };
 
@@ -408,4 +419,81 @@ export const fromWei = (number: BigNumberish): string =>
  */
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+export const flattenDeep = (arr: unknown[]): unknown[] =>
+  arr.flatMap(subArray =>
+    Array.isArray(subArray) ? flattenDeep(subArray) : subArray
+  );
+
+export const times = (n: number, fn: (i: number) => unknown) =>
+  Array.from({ length: n }, (_, i) => fn(i));
+
+/**
+ * @desc Creates an object composed of the omitted object properties by some predicate function.
+ */
+export const omitBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => !predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
+};
+
+/**
+ * @desc Can omit only flattened key, will not work with nested props like 'key.someObj.value'
+ */
+export const omitFlatten = <T extends object, K extends keyof T>(
+  obj: T | null | undefined,
+  keys: K[] | K
+): Omit<T, K> => {
+  const keysArr = Array.isArray(keys) ? keys : [keys];
+  const newObj: any = {};
+  const keysArrObj: any = {};
+  for (const key of keysArr) {
+    keysArrObj[key] = true;
+  }
+  for (const key in obj) {
+    if (!keysArrObj[key]) newObj[key] = obj[key];
+  }
+  return newObj;
+};
+
+/**
+ * Creates an object composed of the picked object properties.
+ * @param obj The source object
+ * @param paths The property paths to pick
+ */
+export const pickShallow = <T extends object, K extends keyof T>(
+  obj: T,
+  paths: K[]
+): Pick<T, K> => {
+  return paths.reduce((acc, key) => {
+    if (obj.hasOwnProperty(key)) {
+      acc[key] = obj[key];
+      return acc;
+    }
+    return acc;
+  }, {} as Pick<T, K>);
+};
+
+/**
+ * Creates an object composed of the picked object properties by some predicate function.
+ * @param obj The source object
+ * @param predicate The function invoked per property
+ */
+export const pickBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
 };

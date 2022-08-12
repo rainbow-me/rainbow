@@ -18,7 +18,6 @@ import {
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
@@ -37,6 +36,7 @@ import {
 } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
@@ -54,7 +54,7 @@ import {
 } from '@rainbow-me/handlers/web3';
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
@@ -130,7 +130,7 @@ export interface RainbowAccount {
   color: string;
   emoji: string;
   visible: boolean;
-  image: string | null;
+  image?: string | null;
 }
 
 export interface RainbowWallet {
@@ -140,10 +140,11 @@ export interface RainbowWallet {
   name: string;
   primary: boolean;
   type: EthereumWalletType;
-  backedUp: boolean;
-  backupFile?: string;
+  backedUp?: boolean;
+  backupFile?: string | null;
   backupDate?: string;
   backupType?: string;
+  damaged?: boolean;
 }
 
 export interface AllRainbowWallets {
@@ -624,8 +625,8 @@ export const createWallet = async (
         setTimeout(
           () =>
             Alert.alert(
-              'Oops!',
-              'Looks like you already imported this wallet!'
+              lang.t('wallet.new.alert.oops'),
+              lang.t('wallet.new.alert.looks_like_already_imported')
             ),
           1
         );
@@ -901,7 +902,11 @@ export const createWallet = async (
           ? (walletResult as Wallet)
           : new Wallet(pkey);
       setTimeout(() => {
-        dispatch(setIsWalletLoading(null));
+        // on android we need to call this logic in more specific places
+        if (ios || !isImported) {
+          // !imported = new wallet - then we use this logic for dismissing the loading state
+          dispatch(setIsWalletLoading(null));
+        }
       }, 2000);
 
       return ethersWallet;
@@ -941,8 +946,10 @@ export const getPrivateKey = async (
 
     if (pkey === -2) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
+        lang.t('wallet.authenticate.alert.error'),
+        lang.t(
+          'wallet.authenticate.alert.current_authentication_not_secure_enough'
+        )
       );
       return null;
     }
@@ -981,8 +988,10 @@ export const getSeedPhrase = async (
 
     if (seedPhraseData === -2) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
+        lang.t('wallet.authenticate.alert.error'),
+        lang.t(
+          'wallet.authenticate.alert.current_authentication_not_secure_enough'
+        )
       );
       return null;
     }

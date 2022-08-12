@@ -1,7 +1,7 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import ProfileModal from './profile/ProfileModal';
+import { analytics } from '@rainbow-me/analytics';
 import { useRainbowProfile } from '@rainbow-me/hooks';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';

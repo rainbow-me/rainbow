@@ -1,34 +1,40 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { TokenFamilyHeader } from '../../token-family';
-import { useOpenFamilies } from '@rainbow-me/hooks';
+import { useLatestCallback, useOpenFamilies } from '@rainbow-me/hooks';
+import { ThemeContextProps } from '@rainbow-me/theme';
+
+type Props = {
+  name: string;
+  total?: number;
+  image?: string;
+  theme: ThemeContextProps;
+  testID?: string;
+};
 
 export default React.memo(function WrappedTokenFamilyHeader({
   name,
   total,
   image,
-}: {
-  name: string;
-  total?: number;
-  image?: string;
-}) {
+  theme,
+  testID,
+}: Props) {
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
 
-  const handleToggle = useCallback(
-    () =>
-      updateOpenFamilies({
-        [name]: !isFamilyOpen,
-      }),
-    [name, isFamilyOpen, updateOpenFamilies]
+  const handleToggle = useLatestCallback(() =>
+    updateOpenFamilies({
+      [name]: !isFamilyOpen,
+    })
   );
 
   return (
-    // @ts-ignore
     <TokenFamilyHeader
       childrenAmount={total}
       familyImage={image}
       isOpen={isFamilyOpen}
       onPress={handleToggle}
+      testID={testID}
+      theme={theme}
       title={name}
     />
   );

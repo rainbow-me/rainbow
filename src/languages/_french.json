@@ -60,8 +60,8 @@
         "request_test_eth": "Request test ETH through the %{testnetName} faucet :)",
         "send_test_eth_from_another_source": "Send test ETH from another %{testnetName} wallet—or ask a friend! :)"
       },
-      "to_get_started_ios": "To get started, buy some ETH with Apple Pay :)",
       "to_get_started_android": "To get started, buy some ETH :)",
+      "to_get_started_ios": "To get started, buy some ETH with Apple Pay :)",
       "weekly_limit_reached": "Weekly limit reached :)",
       "yearly_limit_reached": "Yearly limit reached :)"
     },
@@ -78,6 +78,7 @@
       }
     },
     "back_up": {
+      "backup_deleted_successfully": "Backups Deleted Successfully :)",
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "manage_platform_backups": "Manage %{cloudPlatformName} Backups :)",
@@ -187,15 +188,17 @@
       "confirm_exchange": {
         "deposit": "Tenir pour Déposer",
         "enter_amount": "Entrez un Montant",
-        "fetching_details": "Fetching Details... :)",
+        "fetching_quote": "Fetching Quote :)",
         "insufficient_eth": "ETH Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "Insufficient Liquidity :)",
+        "insufficient_matic": "MATIC Insuffisants",
         "insufficient_token": "Insufficient %{tokenName} :)",
         "invalid_fee": "Frais Non Valides",
         "invalid_fee_lowercase": "Frais non valides",
         "loading": "Loading... :)",
         "review": "Review :)",
+        "submitting": "Submitting :)",
         "swap": "Tenir pour Swap",
         "swap_anyway": "Echanger quand Même",
         "symbol_balance_too_low": "%{symbol} balance too low :)",
@@ -204,6 +207,7 @@
       },
       "connect": "Connect :)",
       "connect_walletconnect": "Utiliser WalletConnect",
+      "continue": "Continue :)",
       "delete": "Effacer",
       "donate": "Donner de l’ETH",
       "done": "Terminé",
@@ -214,6 +218,7 @@
       "exchange_again": "Échanger encore",
       "exchange_search_placeholder": "Cherche",
       "go_back": "Retourner",
+      "go_back_undercase": "Go back :)",
       "got_it": "Got it :)",
       "hide": "Cacher",
       "hold_to_authorize": {
@@ -248,7 +253,8 @@
       "unhide": "Afficher",
       "unpin": "Détacher",
       "view": "Affichage",
-      "watch_this_wallet": "Watch this Wallet :)"
+      "watch_this_wallet": "Watch this Wallet :)",
+      "hidden": "Caché"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -258,6 +264,7 @@
         "balance_eth": "%{balanceEth} ETH :)"
       },
       "contacts_title": "Contacts :)",
+      "input_placeholder": "Nom",
       "my_wallets": "My wallets :)",
       "options": {
         "add": "Ajouter le contact",
@@ -269,20 +276,27 @@
       "send_header": "Send :)",
       "suggestions": "Suggestions :)",
       "to_header": "To :)",
-      "watching": "Watching :)",
-      "input_placeholder": "Nom"
+      "watching": "Watching :)"
+    },
+    "deeplinks": {
+      "couldnt_recognize_url": "Uh oh! We couldn’t recognize this URL! :)",
+      "tried_to_use_android": "Tried to use Android bundle :)",
+      "tried_to_use_ios": "Tried to use iOS bundle :)"
     },
     "developer_settings": {
       "alert": "Alert :)",
       "applied": "APPLIED :)",
       "backups_deleted_successfully": "Backups deleted successfully :)",
       "clear_async_storage": "Clear async storage :)",
-      "clear_mmkv_storage": "Clear MMKV storage :)",
-      "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
       "clear_image_cache": "Clear Image Cache :)",
+      "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
+      "clear_mmkv_storage": "Clear MMKV storage :)",
       "connect_to_hardhat": "Connect to hardhat :)",
       "crash_app_render_error": "Crash app (render error) :)",
+      "installing_update": "Installing update :)",
+      "no_update": "No update :)",
       "not_applied": "NOT APPLIED :)",
+      "notifications_debug": "Notifications Debug :)",
       "remove_all_backups": "Remove all backups :)",
       "reset_keychain": "Reset Keychain :)",
       "restart_app": "Restart app :)",
@@ -291,6 +305,30 @@
       "sync_codepush": "Sync codepush, current: %{codePushVersion} :)"
     },
     "discover": {
+      "dpi": {
+        "title": "DeFi Pulse Index :)",
+        "body": "All the top decentralized finance tokens in one. Track the industry. :)",
+        "view": "View :)"
+      },
+      "ens_create_profile": {
+        "title": "Create your ENS profile :)",
+        "body": "Replace your wallet address with a profile owned entirely by you. :)"
+      },
+      "ens_search": {
+        "mini_title": "ENS :)",
+        "title_part_1": "Register a  :)",
+        "title_part_2": ".eth name :)"
+      },
+      "gas": {
+        "average": "Average :)",
+        "gwei": "Gwei :)",
+        "high": "High :)",
+        "loading": "Loading… :)",
+        "low": "Low :)",
+        "network_fees": "Network fees :)",
+        "surging": "Surging :)",
+        "very_low": "Very low :)"
+      },
       "lists": {
         "lists_title": "Lists :)",
         "this_list_is_empty": "This list is empty! :)"
@@ -302,7 +340,8 @@
       },
       "search": {
         "profiles": "Profiles :)",
-        "search_ethereum": "Search all of Ethereum :)"
+        "search_ethereum": "Search all of Ethereum :)",
+        "search_ethereum_short": "Search Ethereum :)"
       },
       "strategies": {
         "strategies_title": "Strategies :)",
@@ -350,14 +389,21 @@
       },
       "price_impact": {
         "losing_prefix": "Losing :)",
-        "small_market": "Small Market :)"
+        "small_market": "Small Market :)",
+        "label": "Possible loss :)"
       },
+      "source": {
+        "rainbow": "Auto :)",
+        "0x": "0x :)",
+        "1inch": "1inch :)"
+      },
+      "settings": "Settings :)",
+      "use_defaults": "Use Defaults :)",
+      "done": "Done :)",
+      "slippage_tolerance": "Slippage Tolerance :)",
+      "route_picker": "Route Swaps via :)",
+      "use_flashbots": "Use Flashbots :)",
       "swapping_for_prefix": "Swapping for :)",
-      "unverified_token": {
-        "go_back": "Go Back :)",
-        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens! :)",
-        "unverified_token_title": "Unverified Token :)"
-      },
       "view_details": "View Details :)"
     },
     "expanded_state": {
@@ -367,6 +413,8 @@
         "get_asset": "Get %{assetSymbol} :)",
         "market_cap": "Market cap :)",
         "read_more_button": "Read more :)",
+        "available_networks": "Available on %{availableNetworks} networks :)",
+        "available_network": "Available on the %{availableNetwork} network :)",
         "social": {
           "facebook": "Facebook :)",
           "homepage": "Homepage :)",
@@ -433,6 +481,7 @@
         "unicorn_one": "that unicorn one :)",
         "uniswap_v2": "Uniswap v2 :)",
         "view_on": "View on %{blockExplorerName} :)",
+        "network_switcher": "Swapping on the %{network} network :)",
         "swap_max_alert": {
           "title": "Are you sure? :)",
           "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}? :)",
@@ -445,7 +494,18 @@
         }
       },
       "swap_details": {
-        "review": "Review :)"
+        "exchange_rate": "Exchange rate :)",
+        "rainbow_fee": "Included Rainbow fee :)",
+        "review": "Review :)",
+        "show_details": "More details :)",
+        "hide_details": "Hide details :)",
+        "price_impact": "Difference in value :)",
+        "minimum_received": "Minimum received :)",
+        "maximum_sold": "Maximum sold :)",
+        "token_contract": "%{token} contract :)",
+        "number_of_exchanges": "%{number} Exchanges :)",
+        "input_exchange_rate": "1 %{inputSymbol} pour %{executionRate} %{outputSymbol}",
+        "output_exchange_rate": "1 %{outputSymbol} pour %{executionRate} %{inputSymbol}"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol} :)",
@@ -459,50 +519,69 @@
           "image_download_permission": "Image Download Permission :)",
           "nft_image": "NFT image :)",
           "your_permission_is_required": "Your permission is required to save images to your device :)"
-        },
-        "view_on_opensea": "View on OpenSea :)"
+        }
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName} :)",
-        "advanced": "Advanced :)",
         "attributes": "Attributes :)",
+        "collection_website": "Collection Website :)",
         "configuration": "Configuration :)",
         "copy": "Copy :)",
-        "edit": "Edit :)",
-        "manager": "Manager :)",
-        "owner": "Owner :)",
-        "expires_in": "Expires in :)",
-        "expires_on": "Expires on :)",
-        "set_primary_name": "Set as my ENS name :)",
-        "profile_info": "Profile Info :)",
-        "registrant": "Registrant :)",
-        "resolver": "Resolver",
-        "view_on_opensea": "View on Opensea :)",
-        "view_on_platform": "View on %{platform} :)",
-        "collection_website": "Collection Website :)",
         "copy_token_id": "Copy Token ID :)",
         "description": "Description :)",
         "discord": "Discord",
+        "edit": "Edit :)",
+        "expires_in": "Expires in :)",
+        "expires_on": "Expires on :)",
         "floor_price": "Floor price :)",
         "for_sale": "For sale :)",
         "in_showcase": "In Showcase :)",
         "last_sale_price": "Last sale price :)",
+        "manager": "Manager :)",
         "open_in_web_browser": "Open in Web Browser :)",
-        "opensea": "OpenSea",
+        "owner": "Owner :)",
+        "profile_info": "Profile Info :)",
         "properties": "Properties :)",
+        "registrant": "Registrant :)",
+        "resolver": "Resolver",
         "save_to_photos": "Save to Photos :)",
+        "set_primary_name": "Set as my ENS name :)",
         "share_token_info": "Share %{uniqueTokenName} Info :)",
         "showcase": "Showcase :)",
         "toast_added_to_showcase": "Added to showcase :)",
         "toast_removed_from_showcase": "Removed from showcase :)",
         "twitter": "Twitter",
-        "view_all_with_property": "View All With Property :)",
+        "view_all_with_property": "View All with Property :)",
         "view_collection": "View Collection :)",
         "view_on_block_explorer": "View on %{blockExplorerName} :)",
-        "view_on_web": "View on Web :)"
+        "view_on_marketplace_name": "View on %{marketplaceName} :)",
+        "view_on_platform": "View on %{platform} :)",
+        "view_on_web": "View on Web :)",
+        "hide": "Hide",
+        "unhide": "Unhide"
       }
     },
     "explain": {
+      "optimism_app_icon": {
+        "title": "You've unlocked\nRainbow 􀆄 Optimism :)",
+        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "button": "Snag the icon :)"
+      },
+      "output_disabled": {
+        "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
+        "title": "Enter %{inputToken} Instead :)",
+        "title_empty": "Choose a Token :)"
+      },
+      "available_networks": {
+        "text": "%{tokenSymbol} is also available on %{networks}. To get %{tokenSymbol} on these networks, use a Bridge like Hop. :)",
+        "title_plural": "Available on %{length} Networks :)",
+        "title_singular": "Available on the %{network} Network :)"
+      },
+      "optimism_app_icon": {
+        "title": "You've unlocked\nRainbow 􀆄 Optimism :)",
+        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "button": "Snag the icon :)"
+      },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum. :)",
         "title": "What's Arbitrum? :)"
@@ -554,7 +633,33 @@
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust. :)",
         "title": "Verified Tokens :)"
+      },
+      "insufficient_liquidity": {
+        "fragment1": "The exchanges don't have enough of the tokens you requested to complete this transaction. \n\n Still curious? :)",
+        "fragment2": "Read more :)",
+        "fragment3": " about AMMs and token liquidity. :)",
+        "title": "Insufficient Liquidity :)"
+      },
+      "unverified": {
+        "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
+        "fragment2": "token contract :)",
+        "fragment3": " and always do research to ensure that you interact with tokens you trust. :)",
+        "title": "%{symbol} is Unverified :)",
+        "go_back": "Go back :)"
+      },
+      "obtain_l2_asset": {
+        "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. \n\n Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? :)",
+        "fragment2": "Read more :)",
+        "fragment3": " about bridges. :)",
+        "title": "No Tokens on %{networkName} :)"
       }
+    },
+    "fedora": {
+      "cannot_verify_bundle": "Cannot verify the bundle! This might be a scam. Installation blocked. :)",
+      "error": "ERROR :)",
+      "fedora": "Fedora :)",
+      "this_will_override_bundle": "This will override your bundle. Be careful. Are you a Rainbow employee? :)",
+      "wait": "wait :)"
     },
     "fields": {
       "address": {
@@ -592,6 +697,12 @@
         "link_title": "portefeuille mobile WalletConnect"
       }
     },
+    "image_picker": {
+      "cancel": "Cancel :)",
+      "confirm": "Enable library access :)",
+      "message": "This allows Rainbow to use your photos from your library :)",
+      "title": "Rainbow would like to access your photos :)"
+    },
     "input": {
       "asset_amount": "Quantité",
       "donation_address": "Adresse du Balance Manager",
@@ -603,12 +714,6 @@
       "password_placeholder": "••••••••••",
       "private_key": "Clé privée",
       "recipient_address": "Adresse du destinataire"
-    },
-    "image_picker": {
-      "title": "Rainbow would like to access your photos :)",
-      "message": "This allows Rainbow to use your photos from your library :)",
-      "confirm": "Enable library access :)",
-      "cancel": "Cancel :)"
     },
     "list": {
       "nothing_here": "Nothing here! :)",
@@ -745,44 +850,15 @@
     },
     "profiles": {
       "actions": {
-        "watching": "Watching :)",
-        "watch": "Watch :)",
+        "edit_profile": "Edit profile :)",
         "unwatch_ens": "Unwatch %{ensName} :)",
         "unwatch_ens_title": "Are you sure you want to unwatch %{ensName}? :)",
-        "edit_profile": "Edit profile :)"
+        "watch": "Watch :)",
+        "watching": "Watching :)"
       },
       "banner": {
-        "register_name": "Create Your ENS Profile :)",
-        "and_create_ens_profile": "Search available .eth names :)"
-      },
-      "details": {
-        "add_to_contacts": "Add to Contacts :)",
-        "remove_from_contacts": "Remove from Contacts :)",
-        "copy_address": "Copy Address :)",
-        "view_on_etherscan": "View on Etherscan :)"
-      },
-      "intro": {
-        "create_your": "Create Your :)",
-        "ens_profile": "ENS Profile :)",
-        "wallet_address_info": {
-          "title": "A better wallet address :)",
-          "description": "Send to ENS names instead of hard-to-remember wallet addresses. :)"
-        },
-        "portable_identity_info": {
-          "title": "A portable digital identity :)",
-          "description": "Carry your ENS name and profile between websites. No more signups. :)"
-        },
-        "stored_on_blockchain_info": {
-          "title": "Stored on Ethereum :)",
-          "description": "Your profile is stored directly on Ethereum and owned by you. :)"
-        },
-        "find_your_name": "Find your name :)",
-        "use_name": "Use %{name} :)",
-        "use_existing_name": "Use an existing ENS name :)",
-        "search_new_name": "Search for a new ENS name :)",
-        "choose_another_name": "Choose another ENS name :)",
-        "my_ens_names": "My ENS Names :)",
-        "search_new_ens": "Find a New Name :)"
+        "and_create_ens_profile": "Search available .eth names :)",
+        "register_name": "Create Your ENS Profile :)"
       },
       "select_ens_name": "My ENS Names :)",
       "search": {
@@ -794,109 +870,157 @@
         "price": "%{content} / Year :)",
         "expiration": "Til %{content} :)",
         "3_char_min": "Minimum 3 characters :)",
+        "already_registering_name": "You are already registering this name :)",
         "estimated_total_cost_1": "Estimated total cost of :)",
         "estimated_total_cost_2": "with current network fees :)",
         "loading_fees": "Loading network fees… :)",
         "clear": "􀅉 Clear :)",
         "continue": "Continue 􀆊 :)"
       },
-      "create": {
-        "label": "Create your profile :)",
-        "add_cover": "Add Cover :)",
-        "name": "Name :)",
-        "bio": "Bio :)",
-        "website": "Website :)",
-        "back": "􀆉 Back :)",
-        "skip": "Skip :)",
-        "username_placeholder": "username :)",
-        "name_placeholder": "Add a display name :)",
-        "bio_placeholder": "Add a bio to your profile :)",
-        "website_placeholder": "Add your website :)",
-        "review": "Review :)",
-        "cancel": "Cancel :)",
-        "choose_nft": "Choose an NFT :)",
-        "upload_photo": "Upload a Photo :)",
-        "eth": "Ethereum :)",
-        "btc": "Bitcoin :)",
-        "ltc": "Litecoin :)",
-        "doge": "Dogecoin :)",
-        "wallet_placeholder": "Add a %{coin} address :)",
-        "content": "Content :)",
-        "content_placeholder": "Add a content hash :)",
-        "notice": "Notice :)",
-        "notice_placeholder": "Add a notice :)",
-        "keywords": "Keywords :)",
-        "keywords_placeholder": "Add keywords :)",
-        "reddit": "Reddit :)",
-        "twitter": "Twitter :)",
-        "telegram": "Telegram :)",
-        "pronouns": "Pronouns :)",
-        "pronouns_placeholder": "Add pronouns :)",
-        "email": "Email :)",
-        "github": "GitHub :)",
-        "instagram": "Instagram :)",
-        "snapchat": "Snapchat :)",
-        "discord": "Discord :)",
-        "email_placeholder": "Add your email :)",
-        "email_submit_message": "Please enter a valid email :)",
-        "website_submit_message": "Please enter a valid email :)",
-        "invalid_asset": "Invalid %{coin} address :)",
-        "invalid_content_hash": "Invalid content hash :)",
-        "remove": "Remove :)",
-        "email_message": "Please enter a valid email :)",
-        "website_message": "Please enter a valid website URL :)"
+      "search_validation": {
+        "invalid_domain": "This is an invalid domain :)",
+        "tld_not_supported": "This TLD is not supported :)",
+        "subdomains_not_supported": "Subdomains are not supported :)",
+        "invalid_length": "Your name must be at least 3 characters :)",
+        "invalid_special_characters": "Your name cannot include special characters :)"
       },
       "confirm": {
-        "confirm_purchase": "Confirm purchase :)",
-        "registration_details": "Registration Details :)",
-        "requesting_register": "Requesting to Register :)",
-        "reserving_name": "Reserving Your Name :)",
         "confirm_registration": "Confirm Registration :)",
-        "set_name_registration": "Set as Primary Name :)",
-        "confirm_set_name": "Confirm Set Primary Name :)",
-        "start_registration": "Start Registration :)",
-        "confirm_update": "Confirm Update :)",
-        "confirm_renew": "Hold to Extend :)",
-        "suggestion": "Buy more years now to save on fees :)",
-        "set_ens_name": "Set as my primary ENS name :)",
-        "registration_duration": "Register name for :)",
-        "new_expiration_date": "New expiration date :)",
-        "extend_by": "Extend by :)",
-        "registration_cost": "Registration cost :)",
-        "estimated_fees": "Estimated network fees :)",
-        "estimated_total_eth": "Estimated total in ETH :)",
-        "estimated_total": "Estimated total :)",
+        "confirm_updates": "Confirm Updates :)",
         "duration_plural": "%{content} years :)",
         "duration_singular": "1 year :)",
-        "commit_button": "Hold to Commit :)",
-        "insufficient_eth": "Insufficient ETH :)",
-        "speed_up": "Speed Up :)",
+        "estimated_fees": "Estimated network fees :)",
+        "estimated_total": "Estimated total :)",
+        "estimated_total_eth": "Estimated total in ETH :)",
+        "extend_by": "Extend by :)",
         "extend_registration": "Extend Registration :)",
+        "hold_to_begin": "Hold to Begin :)",
+        "hold_to_confirm": "Hold to Confirm :)",
+        "hold_to_extend": "Hold to Extend :)",
+        "hold_to_register": "Hold to Register :)",
+        "insufficient_eth": "Insufficient ETH :)",
         "last_step": "One last step :)",
         "last_step_description": "Confirm below to register your name and configure your profile :)",
+        "new_expiration_date": "New expiration date :)",
+        "registration_cost": "Registration cost :)",
+        "registration_details": "Registration Details :)",
+        "registration_duration": "Register name for :)",
+        "requesting_register": "Requesting to Register :)",
+        "reserving_name": "Reserving Your Name :)",
+        "set_ens_name": "Set as my primary ENS name :)",
+        "set_name_registration": "Set as Primary Name :)",
+        "speed_up": "Speed Up :)",
+        "suggestion": "Buy more years now to save on fees :)",
         "transaction_pending": "Transaction pending :)",
         "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain :)",
         "wait_one_minute": "Wait for one minute :)",
         "wait_one_minute_description": "This waiting period ensures that another person can’t register this name before you do :)"
       },
+      "create": {
+        "add_cover": "Add Cover :)",
+        "back": "􀆉 Back :)",
+        "bio": "Bio :)",
+        "bio_placeholder": "Add a bio to your profile :)",
+        "btc": "Bitcoin :)",
+        "cancel": "Cancel :)",
+        "choose_nft": "Choose an NFT :)",
+        "content": "Content :)",
+        "content_placeholder": "Add a content hash :)",
+        "discord": "Discord :)",
+        "doge": "Dogecoin :)",
+        "email": "Email :)",
+        "invalid_email": "Invalid email :)",
+        "email_placeholder": "Add your email :)",
+        "invalid_username": "Invalid %{app} username :)",
+        "eth": "Ethereum :)",
+        "github": "GitHub :)",
+        "instagram": "Instagram :)",
+        "invalid_asset": "Invalid %{coin} address :)",
+        "invalid_content_hash": "Invalid content hash :)",
+        "keywords": "Keywords :)",
+        "keywords_placeholder": "Add keywords :)",
+        "label": "Create your profile :)",
+        "ltc": "Litecoin :)",
+        "name": "Name :)",
+        "name_placeholder": "Add a display name :)",
+        "notice": "Notice :)",
+        "notice_placeholder": "Add a notice :)",
+        "pronouns": "Pronouns :)",
+        "pronouns_placeholder": "Add pronouns :)",
+        "reddit": "Reddit :)",
+        "remove": "Remove :)",
+        "review": "Review :)",
+        "skip": "Skip :)",
+        "snapchat": "Snapchat :)",
+        "telegram": "Telegram :)",
+        "twitter": "Twitter :)",
+        "upload_photo": "Upload a Photo :)",
+        "uploading": "Uploading :)",
+        "username_placeholder": "username :)",
+        "wallet_placeholder": "Add a %{coin} address :)",
+        "website": "Website :)",
+        "invalid_website": "Invalid URL :)",
+        "website_placeholder": "Add your website :)"
+      },
+      "details": {
+        "add_to_contacts": "Add to Contacts :)",
+        "copy_address": "Copy Address :)",
+        "remove_from_contacts": "Remove from Contacts :)",
+        "view_on_etherscan": "View on Etherscan :)"
+      },
       "edit": {
         "label": "Edit your profile :)"
+      },
+      "intro": {
+        "choose_another_name": "Choose another ENS name :)",
+        "create_your": "Create Your :)",
+        "ens_profile": "ENS Profile :)",
+        "find_your_name": "Find your name :)",
+        "my_ens_names": "My ENS Names :)",
+        "portable_identity_info": {
+          "description": "Carry your ENS name and profile between websites. No more signups. :)",
+          "title": "A portable digital identity :)"
+        },
+        "search_new_ens": "Find a New Name :)",
+        "search_new_name": "Search for a new ENS name :)",
+        "stored_on_blockchain_info": {
+          "description": "Your profile is stored directly on Ethereum and owned by you. :)",
+          "title": "Stored on Ethereum :)"
+        },
+        "use_existing_name": "Use an existing ENS name :)",
+        "use_name": "Use %{name} :)",
+        "wallet_address_info": {
+          "description": "Send to ENS names instead of hard-to-remember wallet addresses. :)",
+          "title": "A better wallet address :)"
+        }
+      },
+      "pending_registrations": {
+        "alert_cancel": "Cancel :)",
+        "alert_confirm": "Proceed Anyway :)",
+        "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.` :)",
+        "alert_title": "Are you sure? :)",
+        "finish": "Finish :)",
+        "in_progress": "In progress :)"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library :)",
         "create_profile": "Create your Profile :)",
         "edit_profile": "Edit Profile :)",
         "pick_emoji": "Pick an Emoji :)",
+        "shuffle_emoji": "Shuffle Emoji :)",
         "remove_photo": "Remove Photo :)",
         "view_profile": "View Profile :)"
       },
-      "pending_registrations": {
-        "alert_title": "Are you sure? :)",
-        "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.` :)",
-        "alert_confirm": "Proceed Anyway :)",
-        "alert_cancel": "Cancel :)",
-        "in_progress": "In progress :)",
-        "finish": "Finish :)"
+      "records": {
+        "since": "Since :)"
+      }
+    },
+    "review": {
+      "alert": {
+        "are_you_enjoying_rainbow": "Are you enjoying Rainbow? 🥰 :)",
+        "leave_a_review": "Leave a review on the App Store! :)",
+        "no": "No :)",
+        "yes": "Yes :)"
       }
     },
     "savings": {
@@ -1116,10 +1240,26 @@
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}? :)",
         "watching_mode_confirm_title": "You’re in Watching Mode :)"
       },
+      "alert": {
+        "finish_importing": "Finish Importing :)",
+        "looks_like_imported_public_address": "\nIt looks like you imported this wallet using only its public address. In order to control what's inside, you'll need to import the private key or secret phrase first. :)",
+        "nevermind": "Nevermind :)",
+        "this_wallet_in_watching_mode": "This wallet is currently in \"Watching\" mode! :)"
+      },
+      "alerts": {
+        "dont_have_asset_in_wallet": "Looks like you don't have that asset in your wallet... :)",
+        "invalid_ethereum_url": "Invalid ethereum url :)",
+        "ooops": "Ooops! :)",
+        "this_action_not_supported": "This action is currently not supported :( :)"
+      },
       "assets": {
         "no_price": "actifs sans données de prix"
       },
       "authenticate": {
+        "alert": {
+          "current_authentication_not_secure_enough": "Your current authentication method (Face Recognition) is not secure enough, please go to \"Settings > Biometrics & Security\" and enable an alternative biometric method like Fingerprint or Iris. :)",
+          "error": "Error :)"
+        },
         "please": "Veuillez vous authentifier",
         "please_seed_phrase": "Veuillez vous authentifier pour afficher votre clé mnémonique"
       },
@@ -1169,12 +1309,15 @@
         "error": "Erreur lors du chargement de votre client mail",
         "send": "Envoyer feedback"
       },
+      "import_failed_invalid_private_key": "Import failed due to an invalid private key. Please try again. :)",
       "intro": {
         "create_wallet": "Créez un portefeuille",
         "instructions": "Veuillez ne pas stocker dans votre portefeuille plus que vous n'êtes prêt à perdre.",
         "warning": "Ceci est une version alpha de l'application.",
         "welcome": "Bienvenue sur Rainbow"
       },
+      "invalid_ens_name": "This is not a valid ENS name :)",
+      "invalid_unstoppable_name": "This is not a valid Unstoppable name :)",
       "label": "Portefeuilles",
       "loading": {
         "error": "Une erreur est survenue lors du chargement du portefeuille. Veuillez redémarrer l'application.",
@@ -1187,6 +1330,10 @@
       "my_account_address": "My account address: :)",
       "network_title": "Network :)",
       "new": {
+        "alert": {
+          "looks_like_already_imported": "Looks like you already imported this wallet! :)",
+          "oops": "Oops! :)"
+        },
         "already_have_wallet": "I already have on :) ",
         "create_wallet": "Créez un portefeuille",
         "ens_invalid": "Ce n'est pas un nom ENS valide",
@@ -1231,6 +1378,9 @@
         "hide_seed_phrase": "Cacher clé mnémonique",
         "show_seed_phrase": "Afficher clé mnémonique"
       },
+      "something_went_wrong_importing": "Something went wrong while importing. Please try again! :)",
+      "sorry_cannot_add_ens": "Sorry, we cannot add this ENS name at this time. Please try again later! :)",
+      "sorry_cannot_add_unstoppable": "Sorry, we cannot add this Unstoppable name at this time. Please try again later! :)",
       "speed_up": {
         "problem_while_fetching_transaction_data": "There was a problem while fetching the transaction data. Please try again... :)",
         "unable_to_speed_up": "Unable to speed up transaction :)"
@@ -1300,8 +1450,8 @@
         "reject": "Connection canceled :)",
         "sign": "Message signed! :)",
         "sign_canceled": "Transaction canceled! :)",
-        "transaction_sent": "Transaction sent! :)",
-        "transaction_canceled": "Transaction canceled! :)"
+        "transaction_canceled": "Transaction canceled! :)",
+        "transaction_sent": "Transaction sent! :)"
       },
       "unknown_application": "Unknown Application :)"
     },

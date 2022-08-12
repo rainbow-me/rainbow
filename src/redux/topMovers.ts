@@ -1,10 +1,11 @@
+import { ThunkDispatch } from 'redux-thunk';
 import {
   getTopMovers,
   saveTopGainers,
   saveTopLosers,
 } from '../handlers/localstorage/topMovers';
 import { emitChartsRequest } from './explorer';
-import { AppDispatch, AppGetState } from './store';
+import { AppDispatch, AppGetState, AppState } from './store';
 import { parseAsset, parseAssetsNative } from '@rainbow-me/parsers';
 
 interface ZerionAsset {
@@ -19,7 +20,7 @@ interface ZerionAssetInfo {
   asset: ZerionAsset;
 }
 
-interface ZerionAssetInfoResponse {
+export interface ZerionAssetInfoResponse {
   meta: {
     order_by: {
       'relative_changes.1d': string;
@@ -91,7 +92,11 @@ export const topMoversLoadState = () => async (dispatch: AppDispatch) => {
 const MIN_MOVERS = 3;
 
 export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
-  dispatch: AppDispatch,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    TopMoversUpdateLosersAction | TopMoversUpdateGainersAction
+  >,
   getState: AppGetState
 ) => {
   const { nativeCurrency } = getState().settings;

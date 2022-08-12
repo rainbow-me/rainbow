@@ -1,10 +1,13 @@
-import { isEmpty, isNil, pick, pickBy, remove, toLower, uniq } from 'lodash';
+import { isEmpty, isNil, remove } from 'lodash';
+import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
+import { OpenseaPaymentTokens } from '@/references/opensea';
 import { AssetTypes } from '@rainbow-me/entities';
 import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { pickBy, pickShallow } from '@rainbow-me/helpers/utilities';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   polygonAllowList,
@@ -19,6 +22,22 @@ const parseLastSalePrice = lastSale =>
         (lastSale?.total_price / 1000000000000000000 + Number.EPSILON) * 1000
       ) / 1000
     : null;
+
+const getCurrentPrice = ({ currentPrice, token }) => {
+  const paymentToken = OpenseaPaymentTokens.find(
+    osToken => osToken.address.toLowerCase() === token.toLowerCase()
+  );
+
+  if (!currentPrice || !paymentToken) return null;
+  // Use the decimals returned from the token list to calculate a human readable value. Add 1 to decimals as padEnd includes the first digit
+  const price =
+    Number(currentPrice) / Number('1'.padEnd(paymentToken.decimals + 1, '0'));
+
+  return `${price} ${paymentToken.symbol}`;
+};
+
+export const getOpenSeaCollectionUrl = slug =>
+  `https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`;
 
 /**
  * @desc signs and handles low res + full res images
@@ -72,18 +91,17 @@ export const parseAccountUniqueTokens = data => {
           asset.image_preview_url
         );
         return {
-          ...pick(asset, [
+          ...pickShallow(asset, [
             'animation_url',
-            'current_price',
             'description',
             'external_link',
             'last_sale',
             'name',
             'permalink',
-            'sell_orders',
             'traits',
+            'seaport_sell_orders',
           ]),
-          asset_contract: pick(asset_contract, [
+          asset_contract: pickShallow(asset_contract, [
             'address',
             'name',
             'nft_version',
@@ -92,7 +110,7 @@ export const parseAccountUniqueTokens = data => {
             'total_supply',
           ]),
           background: background_color ? `#${background_color}` : null,
-          collection: pick(collection, [
+          collection: pickShallow(collection, [
             'description',
             'discord_url',
             'external_url',
@@ -105,18 +123,29 @@ export const parseAccountUniqueTokens = data => {
             'twitter_username',
             'wiki_link',
           ]),
-          currentPrice: asset.sell_orders
-            ? `${
-                Number(asset.sell_orders[0].current_price) / 1000000000000000000
-              } ${asset.sell_orders[0].payment_token_contract.symbol}`
+          currentPrice: asset.seaport_sell_orders
+            ? getCurrentPrice({
+                currentPrice: asset.seaport_sell_orders[0].current_price,
+                token:
+                  asset.seaport_sell_orders[0].protocol_data.parameters
+                    .consideration[0].token,
+              })
             : null,
           familyImage: collection.image_url,
           familyName:
             asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
               ? 'ENS'
               : collection.name,
+          /*
+           * TODO replace with `chain_identifier` from OpenSea API v2 response
+           * once we migrate off v1. `ethereum` here is hard-coded to match the
+           * v2 response we utilize on web profiles, as opposed to
+           * `Network.mainnet` that we typically use in the app.
+           */
+          fullUniqueId: `ethereum_${asset_contract?.address}_${token_id}`,
           id: token_id,
           image_original_url: asset.image_url,
+          image_thumbnail_url: lowResUrl,
           image_url: imageUrl,
           isSendable:
             asset_contract.nft_version === '1.0' ||
@@ -132,6 +161,9 @@ export const parseAccountUniqueTokens = data => {
             ? asset.last_sale.payment_token?.symbol
             : null,
           lowResUrl,
+          marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
+          marketplaceName: 'OpenSea',
+          network: Network.mainnet,
           type: AssetTypes.nft,
           uniqueId:
             asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
@@ -150,19 +182,19 @@ export const parseAccountUniqueTokensPolygon = data => {
   erc721s = erc721s
     .map(({ asset_contract, collection, token_id, metadata, ...asset }) => {
       const { imageUrl, lowResUrl } = handleAndSignImages(
-        asset.image_url,
-        asset.image_original_url,
-        asset.image_preview_url
+        metadata.image_url,
+        metadata.image_original_url,
+        metadata.image_preview_url
       );
       return {
-        ...pick(metadata, [
+        ...pickShallow(metadata, [
           'animation_url',
           'description',
           'external_link',
           'name',
           'traits',
         ]),
-        asset_contract: pick(asset_contract, [
+        asset_contract: pickShallow(asset_contract, [
           'address',
           'name',
           'contract_standard',
@@ -170,7 +202,7 @@ export const parseAccountUniqueTokensPolygon = data => {
         background: metadata.background_color
           ? `#${metadata.background_color}`
           : null,
-        collection: pick(collection, [
+        collection: pickShallow(collection, [
           'description',
           'discord_url',
           'external_url',
@@ -183,18 +215,23 @@ export const parseAccountUniqueTokensPolygon = data => {
           'twitter_username',
           'wiki_link',
         ]),
-        currentPrice: asset.sell_orders
-          ? `${
-              Number(asset.sell_orders[0].current_price) / 1000000000000000000
-            } ${asset.sell_orders[0].payment_token_contract.symbol}`
+        currentPrice: asset.seaport_sell_orders
+          ? getCurrentPrice({
+              currentPrice: asset.seaport_sell_orders[0].current_price,
+              token:
+                asset.seaport_sell_orders[0].protocol_data.parameters
+                  .consideration[0].token,
+            })
           : null,
         familyImage: collection.image_url,
         familyName:
           asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
             ? 'ENS'
             : collection.name,
+        fullUniqueId: `${Network.polygon}_${asset_contract?.address}_${token_id}`,
         id: token_id,
         image_original_url: asset.image_url,
+        image_thumbnail_url: lowResUrl,
         image_url: imageUrl,
         isSendable: false,
         lastPrice: parseLastSalePrice(asset.last_sale),
@@ -206,6 +243,8 @@ export const parseAccountUniqueTokensPolygon = data => {
           ? asset.last_sale.payment_token?.symbol
           : null,
         lowResUrl,
+        marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
+        marketplaceName: 'OpenSea',
         network: Network.polygon,
         permalink: asset.permalink,
         type: AssetTypes.nft,
@@ -218,7 +257,8 @@ export const parseAccountUniqueTokensPolygon = data => {
   //filter out NFTs that are not on our allow list
   remove(
     erc721s,
-    NFT => !polygonAllowList.includes(toLower(NFT.asset_contract.address))
+    nft =>
+      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
   );
 
   return erc721s;
@@ -236,6 +276,7 @@ export const applyENSMetadataFallbackToToken = async token => {
     return {
       ...token,
       image_preview_url: lowResUrl,
+      image_thumbnail_url: lowResUrl,
       image_url: imageUrl,
       lowResUrl,
       name,
@@ -249,7 +290,7 @@ export const applyENSMetadataFallbackToTokens = async data => {
   return await Promise.all(
     data.map(async token => {
       try {
-        return applyENSMetadataFallbackToToken(token);
+        return await applyENSMetadataFallbackToToken(token);
       } catch {
         return token;
       }
@@ -279,3 +320,90 @@ export const dedupeAssetsWithFamilies = (accountAssets, families) =>
     accountAssets,
     asset => !families?.find(family => family === asset?.address)
   );
+
+const getSimplehashMarketplaceInfo = simplehashNft => {
+  const marketplace = simplehashNft.collection.marketplace_pages?.[0];
+  if (!marketplace) return null;
+
+  const marketplaceName = marketplace.marketplace_name;
+  const collectionId = marketplace.marketplace_collection_id;
+  const collectionUrl = marketplace.collection_url;
+  const tokenId = simplehashNft.token_id;
+  let permalink = null;
+  switch (marketplaceName) {
+    case 'Quixotic':
+      permalink = `https://quixotic.io/asset/${collectionId}/${tokenId}`;
+      break;
+    case 'Stratos':
+      permalink = `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
+      break;
+    default:
+      permalink = null;
+  }
+  return {
+    collectionId,
+    collectionUrl,
+    marketplaceName,
+    permalink,
+  };
+};
+
+export const parseSimplehashNfts = nftData => {
+  const results = nftData?.map(simplehashNft => {
+    const collection = simplehashNft.collection;
+
+    const { imageUrl, lowResUrl } = handleAndSignImages(
+      simplehashNft.image_url,
+      simplehashNft.extra_metadata?.image_original_url,
+      simplehashNft.previews.image_small_url
+    );
+
+    const marketplaceInfo = getSimplehashMarketplaceInfo(simplehashNft);
+
+    const parsedNft = {
+      animation_url: simplehashNft.extra_metadata?.animation_original_url,
+      asset_contract: {
+        address: simplehashNft.contract_address,
+        name: simplehashNft.contract.name,
+        schema_name: simplehashNft.contract.type,
+        symbol: simplehashNft.contract.symbol,
+      },
+      background: simplehashNft.background_color,
+      collection: {
+        description: collection.description,
+        discord_url: collection.discord_url,
+        external_url: collection.external_url,
+        image_url: collection.image_url,
+        name: collection.name,
+        slug: marketplaceInfo?.collectionId,
+        twitter_username: collection.twitter_username,
+      },
+      description: simplehashNft.description,
+      external_link: simplehashNft.external_url,
+      familyImage: collection.image_url,
+      familyName: collection.name,
+      fullUniqueId: `${simplehashNft.chain}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
+      id: simplehashNft.token_id,
+      image_original_url: simplehashNft.extra_metadata?.image_original_url,
+      image_preview_url: lowResUrl,
+      image_thumbnail_url: lowResUrl,
+      image_url: imageUrl,
+      isPoap: false,
+      isSendable: false,
+      lastPrice: parseLastSalePrice(simplehashNft.last_sale?.unit_price),
+      lastSalePaymentToken: simplehashNft.last_sale?.payment_token?.symbol,
+      lowResUrl,
+      marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
+      marketplaceName: marketplaceInfo?.marketplaceName,
+      name: simplehashNft.name,
+      network: simplehashNft.chain,
+      permalink: marketplaceInfo?.permalink,
+      traits: simplehashNft.extra_metadata?.attributes ?? [],
+      type: AssetTypes.nft,
+      uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
+      urlSuffixForAsset: `${simplehashNft.contract_address}/${simplehashNft.token_id}`,
+    };
+    return parsedNft;
+  });
+  return results;
+};

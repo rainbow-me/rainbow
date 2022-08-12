@@ -1,6 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import AddCashSheet from '../screens/AddCashSheet';
@@ -25,7 +24,8 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsModal from '../screens/SettingsModal';
+import SettingsSheet from '../screens/SettingsSheet';
+import SettingsSheetV2 from '../screens/SettingsSheetV2';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
@@ -45,7 +45,6 @@ import {
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
-  expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
   explainSheetConfig,
   externalLinkWarningSheetConfig,
@@ -56,7 +55,9 @@ import {
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
+  settingsSheetConfig,
   stackNavigationConfig,
+  swapDetailsSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -70,9 +71,11 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, {
+  NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
@@ -207,7 +210,7 @@ function NativeStackFallbackNavigator() {
         component={SendSheet}
         name={Routes.SEND_SHEET}
         options={{
-          ...omit(sheetPreset, 'gestureResponseDistance'),
+          ...omitFlatten(sheetPreset, 'gestureResponseDistance'),
           onTransitionStart: () => {
             StatusBar.setBarStyle('light-content');
           },
@@ -234,6 +237,7 @@ const MainStack = isNativeStackAvailable
 function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -248,20 +252,21 @@ function NativeStackNavigator() {
         }}
       />
       <NativeStack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
-        options={{
-          backgroundOpacity: 0.7,
-          cornerRadius: 0,
-          customStack: true,
-          ignoreBottomOffset: true,
-          topOffset: 0,
-        }}
+        component={SettingsSheet}
+        name={Routes.SETTINGS_SHEET}
+        {...settingsSheetConfig}
       />
+      {notificationsEnabled && (
+        <NativeStack.Screen
+          component={SettingsSheetV2}
+          name={Routes.SETTINGS_SHEET_V2}
+          {...settingsSheetConfig}
+        />
+      )}
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
-        options={{ ...nativeStackDefaultConfig, interactWithScrollView: false }}
+        options={{ ...nativeStackDefaultConfig, relevantScrollViewDepth: 2 }}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
@@ -403,7 +408,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.SWAP_DETAILS_SHEET}
-        {...expandedAssetSheetConfig}
+        {...swapDetailsSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.SWAP_SETTINGS_SHEET}
+        {...customGasSheetConfig}
       />
 
       {profilesEnabled && (

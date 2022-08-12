@@ -1,3 +1,5 @@
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
@@ -7,6 +9,7 @@ import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BottomRowText } from '../../coin-row';
 import { ContactAvatar } from '../../contacts';
+import ImageAvatar from '../../contacts/ImageAvatar';
 import { Icon } from '../../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
@@ -92,6 +95,8 @@ const WalletSelectionView = () => {
   const { colors, isDarkMode } = useTheme();
   const { walletNames, wallets } = useWallets();
   const { manageCloudBackups } = useManageCloudBackups();
+  const isInsideBottomSheet = !!useContext(BottomSheetContext);
+
   const onPress = useCallback(
     (walletId, name) => {
       const wallet = wallets[walletId];
@@ -115,8 +120,12 @@ const WalletSelectionView = () => {
 
   let cloudBackedUpWallets = 0;
 
+  const ScrollComponent = isInsideBottomSheet
+    ? BottomSheetScrollView
+    : ScrollView;
+
   return (
-    <ScrollView>
+    <ScrollComponent>
       {Object.keys(wallets)
         .filter(key => wallets[key].type !== WalletTypes.readOnly)
         .map(key => {
@@ -124,8 +133,7 @@ const WalletSelectionView = () => {
           const visibleAccounts = wallet.addresses.filter(a => a.visible);
           const account = visibleAccounts[0];
           const totalAccounts = visibleAccounts.length;
-          const { color, emoji, label, address } = account;
-
+          const { color, emoji, image, label, address } = account;
           if (wallet.backupType === WalletBackupTypes.cloud) {
             cloudBackedUpWallets += 1;
           }
@@ -146,14 +154,23 @@ const WalletSelectionView = () => {
               >
                 <Row height={56}>
                   <Row alignSelf="center" flex={1} marginLeft={15}>
-                    <ContactAvatar
-                      address={address}
-                      alignSelf="center"
-                      color={color}
-                      emoji={emoji}
-                      marginRight={10}
-                      size="smedium"
-                    />
+                    {image ? (
+                      <ImageAvatar
+                        alignSelf="center"
+                        image={image}
+                        marginRight={10}
+                        size="smedium"
+                      />
+                    ) : (
+                      <ContactAvatar
+                        address={address}
+                        alignSelf="center"
+                        color={color}
+                        emoji={emoji}
+                        marginRight={10}
+                        size="smedium"
+                      />
+                    )}
                     <ColumnWithMargins margin={3} marginBottom={0.5}>
                       <Row>
                         {labelOrName ? (
@@ -233,7 +250,7 @@ const WalletSelectionView = () => {
           </ButtonPressAnimation>
         </Footer>
       )}
-    </ScrollView>
+    </ScrollComponent>
   );
 };
 

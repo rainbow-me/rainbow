@@ -22,6 +22,13 @@ const GAS_ICONS = {
   [URGENT]: 'policeCarLight',
 };
 
+const GAS_EMOJIS = {
+  [CUSTOM]: '⚙️',
+  [FAST]: '🚀',
+  [NORMAL]: ios ? '⏱' : '🕘',
+  [URGENT]: '🚨',
+};
+
 const GAS_TRENDS = {
   [FALLING]: { color: colors.green, label: '􀄱 Falling' },
   [NO_TREND]: { color: colors.appleBlue, label: '' },
@@ -30,9 +37,13 @@ const GAS_TRENDS = {
   [SURGING]: { color: colors.red, label: '􀇿 Surging' },
 };
 
+const FLASHBOTS_MIN_TIP = 6;
+
 export default {
   CUSTOM,
   FAST,
+  FLASHBOTS_MIN_TIP,
+  GAS_EMOJIS,
   GAS_ICONS,
   GAS_TRENDS,
   GasSpeedOrder,

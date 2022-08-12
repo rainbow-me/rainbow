@@ -38,18 +38,17 @@ const Container = styled(Column)({
   flex: 1,
 });
 
-const FormContainer = styled(Column).attrs({
-  align: 'end',
-  justify: 'space-between',
-})(({ isNft }) => ({
-  ...(isNft ? padding.object(0) : padding.object(0, 19)),
+const FormContainer = styled(Column).attrs(
+  ios
+    ? {
+        align: 'end',
+        justify: 'space-between',
+      }
+    : {}
+)(({ isNft }) => ({
   flex: 1,
-  width: '100%',
+  ...(isNft ? padding.object(0) : padding.object(0, 19)),
 }));
-
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ theme: { colors } }) => colors.lighterGrey,
-});
 
 export default function SendAssetForm({
   assetAmount,
@@ -165,9 +164,7 @@ export default function SendAssetForm({
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
-            {ios ? (
-              <KeyboardSizeView initialHeight={keyboardHeight} isOpen />
-            ) : null}
+            <KeyboardArea initialHeight={keyboardHeight} isOpen />
           </Fragment>
         )}
       </FormContainer>

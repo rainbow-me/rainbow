@@ -1,15 +1,17 @@
-import analytics from '@segment/analytics-react-native';
 // @ts-ignore
-import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
+import { IS_TESTING, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
 import { PerformanceMetricsType } from './types/PerformanceMetrics';
 import { PerformanceTagsType } from './types/PerformanceTags';
+import { analytics } from '@rainbow-me/analytics';
 /*
-This will be a version for all performnce tracking events.
+This will be a version for all performance tracking events.
 If we make breaking changes we will be able to take it into consideration when doing analytics
  */
-const performanceTrackingVersion = 1;
+const performanceTrackingVersion = 2;
 const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
+const shouldReportMeasurement =
+  IS_TESTING === 'false' && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
 const logTag = '[PERFORMANCE]: ';
 
 function logDurationIfAppropriate(
@@ -48,11 +50,13 @@ function logDirectly(
   additionalParams?: AdditionalParams
 ) {
   logDurationIfAppropriate(metric, durationInMs);
-  analytics.track(metric, {
-    durationInMs,
-    performanceTrackingVersion,
-    ...additionalParams,
-  });
+  if (shouldReportMeasurement) {
+    analytics.track(metric, {
+      durationInMs,
+      performanceTrackingVersion,
+      ...additionalParams, // wondering if we need to protect ourselves here
+    });
+  }
 }
 
 /**
@@ -97,12 +101,14 @@ function finishMeasuring(
   const finishTime = performance.now();
   const durationInMs = finishTime - savedEntry.startTimestamp;
 
-  analytics.track(metric, {
-    durationInMs,
-    performanceTrackingVersion,
-    ...savedEntry.additionalParams,
-    ...additionalParams,
-  });
+  if (shouldReportMeasurement) {
+    analytics.track(metric, {
+      durationInMs,
+      performanceTrackingVersion,
+      ...savedEntry.additionalParams,
+      ...additionalParams,
+    });
+  }
   logDurationIfAppropriate(metric, durationInMs);
   currentlyTrackedMetrics.delete(metric);
   return true;
@@ -136,11 +142,13 @@ export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
 
     const durationInMs = performance.now() - startTime;
     logDurationIfAppropriate(metric, durationInMs);
-    analytics.track(metric, {
-      durationInMs,
-      performanceTrackingVersion,
-      ...additionalParams,
-    });
+    if (shouldReportMeasurement) {
+      analytics.track(metric, {
+        durationInMs,
+        performanceTrackingVersion,
+        ...additionalParams,
+      });
+    }
 
     return res;
   };

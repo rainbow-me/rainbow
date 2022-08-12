@@ -1,3 +1,4 @@
+import { AddressZero } from '@ethersproject/constants';
 import gql from 'graphql-tag';
 
 export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (
@@ -44,35 +45,6 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
         symbol
         totalUnderlyingSupplied
       }
-    }
-  }
-`;
-
-export const UNISWAP_24HOUR_PRICE_QUERY = (
-  tokenAddress: string,
-  block: number
-) => {
-  const queryString = `
-    query tokens {
-      tokens(${
-        block ? `block : {number: ${block}}` : ``
-      } where: {id:"${tokenAddress}"}) {
-        id
-        derivedETH
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
-export const UNISWAP_PRICES_QUERY = gql`
-  query tokens($addresses: [String]!) {
-    tokens(where: { id_in: $addresses, derivedETH_gt: 0 }) {
-      id
-      derivedETH
-      symbol
-      name
-      decimals
     }
   }
 `;
@@ -199,7 +171,7 @@ export const ENS_SUGGESTIONS = gql`
   query lookup($name: String!, $amount: Int!) {
     domains(
       first: $amount
-      where: { name_starts_with: $name, resolvedAddress_not: null }
+      where: { name_starts_with: $name, resolvedAddress_not: \"${AddressZero}\" }
       orderBy: labelName
       orderDirection: asc
     ) {

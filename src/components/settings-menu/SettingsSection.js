@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
@@ -14,6 +14,8 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji, Text } from '../text';
+import AppIconIcon from '@rainbow-me/assets/settingsAppIcon.png';
+import AppIconIconDark from '@rainbow-me/assets/settingsAppIconDark.png';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
@@ -29,6 +31,7 @@ import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
 } from '@rainbow-me/config/experimentalHooks';
+import { Box } from '@rainbow-me/design-system';
 import {
   isCustomBuild,
   setOriginalDeploymentKey,
@@ -66,12 +69,6 @@ const CheckmarkIcon = styled(Icon).attrs({
     colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4),
   shadowOffset: { height: 4, width: 0 },
   shadowRadius: 6,
-});
-
-const Container = styled(Column).attrs({})({
-  ...position.coverAsObject,
-
-  backgroundColor: ({ backgroundColor }) => backgroundColor,
 });
 
 const ScrollContainer = styled(ScrollView).attrs({
@@ -139,6 +136,7 @@ export default function SettingsSection({
   onPressCurrency,
   onPressDev,
   onPressIcloudBackup,
+  onPressAppIcon,
   onPressLanguage,
   onPressNetwork,
   onPressPrivacy,
@@ -214,7 +212,7 @@ export default function SettingsSection({
   }, [setTheme, colorScheme]);
 
   return (
-    <Container backgroundColor={colors.white}>
+    <Box background="body">
       <ScrollContainer>
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
@@ -319,6 +317,20 @@ export default function SettingsSection({
               </ListItemArrowGroup>
             </ListItem>
           )}
+          {ios && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? AppIconIconDark : AppIconIcon}
+                />
+              }
+              label={lang.t('settings.app_icon')}
+              onPress={onPressAppIcon}
+              testID="app-icon-section"
+            >
+              <ListItemArrowGroup />
+            </ListItem>
+          )}
         </ColumnWithDividers>
         <ListFooter />
         <ColumnWithDividers dividerRenderer={ListItemDivider}>
@@ -384,6 +396,6 @@ export default function SettingsSection({
           <AppVersionStamp />
         </VersionStampContainer>
       </ScrollContainer>
-    </Container>
+    </Box>
   );
 }

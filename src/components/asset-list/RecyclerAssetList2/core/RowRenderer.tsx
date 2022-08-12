@@ -85,7 +85,13 @@ function rowRenderer(
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;
       return (
-        <WrappedTokenFamilyHeader image={image} name={name} total={total} />
+        <WrappedTokenFamilyHeader
+          image={image}
+          name={name}
+          testID={`token-family-header-${name}`}
+          theme={extendedState.theme}
+          total={total}
+        />
       );
     }
     case CellType.NFT: {
@@ -101,7 +107,6 @@ function rowRenderer(
       );
     }
     case CellType.LOADING_ASSETS:
-      // @ts-expect-error untyped JS component
       return <AssetListItemSkeleton />;
     default:
       assertNever(type);

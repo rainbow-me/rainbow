@@ -125,7 +125,6 @@ const BalanceCoinRow = ({
     } else {
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
-        fromDiscover: true,
         longFormHeight: initialChartExpandedStateSheetHeight,
         type: 'token',
       });
@@ -162,7 +161,7 @@ const BalanceCoinRow = ({
         <ButtonPressAnimation
           onPress={handlePress}
           scaleTo={0.96}
-          testID={`balance-coin-row-${item.name}`}
+          testID={`balance-coin-row-${item.symbol}-${item.type || 'token'}`}
         >
           <Animated.View>
             <CoinRow

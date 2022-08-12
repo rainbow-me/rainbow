@@ -1,4 +1,3 @@
-import { filter, omit, values } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
@@ -11,6 +10,7 @@ import {
   dappLogoOverride,
   dappNameOverride,
 } from '@rainbow-me/helpers/dappNameHandler';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -29,7 +29,7 @@ const EXPIRATION_THRESHOLD_IN_MS = 1000 * 60 * 60;
 /**
  * A request stored in state.
  */
-interface RequestData {
+export interface RequestData {
   /**
    * The WalletConnect client ID for the request.
    */
@@ -158,11 +158,12 @@ export const addRequestToApprove = (
   payload: any,
   peerMeta:
     | undefined
+    | null
     | {
         name?: string;
         url?: string;
         scheme?: string;
-        icons?: string;
+        icons?: string[];
       }
 ) => (
   dispatch: Dispatch<RequestsUpdateRequestsToApproveAction>,
@@ -172,6 +173,7 @@ export const addRequestToApprove = (
   const { walletConnectors } = getState().walletconnect;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const walletConnector = walletConnectors[peerId];
+  // @ts-expect-error "_chainId" is private.
   const chainId = walletConnector._chainId;
   const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
   const displayDetails = getRequestDisplayDetails(
@@ -227,7 +229,7 @@ export const requestsForTopic = (topic: string) => (
   getState: AppGetState
 ): RequestData[] => {
   const { requests } = getState().requests;
-  return filter(values(requests), { clientId: topic });
+  return Object.values(requests).filter(({ clientId }) => clientId === topic);
 };
 
 /**
@@ -248,7 +250,7 @@ export const removeRequest = (requestId: number) => (
 ) => {
   const { accountAddress, network } = getState().settings;
   const { requests } = getState().requests;
-  const updatedRequests = omit(requests, [requestId]);
+  const updatedRequests = omitFlatten(requests, [requestId]);
   removeLocalRequest(accountAddress, network, requestId);
   dispatch({
     payload: updatedRequests,

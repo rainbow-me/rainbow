@@ -1,11 +1,14 @@
-import { applyMiddleware, createStore } from 'redux';
-import thunk from 'redux-thunk';
-import { loadingAssetsMiddleware } from './data';
+import { AnyAction, applyMiddleware, createStore } from 'redux';
+import thunk, { ThunkMiddleware } from 'redux-thunk';
+import { loadingAssetsMiddleware } from './helpers/middlewares';
 import reducers from './reducers';
 
 const store = createStore(
   reducers,
-  applyMiddleware(thunk, loadingAssetsMiddleware)
+  applyMiddleware(
+    thunk as ThunkMiddleware<ReturnType<typeof reducers>, AnyAction, undefined>,
+    loadingAssetsMiddleware
+  )
 );
 
 export default store;

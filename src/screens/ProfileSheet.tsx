@@ -1,10 +1,10 @@
 import { useRoute } from '@react-navigation/core';
-import analytics from '@segment/analytics-react-native';
 import React, { createContext, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
+import { analytics } from '@rainbow-me/analytics';
 import {
   AccentColorProvider,
   Box,
@@ -18,11 +18,10 @@ import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
-  useENSProfile,
-  useENSProfileImages,
-  useENSResolveName,
+  useENSAddress,
+  useENSAvatar,
+  useENSFirstTransactionTimestamp,
   useExternalWalletSectionsData,
-  useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
   useRainbowProfile,
 } from '@rainbow-me/hooks';
@@ -45,46 +44,45 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const { isSuccess } = useENSProfile(ensName);
-  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
+  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress(
     ensName
   );
-  const avatarUrl = images?.avatarUrl;
+  const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
-  const { data: profileAddress } = useENSResolveName(ensName);
+  const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
 
   const { rainbowProfile } = useRainbowProfile(profileAddress || '');
 
-  // Prefetch first transaction timestamp
-  useFirstTransactionTimestamp({
-    ensName,
-  });
+  // Prefetch first transaction timestamp unless already fetched for intro marquee
+  const {
+    isSuccess: hasFirstTxTimestampFetched,
+  } = useENSFirstTransactionTimestamp(name, { enabled: !isPreview });
 
   // Prefetch asset list
   const {
     isSuccess: hasListFetched,
     briefSectionsData,
   } = useExternalWalletSectionsData({
-    address: profileAddress,
+    address: profileAddress || undefined,
+    infinite: true,
   });
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatarUrl || '') || ''
+    maybeSignUri(avatar?.imageUrl ?? '') ?? ''
   );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,
   ]);
 
+  // Set accent color when ENS images have fetched & dominant
+  // color is not loading.
   const accentColor =
-    // Set accent color when ENS images have fetched & dominant
-    // color is not loading.
-    isImagesFetched && state !== 1
+    isAvatarFetched && state !== 1
       ? dominantColor ?? rainbowProfile?.color ?? colors.skeleton
       : rainbowProfile?.color ?? colors.skeleton;
 
-  const enableZoomableImages =
-    !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
+  const enableZoomableImages = !isPreview;
 
   useEffect(() => {
     if (profileAddress && accountAddress) {
@@ -101,21 +99,22 @@ export default function ProfileSheet() {
       <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
         <StatusBar barStyle="light-content" />
         <AccentColorProvider color={accentColor}>
-          <Box background="body">
+          <Box background="body" testID="profile-sheet">
             <Box style={wrapperStyle}>
-              {!isSuccess || !hasListFetched ? (
+              {!isPreview &&
+              (!isAddressSuccess ||
+                !hasListFetched ||
+                !hasFirstTxTimestampFetched) ? (
                 <Stack space="19px">
-                  <ProfileSheetHeader isLoading isPreview={params.isPreview} />
+                  <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
-              ) : !params.isPreview ? (
+              ) : (
                 <RecyclerAssetList2
-                  externalAddress={profileAddress}
+                  externalAddress={profileAddress || ''}
                   type="ens-profile"
                   walletBriefSectionsData={briefSectionsData}
                 />
-              ) : (
-                <ProfileSheetHeader ensName={params?.ensName} isPreview />
               )}
             </Box>
           </Box>
