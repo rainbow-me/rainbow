@@ -337,6 +337,9 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
     case 'Stratos':
       permalink = `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
       break;
+    case 'Trove':
+      permalink = `https://trove.treasure.lol/collection/${collectionId}/${tokenId}`;
+      break;
     default:
       permalink = null;
   }
