@@ -20,6 +20,8 @@ let previousAppState: AppStateStatus | undefined;
 let appStateChangeSubscription: NativeEventSubscription | null = null;
 
 function startMonitoring() {
+  // TODO: Remove when iOS implementation is done
+  if (ios) return;
   if (!isMonitoring) {
     isMonitoring = true;
     FrameRateMonitorModule.startMonitoring();
@@ -27,12 +29,14 @@ function startMonitoring() {
 }
 
 async function stopMonitoring() {
+  // TODO: Remove when iOS implementation is done
+  if (ios) return;
   if (isMonitoring) {
     isMonitoring = false;
     await FrameRateMonitorModule.stopMonitoring();
     const stats = await FrameRateMonitorModule.getStats();
     // TODO: Remove TEST prefix before releasing to broader audience
-    analytics.track(`$TEST ${EVENT_NAME}`, { frameRateStats: stats });
+    analytics.track(`TEST ${EVENT_NAME}`, { frameRateStats: stats });
     global.console.log(JSON.stringify(stats, null, 2));
   }
 }
@@ -51,6 +55,8 @@ function onAppStateChange(state: AppStateStatus) {
 }
 
 function registerListeners() {
+  // TODO: Remove when iOS implementation is done
+  if (ios) return;
   appStateChangeSubscription = AppState.addEventListener(
     'change',
     onAppStateChange
@@ -58,6 +64,8 @@ function registerListeners() {
 }
 
 function removeListeners() {
+  // TODO: Remove when iOS implementation is done
+  if (ios) return;
   if (appStateChangeSubscription) {
     appStateChangeSubscription.remove();
     appStateChangeSubscription = null;

@@ -9,10 +9,21 @@ type FrameRateMonitorModuleInterface = {
     totalFramesDrawn: number;
     totalFramesDropped: number;
   }>;
-  addSlowPeriodEventListener: any;
-  removeSlowPeriodEventListener: any;
-  resetStats: any;
 };
 
-export const FrameRateMonitorModule: FrameRateMonitorModuleInterface =
-  NativeModules.RNFrameRateMonitorModule;
+const dummyModule: FrameRateMonitorModuleInterface = {
+  getStats: () =>
+    new Promise(resolve =>
+      resolve({
+        screenFrameRate: 0,
+        sessionDuration: 0,
+        totalFramesDrawn: 0,
+        totalFramesDropped: 0,
+      })
+    ),
+  startMonitoring: () => new Promise(resolve => resolve()),
+  stopMonitoring: () => new Promise(resolve => resolve()),
+};
+export const FrameRateMonitorModule: FrameRateMonitorModuleInterface = android
+  ? NativeModules.RNFrameRateMonitorModule
+  : dummyModule;
