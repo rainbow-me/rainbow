@@ -49,10 +49,10 @@ export default function ENSIntroSheet() {
   const { params } = useRoute<any>();
 
   const {
+    controlledDomains,
     isLoading,
     isFetched,
     nonPrimaryDomains,
-    ownedDomains,
     uniqueDomain,
   } = useAccountENSDomains();
   const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {
@@ -222,7 +222,7 @@ export default function ENSIntroSheet() {
                   )}
                   {isFetched && (
                     <>
-                      {ownedDomains?.length === 0 ? (
+                      {controlledDomains?.length === 0 ? (
                         <Inset bottom={android ? '10px' : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}

@@ -58,7 +58,7 @@ export default function SelectENSSheet() {
     [goBack, params]
   );
 
-  const ownedDomains = useMemo(() => {
+  const controlledDomains = useMemo(() => {
     const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) =>
       a.name > b.name ? 1 : -1
     );
@@ -68,7 +68,8 @@ export default function SelectENSSheet() {
     return sortedNonPrimaryDomains;
   }, [primaryDomain, nonPrimaryDomains]);
 
-  let listHeight = (rowHeight + rowPadding) * (ownedDomains?.length || 0) + 21;
+  let listHeight =
+    (rowHeight + rowPadding) * (controlledDomains?.length || 0) + 21;
   let scrollEnabled = false;
   if (listHeight > maxListHeight) {
     listHeight = maxListHeight;
@@ -128,7 +129,7 @@ export default function SelectENSSheet() {
                   paddingBottom: 50,
                   paddingHorizontal: 19,
                 }}
-                data={ownedDomains}
+                data={controlledDomains}
                 height={{ custom: listHeight }}
                 initialNumToRender={15}
                 keyExtractor={({ domain }: { domain: string }) => domain}
