@@ -840,9 +840,6 @@ export const estimateGasLimit = async (
 const HAS_MERGED_DEFAULTS: { [key: string]: boolean } = {
   [Network.mainnet]: false,
   [Network.goerli]: false,
-  [Network.ropsten]: false,
-  [Network.rinkeby]: false,
-  [Network.kovan]: false,
 };
 const hasMergedStorage = new MMKV();
 export const getHasMerged = (network: Network) => {
