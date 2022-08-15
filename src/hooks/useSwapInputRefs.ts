@@ -5,8 +5,8 @@ import useSwapCurrencies from './useSwapCurrencies';
 
 export default function useSwapInputRefs() {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-  const inputFieldRef = useRef<TextInput>();
-  const nativeFieldRef = useRef<TextInput>();
+  const inputFieldRef = useRef<TextInput>(null);
+  const nativeFieldRef = useRef<TextInput>(null);
   const outputFieldRef = useRef<TextInput>(null);
 
   const findNextInput = useCallback(
