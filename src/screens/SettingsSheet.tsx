@@ -192,7 +192,8 @@ export default function SettingsSheet() {
           headerRight: renderHeaderRight,
           headerStyle: {
             ...memoSettingsOptions.headerStyle,
-            backgroundColor: colors.cardBackdrop,
+            // ios MenuContainer scroll fix
+            ...(ios && { backgroundColor: colors.cardBackdrop }),
           },
         }}
       >
