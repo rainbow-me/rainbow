@@ -35,7 +35,7 @@ import {
 } from '../components/exchange';
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
-import { Column, KeyboardFixedOpenLayout } from '../components/layout';
+import { KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -49,7 +49,6 @@ import { divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
-  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -73,14 +72,12 @@ import {
   TypeSpecificParameters,
   updateSwapSlippage,
   updateSwapTypeDetails,
-} from '@/redux/swap';
-import { ETH_ADDRESS, ethUnits } from '@/references';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import { ethereumUtils, gasUtils } from '@/utils';
-import { useEthUSDPrice } from '@/utils/ethereumUtils';
-import logger from '@/utils/logger';
+} from '@rainbow-me/redux/swap';
+import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
+import Routes from '@rainbow-me/routes';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
+import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
+import logger from 'logger';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -106,12 +103,6 @@ const NOOP = () => null;
 const FloatingPanels = AnimatedExchangeFloatingPanels;
 
 const Wrapper = KeyboardFixedOpenLayout;
-
-const InnerWrapper = styled(Column).attrs({
-  direction: 'column',
-})({
-  ...position.sizeAsObject('100%'),
-});
 
 const getInputHeaderTitle = (
   type: keyof typeof ExchangeModalTypes,
@@ -181,7 +172,6 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }: ExchangeModalProps) {
-  const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
   const {
     slippageInBips,
@@ -936,9 +926,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper keyboardType={KeyboardType.numpad}>
-      <InnerWrapper
-        isSmallPhone={isSmallPhone || (android && isSmallAndroidPhone)}
-      >
+      <Box height="full" width="full">
         <FloatingPanels>
           <>
             <FloatingPanel
@@ -1062,7 +1050,7 @@ export default function ExchangeModal({
             </Row>
           </Rows>
         </Box>
-      </InnerWrapper>
+      </Box>
     </Wrapper>
   );
 }
