@@ -28,15 +28,6 @@ const CoinIconSkeleton = styled.View({
     colors.alpha(colors.blueGreyDark, 0.1),
 });
 
-// const CoinIconSkeleton = () => (
-//   <Box
-//     background=
-//     borderRadius={CoinIconSize / 2}
-//     height={{ custom: CoinIconSize }}
-//     width={{ custom: CoinIconSize }}
-//   />
-// );
-
 const Container = styled(Row).attrs({
   align: 'center',
   justify: 'flex-end',
@@ -51,8 +42,11 @@ const FieldRow = styled(RowWithMargins).attrs({
 })({
   flex: 1,
   paddingLeft: ExchangeFieldPadding,
-  paddingRight: ({ disableCurrencySelection }) =>
-    disableCurrencySelection ? ExchangeFieldPadding : 6,
+  paddingRight: ({
+    disableCurrencySelection,
+  }: {
+    disableCurrencySelection: boolean;
+  }) => (disableCurrencySelection ? ExchangeFieldPadding : 6),
 });
 
 const Input = styled(ExchangeInput).attrs({
@@ -73,7 +67,7 @@ interface ExchangeFieldProps {
   network: Network;
   onBlur?: (event: FocusEvent) => void;
   onFocus: (event: FocusEvent) => void;
-  onPressSelectCurrency: () => void;
+  onPressSelectCurrency: (chainId: any) => void;
   onTapWhileDisabled?: () => void;
   setAmount: (value: string | null) => void;
   symbol?: string;
