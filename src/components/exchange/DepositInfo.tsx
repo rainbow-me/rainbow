@@ -7,14 +7,11 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { Centered, RowWithMargins } from '../layout';
-import { Text } from '../text';
 import PriceImpactWarning from './PriceImpactWarning';
-import styled from '@/styled-thing';
-import { padding } from '@/styles';
+import { Box, Text } from '@rainbow-me/design-system';
+import { SwappableAsset } from '@rainbow-me/entities';
 
 const springConfig = {
   damping: 14,
@@ -25,13 +22,15 @@ const springConfig = {
   stiffness: 121.5,
 };
 
-const Container = styled(RowWithMargins).attrs({
-  centered: true,
-  margin: 5,
-})({
-  ...padding.object(android ? 6 : 10, 10, 2),
-  width: '100%',
-});
+interface DepositInfoProps {
+  amount: string | null;
+  asset: SwappableAsset;
+  isHighPriceImpact: boolean;
+  onPress: () => void;
+  priceImpactColor?: string;
+  priceImpactNativeAmount?: string | null;
+  priceImpactPercentDisplay?: string | null;
+}
 
 export default function DepositInfo({
   amount,
@@ -41,12 +40,10 @@ export default function DepositInfo({
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
-  testID,
-}) {
-  const { colors } = useTheme();
+}: DepositInfoProps) {
   const isVisible = !!(asset && amount);
 
-  const prevAmountRef = useRef();
+  const prevAmountRef = useRef<string>();
   useEffect(() => {
     // Need to remember the amount so
     // it doesn't show NULL while fading out!
@@ -101,32 +98,43 @@ export default function DepositInfo({
   });
 
   return (
-    <Animated.View>
-      <Animated.View style={animatedContainerStyle} testID="deposit-info">
+    <Box as={Animated.View}>
+      <Box
+        as={Animated.View}
+        style={animatedContainerStyle}
+        testID="deposit-info"
+      >
         <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-          <Container>
-            <CoinIcon
-              address={asset?.address}
-              size={20}
-              symbol={asset?.symbol}
-              testID="deposit-info-container"
-            />
-            <Centered>
-              <Text
-                color={colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)}
-                size="smedium"
-                weight="semibold"
-              >
+          <Box
+            alignItems="center"
+            flexDirection="row"
+            justifyContent="center"
+            paddingLeft="2px"
+            paddingRight="10px"
+            paddingVertical={android ? '6px' : '10px'}
+            style={{}}
+          >
+            <Box paddingRight="5px">
+              {/* @ts-expect-error - Javascript Component */}
+              <CoinIcon
+                address={asset?.address}
+                size={20}
+                symbol={asset?.symbol}
+                testID="deposit-info-container"
+              />
+            </Box>
+            <Box flexDirection="row">
+              <Text color="secondary60" size="14px" weight="semibold">
                 {lang.t('exchange.swapping_for_prefix')}{' '}
               </Text>
-              <Text color="whiteLabel" size="smedium" weight="bold">
+              <Text weight="bold">
                 {`${amountToDisplay} ${asset?.symbol || ''}`}
               </Text>
-            </Centered>
-          </Container>
+            </Box>
+          </Box>
         </ButtonPressAnimation>
-      </Animated.View>
-      <Animated.View style={priceImpactAnimatedStyle}>
+      </Box>
+      <Box as={Animated.View} style={priceImpactAnimatedStyle}>
         <PriceImpactWarning
           isHighPriceImpact={isHighPriceImpact}
           onPress={onPress}
@@ -135,7 +143,7 @@ export default function DepositInfo({
           priceImpactNativeAmount={priceImpactNativeAmount}
           priceImpactPercentDisplay={priceImpactPercentDisplay}
         />
-      </Animated.View>
-    </Animated.View>
+      </Box>
+    </Box>
   );
 }
