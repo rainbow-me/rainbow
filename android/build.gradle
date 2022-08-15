@@ -34,7 +34,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.0.4")
+        classpath("com.android.tools.build:gradle:7.2.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("de.undercouch:gradle-download-task:4.1.2")
         classpath 'com.google.gms:google-services:4.3.3'
@@ -67,5 +67,13 @@ allprojects {
             url "$rootDir/../node_modules/detox/Detox-android"
         }
         maven { url 'https://www.jitpack.io' }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            dependencySubstitution {
+                substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+            }
+        }
     }
 }
