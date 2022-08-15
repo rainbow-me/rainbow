@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
@@ -157,7 +156,6 @@ export default function ImportSeedPhraseSheet() {
   const { colors } = useTheme();
   return (
     <Container testID="import-sheet">
-      <StatusBar barStyle="light-content" />
       <Sheet>
         <SheetHandle marginBottom={7} marginTop={6} />
         <Text size="large" weight="bold">
