@@ -190,6 +190,10 @@ export default function SettingsSheet() {
         screenOptions={{
           ...memoSettingsOptions,
           headerRight: renderHeaderRight,
+          headerStyle: {
+            ...memoSettingsOptions.headerStyle,
+            backgroundColor: colors.cardBackdrop,
+          },
         }}
       >
         <Stack.Screen
