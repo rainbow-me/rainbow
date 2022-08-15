@@ -1,14 +1,23 @@
-import React, { useCallback, useEffect } from 'react';
-import { TouchableWithoutFeedback, View } from 'react-native';
+import React, {
+  FocusEvent,
+  ForwardRefRenderFunction,
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import { TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { AssetType } from '@/entities';
+import { Network } from '@rainbow-me/helpers';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;
@@ -18,6 +27,15 @@ const CoinIconSkeleton = styled.View({
   backgroundColor: ({ theme: { colors } }) =>
     colors.alpha(colors.blueGreyDark, 0.1),
 });
+
+// const CoinIconSkeleton = () => (
+//   <Box
+//     background=
+//     borderRadius={CoinIconSize / 2}
+//     height={{ custom: CoinIconSize }}
+//     width={{ custom: CoinIconSize }}
+//   />
+// );
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -44,7 +62,27 @@ const Input = styled(ExchangeInput).attrs({
   marginVertical: -10,
 });
 
-const ExchangeField = (
+interface ExchangeFieldProps {
+  address: string;
+  mainnetAddress?: string;
+  amount: string | null;
+  disableCurrencySelection?: boolean;
+  editable: boolean;
+  loading: boolean;
+  type?: string;
+  network: Network;
+  onBlur?: (event: FocusEvent) => void;
+  onFocus: (event: FocusEvent) => void;
+  onPressSelectCurrency: () => void;
+  onTapWhileDisabled?: () => void;
+  setAmount: (value: string | null) => void;
+  symbol?: string;
+  testID: string;
+  useCustomAndroidMask: boolean;
+  updateOnFocus: boolean;
+}
+
+const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   {
     address,
     mainnetAddress,
@@ -67,6 +105,7 @@ const ExchangeField = (
   },
   ref
 ) => {
+  const inputRef = ref as MutableRefObject<TextInput>;
   const { colors } = useTheme();
   const [value, setValue] = useState(amount);
 
@@ -77,8 +116,8 @@ const ExchangeField = (
     type: mainnetAddress ? AssetType.token : type,
   });
   const handleFocusField = useCallback(() => {
-    ref?.current?.focus();
-  }, [ref]);
+    inputRef?.current?.focus();
+  }, [inputRef]);
 
   const handleBlur = useCallback(
     event => {
@@ -110,7 +149,7 @@ const ExchangeField = (
 
   const placeholderText = symbol ? '0' : EnDash.unicode;
 
-  const editing = ref?.current?.isFocused() ?? false;
+  const editing = inputRef?.current?.isFocused() ?? false;
 
   useEffect(() => {
     if (!editing || updateOnFocus) {
@@ -125,6 +164,7 @@ const ExchangeField = (
       >
         <FieldRow disableCurrencySelection={disableCurrencySelection}>
           {symbol ? (
+            /* @ts-expect-error — JavaScript component */
             <CoinIcon
               address={address}
               mainnet_address={mainnetAddress}

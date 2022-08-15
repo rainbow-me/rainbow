@@ -16,9 +16,9 @@ interface ExchangeOutputFieldProps {
   outputCurrencyMainnetAddress?: string;
   outputCurrencyAssetType?: string;
   outputCurrencySymbol?: string;
-  outputFieldRef: MutableRefObject<TextInput | undefined>;
-  setOutputAmount: (value: number) => void;
-  updateAmountOnFocus: () => void;
+  outputFieldRef: MutableRefObject<TextInput | null>;
+  setOutputAmount: (value: string | null) => void;
+  updateAmountOnFocus: boolean;
   testID: string;
 }
 
