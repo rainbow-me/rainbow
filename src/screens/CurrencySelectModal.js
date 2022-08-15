@@ -124,20 +124,41 @@ export default function CurrencySelectModal() {
     }
   }, [chainId]);
 
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
-      return assetsInWallet?.filter(asset => !hiddenCoinsObj[asset.uniqueId]);
+      let filteredAssetsInWallet = assetsInWallet?.filter(
+        asset => !hiddenCoinsObj[asset.uniqueId]
+      );
+      if (fromDiscover && outputCurrency?.implementations) {
+        const outputTokenNetworks = Object.keys(
+          outputCurrency?.implementations
+        );
+
+        filteredAssetsInWallet = filteredAssetsInWallet.filter(asset => {
+          const network = ethereumUtils.getNetworkFromType(asset.type);
+          return outputTokenNetworks.includes(
+            network === Network.mainnet ? 'ethereum' : network
+          );
+        });
+      }
+      return filteredAssetsInWallet;
     }
     return [];
-  }, [type, assetsInWallet, hiddenCoinsObj]);
+  }, [
+    type,
+    assetsInWallet,
+    outputCurrency?.implementations,
+    fromDiscover,
+    hiddenCoinsObj,
+  ]);
 
   const {
     swapCurrencyList,
     swapCurrencyListLoading,
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
-
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const checkForSameNetwork = useCallback(
     (newAsset, selectAsset, type) => {
