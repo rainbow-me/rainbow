@@ -1,4 +1,4 @@
-import { Quote } from '@rainbow-me/swaps';
+import { Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@rainbow-me/entities';
@@ -31,6 +31,7 @@ interface SwapState {
   derivedValues: any;
   displayValues: any;
   depositCurrency: SwappableAsset | null;
+  errorCode: QuoteError | null;
   inputCurrency: SwappableAsset | null;
   independentField: SwapModalField;
   independentValue: string | null;
@@ -236,6 +237,7 @@ const INITIAL_STATE: SwapState = {
   depositCurrency: null,
   derivedValues: null,
   displayValues: null,
+  errorCode: null,
   flipCurrenciesUpdate: false,
   independentField: SwapModalField.input,
   independentValue: null,
@@ -256,6 +258,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         derivedValues: action.payload.derivedValues,
         displayValues: action.payload.displayValues,
+        errorCode: action.payload.errorCode,
         tradeDetails: action.payload.tradeDetails,
       };
     case SWAP_UPDATE_TYPE_DETAILS:

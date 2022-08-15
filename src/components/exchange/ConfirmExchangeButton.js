@@ -21,7 +21,7 @@ export default function ConfirmExchangeButton({
   disabled,
   loading,
   isHighPriceImpact,
-  insufficientLiquidity,
+  errorCode,
   onPressViewDetails,
   onSubmit,
   testID,
@@ -72,7 +72,7 @@ export default function ConfirmExchangeButton({
     : darkModeThemeColors.blueGreyDark04;
 
   const { buttonColor, shadowsForAsset } = useMemo(() => {
-    const color = insufficientLiquidity
+    const color = errorCode
       ? disabledButtonColor
       : asset.address === ETH_ADDRESS
       ? colors.appleBlue
@@ -95,7 +95,7 @@ export default function ConfirmExchangeButton({
     colorForAsset,
     colors,
     disabledButtonColor,
-    insufficientLiquidity,
+    errorCode,
     isDarkMode,
     isSwapDetailsRoute,
   ]);
@@ -132,7 +132,7 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.enter_amount');
   }
 
-  if (insufficientLiquidity) {
+  if (errorCode) {
     label = lang.t('button.confirm_exchange.insufficient_liquidity');
   }
 
@@ -163,12 +163,12 @@ export default function ConfirmExchangeButton({
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
             disableLongPress={
-              (shouldOpenSwapDetails && !insufficientLiquidity) ||
+              (shouldOpenSwapDetails && !errorCode) ||
               loading ||
               isSwapSubmitting
             }
-            disableShimmerAnimation={insufficientLiquidity}
-            disabled={isDisabled && !insufficientLiquidity}
+            disableShimmerAnimation={errorCode}
+            disabled={isDisabled && !errorCode}
             disabledBackgroundColor={
               isSwapSubmitting ? buttonColor : disabledButtonColor
             }
@@ -179,7 +179,7 @@ export default function ConfirmExchangeButton({
             onLongPress={
               loading || isSwapSubmitting
                 ? NOOP
-                : insufficientLiquidity
+                : errorCode
                 ? handleShowLiquidityExplainer
                 : shouldOpenSwapDetails
                 ? onPressViewDetails
@@ -187,7 +187,7 @@ export default function ConfirmExchangeButton({
             }
             shadows={
               isSwapDetailsRoute
-                ? isDisabled || insufficientLiquidity
+                ? isDisabled || errorCode
                   ? shadows.disabled
                   : shadowsForAsset
                 : shadows.default
