@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactNode } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { usePagerPosition } from '../../navigation/ScrollPositionContext';
 
@@ -7,7 +7,7 @@ import ExchangeFloatingPanels from './ExchangeFloatingPanels';
 const AnimatedPanels = Animated.createAnimatedComponent(ExchangeFloatingPanels);
 
 interface AnimatedExchangeFloatingPanelsProps {
-  children: ReactElement;
+  children: ReactNode;
 }
 
 export default function AnimatedExchangeFloatingPanels(
