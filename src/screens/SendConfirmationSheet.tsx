@@ -10,7 +10,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Keyboard, StatusBar } from 'react-native';
+import { Keyboard } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import Divider from '../components/Divider';
@@ -539,7 +539,6 @@ export default function SendConfirmationSheet() {
       height={contentHeight}
       insets={insets}
     >
-      {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {/* @ts-expect-error JavaScript component */}

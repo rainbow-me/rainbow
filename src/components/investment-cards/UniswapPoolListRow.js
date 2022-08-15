@@ -12,7 +12,7 @@ import { PoolValue } from './PoolValue';
 import { analytics } from '@rainbow-me/analytics';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 import { useAccountSettings, useGenericAsset } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -58,6 +58,8 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useCallback(() => {
+    const isFromWalletScreen = Navigation.getActiveRoute().params
+      ?.isFromWalletScreen;
     let poolAsset = uniswap.find(pool => pool.address === item.address);
     if (!poolAsset) {
       poolAsset = parseAssetNative(
@@ -79,6 +81,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
       asset: poolAsset,
       dpi: true,
       fromDiscover: true,
+      isFromWalletScreen,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });

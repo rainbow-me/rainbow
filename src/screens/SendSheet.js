@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
@@ -940,7 +940,6 @@ export default function SendSheet(props) {
 
   return (
     <Container testID="send-sheet">
-      {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
           contacts={contacts}

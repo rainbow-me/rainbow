@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { InteractionManager, StatusBar } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { DelayedAlert } from '../components/alerts';
 import {
@@ -232,7 +232,6 @@ export default function BackupSheet() {
 
   return (
     <Column height={wrapperHeight} testID="backup-sheet">
-      <StatusBar barStyle="light-content" />
       <SlackSheet
         additionalTopPadding={additionalTopPadding}
         contentHeight={sheetHeight}
