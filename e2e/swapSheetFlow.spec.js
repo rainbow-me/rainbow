@@ -241,6 +241,11 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('exchange-modal-input-native-246');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
+    await Helpers.waitAndTap('exchange-settings-button');
+    await Helpers.checkIfVisible('swap-settings-header');
+    await Helpers.checkIfNotVisible('swap-settings-routes-label');
+    await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
+    await Helpers.swipe('swap-settings-header', 'down', 'slow');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
@@ -421,6 +426,15 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should show Swap Settings State on Settings Button press', async () => {
     await Helpers.waitAndTap('exchange-settings-button');
     await Helpers.checkIfVisible('swap-settings-header');
+    await Helpers.waitAndTap('swap-settings-routes-label');
+    await Helpers.checkIfVisible('explain-sheet-routeSwaps');
+    await Helpers.swipe('explain-sheet-routeSwaps', 'down', 'slow');
+    await Helpers.waitAndTap('swap-settings-flashbots-label');
+    await Helpers.checkIfVisible('explain-sheet-flashbots');
+    await Helpers.swipe('explain-sheet-flashbots', 'down', 'slow');
+    await Helpers.waitAndTap('swap-slippage-label');
+    await Helpers.checkIfVisible('explain-sheet-slippage');
+    await Helpers.swipe('explain-sheet-slippage', 'down', 'slow');
     await Helpers.swipe('swap-settings-header', 'down', 'slow');
     if (device.getPlatform() === 'android') {
       await device.pressBack();

@@ -73,7 +73,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
     );
   }, [onSelect]);
 
-  const openExplainer = () => {
+  const openRoutesExplainer = () => {
     Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       type: 'routeSwaps',
@@ -87,8 +87,9 @@ export default function SourcePicker({ onSelect, currentSource }) {
           as={ButtonPressAnimation}
           {...(ios ? { marginVertical: '-12px' } : {})}
           // @ts-expect-error
-          onPress={openExplainer}
+          onPress={openRoutesExplainer}
           paddingVertical="12px"
+          testID="swap-settings-routes-label"
         >
           <Text size="16px" weight="bold">
             {lang.t('exchange.source_picker')}

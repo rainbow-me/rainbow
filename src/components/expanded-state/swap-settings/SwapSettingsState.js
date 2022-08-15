@@ -114,7 +114,7 @@ export default function SwapSettingsState({ asset }) {
     updateSource(Source.AggregatorRainbow);
   }, [settingsChangeFlashbotsEnabled, updateSource]);
 
-  const openExplainer = () => {
+  const openFlashbotsExplainer = () => {
     Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       type: 'flashbots',
@@ -149,9 +149,10 @@ export default function SwapSettingsState({ asset }) {
                 <Column width="content">
                   <Box
                     as={ButtonPressAnimation}
+                    testID="swap-settings-flashbots-label"
                     {...(ios ? { marginVertical: '-12px' } : {})}
                     // @ts-expect-error
-                    onPress={openExplainer}
+                    onPress={openFlashbotsExplainer}
                     paddingVertical="12px"
                   >
                     <Text color="primary" size="16px" weight="bold">
@@ -184,7 +185,10 @@ export default function SwapSettingsState({ asset }) {
         <Inset horizontal="24px" top="24px">
           <Columns alignHorizontal="justify">
             <Column width="content">
-              <ButtonPressAnimation onPress={resetToDefaults}>
+              <ButtonPressAnimation
+                onPress={resetToDefaults}
+                testID="swap-settings-defaults-button"
+              >
                 <Box
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
