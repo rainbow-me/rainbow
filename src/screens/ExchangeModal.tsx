@@ -114,7 +114,7 @@ const InnerWrapper = styled(Column).attrs({
 });
 
 const getInputHeaderTitle = (
-  type: 'deposit' | 'swap' | 'withdrawal',
+  type: keyof typeof ExchangeModalTypes,
   defaultInputAsset: Asset
 ) => {
   switch (type) {
@@ -129,7 +129,7 @@ const getInputHeaderTitle = (
   }
 };
 
-const getShowOutputField = (type: 'deposit' | 'swap' | 'withdrawal') => {
+const getShowOutputField = (type: keyof typeof ExchangeModalTypes) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
     case ExchangeModalTypes.withdrawal:
@@ -147,7 +147,7 @@ interface Asset {
   id: string;
   implementations: {
     [network: string]: { address: string; decimals: number };
-  }[];
+  };
   isNativeAsset: boolean;
   isRainbowCurated: boolean;
   isVerified: boolean;
@@ -163,13 +163,14 @@ interface Asset {
   symbol: string;
   type: string;
   uniqueId: string;
+  mainnet_address?: string;
 }
 
 interface ExchangeModalProps {
   fromDiscover: boolean;
   ignoreInitialTypeCheck?: boolean;
   testID: string;
-  type: 'deposit' | 'swap' | 'withdrawal';
+  type: keyof typeof ExchangeModalTypes;
   typeSpecificParams: TypeSpecificParameters;
 }
 
@@ -203,8 +204,8 @@ export default function ExchangeModal({
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
   const genericAssets = useSelector<
-    { data: { genericAssets: Asset[] } },
-    Asset[]
+    { data: { genericAssets: { [address: string]: Asset } } },
+    { [address: string]: Asset }
   >(({ data: { genericAssets } }) => genericAssets);
 
   const {
@@ -431,12 +432,17 @@ export default function ExchangeModal({
     };
     const unsubscribe = (
       dangerouslyGetParent()?.dangerouslyGetParent()?.addListener || addListener
-    )('transitionEnd', ({ data: { closing } }) => {
-      if (!closing && isDismissing.current) {
-        isDismissing.current = false;
-        ((lastFocusedInputHandle as unknown) as MutableRefObject<TextInput>)?.current?.focus();
+    )(
+      // @ts-ignore - Not sure if this is even triggered as React Navigation apparently doesnt emit this event.
+      'transitionEnd',
+      // @ts-ignore - Can't find any docs around this closing prop being sent is this a private API?
+      ({ data: { closing } }) => {
+        if (!closing && isDismissing.current) {
+          isDismissing.current = false;
+          ((lastFocusedInputHandle as unknown) as MutableRefObject<TextInput>)?.current?.focus();
+        }
       }
-    });
+    );
     return () => {
       unsubscribe();
       dismissingScreenListener.current = undefined;
@@ -445,8 +451,11 @@ export default function ExchangeModal({
 
   useEffect(() => {
     let slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
-    if (config.default_slippage_bips?.[currentNetwork]) {
-      slippage = config.default_slippage_bips?.[currentNetwork];
+    const configSlippage = (config.default_slippage_bips as unknown) as {
+      [network: string]: number;
+    };
+    if (configSlippage?.[currentNetwork]) {
+      slippage = configSlippage?.[currentNetwork];
     }
     slippage && dispatch(updateSwapSlippage(slippage));
   }, [currentNetwork, dispatch]);
@@ -616,7 +625,10 @@ export default function ExchangeModal({
           return false;
         }
 
-        const callback = (success = false, errorMessage = null) => {
+        const callback = (
+          success: boolean = false,
+          errorMessage: string | null = null
+        ) => {
           setIsAuthorizing(false);
           if (success) {
             setParams({ focused: false });
@@ -630,10 +642,10 @@ export default function ExchangeModal({
         const swapParameters = {
           chainId,
           flashbots,
-          inputAmount,
+          inputAmount: inputAmount!,
           nonce,
-          outputAmount,
-          tradeDetails,
+          outputAmount: outputAmount!,
+          tradeDetails: tradeDetails!,
         };
         const rapType = getSwapRapTypeByExchangeType(type);
         await executeRap(wallet, rapType, swapParameters, callback);
@@ -899,14 +911,15 @@ export default function ExchangeModal({
   ]);
 
   const handleTapWhileDisabled = useCallback(() => {
-    lastFocusedInputHandle?.current?.blur();
+    const lastFocusedInput = (lastFocusedInputHandle?.current as unknown) as TextInput;
+    lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
       network: currentNetwork,
       onClose: () => {
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
-            lastFocusedInputHandle?.current?.focus();
+            lastFocusedInput?.focus();
           }, 250);
         });
       },

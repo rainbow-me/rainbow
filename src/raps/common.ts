@@ -106,7 +106,7 @@ export interface SwapActionParameters {
   tradeDetails: Quote;
   permit?: boolean;
   flashbots?: boolean;
-  provider: Provider;
+  provider?: Provider;
   chainId?: number;
   requiresApprove?: boolean;
 }
