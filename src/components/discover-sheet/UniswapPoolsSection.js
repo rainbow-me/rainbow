@@ -19,7 +19,7 @@ import {
   useLatestCallback,
   useUniswapPools,
 } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { useRemoveNextToLast } from '@rainbow-me/navigation/useRemoveNextToLast';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
@@ -206,6 +206,8 @@ export default function UniswapPools({
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useLatestCallback(item => {
+    const isFromWalletScreen = Navigation.getActiveRoute().params
+      ?.isFromWalletScreen;
     let poolAsset = uniswap.find(pool => pool.address === item.address);
     if (!poolAsset) {
       poolAsset = parseAssetNative(
@@ -227,6 +229,7 @@ export default function UniswapPools({
       asset: poolAsset,
       dpi: true,
       fromDiscover: true,
+      isFromWalletScreen,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: 'uniswap',
     });
