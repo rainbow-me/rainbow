@@ -846,7 +846,6 @@ export const getHasMerged = (network: Network) => {
   const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
   if (storage) {
     const data = JSON.parse(storage);
-    logger.debug('GET HAS MERGED DATA: ', data);
     const hasMerged = data[network];
     if (hasMerged === undefined) {
       data[network] = HAS_MERGED_DEFAULTS[network];
@@ -866,7 +865,6 @@ const getSetMergeStorageKey = (setting: boolean) => (network: Network) => {
     const data = JSON.parse(storage);
     data[network] = setting;
     hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
-    logger.debug('NEW DATA IN STORAGE: ', data);
   }
 };
 export const setHasMerged = (network: Network) => {
@@ -880,17 +878,13 @@ export const checkForTheMerge = async (
   network: Network
 ) => {
   const currentHasMerged = getHasMerged(network);
-  logger.debug('CURRENT HAS MERGED: ', currentHasMerged);
   if (currentHasMerged !== true) {
     const block = await provider.getBlock('latest');
-    logger.debug('LATEST BLOCK: ', block);
     const { _difficulty } = block;
-    logger.debug('_DIFFICULTY: ', _difficulty.toString());
     if (_difficulty.toString() === '0') {
       setHasMerged(network);
     } else if (currentHasMerged) {
       setHasNotMerged(network);
     }
-    logger.debug('GET HAS MERGED FINAL: ', getHasMerged(network));
   }
 };
