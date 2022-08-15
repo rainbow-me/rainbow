@@ -1,14 +1,26 @@
-import React from 'react';
-import { Row } from '../layout';
+import React, { MutableRefObject } from 'react';
+import { TextInput } from 'react-native';
 import ExchangeField from './ExchangeField';
-import styled from '@/styled-thing';
+import { Box } from '@rainbow-me/design-system';
+import { Network } from '@rainbow-me/helpers';
 
-const Container = styled(Row).attrs({ align: 'center' })({
-  overflow: 'hidden',
-  paddingBottom: android ? 8 : 21,
-  paddingTop: android ? 22 : 32,
-  width: '100%',
-});
+interface ExchangeOutputFieldProps {
+  editable: boolean;
+  loading: boolean;
+  network: Network;
+  onFocus: ({ target }: { target: Element }) => void;
+  onPressSelectOutputCurrency: () => void;
+  onTapWhileDisabled?: () => void;
+  outputAmount: string | null;
+  outputCurrencyAddress: string;
+  outputCurrencyMainnetAddress?: string;
+  outputCurrencyAssetType?: string;
+  outputCurrencySymbol?: string;
+  outputFieldRef: MutableRefObject<TextInput | undefined>;
+  setOutputAmount: (value: number) => void;
+  updateAmountOnFocus: () => void;
+  testID: string;
+}
 
 export default function ExchangeOutputField({
   editable,
@@ -26,9 +38,15 @@ export default function ExchangeOutputField({
   setOutputAmount,
   updateAmountOnFocus,
   testID,
-}) {
+}: ExchangeOutputFieldProps) {
   return (
-    <Container>
+    <Box
+      alignItems="center"
+      paddingBottom={android ? '8px' : '24px'}
+      paddingTop={android ? '24px' : '34px'}
+      style={{ overflow: 'hidden' }}
+      width="full"
+    >
       <ExchangeField
         address={outputCurrencyAddress}
         amount={outputAmount}
@@ -47,6 +65,6 @@ export default function ExchangeOutputField({
         updateOnFocus={updateAmountOnFocus}
         useCustomAndroidMask={android}
       />
-    </Container>
+    </Box>
   );
 }
