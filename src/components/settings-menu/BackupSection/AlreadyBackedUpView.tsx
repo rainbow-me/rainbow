@@ -161,18 +161,20 @@ export default function AlreadyBackedUpView() {
     >
       <Box marginTop="-10px">
         <Text color="secondary50" size="14px" weight="medium">
-          {(walletStatus === WalletBackupStatus.CLOUD_BACKUP && `Backed up`) ||
+          {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
+            lang.t('back_up.already_backed_up.backed_up')) ||
             (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
-              `Backed up manually`) ||
-            (walletStatus === WalletBackupStatus.IMPORTED && `Imported`)}
+              lang.t('back_up.already_backed_up.backed_up_manually')) ||
+            (walletStatus === WalletBackupStatus.IMPORTED &&
+              lang.t('back_up.already_backed_up.imported'))}
         </Text>
       </Box>
       <Box alignItems="center" marginTop="-42px">
         <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
         <Text size="20px" weight="bold">
           {(walletStatus === WalletBackupStatus.IMPORTED &&
-            `Your wallet was imported`) ||
-            `Your wallet is backed up`}
+            lang.t('back_up.already_backed_up.imported_message')) ||
+            lang.t('back_up.already_backed_up.backed_up_message')}
         </Text>
         <Box paddingHorizontal="60px" paddingTop="24px">
           <Text align="center" color="secondary50" size="18px">

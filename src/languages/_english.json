@@ -79,6 +79,13 @@
       }
     },
     "back_up": {
+      "already_backed_up": {
+        "backed_up": "Backed up",
+        "backed_up_manually": "Backed up manually",
+        "backed_up_message": "Your wallet is backed up",
+        "imported": "Imported",
+        "imported_message": "Your wallet was imported"
+      },
       "backup_deleted_successfully": "Backups Deleted Successfully",
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
@@ -166,6 +173,7 @@
       },
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet!",
+        "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings.",
         "copy_to_clipboard": "Copy to clipboard",
         "for_your_eyes_only": "For your eyes only",
         "private_key_title": "Private Key",

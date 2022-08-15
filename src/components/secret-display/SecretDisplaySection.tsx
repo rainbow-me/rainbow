@@ -55,7 +55,7 @@ export default function SecretDisplaySection({
   const currentWallet = wallets[walletId];
   const [visible, setVisible] = useState(true);
   const [isRecoveryPhraseVisible, setIsRecoveryPhraseVisible] = useState(false);
-  const [seed, setSeed] = useState(null as any);
+  const [seed, setSeed] = useState<string | null>(null);
   const [type, setType] = useState(currentWallet?.type);
 
   const loadSeed = useCallback(async () => {
@@ -126,9 +126,7 @@ export default function SecretDisplaySection({
     } else {
       return (
         <Text align="center" color="secondary60" size="16px">
-          Your account has been secured with biometric data, like fingerprint or
-          face identification. To see your recovery phrase, turn on biometrics
-          in your phone’s settings.
+          {lang.t('back_up.secret.biometrically_secured')}
         </Text>
       );
     }

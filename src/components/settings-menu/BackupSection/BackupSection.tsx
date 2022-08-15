@@ -118,7 +118,8 @@ const BackupSection = () => {
                 onPress(
                   key,
                   removeFirstEmojiFromString(labelOrName) ||
-                    abbreviations.address(address, 4, 6)
+                    abbreviations.address(address, 4, 6) ||
+                    ''
                 )
               }
               rightComponent={

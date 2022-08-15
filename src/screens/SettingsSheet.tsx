@@ -186,6 +186,7 @@ export default function SettingsSheet() {
       {...(android && { borderTopRadius: 30, marginTop: { custom: 8 } })}
     >
       <Stack.Navigator
+        // @ts-ignore
         screenOptions={{
           ...memoSettingsOptions,
           headerRight: renderHeaderRight,
@@ -223,6 +224,7 @@ export default function SettingsSheet() {
                   cardStyleInterpolator,
                   title: getTitle(),
                 }}
+                // @ts-ignore
                 title={getTitle()}
               />
             )
