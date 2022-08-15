@@ -120,7 +120,7 @@ export default function SettingsSheet() {
   const { colors } = useTheme();
 
   const getRealRoute = useCallback(
-    key => {
+    (key: any) => {
       let route = key;
       let paramsToPass: { imported?: boolean; type?: string } = {};
       if (key === SettingsPages.backup.key) {
@@ -149,7 +149,7 @@ export default function SettingsSheet() {
   );
 
   const onPressSection = useCallback(
-    section => () => {
+    (section: any) => () => {
       const { params, route } = getRealRoute(section.key);
       navigate(route, params);
     },
@@ -186,7 +186,6 @@ export default function SettingsSheet() {
       {...(android && { borderTopRadius: 30, marginTop: { custom: 8 } })}
     >
       <Stack.Navigator
-        // @ts-expect-error
         screenOptions={{
           ...memoSettingsOptions,
           headerRight: renderHeaderRight,
@@ -224,7 +223,6 @@ export default function SettingsSheet() {
                   cardStyleInterpolator,
                   title: getTitle(),
                 }}
-                // @ts-expect-error
                 title={getTitle()}
               />
             )
@@ -240,27 +238,24 @@ export default function SettingsSheet() {
         <Stack.Screen
           component={WalletNotificationsSettings}
           name="WalletNotificationsSettings"
-          options={({ route }) => ({
+          options={({ route }: any) => ({
             cardStyleInterpolator,
-            // @ts-expect-error
             title: route.params?.title,
           })}
         />
         <Stack.Screen
           component={SettingsBackupView}
           name="SettingsBackupView"
-          options={({ route }) => ({
+          options={({ route }: any) => ({
             cardStyleInterpolator,
-            // @ts-expect-error
             title: route.params?.title || lang.t('settings.backup'),
           })}
         />
         <Stack.Screen
           component={ShowSecretView}
           name="ShowSecretView"
-          options={({ route }) => ({
+          options={({ route }: any) => ({
             cardStyleInterpolator,
-            // @ts-expect-error
             title: route.params?.title || lang.t('settings.backup'),
           })}
         />
