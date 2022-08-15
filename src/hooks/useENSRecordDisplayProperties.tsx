@@ -44,7 +44,7 @@ const icons = {
 const links = {
   [ENS_RECORDS.twitter]: 'https://twitter.com/',
   [ENS_RECORDS.github]: 'https://github.com/',
-  [ENS_RECORDS.instagram]: 'https://intagram.com/',
+  [ENS_RECORDS.instagram]: 'https://instagram.com/',
   [ENS_RECORDS.reddit]: 'https://reddit.com/',
   [ENS_RECORDS.telegram]: 'https://telegram.com/',
 } as { [key: string]: string };

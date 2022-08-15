@@ -89,6 +89,8 @@ const getNftTraitUrl = (
       return `https://stratosnft.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
     case 'Quixotic':
       return `https://quixotic.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
+    case 'Trove':
+      return `https://trove.treasure.lol/collection/${collectionId}?trait%5B%5D=${traitTitle}%3A${traitValue}`;
     default:
       return `https://opensea.io/collection/${collectionId}?search[stringTraits][0][name]=${traitTitle}&search[stringTraits][0][values][0]=${traitValue}`;
   }

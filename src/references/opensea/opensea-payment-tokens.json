@@ -1,0 +1,82 @@
+[
+  {
+    "symbol": "APE",
+    "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+    "decimals": 18
+  },
+  {
+    "symbol": "VOLT",
+    "address": "0xffbf315f70e458e49229654dea4ce192d26f9b25",
+    "decimals": 18
+  },
+  {
+    "symbol": "ASH",
+    "address": "0x64d91f12ece7362f91a6f8e7940cd55f05060b92",
+    "decimals": 18
+  },
+  {
+    "symbol": "NCT",
+    "address": "0x8a9c4dfe8b9d8962b31e4e16f8321c44d48e246e",
+    "decimals": 18
+  },
+  {
+    "symbol": "GALA",
+    "address": "0x15d4c048f83bd7e37d49ea4c83a07267ec4203da",
+    "decimals": 8
+  },
+  {
+    "symbol": "UNI",
+    "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+    "decimals": 18
+  },
+  {
+    "symbol": "REVV",
+    "address": "0x557b933a7c2c45672b610f8954a3deb39a51a8ca",
+    "decimals": 18
+  },
+  {
+    "symbol": "LINK",
+    "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "decimals": 18
+  },
+  {
+    "symbol": "MANA",
+    "address": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+    "decimals": 18
+  },
+  {
+    "symbol": "CUBE",
+    "address": "0xdf801468a808a32656d2ed2d2d80b72a129739f4",
+    "decimals": 8
+  },
+  {
+    "symbol": "BAT",
+    "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
+    "decimals": 18
+  },
+  {
+    "symbol": "USDC",
+    "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "decimals": 6
+  },
+  {
+    "symbol": "WETH",
+    "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "decimals": 18
+  },
+  {
+    "symbol": "DAI",
+    "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "decimals": 18
+  },
+  {
+    "symbol": "ETH",
+    "address": "0x0000000000000000000000000000000000000000",
+    "decimals": 18
+  },
+  {
+    "symbol": "SAND",
+    "address": "0x3845badade8e6dff049820680d1f14bd3903a5d0",
+    "decimals": 18
+  }
+]

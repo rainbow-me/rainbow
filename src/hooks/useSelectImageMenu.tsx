@@ -133,8 +133,6 @@ export default function useSelectImageMenu({
     const stringIndex = image?.path.indexOf('/tmp');
     const tmpPath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
 
-    onChangeImage?.({ image: { ...image, tmpPath } });
-
     if (uploadToIPFS) {
       onUploading?.({ image });
       try {
@@ -152,6 +150,8 @@ export default function useSelectImageMenu({
         if (!isFocused.current || isRemoved.current) return;
         onUploadError?.({ error: err, image });
       }
+    } else {
+      onChangeImage?.({ image: { ...image, tmpPath } });
     }
   }, [
     imagePickerOptions,
@@ -176,6 +176,7 @@ export default function useSelectImageMenu({
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'library') {
+        isRemoved.current = false;
         handleSelectImage();
       }
       if (actionKey === 'nft') {
@@ -200,6 +201,7 @@ export default function useSelectImageMenu({
       },
       async (buttonIndex: Number) => {
         if (buttonIndex === 0) {
+          isRemoved.current = false;
           handleSelectImage();
         } else if (buttonIndex === 1) {
           handleSelectNFT();

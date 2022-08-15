@@ -30,6 +30,8 @@ import { timeUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { labelhash, logger } from '@rainbow-me/utils';
 
+const NOOP = () => null;
+
 const formatENSActionParams = (
   registrationParameters: RegistrationParameters
 ): ENSActionParameters => {
@@ -90,7 +92,7 @@ export default function useENSRegistrationActionHandler(
 
   // actions
   const commitAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       updateAvatarsOnNextBlock.current = true;
       const wallet = await loadWallet();
       if (!wallet) {
@@ -140,11 +142,16 @@ export default function useENSRegistrationActionHandler(
       const tx = getPendingTransactionByHash(commitTransactionHash || '');
       commitTransactionHash &&
         tx &&
-        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-          accentColor,
-          tx,
-          type: 'speed_up',
-        });
+        navigate(
+          ios
+            ? Routes.SPEED_UP_AND_CANCEL_SHEET
+            : Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET,
+          {
+            accentColor,
+            tx,
+            type: 'speed_up',
+          }
+        );
     },
     [
       getPendingTransactionByHash,
@@ -154,7 +161,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const registerAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       const {
         name,
         duration,
@@ -204,7 +211,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const renewAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
       const wallet = await loadWallet();
@@ -236,7 +243,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const setNameAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
       const wallet = await loadWallet();
@@ -264,7 +271,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const setRecordsAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -309,7 +316,7 @@ export default function useENSRegistrationActionHandler(
 
   const transferAction = useCallback(
     async (
-      callback: () => void,
+      callback: () => void = NOOP,
       {
         clearRecords,
         records,

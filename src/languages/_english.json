@@ -987,6 +987,7 @@
         "telegram": "Telegram",
         "twitter": "Twitter",
         "upload_photo": "Upload a Photo",
+        "uploading": "Uploading",
         "username_placeholder": "username",
         "wallet_placeholder": "Add a %{coin} address",
         "website": "Website",
@@ -1063,6 +1064,13 @@
         "finish": "Finish 􀆊",
         "and_create_ens_profile": "Search available .eth names",
         "register_name": "Create Your ENS Profile"
+      },
+      "search_validation": {
+        "invalid_domain": "This is an invalid domain",
+        "tld_not_supported": "This TLD is not supported",
+        "subdomains_not_supported": "Subdomains are not supported",
+        "invalid_length": "Your name must be at least 3 characters",
+        "invalid_special_characters": "Your name cannot include special characters"
       },
       "records": {
         "since": "Since"

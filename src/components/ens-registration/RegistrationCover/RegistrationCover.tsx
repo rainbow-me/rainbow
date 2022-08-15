@@ -7,7 +7,12 @@ import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
-import { Box, Text, useForegroundColor } from '@rainbow-me/design-system';
+import {
+  Box,
+  Cover,
+  Text,
+  useForegroundColor,
+} from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
@@ -102,6 +107,8 @@ const RegistrationCover = ({
     },
     [onBlurField, setCoverMetadata]
   );
+  const [isUploading, setIsUploading] = useState(false);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   const { ContextMenu, handleSelectImage } = useSelectImageMenu({
     imagePickerOptions: {
@@ -113,18 +120,26 @@ const RegistrationCover = ({
     onChangeImage: onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'header' });
-      setCoverUrl('');
       setCoverMetadata(undefined);
       setDisabled(false);
+      setTimeout(() => {
+        setCoverUrl('');
+      }, 100);
     },
     onUploadError: () => {
       onBlurField({ key: 'header', value: '' });
       setCoverUrl('');
+      setIsUploading(false);
     },
-    onUploading: () => setDisabled(true),
+    onUploading: () => {
+      setIsUploading(true);
+      setDisabled(true);
+    },
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onBlurField({ key: 'header', value: data.url });
       setDisabled(false);
+      setIsUploading(false);
+      setIsLoadingImage(true);
     },
     showRemove: Boolean(coverUrl),
     testID: 'cover',
@@ -169,19 +184,27 @@ const RegistrationCover = ({
                 style: { backgroundColor: accentColor + '10' },
               })}
         >
-          {coverUrl ? (
-            <Box
-              as={ImgixImage}
-              height="126px"
-              source={{ uri: coverUrl }}
-              width="full"
-            />
-          ) : (
+          {(!coverUrl || isUploading || isLoadingImage) && (
             <Text align="center" color="accent" size="18px" weight="heavy">
-              􀣵 {lang.t('profiles.create.add_cover')}
+              􀣵{' '}
+              {isUploading || isLoadingImage
+                ? lang.t('profiles.create.uploading')
+                : lang.t('profiles.create.add_cover')}
             </Text>
           )}
         </Box>
+        {!!coverUrl && !isUploading && (
+          <Cover>
+            <Box
+              as={ImgixImage}
+              height="126px"
+              onLoadEnd={() => setIsLoadingImage(false)}
+              size={400}
+              source={{ uri: coverUrl }}
+              width="full"
+            />
+          </Cover>
+        )}
       </ButtonPressAnimation>
     </ConditionalWrap>
   );

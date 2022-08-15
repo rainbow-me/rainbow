@@ -103,6 +103,10 @@ const yOffsetAtom = atomFamily({
   default: 0,
   key: 'imagePreviewOverlay.yOffset',
 });
+const zIndexAtom = atomFamily({
+  default: 0,
+  key: 'imagePreviewOverlay.zIndex',
+});
 
 const ImageOverlayConfigContext = createContext<{
   enableZoom: boolean;
@@ -222,8 +226,10 @@ function ImagePreview({
   const width = useRecoilValue(widthAtom(id));
   const xOffset = useRecoilValue(xOffsetAtom(id));
   const yOffset = useRecoilValue(yOffsetAtom(id));
+  const zIndexOverride = useRecoilValue(zIndexAtom(id));
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const opacity = givenOpacity || useSharedValue(1);
+  const zIndex = zIndexOverride ?? index;
 
   const { colorMode } = useColorMode();
 
@@ -244,7 +250,7 @@ function ImagePreview({
   }, [progress]);
 
   const backgroundMaskStyle = useAnimatedStyle(() => ({
-    zIndex: progress.value > 0 ? index + 1 : index,
+    zIndex: progress.value > 0 ? zIndex + 1 : zIndex,
   }));
   const overlayStyle = useAnimatedStyle(() => ({
     opacity: 1 * progress.value,
@@ -254,10 +260,10 @@ function ImagePreview({
           yPosition.value - (hideStatusBar ? SheetHandleFixedToTopHeight : 0),
       },
     ],
-    zIndex: progress.value > 0 ? index + 2 : -2,
+    zIndex: progress.value > 0 ? zIndex + 2 : -2,
   }));
   const containerStyle = useAnimatedStyle(() => ({
-    zIndex: progress.value > 0 ? index + 10 : index,
+    zIndex: progress.value > 0 ? zIndex + 10 : zIndex,
   }));
 
   const ready =
@@ -411,6 +417,7 @@ export function ImagePreviewOverlayTarget({
   onPress,
   topOffset = 85,
   uri,
+  zIndex = 0,
 }: {
   backgroundMask?: 'avatar';
   borderRadius?: number;
@@ -424,6 +431,7 @@ export function ImagePreviewOverlayTarget({
   hideStatusBar?: boolean;
   imageUrl?: string;
   topOffset?: number;
+  zIndex?: number;
 } & (
   | {
       aspectRatioType?: never;
@@ -459,6 +467,7 @@ export function ImagePreviewOverlayTarget({
   const setImageUrl = useSetRecoilState(imageUrlAtom(id));
   const setXOffset = useSetRecoilState(xOffsetAtom(id));
   const setYOffset = useSetRecoilState(yOffsetAtom(id));
+  const setZIndex = useSetRecoilState(zIndexAtom(id));
 
   useEffect(() => {
     if (backgroundMask) {
@@ -471,11 +480,12 @@ export function ImagePreviewOverlayTarget({
     setHideStatusBar(hideStatusBar);
     setImageUrl(imageUrl);
     setIds(ids => [...ids, id]);
+    setZIndex(zIndex);
   }, [
     backgroundMask,
     borderRadius,
-    enableZoomOnPress,
     disableEnteringWithPinch,
+    enableZoomOnPress,
     hasShadow,
     hideStatusBar,
     id,
@@ -488,6 +498,8 @@ export function ImagePreviewOverlayTarget({
     setHideStatusBar,
     setIds,
     setImageUrl,
+    setZIndex,
+    zIndex,
   ]);
 
   // If we are not given an `aspectRatioType`, then we will need to

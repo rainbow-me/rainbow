@@ -11,6 +11,7 @@ import RecordTags, {
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import { getLowResUrl } from '@/utils/getLowResUrl';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import {
   Bleed,
@@ -22,7 +23,6 @@ import {
   Inset,
   Stack,
 } from '@rainbow-me/design-system';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
   useENSAddress,
@@ -77,7 +77,7 @@ export default function ProfileSheetHeader({
   });
   const enableZoomOnPressAvatar = enableZoomableImages && !onPressAvatar;
 
-  const coverUrl = maybeSignUri(cover?.imageUrl || undefined, { w: 400 });
+  const coverUrl = getLowResUrl(cover?.imageUrl || '', { w: 400 });
   const { onPress: onPressCover } = useOpenENSNFTHandler({
     uniqueTokens,
     value: records?.header,

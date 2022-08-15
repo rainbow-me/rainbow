@@ -29,6 +29,8 @@ export default class ERC1155 {
     ]);
     if (!opts?.allowNonOwnerNFTs && ownerAddress && balance.eq(0)) return null;
 
+    let image;
+
     const { uri: resolvedURI, isOnChain, isEncoded } = resolveURI(tokenURI);
     let _resolvedUri = resolvedURI;
     if (isOnChain) {
@@ -38,10 +40,10 @@ export default class ERC1155 {
           'base64'
         ).toString();
       }
-      return JSON.parse(_resolvedUri);
+      const data = JSON.parse(_resolvedUri);
+      image = svgToPngIfNeeded(data?.image, false);
     }
 
-    let image;
     try {
       const data: UniqueAsset = await apiGetAccountUniqueToken(
         NetworkTypes.mainnet,

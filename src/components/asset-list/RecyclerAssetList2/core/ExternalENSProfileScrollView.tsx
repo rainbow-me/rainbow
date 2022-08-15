@@ -2,14 +2,18 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, {
   RefObject,
-  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
   useState,
 } from 'react';
 import { ScrollViewProps, ViewStyle } from 'react-native';
-import Animated, { runOnUI, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedScrollHandler,
+  useSharedValue,
+  useWorkletCallback,
+} from 'react-native-reanimated';
 
 import BaseScrollView, {
   ScrollViewDefaultProps,
@@ -18,10 +22,9 @@ import { ProfileSheetConfigContext } from '../../../../screens/ProfileSheet';
 import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
 import ImagePreviewOverlay from '../../../images/ImagePreviewOverlay';
 import { StickyHeaderContext } from './StickyHeaders';
-import { useAndroidScrollViewGestureHandler } from '@/hooks';
 
 const extraPadding = { paddingBottom: 144 };
-const ExternalENSScrollViewWithRefFactory = (type: string) =>
+const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
   React.forwardRef<
     BaseScrollView,
     ScrollViewDefaultProps & {
@@ -38,7 +41,6 @@ const ExternalENSScrollViewWithRefFactory = (type: string) =>
     const isInsideBottomSheet = !!useContext(BottomSheetContext);
     const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
 
-    const { onScroll, ...rest } = props;
     const { scrollViewRef } = useContext(StickyHeaderContext)!;
 
     const [scrollEnabled, setScrollEnabled] = useState(ios);
@@ -52,24 +54,14 @@ const ExternalENSScrollViewWithRefFactory = (type: string) =>
 
     const yPosition = useSharedValue(0);
 
-    const scrollHandler = useCallback(
-      y => {
-        'worklet';
-        yPosition.value = y;
-      },
-      [yPosition]
-    );
+    const scrollHandler = useAnimatedScrollHandler(nativeEvent => {
+      yPosition.value = nativeEvent.contentOffset.y;
+      runOnJS(props.onScroll)({ nativeEvent });
+    });
 
-    const { onScroll: onAndroidScroll } = useAndroidScrollViewGestureHandler();
-
-    const handleScroll = useCallback(
-      event => {
-        onScroll(event);
-        android && onAndroidScroll(event);
-        runOnUI(scrollHandler)(event.nativeEvent.contentOffset.y);
-      },
-      [onAndroidScroll, onScroll, scrollHandler]
-    );
+    const scrollWorklet = useWorkletCallback(event => {
+      yPosition.value = event.contentOffset.y;
+    });
 
     useImperativeHandle(ref, () => scrollViewRef.current!);
 
@@ -79,12 +71,18 @@ const ExternalENSScrollViewWithRefFactory = (type: string) =>
 
     return (
       <ScrollView
-        {...(rest as ScrollViewProps)}
+        {...(props as ScrollViewProps)}
         bounces={false}
-        contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
-        onScroll={handleScroll}
+        contentContainerStyle={[extraPadding, props.contentContainerStyle]}
         ref={scrollViewRef as RefObject<any>}
         scrollEnabled={scrollEnabled}
+        {...(isInsideBottomSheet
+          ? {
+              onScrollWorklet: scrollWorklet,
+            }
+          : {
+              onScroll: scrollHandler,
+            })}
       >
         <ImagePreviewOverlay
           enableZoom={ios && enableZoomableImages}
@@ -97,10 +95,10 @@ const ExternalENSScrollViewWithRefFactory = (type: string) =>
     );
   });
 
-const ExternalENSProfileScrollViewWithRef = ExternalENSScrollViewWithRefFactory(
+const ExternalENSProfileScrollViewWithRef = ExternalENSProfileScrollViewWithRefFactory(
   'ens-profile'
 );
-const ExternalSelectNFTScrollViewWithRef = ExternalENSScrollViewWithRefFactory(
+const ExternalSelectNFTScrollViewWithRef = ExternalENSProfileScrollViewWithRefFactory(
   'select-nft'
 );
 export {
