@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
+import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
@@ -20,6 +21,15 @@ const Label = styled(Text).attrs(
   })
 )({});
 
+interface PriceImpactWarningProps extends ViewProps {
+  onPress: () => void;
+  isHighPriceImpact: boolean;
+  priceImpactColor?: string;
+  priceImpactNativeAmount?: string | null;
+  priceImpactPercentDisplay?: string | null;
+  style?: StyleProp<ViewStyle>;
+}
+
 export default function PriceImpactWarning({
   onPress,
   isHighPriceImpact,
@@ -28,7 +38,7 @@ export default function PriceImpactWarning({
   priceImpactPercentDisplay,
   style,
   ...props
-}) {
+}: PriceImpactWarningProps) {
   const headingValue = priceImpactNativeAmount ?? priceImpactPercentDisplay;
   return (
     <Animated.View {...props} style={[style, position.coverAsObject]}>
