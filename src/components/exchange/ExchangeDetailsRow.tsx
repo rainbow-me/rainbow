@@ -6,13 +6,11 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
-import { analytics } from '@/analytics';
-import { usePrevious, useSwapCurrencies } from '@/hooks';
-import styled from '@/styled-thing';
-import { padding, position } from '@/styles';
+import { analytics } from '@rainbow-me/analytics';
+import { Box } from '@rainbow-me/design-system';
+import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
 
 const defaultPriceImpactScale = 1.15;
 const timingConfig = {
@@ -20,23 +18,16 @@ const timingConfig = {
   easing: Easing.bezier(0.76, 0, 0.24, 1),
 };
 
-const Container = styled(Centered)({
-  height: 60,
-  width: '100%',
-});
-
-const ExchangeDetailsButtonRow = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})({
-  ...padding.object(10),
-  ...position.coverAsObject,
-  width: '100%',
-});
-
-const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
-  ExchangeDetailsButtonRow
-);
+interface ExchangeDetailsRowProps {
+  isHighPriceImpact: boolean;
+  onFlipCurrencies: () => void;
+  onPressSettings: () => void;
+  onPressImpactWarning: () => void;
+  priceImpactColor?: string;
+  priceImpactNativeAmount?: string | null;
+  priceImpactPercentDisplay?: string | null;
+  type: string;
+}
 
 export default function ExchangeDetailsRow({
   isHighPriceImpact,
@@ -47,9 +38,7 @@ export default function ExchangeDetailsRow({
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
   type,
-  flipDisabled,
-  ...props
-}) {
+}: ExchangeDetailsRowProps) {
   const detailsRowOpacity = useSharedValue(1);
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
@@ -105,7 +94,7 @@ export default function ExchangeDetailsRow({
   ]);
 
   return (
-    <Container {...props}>
+    <Box alignItems="center" height="56px" justifyContent="center" width="full">
       <PriceImpactWarning
         isHighPriceImpact={isHighPriceImpact}
         onPress={onPressImpactWarning}
@@ -115,12 +104,17 @@ export default function ExchangeDetailsRow({
         priceImpactPercentDisplay={priceImpactPercentDisplay}
         style={priceImpactAnimatedStyle}
       />
-      <AnimatedExchangeDetailsButtonRow
+      <Box
+        alignItems="center"
+        as={Animated.View}
+        flexDirection="row"
+        justifyContent="space-between"
+        padding="10px"
         pointerEvents={isHighPriceImpact ? 'none' : 'auto'}
         style={detailsRowAnimatedStyle}
+        width="full"
       >
         <ExchangeDetailsButton
-          disabled={flipDisabled}
           onPress={onFlipCurrencies}
           testID="exchange-flip-button"
         >
@@ -132,7 +126,7 @@ export default function ExchangeDetailsRow({
         >
           􀣋 {lang.t('exchange.settings')}
         </ExchangeDetailsButton>
-      </AnimatedExchangeDetailsButtonRow>
-    </Container>
+      </Box>
+    </Box>
   );
 }
