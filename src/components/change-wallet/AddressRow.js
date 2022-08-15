@@ -252,86 +252,84 @@ export default function AddressRow({ contextMenuActions, data, editMode }) {
   );
 
   const WalletRow = () => (
-    <ButtonPressAnimation
-      disabled={!editMode}
-      enableHapticFeedback
-      onPress={android && onPressAndroidActions}
-      scaleTo={0.98}
-    >
-      <Row align="center">
-        <Row align="center" flex={1} height={59}>
-          {accountImage ? (
-            <ImageAvatar image={accountImage} marginRight={10} size="medium" />
+    <Row align="center">
+      <Row align="center" flex={1} height={59}>
+        {accountImage ? (
+          <ImageAvatar image={accountImage} marginRight={10} size="medium" />
+        ) : (
+          <ContactAvatar
+            color={accountColor}
+            marginRight={10}
+            size="medium"
+            value={
+              returnStringFirstEmoji(cleanedUpLabel) ||
+              profileUtils.addressHashedEmoji(address) ||
+              cleanedUpLabel ||
+              ens
+            }
+          />
+        )}
+        <ColumnWithMargins margin={android ? -6 : 3}>
+          {cleanedUpLabel || ens ? (
+            <StyledTruncatedText color={colors.dark}>
+              {cleanedUpLabel || ens}
+            </StyledTruncatedText>
           ) : (
-            <ContactAvatar
-              color={accountColor}
-              marginRight={10}
-              size="medium"
-              value={
-                returnStringFirstEmoji(cleanedUpLabel) ||
-                profileUtils.addressHashedEmoji(address) ||
-                cleanedUpLabel ||
-                ens
-              }
+            <TruncatedAddress
+              address={address}
+              color={colors.dark}
+              firstSectionLength={6}
+              size="smaller"
+              style={sx.accountLabel}
+              truncationLength={4}
+              weight="medium"
             />
           )}
-          <ColumnWithMargins margin={android ? -6 : 3}>
-            {cleanedUpLabel || ens ? (
-              <StyledTruncatedText color={colors.dark}>
-                {cleanedUpLabel || ens}
-              </StyledTruncatedText>
-            ) : (
-              <TruncatedAddress
-                address={address}
-                color={colors.dark}
-                firstSectionLength={6}
-                size="smaller"
-                style={sx.accountLabel}
-                truncationLength={4}
-                weight="medium"
-              />
-            )}
-            <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-              {cleanedUpBalance || 0} ETH
-            </StyledBottomRowText>
-          </ColumnWithMargins>
-        </Row>
-        <Column style={sx.rightContent}>
-          {isReadOnly && (
-            <LinearGradient
-              {...linearGradientProps}
-              marginRight={editMode || isSelected ? -9 : 19}
-            >
-              <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                {lang.t('wallet.change_wallet.watching')}
-              </ReadOnlyText>
-            </LinearGradient>
-          )}
-          {!editMode && isSelected && (
-            <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
-          )}
-          {editMode && <OptionsIcon onPress={NOOP} />}
-        </Column>
+          <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+            {cleanedUpBalance || 0} ETH
+          </StyledBottomRowText>
+        </ColumnWithMargins>
       </Row>
-    </ButtonPressAnimation>
+      <Column style={sx.rightContent}>
+        {isReadOnly && (
+          <LinearGradient
+            {...linearGradientProps}
+            marginRight={editMode || isSelected ? -9 : 19}
+          >
+            <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+              {lang.t('wallet.change_wallet.watching')}
+            </ReadOnlyText>
+          </LinearGradient>
+        )}
+        {!editMode && isSelected && (
+          <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
+        )}
+        {editMode &&
+          (ios ? (
+            <ContextMenuButton
+              isMenuPrimaryAction
+              menuConfig={menuConfig}
+              onPressMenuItem={handleSelectMenuItem}
+              useActionSheetFallback={false}
+            >
+              <OptionsIcon onPress={NOOP} />
+            </ContextMenuButton>
+          ) : (
+            <ButtonPressAnimation
+              enableHapticFeedback
+              onPress={onPressAndroidActions}
+              scaleTo={0.9}
+            >
+              <OptionsIcon onPress={NOOP} />
+            </ButtonPressAnimation>
+          ))}
+      </Column>
+    </Row>
   );
 
   return (
     <View style={sx.accountRow}>
-      {editMode && ios ? (
-        <ContextMenuButton
-          isMenuPrimaryAction
-          // @ts-ignore
-          menuAlignmentOverride="right"
-          menuConfig={menuConfig}
-          onPressMenuItem={handleSelectMenuItem}
-          useActionSheetFallback={false}
-        >
-          <WalletRow />
-        </ContextMenuButton>
-      ) : (
-        <WalletRow />
-      )}
+      <WalletRow />
     </View>
   );
 }
