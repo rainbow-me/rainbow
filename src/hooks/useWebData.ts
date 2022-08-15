@@ -36,9 +36,14 @@ export default function useWebData() {
   const dispatch = useDispatch();
   const { wallets } = useWallets();
 
-  const { showcaseTokens, webDataEnabled } = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
-    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
+  const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
+    ({
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'hidden' does not exist on type '... Remove this comment to see the full error message
+      hiddenTokens: { hiddenTokens },
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
+      showcaseTokens: { webDataEnabled, showcaseTokens },
+    }) => ({
+      hiddenTokens,
       showcaseTokens,
       webDataEnabled,
     })
@@ -59,6 +64,13 @@ export default function useWebData() {
 
       await setPreference(
         PreferenceActionType.init,
+        'hidden',
+        accountAddress,
+        hiddenTokens
+      );
+
+      await setPreference(
+        PreferenceActionType.init,
         'profile',
         accountAddress,
         {
@@ -75,6 +87,7 @@ export default function useWebData() {
       accountSymbol,
       colors.avatarBackgrounds,
       dispatch,
+      hiddenTokens,
     ]
   );
 
