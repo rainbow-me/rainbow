@@ -271,7 +271,12 @@ export default function AddressRow({ contextMenuActions, data, editMode }) {
         )}
         <ColumnWithMargins margin={android ? -6 : 3}>
           {cleanedUpLabel || ens ? (
-            <StyledTruncatedText color={colors.dark}>
+            <StyledTruncatedText
+              color={colors.dark}
+              testID={`change-wallet-address-row-label-${
+                cleanedUpLabel || ens
+              }`}
+            >
               {cleanedUpLabel || ens}
             </StyledTruncatedText>
           ) : (
@@ -281,6 +286,7 @@ export default function AddressRow({ contextMenuActions, data, editMode }) {
               firstSectionLength={6}
               size="smaller"
               style={sx.accountLabel}
+              testID={`change-wallet-address-row-address-${address}`}
               truncationLength={4}
               weight="medium"
             />
