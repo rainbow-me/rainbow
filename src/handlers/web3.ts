@@ -20,10 +20,14 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import { RainbowConfig } from '../model/config';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
-import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/helpers/networkTypes';
-import { isUnstoppableAddressFormat } from '@/helpers/validators';
+import {
+  AssetType,
+  NewTransaction,
+  ParsedAddressAsset,
+} from '@rainbow-me/entities';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { Network } from '@rainbow-me/helpers/networkTypes';
+import { isUnstoppableAddressFormat } from '@rainbow-me/helpers/validators';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,

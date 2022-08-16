@@ -36,8 +36,16 @@ import {
 import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
 import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
-import { disableCharts, forceFallbackProvider } from '@/config/debug';
-import { ZerionAsset } from '@/entities';
+import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
+import { ZerionAsset } from '@rainbow-me/entities';
+import {
+  checkForTheMerge,
+  getProviderForNetwork,
+  isHardHat,
+} from '@rainbow-me/handlers/web3';
+import ChartTypes, { ChartType } from '@rainbow-me/helpers/chartTypes';
+import currencyTypes from '@rainbow-me/helpers/currencyTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   checkForTheMerge,
   getProviderForNetwork,
