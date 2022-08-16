@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
-import { isNil } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
@@ -22,14 +21,11 @@ const PrivacySection = () => {
   const { navigate } = useNavigation();
   const { accountENS } = useAccountProfile();
 
-  const [publicShowCase, setPublicShowCase] = useState<boolean | undefined>();
+  const [publicShowCase, togglePublicShowcase] = useReducer(
+    publicShowCase => !publicShowCase,
+    webDataEnabled
+  );
   const profilesEnabled = useExperimentalFlag(PROFILES);
-
-  useEffect(() => {
-    if (isNil(publicShowCase) && webDataEnabled) {
-      setPublicShowCase(webDataEnabled);
-    }
-  }, [publicShowCase, webDataEnabled]);
 
   const viewProfile = useCallback(() => {
     navigate(Routes.PROFILE_SHEET, {
@@ -39,19 +35,13 @@ const PrivacySection = () => {
   }, [accountENS, navigate]);
 
   const toggleWebData = useCallback(() => {
-    setPublicShowCase(!webDataEnabled as any);
-    if (webDataEnabled) {
+    if (publicShowCase) {
       wipeWebData();
     } else {
       initWebData(showcaseTokens);
     }
-  }, [
-    initWebData,
-    setPublicShowCase,
-    showcaseTokens,
-    webDataEnabled,
-    wipeWebData,
-  ]);
+    togglePublicShowcase();
+  }, [initWebData, publicShowCase, showcaseTokens, wipeWebData]);
 
   return (
     <MenuContainer>
