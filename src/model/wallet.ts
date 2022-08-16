@@ -484,7 +484,12 @@ const loadPrivateKey = async (
         return null;
       }
 
-      android && (await delay(300));
+      // in sporadic cases, it crashes the application due to the keychain and
+      // biometric authentication that it calls. Potentially It appears when
+      // performing ECDH KeyAgreement that operational slots are not being
+      // released after the key agreement has finished.
+      android && (await delay(100));
+
       const privateKeyData = await getPrivateKey(addressToUse);
       if (privateKeyData === -1) {
         return -1;
