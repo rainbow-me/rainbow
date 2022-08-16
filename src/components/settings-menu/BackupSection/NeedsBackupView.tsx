@@ -104,14 +104,15 @@ export default function NeedsBackupView() {
             })}`}
             onPress={onIcloudBackup}
           />
-          <SheetActionButton
-            color={colors.white}
-            // @ts-ignore
-            label={`🤓 ${lang.t('modal.back_up.default.button.manual')}`}
-            onPress={onManualBackup}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-            width={ios ? 221 : 270}
-          />
+          <Box width={{ custom: ios ? 221 : 270 }}>
+            <SheetActionButton
+              color={colors.white}
+              // @ts-ignore
+              label={`🤓 ${lang.t('modal.back_up.default.button.manual')}`}
+              onPress={onManualBackup}
+              textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            />
+          </Box>
         </Stack>
       </Box>
     </Box>
