@@ -108,10 +108,7 @@ type NewTransactionNonNullable = {
  */
 export const setRpcEndpoints = (config: RainbowConfig): void => {
   rpcEndpoints[Network.mainnet] = config.ethereum_mainnet_rpc;
-  rpcEndpoints[Network.ropsten] = config.ethereum_ropsten_rpc;
-  rpcEndpoints[Network.kovan] = config.ethereum_kovan_rpc;
   rpcEndpoints[Network.goerli] = config.ethereum_goerli_rpc;
-  rpcEndpoints[Network.rinkeby] = config.ethereum_rinkeby_rpc;
   rpcEndpoints[Network.optimism] = config.optimism_mainnet_rpc;
   rpcEndpoints[Network.arbitrum] = config.arbitrum_mainnet_rpc;
   rpcEndpoints[Network.polygon] = config.polygon_mainnet_rpc;
@@ -177,9 +174,6 @@ export const isHardHat = (providerUrl: string): boolean => {
 export const isTestnetNetwork = (network: Network): boolean => {
   switch (network) {
     case Network.goerli:
-    case Network.kovan:
-    case Network.rinkeby:
-    case Network.ropsten:
       return true;
     default:
       return false;

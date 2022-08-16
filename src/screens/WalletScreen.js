@@ -237,7 +237,7 @@ export default function WalletScreen() {
   }, [profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
-  // (mainnet & rinkeby)
+  // (mainnet)
   const fabs = useMemo(
     () =>
       [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(

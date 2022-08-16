@@ -23,6 +23,7 @@ export const optimismNftAppIconCheck = async (
   walletsToCheck: EthereumAddress[]
 ) => {
   logger.log('Checking OP NFT  on network', NETWORK);
+
   try {
     const found = await checkIfWalletsOwnNft(
       TOKEN_ADDRESSES,

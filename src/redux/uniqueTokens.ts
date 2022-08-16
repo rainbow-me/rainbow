@@ -205,7 +205,7 @@ export const uniqueTokensResetState = () => (
 
 /**
  * Fetches unique tokens via API, updates state, and saves to local storage,
- * as long as the current network is either mainnet or rinkeby.
+ * as long as the current network is mainnet lol.
  */
 export const uniqueTokensRefreshState = () => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
@@ -214,7 +214,7 @@ export const uniqueTokensRefreshState = () => async (
   const { network } = getState().settings;
 
   // Currently not supported in testnets
-  if (network !== Network.mainnet && network !== Network.rinkeby) {
+  if (network !== Network.mainnet) {
     return;
   }
 
