@@ -22,7 +22,7 @@ const PrivacySection = () => {
   const { navigate } = useNavigation();
   const { accountENS } = useAccountProfile();
 
-  const [publicShowCase, setPublicShowCase] = useState();
+  const [publicShowCase, setPublicShowCase] = useState<boolean | undefined>();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {

@@ -52,7 +52,7 @@ export default function SecretDisplaySection({
   const { params } = useRoute();
   const { selectedWallet, wallets } = useWallets();
   const walletId = (params as any)?.walletId || selectedWallet.id;
-  const currentWallet = wallets[walletId];
+  const currentWallet = wallets?.[walletId];
   const [visible, setVisible] = useState(true);
   const [isRecoveryPhraseVisible, setIsRecoveryPhraseVisible] = useState(false);
   const [seed, setSeed] = useState<string | null>(null);
@@ -154,6 +154,7 @@ export default function SecretDisplaySection({
                 </CopyFloatingEmojis>
               </Box>
               <Stack alignHorizontal="center" space="19px">
+                {/* @ts-ignore */}
                 <SecretDisplayCard seed={seed} type={type} />
                 <Text containsEmoji size="16px" weight="bold">
                   👆{lang.t('back_up.secret.for_your_eyes_only')} 👆

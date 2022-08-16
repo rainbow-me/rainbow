@@ -134,6 +134,7 @@ export default function SettingsSheet() {
           route = 'BackupSection';
         } else {
           if (
+            wallets &&
             Object.keys(wallets).length === 1 &&
             (selectedWallet.imported || selectedWallet.backedUp)
           ) {

@@ -65,8 +65,8 @@ export default function AlreadyBackedUpView() {
 
   const walletStatus = useMemo(() => {
     let status = null;
-    if (wallets[walletId].backedUp) {
-      if (wallets[walletId].backupType === WalletBackupTypes.manual) {
+    if (wallets?.[walletId].backedUp) {
+      if (wallets?.[walletId].backupType === WalletBackupTypes.manual) {
         status = WalletBackupStatus.MANUAL_BACKUP;
       } else {
         status = WalletBackupStatus.CLOUD_BACKUP;
@@ -129,7 +129,7 @@ export default function AlreadyBackedUpView() {
 
   const { colors, isDarkMode } = useTheme();
 
-  const isSecretPhrase = WalletTypes.mnemonic === wallets[walletId].type;
+  const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId].type;
 
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
@@ -147,10 +147,11 @@ export default function AlreadyBackedUpView() {
       ? colors.green
       : colors.alpha(colors.blueGreyDark, 0.5);
 
-  const hasMultipleWallets =
-    Object.keys(wallets).filter(
-      key => wallets[key].type !== WalletTypes.readOnly
-    ).length > 1;
+  const hasMultipleWallets = wallets
+    ? Object.keys(wallets).filter(
+        key => wallets?.[key].type !== WalletTypes.readOnly
+      ).length > 1
+    : false;
 
   return (
     <Box

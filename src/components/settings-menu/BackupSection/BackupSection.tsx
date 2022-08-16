@@ -20,8 +20,8 @@ const BackupSection = () => {
 
   const onPress = useCallback(
     (walletId: string, name: string) => {
-      const wallet = wallets[walletId];
-      if (wallet.backedUp || wallet.imported) {
+      const wallet = wallets?.[walletId];
+      if (wallet?.backedUp || wallet?.imported) {
         navigate('SettingsBackupView', {
           imported: wallet.imported,
           title: name,
@@ -41,32 +41,36 @@ const BackupSection = () => {
 
   let cloudBackedUpWallets = 0;
 
-  const backups = Object.keys(wallets)
-    .filter(key => wallets[key].type !== WalletTypes.readOnly)
-    .map(key => {
-      const wallet = wallets[key];
-      const visibleAccounts = wallet.addresses.filter((a: any) => a.visible);
-      const account = visibleAccounts[0];
-      const totalAccounts = visibleAccounts.length;
-      const { color, label, address } = account;
-      if (wallet.backupType === WalletBackupTypes.cloud) {
-        cloudBackedUpWallets += 1;
-      }
-      let labelOrName = label;
-      if (!label) {
-        if (walletNames[address]) {
-          labelOrName = walletNames[address];
-        }
-      }
-      return {
-        address,
-        color,
-        key,
-        label: labelOrName,
-        numAccounts: totalAccounts,
-        wallet,
-      };
-    });
+  const backups = wallets
+    ? Object.keys(wallets)
+        .filter(key => wallets[key].type !== WalletTypes.readOnly)
+        .map(key => {
+          const wallet = wallets[key];
+          const visibleAccounts = wallet.addresses.filter(
+            (a: any) => a.visible
+          );
+          const account = visibleAccounts[0];
+          const totalAccounts = visibleAccounts.length;
+          const { color, label, address } = account;
+          if (wallet.backupType === WalletBackupTypes.cloud) {
+            cloudBackedUpWallets += 1;
+          }
+          let labelOrName = label;
+          if (!label) {
+            if (walletNames[address]) {
+              labelOrName = walletNames[address];
+            }
+          }
+          return {
+            address,
+            color,
+            key,
+            label: labelOrName,
+            numAccounts: totalAccounts,
+            wallet,
+          };
+        })
+    : [];
 
   return (
     <MenuContainer>

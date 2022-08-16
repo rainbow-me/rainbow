@@ -35,7 +35,7 @@ export default function NeedsBackupView() {
   const walletId = (params as any)?.walletId || selectedWallet.id;
 
   useEffect(() => {
-    if (wallets[walletId]?.backedUp) {
+    if (wallets?.[walletId]?.backedUp) {
       setParams({ type: 'AlreadyBackedUpView' });
     }
   }, [setParams, walletId, wallets]);
