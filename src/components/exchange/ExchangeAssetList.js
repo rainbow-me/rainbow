@@ -134,6 +134,8 @@ function renderItem({ item }) {
       <ContactRow
         accountType="contact"
         address={item.address}
+        color={item.color}
+        emoji={item.emoji}
         nickname={item.nickname}
         onPress={item.onPress}
         showcaseItem={item}

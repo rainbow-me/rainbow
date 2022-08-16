@@ -280,7 +280,6 @@ export default function SendConfirmationSheet() {
     if (!isSendingToUserAccount) {
       let sends = 0;
       let sendsCurrentNetwork = 0;
-      // @ts-expect-error From JavaScript hook
       transactions.forEach(tx => {
         if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
           sends++;

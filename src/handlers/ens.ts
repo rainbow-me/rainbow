@@ -57,6 +57,7 @@ import {
   getOpenSeaCollectionUrl,
   handleAndSignImages,
 } from '@rainbow-me/parsers';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
@@ -255,10 +256,12 @@ export const fetchSuggestions = async (
       });
       // eslint-disable-next-line no-empty
     } catch (e) {}
+    const rainbowProfile = await fetchRainbowProfile(address);
     const suggestion = [
       {
         address: address,
-        color: profileUtils.addressHashedColorIndex(recipient),
+        color: rainbowProfile?.color,
+        emoji: rainbowProfile?.emoji,
         ens: true,
         image: avatar?.imageUrl,
         network: 'mainnet',
@@ -273,6 +276,8 @@ export const fetchSuggestions = async (
   if (recipient.length > 2) {
     let suggestions: {
       address: any;
+      color: string;
+      emoji: string;
       ens: boolean;
       image: any;
       network: string;

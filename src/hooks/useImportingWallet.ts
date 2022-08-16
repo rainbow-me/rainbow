@@ -48,10 +48,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
-  const [name, setName] = useState(null);
-  const [image, setImage] = useState(null);
-  const [color, setColor] = useState(null);
-  const [emoji, setEmoji] = useState(null);
+  const [emoji, setEmoji] = useState<string | null>(null);
+  const [color, setColor] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
@@ -111,7 +111,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           address,
           asset: [],
           isNewProfile: true,
-          onCloseModal: ({ name, image }: any) => {
+          onCloseModal: ({ name, image }: { name: string; image: string }) => {
             importWallet(name, image);
           },
           profile: {
@@ -136,7 +136,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
-      let name: any = null;
+      let name: string | null = null;
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {

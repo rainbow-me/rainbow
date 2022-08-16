@@ -16,11 +16,11 @@ export default function useUpdateAvatar() {
     async (color, emoji) => {
       if (!color && !emoji) return;
       const walletId = selectedWallet.id;
-      const newWallets = {
+      const newWallets: typeof wallets = {
         ...wallets,
         [walletId]: {
-          ...wallets[walletId],
-          addresses: wallets[walletId].addresses.map(
+          ...wallets![walletId],
+          addresses: wallets![walletId].addresses.map(
             (singleAddress: { address: string }) =>
               singleAddress.address.toLowerCase() ===
               accountAddress.toLowerCase()
@@ -51,7 +51,9 @@ export default function useUpdateAvatar() {
   );
 
   const setNextEmoji = useCallback(() => {
-    const { emoji, color } = getNextEmojiWithColor(accountSymbol);
+    const { emoji, color } = getNextEmojiWithColor(
+      (accountSymbol as string) || ''
+    );
     saveInfo(color, emoji);
   }, [accountSymbol, saveInfo]);
 

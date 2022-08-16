@@ -11,6 +11,7 @@ import useWallets from './useWallets';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import { AppState } from '@rainbow-me/redux/store';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -22,8 +23,7 @@ export default function useWebData() {
   const { wallets } = useWallets();
 
   const { showcaseTokens, webDataEnabled } = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
-    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
+    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
       showcaseTokens,
       webDataEnabled,
     })
@@ -83,7 +83,7 @@ export default function useWebData() {
   const updateWebProfile = useCallback(
     async (address, color, emoji) => {
       if (!webDataEnabled) return;
-      const wallet = findWalletWithAccount(wallets, address);
+      const wallet = findWalletWithAccount(wallets!, address);
       // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {

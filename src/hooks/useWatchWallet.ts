@@ -9,7 +9,7 @@ import {
   useInitializeWallet,
   useWallets,
 } from '@rainbow-me/hooks';
-import { cleanUpWalletKeys } from '@rainbow-me/model/wallet';
+import { cleanUpWalletKeys, RainbowWallet } from '@rainbow-me/model/wallet';
 import {
   addressSetSelected,
   walletsSetSelected,
@@ -33,8 +33,8 @@ export default function useWatchWallet({
   const { wallets } = useWallets();
 
   const watchingWallet = useMemo(() => {
-    return Object.values(wallets || {}).find((wallet: any) =>
-      wallet.addresses.some(({ address }: any) => address === primaryAddress)
+    return Object.values<RainbowWallet>(wallets || {}).find(wallet =>
+      wallet.addresses.some(({ address }) => address === primaryAddress)
     );
   }, [primaryAddress, wallets]);
   const isWatching = useMemo(() => Boolean(watchingWallet), [watchingWallet]);
@@ -44,7 +44,7 @@ export default function useWatchWallet({
   const initializeWallet = useInitializeWallet();
   const changeAccount = useCallback(
     async (walletId, address) => {
-      const wallet = wallets[walletId];
+      const wallet = wallets![walletId];
       try {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
@@ -72,8 +72,8 @@ export default function useWatchWallet({
     } else {
       // If there's more than 1 account
       // it's deletable
-      const isLastAvailableWallet = Object.keys(wallets).find(key => {
-        const someWallet = wallets[key];
+      const isLastAvailableWallet = Object.keys(wallets!).find(key => {
+        const someWallet = wallets![key];
         const otherAccount = someWallet.addresses.find(
           (account: any) =>
             account.visible && account.address !== accountAddress
@@ -96,7 +96,7 @@ export default function useWatchWallet({
           const { wallet: foundWallet, key } =
             doesWalletsContainAddress({
               address: primaryAddress,
-              wallets,
+              wallets: wallets!,
             }) || {};
           if (foundWallet) {
             await changeAccount(key, foundWallet.address);

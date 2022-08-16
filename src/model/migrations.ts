@@ -138,7 +138,9 @@ export default async function runMigrations() {
         const wallets = { [id]: currentWallet };
 
         logger.sentry('v1 migration - update wallets and selected wallet');
+        // @ts-ignore
         await store.dispatch(walletsUpdate(wallets));
+        // @ts-ignore
         await store.dispatch(walletsSetSelected(currentWallet));
       }
     }
@@ -372,6 +374,7 @@ export default async function runMigrations() {
           };
         });
         const newWallet = { ...wallet, addresses: newAddresses };
+        // @ts-ignore
         updatedWallets[walletKeys[i]] = newWallet;
       }
       logger.log('update wallets in store to index new colors');

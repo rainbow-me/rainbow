@@ -522,7 +522,7 @@ export const getWalletRainbowProfiles = async (
   });
 
   const newAccounts = await Promise.all(promises);
-  newAccounts.forEach(({ account, key, updated }) => {
+  newAccounts.forEach(({ account, key, updated }: any) => {
     if (!updated) return;
     const addresses = wallets?.[key]?.addresses;
     if (!addresses) return;

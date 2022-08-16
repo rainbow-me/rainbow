@@ -67,7 +67,6 @@ const ContactRow = (
   ref
 ) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { rainbowProfile } = useRainbowProfile(address);
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
@@ -84,6 +83,9 @@ const ContactRow = (
     showcaseItem,
     testID,
   } = props;
+  const { rainbowProfile } = useRainbowProfile(address, {
+    enabled: !((color && emoji) || image),
+  });
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
