@@ -369,12 +369,13 @@ const DevSection = () => {
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="⏩" isEmoji />}
               onPress={syncCodepush}
+              rightComponent={
+                <MenuItem.Selection>{codePushVersion}</MenuItem.Selection>
+              }
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.sync_codepush', {
-                    codePushVersion: codePushVersion,
-                  })}
+                  text={lang.t('developer_settings.sync_codepush')}
                 />
               }
             />

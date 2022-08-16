@@ -311,7 +311,7 @@
       "restart_app": "Restart app",
       "reset_experimental_config": "Reset experimental config",
       "status": "Status",
-      "sync_codepush": "Sync codepush, current: %{codePushVersion}"
+      "sync_codepush": "Sync codepush"
     },
     "discover": {
       "dpi": {
