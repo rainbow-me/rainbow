@@ -19,7 +19,6 @@ import { fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
-  width: ios ? 221 : 270,
 })({
   marginBottom: 19,
 });
