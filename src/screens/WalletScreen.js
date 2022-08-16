@@ -101,10 +101,9 @@ export default function WalletScreen() {
   }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
 
   useEffect(() => {
-    const revertFn = async () => await revertToMainnet();
     const supportedNetworks = [Network.mainnet, Network.goerli];
     if (!supportedNetworks.includes(network)) {
-      revertFn();
+      revertToMainnet();
     }
   }, [network, revertToMainnet]);
 
