@@ -241,6 +241,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('exchange-modal-input-native-246');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
+  });
+
+  it('Should not show settings routes picker on Arbitrum or flashbots on L2s', async () => {
     await Helpers.waitAndTap('exchange-settings-button');
     await Helpers.checkIfVisible('swap-settings-header');
     await Helpers.checkIfNotVisible('swap-settings-routes-label');
@@ -429,9 +432,21 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('swap-settings-routes-label');
     await Helpers.checkIfVisible('explain-sheet-routeSwaps');
     await Helpers.swipe('explain-sheet-routeSwaps', 'down', 'slow');
+    await Helpers.waitAndTap('swap-settings-routes-current-rainbow');
+    await Helpers.tapByText('0x');
+    await Helpers.checkIfVisible('swap-settings-routes-current-0x');
+    await Helpers.waitAndTap('swap-settings-flashbots-switch-false');
+    await Helpers.checkIfVisible('swap-settings-flashbots-switch-true');
     await Helpers.waitAndTap('swap-settings-flashbots-label');
     await Helpers.checkIfVisible('explain-sheet-flashbots');
     await Helpers.swipe('explain-sheet-flashbots', 'down', 'slow');
+    await Helpers.clearField('swap-slippage-input-2');
+    await Helpers.typeText('swap-slippage-input-', '10', false);
+    await Helpers.checkIfVisible('swap-slippage-input-10');
+    await Helpers.waitAndTap('swap-settings-defaults-button');
+    await Helpers.checkIfVisible('swap-settings-routes-current-rainbow');
+    await Helpers.checkIfVisible('swap-settings-flashbots-switch-false');
+    await Helpers.checkIfVisible('swap-slippage-input-2');
     await Helpers.waitAndTap('swap-slippage-label');
     await Helpers.checkIfVisible('explain-sheet-slippage');
     await Helpers.swipe('explain-sheet-slippage', 'down', 'slow');
@@ -442,6 +457,7 @@ describe('Swap Sheet Interaction Flow', () => {
       await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
+  /*
 
   it('Should update input & native input after output field change', async () => {
     await Helpers.waitAndTap('exchange-fab');
@@ -659,6 +675,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('max-priority-fee-input', '2\n', false);
   });
 
+  */
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
