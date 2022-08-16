@@ -7,6 +7,7 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import {
   Block,
   Network as EthersNetwork,
+  JsonRpcProvider,
   StaticJsonRpcProvider,
   TransactionRequest,
   TransactionResponse,
@@ -16,7 +17,9 @@ import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 // @ts-expect-error – No TS definitions
 import { IS_TESTING } from 'react-native-dotenv';
+import { MMKV } from 'react-native-mmkv';
 import { RainbowConfig } from '../model/config';
+import { STORAGE_IDS } from '@/model/mmkv';
 import {
   AssetType,
   NewTransaction,
@@ -831,5 +834,57 @@ export const estimateGasLimit = async (
     return estimateGasWithPadding(estimateGasData, null, null, provider);
   } else {
     return estimateGas(estimateGasData, provider);
+  }
+};
+
+const HAS_MERGED_DEFAULTS: { [key: string]: boolean } = {
+  [Network.mainnet]: false,
+  [Network.goerli]: false,
+};
+const hasMergedStorage = new MMKV();
+export const getHasMerged = (network: Network) => {
+  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
+  if (storage) {
+    const data = JSON.parse(storage);
+    const hasMerged = data[network];
+    if (hasMerged === undefined) {
+      data[network] = HAS_MERGED_DEFAULTS[network];
+      hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
+    }
+    return data[network];
+  } else {
+    hasMergedStorage.set(
+      STORAGE_IDS.HAS_MERGED,
+      JSON.stringify(HAS_MERGED_DEFAULTS)
+    );
+  }
+};
+const getSetMergeStorageKey = (setting: boolean) => (network: Network) => {
+  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
+  if (storage) {
+    const data = JSON.parse(storage);
+    data[network] = setting;
+    hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
+  }
+};
+export const setHasMerged = (network: Network) => {
+  getSetMergeStorageKey(true)(network);
+};
+export const setHasNotMerged = (network: Network) => {
+  getSetMergeStorageKey(false)(network);
+};
+export const checkForTheMerge = async (
+  provider: JsonRpcProvider,
+  network: Network
+) => {
+  const currentHasMerged = getHasMerged(network);
+  if (currentHasMerged !== true) {
+    const block = await provider.getBlock('latest');
+    const { _difficulty } = block;
+    if (_difficulty.toString() === '0') {
+      setHasMerged(network);
+    } else if (currentHasMerged) {
+      setHasNotMerged(network);
+    }
   }
 };
