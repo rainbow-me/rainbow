@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
@@ -1030,6 +1031,8 @@ export default function SendSheet(props) {
           />
         )}
       </SheetContainer>
+
+      {android && <KeyboardArea />}
     </Container>
   );
 }

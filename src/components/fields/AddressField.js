@@ -89,6 +89,18 @@ const AddressField = (
 
   return (
     <Row flex={1}>
+      {!inputValue && (
+        <Placeholder touchEvents="none">
+          <TouchableWithoutFeedback onPress={ref?.current?.focus}>
+            <PlaceholderText>
+              {android || isTinyPhone
+                ? lang.t('fields.address.short_placeholder')
+                : lang.t('fields.address.long_placeholder')}
+            </PlaceholderText>
+          </TouchableWithoutFeedback>
+        </Placeholder>
+      )}
+
       <AddressInput
         {...props}
         autoFocus={autoFocus}
@@ -101,17 +113,6 @@ const AddressField = (
         testID={testID}
         value={formatValue(inputValue)}
       />
-      {!inputValue && (
-        <Placeholder>
-          <TouchableWithoutFeedback onPress={ref?.current?.focus}>
-            <PlaceholderText>
-              {android || isTinyPhone
-                ? lang.t('fields.address.short_placeholder')
-                : lang.t('fields.address.long_placeholder')}
-            </PlaceholderText>
-          </TouchableWithoutFeedback>
-        </Placeholder>
-      )}
     </Row>
   );
 };
