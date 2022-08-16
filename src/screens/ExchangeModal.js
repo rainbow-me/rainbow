@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import React, {
   useCallback,
@@ -42,7 +41,12 @@ import {
   Network,
 } from '@rainbow-me/helpers';
 import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
-import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
+import {
+  divide,
+  greaterThan,
+  isEmpty,
+  multiply,
+} from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,

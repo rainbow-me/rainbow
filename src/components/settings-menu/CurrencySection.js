@@ -1,4 +1,3 @@
-import isNil from 'lodash/isNil';
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 import { reloadTimelines } from 'react-native-widgetkit';
@@ -6,6 +5,7 @@ import { CoinIcon } from '../coin-icon';
 import { RadioList, RadioListItem } from '../radio-list';
 import { Emoji } from '../text';
 import { analytics } from '@rainbow-me/analytics';
+import { isNil } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 

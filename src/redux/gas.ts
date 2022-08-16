@@ -1,7 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
-import isEmpty from 'lodash/isEmpty';
 import {
   // @ts-ignore
   IS_TESTING,
@@ -47,7 +46,7 @@ import {
   weiToGwei,
 } from '@rainbow-me/parsers';
 import { ethUnits, supportedNativeCurrencies } from '@rainbow-me/references';
-import { multiply } from '@rainbow-me/utilities';
+import { isEmpty, multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

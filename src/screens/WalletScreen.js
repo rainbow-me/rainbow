@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/core';
 import compact from 'lodash/compact';
-import isEmpty from 'lodash/isEmpty';
 import keys from 'lodash/keys';
 import React, { useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
@@ -21,6 +20,7 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {
   useAccountEmptyState,
   useAccountSettings,

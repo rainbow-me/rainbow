@@ -6,7 +6,6 @@ import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import debounce from 'lodash/debounce';
-import isEmpty from 'lodash/isEmpty';
 import sortBy from 'lodash/sortBy';
 import { ensClient } from '../apollo/client';
 import {
@@ -51,7 +50,7 @@ import {
   getENSExecutionDetails,
   getNameOwner,
 } from '@rainbow-me/helpers/ens';
-import { add } from '@rainbow-me/helpers/utilities';
+import { add, isEmpty } from '@rainbow-me/helpers/utilities';
 import { ImgixImage } from '@rainbow-me/images';
 import {
   getOpenSeaCollectionUrl,

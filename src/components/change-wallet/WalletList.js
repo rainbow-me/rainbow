@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import isEmpty from 'lodash/isEmpty';
 import React, {
   useCallback,
   useEffect,
@@ -23,6 +22,7 @@ import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

@@ -1,8 +1,6 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import isEmpty from 'lodash/isEmpty';
 import isNaN from 'lodash/isNaN';
-import isNil from 'lodash/isNil';
 import upperFirst from 'lodash/upperFirst';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -20,6 +18,8 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   add,
   greaterThan,
+  isEmpty,
+  isNil,
   toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
 import {

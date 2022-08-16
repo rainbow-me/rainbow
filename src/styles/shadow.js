@@ -1,5 +1,5 @@
-import isNumber from 'lodash/isNumber';
 import colors from './colors';
+import { isNumber } from '@rainbow-me/helpers/utilities';
 
 const addUnitToNumberValues = value => (isNumber(value) ? `${value}px` : value);
 

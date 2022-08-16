@@ -1,5 +1,4 @@
 import produce from 'immer';
-import isArray from 'lodash/isArray';
 import toLower from 'lodash/toLower';
 import uniq from 'lodash/uniq';
 import without from 'lodash/without';
@@ -245,7 +244,7 @@ export const uniswapUpdateFavorites = (
 
   const updatedFavorites = add
     ? uniq(normalizedFavorites.concat(assetAddress))
-    : isArray(assetAddress)
+    : Array.isArray(assetAddress)
     ? without(normalizedFavorites, ...assetAddress)
     : without(normalizedFavorites, assetAddress);
   const updatedFavoritesMeta =

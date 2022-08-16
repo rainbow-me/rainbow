@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import isEmpty from 'lodash/isEmpty';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import isEqual from 'react-fast-compare';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +8,7 @@ import { disableCharts } from '../../config/debug';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { useNavigation } from '@rainbow-me/navigation';
 
 const formatChartData = (chart: any) => {

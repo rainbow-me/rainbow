@@ -1,5 +1,4 @@
 import produce from 'immer';
-import isArray from 'lodash/isArray';
 import uniq from 'lodash/uniq';
 import without from 'lodash/without';
 import { InteractionManager } from 'react-native';
@@ -198,7 +197,7 @@ export const userListsUpdateList = (
     if (listIndex !== null) {
       const updatedListTokens = add
         ? uniq(allNewLists[listIndex].tokens.concat(assetAddress))
-        : isArray(assetAddress)
+        : Array.isArray(assetAddress)
         ? without(allNewLists[listIndex].tokens, ...assetAddress)
         : without(allNewLists[listIndex].tokens, assetAddress);
       if (add) {

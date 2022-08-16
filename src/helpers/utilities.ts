@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import isNil from 'lodash/isNil';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
@@ -9,6 +8,25 @@ interface Dictionary<T> {
 }
 type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
 type nativeCurrencyType = typeof supportedNativeCurrencies;
+
+export const isNil = (value: unknown): value is null | undefined =>
+  value == null;
+
+export const isNull = (value: unknown): value is null => value == null;
+
+export const isEmpty = (obj: any): boolean =>
+  [Object, Array].includes((obj || {}).constructor) &&
+  !Object.entries(obj || {}).length;
+
+export const isString = (str: any): str is string => {
+  if (str != null && typeof str.valueOf() === 'string') {
+    return true;
+  }
+  return false;
+};
+
+export const isNumber = (value: any) =>
+  typeof value === 'number' && !Number.isNaN(value);
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();

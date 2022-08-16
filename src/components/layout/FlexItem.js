@@ -1,10 +1,11 @@
-import isUndefined from 'lodash/isUndefined';
 import styled from '@rainbow-me/styled-components';
 
 const FlexItem = styled.View(({ flex, grow, shrink }) => {
   const props = {
     flex:
-      isUndefined(flex) && isUndefined(grow) && isUndefined(shrink) ? 1 : flex,
+      flex === undefined && grow === undefined && shrink === undefined
+        ? 1
+        : flex,
   };
 
   if (grow !== undefined) {

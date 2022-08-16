@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
@@ -17,6 +16,7 @@ import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
 import { analytics } from '@rainbow-me/analytics';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useDimensions,

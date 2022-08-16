@@ -1,4 +1,3 @@
-import isEmpty from 'lodash/isEmpty';
 import { AnyAction } from 'redux';
 import { uniswapClient } from '../apollo/client';
 import {
@@ -10,6 +9,7 @@ import {
   getUniswapPositions,
   saveUniswapPositions,
 } from '@rainbow-me/handlers/localstorage/uniswap';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import {
   BUSD_ADDRESS,

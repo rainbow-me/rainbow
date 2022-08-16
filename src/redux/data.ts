@@ -1,8 +1,6 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
 import find from 'lodash/find';
-import isEmpty from 'lodash/isEmpty';
-import isNil from 'lodash/isNil';
 import keys from 'lodash/keys';
 import mapValues from 'lodash/mapValues';
 import partition from 'lodash/partition';
@@ -72,7 +70,7 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, pickBy } from '@rainbow-me/utilities';
+import { delay, isEmpty, isNil, isZero, pickBy } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   isLowerCaseMatch,

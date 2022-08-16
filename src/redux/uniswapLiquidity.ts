@@ -1,4 +1,3 @@
-import isEmpty from 'lodash/isEmpty';
 import uniqBy from 'lodash/uniqBy';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -9,6 +8,7 @@ import {
   getLiquidity,
   saveLiquidity,
 } from '@rainbow-me/handlers/localstorage/uniswap';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 
 // -- Constants ------------------------------------------------------------- //
 

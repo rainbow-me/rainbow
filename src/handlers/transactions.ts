@@ -1,9 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
-import isEmpty from 'lodash/isEmpty';
 import { web3Provider } from './web3';
 import { metadataClient } from '@rainbow-me/apollo/client';
 import { CONTRACT_FUNCTION } from '@rainbow-me/apollo/queries';
 import { ZerionTransaction } from '@rainbow-me/entities';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import store from '@rainbow-me/redux/store';
 import { transactionSignaturesDataAddNewSignature } from '@rainbow-me/redux/transactionSignatures';
 import {

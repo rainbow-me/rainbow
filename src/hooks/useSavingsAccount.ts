@@ -1,6 +1,4 @@
 import { useQuery } from '@apollo/client';
-import isEmpty from 'lodash/isEmpty';
-import isNil from 'lodash/isNil';
 import keyBy from 'lodash/keyBy';
 import orderBy from 'lodash/orderBy';
 import { useMemo } from 'react';
@@ -12,7 +10,7 @@ import { useGenericAssets } from './useGenericAsset';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
 import { AssetTypes } from '@rainbow-me/entities';
-import { multiply } from '@rainbow-me/helpers/utilities';
+import { isEmpty, isNil, multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import { AppState } from '@rainbow-me/redux/store';

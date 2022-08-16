@@ -1,6 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
 import mapValues from 'lodash/mapValues';
 import isEqual from 'react-fast-compare';
@@ -17,7 +16,7 @@ import { ZerionAsset } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickBy } from '@rainbow-me/helpers/utilities';
+import { isEmpty, pickBy } from '@rainbow-me/helpers/utilities';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,

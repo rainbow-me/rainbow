@@ -1,5 +1,4 @@
 import compact from 'lodash/compact';
-import isEmpty from 'lodash/isEmpty';
 import orderBy from 'lodash/orderBy';
 import partition from 'lodash/partition';
 import reverse from 'lodash/reverse';
@@ -33,6 +32,7 @@ import {
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
+  isEmpty,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
