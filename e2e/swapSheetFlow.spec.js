@@ -542,7 +542,7 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
-  it('Should display Gas Button on Normal by default', async () => {
+  it('Should display Gas Button on Fast by default', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
@@ -554,23 +554,23 @@ describe('Swap Sheet Interaction Flow', () => {
       'currency-select-list-exchange-coin-row-ZRX-token'
     );
     await Helpers.checkIfVisible('exchange-modal-gas');
-    await Helpers.checkIfElementByTextIsVisible('Normal');
+    await Helpers.checkIfElementByTextIsVisible('Fast');
   });
 
   it('Should display warning on invalid custom gas price', async () => {
     await Helpers.waitAndTap('gas-speed-custom');
-    await Helpers.checkIfElementByTextIsVisible('Fast');
-    await Helpers.checkIfElementByTextIsVisible('Custom');
+    await Helpers.checkIfVisible('speed-pill-fast');
+    await Helpers.checkIfVisible('speed-pill-custom');
     await Helpers.clearField('max-base-fee-input');
     await Helpers.typeText('max-base-fee-input', '\n', false);
     await Helpers.checkIfElementByTextIsVisible('Low · likely to fail');
   });
 
   it('Should rotate between Normal, Fast, Urgent, & Custom', async () => {
-    await Helpers.waitAndTap('speed-pill-normal');
     await Helpers.waitAndTap('speed-pill-fast');
     await Helpers.waitAndTap('speed-pill-urgent');
     await Helpers.waitAndTap('speed-pill-custom');
+    await Helpers.waitAndTap('speed-pill-normal');
   });
 
   xit('Should display warning on high custom base fee price', async () => {

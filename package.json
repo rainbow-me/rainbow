@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.7.0-1",
+  "version": "1.7.2-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
@@ -511,8 +511,7 @@
       "src/ens-avatar/**/*.*",
       "src/react-native-animated-charts/**/*.*",
       "src/react-native-cool-modals/**/*.*",
-      "src/react-native-shadow-stack/**/*.*",
-      "src/react-native-yet-another-bottom-sheet/**/*.*"
+      "src/react-native-shadow-stack/**/*.*"
     ]
   },
   "lavamoat": {

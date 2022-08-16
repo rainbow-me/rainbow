@@ -1,18 +1,18 @@
 import { get, isFunction, toLower } from 'lodash';
 import { isString } from './utilities';
 
-export const sortList = (
-  array: any[] = [],
-  sortByKey: any,
-  direction?: any,
-  defaultValue?: any,
-  formatter?: any
+export const sortList = <T>(
+  array: T[] = [],
+  sortByKey: string,
+  direction?: 'asc' | 'desc',
+  defaultValue?: T,
+  formatter?: (value: T) => string
 ) =>
   array.slice(0).sort((a, b) => {
     const isAscending = direction === 'asc';
 
-    let itemA = a;
-    let itemB = b;
+    let itemA: T | string = a;
+    let itemB: T | string = b;
 
     if (sortByKey) {
       itemA = get(a, sortByKey, defaultValue);
@@ -20,8 +20,8 @@ export const sortList = (
     }
 
     if (isFunction(formatter)) {
-      itemA = formatter(itemA);
-      itemB = formatter(itemB);
+      itemA = formatter(itemA as T);
+      itemB = formatter(itemB as T);
     }
 
     if (isString(itemA) && isString(itemB)) {
