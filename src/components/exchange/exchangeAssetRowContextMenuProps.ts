@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { startCase } from 'lodash';
+import startCase from 'lodash/startCase';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
 import { Network } from '@rainbow-me/networkTypes';

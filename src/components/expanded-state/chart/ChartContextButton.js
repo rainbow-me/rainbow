@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
-import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
 import EditAction from '@rainbow-me/helpers/EditAction';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import {
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
@@ -67,7 +67,7 @@ export default function ChartContextButton({ asset, color }) {
         ? []
         : [
             `🔍 ${emojiSpacing}${lang.t('wallet.action.view_on', {
-              blockExplorerName: startCase(
+              blockExplorerName: toStartCaseStr(
                 ethereumUtils.getBlockExplorer(asset?.type)
               ),
             })}`,

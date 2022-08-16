@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import LottieView from 'lottie-react-native';
 import React, { Fragment, useMemo } from 'react';
 import { StyleSheet } from 'react-native';

@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { useEffect, useState } from 'react';
 import { isPinOrFingerprintSet } from 'react-native-device-info';
 import * as Keychain from 'react-native-keychain';

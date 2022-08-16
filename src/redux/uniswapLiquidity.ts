@@ -1,4 +1,5 @@
-import { isEmpty, uniqBy } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import uniqBy from 'lodash/uniqBy';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
@@ -40,6 +41,7 @@ export interface UniswapPoolAddressDetailsFull {
   symbol: string;
   token0: UniswapPoolToken;
   token1: UniswapPoolToken;
+  tokens?: [UniswapPoolToken, UniswapPoolToken];
   tokenNames: string;
   type: string;
 }

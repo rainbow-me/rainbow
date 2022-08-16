@@ -1,5 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
-import { isEmpty, keys } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import keys from 'lodash/keys';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
@@ -9,6 +10,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/walletBalances';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { AllRainbowWallets } from '@rainbow-me/model/wallet';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { balanceCheckerContractAbi } from '@rainbow-me/references';
 import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
@@ -16,7 +18,7 @@ import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-const useWalletBalances = (wallets: any) => {
+const useWalletBalances = (wallets: AllRainbowWallets) => {
   const { network } = useAccountSettings();
 
   const fetchBalances = useCallback(async () => {
@@ -59,9 +61,9 @@ const useWalletBalances = (wallets: any) => {
     enabled: !isEmpty(wallets),
   });
 
-  const resultFromStorage = queryClient.getQueryData(
-    WALLET_BALANCES_FROM_STORAGE
-  );
+  const resultFromStorage = queryClient.getQueryData<{
+    [address: string]: string;
+  }>(WALLET_BALANCES_FROM_STORAGE);
 
   if (isEmpty(data) && !isEmpty(resultFromStorage)) {
     return resultFromStorage;

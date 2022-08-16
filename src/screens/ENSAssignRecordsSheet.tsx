@@ -2,7 +2,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React, {
   useCallback,
   useContext,

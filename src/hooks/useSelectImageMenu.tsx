@@ -167,7 +167,7 @@ export default function useSelectImageMenu({
 
   const handleSelectNFT = useCallback(() => {
     navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
-      onSelect: (asset: any) => onChangeImage?.({ asset }),
+      onSelect: (asset: UniqueAsset) => onChangeImage?.({ asset }),
       springDamping: 1,
       topOffset: 0,
     });
@@ -193,7 +193,7 @@ export default function useSelectImageMenu({
   const handleAndroidPress = useCallback(() => {
     const actionSheetOptions = menuItems
       .map(item => items[item]?.actionTitle)
-      .filter(Boolean) as any;
+      .filter(Boolean);
 
     showActionSheetWithOptions(
       {

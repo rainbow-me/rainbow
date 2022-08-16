@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';

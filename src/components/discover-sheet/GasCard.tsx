@@ -2,7 +2,7 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { useIsFocused } from '@react-navigation/native';
 import lang from 'i18n-js';
-import { isNaN } from 'lodash';
+import isNaN from 'lodash/isNaN';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Animated, {
   Easing,

@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { values } from 'lodash';
+import values from 'lodash/values';
 import React from 'react';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';

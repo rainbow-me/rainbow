@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {

@@ -1,4 +1,6 @@
-import { groupBy, mapValues, values } from 'lodash';
+import groupBy from 'lodash/groupBy';
+import mapValues from 'lodash/mapValues';
+import values from 'lodash/values';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -8,6 +10,7 @@ import {
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
+import { AppState } from '@rainbow-me/redux/store';
 
 const formatDappData = (connections: any) =>
   values(
@@ -23,8 +26,7 @@ const formatDappData = (connections: any) =>
   );
 
 const walletConnectSelector = createSelector(
-  // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-  state => state.walletconnect.walletConnectors,
+  (state: AppState) => state.walletconnect.walletConnectors,
   walletConnectors => {
     const sorted = sortList(values(walletConnectors), 'peerMeta.name');
     const groupedByDappName = groupBy(sorted, 'peerMeta.url');

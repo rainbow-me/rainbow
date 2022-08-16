@@ -7,7 +7,7 @@ import useInteraction from './useInteraction';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
-let timeout: any = null;
+let timeout: ReturnType<typeof setTimeout> | null = null;
 let delay = false;
 let cancel = false;
 

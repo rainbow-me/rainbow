@@ -1,5 +1,5 @@
 import { AddressZero } from '@ethersproject/constants';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import {
   createNewENSAction,
   createNewRap,

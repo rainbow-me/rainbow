@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { captureException } from '@sentry/react-native';
-import { keyBy } from 'lodash';
+import keyBy from 'lodash/keyBy';
 // @ts-ignore
 import { RAINBOW_LEAN_TOKEN_LIST_URL } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';

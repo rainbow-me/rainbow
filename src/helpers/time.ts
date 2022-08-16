@@ -1,5 +1,7 @@
 import lang from 'i18n-js';
-import { findKey, isObjectLike, isString } from 'lodash';
+import findKey from 'lodash/findKey';
+import isObjectLike from 'lodash/isObjectLike';
+import isString from 'lodash/isString';
 import parseMilliseconds from 'parse-ms';
 import { convertStringToNumber, omitBy } from './utilities';
 

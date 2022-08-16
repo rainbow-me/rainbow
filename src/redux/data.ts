@@ -1,15 +1,13 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import {
-  find,
-  isEmpty,
-  isNil,
-  keys,
-  mapValues,
-  partition,
-  toUpper,
-  uniqBy,
-} from 'lodash';
+import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
+import keys from 'lodash/keys';
+import mapValues from 'lodash/mapValues';
+import partition from 'lodash/partition';
+import toUpper from 'lodash/toUpper';
+import uniqBy from 'lodash/uniqBy';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';

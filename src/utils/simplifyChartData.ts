@@ -1,4 +1,5 @@
-import { maxBy, minBy } from 'lodash';
+import maxBy from 'lodash/maxBy';
+import minBy from 'lodash/minBy';
 
 export default function simplifyChartData(
   data: any,

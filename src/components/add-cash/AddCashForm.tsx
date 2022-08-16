@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {

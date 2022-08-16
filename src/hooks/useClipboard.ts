@@ -3,11 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import useAppState from './useAppState';
 import { deviceUtils } from '@rainbow-me/utils';
 
-const listeners = new Set();
+const listeners = new Set<React.Dispatch<React.SetStateAction<string>>>();
 
-export function setClipboard(content: any) {
+export function setClipboard(content: string) {
   Clipboard.setString(content);
-  // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
   listeners.forEach(listener => listener(content));
 }
 

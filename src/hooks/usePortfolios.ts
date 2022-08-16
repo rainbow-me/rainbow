@@ -1,12 +1,15 @@
-import { isNil, keys } from 'lodash';
+import isNil from 'lodash/isNil';
+import keys from 'lodash/keys';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { analytics } from '@rainbow-me/analytics';
+import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
 export default function usePortfolios() {
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-  const portfolios = useSelector(({ data: { portfolios } }) => portfolios);
+  const portfolios = useSelector(
+    ({ data: { portfolios } }: AppState) => portfolios
+  );
 
   const trackPortfolios = useCallback(() => {
     const total = {
@@ -21,17 +24,16 @@ export default function usePortfolios() {
     };
     keys(portfolios).forEach(address => {
       keys(portfolios[address]).forEach(key => {
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-        if (!isNil(total[key])) {
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-          total[key] += portfolios[address][key];
+        if (!isNil(total[key as keyof typeof total])) {
+          total[key as keyof typeof total] += portfolios[address][
+            key as keyof typeof portfolios[typeof address]
+          ]!;
         }
       });
     });
     logger.log('💰 wallet totals', JSON.stringify(total, null, 2));
     keys(total).forEach(key => {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      const data = { [key]: total[key] };
+      const data = { [key]: total[key as keyof typeof total] };
       analytics.identify(undefined, data);
     });
   }, [portfolios]);

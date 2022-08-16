@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import React, {
   useCallback,
   useContext,

@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { startCase } from 'lodash';
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import Animated, {
@@ -12,6 +11,7 @@ import Animated, {
 import { ButtonPressAnimation } from '../../animations';
 import { Text, TruncatedAddress } from '../../text';
 import SwapDetailsRow from './SwapDetailsRow';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
@@ -54,7 +54,7 @@ const ContractActions = {
 
 const buildBlockExplorerAction = type => {
   const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+    blockExplorerName: toStartCaseStr(ethereumUtils.getBlockExplorer(type)),
   });
   return {
     actionKey: ContractActionsEnum.blockExplorer,
@@ -170,7 +170,9 @@ export default function SwapDetailsContractRow({
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.type)),
+      blockExplorerName: toStartCaseStr(
+        ethereumUtils.getBlockExplorer(asset?.type)
+      ),
     });
     const androidContractActions = [
       lang.t('wallet.action.copy_contract_address'),

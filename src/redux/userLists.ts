@@ -1,6 +1,7 @@
 import produce from 'immer';
-import { isArray, without } from 'lodash';
+import isArray from 'lodash/isArray';
 import uniq from 'lodash/uniq';
+import without from 'lodash/without';
 import { InteractionManager } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';

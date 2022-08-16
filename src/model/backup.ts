@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { endsWith } from 'lodash';
+import endsWith from 'lodash/endsWith';
 import {
   Options,
   requestSharedWebCredentials,

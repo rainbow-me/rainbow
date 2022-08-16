@@ -1,4 +1,5 @@
-import { isArray, isString } from 'lodash';
+import isArray from 'lodash/isArray';
+import isString from 'lodash/isString';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';

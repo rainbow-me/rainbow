@@ -1,4 +1,4 @@
-import { isUndefined } from 'lodash';
+import isUndefined from 'lodash/isUndefined';
 import styled from '@rainbow-me/styled-components';
 
 const FlexItem = styled.View(({ flex, grow, shrink }) => {

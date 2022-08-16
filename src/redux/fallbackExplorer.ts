@@ -1,6 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, mapValues, uniqBy } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
+import mapValues from 'lodash/mapValues';
+import uniqBy from 'lodash/uniqBy';
 import isEqual from 'react-fast-compare';
 import {
   // @ts-ignore

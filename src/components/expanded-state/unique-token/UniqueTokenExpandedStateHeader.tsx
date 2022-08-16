@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
 import URL from 'url-parse';
@@ -20,6 +19,7 @@ import {
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import {
   useClipboard,
   useDimensions,
@@ -70,7 +70,9 @@ const getAssetActions = (network: Network) =>
       actionTitle: lang.t(
         'expanded_state.unique_expanded.view_on_block_explorer',
         {
-          blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+          blockExplorerName: toStartCaseStr(
+            ethereumUtils.getBlockExplorer(network)
+          ),
         }
       ),
       icon: {
@@ -425,7 +427,7 @@ const UniqueTokenExpandedStateHeader = ({
     const blockExplorerActionName = lang.t(
       'expanded_state.unique_expanded.view_on_block_explorer',
       {
-        blockExplorerName: startCase(
+        blockExplorerName: toStartCaseStr(
           ethereumUtils.getBlockExplorer(asset.network)
         ),
       }

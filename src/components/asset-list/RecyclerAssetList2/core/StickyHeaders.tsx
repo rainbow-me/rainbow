@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy';
 import React, {
   MutableRefObject,
   ReactElement,

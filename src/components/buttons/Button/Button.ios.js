@@ -1,4 +1,5 @@
-import { isArray, isString } from 'lodash';
+import isArray from 'lodash/isArray';
+import isString from 'lodash/isString';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';

@@ -1,4 +1,4 @@
-import { toUpper } from 'lodash';
+import toUpper from 'lodash/toUpper';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';

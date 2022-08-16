@@ -17,7 +17,8 @@ import {
   default as LibWallet,
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
-import { findKey, isEmpty } from 'lodash';
+import findKey from 'lodash/findKey';
+import isEmpty from 'lodash/isEmpty';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {

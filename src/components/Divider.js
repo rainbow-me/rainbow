@@ -1,4 +1,5 @@
-import { isNil, isNumber } from 'lodash';
+import isNil from 'lodash/isNil';
+import isNumber from 'lodash/isNumber';
 import React from 'react';
 import { magicMemo } from '../utils';
 import styled from '@rainbow-me/styled-components';

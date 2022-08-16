@@ -1,5 +1,10 @@
 import lang from 'i18n-js';
-import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
+import chunk from 'lodash/chunk';
+import compact from 'lodash/compact';
+import groupBy from 'lodash/groupBy';
+import isEmpty from 'lodash/isEmpty';
+import slice from 'lodash/slice';
+import sortBy from 'lodash/sortBy';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import store from '@rainbow-me/redux/store';

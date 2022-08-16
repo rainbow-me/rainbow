@@ -1,6 +1,6 @@
 import { ChainId } from '@rainbow-me/swaps';
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,

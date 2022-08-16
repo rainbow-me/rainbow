@@ -1,4 +1,4 @@
-import { concat, without } from 'lodash';
+import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
@@ -116,7 +116,7 @@ export const addHiddenToken = (tokenId: string) => (
 
   const { accountAddress, network } = getState().settings;
   const { hiddenTokens } = getState().hiddenTokens;
-  const updatedHiddenTokens = concat(hiddenTokens, tokenId);
+  const updatedHiddenTokens = hiddenTokens.concat(tokenId);
   dispatch({
     payload: updatedHiddenTokens,
     type: HIDDEN_TOKENS_UPDATE,

@@ -1,5 +1,7 @@
 import lang from 'i18n-js';
-import { compact, groupBy, property } from 'lodash';
+import compact from 'lodash/compact';
+import groupBy from 'lodash/groupBy';
+import property from 'lodash/property';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';

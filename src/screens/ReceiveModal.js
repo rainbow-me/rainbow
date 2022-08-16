@@ -1,5 +1,5 @@
 import { toChecksumAddress } from '@walletconnect/utils';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';

@@ -1,5 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';

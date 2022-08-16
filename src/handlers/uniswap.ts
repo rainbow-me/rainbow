@@ -16,7 +16,8 @@ import {
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { ethers } from 'ethers';
-import { mapKeys, mapValues } from 'lodash';
+import mapKeys from 'lodash/mapKeys';
+import mapValues from 'lodash/mapValues';
 import {
   // @ts-ignore
   IS_TESTING,

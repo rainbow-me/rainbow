@@ -1,7 +1,7 @@
 import { Wallet } from '@ethersproject/wallet';
 import { ChainId } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
-import { toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import {
   Rap,
   RapExchangeActionParameters,

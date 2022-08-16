@@ -1,6 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { precomputeValues } from '@capsizecss/core';
-import { mapValues } from 'lodash';
+import mapValues from 'lodash/mapValues';
 import { PixelRatio, Platform } from 'react-native';
 import { ForegroundColor } from './../color/palettes';
 import { fontWeights } from './fontWeights';

@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, startCase } from 'lodash';
+import compact from 'lodash/compact';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';
@@ -18,6 +18,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -132,7 +133,9 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
 
     const blockExplorerAction = lang.t('exchange.coin_row.view_on', {
-      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+      blockExplorerName: toStartCaseStr(
+        ethereumUtils.getBlockExplorer(network)
+      ),
     });
     if (hash) {
       let buttons = [

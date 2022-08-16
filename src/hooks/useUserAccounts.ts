@@ -1,4 +1,4 @@
-import { values } from 'lodash';
+import values from 'lodash/values';
 
 import useAccountSettings from './useAccountSettings';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';

@@ -1,6 +1,8 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, mapValues } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
+import mapValues from 'lodash/mapValues';
 import isEqual from 'react-fast-compare';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';

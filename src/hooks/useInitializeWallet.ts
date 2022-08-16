@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import runMigrations from '../model/migrations';

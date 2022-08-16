@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { map } from 'lodash';
+import map from 'lodash/map';
 import React, { Fragment } from 'react';
 import { OpacityToggler } from '../animations';
 import { UniswapInvestmentRow } from '../investment-cards';

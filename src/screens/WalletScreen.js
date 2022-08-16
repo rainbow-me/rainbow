@@ -1,9 +1,9 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, isEmpty, keys } from 'lodash';
+import compact from 'lodash/compact';
+import isEmpty from 'lodash/isEmpty';
+import keys from 'lodash/keys';
 import React, { useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
@@ -72,7 +72,6 @@ export default function WalletScreen() {
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
   const { isCoinListEdited } = useCoinListEdited();
-  const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
   const { network, accountAddress } = useAccountSettings();
@@ -231,9 +230,6 @@ export default function WalletScreen() {
 
   return (
     <WalletPage testID="wallet-screen">
-      {/* Line below appears to be needed for having scrollViewTracker persistent while
-      reattaching of react subviews */}
-      <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
         disabled={isAccountEmpty || !!params?.emptyWallet}
         fabs={fabs}
@@ -255,7 +251,6 @@ export default function WalletScreen() {
           isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
           network={network}
-          scrollViewTracker={scrollViewTracker}
           walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>

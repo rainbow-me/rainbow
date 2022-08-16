@@ -1,5 +1,8 @@
 import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
-import { compact, isEmpty, orderBy, sumBy } from 'lodash';
+import compact from 'lodash/compact';
+import isEmpty from 'lodash/isEmpty';
+import orderBy from 'lodash/orderBy';
+import sumBy from 'lodash/sumBy';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';

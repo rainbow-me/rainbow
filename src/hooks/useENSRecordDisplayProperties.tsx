@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { upperFirst } from 'lodash';
+import upperFirst from 'lodash/upperFirst';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import URL from 'url-parse';
@@ -99,10 +99,9 @@ export default function useENSRecordDisplayProperties({
   }, [url]);
 
   const label = useMemo(() => {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    if (textRecordFields[recordKey]?.label) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      return textRecordFields[recordKey].label;
+    if (textRecordFields[recordKey as keyof typeof textRecordFields]?.label) {
+      return textRecordFields[recordKey as keyof typeof textRecordFields]!
+        .label;
     }
     if (recordKey.includes('.')) {
       return recordKey;

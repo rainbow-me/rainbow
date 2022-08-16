@@ -1,4 +1,4 @@
-import { values } from 'lodash';
+import values from 'lodash/values';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';

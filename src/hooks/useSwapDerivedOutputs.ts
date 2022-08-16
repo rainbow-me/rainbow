@@ -11,6 +11,7 @@ import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
+
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@rainbow-me/analytics';
 import { EthereumAddress } from '@rainbow-me/entities';

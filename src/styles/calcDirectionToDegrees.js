@@ -1,4 +1,4 @@
-import { isString } from 'lodash';
+import isString from 'lodash/isString';
 
 export default (directionValue = 'right') => {
   const direction = isString(directionValue)

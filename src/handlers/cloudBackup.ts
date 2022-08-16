@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RNCloudFs from 'react-native-cloud-fs';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message

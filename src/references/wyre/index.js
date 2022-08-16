@@ -1,4 +1,5 @@
-import { keys, upperFirst } from 'lodash';
+import keys from 'lodash/keys';
+import upperFirst from 'lodash/upperFirst';
 import { orderExceptions } from './orderExceptions';
 import { wyreSupportedCountries } from './supportedCountries';
 

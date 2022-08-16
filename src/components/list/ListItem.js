@@ -1,4 +1,4 @@
-import { isString } from 'lodash';
+import isString from 'lodash/isString';
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';

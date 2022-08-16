@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -9,6 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import { useClipboard } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
@@ -76,7 +76,7 @@ const CoinRowActions = {
 
 const buildBlockExplorerAction = type => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+    blockExplorerName: toStartCaseStr(ethereumUtils.getBlockExplorer(type)),
   });
   return {
     actionKey: CoinRowActionsEnum.blockExplorer,
@@ -104,7 +104,7 @@ const CoinRowInfoButton = ({
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(
+    const blockExplorerText = `View on ${toStartCaseStr(
       ethereumUtils.getBlockExplorer(item?.type)
     )}`;
     const androidContractActions = [

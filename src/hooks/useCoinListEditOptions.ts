@@ -1,4 +1,4 @@
-import { difference } from 'lodash';
+import difference from 'lodash/difference';
 import { useCallback, useMemo, useRef } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';

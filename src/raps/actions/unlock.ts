@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { ALLOWS_PERMIT, PermitSupportedTokenList } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
-import { isNull } from 'lodash';
+import isNull from 'lodash/isNull';
 import { alwaysRequireApprove } from '../../config/debug';
 import {
   Rap,

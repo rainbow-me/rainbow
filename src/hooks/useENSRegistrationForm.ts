@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
@@ -107,9 +107,8 @@ export default function useENSRegistrationForm({
     if (!isEmpty(defaultRecords)) {
       setSelectedFields(
         Object.keys(defaultRecords)
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-          .map(key => textRecordFields[key])
-          .filter(Boolean)
+          .map(key => textRecordFields[key as keyof typeof textRecordFields])
+          .filter((key): key is TextRecordField => Boolean(key))
       );
     } else {
       if (defaultFields) {

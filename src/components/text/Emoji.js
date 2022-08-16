@@ -1,4 +1,4 @@
-import { isString } from 'lodash';
+import isString from 'lodash/isString';
 import React from 'react';
 import Text from './Text';
 import { emojis } from '@rainbow-me/references';

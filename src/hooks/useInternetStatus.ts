@@ -1,5 +1,5 @@
 import * as NetInfo from '@react-native-community/netinfo';
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import { useCallback, useEffect, useState } from 'react';
 import useRefreshAccountData from './useRefreshAccountData';
 import { analytics } from '@rainbow-me/analytics';

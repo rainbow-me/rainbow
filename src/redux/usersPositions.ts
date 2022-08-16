@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { AnyAction } from 'redux';
 import { uniswapClient } from '../apollo/client';
 import {

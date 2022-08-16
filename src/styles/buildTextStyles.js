@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import colors from './colors';
 import fonts from './fonts';
 import { css } from '@rainbow-me/styled-components';

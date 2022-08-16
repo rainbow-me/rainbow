@@ -2,7 +2,10 @@ import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
-import { clone, isEmpty, mapValues, values } from 'lodash';
+import clone from 'lodash/clone';
+import isEmpty from 'lodash/isEmpty';
+import mapValues from 'lodash/mapValues';
+import values from 'lodash/values';
 import { AppState, InteractionManager, Linking } from 'react-native';
 import {
   // @ts-ignore

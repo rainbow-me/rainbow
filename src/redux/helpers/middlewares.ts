@@ -1,4 +1,4 @@
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { AnyAction, Dispatch } from 'redux';
 import {
   DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED,

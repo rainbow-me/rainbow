@@ -1,5 +1,8 @@
 import { useQuery } from '@apollo/client';
-import { isEmpty, isNil, keyBy, orderBy } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
+import keyBy from 'lodash/keyBy';
+import orderBy from 'lodash/orderBy';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +15,7 @@ import { AssetTypes } from '@rainbow-me/entities';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+import { AppState } from '@rainbow-me/redux/store';
 import {
   CDAI_CONTRACT,
   DAI_ADDRESS,
@@ -94,7 +98,7 @@ function usePersistentBackupSavings(accountAddress: any, network: any) {
   return useMMKVObject('savings-' + accountAddress + network);
 }
 
-export default function useSavingsAccount(includeDefaultDai: any) {
+export default function useSavingsAccount(includeDefaultDai: boolean) {
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
@@ -105,8 +109,7 @@ export default function useSavingsAccount(includeDefaultDai: any) {
   const hasAccountAddress = !!accountAddress;
 
   const shouldRefetchSavings = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-    ({ data: { shouldRefetchSavings } }) => shouldRefetchSavings
+    ({ data: { shouldRefetchSavings } }: AppState) => shouldRefetchSavings
   );
 
   const { data, error, loading, refetch: refetchSavings } = useQuery(

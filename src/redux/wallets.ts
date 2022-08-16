@@ -1,6 +1,7 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty, keys } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import keys from 'lodash/keys';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';

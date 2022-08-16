@@ -1,4 +1,6 @@
-import { isEmpty, isNil, remove } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
+import remove from 'lodash/remove';
 import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';

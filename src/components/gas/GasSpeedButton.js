@@ -1,6 +1,9 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNaN from 'lodash/isNaN';
+import isNil from 'lodash/isNil';
+import upperFirst from 'lodash/upperFirst';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';

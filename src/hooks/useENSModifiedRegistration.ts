@@ -1,4 +1,5 @@
-import { differenceWith, isEqual } from 'lodash';
+import differenceWith from 'lodash/differenceWith';
+import isEqual from 'lodash/isEqual';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
