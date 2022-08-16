@@ -33,7 +33,7 @@ const handleMailError = debounce(
   250
 );
 
-function feedbackEmailOptions(appVersion: any, codePushVersion: any) {
+function feedbackEmailOptions(appVersion: string, codePushVersion: string) {
   return {
     recipients: [FeedbackEmailAddress],
     subject: `🌈️ Rainbow Feedback - ${

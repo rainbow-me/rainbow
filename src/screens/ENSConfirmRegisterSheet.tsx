@@ -1,12 +1,14 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
+import isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
+  EditContent,
   RegisterContent,
   RenewContent,
   WaitCommitmentConfirmationContent,
@@ -15,6 +17,7 @@ import {
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import {
   AccentColorProvider,
   Box,
@@ -50,8 +53,8 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
-export const ENSConfirmRenewSheetHeight = ios ? 500 : 560;
-export const ENSConfirmUpdateSheetHeight = 400;
+export const ENSConfirmRenewSheetHeight = 560;
+export const ENSConfirmUpdateSheetHeight = 290;
 const avatarSize = 60;
 
 function TransactionActionRow({
@@ -109,6 +112,7 @@ export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute<any>();
   const { name: ensName, mode } = useENSRegistration();
   const {
+    changedRecords,
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration();
   const { isSmallPhone } = useDimensions();
@@ -143,7 +147,8 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
-    !accountProfile.accountENS
+    accountProfile.accountENS !== ensName &&
+      (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
   );
   const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
     false
@@ -174,7 +179,7 @@ export default function ENSConfirmRegisterSheet() {
 
   const stepLabel = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT)
-      return lang.t('profiles.confirm.confirm_update');
+      return lang.t('profiles.confirm.confirm_updates');
     if (mode === REGISTRATION_MODES.RENEW)
       return lang.t('profiles.confirm.extend_registration');
     if (step === REGISTRATION_STEPS.COMMIT)
@@ -215,8 +220,20 @@ export default function ENSConfirmRegisterSheet() {
           }
         />
       ),
-      [REGISTRATION_STEPS.EDIT]: null,
+      [REGISTRATION_STEPS.EDIT]: (
+        <EditContent
+          accentColor={accentColor}
+          sendReverseRecord={sendReverseRecord}
+          setSendReverseRecord={
+            registrationCostsData?.isSufficientGasForStep
+              ? setSendReverseRecord
+              : null
+          }
+          showReverseRecordSwitch={accountProfile.accountENS !== ensName}
+        />
+      ),
       [REGISTRATION_STEPS.SET_NAME]: null,
+      [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.RENEW]: (
         <RenewContent
           name={name}
@@ -229,6 +246,7 @@ export default function ENSConfirmRegisterSheet() {
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}
           action={() => action(accentColor)}
+          secondsSinceCommitConfirmed={secondsSinceCommitConfirmed}
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
@@ -247,7 +265,10 @@ export default function ENSConfirmRegisterSheet() {
       registrationCostsData,
       accentColor,
       sendReverseRecord,
+      accountProfile.accountENS,
+      ensName,
       name,
+      secondsSinceCommitConfirmed,
       onMountSecondsSinceCommitConfirmed,
       action,
     ]
@@ -267,7 +288,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.start_registration')}
+          label={lang.t('profiles.confirm.hold_to_begin')}
           testID={step}
         />
       ),
@@ -282,7 +303,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.confirm_registration')}
+          label={lang.t('profiles.confirm.hold_to_register')}
           testID={step}
         />
       ),
@@ -301,7 +322,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.confirm_renew')}
+          label={lang.t('profiles.confirm.hold_to_extend')}
           testID={step}
         />
       ),
@@ -316,7 +337,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.confirm_update')}
+          label={lang.t('profiles.confirm.hold_to_confirm')}
           testID={step}
         />
       ),
@@ -331,10 +352,11 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
               registrationCostsData?.stepGasLimit
           )}
-          label={lang.t('profiles.confirm.confirm_set_name')}
+          label={lang.t('profiles.confirm.hold_to_confirm')}
           testID={step}
         />
       ),
+      [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
@@ -352,6 +374,7 @@ export default function ENSConfirmRegisterSheet() {
 
   useFocusEffect(
     useCallback(() => {
+      Keyboard.dismiss();
       blurFields();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -409,8 +432,8 @@ export default function ENSConfirmRegisterSheet() {
                     </Box>
                   )}
                   <Inset horizontal="30px">
-                    <Heading align="center" size="26px">
-                      {ensName}
+                    <Heading align="center" numberOfLines={1} size="26px">
+                      {abbreviateEnsForDisplay(ensName, 15)}
                     </Heading>
                   </Inset>
                   <Text

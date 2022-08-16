@@ -8,7 +8,6 @@ import { addressHashedEmoji, isValidImagePath } from '../utils/profileUtils';
 export function getAccountProfileInfo(
   selectedWallet: any,
   walletNames: any,
-  network: any,
   accountAddress: any
 ) {
   if (!selectedWallet) {

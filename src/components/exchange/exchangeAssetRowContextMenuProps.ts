@@ -104,6 +104,6 @@ export default function contextMenuProps(
   return {
     menuConfig,
     ...(android ? { isAnchoredToRight: true, onPress: onPressAndroid } : {}),
-    handlePressMenuItem,
+    onPressMenuItem: handlePressMenuItem,
   };
 }

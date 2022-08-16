@@ -6,7 +6,7 @@ import clone from 'lodash/clone';
 import isEmpty from 'lodash/isEmpty';
 import mapValues from 'lodash/mapValues';
 import values from 'lodash/values';
-import { Alert, AppState, InteractionManager, Linking } from 'react-native';
+import { AppState, InteractionManager, Linking } from 'react-native';
 import {
   // @ts-ignore
   IS_TESTING,
@@ -28,6 +28,7 @@ import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';

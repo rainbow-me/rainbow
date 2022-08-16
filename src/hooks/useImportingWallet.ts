@@ -2,11 +2,12 @@ import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import keys from 'lodash/keys';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
+import { fetchENSAvatar } from './useENSAvatar';
 import useInitializeWallet from './useInitializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
@@ -14,9 +15,10 @@ import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   resolveUnstoppableDomain,
   web3Provider,
@@ -30,7 +32,6 @@ import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import { useRemoveFirst } from '@rainbow-me/navigation/useRemoveFirst';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
@@ -46,9 +47,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
-  const [color, setColor] = useState(null);
-  const [name, setName] = useState(null);
-  const [image, setImage] = useState(null);
+  const [color, setColor] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
@@ -91,7 +92,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const startImportProfile = useCallback(
     (name, forceColor, address = null, avatarUrl) => {
-      const importWallet = (color: any, name: any, image: any) =>
+      const importWallet = (color: string, name: string, image: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
           if (name) setName(name);
@@ -108,7 +109,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           asset: [],
           forceColor,
           isNewProfile: true,
-          onCloseModal: ({ color, name, image }: any) => {
+          onCloseModal: ({
+            color,
+            name,
+            image,
+          }: {
+            color: string;
+            name: string;
+            image: string;
+          }) => {
             importWallet(color, name, image);
           },
           profile: { image: avatarUrl, name },
@@ -116,7 +125,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           withoutStatusBar: true,
         });
       } else {
-        importWallet(name, forceColor, avatarUrl);
+        importWallet(forceColor, name, avatarUrl);
       }
     },
     [handleSetImporting, navigate, showImportModal]
@@ -133,13 +142,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           : null;
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
-      let name: any = null;
+      let name: string | null = null;
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const [address, images] = await Promise.all([
+          const [address, avatar] = await Promise.all([
             web3Provider.resolveName(input),
-            !avatarUrl && profilesEnabled && fetchImages(input),
+            !avatarUrl &&
+              profilesEnabled &&
+              fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
             Alert.alert(lang.t('wallet.invalid_ens_name'));
@@ -148,7 +159,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          avatarUrl = avatarUrl || images?.avatarUrl;
+          avatarUrl = avatarUrl || avatar?.imageUrl;
           startImportProfile(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
@@ -181,12 +192,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       } else if (isValidAddress(input)) {
         try {
-          const ens = await web3Provider.lookupAddress(input);
+          const ens = await fetchReverseRecord(input);
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             if (!avatarUrl && profilesEnabled) {
-              const images = await fetchImages(name);
-              avatarUrl = images?.avatarUrl;
+              const avatar = await fetchENSAvatar(name, { swallowError: true });
+              avatarUrl = avatar?.imageUrl;
             }
           }
           analytics.track('Show wallet profile modal for read only wallet', {
@@ -211,8 +222,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
               if (!avatarUrl && profilesEnabled) {
-                const images = await fetchImages(name);
-                avatarUrl = images?.avatarUrl;
+                const avatar = await fetchENSAvatar(name, {
+                  swallowError: true,
+                });
+                avatarUrl = avatar?.imageUrl;
               }
             }
             setBusy(false);
@@ -237,7 +250,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const dispatch = useDispatch();
-  const removeFirst = useRemoveFirst();
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
@@ -292,7 +304,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                     InteractionManager.runAfterInteractions(() =>
                       setIsWalletLoading(null)
                     );
-                    removeFirst();
                   }
 
                   setTimeout(() => {
@@ -367,7 +378,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     dispatch,
     showImportModal,
     profilesEnabled,
-    removeFirst,
     setIsWalletLoading,
   ]);
 

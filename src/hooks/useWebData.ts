@@ -13,9 +13,10 @@ import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
-const getAccountSymbol = (name: any) => {
+const getAccountSymbol = (name: string) => {
   if (!name) {
     return null;
   }
@@ -23,7 +24,7 @@ const getAccountSymbol = (name: any) => {
   return accountSymbol;
 };
 
-const wipeNotEmoji = (text: any) => {
+const wipeNotEmoji = (text: string) => {
   const characters = new GraphemeSplitter().splitGraphemes(text);
   if (characters.length !== 1) {
     return null;
@@ -37,8 +38,7 @@ export default function useWebData() {
   const { wallets } = useWallets();
 
   const { showcaseTokens, webDataEnabled } = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
-    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
+    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
       showcaseTokens,
       webDataEnabled,
     })
@@ -63,7 +63,7 @@ export default function useWebData() {
         accountAddress,
         {
           accountColor: colors.avatarBackgrounds[accountColor],
-          accountSymbol: wipeNotEmoji(accountSymbol),
+          accountSymbol: wipeNotEmoji(accountSymbol as string),
         }
       );
 
@@ -81,6 +81,7 @@ export default function useWebData() {
   const wipeWebData = useCallback(async () => {
     if (!webDataEnabled) return;
     await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
+    await setPreference(PreferenceActionType.wipe, 'hidden', accountAddress);
     await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
     dispatch(updateWebDataEnabled(false, accountAddress));
   }, [accountAddress, dispatch, webDataEnabled]);
@@ -88,13 +89,13 @@ export default function useWebData() {
   const updateWebProfile = useCallback(
     async (address, name, color) => {
       if (!webDataEnabled) return;
-      const wallet = findWalletWithAccount(wallets, address);
+      const wallet = findWalletWithAccount(wallets!, address);
       // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color || accountColor,
         accountSymbol: wipeNotEmoji(
-          name ? getAccountSymbol(name) : accountSymbol
+          name ? getAccountSymbol(name)! : (accountSymbol as string)
         ),
       };
       await setPreference(
@@ -134,6 +135,33 @@ export default function useWebData() {
     [accountAddress, initWebData, webDataEnabled]
   );
 
+  const updateWebHidden = useCallback(
+    async assetIds => {
+      if (!webDataEnabled) return;
+      const response = await getPreference('hidden', accountAddress);
+      // If the showcase is populated, just updated it
+      // @ts-expect-error
+      if (response?.ids?.length > 0) {
+        setPreference(
+          PreferenceActionType.update,
+          'hidden',
+          accountAddress,
+          assetIds
+        );
+      } else {
+        await setPreference(
+          PreferenceActionType.init,
+          'hidden',
+          accountAddress,
+          assetIds
+        );
+
+        logger.log('hidden initialized!');
+      }
+    },
+    [accountAddress, webDataEnabled]
+  );
+
   const initializeShowcaseIfNeeded = useCallback(async () => {
     try {
       // If local showcase is not empty
@@ -161,6 +189,7 @@ export default function useWebData() {
     getWebProfile,
     initializeShowcaseIfNeeded,
     initWebData,
+    updateWebHidden,
     updateWebProfile,
     updateWebShowcase,
     webDataEnabled,

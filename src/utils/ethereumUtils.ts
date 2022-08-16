@@ -22,16 +22,12 @@ import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
 import isString from 'lodash/isString';
 import replace from 'lodash/replace';
-import {
-  Alert,
-  InteractionManager,
-  Linking,
-  NativeModules,
-} from 'react-native';
+import { InteractionManager, Linking, NativeModules } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   EthereumAddress,
   GasFee,
@@ -131,9 +127,19 @@ const getNativeAssetForNetwork = async (
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
-      if (network === Network.polygon) {
-        nativeAsset.mainnet_address = mainnetAddress;
-        nativeAsset.address = MATIC_POLYGON_ADDRESS;
+      switch (network) {
+        case Network.polygon:
+          nativeAsset.mainnet_address = mainnetAddress;
+          nativeAsset.address = MATIC_POLYGON_ADDRESS;
+          break;
+        case Network.optimism:
+          nativeAsset.mainnet_address = ETH_ADDRESS;
+          nativeAsset.address = OPTIMISM_ETH_ADDRESS;
+          break;
+        case Network.arbitrum:
+          nativeAsset.mainnet_address = ETH_ADDRESS;
+          nativeAsset.address = ARBITRUM_ETH_ADDRESS;
+          break;
       }
       const balance = await getOnchainAssetBalance(
         nativeAsset,
@@ -646,7 +652,7 @@ async function parseEthereumUrl(data: string) {
 
   InteractionManager.runAfterInteractions(() => {
     const params = { address, asset: assetWithPrice, nativeAmount };
-    if (isNativeStackAvailable || android) {
+    if (isNativeStackAvailable) {
       Navigation.handleAction(Routes.SEND_FLOW, {
         params,
         screen: Routes.SEND_SHEET,

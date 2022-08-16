@@ -122,8 +122,8 @@ export default React.memo(function TransactionCoinRow({
 
   return (
     <ContextMenuButton
-      handlePressMenuItem={android ? onPressAndroidCallback : noop}
       menuConfig={menuItems}
+      onPressMenuItem={android ? onPressAndroidCallback : noop}
     >
       <ButtonPressAnimation
         onPress={ios ? onPressIOSCallback : noop}

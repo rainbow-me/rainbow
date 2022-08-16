@@ -131,7 +131,9 @@ class ViewPagerBackend extends React.Component {
       removeListener: this.removeListener,
       render: children => (
         <ViewPagerWrapper
-          initialPage={initialScrollPosition}
+          initialPage={
+            initialScrollPosition ?? this.props.navigationState.index
+          }
           keyboardDismissMode={
             // ViewPager does not accept auto mode
             keyboardDismissMode === 'auto' ? 'on-drag' : keyboardDismissMode

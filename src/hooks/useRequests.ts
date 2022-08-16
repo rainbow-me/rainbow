@@ -3,10 +3,10 @@ import sortBy from 'lodash/sortBy';
 import values from 'lodash/values';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { AppState } from '@rainbow-me/redux/store';
 
 export default function useRequests() {
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'requests' does not exist on type 'Defaul... Remove this comment to see the full error message
-  const { requests } = useSelector(({ requests: { requests } }) => ({
+  const { requests } = useSelector(({ requests: { requests } }: AppState) => ({
     requests,
   }));
 

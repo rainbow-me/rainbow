@@ -46,13 +46,9 @@ const FormContainer = styled(Column).attrs(
       }
     : {}
 )(({ isNft }) => ({
+  flex: 1,
   ...(isNft ? padding.object(0) : padding.object(0, 19)),
-  ...(ios ? { flex: 1 } : {}),
 }));
-
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ theme: { colors } }) => colors.lighterGrey,
-});
 
 export default function SendAssetForm({
   assetAmount,
@@ -168,9 +164,7 @@ export default function SendAssetForm({
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
-            {ios ? (
-              <KeyboardSizeView initialHeight={keyboardHeight} isOpen />
-            ) : null}
+            <KeyboardArea initialHeight={keyboardHeight} isOpen />
           </Fragment>
         )}
       </FormContainer>

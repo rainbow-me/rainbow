@@ -323,6 +323,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   if (currentNetwork === Network.mainnet) {
     const poaps = (await fetchPoaps(accountAddress)) ?? [];
     if (poaps.length > 0) {
+      analytics.identify(undefined, { poaps: poaps.length });
       uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
       uniqueTokens = uniqueTokens.concat(poaps);
     }
@@ -337,16 +338,16 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
 
     //we only care about analytics for mainnet + L2's
     analytics.identify(undefined, { NFTs: uniqueTokens.length });
-  }
 
-  // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
-  // We will fetch tokens registered in the past 48 hours to be safe.
-  const ensTokens = await fetchEnsTokens({
-    address: accountAddress,
-    timeAgo: { hours: 48 },
-  });
-  if (ensTokens.length > 0) {
-    uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
+    // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
+    // We will fetch tokens registered in the past 48 hours to be safe.
+    const ensTokens = await fetchEnsTokens({
+      address: accountAddress,
+      timeAgo: { hours: 48 },
+    });
+    if (ensTokens.length > 0) {
+      uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
+    }
   }
 
   // NFT Fetching clean up
