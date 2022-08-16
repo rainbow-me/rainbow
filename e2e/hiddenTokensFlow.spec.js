@@ -46,4 +46,8 @@ describe('Hidden tokens flow', () => {
 
     await Helpers.checkIfVisible('wrapped-nft-rainbowtestwallet.eth');
   });
+
+  afterAll(async () => {
+    await device.clearKeychain();
+  });
 });

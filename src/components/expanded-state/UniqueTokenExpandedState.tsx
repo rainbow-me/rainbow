@@ -498,15 +498,19 @@ const UniqueTokenExpandedState = ({
                   <Stack space={sectionSpace}>
                     <Stack space="42px">
                       <Inline alignHorizontal="justify" wrap={false}>
-                        <TextButton onPress={handlePressShowcase}>
-                          {isShowcaseAsset
-                            ? `􀁏 ${lang.t(
-                                'expanded_state.unique_expanded.in_showcase'
-                              )}`
-                            : `􀁍 ${lang.t(
-                                'expanded_state.unique_expanded.showcase'
-                              )}`}
-                        </TextButton>
+                        {isActionsEnabled ? (
+                          <TextButton onPress={handlePressShowcase}>
+                            {isShowcaseAsset
+                              ? `􀁏 ${lang.t(
+                                  'expanded_state.unique_expanded.in_showcase'
+                                )}`
+                              : `􀁍 ${lang.t(
+                                  'expanded_state.unique_expanded.showcase'
+                                )}`}
+                          </TextButton>
+                        ) : (
+                          <View />
+                        )}
                         {isSupportedOnRainbowWeb || asset.permalink ? (
                           <TextButton align="right" onPress={handlePressShare}>
                             􀈂 {lang.t('button.share')}
@@ -516,6 +520,7 @@ const UniqueTokenExpandedState = ({
                       <UniqueTokenExpandedStateHeader
                         asset={asset}
                         hideNftMarketplaceAction={hideNftMarketplaceAction}
+                        isModificationActionsEnabled={isActionsEnabled}
                         isSupportedOnRainbowWeb={isSupportedOnRainbowWeb}
                         rainbowWebUrl={rainbowWebUrl}
                       />
