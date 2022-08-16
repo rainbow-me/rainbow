@@ -210,17 +210,7 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.type,
   ]);
   const isTestnet = isTestnetNetwork(currentNetwork);
-  // This one includes the original l2 address if exists
-  const ogAsset = useMemo(() => {
-    return {
-      ...assetWithPrice,
-      address: isL2
-        ? assetWithPrice.l2Address || asset?.address
-        : assetWithPrice.address,
-    };
-  }, [assetWithPrice, isL2, asset]);
 
-  const { height: screenHeight } = useDimensions();
   const {
     description,
     marketCap,
@@ -230,6 +220,28 @@ export default function ChartExpandedState({ asset }) {
     links,
     networks,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
+
+  // This one includes the original l2 address if exists
+  const ogAsset = useMemo(() => {
+    if (networks) {
+      let mappedNetworks = {};
+      Object.keys(networks).forEach(
+        chainId =>
+          (mappedNetworks[ethereumUtils.getNetworkNameFromChainId(chainId)] =
+            networks[chainId])
+      );
+      assetWithPrice.implementations = mappedNetworks;
+    }
+
+    return {
+      ...assetWithPrice,
+      address: isL2
+        ? assetWithPrice.l2Address || asset?.address
+        : assetWithPrice.address,
+    };
+  }, [assetWithPrice, isL2, asset?.address, networks]);
+
+  const { height: screenHeight } = useDimensions();
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
     description?.replace(/\s+/g, '')
