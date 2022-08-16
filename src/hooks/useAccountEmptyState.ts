@@ -7,7 +7,7 @@ import {
 import useAccountSettings from './useAccountSettings';
 import { AppState } from '@rainbow-me/redux/store';
 
-export default function useAccountEmptyState(isSectionsEmpty: any) {
+export default function useAccountEmptyState(isSectionsEmpty: boolean) {
   const { network, accountAddress } = useAccountSettings();
   const isLoadingAssets = useSelector(
     (state: AppState) => state.data.isLoadingAssets
@@ -16,8 +16,7 @@ export default function useAccountEmptyState(isSectionsEmpty: any) {
     () => getAccountEmptyState(accountAddress, network),
     [accountAddress, network]
   );
-  // @ts-expect-error ts-migrate(7022) FIXME: 'isEmpty' implicitly has type 'any' because it doe... Remove this comment to see the full error message
-  const isEmpty = useMemo(
+  const isEmpty: { [address: string]: boolean | undefined } = useMemo(
     () => ({
       ...isEmpty,
       [accountAddress]: isLoadingAssets

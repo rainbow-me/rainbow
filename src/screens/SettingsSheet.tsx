@@ -127,8 +127,8 @@ export default function SettingsSheet() {
         const walletId = params?.walletId;
         if (
           !walletId &&
-          Object.keys(wallets).filter(
-            key => wallets[key].type !== WalletTypes.readOnly
+          Object.keys(wallets!).filter(
+            key => wallets![key].type !== WalletTypes.readOnly
           ).length > 1
         ) {
           route = 'BackupSection';

@@ -34,13 +34,13 @@ export default function useManageCloudBackups() {
         options: buttons,
         title: `Manage ${cloudPlatform} Backups`,
       },
-      async (buttonIndex: any) => {
+      async (buttonIndex: number) => {
         if (buttonIndex === 0) {
           const { files } = await fetchAllBackups();
           const filteredFiles = files.filter(
             (file: any) => file.name.indexOf('backup_') !== -1
           );
-          const backupFiles = filteredFiles.map((file: any, i: any) => {
+          const backupFiles = filteredFiles.map((file: any, i: number) => {
             const ts = Number(
               file.name
                 .replace('.backup_', '')
@@ -62,7 +62,7 @@ export default function useManageCloudBackups() {
                 message: `Choose your ${cloudPlatform} backups`,
                 options: backupFiles.concat(['Cancel']),
               },
-              async (buttonIndex: any) => {
+              async (buttonIndex: number) => {
                 showActionSheetWithOptions(
                   {
                     cancelButtonIndex: 1,
@@ -70,7 +70,7 @@ export default function useManageCloudBackups() {
                     message: `This will override all your current wallets. Are you sure?`,
                     options: [`Yes, Restore my backup`, 'Cancel'],
                   },
-                  async (actionIndex: any) => {
+                  async (actionIndex: number) => {
                     if (actionIndex === 0) {
                       const potentialUserData = await fetchUserDataFromCloud();
                       let backupSelected = null;
