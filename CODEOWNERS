@@ -45,7 +45,7 @@ src/redux/nonceManager.ts @derHowie @brunobar79 @estebanmino
 app.json @brunobar79 @estebanmino
 
 # SECURITY / APP INFRA
-audit-ci.json @brunobar79 @skylarbarrera @estebanmino @nickbytes
+audit-ci.jsonc @brunobar79 @skylarbarrera @estebanmino @nickbytes
 
 # APP INFRA
 babel.config.js @brunobar79 @osdnk @estebanmino
