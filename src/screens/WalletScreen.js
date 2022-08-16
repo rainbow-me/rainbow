@@ -16,9 +16,11 @@ import { Page, RowWithMargins } from '../components/layout';
 import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { prefetchENSIntroData } from '@/handlers/ens';
-import networkInfo from '@/helpers/networkInfo';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
+import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
