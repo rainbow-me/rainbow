@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import qs from 'qs';
@@ -6,11 +5,17 @@ import { useCallback, useEffect } from 'react';
 import { InteractionManager } from 'react-native';
 import URL from 'url-parse';
 import { Alert } from '../components/alerts';
+import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
+import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { analytics } from '@rainbow-me/analytics';
 import { handleQRScanner } from '@rainbow-me/handlers/fedora';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import {
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -20,6 +25,7 @@ import logger from 'logger';
 export default function useScanner(enabled: any, onSuccess: any) {
   const { navigate } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const enabledVar = useRef();
 
@@ -48,23 +54,29 @@ export default function useScanner(enabled: any, onSuccess: any) {
   }, []);
 
   const handleScanAddress = useCallback(
-    address => {
+    async address => {
       haptics.notificationSuccess();
       analytics.track('Scanned address QR code');
-
+      const ensName = isENSAddressFormat(address)
+        ? address
+        : await fetchReverseRecordWithRetry(address);
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
 
-      // And then navigate to Showcase sheet
+      // And then navigate to Profile sheet
       InteractionManager.runAfterInteractions(() => {
-        Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-          address,
-        });
+        Navigation.handleAction(
+          profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
+          {
+            address: ensName || address,
+            fromRoute: 'QR Code',
+          }
+        );
 
         setTimeout(onSuccess, 500);
       });
     },
-    [navigate, onSuccess]
+    [navigate, onSuccess, profilesEnabled]
   );
 
   const handleScanRainbowProfile = useCallback(
@@ -76,20 +88,27 @@ export default function useScanner(enabled: any, onSuccess: any) {
       const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
       const isValid = await checkIsValidAddressOrDomain(addressOrENS);
       if (isValid) {
+        const ensName = isENSAddressFormat(addressOrENS)
+          ? addressOrENS
+          : await fetchReverseRecordWithRetry(addressOrENS);
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
 
-        // And then navigate to Showcase sheet
+        // And then navigate to Profile sheet
         InteractionManager.runAfterInteractions(() => {
-          Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-            address: addressOrENS,
-          });
+          Navigation.handleAction(
+            profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
+            {
+              address: ensName,
+              fromRoute: 'QR Code',
+            }
+          );
 
           setTimeout(onSuccess, 500);
         });
       }
     },
-    [navigate, onSuccess]
+    [navigate, onSuccess, profilesEnabled]
   );
 
   const handleScanWalletConnect = useCallback(

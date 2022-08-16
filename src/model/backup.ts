@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import {
   Options,
@@ -25,6 +24,7 @@ import {
   createWallet,
   RainbowWallet,
 } from './wallet';
+import { analytics } from '@rainbow-me/analytics';
 
 import logger from 'logger';
 

@@ -42,7 +42,7 @@ export default function ActionButton({
 
   const isIconOnly = Boolean(icon && !children);
   return (
-    <ButtonPressAnimation onPress={onPress} testID={testID}>
+    <ButtonPressAnimation onPress={onPress} overflowMargin={20} testID={testID}>
       <AccentColorProvider color={shadowColor}>
         <Box
           alignItems="center"

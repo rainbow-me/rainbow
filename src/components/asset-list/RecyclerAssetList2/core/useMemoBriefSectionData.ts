@@ -37,17 +37,18 @@ export default function useMemoBriefSectionData({
 } = {}) {
   let sectionsDataToUse: any[];
 
-  if (externalAddress) {
-    // `externalAddress` is a static prop, so hooks will always execute in order.
+  if (type === 'ens-profile') {
+    // `type` is a static prop, so hooks will always execute in order.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     sectionsDataToUse = useExternalWalletSectionsData({
       address: externalAddress,
+      type,
     }).briefSectionsData;
   } else if (!briefSectionsData) {
     // briefSectionsData is an optional thing - we might send it from the tree
     // so we run it only once for a tree
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    sectionsDataToUse = useWalletSectionsData().briefSectionsData!;
+    sectionsDataToUse = useWalletSectionsData({ type }).briefSectionsData!;
   } else {
     sectionsDataToUse = briefSectionsData;
   }

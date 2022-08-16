@@ -1,10 +1,14 @@
+import { BlurView } from '@react-native-community/blur';
 import React, { Fragment, useCallback, useState } from 'react';
+import { View } from 'react-native';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
+import { Text } from '@rainbow-me/design-system';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
+import { useHiddenTokens } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
@@ -29,6 +33,14 @@ const ImageTile = styled(ImgixImage)({
   justifyContent: 'center',
 });
 
+const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
+  blurAmount: 40,
+  blurType: isDarkMode ? 'dark' : 'light',
+}))({
+  ...position.coverAsObject,
+  zIndex: 1,
+});
+
 const UniqueTokenImage = ({
   backgroundColor: givenBackgroundColor,
   imageUrl,
@@ -48,6 +60,10 @@ const UniqueTokenImage = ({
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
   let backgroundColor = givenBackgroundColor;
+  const { hiddenTokens } = useHiddenTokens();
+  const isHiddenToken = React.useMemo(() => {
+    return hiddenTokens.find(token => token === item.fullUniqueId);
+  }, [hiddenTokens, item]);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
@@ -92,6 +108,23 @@ const UniqueTokenImage = ({
         >
           {buildUniqueTokenName(item)}
         </Monospace>
+      )}
+
+      {isHiddenToken && isCard && (
+        <>
+          <OverlayBlur isDarkMode={isDarkMode} />
+          <View style={{ paddingHorizontal: 10 }} zIndex={2}>
+            <Text
+              align="center"
+              color="secondary60"
+              lineHeight="looser"
+              size="14px"
+              weight="semibold"
+            >
+              {`${item.familyName} #${item.id}`}
+            </Text>
+          </View>
+        </>
       )}
     </Centered>
   );

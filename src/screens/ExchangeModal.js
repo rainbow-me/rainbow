@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual } from 'lodash';
 import React, {
@@ -10,12 +9,7 @@ import React, {
   useState,
 } from 'react';
 import equal from 'react-fast-compare';
-import {
-  Alert,
-  InteractionManager,
-  Keyboard,
-  NativeModules,
-} from 'react-native';
+import { InteractionManager, Keyboard, NativeModules } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
@@ -36,6 +30,8 @@ import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@rainbow-me/analytics';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
@@ -77,7 +73,7 @@ import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
@@ -216,6 +212,7 @@ export default function ExchangeModal({
     startPollingGasFees,
     stopPollingGasFees,
     updateDefaultGasLimit,
+    updateGasFeeOption,
     updateTxFee,
     txNetwork,
     isGasReady,
@@ -286,14 +283,40 @@ export default function ExchangeModal({
     title,
     type,
   });
+  const speedUrgentSelected = useRef(false);
 
-  const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
+  useEffect(() => {
+    if (
+      !speedUrgentSelected.current &&
+      !isEmpty(gasFeeParamsBySpeed) &&
+      (currentNetwork === Network.mainnet || currentNetwork === Network.polygon)
+    ) {
+      // Default to fast for networks with speed options
+      updateGasFeeOption(gasUtils.FAST);
+      speedUrgentSelected.current = true;
+    }
+  }, [
+    currentNetwork,
+    gasFeeParamsBySpeed,
+    selectedGasFee,
+    updateGasFeeOption,
+    updateTxFee,
+  ]);
 
-  const defaultGasLimit = isDeposit
-    ? ethUnits.basic_deposit
-    : isWithdrawal
-    ? ethUnits.basic_withdrawal
-    : basicSwap;
+  useEffect(() => {
+    if (currentNetwork !== prevTxNetwork) {
+      speedUrgentSelected.current = false;
+    }
+  }, [currentNetwork, prevTxNetwork]);
+
+  const defaultGasLimit = useMemo(() => {
+    const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
+    return isDeposit
+      ? ethUnits.basic_deposit
+      : isWithdrawal
+      ? ethUnits.basic_withdrawal
+      : basicSwap;
+  }, [chainId, isDeposit, isWithdrawal]);
 
   const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
@@ -386,15 +409,6 @@ export default function ExchangeModal({
 
   const updateGasLimit = useCallback(async () => {
     try {
-      if (
-        ((type === ExchangeModalTypes.swap ||
-          type === ExchangeModalTypes.deposit) &&
-          !(inputCurrency && outputCurrency)) ||
-        type === ExchangeModalTypes.withdraw ||
-        loading
-      ) {
-        return;
-      }
       const swapParams = {
         chainId,
         inputAmount,
@@ -438,10 +452,7 @@ export default function ExchangeModal({
     currentProvider,
     defaultGasLimit,
     inputAmount,
-    inputCurrency,
-    loading,
     outputAmount,
-    outputCurrency,
     tradeDetails,
     type,
     updateTxFee,
@@ -573,12 +584,16 @@ export default function ExchangeModal({
         analytics.track(`Completed ${type}`, {
           aggregator: tradeDetails?.source || '',
           amountInUSD,
+          gasSetting: selectedGasFee?.option,
           inputTokenAddress: inputCurrency?.address || '',
           inputTokenName: inputCurrency?.name || '',
           inputTokenSymbol: inputCurrency?.symbol || '',
           isHighPriceImpact: debouncedIsHighPriceImpact,
+          legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
           liquiditySources: tradeDetails?.protocols || [],
+          maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
           network: currentNetwork,
+          networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
           outputTokenAddress: outputCurrency?.address || '',
           outputTokenName: outputCurrency?.name || '',
           outputTokenSymbol: outputCurrency?.symbol || '',
@@ -649,12 +664,16 @@ export default function ExchangeModal({
       analytics.track(`Submitted ${type}`, {
         aggregator: tradeDetails?.source || '',
         amountInUSD,
+        gasSetting: selectedGasFee?.option,
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
         isHighPriceImpact: debouncedIsHighPriceImpact,
+        legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
         liquiditySources: tradeDetails?.protocols || [],
+        maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
         network: currentNetwork,
+        networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
         outputTokenAddress: outputCurrency?.address || '',
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
@@ -679,7 +698,7 @@ export default function ExchangeModal({
   }, [
     outputPriceValue,
     outputAmount,
-    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
+    selectedGasFee,
     submit,
     nativeCurrency,
     nativeAmount,
@@ -689,6 +708,7 @@ export default function ExchangeModal({
     inputCurrency?.symbol,
     inputAmount,
     priceOfEther,
+    slippageInBips,
     type,
     tradeDetails?.source,
     tradeDetails?.protocols,
@@ -698,7 +718,6 @@ export default function ExchangeModal({
     outputCurrency?.name,
     outputCurrency?.symbol,
     priceImpactPercentDisplay,
-    slippageInBips,
   ]);
 
   const confirmButtonProps = useMemoOne(

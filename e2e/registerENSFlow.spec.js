@@ -6,19 +6,30 @@ import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
 import registrarABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
 import publicResolverABI from '@rainbow-me/references/ens/ENSPublicResolver.json';
+import registryWithFallbackABI from '@rainbow-me/references/ens/ENSRegistryWithFallback.json';
+
 const ensETHRegistrarControllerAddress =
   '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 const ensPublicResolverAddress = '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41';
+const ensRegistryAddress = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
 
-const RANDOM_NAME = 'somerandomname321';
+const RANDOM_NAME = 'randomname321';
 const RANDOM_NAME_ETH = RANDOM_NAME + '.eth';
 const RAINBOW_TEST_WALLET_NAME = 'rainbowtestwallet.eth';
 const RAINBOW_TEST_WALLET_ADDRESS =
   '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
+const RAINBOW_WALLET_NAME = 'rainbowwallet.eth';
+const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const RECORD_BIO = 'my bio';
 const RECORD_NAME = 'random';
 const EIP155_FORMATTED_AVATAR_RECORD =
   'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227';
+
+const address = (address, start, finish) =>
+  [
+    address.substring(0, start),
+    address.substring(address.length - finish),
+  ].join('...');
 
 const nameIsAvailable = async name => {
   const provider = Helpers.getProvider();
@@ -29,6 +40,17 @@ const nameIsAvailable = async name => {
   );
   const nameIsAvailable = await registrarContract.available(name);
   return !!nameIsAvailable;
+};
+
+const getNameOwner = async ensName => {
+  const provider = Helpers.getProvider();
+  const registry = new Contract(
+    ensRegistryAddress,
+    registryWithFallbackABI,
+    provider
+  );
+  const owner = await registry.owner(hash(ensName));
+  return owner;
 };
 
 const getRecords = async ensName => {
@@ -147,11 +169,6 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('developer-settings-sheet');
   });
 
-  it('Should make ENS Profiles available', async () => {
-    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
-    await Helpers.tapByText('ENS Profiles');
-  });
-
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
@@ -167,8 +184,14 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('discover-header');
   });
 
-  it('Should go to ENS flow pressing the ENS banner', async () => {
+  it('Should go to ENS search screen by pressing the ENS search banner', async () => {
     await Helpers.waitAndTap('ens-register-name-banner');
+    await Helpers.checkIfVisible('ens-search-input');
+    await Helpers.swipe('ens-search-sheet', 'down');
+  });
+
+  it('Should go to ENS flow pressing the ENS banner', async () => {
+    await Helpers.waitAndTap('ens-create-profile-card');
     await Helpers.checkIfVisible('ens-intro-sheet');
   });
 
@@ -183,6 +206,16 @@ describe('Register ENS Flow', () => {
   it('Should be able to type a name that is not available', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
+    await Helpers.waitAndTap('ens-search-clear-button');
+  });
+
+  it('Should be able to type a name that has special characters', async () => {
+    await Helpers.checkIfVisible('ens-search-input');
+    await Helpers.typeText('ens-search-input', '‘invalidname', false);
+    await Helpers.waitAndTap('ens-search-clear-button');
+    await Helpers.typeText('ens-search-input', '&&&ivalidname', false);
+    await Helpers.waitAndTap('ens-search-clear-button');
+    await Helpers.typeText('ens-search-input', '‘invalidname‘', false);
     await Helpers.waitAndTap('ens-search-clear-button');
   });
 
@@ -224,18 +257,17 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to review registration and start it', async () => {
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+    await Helpers.delay(1000);
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
-    await Helpers.delay(60000);
+    await Helpers.delay(65000);
   });
 
-  it('Should see confirm registration screen and set reverse records', async () => {
-    await Helpers.checkIfVisible(`ens-reverse-record-switch`);
-    // set RANDOM_NAME as primary name
-    await Helpers.waitAndTap('ens-reverse-record-switch');
+  it('Should see confirm registration screen', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
     await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
   });
@@ -260,17 +292,39 @@ describe('Register ENS Flow', () => {
     await validatePrimaryName(RANDOM_NAME_ETH);
   });
 
-  it('Should navigate to the Wallet screen and refresh', async () => {
+  it('Should check new wallet name is the new ENS on profile screen and change wallet screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.swipe('wallet-screen', 'down', 'slow');
+    await Helpers.checkIfVisible(
+      `wallet-screen-account-name-${RANDOM_NAME_ETH}`
+    );
+    await Helpers.waitAndTap(`wallet-screen-account-name-${RANDOM_NAME_ETH}`);
+    await Helpers.checkIfVisible(
+      `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
+    );
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.tapByText(`${RANDOM_NAME_ETH}`);
+    await Helpers.checkIfVisible(
+      `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
+    );
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it('Should open ENS rainbowtestwallet.eth', async () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow');
-    await Helpers.tapByText('ENS');
+    await Helpers.tapByText('CryptoKitties');
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.waitAndTap('token-family-header-ENS');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
+  });
+
+  it('Should be able to navigate to the Edit screen', async () => {
+    await Helpers.waitAndTap('edit-action-button');
+    await Helpers.checkIfVisible('ens-assign-records-sheet');
+    await Helpers.swipe('ens-assign-records-sheet', 'down');
   });
 
   it('Should use rainbowtestwallet.eth as primary name', async () => {
@@ -284,8 +338,22 @@ describe('Register ENS Flow', () => {
     await validatePrimaryName(RAINBOW_TEST_WALLET_NAME);
   });
 
-  it('Should navigate to the Wallet screen to renew', async () => {
+  it('Should check wallet name is the new ENS set as primary on profile screen and change wallet screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.checkIfVisible(
+      `wallet-screen-account-name-${RAINBOW_TEST_WALLET_NAME}`
+    );
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.tapByText(RAINBOW_TEST_WALLET_NAME);
+    await Helpers.checkIfVisible(
+      `change-wallet-address-row-label-${RAINBOW_TEST_WALLET_NAME}`
+    );
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should navigate to the Wallet screen to renew', async () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
@@ -298,6 +366,64 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
     await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
     await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
+  });
+
+  it('Should navigate to the Wallet screen to send ENS from renew tx', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+  });
+
+  it('Should open ENS rainbowtestwallet.eth to send ENS', async () => {
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.tapByText('CryptoKitties');
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
+    await Helpers.waitAndTap('send-action-button');
+  });
+
+  it('Should go to review send ENS', async () => {
+    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth\n');
+    await Helpers.waitAndTap('gas-speed-custom');
+    await Helpers.waitAndTap('speed-pill-urgent');
+    await Helpers.waitAndTap('gas-speed-done-button');
+    await Helpers.waitAndTap('send-sheet-confirm-action-button');
+  });
+
+  it('Should press all ENS options', async () => {
+    await Helpers.waitAndTap('clear-records');
+    await Helpers.waitAndTap('set-address');
+    await Helpers.waitAndTap('transfer-control');
+    await Helpers.tapAndLongPress('send-confirmation-button');
+  });
+
+  it('Should confirm the ENS was sent correctly', async () => {
+    await Helpers.delay(1000);
+    const { displayName } = await getRecords(RAINBOW_TEST_WALLET_NAME);
+    const { address, primaryName } = await resolveName(
+      RAINBOW_TEST_WALLET_NAME
+    );
+    const owner = await getNameOwner(RAINBOW_TEST_WALLET_NAME);
+    if (address !== RAINBOW_WALLET_ADDRESS)
+      throw new Error('Resolved address is wrong');
+    if (primaryName !== RAINBOW_WALLET_NAME)
+      throw new Error('Resolved primary name is wrong');
+    if (displayName) throw new Error('me.rainbow.displayName name is wrong');
+    if (owner !== RAINBOW_WALLET_ADDRESS)
+      throw new Error('Owner not set correctly');
+  });
+
+  it('Should check address is the new label on profile screen and change wallet screen', async () => {
+    const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.checkIfVisible(
+      `wallet-screen-account-name-${TRUNCATED_ADDRESS}`
+    );
+    await Helpers.waitAndTap(`wallet-screen-account-name-${TRUNCATED_ADDRESS}`);
+    await Helpers.checkIfVisible(
+      `change-wallet-address-row-address-${RAINBOW_TEST_WALLET_ADDRESS}`
+    );
   });
 
   afterAll(async () => {

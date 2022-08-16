@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import ChainLogo from '../ChainLogo';
@@ -9,6 +8,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
+import { analytics } from '@rainbow-me/analytics';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
   dappLogoOverride,
@@ -22,11 +22,7 @@ import {
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
 } from '@rainbow-me/helpers/walletConnectNetworks';
-import {
-  useAccountSettings,
-  useWalletConnectConnections,
-  useWallets,
-} from '@rainbow-me/hooks';
+import { useWalletConnectConnections, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -89,7 +85,6 @@ export default function WalletConnectListItem({
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
-  const { network } = useAccountSettings();
 
   const overrideLogo = useMemo(() => {
     return dappLogoOverride(dappUrl);
@@ -104,13 +99,12 @@ export default function WalletConnectListItem({
     const approvalAccountInfo = getAccountProfileInfo(
       selectedWallet,
       walletNames,
-      network,
       account
     );
     return {
       ...approvalAccountInfo,
     };
-  }, [wallets, walletNames, network, account]);
+  }, [wallets, walletNames, account]);
 
   const connectionNetworkInfo = useMemo(() => {
     const network = ethereumUtils.getNetworkFromChainId(Number(chainId));

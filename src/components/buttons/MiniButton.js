@@ -73,6 +73,35 @@ export default function MiniButton({
 
   const shadows = isDarkMode ? shadowsDark : shadowLight;
 
+  const content = (
+    <Content
+      backgroundColor={
+        android
+          ? disabled
+            ? colors.lightGrey
+            : backgroundColor || colors.appleBlue
+          : 'none'
+      }
+      disablePadding={disablePadding}
+      hasLeadingIcon={hasLeadingIcon}
+      height={height ? height : small ? 27 : 30}
+    >
+      {typeof children === 'string' ? (
+        <Text
+          align="center"
+          color={color || colors.whiteLabel}
+          letterSpacing={letterSpacing}
+          lineHeight={android ? 19 : null}
+          weight={weight || 'bold'}
+        >
+          {children}
+        </Text>
+      ) : (
+        children
+      )}
+    </Content>
+  );
+
   return (
     <ButtonPressAnimation
       disabled={disabled}
@@ -103,32 +132,7 @@ export default function MiniButton({
           }
           width={width}
         />
-        <Content
-          backgroundColor={
-            android
-              ? disabled
-                ? colors.lightGrey
-                : backgroundColor || colors.appleBlue
-              : 'none'
-          }
-          disablePadding={disablePadding}
-          hasLeadingIcon={hasLeadingIcon}
-          height={height ? height : small ? 27 : 30}
-        >
-          {typeof children === 'string' ? (
-            <Text
-              align="center"
-              color={color || colors.whiteLabel}
-              letterSpacing={letterSpacing}
-              lineHeight={android ? 19 : null}
-              weight={weight || 'bold'}
-            >
-              {children}
-            </Text>
-          ) : (
-            children
-          )}
-        </Content>
+        {content}
       </View>
     </ButtonPressAnimation>
   );

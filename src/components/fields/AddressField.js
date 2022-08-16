@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { isHexString } from '../../handlers/web3';
-import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
@@ -53,6 +52,7 @@ const AddressField = (
     autoFocus,
     editable,
     name,
+    isValid,
     onChangeText,
     onFocus,
     testID,
@@ -64,7 +64,6 @@ const AddressField = (
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
   const [inputValue, setInputValue] = useState(address ?? '');
-  const [isValid, setIsValid] = useState(false);
 
   const expandAbbreviatedClipboard = useCallback(() => {
     if (clipboard === abbreviations.formatAddressForDisplay(address)) {
@@ -72,28 +71,21 @@ const AddressField = (
     }
   }, [address, clipboard, setClipboard]);
 
-  const validateAddress = useCallback(async address => {
-    const newIsValid = await checkIsValidAddressOrDomain(address);
-    return setIsValid(newIsValid);
-  }, []);
-
   const handleChangeText = useCallback(
     text => {
-      validateAddress(text);
       expandAbbreviatedClipboard();
       setInputValue(text);
       onChangeText(text);
     },
-    [validateAddress, setInputValue, expandAbbreviatedClipboard, onChangeText]
+    [setInputValue, expandAbbreviatedClipboard, onChangeText]
   );
 
   useEffect(() => {
     if (name !== inputValue || name !== address) {
       setInputValue(name);
-      validateAddress(address);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, editable, name, validateAddress]);
+  }, [address, editable, name]);
 
   return (
     <Row flex={1}>

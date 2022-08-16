@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -68,7 +69,10 @@ export default function RecordTags({
           )}
           {firstTransactionTimestamp && (
             <Tag color="grey" symbol="􀉉">
-              Since {format(firstTransactionTimestamp, 'MMM yyyy')}
+              {`${lang.t(`profiles.records.since`)} ${format(
+                firstTransactionTimestamp,
+                'MMM yyyy'
+              )}`}
             </Tag>
           )}
         </Inline>
@@ -135,11 +139,12 @@ function Tag({
           <Text
             align="center"
             color={textColors[color]}
+            containsEmoji
             size={size}
             weight="bold"
           >
             {symbol ? `${symbol} ` : ''}
-            {children}
+            {children as string}
           </Text>
         </Inline>
       </Inset>

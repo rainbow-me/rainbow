@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   forwardRef,
@@ -16,6 +15,8 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSearchInput from './DiscoverSearchInput';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import { deviceUtils } from '@/utils';
+import { analytics } from '@rainbow-me/analytics';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 
@@ -136,10 +137,13 @@ export default forwardRef(function DiscoverSearchContainer(
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 
+  const placeholderText = deviceUtils.isNarrowPhone
+    ? lang.t('discover.search.search_ethereum_short')
+    : lang.t('discover.search.search_ethereum');
   return (
     <>
       <Row>
-        <Column flex={1} marginTop={19}>
+        <Column flex={1} marginHorizontal={4} marginTop={19}>
           <DiscoverSearchInput
             clearTextOnFocus={false}
             isDiscover
@@ -149,9 +153,7 @@ export default forwardRef(function DiscoverSearchContainer(
             onChangeText={setSearchQuery}
             onFocus={onTapSearch}
             placeholderText={
-              isSearchModeEnabled
-                ? lang.t('discover.search.search_ethereum')
-                : `􀊫 ${lang.t('discover.search.search_ethereum')}`
+              isSearchModeEnabled ? placeholderText : `􀊫 ${placeholderText}`
             }
             ref={searchInputRef}
             searchQuery={searchQuery}
