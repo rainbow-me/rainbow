@@ -128,6 +128,7 @@ const SearchInput = ({
             </Column>
             <Input
               autoCorrect={false}
+              autoFocus
               keyboardType={android ? 'visible-password' : 'default'}
               onChangeText={onChangeText}
               onFocus={handleFocus}
@@ -157,4 +158,4 @@ const SearchInput = ({
   );
 };
 
-export default SearchInput;
+export default React.memo(SearchInput);
