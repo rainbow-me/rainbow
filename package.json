@@ -100,8 +100,8 @@
     "@react-navigation/material-top-tabs": "5.2.19",
     "@react-navigation/native": "5.7.6",
     "@react-navigation/stack": "5.9.3",
-    "@segment/analytics-react-native": "2.3.2",
-    "@segment/sovran-react-native": "0.2.8",
+    "@segment/analytics-react-native": "2.7.0",
+    "@segment/sovran-react-native": "0.4.3",
     "@sentry/react-native": "3.4.1",
     "@tradle/react-native-http": "2.0.1",
     "@types/i18n-js": "3.0.3",
@@ -323,6 +323,7 @@
     "ethers": "5.6.8",
     "graphql": "15.3.0",
     "hardhat": "2.9.1",
+    "husky": "8.0.1",
     "image-size": "1.0.0",
     "jest": "26.6.3",
     "jest-circus": "26.6.3",
@@ -335,8 +336,7 @@
     "schedule": "0.5.0",
     "ts-migrate": "0.1.26",
     "typescript": "4.4.4",
-    "typescript-coverage-report": "0.6.1",
-    "husky": "8.0.1"
+    "typescript-coverage-report": "0.6.1"
   },
   "resolutions": {
     "**/async": "2.6.4",
