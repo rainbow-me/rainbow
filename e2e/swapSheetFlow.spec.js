@@ -70,11 +70,25 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
   });
 
-  it('Should update input value after tapping Max Button', async () => {
+  it('Should toggle through token networks and show the respective tokens', async () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.waitAndTap('currency-select-network-switcher-1');
+    await Helpers.tapByText('Optimism');
+    await Helpers.waitAndTap('currency-select-network-switcher-10');
+    await Helpers.tapByText('Arbitrum');
+    await Helpers.waitAndTap('currency-select-network-switcher-42161');
+    await Helpers.tapByText('Polygon (Matic)');
+    await Helpers.checkIfVisible('currency-select-network-switcher-137');
+    await Helpers.waitAndTap('currency-select-header-back-button');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.checkIfVisible('currency-select-network-switcher-1');
+  });
+
+  it('Should update input value after tapping Max Button', async () => {
     await Helpers.typeText('currency-select-search-input', 'BAT', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-BAT-token');
     await Helpers.checkIfVisible('exchange-modal-input');

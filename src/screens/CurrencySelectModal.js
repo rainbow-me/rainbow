@@ -492,6 +492,7 @@ export default function CurrencySelectModal() {
                 colors={colors}
                 currentChainId={currentChainId}
                 setCurrentChainId={setCurrentChainId}
+                testID="currency-select-network-switcher"
               />
             )}
             {type === null || type === undefined ? null : (
