@@ -23,7 +23,7 @@ import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import logger from 'logger';
 
-function getUserError(e: any) {
+function getUserError(e: Error) {
   switch (e.message) {
     case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
       return 'You need to authenticate to proceed with the Backup process';
@@ -126,24 +126,24 @@ export default function useWalletCloudBackup() {
       let updatedBackupFile = null;
       try {
         if (!latestBackup) {
-          logger.log(`backing up to ${cloudPlatform}`, wallets[walletId]);
+          logger.log(`backing up to ${cloudPlatform}`, wallets![walletId]);
           updatedBackupFile = await backupWalletToCloud(
             fetchedPassword,
-            wallets[walletId]
+            wallets![walletId]
           );
         } else {
           logger.log(
             `adding wallet to ${cloudPlatform} backup`,
-            wallets[walletId]
+            wallets![walletId]
           );
           updatedBackupFile = await addWalletToCloudBackup(
             fetchedPassword,
-            wallets[walletId],
+            wallets![walletId],
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | true' is not assignable... Remove this comment to see the full error message
             latestBackup
           );
         }
-      } catch (e) {
+      } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
         logger.sentry(

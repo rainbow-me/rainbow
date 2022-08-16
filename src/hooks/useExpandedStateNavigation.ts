@@ -9,7 +9,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { watchingAlert } from '@rainbow-me/utils';
 
 export default function useExpandedStateNavigation(
-  inputType: any,
+  inputType: typeof AssetInputTypes[keyof typeof AssetInputTypes],
   fromDiscover = false
 ) {
   const { goBack, navigate } = useNavigation();
