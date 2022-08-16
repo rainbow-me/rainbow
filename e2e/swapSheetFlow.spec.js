@@ -457,7 +457,6 @@ describe('Swap Sheet Interaction Flow', () => {
       await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
-  /*
 
   it('Should update input & native input after output field change', async () => {
     await Helpers.waitAndTap('exchange-fab');
@@ -675,7 +674,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('max-priority-fee-input', '2\n', false);
   });
 
-  */
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
