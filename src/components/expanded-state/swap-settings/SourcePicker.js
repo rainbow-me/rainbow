@@ -124,7 +124,11 @@ export default function SourcePicker({ onSelect, currentSource }) {
                 }}
                 width={20}
               />
-              <Text size="18px" weight="bold">
+              <Text
+                size="18px"
+                testID={`swap-settings-routes-current-${currentSource}`}
+                weight="bold"
+              >
                 {`${lang.t(`exchange.source.${currentSource}`)} 􀆈`}
               </Text>
             </Inline>

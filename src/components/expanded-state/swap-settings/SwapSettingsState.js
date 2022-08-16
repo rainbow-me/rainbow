@@ -166,7 +166,7 @@ export default function SwapSettingsState({ asset }) {
                 <Column width="content">
                   <Switch
                     onValueChange={toggleFlashbotsEnabled}
-                    testID="swap-settings-flashbots-switch"
+                    testID={`swap-settings-flashbots-switch-${flashbotsEnabled}`}
                     trackColor={{ false: '#767577', true: colorForAsset }}
                     value={flashbotsEnabled}
                   />
