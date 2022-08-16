@@ -542,3 +542,44 @@ export const pickBy = <T>(
       return acc;
     }, {} as Dictionary<T>);
 };
+
+/**
+ * Creates an array of elements split into two groups, the first of which contains elements predicate returns truthy for,
+ * while the second of which contains elements predicate returns falsey for.
+ *
+ * @param arr The array to iterate over.
+ * @param predicate The function called per iteration.
+ * @return Returns the array of grouped elements.
+ */
+export const partition = <
+  T extends Record<PropertyKey, any>,
+  Func extends (arg: T) => boolean
+>(
+  arr: T[],
+  predicate: Func
+): [T[], T[]] =>
+  arr.reduce<[T[], T[]]>(
+    (acc, val) => {
+      if (predicate(val)) {
+        acc[0].push(val);
+      } else {
+        acc[1].push(val);
+      }
+      return acc;
+    },
+    [[], []]
+  );
+
+/**
+ * Creates an array excluding all provided strings.
+ *
+ * @param arr The array to filter.
+ * @param values The values to exclude.
+ * @return Returns the new array of filtered values.
+ */
+export const excludeSpecifiedStrings = <T>(arr: T[], values: T | T[]): T[] => {
+  if (Array.isArray(values)) {
+    return arr.filter(e => !values.includes(e));
+  }
+  return arr.filter(e => e !== values);
+};

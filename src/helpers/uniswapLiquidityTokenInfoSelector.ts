@@ -1,6 +1,5 @@
 import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import compact from 'lodash/compact';
-import orderBy from 'lodash/orderBy';
 import sumBy from 'lodash/sumBy';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
@@ -155,11 +154,9 @@ const buildUniswapCards = (
       return transformPool(liquidityToken, position, nativeCurrency, chainId);
     })
   );
-  const orderedUniswapPools = orderBy(
-    uniswapPools,
-    [({ totalBalancePrice }) => Number(totalBalancePrice)],
-    ['desc']
-  );
+  const orderedUniswapPools = uniswapPools
+    .slice()
+    .sort((a, b) => (a.totalBalancePrice > b.totalBalancePrice ? -1 : 1));
 
   let uniswapTotal = 0;
 

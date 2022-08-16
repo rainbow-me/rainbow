@@ -1,10 +1,10 @@
-import difference from 'lodash/difference';
 import { useCallback, useMemo, useRef } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
 import EditAction from '@rainbow-me/helpers/EditAction';
+import { excludeSpecifiedStrings } from '@rainbow-me/helpers/utilities';
 import { setHiddenCoins as reduxSetHiddenCoins } from '@rainbow-me/redux/editOptions';
 
 const selectedItemsAtom = atom<string[]>({
@@ -88,13 +88,15 @@ export function useCoinListFinishEditingOptions() {
       return EditAction.none;
     } else if (
       newSelectedCoinsLength > 0 &&
-      difference(Object.keys(hiddenCoins), selectedItems).length ===
+      excludeSpecifiedStrings(Object.keys(hiddenCoins), selectedItems)
+        .length ===
         Object.keys(hiddenCoins).length - newSelectedCoinsLength
     ) {
       return EditAction.unhide;
     } else if (
       newSelectedCoinsLength > 0 &&
-      difference(Object.keys(pinnedCoins), selectedItems).length ===
+      excludeSpecifiedStrings(Object.keys(pinnedCoins), selectedItems)
+        .length ===
         Object.keys(pinnedCoins).length - newSelectedCoinsLength
     ) {
       return EditAction.unpin;

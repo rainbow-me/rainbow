@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import uniqBy from 'lodash/uniqBy';
-import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -25,6 +24,7 @@ import {
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { getNftsByWalletAddress } from '@rainbow-me/handlers/simplehash';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { excludeSpecifiedStrings } from '@rainbow-me/helpers/utilities';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //
@@ -294,7 +294,10 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         if (isCurrentAccountAddress) {
           const existingFamilies = getFamilies(existingUniqueTokens);
           const newFamilies = getFamilies(uniqueTokens);
-          const incomingFamilies = without(newFamilies, ...existingFamilies);
+          const incomingFamilies = excludeSpecifiedStrings(
+            newFamilies,
+            existingFamilies
+          );
           if (incomingFamilies.length) {
             const dedupedAssets = dedupeAssetsWithFamilies(
               getState().data.accountAssetsData,

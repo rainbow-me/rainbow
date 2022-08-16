@@ -1,7 +1,6 @@
 import produce from 'immer';
 import toLower from 'lodash/toLower';
 import uniq from 'lodash/uniq';
-import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import {
@@ -18,6 +17,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/uniswap';
 import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { excludeSpecifiedStrings } from '@rainbow-me/helpers/utilities';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
@@ -244,9 +244,8 @@ export const uniswapUpdateFavorites = (
 
   const updatedFavorites = add
     ? uniq(normalizedFavorites.concat(assetAddress))
-    : Array.isArray(assetAddress)
-    ? without(normalizedFavorites, ...assetAddress)
-    : without(normalizedFavorites, assetAddress);
+    : excludeSpecifiedStrings(normalizedFavorites, assetAddress);
+
   const updatedFavoritesMeta =
     (await getUniswapFavoritesMetadata(updatedFavorites)) || favoritesMeta;
   dispatch({
