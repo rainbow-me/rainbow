@@ -11,6 +11,7 @@ import {
 } from '@metamask/eth-sig-util';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
+import delay from 'delay';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import {
   hdkey as EthereumHDKey,
@@ -483,6 +484,12 @@ const loadPrivateKey = async (
       if (!addressToUse) {
         return null;
       }
+
+      // in sporadic cases, it crashes the application due to the keychain and
+      // biometric authentication that it calls. Potentially It appears when
+      // performing ECDH KeyAgreement that operational slots are not being
+      // released after the key agreement has finished.
+      android && (await delay(100));
 
       const privateKeyData = await getPrivateKey(addressToUse);
       if (privateKeyData === -1) {
