@@ -11,6 +11,7 @@ import {
 } from '@metamask/eth-sig-util';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
+import delay from 'delay';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import {
   hdkey as EthereumHDKey,
@@ -483,6 +484,7 @@ const loadPrivateKey = async (
         return null;
       }
 
+      android && (await delay(300));
       const privateKeyData = await getPrivateKey(addressToUse);
       if (privateKeyData === -1) {
         return -1;
