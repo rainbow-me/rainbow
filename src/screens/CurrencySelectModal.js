@@ -131,6 +131,7 @@ export default function CurrencySelectModal() {
       let filteredAssetsInWallet = assetsInWallet?.filter(
         asset => !hiddenCoinsObj[asset.uniqueId]
       );
+      //TODO: remove this once BACK-219 is fixed
       if (fromDiscover && defaultOutputAsset?.implementations) {
         const outputTokenNetworks = Object.keys(
           defaultOutputAsset?.implementations
