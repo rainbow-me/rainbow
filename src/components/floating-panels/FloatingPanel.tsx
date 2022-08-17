@@ -24,7 +24,6 @@ const FloatingPanel = ({
       background="body"
       borderRadius={borderRadius}
       paddingBottom={paddingBottom}
-      paddingHorizontal="19px"
       style={{ ...style, overflow, zIndex: 1 }}
       testID={testID + '-container'}
       {...props}
