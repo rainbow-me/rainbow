@@ -94,10 +94,9 @@ const WalletListFooter = styled(Column)({
 export default function WalletList({
   accountAddress,
   allWallets,
+  contextMenuActions,
   currentWallet,
   editMode,
-  getEditMenuItems,
-  getOnMenuItemPress,
   height,
   onChangeAccount,
   onPressAddAccount,
@@ -205,11 +204,9 @@ export default function WalletList({
           return (
             <Column height={item.height}>
               <AddressRow
+                contextMenuActions={contextMenuActions}
                 data={item}
                 editMode={editMode}
-                getEditMenuItems={getEditMenuItems}
-                getOnMenuItemPress={getOnMenuItemPress}
-                onPress={item.onPress}
                 watchOnly={watchOnly}
               />
             </Column>
@@ -218,7 +215,7 @@ export default function WalletList({
           return null;
       }
     },
-    [editMode, getEditMenuItems, getOnMenuItemPress, watchOnly]
+    [contextMenuActions, editMode, watchOnly]
   );
 
   return (
