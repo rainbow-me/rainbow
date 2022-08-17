@@ -23,6 +23,7 @@ import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
+import { EthereumAddress } from '@rainbow-me/entities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -36,7 +37,7 @@ const RowTypes = {
   EMPTY: 2,
 };
 
-const getItemLayout = (data, index) => {
+const getItemLayout = (data: any, index: number) => {
   const { height } = data[index];
   return {
     index,
@@ -45,10 +46,11 @@ const getItemLayout = (data, index) => {
   };
 };
 
-const keyExtractor = item => `${item.walletId}-${item?.id}`;
+const keyExtractor = (item: any) => `${item.walletId}-${item?.id}`;
 
+// @ts-ignore
 const Container = styled.View({
-  height: ({ height }) => height,
+  height: ({ height }: { height: number }) => height,
   marginTop: -2,
 });
 
@@ -61,27 +63,31 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })({
   ...position.coverAsObject,
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }: any) => colors.white,
   paddingTop: listTopPadding,
 });
 
-const WalletFlatList = styled(FlatList).attrs(({ showDividers }) => ({
-  contentContainerStyle: {
-    paddingBottom: showDividers ? 9.5 : 0,
-    paddingTop: listTopPadding,
-  },
-  getItemLayout,
-  keyExtractor,
-  removeClippedSubviews: true,
-}))({
+const WalletFlatList = styled(FlatList).attrs(
+  ({ showDividers }: { showDividers: boolean }) => ({
+    contentContainerStyle: {
+      paddingBottom: showDividers ? 9.5 : 0,
+      paddingTop: listTopPadding,
+    },
+    getItemLayout,
+    keyExtractor,
+    removeClippedSubviews: true,
+  })
+)({
   flex: 1,
   minHeight: 1,
 });
 
-const WalletListDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
-  color: colors.rowDividerExtraLight,
-  inset: [0, 15],
-}))({
+const WalletListDivider = styled(Divider).attrs(
+  ({ theme: { colors } }: any) => ({
+    color: colors.rowDividerExtraLight,
+    inset: [0, 15],
+  })
+)({
   marginBottom: 1,
   marginTop: -1,
 });
@@ -90,6 +96,24 @@ const WalletListFooter = styled(Column)({
   paddingBottom: 6,
   paddingTop: 4,
 });
+
+interface Props {
+  accountAddress: EthereumAddress;
+  allWallets: any;
+  contextMenuActions: any;
+  currentWallet: any;
+  editMode: boolean;
+  height: number;
+  onChangeAccount: (
+    walletId: any,
+    address: EthereumAddress | undefined
+  ) => void;
+  onPressAddAccount: () => void;
+  onPressImportSeedPhrase: () => void;
+  scrollEnabled: boolean;
+  showDividers: boolean;
+  watchOnly: boolean;
+}
 
 export default function WalletList({
   accountAddress,
@@ -104,8 +128,8 @@ export default function WalletList({
   scrollEnabled,
   showDividers,
   watchOnly,
-}) {
-  const [rows, setRows] = useState([]);
+}: Props) {
+  const [rows, setRows] = useState<any[]>([]);
   const [ready, setReady] = useState(false);
   const scrollView = useRef(null);
   const { network } = useAccountSettings();
@@ -113,18 +137,18 @@ export default function WalletList({
 
   // Update the rows when allWallets changes
   useEffect(() => {
-    const seedRows = [];
-    const privateKeyRows = [];
-    const readOnlyRows = [];
+    const seedRows: any[] = [];
+    const privateKeyRows: any[] = [];
+    const readOnlyRows: any[] = [];
 
     if (isEmpty(allWallets)) return;
     const sortedKeys = Object.keys(allWallets).sort();
     sortedKeys.forEach(key => {
       const wallet = allWallets[key];
       const filteredAccounts = wallet.addresses.filter(
-        account => account.visible
+        (account: any) => account.visible
       );
-      filteredAccounts.forEach(account => {
+      filteredAccounts.forEach((account: any) => {
         const row = {
           ...account,
           editMode,
@@ -165,17 +189,16 @@ export default function WalletList({
   }, [
     accountAddress,
     allWallets,
-    currentWallet,
+    currentWallet?.id,
     editMode,
     network,
     onChangeAccount,
-    onPressAddAccount,
     watchOnly,
   ]);
 
   // Update the data provider when rows change
   useEffect(() => {
-    if (rows && rows.length && !ready) {
+    if (rows?.length && !ready) {
       setTimeout(() => {
         setReady(true);
       }, 50);
@@ -207,7 +230,6 @@ export default function WalletList({
                 contextMenuActions={contextMenuActions}
                 data={item}
                 editMode={editMode}
-                watchOnly={watchOnly}
               />
             </Column>
           );
@@ -215,7 +237,7 @@ export default function WalletList({
           return null;
       }
     },
-    [contextMenuActions, editMode, watchOnly]
+    [contextMenuActions, editMode]
   );
 
   return (
@@ -235,13 +257,11 @@ export default function WalletList({
             <WalletListFooter>
               <WalletOption
                 editMode={editMode}
-                icon="arrowBack"
                 label={`􀁍 ${lang.t('wallet.action.create_new')}`}
                 onPress={onPressAddAccount}
               />
               <WalletOption
                 editMode={editMode}
-                icon="arrowBack"
                 label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
                 onPress={onPressImportSeedPhrase}
               />

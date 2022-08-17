@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
@@ -35,6 +35,7 @@ const sx = StyleSheet.create({
   accountLabel: {
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
+    // @ts-ignore
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
     maxWidth: maxAccountLabelWidth,
@@ -45,6 +46,7 @@ const sx = StyleSheet.create({
     marginLeft: 19,
   },
   bottomRowText: {
+    // @ts-ignore
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
@@ -55,6 +57,7 @@ const sx = StyleSheet.create({
     color: '#0E76FD',
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.large),
+    // @ts-ignore
     fontWeight: fonts.weight.heavy,
     textAlign: 'center',
   },
@@ -80,11 +83,13 @@ const gradientProps = {
 
 const StyledTruncatedText = styled(TruncatedText)({
   ...sx.accountLabel,
+  // @ts-ignore
   ...fontWithWidth(sx.accountLabel.fontWeight),
 });
 
 const StyledBottomRowText = styled(BottomRowText)({
   ...sx.bottomRowText,
+  // @ts-ignore
   ...fontWithWidth(sx.bottomRowText.fontWeight),
 });
 
@@ -97,7 +102,7 @@ const ReadOnlyText = styled(Text).attrs({
   paddingHorizontal: 8,
 });
 
-const OptionsIcon = ({ onPress }) => {
+const OptionsIcon = ({ onPress }: { onPress: () => void }) => {
   const { colors } = useTheme();
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
@@ -118,7 +123,15 @@ const ContextMenuKeys = {
   Remove: 'remove',
 };
 
-export default function AddressRow({ contextMenuActions, data, editMode }) {
+export default function AddressRow({
+  contextMenuActions,
+  data,
+  editMode,
+}: {
+  contextMenuActions: any;
+  data: any;
+  editMode: boolean;
+}) {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const {
@@ -208,7 +221,7 @@ export default function AddressRow({ contextMenuActions, data, editMode }) {
         showSeparators: true,
         title: cleanedUpLabel,
       },
-      idx => {
+      (idx: number) => {
         if (idx === 0) {
           contextMenuActions?.edit(walletId, address);
         } else if (idx === 1) {
@@ -301,6 +314,7 @@ export default function AddressRow({ contextMenuActions, data, editMode }) {
           {isReadOnly && (
             <LinearGradient
               {...linearGradientProps}
+              // @ts-ignore
               marginRight={editMode || isSelected ? -9 : 19}
             >
               <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
@@ -309,6 +323,7 @@ export default function AddressRow({ contextMenuActions, data, editMode }) {
             </LinearGradient>
           )}
           {!editMode && isSelected && (
+            // @ts-ignore
             <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
           )}
           {editMode &&
