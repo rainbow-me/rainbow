@@ -10,7 +10,7 @@ import Animated, {
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import PriceImpactWarning from './PriceImpactWarning';
-import { Box, Text } from '@rainbow-me/design-system';
+import { Box, Inline, Inset, Text } from '@rainbow-me/design-system';
 import { SwappableAsset } from '@rainbow-me/entities';
 
 const springConfig = {
@@ -105,33 +105,26 @@ export default function DepositInfo({
         testID="deposit-info"
       >
         <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-          <Box
-            alignItems="center"
-            flexDirection="row"
-            justifyContent="center"
-            paddingLeft="2px"
-            paddingRight="10px"
-            paddingVertical={android ? '6px' : '10px'}
-            style={{}}
-          >
-            <Box paddingRight="5px">
-              {/* @ts-expect-error - Javascript Component */}
-              <CoinIcon
-                address={asset?.address}
-                size={20}
-                symbol={asset?.symbol}
-                testID="deposit-info-container"
-              />
-            </Box>
-            <Box flexDirection="row">
+          <Inset left="2px" right="10px" vertical={android ? '6px' : '10px'}>
+            <Inline alignHorizontal="center" alignVertical="center">
+              <Box paddingRight="5px">
+                {/* @ts-expect-error - Javascript Component */}
+                <CoinIcon
+                  address={asset?.address}
+                  size={20}
+                  symbol={asset?.symbol}
+                  testID="deposit-info-container"
+                />
+              </Box>
+
               <Text color="secondary60" size="14px" weight="semibold">
-                {lang.t('exchange.swapping_for_prefix')}{' '}
+                {lang.t('exchange.swapping_for_prefix')}
               </Text>
               <Text weight="bold">
                 {`${amountToDisplay} ${asset?.symbol || ''}`}
               </Text>
-            </Box>
-          </Box>
+            </Inline>
+          </Inset>
         </ButtonPressAnimation>
       </Box>
       <Box as={Animated.View} style={priceImpactAnimatedStyle}>
