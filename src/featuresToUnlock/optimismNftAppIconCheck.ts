@@ -30,20 +30,26 @@ export const optimismNftAppIconCheck = async (
       walletsToCheck
     );
 
-    if (found) {
-      Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-        onClose: () => {
-          mmkv.set(featureCheckName, true);
-          logger.log(
-            'Feature check',
-            featureCheckName,
-            'set to true. Wont show up anymore!'
-          );
-        },
-        type: 'optimism_app_icon',
-      });
-      return true;
-    }
+    // We open the sheet with a setTimeout 1 sec later to make sure we can return first
+    // so we can abort early if we're showing a sheet to prevent 2+ sheets showing at the same time
+
+    setTimeout(() => {
+      if (found) {
+        Navigation.handleAction(Routes.EXPLAIN_SHEET, {
+          onClose: () => {
+            mmkv.set(featureCheckName, true);
+            logger.log(
+              'Feature check',
+              featureCheckName,
+              'set to true. Wont show up anymore!'
+            );
+          },
+          type: 'optimism_app_icon',
+        });
+        return true;
+      }
+    }, 1000);
+    return found;
   } catch (e) {
     logger.log('areOwners blew up', e);
   }
