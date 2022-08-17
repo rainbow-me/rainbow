@@ -227,8 +227,9 @@ export default function ChartExpandedState({ asset }) {
       let mappedNetworks = {};
       Object.keys(networks).forEach(
         chainId =>
-          (mappedNetworks[ethereumUtils.getNetworkNameFromChainId(chainId)] =
-            networks[chainId])
+          (mappedNetworks[
+            ethereumUtils.getNetworkFromChainId(Number(chainId))
+          ] = networks[chainId])
       );
       assetWithPrice.implementations = mappedNetworks;
     }

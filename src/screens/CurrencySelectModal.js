@@ -131,16 +131,14 @@ export default function CurrencySelectModal() {
       let filteredAssetsInWallet = assetsInWallet?.filter(
         asset => !hiddenCoinsObj[asset.uniqueId]
       );
-      if (fromDiscover && outputCurrency?.implementations) {
+      if (fromDiscover && defaultOutputAsset?.implementations) {
         const outputTokenNetworks = Object.keys(
-          outputCurrency?.implementations
+          defaultOutputAsset?.implementations
         );
 
         filteredAssetsInWallet = filteredAssetsInWallet.filter(asset => {
           const network = ethereumUtils.getNetworkFromType(asset.type);
-          return outputTokenNetworks.includes(
-            network === Network.mainnet ? 'ethereum' : network
-          );
+          return outputTokenNetworks.includes(network);
         });
       }
       return filteredAssetsInWallet;
@@ -149,8 +147,8 @@ export default function CurrencySelectModal() {
   }, [
     type,
     assetsInWallet,
-    outputCurrency?.implementations,
     fromDiscover,
+    defaultOutputAsset?.implementations,
     hiddenCoinsObj,
   ]);
 
