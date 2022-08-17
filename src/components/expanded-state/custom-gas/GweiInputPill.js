@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 import { Row } from '../../../components/layout';
@@ -113,7 +114,7 @@ function GweiInputPill(
             testID={testID}
             value={value}
           />
-          <GweiLabel> Gwei</GweiLabel>
+          {IS_TESTING !== 'true' && <GweiLabel> Gwei</GweiLabel>}
         </Row>
       </GweiPill>
     </ButtonPressAnimation>
