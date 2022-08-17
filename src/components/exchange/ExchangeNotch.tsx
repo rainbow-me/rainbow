@@ -24,7 +24,7 @@ const NotchMiddle = styled(FastImage).attrs(
   height: notchHeight,
   left: android ? -ANDROID_NOTCH_OFFSET : 0,
   width: ({ deviceWidth }: { deviceWidth: number }) =>
-    deviceWidth - notchSideWidth * 2.11,
+    deviceWidth - notchSideWidth * 2,
 });
 
 const NotchSide = styled(FastImage)({
