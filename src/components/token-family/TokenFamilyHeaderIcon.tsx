@@ -49,6 +49,16 @@ export default React.memo(function TokenFamilyHeaderIcon({
     );
   }
 
+  if (familyName === 'Selling') {
+    return (
+      <View style={sx.trophy}>
+        <Text align="center" containsEmoji size="16px">
+          💸
+        </Text>
+      </View>
+    );
+  }
+
   if (familyName === lang.t('button.hidden')) {
     return (
       <View
