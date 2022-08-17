@@ -218,6 +218,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-optimism');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-network-switcher-10');
     await Helpers.tap('currency-select-list-exchange-coin-row-OP-optimism');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
@@ -233,7 +234,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('exchange-modal-output');
   });
 
-  it('Should show settings routes picker but notflashbots on Optimism', async () => {
+  it('Should show settings routes picker but not flashbots on Optimism', async () => {
     await Helpers.waitAndTap('exchange-settings-button');
     await Helpers.checkIfVisible('swap-settings-header');
     await Helpers.checkIfVisible('swap-settings-routes-label');
@@ -252,6 +253,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-arbitrum');
     await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-network-switcher-42161');
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
@@ -282,6 +284,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'WETH\n', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
     await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-network-switcher-137');
     await Helpers.tap('currency-select-list-exchange-coin-row-MATIC-polygon');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
