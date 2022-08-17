@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import { resources, supportedLanguages } from '../../languages';
-import { RadioList, RadioListItem } from '../radio-list';
+import Menu from './components/Menu';
+import MenuContainer from './components/MenuContainer';
+import MenuItem from './components/MenuItem';
 import { analytics } from '@rainbow-me/analytics';
 import { pickBy } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -11,14 +13,8 @@ const languagesWithWalletTranslations = Object.keys(
 
 const languageListItems = languagesWithWalletTranslations.map(code => ({
   code,
-  key: code,
-  language: supportedLanguages[code],
-  value: code,
+  name: (supportedLanguages as any)[code],
 }));
-
-const renderLanguageListItem = ({ code, language, ...item }) => (
-  <RadioListItem {...item} label={language} value={code} />
-);
 
 const LanguageSection = () => {
   const { language, settingsChangeLanguage } = useAccountSettings();
@@ -32,14 +28,21 @@ const LanguageSection = () => {
   );
 
   return (
-    <RadioList
-      extraData={language}
-      items={languageListItems}
-      marginTop={7}
-      onChange={onSelectLanguage}
-      renderItem={renderLanguageListItem}
-      value={language}
-    />
+    <MenuContainer>
+      <Menu>
+        {languageListItems.map(({ name, code }: any) => (
+          <MenuItem
+            key={code}
+            onPress={() => onSelectLanguage(code)}
+            rightComponent={
+              code === language && <MenuItem.StatusIcon status="selected" />
+            }
+            size={52}
+            titleComponent={<MenuItem.Title text={name} />}
+          />
+        ))}
+      </Menu>
+    </MenuContainer>
   );
 };
 

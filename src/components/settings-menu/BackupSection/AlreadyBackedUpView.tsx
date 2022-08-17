@@ -1,14 +1,12 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
-import { Centered, Column } from '../../layout';
-import { SheetActionButton } from '../../sheet';
-import { Text } from '../../text';
 import { analytics } from '@rainbow-me/analytics';
+import { AccentColorProvider, Box, Text } from '@rainbow-me/design-system';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -20,7 +18,7 @@ import {
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { fonts, padding, position, shadow } from '@rainbow-me/styles';
+import { colors, position, shadow } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 
 const WalletBackupStatus = {
@@ -30,69 +28,26 @@ const WalletBackupStatus = {
 };
 
 const CheckmarkIconContainer = styled(View)(
-  ({ color, isDarkMode, theme: { colors } }) => ({
+  ({ color, isDarkMode, theme: { colors } }: any) => ({
     ...shadow.buildAsObject(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4),
     ...position.sizeAsObject(50),
     backgroundColor: color,
     borderRadius: 25,
     marginBottom: 19,
-    paddingTop: ios ? 13 : 7,
   })
 );
 
-const CheckmarkIconText = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.whiteLabel,
-  size: 'larger',
-  weight: 'bold',
-}))({});
-
-const CheckmarkIcon = ({ color, isDarkMode }) => (
+const CheckmarkIcon = ({ color, isDarkMode }: any) => (
   <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
-    <CheckmarkIconText>􀆅</CheckmarkIconText>
+    <Box alignItems="center" height="full" justifyContent="center" width="full">
+      <Text color={{ custom: colors.whiteLabel }} size="20px" weight="bold">
+        􀆅
+      </Text>
+    </Box>
   </CheckmarkIconContainer>
 );
 
-const Content = styled(Centered).attrs({
-  direction: 'column',
-})({
-  ...padding.object(0, 19, 30),
-  flex: 1,
-});
-
-const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'loosest',
-  size: 'large',
-}))({
-  marginBottom: 42,
-  paddingHorizontal: 23,
-});
-
-const Footer = styled(Centered)({
-  ...padding.object(0, 15, 42),
-});
-
-const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  size: fonts.size.smedium,
-  weight: fonts.weight.medium,
-}))({
-  marginTop: -10,
-});
-
-const Title = styled(Text).attrs({
-  align: 'center',
-  size: 'larger',
-  weight: 'bold',
-})({
-  marginBottom: 8,
-  paddingHorizontal: 11,
-});
-
-const onError = error => DelayedAlert({ title: error }, 500);
+const onError = (error: any) => DelayedAlert({ title: error }, 500);
 
 export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
@@ -100,7 +55,7 @@ export default function AlreadyBackedUpView() {
   const { manageCloudBackups } = useManageCloudBackups();
   const { wallets, selectedWallet } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
-  const walletId = params?.walletId || selectedWallet.id;
+  const walletId = (params as any)?.walletId || selectedWallet.id;
 
   useEffect(() => {
     analytics.track('Already Backed Up View', {
@@ -110,8 +65,8 @@ export default function AlreadyBackedUpView() {
 
   const walletStatus = useMemo(() => {
     let status = null;
-    if (wallets[walletId].backedUp) {
-      if (wallets[walletId].backupType === WalletBackupTypes.manual) {
+    if (wallets?.[walletId].backedUp) {
+      if (wallets?.[walletId].backupType === WalletBackupTypes.manual) {
         status = WalletBackupStatus.MANUAL_BACKUP;
       } else {
         status = WalletBackupStatus.CLOUD_BACKUP;
@@ -172,7 +127,9 @@ export default function AlreadyBackedUpView() {
     walletStatus,
   ]);
 
-  const isSecretPhrase = WalletTypes.mnemonic === wallets[walletId].type;
+  const { colors, isDarkMode } = useTheme();
+
+  const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId].type;
 
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
@@ -185,37 +142,43 @@ export default function AlreadyBackedUpView() {
     });
   }, [isSecretPhrase, navigate, walletId]);
 
-  const { colors } = useTheme();
-
   const checkmarkColor =
     walletStatus === WalletBackupStatus.CLOUD_BACKUP
       ? colors.green
       : colors.alpha(colors.blueGreyDark, 0.5);
 
-  const hasMultipleWallets =
-    Object.keys(wallets).filter(
-      key => wallets[key].type !== WalletTypes.readOnly
-    ).length > 1;
-
-  const { isDarkMode } = useTheme();
+  const hasMultipleWallets = wallets
+    ? Object.keys(wallets).filter(
+        key => wallets?.[key].type !== WalletTypes.readOnly
+      ).length > 1
+    : false;
 
   return (
-    <Fragment>
-      <Subtitle>
-        {(walletStatus === WalletBackupStatus.CLOUD_BACKUP && `Backed up`) ||
-          (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
-            `Backed up manually`) ||
-          (walletStatus === WalletBackupStatus.IMPORTED && `Imported`)}
-      </Subtitle>
-      <Content>
-        <Centered direction="column">
-          <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
-          <Title>
-            {(walletStatus === WalletBackupStatus.IMPORTED &&
-              `Your wallet was imported`) ||
-              `Your wallet is backed up`}
-          </Title>
-          <DescriptionText>
+    <Box
+      alignItems="center"
+      height="full"
+      justifyContent="space-between"
+      width="full"
+    >
+      <Box marginTop="-10px">
+        <Text color="secondary50" size="14px" weight="medium">
+          {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
+            lang.t('back_up.already_backed_up.backed_up')) ||
+            (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
+              lang.t('back_up.already_backed_up.backed_up_manually')) ||
+            (walletStatus === WalletBackupStatus.IMPORTED &&
+              lang.t('back_up.already_backed_up.imported'))}
+        </Text>
+      </Box>
+      <Box alignItems="center" marginTop="-42px">
+        <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
+        <Text size="20px" weight="bold">
+          {(walletStatus === WalletBackupStatus.IMPORTED &&
+            lang.t('back_up.already_backed_up.imported_message')) ||
+            lang.t('back_up.already_backed_up.backed_up_message')}
+        </Text>
+        <Box paddingHorizontal="60px" paddingTop="24px">
+          <Text align="center" color="secondary50" size="18px">
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
               lang.t('back_up.explainers.if_lose_cloud', {
                 cloudPlatformName: cloudPlatform,
@@ -224,56 +187,55 @@ export default function AlreadyBackedUpView() {
                 lang.t('back_up.explainers.if_lose_manual')) ||
               (walletStatus === WalletBackupStatus.IMPORTED &&
                 lang.t('back_up.explainers.if_lose_imported'))}
-          </DescriptionText>
-        </Centered>
-        <Column>
-          <SheetActionButton
-            color={colors.white}
-            label={`🗝 ${
-              isSecretPhrase
-                ? lang.t('back_up.secret.view_secret_phrase')
-                : lang.t('back_up.secret.view_private_key')
-            }`}
-            onPress={handleViewRecoveryPhrase}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-          />
-        </Column>
-      </Content>
-      {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
-        <Footer>
+          </Text>
+        </Box>
+        <Box paddingTop="42px">
+          <AccentColorProvider color={colors.whiteLabel}>
+            <ButtonPressAnimation onPress={handleViewRecoveryPhrase}>
+              <Box
+                background="accent"
+                borderRadius={56}
+                height={{ custom: 48 }}
+                justifyContent="center"
+                paddingHorizontal="19px"
+                shadow="15px light"
+              >
+                <Text
+                  color="secondary"
+                  containsEmoji
+                  size="18px"
+                  weight="semibold"
+                >
+                  {`🗝 ${
+                    isSecretPhrase
+                      ? lang.t('back_up.secret.view_secret_phrase')
+                      : lang.t('back_up.secret.view_private_key')
+                  }`}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          </AccentColorProvider>
+        </Box>
+      </Box>
+      <Box paddingBottom="42px">
+        {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
           <ButtonPressAnimation onPress={handleIcloudBackup}>
-            <Text
-              align="center"
-              color={colors.appleBlue}
-              letterSpacing="roundedMedium"
-              size="large"
-              weight="semibold"
-            >
-              􀙶{' '}
-              {lang.t('back_up.cloud.back_up_to_platform', {
+            <Text color="action" size="18px" weight="semibold">
+              {`􀙶 ${lang.t('back_up.cloud.back_up_to_platform', {
                 cloudPlatformName: cloudPlatform,
-              })}
+              })}`}
             </Text>
           </ButtonPressAnimation>
-        </Footer>
-      ) : !hasMultipleWallets ? (
-        <Footer>
+        ) : !hasMultipleWallets ? (
           <ButtonPressAnimation onPress={manageCloudBackups}>
-            <Text
-              align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              letterSpacing="roundedMedium"
-              size="lmedium"
-              weight="semibold"
-            >
-              􀍢{' '}
-              {lang.t('back_up.cloud.manage_platform_backups', {
+            <Text color="secondary60" size="18px" weight="semibold">
+              {`􀍢 ${lang.t('back_up.cloud.manage_platform_backups', {
                 cloudPlatformName: cloudPlatform,
-              })}
+              })}`}
             </Text>
           </ButtonPressAnimation>
-        </Footer>
-      ) : null}
-    </Fragment>
+        ) : null}
+      </Box>
+    </Box>
   );
 }

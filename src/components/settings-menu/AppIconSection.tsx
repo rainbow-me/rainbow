@@ -1,6 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { Source } from 'react-native-fast-image';
 import { MMKV } from 'react-native-mmkv';
-import { RadioList, RadioListItem } from '../radio-list';
+import Menu from './components/Menu';
+import MenuContainer from './components/MenuContainer';
+import MenuItem from './components/MenuItem';
 import { UNLOCK_KEY_OPTIMISM_NFT_APP_ICON } from '@/featuresToUnlock';
 import AppIconOg from '@rainbow-me/assets/appIconOg.png';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
@@ -8,74 +11,50 @@ import AppIconPixel from '@rainbow-me/assets/appIconPixel.png';
 import { Box } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { useTheme } from '@rainbow-me/theme';
 import Logger from '@rainbow-me/utils/logger';
 
-const supportedAppIcons = {
+type AppIcon = {
+  color: string;
+  key: string;
+  name: string;
+  source: StaticImageData;
+};
+
+const supportedAppIcons: { [key: string]: AppIcon } = {
   og: {
     color: 'rainbowBlue',
-    icon: 'og',
     key: 'og',
     name: 'OG',
     source: AppIconOg,
-    value: 'og',
   },
   pixel: {
     color: 'rainbowBlue',
-    icon: 'pixel',
     key: 'pixel',
     name: 'Pixel',
     source: AppIconPixel,
-    value: 'pixel',
   },
 };
 
-const tokenGatedIcons = {
+type LockedAppIcon = AppIcon & {
+  unlock_key: string;
+};
+
+const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
   optimism: {
     color: 'optimismRed',
-    icon: 'optimism',
     key: 'optimism',
     name: 'Optimism',
     source: AppIconOptimism,
     unlock_key: UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
-    value: 'optimism',
   },
-};
-
-const AppIconListItem = ({ name, value, source, color, ...item }) => {
-  const { colors, isDarkMode } = useTheme();
-  return (
-    <RadioListItem
-      {...item}
-      icon={
-        <Box
-          style={{
-            shadowColor: isDarkMode
-              ? colors.shadowBlack
-              : colors[color] || colors.shadowBlack,
-            shadowOffset: { height: 4, width: 0 },
-            shadowOpacity: 0.3,
-            shadowRadius: 4,
-          }}
-        >
-          <ImgixImage
-            source={source}
-            style={{
-              height: 36,
-              width: 36,
-            }}
-          />
-        </Box>
-      }
-      label={name}
-      value={value}
-    />
-  );
 };
 
 const mmkv = new MMKV();
 
 const AppIconSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();
+  const { colors, isDarkMode } = useTheme();
 
   const onSelectIcon = useCallback(
     icon => {
@@ -101,13 +80,41 @@ const AppIconSection = () => {
   }, []);
 
   return (
-    <RadioList
-      items={appIconListItemsWithUnlocked}
-      marginTop={7}
-      onChange={onSelectIcon}
-      renderItem={AppIconListItem}
-      value={appIcon}
-    />
+    <MenuContainer>
+      <Menu>
+        {appIconListItemsWithUnlocked.map(({ key, name, color, source }) => (
+          <MenuItem
+            key={key}
+            leftComponent={
+              <Box
+                style={{
+                  shadowColor: isDarkMode
+                    ? colors.shadowBlack
+                    : (colors as any)[color] || colors.shadowBlack,
+                  shadowOffset: { height: 4, width: 0 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 4,
+                }}
+              >
+                <ImgixImage
+                  source={source as Source}
+                  style={{
+                    height: 36,
+                    width: 36,
+                  }}
+                />
+              </Box>
+            }
+            onPress={() => onSelectIcon(key)}
+            rightComponent={
+              key === appIcon && <MenuItem.StatusIcon status="selected" />
+            }
+            size={60}
+            titleComponent={<MenuItem.Title text={name} />}
+          />
+        ))}
+      </Menu>
+    </MenuContainer>
   );
 };
 
