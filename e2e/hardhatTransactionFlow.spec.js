@@ -141,7 +141,7 @@ describe('Hardhat Transaction Flow', () => {
 
   if (device.getPlatform() === 'ios') {
     it('Should show Applied alert after pressing Alert', async () => {
-      await Helpers.swipe('developer-settings-sheet', 'down', 'slow');
+      await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
       await Helpers.waitAndTap('alert-section');
       await Helpers.checkIfElementByTextIsVisible('APPLIED');
       await Helpers.tapAlertWithButton('OK');
