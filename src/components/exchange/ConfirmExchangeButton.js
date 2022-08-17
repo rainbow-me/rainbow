@@ -5,6 +5,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
+import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { ExchangeModalTypes, NetworkTypes } from '@rainbow-me/helpers';
 import { useColorForAsset, useGas, useSwapCurrencies } from '@rainbow-me/hooks';
@@ -101,6 +102,7 @@ export default function ConfirmExchangeButton({
   ]);
 
   let label = '';
+  let explainerType = null;
 
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
@@ -133,15 +135,17 @@ export default function ConfirmExchangeButton({
   }
 
   if (errorCode) {
-    label = lang.t('button.confirm_exchange.insufficient_liquidity');
+    const error = handleSwapErrorCodes(errorCode);
+    label = error.buttonLabel;
+    explainerType = error.explainerType;
   }
 
-  const handleShowLiquidityExplainer = useCallback(() => {
+  const handleExplainer = useCallback(() => {
     android && Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
-      type: 'insufficientLiquidity',
+      type: explainerType,
     });
-  }, [navigate]);
+  }, [explainerType, navigate]);
 
   const isDisabled =
     disabled ||
@@ -179,8 +183,8 @@ export default function ConfirmExchangeButton({
             onLongPress={
               loading || isSwapSubmitting
                 ? NOOP
-                : errorCode
-                ? handleShowLiquidityExplainer
+                : explainerType
+                ? handleExplainer
                 : shouldOpenSwapDetails
                 ? onPressViewDetails
                 : onSwap
