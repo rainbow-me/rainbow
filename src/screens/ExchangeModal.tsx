@@ -39,13 +39,17 @@ import { KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@/analytics';
-import { Box, Row, Rows } from '@/design-system';
-import { AssetType } from '@/entities';
-import { getHasMerged, getProviderForNetwork } from '@/handlers/web3';
-import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
-import KeyboardTypes from '@/helpers/keyboardTypes';
-import { divide, greaterThan, multiply } from '@/helpers/utilities';
+import { analytics } from '@rainbow-me/analytics';
+import { Box, Row, Rows } from '@rainbow-me/design-system';
+import { AssetType, ExchangeAsset } from '@rainbow-me/entities';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import {
+  ExchangeModalTypes,
+  isKeyboardOpen,
+  Network,
+} from '@rainbow-me/helpers';
+import { KeyboardType } from '@rainbow-me/helpers/keyboardTypes';
+import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -106,7 +110,7 @@ const Wrapper = KeyboardFixedOpenLayout;
 
 const getInputHeaderTitle = (
   type: keyof typeof ExchangeModalTypes,
-  defaultInputAsset: Asset
+  defaultInputAsset: ExchangeAsset
 ) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
@@ -129,33 +133,6 @@ const getShowOutputField = (type: keyof typeof ExchangeModalTypes) => {
       return true;
   }
 };
-
-interface Asset {
-  address: string;
-  balance: { amount: string; display: string };
-  decimals: number;
-  icon_url: string;
-  id: string;
-  implementations: {
-    [network: string]: { address: string; decimals: number };
-  };
-  isNativeAsset: boolean;
-  isRainbowCurated: boolean;
-  isVerified: boolean;
-  is_displayable: boolean;
-  is_verified: boolean;
-  name: string;
-  native: {
-    balance: { amount: string; display: string };
-    change: string;
-    price: { amount: number; display: string };
-  };
-  price: { changed_at: number; relative_change_24h: number; value: number };
-  symbol: string;
-  type: string;
-  uniqueId: string;
-  mainnet_address?: string;
-}
 
 interface ExchangeModalProps {
   fromDiscover: boolean;
@@ -183,7 +160,7 @@ export default function ExchangeModal({
   } = useRoute<{
     key: string;
     name: string;
-    params: { inputAsset: Asset; outputAsset: Asset };
+    params: { inputAsset: ExchangeAsset; outputAsset: ExchangeAsset };
   }>();
 
   useLayoutEffect(() => {
@@ -194,8 +171,8 @@ export default function ExchangeModal({
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
   const genericAssets = useSelector<
-    { data: { genericAssets: { [address: string]: Asset } } },
-    { [address: string]: Asset }
+    { data: { genericAssets: { [address: string]: ExchangeAsset } } },
+    { [address: string]: ExchangeAsset }
   >(({ data: { genericAssets } }) => genericAssets);
 
   const {
@@ -1023,6 +1000,7 @@ export default function ExchangeModal({
             {isWithdrawal && <Box height="30px" />}
           </>
         </FloatingPanels>
+
         <Box>
           <Rows alignVertical="bottom" space="19px (Deprecated)">
             <Row height="content">

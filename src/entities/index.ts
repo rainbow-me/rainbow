@@ -30,6 +30,7 @@ export type { UniqueAsset } from './uniqueAssets';
 export type {
   Asset,
   AssetContract,
+  ExchangeAsset,
   IndexToken,
   SavingsAsset,
   ParsedAddressAsset,
