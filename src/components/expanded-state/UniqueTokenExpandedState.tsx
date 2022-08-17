@@ -3,8 +3,16 @@ import { useFocusEffect } from '@react-navigation/core';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, Linking, Share, View } from 'react-native';
+import {
+  InteractionManager,
+  Linking,
+  Share,
+  StatusBar,
+  View,
+} from 'react-native';
 import Animated, {
+  runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -234,6 +242,8 @@ const getIsSaleInfoSupported = (network: Network) => {
   }
 };
 
+const STATUS_BAR_HIDE_TRESHOLD = 69;
+
 const UniqueTokenExpandedState = ({
   asset,
   external,
@@ -289,6 +299,12 @@ const UniqueTokenExpandedState = ({
       if (uniqueTokenType === 'ENS') {
         setOptions({ limitActiveModals: false });
       }
+
+      return () => {
+        if (ios) {
+          StatusBar.setHidden(false, 'fade');
+        }
+      };
     }, [setOptions, uniqueTokenType])
   );
 
@@ -410,6 +426,31 @@ const UniqueTokenExpandedState = ({
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
+  const barHidden = useSharedValue(false);
+
+  useAnimatedReaction(
+    () => yPosition.value >= STATUS_BAR_HIDE_TRESHOLD && !barHidden.value,
+    current => {
+      if (current) {
+        barHidden.value = true;
+        if (ios) {
+          runOnJS(StatusBar.setHidden)(true, 'fade');
+        }
+      }
+    }
+  );
+
+  useAnimatedReaction(
+    () => yPosition.value < STATUS_BAR_HIDE_TRESHOLD && barHidden.value,
+    current => {
+      if (current) {
+        barHidden.value = false;
+        if (ios) {
+          runOnJS(StatusBar.setHidden)(false, 'fade');
+        }
+      }
+    }
+  );
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const isActionsEnabled = !external && !isReadOnlyWallet;
