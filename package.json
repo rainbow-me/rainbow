@@ -33,7 +33,7 @@
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx}'",
     "lint": "yarn lint:ts && yarn lint:js",
-    "lint:js": "eslint --cache --ext '.ts,.tsx,.js,.jsx' .",
+    "lint:js": "eslint --cache .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "preview": "git reset && git commit -m \"/preview\" --allow-empty",
@@ -302,6 +302,8 @@
     "@types/socket.io-client": "1.4.36",
     "@types/styled-components": "5.1.7",
     "@types/url-parse": "1.4.3",
+    "@typescript-eslint/eslint-plugin": "5.33.1",
+    "@typescript-eslint/parser": "5.33.1",
     "ast-parser": "0.0.5",
     "audit-ci": "3.1.1",
     "babel-core": "7.0.0-bridge.0",
@@ -316,13 +318,20 @@
     "chai": "4.2.0",
     "detox": "19.7.1",
     "dotenv": "8.2.0",
-    "eslint": "7.32.0",
-    "eslint-config-rainbow": "2.0.0",
+    "eslint": "8.22.0",
+    "eslint-config-prettier": "8.5.0",
     "eslint-import-resolver-babel-module": "5.3.1",
+    "eslint-import-resolver-typescript": "3.4.2",
+    "eslint-plugin-eslint-comments": "3.2.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-jest": "26.8.3",
+    "eslint-plugin-react": "7.30.1",
+    "eslint-plugin-react-hooks": "4.6.0",
     "ethereum-waffle": "3.4.0",
     "ethers": "5.6.8",
     "graphql": "15.3.0",
     "hardhat": "2.9.1",
+    "husky": "8.0.1",
     "image-size": "1.0.0",
     "jest": "26.6.3",
     "jest-circus": "26.6.3",
@@ -335,8 +344,7 @@
     "schedule": "0.5.0",
     "ts-migrate": "0.1.26",
     "typescript": "4.4.4",
-    "typescript-coverage-report": "0.6.1",
-    "husky": "8.0.1"
+    "typescript-coverage-report": "0.6.1"
   },
   "resolutions": {
     "**/async": "2.6.4",
@@ -540,7 +548,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "prettier --write",
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js"
+      "eslint -c .eslintrc.js"
     ]
   }
 }
