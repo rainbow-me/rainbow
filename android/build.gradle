@@ -32,9 +32,10 @@ buildscript {
         maven {
             url 'https://maven.fabric.io/public'
         }
+        mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath("com.android.tools.build:gradle:7.0.4")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("de.undercouch:gradle-download-task:4.1.2")
         classpath 'com.google.gms:google-services:4.3.3'
@@ -49,7 +50,6 @@ allprojects {
     repositories {
         google()
         mavenLocal()
-        mavenCentral()
         jcenter()
         maven {
             url 'https://maven.google.com'
@@ -67,6 +67,14 @@ allprojects {
             url "$rootDir/../node_modules/detox/Detox-android"
         }
         maven { url 'https://www.jitpack.io' }
+
+        mavenCentral {
+            // We don't want to fetch react-native from Maven Central as there are
+            // older versions over there.
+            content {
+                excludeGroup "com.facebook.react"
+            }
+        }
     }
 
     configurations.all {
