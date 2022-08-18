@@ -54,6 +54,7 @@ import {
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
+  settingsNavigatorConfig,
   settingsSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
@@ -75,6 +76,7 @@ import useExperimentalFlag, {
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
+import SettingsNavigator from './SettingsNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -405,7 +407,11 @@ function NativeStackNavigator() {
         name={Routes.SWAP_SETTINGS_SHEET}
         {...customGasSheetConfig}
       />
-
+      <NativeStack.Screen
+        component={SettingsNavigator}
+        name={Routes.SETTINGS_NAVIGATOR}
+        {...settingsNavigatorConfig}
+      />
       {profilesEnabled && (
         <>
           <NativeStack.Screen

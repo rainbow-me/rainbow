@@ -51,6 +51,8 @@ const Routes = {
   SEND_CONFIRMATION_SHEET: 'SendConfirmationSheet',
   SEND_SHEET: 'SendSheet',
   SEND_SHEET_NAVIGATOR: 'SendSheetNavigator',
+  SETTINGS_NAVIGATOR: 'SettingsNavigator',
+  SETTINGS_SECTION: 'SettingsSection',
   SETTINGS_SHEET: 'SettingsSheet',
   SHOWCASE_SHEET: 'ShowcaseSheet',
   SPEED_UP_AND_CANCEL_BOTTOM_SHEET: 'SpeedUpAndCancelBootomSheet',

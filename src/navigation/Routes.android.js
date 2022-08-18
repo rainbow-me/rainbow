@@ -65,6 +65,7 @@ import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
+import SettingsNavigator from './SettingsNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -277,6 +278,10 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         options={expandedPresetWithSmallGestureResponseDistance}
+      />
+      <BSStack.Screen
+        component={SettingsNavigator}
+        name={Routes.SETTINGS_NAVIGATOR}
       />
       {profilesEnabled && (
         <>
