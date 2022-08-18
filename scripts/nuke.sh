@@ -9,7 +9,7 @@ echo " 🍎  Attempting to clean iOS build..."
 yarn clean:ios  > /dev/null 2>&1 || true
 echo "Done. "
 
-echo " 🕳  Cleaning JS deps..."
+echo " 🕳  Attempting to clean JS deps..."
 yarn clean:node  > /dev/null 2>&1 || true
 echo "Done. "
 
