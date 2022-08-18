@@ -1,30 +1,63 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import React, {
+  ForwardRefRenderFunction,
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { TextInput, TouchableWithoutFeedback } from 'react-native';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { useColorForAsset } from '@/hooks';
-import { supportedNativeCurrencies } from '@/references';
-import styled from '@/styled-thing';
-import { fonts } from '@/styles';
+import { useColorForAsset } from '@rainbow-me/hooks';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
+import { fonts } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
-const CurrencySymbol = styled(Text).attrs(({ height, color }) => ({
-  color: color,
-  letterSpacing: 'roundedTight',
-  lineHeight: height,
-  size: 'larger',
-  weight: 'regular',
-}))(android ? { marginBottom: 1.5 } : {});
+interface CurrencySymbolProps {
+  height: number;
+  color: string;
+}
+
+const CurrencySymbol = styled(Text).attrs(
+  ({ height, color }: CurrencySymbolProps) => ({
+    color: color,
+    letterSpacing: 'roundedTight',
+    lineHeight: height,
+    size: 'larger',
+    weight: 'regular',
+  })
+)(android ? { marginBottom: 1.5 } : {});
 
 const NativeInput = styled(ExchangeInput).attrs({
   letterSpacing: fonts.letterSpacing.roundedTight,
   size: fonts.size.larger,
   weight: fonts.weight.regular,
 })({
-  height: ({ height }) => height,
+  height: ({ height }: { height: number }) => height,
 });
 
-const ExchangeNativeField = (
+interface ExchangeNativeFieldProps {
+  address: string;
+  editable: boolean;
+  height: number;
+  loading: boolean;
+  nativeAmount: string | null;
+  nativeCurrency: string;
+  onFocus: ({ target }: { target: Element }) => void;
+  setNativeAmount: (value: string | null) => void;
+  updateOnFocus: boolean;
+  testID: string;
+}
+
+type SupportedNativeCurrencies = keyof typeof supportedNativeCurrencies;
+
+const ExchangeNativeField: ForwardRefRenderFunction<
+  TextInput,
+  ExchangeNativeFieldProps
+> = (
   {
     address,
     editable,
@@ -41,6 +74,7 @@ const ExchangeNativeField = (
   },
   ref
 ) => {
+  const nativeFieldRef = ref as MutableRefObject<TextInput>;
   const colorForAsset = useColorForAsset({
     address,
     mainnet_address: mainnetAddress,
@@ -49,12 +83,13 @@ const ExchangeNativeField = (
   const [value, setValue] = useState(nativeAmount);
 
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
-    nativeCurrency
+    nativeCurrency as SupportedNativeCurrencies
   ];
 
-  const handleFocusNativeField = useCallback(() => ref?.current?.focus(), [
-    ref,
-  ]);
+  const handleFocusNativeField = useCallback(
+    () => nativeFieldRef?.current?.focus(),
+    [nativeFieldRef]
+  );
 
   const handleFocus = useCallback(
     event => {
@@ -76,7 +111,7 @@ const ExchangeNativeField = (
 
   const { colors } = useTheme();
 
-  const isFocused = ref?.current?.isFocused();
+  const isFocused = nativeFieldRef?.current?.isFocused();
 
   const nativeAmountColor = useMemo(() => {
     const nativeAmountExists =
@@ -108,7 +143,7 @@ const ExchangeNativeField = (
           onChangeText={onChangeText}
           onFocus={handleFocus}
           placeholder={placeholder}
-          ref={ref}
+          ref={nativeFieldRef}
           selectionColor={colorForAsset}
           testID={testID}
           value={isFocused ? value : nativeAmount}
