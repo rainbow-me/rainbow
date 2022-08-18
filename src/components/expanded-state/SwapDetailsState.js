@@ -21,6 +21,7 @@ import {
 } from './swap-details';
 import {
   useHeight,
+  usePrevious,
   usePriceImpactDetails,
   useSwapCurrencies,
 } from '@rainbow-me/hooks';
@@ -86,6 +87,8 @@ export default function SwapDetailsState({
   restoreFocusOnSwapModal,
 }) {
   const { setParams } = useNavigation();
+  const isFocused = useIsFocused();
+  const prevIsFocused = usePrevious(isFocused);
   const {
     params: { longFormHeight, currentNetwork, flashbotTransaction } = {},
   } = useRoute();
@@ -124,7 +127,11 @@ export default function SwapDetailsState({
     FOOTER_CONTENT_MIN_HEIGHT
   );
 
-  useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
+  useEffect(() => {
+    if (!isFocused && prevIsFocused) {
+      return restoreFocusOnSwapModal();
+    }
+  }, [isFocused, prevIsFocused, restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
 
   const sheetHeightWithoutKeyboard =
