@@ -133,7 +133,7 @@ export default function useENSRegistrationForm({
           .map(field =>
             defaultRecords[field.key] !== undefined ? field : undefined
           )
-          .filter(Boolean)
+          .filter(Boolean) as TextRecordField[]
       );
     } else {
       if (defaultFields) {
