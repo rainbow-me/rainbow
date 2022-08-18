@@ -15,7 +15,10 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import { Records } from '@rainbow-me/entities';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import {
+  deprecatedTextRecordFields,
+  ENS_RECORDS,
+} from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 import { useTheme } from '@rainbow-me/theme';
 
@@ -41,11 +44,23 @@ export default function RecordTags({
 }) {
   const recordsToShow = useMemo(
     () =>
-      show.map(key => ({
-        key,
-        type: getRecordType(key),
-        value: records[key],
-      })) as {
+      show
+        .map(key => {
+          // If a deprecated record exists with it's updated counterpart
+          // (e.g. `me.rainbow.displayName` & `name` exists) then omit
+          // the deprecated record.
+          if (
+            deprecatedTextRecordFields[key] &&
+            records[deprecatedTextRecordFields[key]]
+          )
+            return null;
+          return {
+            key,
+            type: getRecordType(key),
+            value: records[key],
+          };
+        })
+        .filter(Boolean) as {
         key: string;
         value: string;
         type: 'address' | 'record';

@@ -4,11 +4,18 @@ import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@rainbow-me/design-system';
 import { Records } from '@rainbow-me/entities';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import {
+  deprecatedTextRecordFields,
+  ENS_RECORDS,
+} from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 
-const omitRecordKeys = [ENS_RECORDS.avatar];
-const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.description];
+const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];
+const topRecordKeys = [
+  ENS_RECORDS.header,
+  ENS_RECORDS.name,
+  ENS_RECORDS.description,
+];
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {
@@ -33,9 +40,13 @@ export default function ProfileInfoSection({
 }) {
   const recordsArray = useMemo(
     () =>
-      Object.entries(records || {}).filter(
-        ([key]) => !omitRecordKeys.includes(key as ENS_RECORDS)
-      ),
+      Object.entries(records || {})
+        .map(([key, value]) => {
+          if (deprecatedTextRecordFields[key as ENS_RECORDS])
+            return [deprecatedTextRecordFields[key as ENS_RECORDS], value];
+          return [key, value];
+        })
+        .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS)),
     [records]
   );
 

@@ -152,6 +152,7 @@ export default function ProfileSheetHeader({
                         ...coinAddresses,
                       }}
                       show={[
+                        ENS_RECORDS.name,
                         ENS_RECORDS.displayName,
                         ENS_RECORDS.url,
                         ENS_RECORDS.twitter,

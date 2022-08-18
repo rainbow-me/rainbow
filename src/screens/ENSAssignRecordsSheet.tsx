@@ -102,7 +102,7 @@ export default function ENSAssignRecordsSheet() {
   const defaultFields = useMemo(
     () =>
       [
-        ENS_RECORDS.displayName,
+        ENS_RECORDS.name,
         ENS_RECORDS.description,
         ENS_RECORDS.url,
         ENS_RECORDS.twitter,
