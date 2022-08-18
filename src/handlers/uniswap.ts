@@ -26,6 +26,7 @@ import { loadWallet } from '../model/wallet';
 import {
   estimateGasWithPadding,
   getFlashbotsProvider,
+  getHasMerged,
   getProviderForNetwork,
   toHex,
   toHexNoLeadingZeros,
@@ -202,7 +203,7 @@ export const getSwapGasLimitWithFakeApproval = async (
       ...(methodArgs ?? []),
       params
     );
-
+    const hasMerged = getHasMerged(provider.network.name as Network);
     const gasLimit = await getClosestGasEstimate(async (gas: number) => {
       const callParams = [
         {
@@ -213,7 +214,7 @@ export const getSwapGasLimitWithFakeApproval = async (
           to: RAINBOW_ROUTER_CONTRACT_ADDRESS,
           value: '0x0', // 100 gwei
         },
-        'latest',
+        hasMerged ? 'safe' : 'latest',
       ];
 
       try {

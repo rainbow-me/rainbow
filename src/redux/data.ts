@@ -49,6 +49,7 @@ import {
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
+  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   web3Provider,
@@ -1580,9 +1581,10 @@ export const checkPendingTransactionsOnInitialize = (
 ) => {
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
+  const hasMerged = getHasMerged(provider?.network.name as Network);
   const currentNonce = await (provider || web3Provider).getTransactionCount(
     currentAccountAddress,
-    'latest'
+    hasMerged ? 'safe' : 'latest'
   );
   await dispatch(dataWatchPendingTransactions(provider, currentNonce));
 };
