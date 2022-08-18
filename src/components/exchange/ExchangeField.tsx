@@ -14,17 +14,17 @@ import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { AssetType } from '@/entities';
 import { Network } from '@rainbow-me/helpers';
-import { useColorForAsset } from '@/hooks';
-import styled from '@/styled-thing';
-import { borders } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useColorForAsset } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
+import { borders } from '@rainbow-me/styles';
+import { ThemeContextProps, useTheme } from '@rainbow-me/theme';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;
 
-const CoinIconSkeleton = styled.View({
+const CoinIconSkeleton = styled(View)({
   ...borders.buildCircleAsObject(CoinIconSize),
-  backgroundColor: ({ theme: { colors } }) =>
+  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) =>
     colors.alpha(colors.blueGreyDark, 0.1),
 });
 
@@ -103,12 +103,15 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   const { colors } = useTheme();
   const [value, setValue] = useState(amount);
 
-  const colorForAsset = useColorForAsset({
-    address,
-    fallbackColor: colors.appleBlue,
-    mainnet_address: mainnetAddress,
-    type: mainnetAddress ? AssetType.token : type,
-  });
+  const colorForAsset = useColorForAsset(
+    {
+      address,
+
+      mainnet_address: mainnetAddress,
+      type: mainnetAddress ? AssetType.token : type,
+    },
+    colors.appleBlue
+  );
   const handleFocusField = useCallback(() => {
     inputRef?.current?.focus();
   }, [inputRef]);
