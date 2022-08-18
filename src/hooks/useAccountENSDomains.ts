@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
-import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';
+import { EnsDomain } from '@rainbow-me/apollo/queries';
 import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
 import {
   getENSDomains,
@@ -59,7 +59,7 @@ export default function useAccountENSDomains() {
   const { accountAddress, accountENS } = useAccountProfile();
 
   const { data: domains, isLoading, isFetched, isSuccess } = useQuery<
-    EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
+    EnsDomain[]
   >(
     queryKey({ accountAddress }),
     async () => fetchENSDomainsWithCache({ accountAddress }),
