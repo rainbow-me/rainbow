@@ -39,7 +39,7 @@ import {
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
-import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
+import { Box, Heading, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { AssetTypes } from '@rainbow-me/entities';
 import {
   estimateENSReclaimGasLimit,
@@ -553,9 +553,9 @@ export default function SendConfirmationSheet() {
           <Column padding={24}>
             <Row>
               <Column justify="center" width={deviceWidth - 117}>
-                <Text numberOfLines={1} size="23px" weight="heavy">
+                <Heading numberOfLines={1} size="26px" weight="heavy">
                   {isNft ? asset?.name : nativeDisplayAmount}
-                </Text>
+                </Heading>
                 <Row marginTop={12}>
                   <Text
                     color={{
@@ -621,9 +621,9 @@ export default function SendConfirmationSheet() {
             <Row marginBottom={android ? 15 : 30}>
               <Column flex={1} justify="center">
                 <Row width={android ? '80%' : '90%'}>
-                  <Text numberOfLines={1} size="23px" weight="heavy">
+                  <Heading numberOfLines={1} size="26px" weight="heavy">
                     {avatarName}
-                  </Text>
+                  </Heading>
                   <Centered marginLeft={4}>
                     <ContactRowInfoButton
                       item={{
