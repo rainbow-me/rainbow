@@ -1,6 +1,7 @@
 import React from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { useDebounce } from 'use-debounce';
 import Centered from './Centered';
 import keyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
@@ -33,6 +34,15 @@ export default function KeyboardFixedOpenLayout({
 
   const containerHeight = screenHeight - keyboardHeight - additionalPadding;
 
+  if (android) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [debouncedHeight] = useDebounce(containerHeight, 300);
+    return (
+      <Container height={debouncedHeight} position={position}>
+        <InnerWrapper {...props} insets={insets} />
+      </Container>
+    );
+  }
   return (
     <Container height={containerHeight} position={position}>
       <KeyboardAvoidingView behavior="height" enabled={!!keyboardHeight}>
