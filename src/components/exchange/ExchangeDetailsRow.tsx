@@ -114,12 +114,14 @@ export default function ExchangeDetailsRow({
         style={detailsRowAnimatedStyle}
         width="full"
       >
+        {/* @ts-expect-error - Javascript Component */}
         <ExchangeDetailsButton
           onPress={onFlipCurrencies}
           testID="exchange-flip-button"
         >
           􀄬 {lang.t('exchange.flip')}
         </ExchangeDetailsButton>
+        {/* @ts-expect-error - Javascript Component */}
         <ExchangeDetailsButton
           onPress={onPressSettings}
           testID="exchange-settings-button"
