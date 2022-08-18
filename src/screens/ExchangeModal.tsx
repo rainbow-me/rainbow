@@ -674,7 +674,7 @@ export default function ExchangeModal({
     try {
       // Tell iOS we're running a rap (for tracking purposes)
       NotificationManager?.postNotification('rapInProgress');
-      if (nativeCurrency === 'usd') {
+      if (nativeCurrency.toLowerCase() === 'usd') {
         amountInUSD = nativeAmount!;
       } else {
         const ethPriceInNativeCurrency =
