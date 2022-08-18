@@ -226,16 +226,18 @@ export const ENS_REGISTRATIONS = gql`
   }
 `;
 
+export type EnsDomain = {
+  name: string;
+  labelhash: string;
+  owner: {
+    id: string;
+  };
+};
+
 export type EnsAccountRegistratonsData = {
-  account: {
-    registrations: {
-      domain: {
-        name: string;
-        labelhash: string;
-        owner: {
-          id: string;
-        };
-      };
+  account?: {
+    registrations?: {
+      domain: EnsDomain;
     }[];
   };
 };
