@@ -4,15 +4,20 @@ import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
-import { Box, Inline } from '@/design-system';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
+import { Box, Inline } from '@rainbow-me/design-system';
+import styled from '@rainbow-me/styled-components';
+import { position } from '@rainbow-me/styles';
+import { ThemeContextProps } from '@rainbow-me/theme';
 
 const Label = styled(Text).attrs(
   ({
     theme: { colors },
     color = colors.alpha(colors.blueGreyDark, 0.8),
     letterSpacing,
+  }: {
+    theme: ThemeContextProps;
+    color: string;
+    letterSpacing: string;
   }) => ({
     color,
     letterSpacing,
