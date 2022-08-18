@@ -344,7 +344,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       address: accountAddress,
       timeAgo: { hours: 48 },
     });
-    if (ensTokens.length > 0) {
+    if (ensTokens?.length > 0) {
       uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
     }
   }
