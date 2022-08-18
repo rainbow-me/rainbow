@@ -143,9 +143,11 @@ export default function ConfirmExchangeButton({
   const handleExplainer = useCallback(() => {
     android && Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
+      inputCurrency,
+      outputCurrency,
       type: explainerType,
     });
-  }, [explainerType, navigate]);
+  }, [explainerType, inputCurrency, navigate, outputCurrency]);
 
   const isDisabled =
     disabled ||
