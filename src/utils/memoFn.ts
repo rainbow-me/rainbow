@@ -14,7 +14,7 @@ import logger from './logger';
  * @param {Function} fn - pure function with at least single argument
  * @returns {Function} - same function with a cache
  */
-export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
+export function memoFn<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => TReturn,
   keyMaker?: (...args: TArgs) => string
 ): typeof fn {
