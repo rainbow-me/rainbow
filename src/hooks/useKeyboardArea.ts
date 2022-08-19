@@ -32,11 +32,7 @@ export const useKeyboardArea = () => {
 };
 
 export const useKeyboardMaxArea = () => {
-  const currentHeight = useKeyboardArea();
-
-  if (currentHeight > maxKeyboardHeight) {
-    maxKeyboardHeight = currentHeight;
-  }
+  useKeyboardArea();
 
   return maxKeyboardHeight;
 };

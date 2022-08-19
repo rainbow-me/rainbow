@@ -30,6 +30,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
+import { position } from '../styles';
 import AndroidKeyboardLayoutFixer from '@/components/layout/AndroidKeyboardLayoutFixer';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
@@ -46,6 +47,7 @@ import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
+  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -98,7 +100,9 @@ const Wrapper = ios ? KeyboardFixedOpenLayout : AndroidKeyboardLayoutFixer;
 
 const InnerWrapper = styled(Column).attrs({
   direction: 'column',
-})({});
+})({
+  ...position.sizeAsObject('100%'),
+});
 
 const Spacer = styled.View({
   height: 20,
@@ -161,6 +165,8 @@ export default function ExchangeModal({
     dangerouslyGetParent,
     addListener,
   } = useNavigation();
+
+  const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
 
   // if the default input is on a different network than
   // we want to update the output to be on the same, if its not available -> null
@@ -867,7 +873,9 @@ export default function ExchangeModal({
 
   return (
     <Wrapper keyboardType={KeyboardTypes.numpad}>
-      <InnerWrapper>
+      <InnerWrapper
+        isSmallPhone={isSmallPhone || (android && isSmallAndroidPhone)}
+      >
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"
