@@ -1,142 +1,120 @@
-import lang from 'i18n-js';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '../Divider';
+import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
-import { ContextMenuButton } from '../context-menu';
-import { Column, Row } from '../layout';
-import { Text } from '../text';
+import { Box, Columns, Inline, Text } from '@/design-system';
+import { AssetType } from '@/entities';
+import { Network } from '@/helpers';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
-import { padding, position } from '@rainbow-me/styles';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
-
-const networkMenuItems = () => {
-  return Object.values(networkInfo)
-    .filter(({ disabled, testnet }) => !disabled && !testnet)
-    .map(netInfo => ({
-      actionKey: netInfo.value,
-      actionTitle: netInfo.longName || netInfo.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${
-          netInfo.layer2 ? `${netInfo.value}BadgeNoShadow` : 'ethereumBadge'
-        }`,
-      },
-    }));
-};
-const androidNetworkMenuItems = () => {
-  return Object.values(networkInfo)
-    .filter(({ disabled, testnet }) => !disabled && !testnet)
-    .map(netInfo => netInfo.name);
-};
+import { position } from '@rainbow-me/styles';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const NetworkSwitcher = ({
   colors,
   hideDivider,
-  marginVertical = 12,
-  marginHorizontal = 19,
   currentChainId,
   setCurrentChainId,
   testID,
-  prominent,
 }) => {
-  const radialGradientProps = {
-    center: [0, 1],
-    colors: colors.gradients.lightGreyWhite,
-    pointerEvents: 'none',
-    style: {
-      ...position.coverAsObject,
-      overflow: 'hidden',
-    },
-  };
-
-  const handleOnPressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
-      setCurrentChainId(ethereumUtils.getChainIdFromNetwork(actionKey));
-    },
-    [setCurrentChainId]
-  );
-  const onPressAndroid = useCallback(() => {
-    const networkActions = androidNetworkMenuItems();
-    showActionSheetWithOptions(
-      {
-        options: networkActions,
-        showSeparators: true,
+  const scrollViewRef = React.useRef();
+  const radialGradientProps = network => {
+    return {
+      center: [0, 1],
+      colors: [
+        colors.alpha(colors.networkColors[network], 0.1),
+        colors.alpha(colors.networkColors[network], 0.02),
+      ],
+      pointerEvents: 'none',
+      style: {
+        ...position.coverAsObject,
+        overflow: 'hidden',
       },
-      idx => {
-        if (idx !== undefined) {
-          setCurrentChainId(
-            ethereumUtils.getChainIdFromNetwork(networkActions[idx])
-          );
-        }
-      }
-    );
-  }, [setCurrentChainId]);
+    };
+  };
+  const networkMenuItems = Object.values(networkInfo)
+    .filter(({ disabled, testnet }) => !disabled && !testnet)
+    .map(netInfo => ({
+      chainId: ethereumUtils.getChainIdFromNetwork(netInfo.value),
+      network: netInfo.value,
+      title: netInfo.name,
+      type: netInfo.value !== Network.mainnet ? netInfo.value : AssetType.token,
+    }));
+
+  // if polygon is selcted intially we should scroll into view
+  useEffect(() => {
+    if (currentChainId === 137) {
+      scrollViewRef?.current.scrollToEnd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
-      <ContextMenuButton
-        menuItems={networkMenuItems()}
-        menuTitle=""
-        onPressAndroid={onPressAndroid}
-        onPressMenuItem={handleOnPressMenuItem}
-        testID={`${testID}-${currentChainId}`}
-      >
-        <Row
-          borderRadius={16}
-          marginHorizontal={marginHorizontal}
-          marginVertical={marginVertical}
-          style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}
+      <Box height="46px" key={`${testID}-${currentChainId}`} width="full">
+        <ScrollView
+          contentContainerStyle={{ paddingHorizontal: 18 }}
+          horizontal
+          ref={scrollViewRef}
+          showsHorizontalScrollIndicator={false}
         >
-          <RadialGradient
-            {...radialGradientProps}
-            borderRadius={16}
-            radius={600}
-          />
-          <Column justify="center">
-            {currentChainId !== 1 ? (
-              <ChainBadge
-                assetType={ethereumUtils.getNetworkFromChainId(currentChainId)}
-                position="relative"
-                size="small"
-              />
-            ) : (
-              <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />
-            )}
-          </Column>
-          <Column flex={1} justify="center" marginHorizontal={8}>
-            <Text
-              color={
-                prominent
-                  ? colors.alpha(colors.blueGreyDark, 0.8)
-                  : colors.alpha(colors.blueGreyDark, 0.6)
-              }
-              numberOfLines={2}
-              size="smedium"
-              weight={prominent ? 'heavy' : 'bold'}
-            >
-              {lang.t('expanded_state.swap.network_switcher', {
-                network:
-                  networkInfo[
-                    ethereumUtils.getNetworkFromChainId(currentChainId)
-                  ].name,
-              })}
-            </Text>
-          </Column>
-          <Column align="end" justify="center">
-            <Text
-              align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.3)}
-              size="smedium"
-              weight="heavy"
-            >
-              􀆈
-            </Text>
-          </Column>
-        </Row>
-      </ContextMenuButton>
+          <Columns space="12px">
+            {networkMenuItems.map(({ chainId, title, type, network }) => {
+              const isSelected = currentChainId === chainId;
+              return (
+                <Box
+                  as={ButtonPressAnimation}
+                  height=""
+                  key={`${testID}-${title}`}
+                  onPress={() => setCurrentChainId(chainId)}
+                  style={{ padding: 10 }}
+                  testID={`network-switcher-${title}`}
+                >
+                  {isSelected && (
+                    <RadialGradient
+                      {...radialGradientProps(network)}
+                      borderRadius={30}
+                    />
+                  )}
+                  <Inline
+                    alignHorizontal="center"
+                    alignVertical="center"
+                    horizontalSpace="4px"
+                  >
+                    {type === AssetType.token ? (
+                      <CoinIcon
+                        address={ETH_ADDRESS}
+                        size={20}
+                        symbol={ETH_SYMBOL}
+                      />
+                    ) : (
+                      <ChainBadge
+                        assetType={type}
+                        position="relative"
+                        size="small"
+                      />
+                    )}
+                    <Text
+                      color={
+                        isSelected
+                          ? { custom: colors.networkColors[network] }
+                          : 'secondary50'
+                      }
+                      size="16px"
+                      weight="bold"
+                    >
+                      {title}
+                    </Text>
+                  </Inline>
+                </Box>
+              );
+            })}
+          </Columns>
+        </ScrollView>
+      </Box>
       {hideDivider ? null : <Divider color={colors.rowDividerExtraLight} />}
     </>
   );
