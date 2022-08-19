@@ -9,7 +9,7 @@ import { ContextMenuButton } from '../../context-menu';
 import { Box, Column, Columns, Inline, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
-import { Source } from '@rainbow-me/redux/swap';
+import { Source } from '@/redux/swap';
 import Routes from '@rainbow-me/routes';
 
 import { showActionSheetWithOptions } from '@rainbow-me/utils';

@@ -21,7 +21,7 @@ import {
   useExperimentalFlag,
 } from '@/config';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
+import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
 

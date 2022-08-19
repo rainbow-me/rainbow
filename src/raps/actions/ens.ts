@@ -18,12 +18,12 @@ import {
   getENSExecutionDetails,
   REGISTRATION_MODES,
 } from '@/helpers/ens';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+import { dataAddNewTransaction } from '@/redux/data';
 import {
   saveCommitRegistrationParameters,
   updateTransactionRegistrationParameters,
-} from '@rainbow-me/redux/ensRegistration';
-import store from '@rainbow-me/redux/store';
+} from '@/redux/ensRegistration';
+import store from '@/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 const executeCommit = async (

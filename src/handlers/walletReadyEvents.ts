@@ -17,8 +17,8 @@ import {
 } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 
-import store from '@rainbow-me/redux/store';
-import { checkKeychainIntegrity } from '@rainbow-me/redux/wallets';
+import store from '@/redux/store';
+import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 

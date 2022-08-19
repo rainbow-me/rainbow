@@ -13,12 +13,12 @@ import { pickShallow } from '@/helpers/utilities';
 import {
   emitAssetRequest,
   emitChartsRequest,
-} from '@rainbow-me/redux/explorer';
-import { AppState } from '@rainbow-me/redux/store';
+} from '@/redux/explorer';
+import { AppState } from '@/redux/store';
 import {
   setPoolsDetails,
   UniswapPoolAddressDetailsFull,
-} from '@rainbow-me/redux/uniswapLiquidity';
+} from '@/redux/uniswapLiquidity';
 import { WETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;

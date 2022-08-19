@@ -33,7 +33,7 @@ import {
   useUserLists,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import store from '@rainbow-me/redux/store';
+import store from '@/redux/store';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

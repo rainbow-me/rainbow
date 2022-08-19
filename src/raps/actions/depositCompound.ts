@@ -13,8 +13,8 @@ import {
   TransactionType,
 } from '@/entities';
 import { toHex } from '@/handlers/web3';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
 import {
   compoundCERC20ABI,
   compoundCETHABI,

@@ -33,7 +33,7 @@ import {
   setWalletBackedUp,
   walletsLoadState,
   walletsSetSelected,
-} from '@rainbow-me/redux/wallets';
+} from '@/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';

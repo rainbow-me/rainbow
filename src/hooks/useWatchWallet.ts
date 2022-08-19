@@ -13,7 +13,7 @@ import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import {
   addressSetSelected,
   walletsSetSelected,
-} from '@rainbow-me/redux/wallets';
+} from '@/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { doesWalletsContainAddress, logger } from '@rainbow-me/utils';
 

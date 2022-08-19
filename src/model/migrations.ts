@@ -61,7 +61,7 @@ import {
 } from '@/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';

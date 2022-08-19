@@ -82,7 +82,7 @@ import {
 } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
+import { walletConnectRemovePendingRedirect } from '@/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

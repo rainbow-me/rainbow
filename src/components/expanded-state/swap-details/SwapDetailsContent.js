@@ -19,7 +19,7 @@ import {
   useSwapAdjustedAmounts,
   useSwapCurrencies,
 } from '@/hooks';
-import { SwapModalField } from '@rainbow-me/redux/swap';
+import { SwapModalField } from '@/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';

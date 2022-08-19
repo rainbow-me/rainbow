@@ -6,7 +6,7 @@ import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getCoingeckoIds } from '@/handlers/dispersion';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
-import { AppDispatch, AppGetState, AppState } from '@rainbow-me/redux/store';
+import { AppDispatch, AppGetState, AppState } from '@/redux/store';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';

@@ -4,8 +4,8 @@ import { useAccountSettings, useENSRegistration } from '.';
 import { ENSRegistrationState } from '@/entities';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useNavigation } from '@/navigation';
-import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';
-import { AppState } from '@rainbow-me/redux/store';
+import { removeExpiredRegistrations } from '@/redux/ensRegistration';
+import { AppState } from '@/redux/store';
 import Routes from '@rainbow-me/routes';
 import { getENSNFTAvatarUrl } from '@rainbow-me/utils';
 

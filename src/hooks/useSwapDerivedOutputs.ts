@@ -17,12 +17,12 @@ import { EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import isTestFlight from '@/helpers/isTestFlight';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import {
   Source,
   SwapModalField,
   updateSwapQuote,
-} from '@rainbow-me/redux/swap';
+} from '@/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,

@@ -17,7 +17,7 @@ import {
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@/helpers/ens';
-import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import { updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 
 const checkRegisterBlockTimestamp = async ({
   registrationParameters,

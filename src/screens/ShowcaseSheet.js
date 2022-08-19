@@ -11,7 +11,7 @@ import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
 import { tokenFamilyItem } from '@/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@/hooks';
-import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
+import { fetchUniqueTokens } from '@/redux/uniqueTokens';
 import styled from '@rainbow-me/styled-components';
 import { useTheme } from '@rainbow-me/theme';
 

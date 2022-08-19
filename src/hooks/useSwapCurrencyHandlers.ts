@@ -11,13 +11,13 @@ import {
 import { updatePrecisionToDisplay } from '@/helpers/utilities';
 import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+import { emitAssetRequest } from '@/redux/explorer';
 import {
   flipSwapCurrencies,
   updateSwapDepositCurrency,
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
-} from '@rainbow-me/redux/swap';
+} from '@/redux/swap';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';

@@ -3,11 +3,11 @@ import { compact, isEmpty, orderBy, sumBy } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@/entities';
 import { parseAssetNative } from '@/parsers';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import {
   PositionsState,
   UniswapPosition,
-} from '@rainbow-me/redux/usersPositions';
+} from '@/redux/usersPositions';
 import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
 import {
   convertAmountToNativeDisplay,

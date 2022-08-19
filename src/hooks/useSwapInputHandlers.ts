@@ -11,12 +11,12 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import {
   updateSwapInputAmount,
   updateSwapNativeAmount,
   updateSwapOutputAmount,
-} from '@rainbow-me/redux/swap';
+} from '@/redux/swap';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapInputHandlers() {

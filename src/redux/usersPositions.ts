@@ -10,7 +10,7 @@ import {
   getUniswapPositions,
   saveUniswapPositions,
 } from '@/handlers/localstorage/uniswap';
-import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import { AppDispatch, AppGetState } from '@/redux/store';
 import {
   BUSD_ADDRESS,
   DAI_ADDRESS,

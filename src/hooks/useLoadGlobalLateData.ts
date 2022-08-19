@@ -5,8 +5,8 @@ import {
   WALLET_BALANCES_FROM_STORAGE,
 } from '@/handlers/localstorage/walletBalances';
 import { queryClient } from '@/react-query/queryClient';
-import { nonceManagerLoadState } from '@rainbow-me/redux/nonceManager';
-import { AppState } from '@rainbow-me/redux/store';
+import { nonceManagerLoadState } from '@/redux/nonceManager';
+import { AppState } from '@/redux/store';
 import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

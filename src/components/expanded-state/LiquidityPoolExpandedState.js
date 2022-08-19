@@ -33,7 +33,7 @@ import {
   usePoolDetails,
   useTotalFeeEarnedPerAsset,
 } from '@/hooks';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+import { emitAssetRequest } from '@/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';

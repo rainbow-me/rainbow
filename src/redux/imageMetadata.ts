@@ -4,7 +4,7 @@ import {
   getImageMetadata,
   saveImageMetadata,
 } from '@/handlers/localstorage/globalSettings';
-import { AppGetState } from '@rainbow-me/redux/store';
+import { AppGetState } from '@/redux/store';
 
 // -- Constants --------------------------------------- //
 const CLEAR = 'imageMetadata/CLEAR';

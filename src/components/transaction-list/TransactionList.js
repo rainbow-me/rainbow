@@ -23,7 +23,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { useNavigation } from '@/navigation/Navigation';
-import { removeRequest } from '@rainbow-me/redux/requests';
+import { removeRequest } from '@/redux/requests';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import {

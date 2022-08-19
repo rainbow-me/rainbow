@@ -12,8 +12,8 @@ import useWallets from './useWallets';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { containsEmoji } from '@/helpers/strings';
 import WalletTypes from '@/helpers/walletTypes';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import { AppState } from '@rainbow-me/redux/store';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { AppState } from '@/redux/store';
 import logger from 'logger';
 
 const getAccountSymbol = (name: string) => {

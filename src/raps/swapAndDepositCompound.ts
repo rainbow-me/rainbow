@@ -13,7 +13,7 @@ import {
 } from './common';
 import { Asset } from '@/entities';
 import { estimateSwapGasLimit } from '@/handlers/uniswap';
-import store from '@rainbow-me/redux/store';
+import store from '@/redux/store';
 import {
   ethUnits,
   savingsAssetsListByUnderlying,

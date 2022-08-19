@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useWallets } from '@/hooks';
-import { getWalletENSAvatars } from '@rainbow-me/redux/wallets';
+import { getWalletENSAvatars } from '@/redux/wallets';
 
 export default function useWalletENSAvatar() {
   const dispatch = useDispatch();

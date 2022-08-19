@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { RainbowToken, SwappableAsset } from '@/entities';
 import { Network } from '@/helpers';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { useTheme } from '@rainbow-me/theme';
 import {

@@ -64,7 +64,7 @@ import {
 } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
-import store from '@rainbow-me/redux/store';
+import store from '@/redux/store';
 import {
   ARBITRUM_BLOCK_EXPLORER_URL,
   ARBITRUM_ETH_ADDRESS,

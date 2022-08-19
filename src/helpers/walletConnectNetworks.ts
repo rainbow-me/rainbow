@@ -1,5 +1,5 @@
 import networkInfo from './networkInfo';
-import store from '@rainbow-me/redux/store';
+import store from '@/redux/store';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const androidNetworkActions = () => {

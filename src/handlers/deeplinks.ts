@@ -20,11 +20,11 @@ import {
   isENSAddressFormat,
 } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
-import { scheduleActionOnAssetReceived } from '@rainbow-me/redux/data';
+import { scheduleActionOnAssetReceived } from '@/redux/data';
 import {
   emitAssetRequest,
   emitChartsRequest,
-} from '@rainbow-me/redux/explorer';
+} from '@/redux/explorer';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';

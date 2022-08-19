@@ -3,8 +3,8 @@ import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { userListsLoadState } from '../redux/userLists';
-import { AppState } from '@rainbow-me/redux/store';
-import { topMoversLoadState } from '@rainbow-me/redux/topMovers';
+import { AppState } from '@/redux/store';
+import { topMoversLoadState } from '@/redux/topMovers';
 import logger from 'logger';
 
 export default function useInitializeDiscoverData() {

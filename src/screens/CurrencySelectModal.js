@@ -48,7 +48,7 @@ import {
 import {
   emitAssetRequest,
   emitChartsRequest,
-} from '@rainbow-me/redux/explorer';
+} from '@/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
 import EditAction from '@/helpers/EditAction';
-import { setHiddenCoins as reduxSetHiddenCoins } from '@rainbow-me/redux/editOptions';
+import { setHiddenCoins as reduxSetHiddenCoins } from '@/redux/editOptions';
 
 const selectedItemsAtom = atom<string[]>({
   default: [],

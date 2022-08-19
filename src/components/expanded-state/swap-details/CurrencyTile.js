@@ -9,7 +9,7 @@ import {
   useColorForAsset,
   useDimensions,
 } from '@/hooks';
-import { SwapModalField } from '@rainbow-me/redux/swap';
+import { SwapModalField } from '@/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {

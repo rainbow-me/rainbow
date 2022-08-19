@@ -5,7 +5,7 @@ import useAccountSettings from './useAccountSettings';
 import useGenericAsset from './useGenericAsset';
 import { AssetType } from '@/entities';
 import { parseAssetNative } from '@/parsers';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
 
 const getZeroEth = () => {

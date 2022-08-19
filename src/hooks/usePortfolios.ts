@@ -2,7 +2,7 @@ import { isNil, keys } from 'lodash';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { analytics } from '@rainbow-me/analytics';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import logger from 'logger';
 
 export default function usePortfolios() {

@@ -11,9 +11,9 @@ import {
   saveSelectedUserList,
   saveUserLists,
 } from '@/handlers/localstorage/userLists';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
-import { AppGetState, AppState } from '@rainbow-me/redux/store';
-import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';
+import { emitAssetRequest } from '@/redux/explorer';
+import { AppGetState, AppState } from '@/redux/store';
+import { uniswapUpdateFavorites } from '@/redux/uniswap';
 import {
   DefaultTokenLists,
   TokenListsExtendedRecord,

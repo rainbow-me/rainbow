@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { contactsLoadState } from '@rainbow-me/redux/contacts';
-import { imageMetadataCacheLoadState } from '@rainbow-me/redux/imageMetadata';
-import { keyboardHeightsLoadState } from '@rainbow-me/redux/keyboardHeight';
+import { contactsLoadState } from '@/redux/contacts';
+import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
+import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
 import {
   settingsLoadLanguage,
   settingsLoadState,
-} from '@rainbow-me/redux/settings';
-import { transactionSignaturesLoadState } from '@rainbow-me/redux/transactionSignatures';
+} from '@/redux/settings';
+import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

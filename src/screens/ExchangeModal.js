@@ -68,7 +68,7 @@ import {
   swapClearState,
   updateSwapSlippage,
   updateSwapTypeDetails,
-} from '@rainbow-me/redux/swap';
+} from '@/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

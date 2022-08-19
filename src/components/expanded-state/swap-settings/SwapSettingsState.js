@@ -29,7 +29,7 @@ import {
   useSwapSettings,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { Source } from '@rainbow-me/redux/swap';
+import { Source } from '@/redux/swap';
 import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 

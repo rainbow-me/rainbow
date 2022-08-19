@@ -22,7 +22,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import store from '@rainbow-me/redux/store';
+import store from '@/redux/store';
 import { DPI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';

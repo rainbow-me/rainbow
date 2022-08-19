@@ -20,9 +20,9 @@ import {
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
-import { dataResetState } from '@rainbow-me/redux/data';
-import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
-import { AppState } from '@rainbow-me/redux/store';
+import { dataResetState } from '@/redux/data';
+import { explorerClearState, explorerInit } from '@/redux/explorer';
+import { AppState } from '@/redux/store';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';

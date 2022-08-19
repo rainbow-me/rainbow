@@ -22,7 +22,7 @@ import {
   useDimensions,
   useOpenSmallBalances,
 } from '@/hooks';
-import { emitChartsRequest } from '@rainbow-me/redux/explorer';
+import { emitChartsRequest } from '@/redux/explorer';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 

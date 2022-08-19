@@ -5,7 +5,7 @@ import {
   usePendingTransactions,
 } from '.';
 import { ENSRegistrationState } from '@/entities';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 /**

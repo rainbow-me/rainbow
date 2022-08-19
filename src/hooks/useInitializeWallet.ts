@@ -24,8 +24,8 @@ import useResetAccountState from './useResetAccountState';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
-import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
-import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
+import { additionalDataCoingeckoIds } from '@/redux/additionalAssetsData';
+import { checkPendingTransactionsOnInitialize } from '@/redux/data';
 import logger from 'logger';
 
 export default function useInitializeWallet() {

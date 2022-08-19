@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { ExchangeModalTypes } from '@/helpers';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import { greaterThanOrEqualTo } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 

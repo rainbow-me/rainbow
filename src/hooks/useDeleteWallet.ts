@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { useWallets } from '@/hooks';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
-import { walletsUpdate } from '@rainbow-me/redux/wallets';
+import { walletsUpdate } from '@/redux/wallets';
 
 export default function useDeleteWallet({
   address: primaryAddress,

@@ -34,11 +34,11 @@ import {
   useWalletSectionsData,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { updateRefetchSavings } from '@rainbow-me/redux/data';
+import { updateRefetchSavings } from '@/redux/data';
 import {
   emitChartsRequest,
   emitPortfolioRequest,
-} from '@rainbow-me/redux/explorer';
+} from '@/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

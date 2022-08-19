@@ -5,7 +5,7 @@ import {
   setKeyboardHeight as saveKeyboardHeight,
 } from '@/handlers/localstorage/globalSettings';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { AppGetState } from '@rainbow-me/redux/store';
+import { AppGetState } from '@/redux/store';
 import { deviceUtils } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //

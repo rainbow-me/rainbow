@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings } from '.';
 import { Records } from '@/entities';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import * as ensRedux from '@rainbow-me/redux/ensRegistration';
-import { AppState } from '@rainbow-me/redux/store';
+import * as ensRedux from '@/redux/ensRegistration';
+import { AppState } from '@/redux/store';
 
 export default function useENSRegistration() {
   const { accountAddress } = useAccountSettings();

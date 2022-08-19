@@ -3,7 +3,7 @@ import { sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { TransactionStatusTypes } from '@/entities';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 
 const DEFAULT_WEEKLY_LIMIT = 500;
 const DEFAULT_YEARLY_LIMIT = 5000;

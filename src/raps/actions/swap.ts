@@ -18,9 +18,9 @@ import {
 } from '@/handlers/uniswap';
 import { isL2Network, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { additionalDataUpdateL2AssetToWatch } from '@rainbow-me/redux/additionalAssetsData';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
+import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';

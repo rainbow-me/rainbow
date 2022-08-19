@@ -11,7 +11,7 @@ import useInitializeWallet from './useInitializeWallet';
 import { toChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import logger from 'logger';
 
 const walletSelector = createSelector(

@@ -11,8 +11,8 @@ import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@/apollo/queries';
 import { AssetTypes } from '@/entities';
 import { multiply } from '@/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@/parsers';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
-import { AppState } from '@rainbow-me/redux/store';
+import { emitAssetRequest } from '@/redux/explorer';
+import { AppState } from '@/redux/store';
 import {
   CDAI_CONTRACT,
   DAI_ADDRESS,

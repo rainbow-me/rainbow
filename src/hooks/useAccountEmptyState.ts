@@ -5,7 +5,7 @@ import {
   saveAccountEmptyState,
 } from '../handlers/localstorage/accountLocal';
 import useAccountSettings from './useAccountSettings';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 
 export default function useAccountEmptyState(isSectionsEmpty: boolean) {
   const { network, accountAddress } = useAccountSettings();
