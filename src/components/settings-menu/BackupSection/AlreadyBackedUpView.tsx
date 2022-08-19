@@ -191,7 +191,15 @@ export default function AlreadyBackedUpView() {
         </Box>
         <Box paddingTop="42px">
           <AccentColorProvider color={colors.whiteLabel}>
-            <ButtonPressAnimation onPress={handleViewRecoveryPhrase}>
+            <ButtonPressAnimation
+              onPress={handleViewRecoveryPhrase}
+              style={
+                android && {
+                  // fix shadow clipping
+                  paddingBottom: 8,
+                }
+              }
+            >
               <Box
                 background="accent"
                 borderRadius={56}
