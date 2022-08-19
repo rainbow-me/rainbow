@@ -9,7 +9,7 @@ import {
 } from '@/hooks';
 
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@/references';
 
 // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-cool-modals/Nativ... Remove this comment to see the full error message
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';

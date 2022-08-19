@@ -17,7 +17,7 @@ import {
 import { isNativeAsset } from '@/handlers/assets';
 import { estimateSwapGasLimit } from '@/handlers/uniswap';
 import store from '@/redux/store';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@/references';
 import { add } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 

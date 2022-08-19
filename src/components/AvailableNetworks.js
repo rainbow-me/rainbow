@@ -11,7 +11,7 @@ import { Text } from './text';
 import { Box } from '@/design-system';
 import networkInfo from '@/helpers/networkInfo';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';

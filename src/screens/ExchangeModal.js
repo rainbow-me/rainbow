@@ -69,7 +69,7 @@ import {
   updateSwapSlippage,
   updateSwapTypeDetails,
 } from '@/redux/swap';
-import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
+import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

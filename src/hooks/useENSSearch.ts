@@ -12,7 +12,7 @@ import {
   getRentPrice,
 } from '@/helpers/ens';
 import { Network } from '@/helpers/networkTypes';
-import { timeUnits } from '@rainbow-me/references';
+import { timeUnits } from '@/references';
 import { ethereumUtils, validateENS } from '@rainbow-me/utils';
 
 const formatTime = (timestamp: string, abbreviated: boolean = true) => {

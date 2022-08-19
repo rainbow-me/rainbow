@@ -79,7 +79,7 @@ import {
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
+} from '@/references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 

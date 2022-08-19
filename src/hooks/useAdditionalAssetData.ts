@@ -6,7 +6,7 @@ import { EthereumAddress } from '@/entities';
 import { getAdditionalAssetData } from '@/handlers/dispersion';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
 
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,

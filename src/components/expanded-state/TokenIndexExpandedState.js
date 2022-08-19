@@ -23,7 +23,7 @@ import {
   useDimensions,
   useDPI,
 } from '@/hooks';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@/references';
 import {
   convertRawAmountToNativeDisplay,
   divide,

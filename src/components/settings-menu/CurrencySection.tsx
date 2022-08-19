@@ -7,7 +7,7 @@ import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { analytics } from '@rainbow-me/analytics';
 import { useAccountSettings } from '@/hooks';
-import { emojis, supportedNativeCurrencies } from '@rainbow-me/references';
+import { emojis, supportedNativeCurrencies } from '@/references';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
   name,

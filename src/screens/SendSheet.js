@@ -69,7 +69,7 @@ import {
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
+import { chainAssets, rainbowTokenList } from '@/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';

@@ -44,7 +44,7 @@ import {
   erc20ABI,
   ethUnits,
   UNISWAP_TESTNET_TOKEN_LIST,
-} from '@rainbow-me/references';
+} from '@/references';
 import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 export enum Field {

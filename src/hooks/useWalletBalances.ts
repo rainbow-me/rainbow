@@ -11,7 +11,7 @@ import { web3Provider } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
 import { AllRainbowWallets } from '@/model/wallet';
 import { queryClient } from '@/react-query/queryClient';
-import { balanceCheckerContractAbi } from '@rainbow-me/references';
+import { balanceCheckerContractAbi } from '@/references';
 import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 

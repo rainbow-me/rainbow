@@ -18,7 +18,7 @@ import {
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
 } from '@/redux/swap';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 

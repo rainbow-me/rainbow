@@ -7,7 +7,7 @@ import {
 } from '@/handlers/uniswap';
 import { AppState } from '@/redux/store';
 import { SwapModalField } from '@/redux/swap';
-import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS } from '@rainbow-me/references';
+import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS } from '@/references';
 import { fromWei, updatePrecisionToDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 

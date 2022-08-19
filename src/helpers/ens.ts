@@ -28,7 +28,7 @@ import {
   ENSRegistryWithFallbackABI,
   ENSReverseRegistrarABI,
   ensReverseRegistrarAddress,
-} from '@rainbow-me/references';
+} from '@/references';
 import { colors } from '@rainbow-me/styles';
 import { labelhash } from '@rainbow-me/utils';
 import {

@@ -7,7 +7,7 @@ import { ensRecordsQueryKey, useENSRecords } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { queryClient } from '@/react-query/queryClient';
-import { ensIntroMarqueeNames } from '@rainbow-me/references';
+import { ensIntroMarqueeNames } from '@/references';
 import Routes from '@rainbow-me/routes';
 
 export const ensAvatarUrl = (ensName: string) =>

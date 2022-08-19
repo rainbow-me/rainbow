@@ -4,7 +4,7 @@ import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Divider, Inset, Stack } from '@/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
 import { useDimensions, useENSRegistrant } from '@/hooks';
-import { timeUnits } from '@rainbow-me/references';
+import { timeUnits } from '@/references';
 
 const RenewContent = ({
   yearsDuration,

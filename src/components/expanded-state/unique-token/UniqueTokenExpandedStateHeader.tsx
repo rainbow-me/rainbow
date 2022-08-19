@@ -28,7 +28,7 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {

@@ -25,7 +25,7 @@ import {
   emitAssetRequest,
   emitChartsRequest,
 } from '@/redux/explorer';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 

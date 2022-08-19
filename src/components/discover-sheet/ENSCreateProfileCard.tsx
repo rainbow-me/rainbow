@@ -25,7 +25,7 @@ import {
   useAccountENSDomains,
   useWallets,
 } from '@/hooks';
-import { ensIntroMarqueeNames } from '@rainbow-me/references';
+import { ensIntroMarqueeNames } from '@/references';
 import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@rainbow-me/utils';
 

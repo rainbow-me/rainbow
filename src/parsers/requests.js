@@ -2,7 +2,7 @@ import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 import { isHexString } from '@/handlers/web3';
-import { ethUnits, smartContractMethods } from '@rainbow-me/references';
+import { ethUnits, smartContractMethods } from '@/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,

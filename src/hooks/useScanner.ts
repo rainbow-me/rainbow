@@ -17,7 +17,7 @@ import {
   isENSAddressFormat,
 } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@rainbow-me/routes';
 import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';

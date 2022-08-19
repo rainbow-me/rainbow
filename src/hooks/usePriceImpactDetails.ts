@@ -3,7 +3,7 @@ import useAccountSettings from './useAccountSettings';
 import { RainbowToken, SwappableAsset } from '@/entities';
 import { Network } from '@/helpers';
 import { AppState } from '@/redux/store';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
 import { useTheme } from '@rainbow-me/theme';
 import {
   convertAmountAndPriceToNativeDisplay,

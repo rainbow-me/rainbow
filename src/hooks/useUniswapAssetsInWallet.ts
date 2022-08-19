@@ -5,7 +5,7 @@ import { getUniswapV2Tokens } from '@/handlers/dispersion';
 import { sortAssetsByNativeAmountSelector } from '@/helpers/assetSelectors';
 import NetworkTypes from '@/helpers/networkTypes';
 import { AppState } from '@/redux/store';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@/references';
 
 const networkSelector = (state: AppState) => state.settings.network;
 

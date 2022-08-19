@@ -72,7 +72,7 @@ import {
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   shitcoins,
-} from '@rainbow-me/references';
+} from '@/references';
 import Routes from '@rainbow-me/routes';
 import { delay, isZero, pickBy } from '@rainbow-me/utilities';
 import {

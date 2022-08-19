@@ -17,7 +17,7 @@ import { uniswapUpdateFavorites } from '@/redux/uniswap';
 import {
   DefaultTokenLists,
   TokenListsExtendedRecord,
-} from '@rainbow-me/references';
+} from '@/references';
 
 // -- Constants ------------------------------------------------------------- //
 const USER_LISTS_READY = 'userLists/USER_LISTS_READY';

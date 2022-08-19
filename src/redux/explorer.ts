@@ -46,7 +46,7 @@ import {
   DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
-} from '@rainbow-me/references';
+} from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 

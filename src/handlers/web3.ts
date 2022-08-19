@@ -32,7 +32,7 @@ import {
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   addBuffer,
   convertAmountToRawAmount,

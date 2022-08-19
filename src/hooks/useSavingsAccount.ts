@@ -17,7 +17,7 @@ import {
   CDAI_CONTRACT,
   DAI_ADDRESS,
   ETH_ADDRESS,
-} from '@rainbow-me/references';
+} from '@/references';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds

@@ -25,7 +25,7 @@ import {
   ETH_ADDRESS,
   rainbowTokenList,
   WETH_ADDRESS,
-} from '@rainbow-me/references';
+} from '@/references';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //

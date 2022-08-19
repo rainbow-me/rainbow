@@ -20,7 +20,7 @@ import {
   USDC_ADDRESS,
   USDT_ADDRESS,
   WETH_ADDRESS,
-} from '@rainbow-me/references';
+} from '@/references';
 import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086;

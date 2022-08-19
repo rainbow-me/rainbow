@@ -21,7 +21,7 @@ import {
   ETH_ADDRESS,
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '@rainbow-me/references';
+} from '@/references';
 import { convertAmountToRawAmount } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';

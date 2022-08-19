@@ -8,7 +8,7 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { DAI_ADDRESS } from '@rainbow-me/references';
+import { DAI_ADDRESS } from '@/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

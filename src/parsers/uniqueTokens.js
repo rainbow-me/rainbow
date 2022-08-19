@@ -11,7 +11,7 @@ import { pickBy, pickShallow } from '@/helpers/utilities';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   polygonAllowList,
-} from '@rainbow-me/references';
+} from '@/references';
 import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
 import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
 import isSVGImage from '@rainbow-me/utils/isSVG';

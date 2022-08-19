@@ -26,7 +26,7 @@ import {
   usePrevious,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';

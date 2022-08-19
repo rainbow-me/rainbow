@@ -8,7 +8,7 @@ import { ContextMenuButton } from '../context-menu';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import networkInfo from '@/helpers/networkInfo';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { padding, position } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 

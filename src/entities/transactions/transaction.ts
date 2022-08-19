@@ -5,7 +5,7 @@ import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
 import { Network } from '@/helpers/networkTypes';
-import { AddCashCurrencyAsset } from '@rainbow-me/references';
+import { AddCashCurrencyAsset } from '@/references';
 
 export interface RainbowTransaction {
   address: string;

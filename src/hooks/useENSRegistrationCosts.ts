@@ -34,7 +34,7 @@ import {
   greaterThanOrEqualTo,
   multiply,
 } from '@/helpers/utilities';
-import { ethUnits, timeUnits } from '@rainbow-me/references';
+import { ethUnits, timeUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 
 enum QUERY_KEYS {

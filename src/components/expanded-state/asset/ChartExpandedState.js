@@ -48,7 +48,7 @@ import {
   useGenericAsset,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';

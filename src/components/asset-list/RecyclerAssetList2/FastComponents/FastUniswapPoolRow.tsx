@@ -5,7 +5,7 @@ import FastCoinIcon from './FastCoinIcon';
 import FastPoolValue from './FastPoolValue';
 import { Text } from '@/design-system';
 import { UniswapPoolAddressDetailsFull } from '@/redux/uniswapLiquidity';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { supportedNativeCurrencies } from '@/references';
 
 interface UniswapCoinRowItem {
   onPress: () => void;

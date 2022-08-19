@@ -19,7 +19,7 @@ import {
 } from '@/helpers/wyreStatusTypes';
 import { useDimensions, useTimeout } from '@/hooks';
 import { useNavigation } from '@/navigation/Navigation';
-import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
+import { ETH_ADDRESS, getWyreErrorOverride } from '@/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

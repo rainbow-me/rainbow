@@ -9,7 +9,7 @@ import { transactionSignaturesDataAddNewSignature } from '@/redux/transactionSig
 import {
   SIGNATURE_REGISTRY_ADDRESS,
   signatureRegistryABI,
-} from '@rainbow-me/references';
+} from '@/references';
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);

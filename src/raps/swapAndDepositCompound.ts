@@ -17,7 +17,7 @@ import store from '@/redux/store';
 import {
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '@rainbow-me/references';
+} from '@/references';
 import { add } from '@rainbow-me/utilities';
 import logger from 'logger';
 

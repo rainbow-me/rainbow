@@ -15,7 +15,7 @@ import {
   useWallets,
   useWebData,
 } from '@/hooks';
-import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 

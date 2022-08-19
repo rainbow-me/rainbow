@@ -23,7 +23,7 @@ import {
   ethUnits,
   supportedNativeCurrencies,
   timeUnits,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   add,
   convertRawAmountToBalance,

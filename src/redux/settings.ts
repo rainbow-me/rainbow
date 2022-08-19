@@ -23,7 +23,7 @@ import { Network } from '@/helpers/networkTypes';
 import { dataResetState } from '@/redux/data';
 import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { supportedNativeCurrencies } from '@/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

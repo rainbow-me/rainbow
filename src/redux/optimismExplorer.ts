@@ -19,7 +19,7 @@ import { pickBy } from '@/helpers/utilities';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,
-} from '@rainbow-me/references';
+} from '@/references';
 import logger from 'logger';
 
 /**

@@ -19,7 +19,7 @@ import {
   setPoolsDetails,
   UniswapPoolAddressDetailsFull,
 } from '@/redux/uniswapLiquidity';
-import { WETH_ADDRESS } from '@rainbow-me/references';
+import { WETH_ADDRESS } from '@/references';
 import logger from 'logger';
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 

@@ -7,7 +7,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useDimensions } from '@/hooks';
-import { wyreSupportedCountries } from '@rainbow-me/references';
+import { wyreSupportedCountries } from '@/references';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';

@@ -6,7 +6,7 @@ import {
   TransactionType,
 } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,

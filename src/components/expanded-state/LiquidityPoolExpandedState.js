@@ -35,7 +35,7 @@ import {
 } from '@/hooks';
 import { emitAssetRequest } from '@/redux/explorer';
 
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS } from '@/references';
 import styled from '@rainbow-me/styled-components';
 import { useTheme } from '@rainbow-me/theme';
 import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';

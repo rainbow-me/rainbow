@@ -1,5 +1,5 @@
 import { memoFn } from '../utils/memoFn';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { supportedNativeCurrencies } from '@/references';
 import {
   convertAmountToNativeDisplay,
   divide,

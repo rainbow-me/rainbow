@@ -6,7 +6,7 @@ import useGenericAsset from './useGenericAsset';
 import { AssetType } from '@/entities';
 import { parseAssetNative } from '@/parsers';
 import { AppState } from '@/redux/store';
-import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
+import { ETH_ADDRESS, ETH_ICON_URL } from '@/references';
 
 const getZeroEth = () => {
   return {

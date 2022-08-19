@@ -22,7 +22,7 @@ import {
   useDimensions,
   useIsWalletEthZero,
 } from '@/hooks';
-import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
+import { DAI_ADDRESS, ETH_ADDRESS } from '@/references';
 import { padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 

@@ -8,7 +8,7 @@ import {
   PositionsState,
   UniswapPosition,
 } from '@/redux/usersPositions';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import {
   convertAmountToNativeDisplay,
   divide,

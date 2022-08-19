@@ -27,7 +27,7 @@ import {
   USDC_ADDRESS,
   WBTC_ADDRESS,
   WETH_ADDRESS,
-} from '@rainbow-me/references';
+} from '@/references';
 import { ethereumUtils, filterList, logger } from '@rainbow-me/utils';
 
 const MAINNET_CHAINID = 1;

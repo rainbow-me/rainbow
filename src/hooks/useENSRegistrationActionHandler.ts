@@ -26,7 +26,7 @@ import {
 } from '@/helpers/ens';
 import { loadWallet } from '@/model/wallet';
 import { executeRap } from '@/raps';
-import { timeUnits } from '@rainbow-me/references';
+import { timeUnits } from '@/references';
 import Routes from '@rainbow-me/routes';
 import { labelhash, logger } from '@rainbow-me/utils';
 

@@ -7,7 +7,7 @@ import {
   ETH_ADDRESS,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,

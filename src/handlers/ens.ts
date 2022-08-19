@@ -59,7 +59,7 @@ import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
   ethUnits,
-} from '@rainbow-me/references';
+} from '@/references';
 import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 

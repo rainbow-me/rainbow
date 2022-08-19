@@ -7,7 +7,7 @@ import {
   ETH_ADDRESS,
   ETH_ICON_URL,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   ethereumUtils,
   getUniqueTokenFormat,

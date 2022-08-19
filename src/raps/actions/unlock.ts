@@ -19,7 +19,7 @@ import { getProviderForNetwork, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
-import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
+import { erc20ABI, ETH_ADDRESS, ethUnits } from '@/references';
 import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';

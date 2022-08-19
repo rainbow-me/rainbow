@@ -13,7 +13,7 @@ import {
   useWatchWallet,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';

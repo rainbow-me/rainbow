@@ -4,7 +4,7 @@ import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPri
 import { useChartData } from '@rainbow-me/animated-charts';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { supportedNativeCurrencies } from '@/references';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);

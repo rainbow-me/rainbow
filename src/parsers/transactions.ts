@@ -31,7 +31,7 @@ import {
   ETH_ADDRESS,
   savingsAssetsList,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
