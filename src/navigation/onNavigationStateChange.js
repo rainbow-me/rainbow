@@ -1,4 +1,4 @@
-import { NativeModules, StatusBar } from 'react-native';
+import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import currentColors from '../theme/currentColors';

@@ -30,6 +30,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
+import AndroidKeyboardLayoutFixer from '@/components/layout/AndroidKeyboardLayoutFixer';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
@@ -95,13 +96,11 @@ const NOOP = () => null;
 
 const FloatingPanels = AnimatedExchangeFloatingPanels;
 
-const Wrapper = KeyboardFixedOpenLayout;
+const Wrapper = ios ? KeyboardFixedOpenLayout : AndroidKeyboardLayoutFixer;
 
 const InnerWrapper = styled(Column).attrs({
   direction: 'column',
-})({
-  ...position.sizeAsObject('100%'),
-});
+})({});
 
 const Spacer = styled.View({
   height: 20,
@@ -871,9 +870,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper keyboardType={KeyboardTypes.numpad}>
-      <InnerWrapper
-        isSmallPhone={isSmallPhone || (android && isSmallAndroidPhone)}
-      >
+      <InnerWrapper>
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"
