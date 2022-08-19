@@ -13,7 +13,6 @@ export default function useLatestCallback<T extends Function>(callback: T): T {
     this: unknown,
     ...args: unknown[]
   ) {
-    // eslint-disable-next-line babel/no-invalid-this
     return ref.current.apply(this, args);
   } as unknown) as T).current;
 
