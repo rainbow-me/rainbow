@@ -7,7 +7,7 @@ import Chevron from '@/assets/chevronUpDown.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 interface ImageIconProps {
   size?: number;

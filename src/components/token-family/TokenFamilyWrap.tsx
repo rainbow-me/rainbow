@@ -5,7 +5,7 @@ import TokenFamilyHeader, {
 } from './TokenFamilyHeader';
 import { times } from '@/helpers/utilities';
 import { useTimeout } from '@/hooks';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@/theme';
 
 type Props = {
   childrenAmount: number;

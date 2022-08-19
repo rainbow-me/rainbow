@@ -26,7 +26,7 @@ import {
 } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 
 export const ProfileSheetConfigContext = createContext<{

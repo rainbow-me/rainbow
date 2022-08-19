@@ -7,7 +7,7 @@ import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const NotificationsSection = () => {
   const { colors } = useTheme();

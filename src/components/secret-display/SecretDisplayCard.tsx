@@ -10,7 +10,7 @@ import WalletTypes, {
 } from '@/helpers/walletTypes';
 import styled from '@/styled-thing';
 import { fonts, padding, position } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import ShadowStack from 'react-native-shadow-stack';
 
 const CardBorderRadius = 25;

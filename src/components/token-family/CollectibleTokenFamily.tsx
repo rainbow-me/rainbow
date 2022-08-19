@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
 import { useOpenFamilies } from '@/hooks';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@/theme';
 
 type Props = {
   childrenAmount: number;

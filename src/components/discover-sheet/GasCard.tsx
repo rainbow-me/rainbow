@@ -25,7 +25,7 @@ import {
 } from '@/design-system';
 import { add } from '@/helpers/utilities';
 import { useDimensions, useGas } from '@/hooks';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { gasUtils } from '@rainbow-me/utils';
 
 type AnimationConfigOptions = {

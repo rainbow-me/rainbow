@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Categories } from './Categories';
 import { AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
 import { fonts } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const categoryKeys = Object.keys(Categories);
 

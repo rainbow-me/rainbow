@@ -9,7 +9,7 @@ import EthIcon from '@/assets/eth-icon.png';
 import { AssetType } from '@/entities';
 import { useColorForAsset } from '@/hooks';
 import { borders, fonts } from '@/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@/theme';
 import {
   FallbackIcon as CoinIconTextFallback,
   getTokenMetadata,

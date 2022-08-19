@@ -7,7 +7,7 @@ import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 

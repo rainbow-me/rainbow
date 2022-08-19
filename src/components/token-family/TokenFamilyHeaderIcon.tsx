@@ -6,7 +6,7 @@ import eyeSlash from '../../assets/sf-eye.slash.png';
 import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { borders } from '@/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@/theme';
 import { FallbackIcon, initials } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 

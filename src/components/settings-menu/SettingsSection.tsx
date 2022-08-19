@@ -43,7 +43,7 @@ import {
   useSendFeedback,
   useWallets,
 } from '@/hooks';
-import { Themes, useTheme } from '@rainbow-me/theme';
+import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import {
   AppleReviewAddress,

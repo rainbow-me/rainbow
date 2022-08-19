@@ -4,7 +4,7 @@ import {
   EMOJIS_CONTAINER_HORIZONTAL_MARGIN,
   EMOJIS_TOP_OFFSET,
 } from './constants';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { magicMemo } from '@rainbow-me/utils';
 
 interface Props {

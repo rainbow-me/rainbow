@@ -4,7 +4,7 @@ import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import { BiometryTypes } from '@/helpers';
 import { useBiometryType, useDimensions } from '@/hooks';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 interface WrapperProps extends HoldToAuthorizeBaseProps {
   label: string;

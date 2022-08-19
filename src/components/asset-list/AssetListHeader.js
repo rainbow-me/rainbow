@@ -16,7 +16,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 

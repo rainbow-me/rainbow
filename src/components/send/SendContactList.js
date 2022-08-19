@@ -16,7 +16,7 @@ import { useAccountSettings, useKeyboardHeight } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { filterList } from '@rainbow-me/utils';
 
 const KeyboardArea = styled.View({

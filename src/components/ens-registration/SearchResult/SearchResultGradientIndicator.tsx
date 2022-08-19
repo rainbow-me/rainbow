@@ -8,7 +8,7 @@ import {
   Text,
 } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 type Props = {
   type: 'availability' | 'expiration' | 'price';

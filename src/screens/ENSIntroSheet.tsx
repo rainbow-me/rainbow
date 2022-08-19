@@ -33,7 +33,7 @@ import {
   useENSRegistration,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 enum AnotherENSEnum {
   search = 'search',

@@ -9,7 +9,7 @@ import TokenInfoValue from './TokenInfoValue';
 import { Column, Columns } from '@/design-system';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';
 import styled from '@/styled-thing';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const VerticalDivider = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.rowDividerExtraLight,

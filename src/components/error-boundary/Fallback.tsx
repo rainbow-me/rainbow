@@ -6,7 +6,7 @@ import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import styled from '@/styled-thing';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import logger from 'logger';
 
 // @ts-ignore

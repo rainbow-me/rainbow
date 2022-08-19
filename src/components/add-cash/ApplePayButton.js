@@ -14,7 +14,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
 import { position } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AnimatedCenter = Animated.createAnimatedComponent(Centered);

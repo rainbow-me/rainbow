@@ -21,7 +21,7 @@ import {
   usePrevious,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const Swipe = createMaterialTopTabNavigator();

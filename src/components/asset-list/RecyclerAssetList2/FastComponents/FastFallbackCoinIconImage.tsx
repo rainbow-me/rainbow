@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { AssetType } from '@/entities';
 import { useForceUpdate } from '@/hooks';
 import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@/theme';
 import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
 
 const ImageState = {

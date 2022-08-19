@@ -10,7 +10,7 @@ import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { useDimensions } from '@/hooks';
 import { fonts, fontWithWidth, position } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { formatURLForDisplay } from '@rainbow-me/utils';
 
 export const ExternalLinkWarningSheetHeight = 380 + (android ? 20 : 0);

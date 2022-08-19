@@ -10,7 +10,7 @@ import Animated, {
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 

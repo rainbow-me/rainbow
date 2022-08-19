@@ -11,7 +11,7 @@ import AppIconPixel from '@/assets/appIconPixel.png';
 import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import Logger from '@rainbow-me/utils/logger';
 
 type AppIcon = {

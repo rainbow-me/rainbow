@@ -25,7 +25,7 @@ import { useAccountSettings } from '@/hooks';
 import store from '@/redux/store';
 import { DPI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const ButtonShadow: ViewStyle = {

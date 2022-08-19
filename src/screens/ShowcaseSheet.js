@@ -13,7 +13,7 @@ import { tokenFamilyItem } from '@/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { fetchUniqueTokens } from '@/redux/uniqueTokens';
 import styled from '@/styled-thing';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 async function fetchShowcaseForAddress(address) {
   const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {

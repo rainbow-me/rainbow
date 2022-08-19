@@ -21,7 +21,7 @@ import {
 } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);

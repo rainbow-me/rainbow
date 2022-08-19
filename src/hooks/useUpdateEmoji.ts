@@ -4,7 +4,7 @@ import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import { useWallets, useWebData } from './index';
 import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@rainbow-me/utils/profileUtils';
 
 export default function useUpdateEmoji() {

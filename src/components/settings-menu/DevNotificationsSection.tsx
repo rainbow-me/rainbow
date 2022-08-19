@@ -5,7 +5,7 @@ import { MiniButton } from '../buttons';
 import { ListFooter } from '../list';
 import { Box, Columns, Text } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 const topics = [

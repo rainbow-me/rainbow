@@ -14,7 +14,7 @@ import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',

@@ -7,7 +7,7 @@ import TabBar from './TabBar';
 import { EmojiCategory } from './types';
 import { ImgixImage } from '@/components/images';
 import { position } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { magicMemo } from '@rainbow-me/utils';
 
 const categoryKeys = Object.keys(Categories);

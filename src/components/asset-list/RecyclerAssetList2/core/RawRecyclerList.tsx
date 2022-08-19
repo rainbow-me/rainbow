@@ -29,7 +29,7 @@ import {
   useCoinListEditOptions,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;

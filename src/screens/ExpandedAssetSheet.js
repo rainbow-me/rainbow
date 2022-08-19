@@ -18,7 +18,7 @@ import { useAsset, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,

@@ -76,7 +76,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

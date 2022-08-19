@@ -29,7 +29,7 @@ import {
   useWallets,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 import { watchingAlert } from '@rainbow-me/utils';
 
 const CardShadow: CustomShadow = {

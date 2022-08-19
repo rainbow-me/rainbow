@@ -37,7 +37,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position, shadow } from '@/styles';
-import { ThemeContextProps, useTheme } from '@rainbow-me/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import logger from 'logger';
 
 const ButtonContainer = styled(Reanimated.View)({

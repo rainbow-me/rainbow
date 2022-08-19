@@ -11,7 +11,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders, padding } from '@/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@/theme';
 
 const BackButtonWrapper = styled(Centered)({
   bottom: 0,

@@ -5,7 +5,7 @@ import { Icon } from '../icons';
 import { Text } from '@/design-system';
 import { TransactionStatusTypes } from '@/entities';
 import { position } from '@/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@/theme';
 
 const StatusProps = {
   [TransactionStatusTypes.approved]: {

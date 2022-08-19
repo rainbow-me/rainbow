@@ -38,7 +38,7 @@ import {
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@/theme';
 import { haptics } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
