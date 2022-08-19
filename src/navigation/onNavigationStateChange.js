@@ -1,4 +1,4 @@
-import { InteractionManager, NativeModules, StatusBar } from 'react-native';
+import { NativeModules, StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import currentColors from '../theme/currentColors';
@@ -129,6 +129,7 @@ export function onNavigationStateChange(currentState) {
       routeName === Routes.WALLET_SCREEN ||
       routeName === Routes.ENS_SEARCH_SHEET ||
       routeName === Routes.ENS_ASSIGN_RECORDS_SHEET ||
+      routeName === Routes.CURRENCY_SELECT_SCREEN ||
       (routeName === Routes.MODAL_SCREEN &&
         Navigation.getActiveRoute().params?.type === 'contact_profile')
     ) {

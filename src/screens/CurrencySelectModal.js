@@ -3,17 +3,23 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
-  Fragment,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  Linking,
+  StatusBar,
+  View,
+} from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { useTheme } from 'styled-components';
 import { useDebounce } from 'use-debounce';
@@ -28,6 +34,7 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
+import { useKeyboardArea } from '@/hooks/useKeyboardArea';
 import { analytics } from '@rainbow-me/analytics';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
@@ -64,8 +71,19 @@ const TabTransitionAnimation = styled(Animated.View)(
   position.sizeAsObject('100%')
 );
 
+function AndroidWrapper({ children }) {
+  const insets = useSafeArea();
+  const keyboardHeight = useKeyboardArea();
+  const marginBottom = keyboardHeight > 0 ? insets.top + 4 + keyboardHeight : 0;
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginBottom }}>{children}</View>
+    </View>
+  );
+}
+
 const headerlessSection = data => [{ data, title: '' }];
-const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+const Wrapper = ios ? KeyboardFixedOpenLayout : AndroidWrapper;
 
 const searchWalletCurrencyList = (searchList, query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
-import { useKeyboardMaxArea } from 'react-native-keyboard-area';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { useKeyboardMaxArea } from '@/hooks/useKeyboardArea';
 import styled from '@rainbow-me/styled-components';
 
 const Container = styled.View({

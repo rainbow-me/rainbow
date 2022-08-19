@@ -46,7 +46,6 @@ import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
-  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -73,7 +72,6 @@ import {
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
@@ -136,7 +134,6 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
-  const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
   const {
     slippageInBips,
