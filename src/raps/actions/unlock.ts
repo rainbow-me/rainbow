@@ -16,7 +16,7 @@ import {
   TransactionType,
 } from '@/entities';
 import { getProviderForNetwork, toHex } from '@/handlers/web3';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+import { parseGasParamsForTransaction } from '@/parsers';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';

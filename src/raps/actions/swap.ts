@@ -17,7 +17,7 @@ import {
   executeSwap,
 } from '@/handlers/uniswap';
 import { isL2Network, toHex } from '@/handlers/web3';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+import { parseGasParamsForTransaction } from '@/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@rainbow-me/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';

@@ -16,7 +16,7 @@ import {
 } from './utilities';
 import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
 import { getProviderForNetwork, toHex } from '@/handlers/web3';
-import { gweiToWei } from '@rainbow-me/parsers';
+import { gweiToWei } from '@/parsers';
 import {
   ENSBaseRegistrarImplementationABI,
   ensBaseRegistrarImplementationAddress,

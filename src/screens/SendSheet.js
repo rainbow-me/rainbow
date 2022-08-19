@@ -68,7 +68,7 @@ import {
 } from '@/hooks';
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+import { parseGasParamsForTransaction } from '@/parsers';
 import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

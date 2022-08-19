@@ -54,7 +54,7 @@ import { ImgixImage } from '@/components/images';
 import {
   getOpenSeaCollectionUrl,
   handleAndSignImages,
-} from '@rainbow-me/parsers';
+} from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,

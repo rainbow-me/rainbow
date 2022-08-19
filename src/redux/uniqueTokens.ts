@@ -24,7 +24,7 @@ import {
 import { fetchPoaps } from '@/handlers/poap';
 import { getNftsByWalletAddress } from '@/handlers/simplehash';
 import { Network } from '@/helpers/networkTypes';
-import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
+import { dedupeAssetsWithFamilies, getFamilies } from '@/parsers';
 
 // -- Constants ------------------------------------------------------------- //
 

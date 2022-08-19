@@ -13,7 +13,7 @@ import { analytics } from '@rainbow-me/analytics';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 import { useAccountSettings, useGenericAsset } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { parseAssetNative } from '@rainbow-me/parsers';
+import { parseAssetNative } from '@/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 

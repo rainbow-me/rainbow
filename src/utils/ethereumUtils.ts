@@ -63,7 +63,7 @@ import {
   EthereumWalletSeed,
 } from '@/model/wallet';
 import { Navigation } from '@/navigation';
-import { parseAssetNative } from '@rainbow-me/parsers';
+import { parseAssetNative } from '@/parsers';
 import store from '@rainbow-me/redux/store';
 import {
   ARBITRUM_BLOCK_EXPLORER_URL,

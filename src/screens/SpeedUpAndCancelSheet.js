@@ -43,7 +43,7 @@ import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
-import { getTitle } from '@rainbow-me/parsers';
+import { getTitle } from '@/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
 import { ethUnits } from '@rainbow-me/references';

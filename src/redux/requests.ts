@@ -11,7 +11,7 @@ import {
   dappNameOverride,
 } from '@/helpers/dappNameHandler';
 import { omitFlatten } from '@/helpers/utilities';
-import { getRequestDisplayDetails } from '@rainbow-me/parsers';
+import { getRequestDisplayDetails } from '@/parsers';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

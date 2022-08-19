@@ -64,7 +64,7 @@ import {
   parseAsset,
   parseNewTransaction,
   parseTransactions,
-} from '@rainbow-me/parsers';
+} from '@/parsers';
 import { setHiddenCoins } from '@rainbow-me/redux/editOptions';
 import {
   coingeckoIdsFallback,

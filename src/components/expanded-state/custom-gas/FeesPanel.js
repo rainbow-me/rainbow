@@ -31,7 +31,7 @@ import {
   usePrevious,
   useTimeout,
 } from '@/hooks';
-import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
+import { gweiToWei, parseGasFeeParam } from '@/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';

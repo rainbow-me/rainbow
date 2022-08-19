@@ -2,7 +2,7 @@ import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { compact, isEmpty, orderBy, sumBy } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@/entities';
-import { parseAssetNative } from '@rainbow-me/parsers';
+import { parseAssetNative } from '@/parsers';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   PositionsState,

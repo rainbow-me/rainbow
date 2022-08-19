@@ -45,7 +45,7 @@ import {
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
   weiToGwei,
-} from '@rainbow-me/parsers';
+} from '@/parsers';
 import { ethUnits, supportedNativeCurrencies } from '@rainbow-me/references';
 import { multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';

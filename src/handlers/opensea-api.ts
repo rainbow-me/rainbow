@@ -11,7 +11,7 @@ import NetworkTypes, { Network } from '@/helpers/networkTypes';
 import {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
-} from '@rainbow-me/parsers';
+} from '@/parsers';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 

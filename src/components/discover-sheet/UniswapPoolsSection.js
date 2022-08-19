@@ -21,7 +21,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useRemoveNextToLast } from '@/navigation/useRemoveNextToLast';
-import { parseAssetNative } from '@rainbow-me/parsers';
+import { parseAssetNative } from '@/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 
