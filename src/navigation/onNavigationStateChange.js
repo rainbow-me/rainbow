@@ -130,6 +130,7 @@ export function onNavigationStateChange(currentState) {
       routeName === Routes.ENS_SEARCH_SHEET ||
       routeName === Routes.ENS_ASSIGN_RECORDS_SHEET ||
       routeName === Routes.SETTINGS_SECTION ||
+      routeName === Routes.CURRENCY_SETTINGS_SHEET ||
       (routeName === Routes.MODAL_SCREEN &&
         Navigation.getActiveRoute().params?.type === 'contact_profile')
     ) {

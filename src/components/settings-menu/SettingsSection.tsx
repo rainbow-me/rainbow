@@ -27,6 +27,7 @@ import NotificationsIcon from '@rainbow-me/assets/settingsNotifications.png';
 import NotificationsIconDark from '@rainbow-me/assets/settingsNotificationsDark.png';
 import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
+import Routes from '@rainbow-me/routes';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,
@@ -46,9 +47,22 @@ import {
 import { Themes, useTheme } from '@rainbow-me/theme';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import {
+  AppIconSection,
+  BackupSection,
+  CurrencySettingsSheet,
+  DevNotificationsSection,
+  DevSection,
+  LanguageSection,
+  NetworkSection,
+  NotificationsSection,
+  PrivacySection,
+  WalletNotificationsSettings,
+} from '../settings-menu';
+import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
+import { useNavigation } from '@rainbow-me/navigation';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
@@ -102,19 +116,10 @@ interface SettingsSectionProps {
   onPressNotifications: () => void;
 }
 
-const SettingsSection = ({
-  onCloseModal,
-  onPressAppIcon,
-  onPressBackup,
-  onPressCurrency,
-  onPressDev,
-  onPressLanguage,
-  onPressNetwork,
-  onPressPrivacy,
-  onPressNotifications,
-}: SettingsSectionProps) => {
+const SettingsSection = () => {
   const isReviewAvailable = false;
-  const { wallets, isReadOnlyWallet } = useWallets();
+  const { wallets, isReadOnlyWallet, selectedWallet } = useWallets();
+  const { goBack, navigate } = useNavigation();
   const {
     language,
     nativeCurrency,
@@ -128,9 +133,103 @@ const SettingsSection = ({
 
   const onSendFeedback = useSendFeedback();
 
+  const SettingsPages = {
+    appIcon: {
+      component: AppIconSection,
+      getTitle: () => lang.t('settings.app_icon'),
+      key: 'AppIconSection',
+    },
+    backup: {
+      component: BackupSection,
+      getTitle: () => lang.t('settings.backup'),
+      key: 'BackupSection',
+    },
+    currency: {
+      component: CurrencySettingsSheet,
+      getTitle: () => lang.t('settings.currency'),
+      key: 'CurrencySettingsSheet',
+    },
+    default: {
+      component: null,
+      getTitle: () => lang.t('settings.label'),
+      key: 'SettingsSection',
+    },
+    dev: {
+      component: DevSection,
+      getTitle: () => lang.t('settings.dev'),
+      key: 'DevSection',
+    },
+    language: {
+      component: LanguageSection,
+      getTitle: () => lang.t('settings.language'),
+      key: 'LanguageSection',
+    },
+    network: {
+      component: NetworkSection,
+      getTitle: () => lang.t('settings.network'),
+      key: 'NetworkSection',
+    },
+    notifications: {
+      component: NotificationsSection,
+      getTitle: () => lang.t('settings.notifications'),
+      key: 'NotificationsSection',
+    },
+    privacy: {
+      component: PrivacySection,
+      getTitle: () => lang.t('settings.privacy'),
+      key: 'PrivacySection',
+    },
+  };
+
+  const getRealRoute = useCallback(
+    (key: any) => {
+      let route = key;
+      let paramsToPass: { imported?: boolean; type?: string } = {};
+      if (key === SettingsPages.backup.key) {
+        const walletId = selectedWallet.id;
+        if (
+          !walletId &&
+          Object.keys(wallets!).filter(
+            key => wallets![key].type !== WalletTypes.readOnly
+          ).length > 1
+        ) {
+          route = 'BackupSection';
+        } else {
+          if (
+            wallets &&
+            Object.keys(wallets).length === 1 &&
+            (selectedWallet.imported || selectedWallet.backedUp)
+          ) {
+            paramsToPass.imported = true;
+            paramsToPass.type = 'AlreadyBackedUpView';
+          }
+          route = 'SettingsBackupView';
+        }
+      }
+      return { params: paramsToPass, route };
+    },
+    [
+      SettingsPages.backup.key,
+      selectedWallet.backedUp,
+      selectedWallet.id,
+      selectedWallet.imported,
+      wallets,
+    ]
+  );
+
+  const onPressSection = useCallback(
+    (section: any) => () => {
+      console.log(section);
+      console.log('TESTING');
+      const { params, route } = getRealRoute(section.key);
+      navigate(route, params);
+    },
+    [getRealRoute, navigate]
+  );
+
   const onPressReview = useCallback(async () => {
     if (ios) {
-      onCloseModal();
+      goBack();
       RainbowRequestReview.requestReview((handled: boolean) => {
         if (!handled) {
           AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
@@ -140,7 +239,7 @@ const SettingsSection = ({
     } else {
       RNReview.show();
     }
-  }, [onCloseModal]);
+  }, [goBack]);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -246,7 +345,7 @@ const SettingsSection = ({
                 source={isDarkMode ? BackupIconDark : BackupIcon}
               />
             }
-            onPress={onPressBackup}
+            onPress={() => onPressSection(SettingsPages.backup)}
             rightComponent={
               <MenuItem.StatusIcon
                 status={
@@ -271,7 +370,7 @@ const SettingsSection = ({
                 source={isDarkMode ? NotificationsIconDark : NotificationsIcon}
               />
             }
-            onPress={onPressNotifications}
+            onPress={() => onPressSection(SettingsPages.notifications)}
             size={60}
             titleComponent={
               <MenuItem.Title text={lang.t('settings.notifications')} />
@@ -285,7 +384,7 @@ const SettingsSection = ({
               source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
             />
           }
-          onPress={onPressCurrency}
+          onPress={() => navigate(Routes.CURRENCY_SETTINGS_SHEET)}
           rightComponent={
             <MenuItem.Selection>{nativeCurrency || ''}</MenuItem.Selection>
           }
@@ -301,7 +400,7 @@ const SettingsSection = ({
                 source={isDarkMode ? NetworkIconDark : NetworkIcon}
               />
             }
-            onPress={onPressNetwork}
+            onPress={() => onPressSection(SettingsPages.network)}
             rightComponent={
               <MenuItem.Selection>
                 {networkInfo?.[network]?.name}
@@ -349,7 +448,7 @@ const SettingsSection = ({
                 source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
               />
             }
-            onPress={onPressPrivacy}
+            onPress={() => onPressSection(SettingsPages.privacy)}
             size={60}
             testID="privacy"
             titleComponent={
@@ -365,7 +464,7 @@ const SettingsSection = ({
                 source={isDarkMode ? LanguageIconDark : LanguageIcon}
               />
             }
-            onPress={onPressLanguage}
+            onPress={() => onPressSection(SettingsPages.language)}
             rightComponent={
               <MenuItem.Selection>
                 {(supportedLanguages as any)[language] || ''}
@@ -385,7 +484,7 @@ const SettingsSection = ({
                 source={isDarkMode ? AppIconIconDark : AppIconIcon}
               />
             }
-            onPress={onPressAppIcon}
+            onPress={() => onPressSection(SettingsPages.appIcon)}
             size={60}
             testID="app-icon-section"
             titleComponent={
@@ -456,7 +555,7 @@ const SettingsSection = ({
         )}
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
-          onPress={onPressDev}
+          onPress={() => onPressSection(SettingsPages.dev)}
           size={52}
           testID="developer-section"
           titleComponent={

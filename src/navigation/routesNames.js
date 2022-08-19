@@ -12,6 +12,7 @@ const Routes = {
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
+  CURRENCY_SETTINGS_SHEET: 'CurrencySettingsSheet',
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   ENS_ADDITIONAL_RECORDS_SHEET: 'ENSAdditionalRecordsSheet',
   ENS_ASSIGN_RECORDS_SHEET: 'ENSAssignRecordsSheet',

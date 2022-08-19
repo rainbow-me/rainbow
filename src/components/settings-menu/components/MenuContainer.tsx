@@ -11,23 +11,23 @@ const MenuContainer = ({ children, testID }: MenuContainerProps) => {
     <Box background="cardBackdrop">
       {/* ios scroll fix */}
       <Inset {...(ios && { bottom: '42px', top: '12px' })}>
-        <ScrollView
+        {/* <ScrollView
           scrollEventThrottle={32}
           // ios scroll fix
           {...(ios && { style: { overflow: 'visible' } })}
           testID={testID}
+        > */}
+        <Box
+          paddingHorizontal="19px"
+          // fix clipped shadows on android
+          {...(android && {
+            paddingBottom: { custom: 22 },
+            paddingTop: { custom: 7 },
+          })}
         >
-          <Box
-            paddingHorizontal="19px"
-            // fix clipped shadows on android
-            {...(android && {
-              paddingBottom: { custom: 22 },
-              paddingTop: { custom: 7 },
-            })}
-          >
-            <Stack space="36px">{children}</Stack>
-          </Box>
-        </ScrollView>
+          <Stack space="36px">{children}</Stack>
+        </Box>
+        {/* </ScrollView> */}
       </Inset>
     </Box>
   );

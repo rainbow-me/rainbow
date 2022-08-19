@@ -1,5 +1,5 @@
-import { useRoute } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import lang from 'i18n-js';
 import React, {
   useCallback,
   useEffect,
@@ -7,27 +7,25 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import lang from 'i18n-js';
 import { Dimensions, StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { Icon } from '../components/icons';
-import { SettingsSection } from '../components/settings-menu';
+import {
+  CurrencySettingsSheet,
+  SettingsSection,
+} from '../components/settings-menu';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box, Inline, Text } from '@rainbow-me/design-system';
-import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import {
-  useDimensions,
-  useENSRegistration,
-  useENSRegistrationForm,
-  usePrevious,
-} from '@rainbow-me/hooks';
+import { accentColorAtom } from '@rainbow-me/helpers/ens';
+import { useDimensions, usePrevious } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 import { deviceUtils } from '@rainbow-me/utils';
+import { useNavigation } from '@rainbow-me/navigation';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -44,15 +42,17 @@ const renderPager = (props: any) => (
 const defaultScreenOptions = {
   [Routes.SETTINGS_SECTION]: {
     scrollEnabled: true,
-    useAccentAsSheetBackground: true,
+    useAccentAsSheetBackground: false,
+  },
+  [Routes.CURRENCY_SETTINGS_SHEET]: {
+    scrollEnabled: true,
+    useAccentAsSheetBackground: false,
   },
 };
 
 export default function SettingsNavigator() {
-  const { params } = useRoute<any>();
-
   const sheetRef = useRef<any>();
-
+  const { navigate } = useNavigation();
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
   const setAccentColor = useSetRecoilState(accentColorAtom);
@@ -65,15 +65,7 @@ export default function SettingsNavigator() {
     SheetHandleFixedToTopHeight -
     (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
-  const [isSearchEnabled, setIsSearchEnabled] = useState(true);
   const [label, setLabel] = useState('Settings');
-  const { clearValues } = useENSRegistrationForm();
-
-  const {
-    removeRecordByKey,
-    clearCurrentRegistrationName,
-    startRegistration,
-  } = useENSRegistration();
 
   const initialRouteName = Routes.SETTINGS_SECTION;
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
@@ -86,31 +78,6 @@ export default function SettingsNavigator() {
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
   ]);
-
-  useEffect(
-    () => () => {
-      clearCurrentRegistrationName();
-    },
-    [clearCurrentRegistrationName]
-  );
-
-  useEffect(
-    () => () => {
-      removeRecordByKey('avatar');
-      setAvatarMetadata(undefined);
-      setAccentColor(colors.purple);
-      clearValues();
-      clearCurrentRegistrationName();
-    },
-    [
-      clearCurrentRegistrationName,
-      clearValues,
-      colors.purple,
-      removeRecordByKey,
-      setAccentColor,
-      setAvatarMetadata,
-    ]
-  );
 
   useEffect(() => {
     if (screenOptions.scrollEnabled) {
@@ -136,9 +103,11 @@ export default function SettingsNavigator() {
       >
         <Inline alignHorizontal="justify" alignVertical="center">
           <Box paddingLeft="19px" width={{ custom: 100 }}>
-            <ButtonPressAnimation>
-              <Icon color={colors.appleBlue} direction="left" name="caret" />
-            </ButtonPressAnimation>
+            {currentRouteName !== Routes.SETTINGS_SECTION && (
+              <ButtonPressAnimation onPress={() => navigate(previousRouteName)}>
+                <Icon color={colors.appleBlue} direction="left" name="caret" />
+              </ButtonPressAnimation>
+            )}
           </Box>
           <Text size="18px" weight="heavy">
             {label}
@@ -161,7 +130,7 @@ export default function SettingsNavigator() {
         </Inline>
       </Box>
     ),
-    [colors.appleBlue, label]
+    [colors.appleBlue, currentRouteName, label]
   );
 
   return (
@@ -204,6 +173,18 @@ export default function SettingsNavigator() {
               },
             }}
             name={Routes.SETTINGS_SECTION}
+          />
+          <Swipe.Screen
+            component={CurrencySettingsSheet}
+            initialParams={{
+              contentHeight,
+            }}
+            listeners={{
+              focus: () => {
+                setCurrentRouteName(Routes.CURRENCY_SETTINGS_SHEET);
+              },
+            }}
+            name={Routes.CURRENCY_SETTINGS_SHEET}
           />
           {/* {isSearchEnabled && (
             <Swipe.Screen

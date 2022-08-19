@@ -23,7 +23,7 @@ const currencyListItems = Object.values(supportedNativeCurrencies).map(
   })
 );
 
-const CurrencySection = () => {
+const CurrencySettingsSheet = () => {
   const { nativeCurrency, settingsChangeNativeCurrency } = useAccountSettings();
 
   const onSelectCurrency = useCallback(
@@ -75,4 +75,4 @@ const CurrencySection = () => {
   );
 };
 
-export default CurrencySection;
+export default CurrencySettingsSheet;

@@ -1,4 +1,4 @@
-export { default as CurrencySection } from './CurrencySection';
+export { default as CurrencySettingsSheet } from './CurrencySettingsSheet';
 export { default as DevSection } from './DevSection';
 export { default as DevNotificationsSection } from './DevNotificationsSection';
 export { default as LanguageSection } from './LanguageSection';
