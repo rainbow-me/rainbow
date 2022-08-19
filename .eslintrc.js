@@ -81,6 +81,7 @@ module.exports = {
     'prefer-rest-params': 'warn',
     'prefer-spread': 'warn',
     'no-async-promise-executor': 'warn',
+    'no-prototype-builtins': 'warn', // this one is probably fine
 
     // Some of these are OK while we transition to TS
     '@typescript-eslint/ban-ts-comment': 'warn',
