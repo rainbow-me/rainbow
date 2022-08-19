@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 

@@ -17,7 +17,7 @@ import SecretDisplayCard from './SecretDisplayCard';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import WalletTypes, {
   EthereumWalletType,
-} from '@rainbow-me/helpers/walletTypes';
+} from '@/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, position, shadow } from '@rainbow-me/styles';

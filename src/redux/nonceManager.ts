@@ -5,7 +5,7 @@ import {
   getNonceManager,
   saveNonceManager,
 } from '@/handlers/localstorage/nonceManager';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import logger from 'logger';
 
 interface NonceManagerLoadSuccessAction {

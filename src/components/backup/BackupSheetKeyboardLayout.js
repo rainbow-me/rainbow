@@ -5,7 +5,7 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
 import { SheetHandleFixedToTopHeight } from '../sheet';
-import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
+import KeyboardTypes from '@/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import styled from '@rainbow-me/styled-components';

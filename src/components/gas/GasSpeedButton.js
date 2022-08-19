@@ -12,13 +12,13 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import networkInfo from '@/helpers/networkInfo';
+import networkTypes from '@/helpers/networkTypes';
 import {
   add,
   greaterThan,
   toFixedDecimals,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,

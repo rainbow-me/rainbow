@@ -23,8 +23,8 @@ import {
 } from '../components/sheet';
 import { analytics } from '@rainbow-me/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
-import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import { isSymbolStablecoin } from '@/helpers/savings';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useDimensions,

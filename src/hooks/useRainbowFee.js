@@ -5,7 +5,7 @@ import {
   divide,
   multiply,
   subtract,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import { useAccountSettings, useSwapCurrencies } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 

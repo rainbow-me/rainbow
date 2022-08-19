@@ -9,7 +9,7 @@ import {
   UniswapPairHistoricalData,
 } from '@/entities';
 import { getUniswapV2Pools } from '@/handlers/dispersion';
-import { pickShallow } from '@rainbow-me/helpers/utilities';
+import { pickShallow } from '@/helpers/utilities';
 import {
   emitAssetRequest,
   emitChartsRequest,

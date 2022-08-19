@@ -4,7 +4,7 @@ import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
 import { Records } from '@/entities';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS } from '@/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];

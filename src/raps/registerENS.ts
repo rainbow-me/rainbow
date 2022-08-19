@@ -14,7 +14,7 @@ import {
   getTransactionTypeForRecords,
   recordsForTransactionAreValid,
 } from '@/handlers/ens';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS } from '@/helpers/ens';
 
 export const createSetRecordsENSRap = async (
   ensActionParameters: ENSActionParameters

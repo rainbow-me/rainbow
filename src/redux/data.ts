@@ -53,7 +53,7 @@ import {
   isL2Network,
   web3Provider,
 } from '@/handlers/web3';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
 import { Network } from '@rainbow-me/networkTypes';

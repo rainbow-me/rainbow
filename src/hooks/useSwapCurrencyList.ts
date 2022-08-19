@@ -18,7 +18,7 @@ import {
 } from '@/entities';
 import tokenSearch from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
-import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
+import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import {
   DAI_ADDRESS,
   erc20ABI,

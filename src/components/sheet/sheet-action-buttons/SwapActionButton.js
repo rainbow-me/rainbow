@@ -4,8 +4,8 @@ import SheetActionButton from './SheetActionButton';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
-} from '@rainbow-me/helpers';
-import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+} from '@/helpers';
+import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useExpandedStateNavigation,
   useSwapCurrencyHandlers,

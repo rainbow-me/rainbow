@@ -18,7 +18,7 @@ import {
   SelectedGasFee,
 } from '@/entities';
 import { toHex } from '@/handlers/web3';
-import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import {
   ethUnits,
   supportedNativeCurrencies,

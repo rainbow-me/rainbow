@@ -1,6 +1,6 @@
 import React from 'react';
 import ExchangeModal from './ExchangeModal';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@/helpers';
 import {
   ExchangeNavigatorFactory,
   useStatusBarManaging,

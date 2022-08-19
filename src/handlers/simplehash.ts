@@ -2,7 +2,7 @@ import { captureException } from '@sentry/react-native';
 // @ts-expect-error
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient } from '../rainbow-fetch';
-import { Network } from '@rainbow-me/helpers';
+import { Network } from '@/helpers';
 import { parseSimplehashNfts } from '@rainbow-me/parsers';
 import { logger } from '@rainbow-me/utils';
 

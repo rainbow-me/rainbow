@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
 import { analytics } from '@rainbow-me/analytics';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import showWalletErrorAlert from '@/helpers/support';
 import {
   useAccountSettings,
   useExpandedStateNavigation,

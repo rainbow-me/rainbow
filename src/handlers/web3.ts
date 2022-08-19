@@ -23,8 +23,8 @@ import {
   ParsedAddressAsset,
 } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { isUnstoppableAddressFormat } from '@rainbow-me/helpers/validators';
+import { Network } from '@/helpers/networkTypes';
+import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,

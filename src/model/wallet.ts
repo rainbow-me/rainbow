@@ -51,10 +51,10 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '@/handlers/web3';
-import { createSignature } from '@rainbow-me/helpers/signingWallet';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
-import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
+import { createSignature } from '@/helpers/signingWallet';
+import showWalletErrorAlert from '@/helpers/support';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { EthereumWalletType } from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';

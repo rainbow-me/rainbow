@@ -12,9 +12,9 @@ import {
   getLocalENSRegistrations,
   saveLocalENSRegistrations,
 } from '@/handlers/localstorage/accountLocal';
-import { NetworkTypes } from '@rainbow-me/helpers';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
+import { NetworkTypes } from '@/helpers';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
+import { omitFlatten } from '@/helpers/utilities';
 
 const ENS_REGISTRATION_SET_CHANGED_RECORDS =
   'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';

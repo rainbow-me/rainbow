@@ -27,9 +27,9 @@ import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
   isValidWallet,
-} from '@rainbow-me/helpers/validators';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
+} from '@/helpers/validators';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';

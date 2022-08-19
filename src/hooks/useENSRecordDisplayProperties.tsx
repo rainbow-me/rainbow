@@ -10,7 +10,7 @@ import {
   ENS_RECORDS,
   REGISTRATION_MODES,
   textRecordFields,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';

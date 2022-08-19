@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 

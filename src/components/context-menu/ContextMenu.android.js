@@ -2,7 +2,7 @@ import React, { Fragment, useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
+import { omitFlatten } from '@/helpers/utilities';
 import { padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 

@@ -6,7 +6,7 @@ import {
   convertRawAmountToDecimalFormat,
   divide,
   handleSignificantDecimals,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import { useStepper, useSwapCurrencies } from '@rainbow-me/hooks';
 
 export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {

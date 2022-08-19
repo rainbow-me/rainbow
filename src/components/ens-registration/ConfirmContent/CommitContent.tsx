@@ -11,7 +11,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 

@@ -8,8 +8,8 @@ import {
   optimismNftAppIconCheck,
   UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
 } from '@/featuresToUnlock';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   AllRainbowWallets,
   RainbowAccount,

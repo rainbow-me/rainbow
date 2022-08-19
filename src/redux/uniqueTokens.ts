@@ -23,7 +23,7 @@ import {
 } from '@/handlers/opensea-api';
 import { fetchPoaps } from '@/handlers/poap';
 import { getNftsByWalletAddress } from '@/handlers/simplehash';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //

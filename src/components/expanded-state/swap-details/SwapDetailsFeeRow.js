@@ -6,7 +6,7 @@ import {
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplayWithThreshold,
   isZero,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

@@ -7,8 +7,8 @@ import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
   Network,
-} from '@rainbow-me/helpers';
-import { updatePrecisionToDisplay } from '@rainbow-me/helpers/utilities';
+} from '@/helpers';
+import { updatePrecisionToDisplay } from '@/helpers/utilities';
 import { useSwapDerivedValues, useSwapInputHandlers } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';

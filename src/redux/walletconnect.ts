@@ -28,15 +28,15 @@ import { AppGetState, AppState as StoreAppState } from './store';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
 import {
   convertHexToString,
   delay,
   omitBy,
   pickBy,
-} from '@rainbow-me/helpers/utilities';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+} from '@/helpers/utilities';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';

@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { deviceUtils } from '@rainbow-me/utils';

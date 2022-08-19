@@ -17,7 +17,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkInfo from '@/helpers/networkInfo';
 import { usePrevious, useStepper } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { getExchangeIconUrl, magicMemo } from '@rainbow-me/utils';

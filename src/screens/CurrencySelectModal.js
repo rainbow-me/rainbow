@@ -30,7 +30,7 @@ import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@rainbow-me/analytics';
 import { addHexPrefix } from '@/handlers/web3';
-import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
+import { CurrencySelectionTypes, Network } from '@/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,

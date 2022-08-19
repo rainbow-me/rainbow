@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SlackSheet } from '../components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
-import { accentColorAtom, textRecordFields } from '@rainbow-me/helpers/ens';
+import { accentColorAtom, textRecordFields } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 import { deviceUtils } from '@rainbow-me/utils';
 

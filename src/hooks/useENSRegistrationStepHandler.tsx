@@ -16,7 +16,7 @@ import {
   ENS_SECONDS_WAIT_WITH_PADDING,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 
 const checkRegisterBlockTimestamp = async ({

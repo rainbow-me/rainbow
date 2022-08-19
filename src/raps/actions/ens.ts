@@ -12,12 +12,12 @@ import {
   formatRecordsForTransaction,
 } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
-import { NetworkTypes } from '@rainbow-me/helpers';
+import { NetworkTypes } from '@/helpers';
 import {
   ENSRegistrationTransactionType,
   getENSExecutionDetails,
   REGISTRATION_MODES,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import {
   saveCommitRegistrationParameters,

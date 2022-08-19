@@ -8,14 +8,14 @@ import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import { analytics } from '@rainbow-me/analytics';
 import { TransactionStatusTypes } from '@/entities';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import TransactionActions from '@rainbow-me/helpers/transactionActions';
+import showWalletErrorAlert from '@/helpers/support';
+import TransactionActions from '@/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
-} from '@rainbow-me/helpers/transactions';
-import { pickShallow } from '@rainbow-me/helpers/utilities';
-import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
+} from '@/helpers/transactions';
+import { pickShallow } from '@/helpers/utilities';
+import { isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,

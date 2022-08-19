@@ -5,7 +5,7 @@ import { ParsedAddressAsset, SwappableAsset } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getCoingeckoIds } from '@/handlers/dispersion';
 import { getProviderForNetwork } from '@/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
+import { Network } from '@/helpers';
 import { AppDispatch, AppGetState, AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';

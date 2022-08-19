@@ -6,8 +6,8 @@ import { AssetTypes } from '@/entities';
 import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
 import { maybeSignUri } from '@/handlers/imgix';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickBy, pickShallow } from '@rainbow-me/helpers/utilities';
+import { Network } from '@/helpers/networkTypes';
+import { pickBy, pickShallow } from '@/helpers/utilities';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   polygonAllowList,

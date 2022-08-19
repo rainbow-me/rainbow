@@ -7,9 +7,9 @@ import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { analytics } from '@rainbow-me/analytics';
 import { AccentColorProvider, Box, Text } from '@/design-system';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   useManageCloudBackups,
   useWalletCloudBackup,

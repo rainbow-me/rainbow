@@ -72,8 +72,8 @@ import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, {
   PROFILES,
 } from '@/config/experimentalHooks';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();

@@ -4,7 +4,7 @@ import React from 'react';
 import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';

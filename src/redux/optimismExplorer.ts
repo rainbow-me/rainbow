@@ -13,9 +13,9 @@ import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
 import { ZerionAsset } from '@/entities';
 import { getProviderForNetwork } from '@/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickBy } from '@rainbow-me/helpers/utilities';
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
+import { pickBy } from '@/helpers/utilities';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,

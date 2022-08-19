@@ -9,8 +9,8 @@ import {
   saveShowcaseTokens,
   saveWebDataEnabled,
 } from '@/handlers/localstorage/accountLocal';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import networkTypes from '@/helpers/networkTypes';
+import WalletTypes from '@/helpers/walletTypes';
 
 // -- Constants --------------------------------------- //
 

@@ -19,7 +19,7 @@ import {
   Text,
 } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { Network } from '@rainbow-me/helpers';
+import { Network } from '@/helpers';
 import {
   useClipboard,
   useDimensions,

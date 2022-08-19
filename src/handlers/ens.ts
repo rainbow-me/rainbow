@@ -40,7 +40,7 @@ import {
   Records,
   UniqueAsset,
 } from '@/entities';
-import { Network } from '@rainbow-me/helpers';
+import { Network } from '@/helpers';
 import {
   ENS_DOMAIN,
   ENS_RECORDS,
@@ -48,8 +48,8 @@ import {
   generateSalt,
   getENSExecutionDetails,
   getNameOwner,
-} from '@rainbow-me/helpers/ens';
-import { add } from '@rainbow-me/helpers/utilities';
+} from '@/helpers/ens';
+import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@rainbow-me/images';
 import {
   getOpenSeaCollectionUrl,

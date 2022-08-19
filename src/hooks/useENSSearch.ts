@@ -10,8 +10,8 @@ import {
   getENSRegistrarControllerContract,
   getNameExpires,
   getRentPrice,
-} from '@rainbow-me/helpers/ens';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/helpers/ens';
+import { Network } from '@/helpers/networkTypes';
 import { timeUnits } from '@rainbow-me/references';
 import { ethereumUtils, validateENS } from '@rainbow-me/utils';
 

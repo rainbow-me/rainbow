@@ -25,15 +25,15 @@ import {
 } from '../components/sheet';
 import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@/design-system';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { getDappHostname } from '@/helpers/dappNameHandler';
+import networkInfo from '@/helpers/networkInfo';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import {
   androidShowNetworksActionSheet,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
-} from '@rainbow-me/helpers/walletConnectNetworks';
+} from '@/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

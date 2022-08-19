@@ -8,7 +8,7 @@ import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Nbsp, Text } from '../text';
 import { analytics } from '@rainbow-me/analytics';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   useDimensions,
   useWalletManualBackup,

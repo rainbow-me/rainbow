@@ -18,7 +18,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkInfo from '@/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,

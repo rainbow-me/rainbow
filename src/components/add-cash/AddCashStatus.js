@@ -16,7 +16,7 @@ import { TransactionStatusTypes } from '@/entities';
 import {
   ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
-} from '@rainbow-me/helpers/wyreStatusTypes';
+} from '@/helpers/wyreStatusTypes';
 import { useDimensions, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';

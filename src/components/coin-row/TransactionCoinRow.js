@@ -13,12 +13,12 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { TransactionStatusTypes, TransactionTypes } from '@/entities';
-import TransactionActions from '@rainbow-me/helpers/transactionActions';
+import TransactionActions from '@/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
-} from '@rainbow-me/helpers/transactions';
-import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
+} from '@/helpers/transactions';
+import { isValidDomainFormat } from '@/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

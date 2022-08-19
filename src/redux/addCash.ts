@@ -21,7 +21,7 @@ import {
   WyreError,
   WyreOrderStatusType,
   WyreReferenceInfo,
-} from '@rainbow-me/helpers/wyreStatusTypes';
+} from '@/helpers/wyreStatusTypes';
 import {
   AddCashCurrencies,
   AddCashCurrencyAsset,

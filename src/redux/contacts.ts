@@ -3,8 +3,8 @@ import {
   getContacts,
   saveContacts,
 } from '@/handlers/localstorage/contacts';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
+import { Network } from '@/helpers/networkTypes';
+import { omitFlatten } from '@/helpers/utilities';
 import { AppGetState } from '@rainbow-me/redux/store';
 
 // -- Constants --------------------------------------- //

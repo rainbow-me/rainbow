@@ -22,7 +22,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useDimensions,
   useENSPendingRegistrations,

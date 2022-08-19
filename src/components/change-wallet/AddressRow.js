@@ -15,7 +15,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+} from '@/helpers/emojiHandler';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import {

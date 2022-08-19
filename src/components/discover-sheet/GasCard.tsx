@@ -23,7 +23,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { add } from '@rainbow-me/helpers/utilities';
+import { add } from '@/helpers/utilities';
 import { useDimensions, useGas } from '@rainbow-me/hooks';
 import { useTheme } from '@rainbow-me/theme';
 import { gasUtils } from '@rainbow-me/utils';

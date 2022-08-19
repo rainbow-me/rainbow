@@ -14,11 +14,11 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@/config/experimentalHooks';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN } from '@/helpers/ens';
 import {
   isENSAddressFormat,
   isValidDomainFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';

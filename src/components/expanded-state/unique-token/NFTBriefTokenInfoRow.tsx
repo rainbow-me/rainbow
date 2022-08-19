@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
 import { apiGetUniqueTokenFloorPrice } from '@/handlers/opensea-api';
-import { Network } from '@rainbow-me/helpers';
+import { Network } from '@/helpers';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

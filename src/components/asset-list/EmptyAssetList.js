@@ -7,7 +7,7 @@ import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
-import { times } from '@rainbow-me/helpers/utilities';
+import { times } from '@/helpers/utilities';
 import { useRefreshAccountData } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

@@ -76,7 +76,7 @@ import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
 } from '@/handlers/fedora';
-import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
+import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';

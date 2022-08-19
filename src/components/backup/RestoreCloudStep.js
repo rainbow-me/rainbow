@@ -19,8 +19,8 @@ import {
   isCloudBackupPasswordValid,
 } from '@/handlers/cloudBackup';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import walletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import {
   useDimensions,
   useInitializeWallet,

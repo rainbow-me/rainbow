@@ -15,8 +15,8 @@ import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
 import { analytics } from '@rainbow-me/analytics';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import showWalletErrorAlert from '@/helpers/support';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import {
   useDimensions,
   useRouteExistsInNavigationState,

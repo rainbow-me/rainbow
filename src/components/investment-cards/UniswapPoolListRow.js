@@ -10,7 +10,7 @@ import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/
 import { FlexItem, Row } from '../layout';
 import { PoolValue } from './PoolValue';
 import { analytics } from '@rainbow-me/analytics';
-import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
+import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 import { useAccountSettings, useGenericAsset } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';

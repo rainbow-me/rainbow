@@ -4,7 +4,7 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { analytics } from '@rainbow-me/analytics';
-import { pickBy } from '@rainbow-me/helpers/utilities';
+import { pickBy } from '@/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 
 const languagesWithWalletTranslations = Object.keys(

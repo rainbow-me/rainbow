@@ -6,11 +6,11 @@ import { AnimatedNumber, Emoji, Text } from '../text';
 import {
   calculateEarningsInDays,
   isSymbolStablecoin,
-} from '@rainbow-me/helpers/savings';
+} from '@/helpers/savings';
 import {
   convertAmountToNativeDisplay,
   handleSignificantDecimals,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

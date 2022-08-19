@@ -26,7 +26,7 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';
-import { TokenSectionTypes } from '@rainbow-me/helpers';
+import { TokenSectionTypes } from '@/helpers';
 import {
   useAndroidScrollViewGestureHandler,
   usePrevious,

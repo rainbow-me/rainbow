@@ -38,8 +38,8 @@ import {
   isL2Network,
   toHex,
 } from '@/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
-import { greaterThan } from '@rainbow-me/helpers/utilities';
+import { Network } from '@/helpers';
+import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';

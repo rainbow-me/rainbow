@@ -60,7 +60,7 @@ import {
   saveUserLists,
 } from '@/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
+import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';

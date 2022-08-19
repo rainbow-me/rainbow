@@ -11,7 +11,7 @@ import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
 import { analytics } from '@rainbow-me/analytics';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import showWalletErrorAlert from '@/helpers/support';
 import {
   useAccountProfile,
   useDimensions,

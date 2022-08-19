@@ -14,11 +14,11 @@ import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { setDeploymentKey } from '@/handlers/fedora';
-import { delay } from '@rainbow-me/helpers/utilities';
+import { delay } from '@/helpers/utilities';
 import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import { scheduleActionOnAssetReceived } from '@rainbow-me/redux/data';
 import {

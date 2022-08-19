@@ -21,12 +21,12 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { Network } from '@rainbow-me/helpers';
+import { Network } from '@/helpers';
 import {
   add,
   convertNumberToString,
   greaterThan,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import { useMagicAutofocus, useSwapSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

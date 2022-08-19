@@ -22,7 +22,7 @@ import {
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
 import { RAINBOW_FETCH_ERROR, RainbowFetchClient } from '../rainbow-fetch';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import NetworkTypes from '@/helpers/networkTypes';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@rainbow-me/references';
 import { subtract } from '@rainbow-me/utilities';
 import logger from 'logger';

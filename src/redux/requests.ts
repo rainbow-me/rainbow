@@ -9,8 +9,8 @@ import {
 import {
   dappLogoOverride,
   dappNameOverride,
-} from '@rainbow-me/helpers/dappNameHandler';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
+} from '@/helpers/dappNameHandler';
+import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';

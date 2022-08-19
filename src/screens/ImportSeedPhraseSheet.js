@@ -14,8 +14,8 @@ import {
   ToastPositionContainer,
 } from '../components/toasts';
 import { useTheme } from '../theme/ThemeContext';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { isValidWallet } from '@rainbow-me/helpers/validators';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import { isValidWallet } from '@/helpers/validators';
 import {
   useAccountSettings,
   useClipboard,

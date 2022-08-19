@@ -15,7 +15,7 @@ import { handleQRScanner } from '@/handlers/fedora';
 import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

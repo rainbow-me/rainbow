@@ -38,7 +38,7 @@ import {
   divide,
   multiply,
   subtract,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import { Network } from '@rainbow-me/networkTypes';
 import {
   erc20ABI,

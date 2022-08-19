@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ParsedAddressAsset } from '@/entities';
 import { getUniswapV2Tokens } from '@/handlers/dispersion';
-import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
+import { sortAssetsByNativeAmountSelector } from '@/helpers/assetSelectors';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS } from '@rainbow-me/references';

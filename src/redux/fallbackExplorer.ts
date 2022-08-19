@@ -27,8 +27,8 @@ import {
 } from '@/entities';
 import { getAssetsFromCovalent } from '@/handlers/covalent';
 import { web3Provider } from '@/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
   chainAssets,

@@ -17,14 +17,14 @@ import FeesGweiInput from './FeesGweiInput';
 import {
   calculateMinerTipAddDifference,
   calculateMinerTipSubstDifference,
-} from '@rainbow-me/helpers/gas';
+} from '@/helpers/gas';
 import {
   add,
   greaterThan,
   isZero,
   multiply,
   toFixedDecimals,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import {
   useFeesPanelInputRefs,
   useGas,

@@ -9,19 +9,19 @@ import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { analytics } from '@rainbow-me/analytics';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import {
   dappLogoOverride,
   dappNameOverride,
-} from '@rainbow-me/helpers/dappNameHandler';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+} from '@/helpers/dappNameHandler';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkInfo from '@/helpers/networkInfo';
 import {
   androidShowNetworksActionSheet,
   changeConnectionMenuItems,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
-} from '@rainbow-me/helpers/walletConnectNetworks';
+} from '@/helpers/walletConnectNetworks';
 import { useWalletConnectConnections, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

@@ -12,7 +12,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+} from '@/helpers/emojiHandler';
 import {
   useAccountSettings,
   useContacts,

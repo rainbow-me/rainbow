@@ -3,7 +3,7 @@ import ActionSheet from 'react-native-actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { omitFlatten, pickShallow } from '@rainbow-me/helpers/utilities';
+import { omitFlatten, pickShallow } from '@/helpers/utilities';
 import { padding } from '@rainbow-me/styles';
 const style = padding.object(12, 8);
 

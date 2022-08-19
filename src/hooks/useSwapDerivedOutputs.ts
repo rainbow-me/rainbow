@@ -16,7 +16,7 @@ import { analytics } from '@rainbow-me/analytics';
 import { EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
+import isTestFlight from '@/helpers/isTestFlight';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   Source,

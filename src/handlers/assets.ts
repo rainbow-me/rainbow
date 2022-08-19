@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { AssetTypes } from '@/entities';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import networkTypes from '@/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
   erc20ABI,

@@ -52,9 +52,9 @@ import {
   TextProps,
 } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { Network } from '@rainbow-me/helpers';
-import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { Network } from '@/helpers';
+import { buildUniqueTokenName } from '@/helpers/assets';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,

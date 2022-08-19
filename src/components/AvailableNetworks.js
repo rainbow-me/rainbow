@@ -9,7 +9,7 @@ import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
 import { Box } from '@/design-system';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkInfo from '@/helpers/networkInfo';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

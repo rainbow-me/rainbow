@@ -7,7 +7,7 @@ import { Centered, Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import networkTypes from '@/helpers/networkTypes';
 import { useAccountSettings, useTopMovers } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

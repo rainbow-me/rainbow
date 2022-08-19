@@ -22,7 +22,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useENSPendingRegistrations,
   useENSRegistration,

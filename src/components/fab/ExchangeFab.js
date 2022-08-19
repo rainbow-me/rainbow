@@ -9,7 +9,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
-} from '@rainbow-me/helpers';
+} from '@/helpers';
 import { useSwapCurrencyHandlers } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

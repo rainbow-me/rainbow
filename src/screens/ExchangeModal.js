@@ -39,9 +39,9 @@ import {
   ExchangeModalTypes,
   isKeyboardOpen,
   Network,
-} from '@rainbow-me/helpers';
-import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
-import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
+} from '@/helpers';
+import KeyboardTypes from '@/helpers/keyboardTypes';
+import { divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,

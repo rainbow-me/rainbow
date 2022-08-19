@@ -27,9 +27,9 @@ import {
   getProviderForNetwork,
   web3SetHttpProvider,
 } from '@/handlers/web3';
-import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { RainbowContext } from '@/helpers/RainbowContext';
+import isTestFlight from '@/helpers/isTestFlight';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useInitializeAccountData,

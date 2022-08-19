@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { Row } from '../../layout';
 import { Text } from '../../text';
 import GweiInputPill from './GweiInputPill';
-import { delay } from '@rainbow-me/helpers/utilities';
+import { delay } from '@/helpers/utilities';
 import { usePrevious } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 

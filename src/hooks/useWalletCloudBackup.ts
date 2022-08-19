@@ -18,9 +18,9 @@ import {
   CLOUD_BACKUP_ERRORS,
   isCloudBackupAvailable,
 } from '@/handlers/cloudBackup';
-import { delay } from '@rainbow-me/helpers/utilities';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
+import { delay } from '@/helpers/utilities';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import logger from 'logger';
 
 function getUserError(e: Error) {

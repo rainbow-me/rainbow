@@ -38,13 +38,13 @@ import {
   resolveNameOrAddress,
   web3Provider,
 } from '@/handlers/web3';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import Network from '@rainbow-me/helpers/networkTypes';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import Network from '@/helpers/networkTypes';
 import {
   checkIsValidAddressOrDomain,
   checkIsValidAddressOrDomainFormat,
   isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/validators';
 import {
   prefetchENSAvatar,
   prefetchENSCover,

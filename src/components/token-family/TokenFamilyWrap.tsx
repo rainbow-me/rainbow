@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
-import { times } from '@rainbow-me/helpers/utilities';
+import { times } from '@/helpers/utilities';
 import { useTimeout } from '@rainbow-me/hooks';
 import { ThemeContextProps } from '@rainbow-me/theme';
 

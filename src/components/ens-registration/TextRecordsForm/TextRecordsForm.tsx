@@ -11,7 +11,7 @@ import {
   Divider,
   Stack,
 } from '@/design-system';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
 export default function TextRecordsForm({

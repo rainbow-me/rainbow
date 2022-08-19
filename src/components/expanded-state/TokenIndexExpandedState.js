@@ -16,7 +16,7 @@ import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useChartThrottledPoints,

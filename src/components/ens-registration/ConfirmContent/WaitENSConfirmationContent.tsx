@@ -11,7 +11,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { ENS_SECONDS_WAIT } from '@rainbow-me/helpers/ens';
+import { ENS_SECONDS_WAIT } from '@/helpers/ens';
 
 const WaitENSConfirmationContent = ({
   seconds,

@@ -34,7 +34,7 @@ import {
   isL2Network,
   web3Provider,
 } from '@/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
   gweiToWei,

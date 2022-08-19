@@ -7,7 +7,7 @@ import ChainBadge from '../coin-icon/ChainBadge';
 import { ContextMenuButton } from '../context-menu';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkInfo from '@/helpers/networkInfo';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';

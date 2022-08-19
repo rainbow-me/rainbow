@@ -18,7 +18,7 @@ import {
   calculateAPY,
   calculateCompoundInterestInDays,
   formatSavingsAmount,
-} from '@rainbow-me/helpers/savings';
+} from '@/helpers/savings';
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

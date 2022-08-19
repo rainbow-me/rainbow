@@ -52,15 +52,15 @@ import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+} from '@/helpers/emojiHandler';
 import {
   add,
   convertAmountToNativeDisplay,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import {
   isENSAddressFormat,
   isValidDomainFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,

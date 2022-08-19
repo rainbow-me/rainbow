@@ -12,9 +12,9 @@ import {
   ChartPriceLabel,
 } from './chart-data-labels';
 import { useChartData } from '@rainbow-me/animated-charts';
-import { Network } from '@rainbow-me/helpers';
-import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import { Network } from '@/helpers';
+import ChartTypes from '@/helpers/chartTypes';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

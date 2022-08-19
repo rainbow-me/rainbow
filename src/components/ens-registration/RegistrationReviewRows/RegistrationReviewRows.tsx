@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useInterval } from '@rainbow-me/hooks';
 
 const MIN_LONG_PRESS_DURATION = 200;

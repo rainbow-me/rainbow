@@ -36,8 +36,8 @@ import {
   isCustomBuild,
   setOriginalDeploymentKey,
 } from '@/handlers/fedora';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import networkInfo from '@/helpers/networkInfo';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   useAccountSettings,
   useSendFeedback,

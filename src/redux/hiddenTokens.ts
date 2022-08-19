@@ -7,7 +7,7 @@ import {
   getWebDataEnabled,
   saveHiddenTokens,
 } from '@/handlers/localstorage/accountLocal';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletTypes from '@/helpers/walletTypes';
 
 const HIDDEN_TOKENS_LOAD_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_LOAD_SUCCESS';
 const HIDDEN_TOKENS_LOAD_FAILURE = 'hiddenTokens/HIDDEN_TOKENS_LOAD_FAILURE';

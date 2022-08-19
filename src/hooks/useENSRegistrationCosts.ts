@@ -14,7 +14,7 @@ import {
   estimateENSSetRecordsGasLimit,
   fetchReverseRecord,
 } from '@/handlers/ens';
-import { NetworkTypes } from '@rainbow-me/helpers';
+import { NetworkTypes } from '@/helpers';
 import {
   ENS_DOMAIN,
   formatEstimatedNetworkFee,
@@ -24,8 +24,8 @@ import {
   getRentPrice,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/helpers/ens';
+import { Network } from '@/helpers/networkTypes';
 import {
   add,
   addBuffer,
@@ -33,7 +33,7 @@ import {
   fromWei,
   greaterThanOrEqualTo,
   multiply,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import { ethUnits, timeUnits } from '@rainbow-me/references';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 

@@ -5,7 +5,7 @@ import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useDimensions } from '@rainbow-me/hooks';
 import { wyreSupportedCountries } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';

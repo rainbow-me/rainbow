@@ -41,9 +41,9 @@ import {
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
@@ -53,8 +53,8 @@ import {
   greaterThan,
   isZero,
   subtract,
-} from '@rainbow-me/helpers/utilities';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+} from '@/helpers/utilities';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
   identifyWalletType,

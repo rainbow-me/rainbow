@@ -58,7 +58,7 @@ import {
   REGISTRATION_MODES,
   TextRecordField,
   textRecordFields,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,

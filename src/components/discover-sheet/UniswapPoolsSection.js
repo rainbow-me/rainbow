@@ -11,9 +11,9 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import { analytics } from '@rainbow-me/analytics';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
-import { times } from '@rainbow-me/helpers/utilities';
+import networkTypes from '@/helpers/networkTypes';
+import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
+import { times } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useLatestCallback,

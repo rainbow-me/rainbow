@@ -8,7 +8,7 @@ import {
   WALLET_BALANCES_FROM_STORAGE,
 } from '@/handlers/localstorage/walletBalances';
 import { web3Provider } from '@/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkInfo from '@/helpers/networkInfo';
 import { AllRainbowWallets } from '@rainbow-me/model/wallet';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { balanceCheckerContractAbi } from '@rainbow-me/references';

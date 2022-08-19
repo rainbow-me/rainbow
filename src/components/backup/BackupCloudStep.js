@@ -17,7 +17,7 @@ import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
 } from '@/handlers/cloudBackup';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import showWalletErrorAlert from '@/helpers/support';
 import {
   useDimensions,
   useMagicAutofocus,

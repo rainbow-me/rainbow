@@ -26,7 +26,7 @@ import {
 } from '@/entities';
 import { getTransactionMethodName } from '@/handlers/transactions';
 import { isL2Network } from '@/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import {
   ETH_ADDRESS,
   savingsAssetsList,

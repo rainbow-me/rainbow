@@ -1,6 +1,6 @@
 import { UniqueAsset } from '@/entities';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import supportedUriExtensions from '@rainbow-me/helpers/supportedUriExtensions';
+import isSupportedUriExtension from '@/helpers/isSupportedUriExtension';
+import supportedUriExtensions from '@/helpers/supportedUriExtensions';
 
 export const uniqueTokenTypes = {
   ENS: 'ENS',

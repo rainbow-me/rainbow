@@ -18,7 +18,7 @@ import {
   saveUniswapFavoritesMetadata,
 } from '@/handlers/localstorage/uniswap';
 import { getTestnetUniswapPairs } from '@/handlers/uniswap';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,

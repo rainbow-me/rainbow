@@ -39,9 +39,9 @@ import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
-import ChartTypes, { ChartType } from '@rainbow-me/helpers/chartTypes';
-import currencyTypes from '@rainbow-me/helpers/currencyTypes';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import ChartTypes, { ChartType } from '@/helpers/chartTypes';
+import currencyTypes from '@/helpers/currencyTypes';
+import { Network } from '@/helpers/networkTypes';
 import {
   DPI_ADDRESS,
   ETH_ADDRESS,

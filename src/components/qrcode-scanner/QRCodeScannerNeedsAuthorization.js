@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { delay } from '@rainbow-me/helpers/utilities';
+import { delay } from '@/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding, position } from '@rainbow-me/styles';
 

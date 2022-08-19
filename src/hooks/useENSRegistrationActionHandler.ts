@@ -23,7 +23,7 @@ import {
   generateSalt,
   getRentPrice,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
 import { timeUnits } from '@rainbow-me/references';

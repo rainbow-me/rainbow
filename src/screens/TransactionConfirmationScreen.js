@@ -57,11 +57,11 @@ import {
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@/helpers';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { isDappAuthenticated } from '@/helpers/dappNameHandler';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useCurrentNonce,

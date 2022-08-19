@@ -22,8 +22,8 @@ import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { toChecksumAddress } from '@/handlers/web3';
-import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import chartTypes from '@rainbow-me/helpers/chartTypes';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import chartTypes from '@/helpers/chartTypes';
 import {
   useAccountSettings,
   useAsset,

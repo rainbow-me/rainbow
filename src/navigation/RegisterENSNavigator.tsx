@@ -13,7 +13,7 @@ import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box } from '@/design-system';
-import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useDimensions,
   useENSRegistration,
