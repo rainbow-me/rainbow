@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Image } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
-import EthIcon from '@rainbow-me/assets/eth-icon.png';
+import EthIcon from '@/assets/eth-icon.png';
 import { AssetTypes } from '@rainbow-me/entities';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';

@@ -11,22 +11,22 @@ import AppVersionStamp from '../AppVersionStamp';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import AppIconIcon from '@rainbow-me/assets/settingsAppIcon.png';
-import AppIconIconDark from '@rainbow-me/assets/settingsAppIconDark.png';
-import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
-import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
-import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
-import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
-import DarkModeIcon from '@rainbow-me/assets/settingsDarkMode.png';
-import DarkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
-import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
-import LanguageIconDark from '@rainbow-me/assets/settingsLanguageDark.png';
-import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
-import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
-import NotificationsIcon from '@rainbow-me/assets/settingsNotifications.png';
-import NotificationsIconDark from '@rainbow-me/assets/settingsNotificationsDark.png';
-import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
-import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
+import AppIconIcon from '@/assets/settingsAppIcon.png';
+import AppIconIconDark from '@/assets/settingsAppIconDark.png';
+import BackupIcon from '@/assets/settingsBackup.png';
+import BackupIconDark from '@/assets/settingsBackupDark.png';
+import CurrencyIcon from '@/assets/settingsCurrency.png';
+import CurrencyIconDark from '@/assets/settingsCurrencyDark.png';
+import DarkModeIcon from '@/assets/settingsDarkMode.png';
+import DarkModeIconDark from '@/assets/settingsDarkModeDark.png';
+import LanguageIcon from '@/assets/settingsLanguage.png';
+import LanguageIconDark from '@/assets/settingsLanguageDark.png';
+import NetworkIcon from '@/assets/settingsNetwork.png';
+import NetworkIconDark from '@/assets/settingsNetworkDark.png';
+import NotificationsIcon from '@/assets/settingsNotifications.png';
+import NotificationsIconDark from '@/assets/settingsNotificationsDark.png';
+import PrivacyIcon from '@/assets/settingsPrivacy.png';
+import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,

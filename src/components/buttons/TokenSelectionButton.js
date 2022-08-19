@@ -4,7 +4,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
+import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';

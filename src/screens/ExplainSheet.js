@@ -9,7 +9,7 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { Box } from '@/design-system';
-import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
+import AppIconOptimism from '@/assets/appIconOptimism.png';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
