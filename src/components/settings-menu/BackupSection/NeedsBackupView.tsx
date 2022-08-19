@@ -4,7 +4,7 @@ import React, { useCallback, useEffect } from 'react';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { SheetActionButton } from '../../sheet';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import BackupIcon from '@/assets/backupIcon.png';
 import BackupIconDark from '@/assets/backupIconDark.png';
 import { Box, Stack, Text } from '@/design-system';

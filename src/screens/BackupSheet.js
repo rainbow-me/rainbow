@@ -14,7 +14,7 @@ import {
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import {

@@ -23,7 +23,7 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
 } from '../components/sheet';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { getDappHostname } from '@/helpers/dappNameHandler';

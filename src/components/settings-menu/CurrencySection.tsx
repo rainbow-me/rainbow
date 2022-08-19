@@ -5,7 +5,7 @@ import { CoinIcon } from '../coin-icon';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { useAccountSettings } from '@/hooks';
 import { emojis, supportedNativeCurrencies } from '@/references';
 

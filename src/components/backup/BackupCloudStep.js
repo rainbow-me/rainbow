@@ -12,7 +12,7 @@ import { PasswordField } from '../fields';
 import { Centered, ColumnWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,

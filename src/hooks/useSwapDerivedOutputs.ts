@@ -12,7 +12,7 @@ import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

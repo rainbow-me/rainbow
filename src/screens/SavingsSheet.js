@@ -21,7 +21,7 @@ import {
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { isSymbolStablecoin } from '@/helpers/savings';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';

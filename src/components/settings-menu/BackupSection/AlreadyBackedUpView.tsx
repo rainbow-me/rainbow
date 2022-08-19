@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Text } from '@/design-system';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';

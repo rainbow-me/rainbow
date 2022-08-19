@@ -7,7 +7,7 @@ import { settingsUpdateNetwork } from '../../redux/settings';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { Divider, Stack } from '@/design-system';
 import {
   useAccountSettings,

@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
 import { AppGetState, AppState } from './store';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,

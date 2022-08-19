@@ -5,7 +5,7 @@ import currentColors from '../theme/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 
 let memRouteName;
 let memState;

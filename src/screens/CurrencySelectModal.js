@@ -28,7 +28,7 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { addHexPrefix } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@/helpers';
 import {

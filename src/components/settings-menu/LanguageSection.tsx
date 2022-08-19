@@ -3,7 +3,7 @@ import { resources, supportedLanguages } from '../../languages';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { pickBy } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 

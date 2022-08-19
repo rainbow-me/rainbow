@@ -7,7 +7,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   BlocksToConfirmation,
   CurrentBlockParams,

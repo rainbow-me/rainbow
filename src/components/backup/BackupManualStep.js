@@ -7,7 +7,7 @@ import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Nbsp, Text } from '../text';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import WalletTypes from '@/helpers/walletTypes';
 import {
   useDimensions,

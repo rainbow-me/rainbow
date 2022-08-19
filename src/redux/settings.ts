@@ -2,7 +2,7 @@ import { changeIcon } from 'react-native-change-icon';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { NativeCurrencyKeys } from '@/entities';
 import {
   getAppIcon,

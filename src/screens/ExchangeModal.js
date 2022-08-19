@@ -31,7 +31,7 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
 import { AssetType } from '@/entities';
 import { getProviderForNetwork } from '@/handlers/web3';

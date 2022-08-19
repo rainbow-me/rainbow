@@ -6,7 +6,7 @@ import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { TransactionStatusTypes } from '@/entities';
 import showWalletErrorAlert from '@/helpers/support';
 import TransactionActions from '@/helpers/transactionActions';

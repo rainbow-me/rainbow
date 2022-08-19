@@ -8,7 +8,7 @@ import {
 } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
 import { fetchEnsTokens } from '@/handlers/ens';
 import {

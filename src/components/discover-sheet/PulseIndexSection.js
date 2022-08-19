@@ -7,7 +7,7 @@ import font from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';

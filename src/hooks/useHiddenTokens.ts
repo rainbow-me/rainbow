@@ -7,7 +7,7 @@ import {
 } from '../redux/hiddenTokens';
 import useWallets from './useWallets';
 import useWebData from './useWebData';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
 
 export default function useHiddenTokens() {

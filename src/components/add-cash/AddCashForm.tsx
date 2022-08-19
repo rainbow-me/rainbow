@@ -15,7 +15,7 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { toChecksumAddress } from '@/handlers/web3';
 import {
   useAccountSettings,

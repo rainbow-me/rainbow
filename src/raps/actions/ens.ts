@@ -5,7 +5,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { ENSRegistrationRecords } from '@/entities';
 import {
   estimateENSTransactionGasLimit,

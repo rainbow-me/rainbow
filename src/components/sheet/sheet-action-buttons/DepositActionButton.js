@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { Linking } from 'react-native';
 import SheetActionButton from './SheetActionButton';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { AssetTypes } from '@/entities';
 import { neverRerender } from '@/utils';
 

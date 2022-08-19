@@ -30,7 +30,7 @@ import {
   syncCloud,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 
 import { useHideSplashScreen } from '@/hooks';
 import { useNavigation } from '@/navigation';

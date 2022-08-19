@@ -16,7 +16,7 @@ import { Text } from '../text';
 import DiscoverSearchInput from './DiscoverSearchInput';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { deviceUtils } from '@/utils';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';
 import styled from '@/styled-thing';
 

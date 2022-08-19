@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../animations';
 import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 

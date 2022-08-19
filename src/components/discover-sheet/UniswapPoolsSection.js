@@ -10,7 +10,7 @@ import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import networkTypes from '@/helpers/networkTypes';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 import { times } from '@/helpers/utilities';

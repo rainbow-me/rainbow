@@ -27,7 +27,7 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { Asset, EthereumAddress, Records } from '@/entities';
 import {
   estimateENSCommitGasLimit,

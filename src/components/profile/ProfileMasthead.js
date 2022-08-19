@@ -10,7 +10,7 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
 import {
   useAccountProfile,

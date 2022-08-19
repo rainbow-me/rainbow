@@ -5,7 +5,7 @@ import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import BackupIcon from '@/assets/backupIcon.png';
 import BackupIconDark from '@/assets/backupIconDark.png';
 import { ImgixImage } from '@/components/images';

@@ -9,7 +9,7 @@ import CoinName from '../coin-row/CoinName';
 import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
 import { PoolValue } from './PoolValue';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 import { useAccountSettings, useGenericAsset } from '@/hooks';
 import { useNavigation } from '@/navigation';

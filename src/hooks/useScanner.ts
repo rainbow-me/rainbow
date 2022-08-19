@@ -10,7 +10,7 @@ import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { handleQRScanner } from '@/handlers/fedora';
 import {
   checkIsValidAddressOrDomain,

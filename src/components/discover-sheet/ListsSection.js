@@ -18,7 +18,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { getTrendingAddresses } from '@/handlers/dispersion';
 import networkTypes from '@/helpers/networkTypes';
 import { times } from '@/helpers/utilities';

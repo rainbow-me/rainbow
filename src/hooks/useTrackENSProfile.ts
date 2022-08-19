@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { EthereumAddress } from '@/entities';
 import { fetchAccountRegistrations } from '@/handlers/ens';
 import { ENS_RECORDS } from '@/helpers/ens';

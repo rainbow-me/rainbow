@@ -9,7 +9,7 @@ import Animated, {
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { usePrevious, useSwapCurrencies } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
