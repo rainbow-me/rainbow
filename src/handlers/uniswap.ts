@@ -57,7 +57,9 @@ const EXTRA_GAS_PADDING = 1.5;
 const SWAP_GAS_PADDING = 1.1;
 const CHAIN_IDS_WITH_TRACE_SUPPORT = [ChainId.mainnet];
 
-async function getClosestGasEstimate(estimationFn: (gasEstimate: number) => Promise<boolean>) {
+async function getClosestGasEstimate(
+  estimationFn: (gasEstimate: number) => Promise<boolean>
+) {
   // From 200k to 1M
   const gasEstimates = Array.from(Array(21).keys())
     .filter(x => x > 3)

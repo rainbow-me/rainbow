@@ -89,7 +89,10 @@ type ExcludeList = {
   [key: string]: true;
 };
 
-type NonReactStatics<S extends OmniComponent, C extends ExcludeList = Record<string, never>> = {
+type NonReactStatics<
+  S extends OmniComponent,
+  C extends ExcludeList = Record<string, never>
+> = {
   [key in Exclude<
     keyof S,
     S extends React.MemoExoticComponent<any>

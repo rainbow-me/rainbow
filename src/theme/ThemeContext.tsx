@@ -52,7 +52,9 @@ export const ThemeContext = createContext<ThemeContextProps>({
 
 const { RNThemeModule } = NativeModules;
 
-export const MainThemeProvider = (props: PropsWithChildren<Record<string, never>>) => {
+export const MainThemeProvider = (
+  props: PropsWithChildren<Record<string, never>>
+) => {
   const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
 
   // looks like one works on Android and another one on iOS. good.

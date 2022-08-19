@@ -28,8 +28,10 @@ export const getNameFromLabelhash = async (key: string) => {
   return labelhash;
 };
 
-export const saveNameFromLabelhash = (key: string, value: string | Record<string, unknown>) =>
-  saveGlobal(ensLabelhashesKey(key), value, ensProfileVersion);
+export const saveNameFromLabelhash = (
+  key: string,
+  value: string | Record<string, unknown>
+) => saveGlobal(ensLabelhashesKey(key), value, ensProfileVersion);
 
 export const getENSData = async (dataType: ENSDataType, key: string) => {
   const profile = await getGlobal(
