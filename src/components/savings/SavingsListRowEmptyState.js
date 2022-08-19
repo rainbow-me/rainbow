@@ -5,7 +5,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { position, shadow } from '@rainbow-me/styles';
+import { position, shadow } from '@/styles';
 
 const ButtonBorderRadius = 15;
 

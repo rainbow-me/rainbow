@@ -15,7 +15,7 @@ import { useImportingWallet, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors, padding } from '@/styles';
 import { abbreviations, profileUtils } from '@rainbow-me/utils';
 
 export const ShowcaseContext = createContext();

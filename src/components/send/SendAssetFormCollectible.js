@@ -5,7 +5,7 @@ import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token'
 import { Column } from '../layout';
 import { useDimensions, useImageMetadata } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 

@@ -9,7 +9,7 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import networkInfo from '@/helpers/networkInfo';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const networkMenuItems = () => {

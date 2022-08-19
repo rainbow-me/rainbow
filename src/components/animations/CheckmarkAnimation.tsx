@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LargeCheckmarkIcon } from '../icons/svg/LargeCheckmarkIcon';
 import { Box } from '@/design-system';
-import { colors } from '@rainbow-me/styles';
+import { colors } from '@/styles';
 
 export function CheckmarkAnimation() {
   const circleEntering = () => {

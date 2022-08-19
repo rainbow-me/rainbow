@@ -7,7 +7,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
 import { ImgixImage } from '@/components/images';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 type SpinnerProps = {
   color?: string;

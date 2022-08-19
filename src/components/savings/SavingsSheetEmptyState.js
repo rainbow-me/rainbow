@@ -11,7 +11,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { DAI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({

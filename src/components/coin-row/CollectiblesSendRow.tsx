@@ -12,7 +12,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const dividerHeight = 22;
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;

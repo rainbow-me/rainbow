@@ -17,7 +17,7 @@ import SimulatorFakeCameraImageSource from '@/assets/simulator-fake-camera-image
 import { useAsyncEffect, useHardwareBack, useScanner } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const Camera = styled(RNCamera)({

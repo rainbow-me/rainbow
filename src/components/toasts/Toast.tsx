@@ -14,7 +14,7 @@ import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import { useDimensions } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { padding, position, shadow } from '@rainbow-me/styles';
+import { padding, position, shadow } from '@/styles';
 
 const springConfig: WithSpringConfig = {
   damping: 14,

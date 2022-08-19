@@ -7,7 +7,7 @@ import ButtonPressAnimation, {
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 import styled from '@rainbow-me/styled-components';
-import { borders, position } from '@rainbow-me/styles';
+import { borders, position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 export const FloatingActionButtonSize = 56;

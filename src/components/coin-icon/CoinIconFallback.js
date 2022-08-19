@@ -7,7 +7,7 @@ import { AssetTypes } from '@/entities';
 import { useBooleanState, useColorForAsset } from '@/hooks';
 import { ImageWithCachedMetadata } from '@/components/images';
 import styled from '@rainbow-me/styled-components';
-import { borders, fonts, position, shadow } from '@rainbow-me/styles';
+import { borders, fonts, position, shadow } from '@/styles';
 import {
   FallbackIcon,
   getUrlForTrustIconFallback,

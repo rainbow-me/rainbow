@@ -5,7 +5,7 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import { useColorForAsset } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const Container = styled(ButtonPressAnimation)({
   marginRight: 4,

@@ -23,7 +23,7 @@ import {
   useIsWalletEthZero,
 } from '@/hooks';
 import { DAI_ADDRESS, ETH_ADDRESS } from '@/references';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];

@@ -4,7 +4,7 @@ import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ChartTypes from '@/helpers/chartTypes';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const Container = styled(Centered)({
   paddingTop: 49,

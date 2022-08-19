@@ -13,7 +13,7 @@ import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { DPI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { fontWithWidth } from '@rainbow-me/styles';
+import { fontWithWidth } from '@/styles';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';

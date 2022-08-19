@@ -9,7 +9,7 @@ import WalletTypes, {
   EthereumWalletType,
 } from '@/helpers/walletTypes';
 import styled from '@rainbow-me/styled-components';
-import { fonts, padding, position } from '@rainbow-me/styles';
+import { fonts, padding, position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 import ShadowStack from 'react-native-shadow-stack';
 

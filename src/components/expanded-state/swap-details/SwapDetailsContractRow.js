@@ -14,7 +14,7 @@ import { Text, TruncatedAddress } from '../../text';
 import SwapDetailsRow from './SwapDetailsRow';
 import { useClipboard, useColorForAsset } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@/styles';
 import {
   abbreviations,
   ethereumUtils,

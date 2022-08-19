@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const shadowsFactory = darkMode => ({

@@ -72,7 +72,7 @@ import {
 import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';

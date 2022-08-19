@@ -29,7 +29,7 @@ import {
   ENSReverseRegistrarABI,
   ensReverseRegistrarAddress,
 } from '@/references';
-import { colors } from '@rainbow-me/styles';
+import { colors } from '@/styles';
 import { labelhash } from '@rainbow-me/utils';
 import {
   encodeContenthash,

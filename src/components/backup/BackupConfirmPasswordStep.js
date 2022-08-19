@@ -25,7 +25,7 @@ import {
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@/styles';
 import logger from 'logger';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({

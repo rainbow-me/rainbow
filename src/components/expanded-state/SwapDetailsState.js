@@ -26,7 +26,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
 const springConfig = {

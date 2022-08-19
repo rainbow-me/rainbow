@@ -17,7 +17,7 @@ import { Text } from '../text';
 import { analytics } from '@rainbow-me/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@rainbow-me/styled-components';
-import { margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const ExchangeSearchHeight = 40;

@@ -9,7 +9,7 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { useDimensions } from '@/hooks';
-import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 import { formatURLForDisplay } from '@rainbow-me/utils';
 

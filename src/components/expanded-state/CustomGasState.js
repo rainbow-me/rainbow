@@ -19,7 +19,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
-import { margin } from '@rainbow-me/styles';
+import { margin } from '@/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const FOOTER_HEIGHT = 76;

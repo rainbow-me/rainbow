@@ -7,7 +7,7 @@ import {
   updateImageMetadataCache,
 } from '@/redux/imageMetadata';
 import { AppState } from '@/redux/store';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { getDominantColorFromImage } from '@rainbow-me/utils';
 
 export default function useImageMetadata(imageUrl: string | null) {

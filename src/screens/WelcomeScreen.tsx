@@ -36,7 +36,7 @@ import { useHideSplashScreen } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { position, shadow } from '@rainbow-me/styles';
+import { position, shadow } from '@/styles';
 import { ThemeContextProps, useTheme } from '@rainbow-me/theme';
 import logger from 'logger';
 

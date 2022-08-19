@@ -10,7 +10,7 @@ import { Inset } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { borders, padding } from '@rainbow-me/styles';
+import { borders, padding } from '@/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
 const BackButtonWrapper = styled(Centered)({

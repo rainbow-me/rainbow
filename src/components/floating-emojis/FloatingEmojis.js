@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, View } from 'react-native';
 import FloatingEmoji from './FloatingEmoji';
 import { useTimeout } from '@/hooks';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 const EMPTY_ARRAY = [];
 const getEmoji = emojis => Math.floor(Math.random() * emojis.length);

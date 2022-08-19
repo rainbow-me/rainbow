@@ -5,7 +5,7 @@ import Centered from './Centered';
 import keyboardTypes from '@/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 const Container = styled.View({
   height: ({ height }) => height,

@@ -21,7 +21,7 @@ import {
 } from '@/helpers/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { margin } from '@rainbow-me/styles';
+import { margin } from '@/styles';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,

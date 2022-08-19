@@ -14,7 +14,7 @@ import {
 } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { colors } from '@rainbow-me/styles';
+import { colors } from '@/styles';
 
 const RegisterContent = ({
   accentColor,

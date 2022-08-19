@@ -7,7 +7,7 @@ import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@/helpers/strings';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const addChartsStyling = isCharts =>

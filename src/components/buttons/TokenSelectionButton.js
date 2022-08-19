@@ -9,7 +9,7 @@ import { AssetType } from '@/entities';
 import { useColorForAsset } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const TokenSelectionButtonHeight = 46;

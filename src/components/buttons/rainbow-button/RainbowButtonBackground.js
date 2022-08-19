@@ -6,7 +6,7 @@ import { darkModeThemeColors } from '../../../styles/colors';
 import { useTheme } from '../../../theme/ThemeContext';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import styled from '@rainbow-me/styled-components';
-import { margin } from '@rainbow-me/styles';
+import { margin } from '@/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const RainbowGradientColorsFactory = darkMode => ({

@@ -8,7 +8,7 @@ import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { colors } from '@rainbow-me/styles';
+import { colors } from '@/styles';
 import { profileUtils } from '@rainbow-me/utils';
 
 export default function WalletProfileState({

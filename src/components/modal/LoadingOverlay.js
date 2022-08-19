@@ -7,7 +7,7 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const Container = styled(Centered).attrs({

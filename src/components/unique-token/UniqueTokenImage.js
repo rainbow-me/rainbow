@@ -12,7 +12,7 @@ import { useHiddenTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({

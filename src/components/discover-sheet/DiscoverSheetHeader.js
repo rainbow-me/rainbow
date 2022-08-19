@@ -12,7 +12,7 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { borders, position } from '@rainbow-me/styles';
+import { borders, position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const Header = styled.View({

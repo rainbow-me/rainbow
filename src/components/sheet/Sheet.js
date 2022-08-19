@@ -8,7 +8,7 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
 import { useDimensions } from '@/hooks';
-import { borders } from '@rainbow-me/styles';
+import { borders } from '@/styles';
 
 const Sheet = ({
   borderRadius,

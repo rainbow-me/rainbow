@@ -1,7 +1,7 @@
 import React, { Children } from 'react';
 import { FlexItem, Row } from '../../layout';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const Container = styled(Row).attrs({
   justify: 'space-around',

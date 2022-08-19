@@ -32,7 +32,7 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
-import { colors } from '@rainbow-me/styles';
+import { colors } from '@/styles';
 import { normalizeENS } from '@rainbow-me/utils';
 
 export default function ENSSearchSheet() {

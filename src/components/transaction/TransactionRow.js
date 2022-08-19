@@ -3,7 +3,7 @@ import React from 'react';
 import { ColumnWithMargins } from '../layout';
 import { Smallcaps } from '../text';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   marginLeft: 5,

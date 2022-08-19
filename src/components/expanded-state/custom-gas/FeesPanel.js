@@ -34,7 +34,7 @@ import {
 import { gweiToWei, parseGasFeeParam } from '@/parsers';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)({});

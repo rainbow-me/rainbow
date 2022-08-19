@@ -43,7 +43,7 @@ import {
 } from '@/design-system';
 import { useDimensions, usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { colors, position } from '@rainbow-me/styles';
+import { colors, position } from '@/styles';
 import { safeAreaInsetValues } from '@rainbow-me/utils';
 
 const idsAtom = atom<string[]>({

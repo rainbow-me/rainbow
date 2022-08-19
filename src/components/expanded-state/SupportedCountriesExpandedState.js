@@ -9,7 +9,7 @@ import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useDimensions } from '@/hooks';
 import { wyreSupportedCountries } from '@/references';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const Panel = styled(FloatingPanels)(

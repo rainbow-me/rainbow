@@ -3,7 +3,7 @@ import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import { Text } from '../text';
 import styled from '@rainbow-me/styled-components';
-import { buildTextStyles } from '@rainbow-me/styles';
+import { buildTextStyles } from '@/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const AndroidMaskWrapper = styled.View({

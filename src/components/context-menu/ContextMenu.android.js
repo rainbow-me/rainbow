@@ -3,7 +3,7 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { omitFlatten } from '@/helpers/utilities';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const ActionSheetProps = [

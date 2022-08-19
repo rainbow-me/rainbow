@@ -5,7 +5,7 @@ import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
 import styled from '@rainbow-me/styled-components';
-import { borders, position } from '@rainbow-me/styles';
+import { borders, position } from '@/styles';
 
 export const ModalHeaderHeight = 50;
 

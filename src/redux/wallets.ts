@@ -42,7 +42,7 @@ import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { WalletLoadingState } from '@/helpers/walletLoadingStates';
-import { lightModeThemeColors } from '@rainbow-me/styles';
+import { lightModeThemeColors } from '@/styles';
 
 // -- Types ---------------------------------------- //
 

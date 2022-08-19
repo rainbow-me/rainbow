@@ -26,7 +26,7 @@ import { useWalletConnectConnections, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const ContainerPadding = 15;

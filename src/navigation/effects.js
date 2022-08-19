@@ -4,7 +4,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import Routes from '@/navigation/routesNames';
-import { lightModeThemeColors } from '@rainbow-me/styles';
+import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@rainbow-me/theme';
 import { deviceUtils } from '@rainbow-me/utils';
 

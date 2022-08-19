@@ -10,7 +10,7 @@ import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
 import { useDimensions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
   const { isTallPhone, isTinyPhone } = useDimensions();

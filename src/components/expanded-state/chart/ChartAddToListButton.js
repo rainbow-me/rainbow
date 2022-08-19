@@ -9,7 +9,7 @@ import { isL2Asset } from '@/handlers/assets';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const AddToListButtonPadding = 19;

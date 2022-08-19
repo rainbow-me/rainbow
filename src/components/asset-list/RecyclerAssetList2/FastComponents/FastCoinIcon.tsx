@@ -8,7 +8,7 @@ import ContractInteraction from '@/assets/contractInteraction.png';
 import EthIcon from '@/assets/eth-icon.png';
 import { AssetType } from '@/entities';
 import { useColorForAsset } from '@/hooks';
-import { borders, fonts } from '@rainbow-me/styles';
+import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';
 import {
   FallbackIcon as CoinIconTextFallback,

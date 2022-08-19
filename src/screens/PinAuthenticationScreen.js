@@ -17,7 +17,7 @@ import { useDimensions, useShakeAnimation } from '@/hooks';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import { ImgixImage } from '@/components/images';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 import { haptics } from '@rainbow-me/utils';
 
 const Logo = styled(ImgixImage).attrs({

@@ -15,7 +15,7 @@ import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { fonts, position } from '@rainbow-me/styles';
+import { fonts, position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;

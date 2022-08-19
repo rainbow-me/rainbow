@@ -68,7 +68,7 @@ import {
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { lightModeThemeColors, position } from '@rainbow-me/styles';
+import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 import {
   buildRainbowUrl,

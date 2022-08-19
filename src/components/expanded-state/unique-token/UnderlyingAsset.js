@@ -9,7 +9,7 @@ import { Text } from '../../text';
 import { useAccountSettings, useColorForAsset } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 

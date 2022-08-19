@@ -17,7 +17,7 @@ import { isUnknownOpenSeaENS } from '@/handlers/ens';
 import { useAsset, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 
 const ScreenTypes = {

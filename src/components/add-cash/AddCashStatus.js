@@ -22,7 +22,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 const OrderIdText = styled(Text).attrs({
   align: 'center',

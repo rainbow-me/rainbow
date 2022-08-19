@@ -4,7 +4,7 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { TransactionStatusTypes } from '@/entities';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const StatusProps = {

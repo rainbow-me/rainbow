@@ -4,7 +4,7 @@ import Spinner from '../Spinner';
 import { Icon } from '../icons';
 import { Text } from '@/design-system';
 import { TransactionStatusTypes } from '@/entities';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
 const StatusProps = {

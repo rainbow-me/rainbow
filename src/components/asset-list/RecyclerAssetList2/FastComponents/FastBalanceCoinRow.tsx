@@ -13,7 +13,7 @@ import {
   useCoinListFinishEditingOptions,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { borders, colors, padding, shadow } from '@rainbow-me/styles';
+import { borders, colors, padding, shadow } from '@/styles';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;

@@ -4,7 +4,7 @@ import { Text } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useLatestCallback } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { borders, position } from '@rainbow-me/styles';
+import { borders, position } from '@/styles';
 
 const CircleButton = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 20],

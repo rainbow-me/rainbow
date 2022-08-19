@@ -20,7 +20,7 @@ import {
   useWyreApplePay,
 } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { borders } from '@rainbow-me/styles';
+import { borders } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 
 const deviceHeight = deviceUtils.dimensions.height;

@@ -17,7 +17,7 @@ import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 

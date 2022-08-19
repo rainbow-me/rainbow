@@ -11,7 +11,7 @@ import { Text, TruncatedAddress } from '../../text';
 import ProfileModalContainer from './ProfileModalContainer';
 import ProfileNameInput from './ProfileNameInput';
 import styled from '@rainbow-me/styled-components';
-import { margin, padding, position } from '@rainbow-me/styles';
+import { margin, padding, position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 
 const ProfileAddressText = styled(TruncatedAddress).attrs(

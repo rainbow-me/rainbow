@@ -23,7 +23,7 @@ import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 import { magicMemo } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 

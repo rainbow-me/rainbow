@@ -23,7 +23,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { haptics } from '@rainbow-me/utils';
 
 const Container = styled(Centered).attrs({

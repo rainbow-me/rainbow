@@ -3,7 +3,7 @@ import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;

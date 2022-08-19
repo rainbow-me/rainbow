@@ -9,7 +9,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { delay } from '@/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
-import { margin, padding, position } from '@rainbow-me/styles';
+import { margin, padding, position } from '@/styles';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.1,

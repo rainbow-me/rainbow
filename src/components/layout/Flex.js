@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import styled from '@rainbow-me/styled-components';
-import { buildFlexStyles } from '@rainbow-me/styles';
+import { buildFlexStyles } from '@/styles';
 import { memoFn } from '@rainbow-me/utils/memoFn';
 
 const flexPropTypes = {

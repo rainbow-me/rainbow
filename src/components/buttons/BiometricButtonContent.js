@@ -3,7 +3,7 @@ import { Text } from '../text';
 import { BiometryTypes } from '@/helpers';
 import { useBiometryType } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { fonts } from '@rainbow-me/styles';
+import { fonts } from '@/styles';
 
 const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
 

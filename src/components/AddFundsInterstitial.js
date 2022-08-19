@@ -21,7 +21,7 @@ import {
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const ContainerWidth = 261;

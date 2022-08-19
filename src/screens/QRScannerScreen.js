@@ -14,7 +14,7 @@ import {
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 const Background = styled.View({
   backgroundColor: 'black',

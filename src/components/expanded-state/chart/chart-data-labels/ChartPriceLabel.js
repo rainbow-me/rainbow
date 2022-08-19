@@ -8,7 +8,7 @@ import { NativeCurrencyKeys } from '@/entities';
 import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
 import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@/styles';
 
 const ChartPriceRow = styled(Row)({});
 

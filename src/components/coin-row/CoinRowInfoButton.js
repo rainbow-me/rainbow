@@ -11,7 +11,7 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { useClipboard } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, padding } from '@/styles';
 import {
   abbreviations,
   ethereumUtils,

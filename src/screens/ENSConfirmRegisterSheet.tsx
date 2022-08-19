@@ -50,7 +50,7 @@ import {
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { colors } from '@rainbow-me/styles';
+import { colors } from '@/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;

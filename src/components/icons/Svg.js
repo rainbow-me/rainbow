@@ -1,6 +1,6 @@
 import SvgPrimitive from 'react-native-svg';
 import styled from '@rainbow-me/styled-components';
-import { calcDirectionToDegrees } from '@rainbow-me/styles';
+import { calcDirectionToDegrees } from '@/styles';
 
 const Svg = styled(SvgPrimitive).withConfig({
   shouldForwardProp: prop => prop !== 'direction',

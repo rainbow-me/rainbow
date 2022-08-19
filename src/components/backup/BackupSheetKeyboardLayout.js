@@ -9,7 +9,7 @@ import KeyboardTypes from '@/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const Footer = styled(Column)(({ isTallPhone }) => ({
   ...padding.object(20, 15, isTallPhone ? 30 : 15),

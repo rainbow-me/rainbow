@@ -6,7 +6,7 @@ import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
 import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   height: 44,

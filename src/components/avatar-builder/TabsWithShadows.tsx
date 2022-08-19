@@ -6,7 +6,7 @@ import { Categories } from './Categories';
 import TabBar from './TabBar';
 import { EmojiCategory } from './types';
 import { ImgixImage } from '@/components/images';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 import { magicMemo } from '@rainbow-me/utils';
 
