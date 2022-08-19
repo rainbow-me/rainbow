@@ -4,7 +4,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';

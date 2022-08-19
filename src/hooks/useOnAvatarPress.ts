@@ -19,7 +19,7 @@ import {
   enableActionsOnReadOnlyWallet,
   PROFILES,
   useExperimentalFlag,
-} from '@rainbow-me/config';
+} from '@/config';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';

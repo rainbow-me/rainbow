@@ -16,7 +16,7 @@ import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@/config/experimentalHooks';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';

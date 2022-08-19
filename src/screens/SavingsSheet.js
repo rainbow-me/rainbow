@@ -22,7 +22,7 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { analytics } from '@rainbow-me/analytics';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import {

@@ -12,7 +12,7 @@ import RecordTags, {
 } from './RecordTags/RecordTags';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { getLowResUrl } from '@/utils/getLowResUrl';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import {
   Bleed,
   Box,

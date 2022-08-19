@@ -7,7 +7,7 @@ import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

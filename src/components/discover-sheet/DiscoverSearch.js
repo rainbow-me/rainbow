@@ -20,7 +20,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { analytics } from '@rainbow-me/analytics';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useHardwareBackOnFocus,

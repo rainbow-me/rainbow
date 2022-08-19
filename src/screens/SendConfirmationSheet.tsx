@@ -38,7 +38,7 @@ import {
 } from '../utils/profileUtils';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { AssetTypes } from '@rainbow-me/entities';
 import {

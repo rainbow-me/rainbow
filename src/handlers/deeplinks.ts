@@ -11,8 +11,8 @@ import {
 } from '../redux/walletconnect';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { defaultConfig } from '@rainbow-me/config/experimental';
-import { PROFILES } from '@rainbow-me/config/experimentalHooks';
+import { defaultConfig } from '@/config/experimental';
+import { PROFILES } from '@/config/experimentalHooks';
 import { setDeploymentKey } from '@rainbow-me/handlers/fedora';
 import { delay } from '@rainbow-me/helpers/utilities';
 import {

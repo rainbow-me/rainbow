@@ -5,7 +5,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,

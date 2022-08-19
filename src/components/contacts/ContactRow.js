@@ -12,7 +12,7 @@ import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@/config/experimentalHooks';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {

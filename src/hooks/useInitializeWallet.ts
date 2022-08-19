@@ -22,7 +22,7 @@ import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import useResetAccountState from './useResetAccountState';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';

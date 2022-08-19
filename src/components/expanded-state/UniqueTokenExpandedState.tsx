@@ -33,7 +33,7 @@ import {
 } from './unique-token';
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import {
   AccentColorProvider,
   Bleed,

@@ -6,7 +6,7 @@ import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@/config/experimentalHooks';
 import {
   useAccountProfile,
   useShowcaseTokens,

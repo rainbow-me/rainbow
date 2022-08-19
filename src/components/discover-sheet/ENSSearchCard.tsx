@@ -10,7 +10,7 @@ import Animated, {
 import { CustomShadow } from '../../design-system/layout/shadow';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
   Box,

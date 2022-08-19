@@ -5,7 +5,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
 import ImgixImage from '../images/ImgixImage';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
   Box,

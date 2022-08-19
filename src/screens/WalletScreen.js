@@ -16,7 +16,7 @@ import { Page, RowWithMargins } from '../components/layout';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {

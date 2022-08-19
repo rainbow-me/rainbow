@@ -26,7 +26,7 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 import { analytics } from '@rainbow-me/analytics';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,

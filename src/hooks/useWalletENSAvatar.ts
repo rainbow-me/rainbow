@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import { useWallets } from '@rainbow-me/hooks';
 import { getWalletENSAvatars } from '@rainbow-me/redux/wallets';
 

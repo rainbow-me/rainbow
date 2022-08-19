@@ -30,7 +30,7 @@ import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@/config/experimentalHooks';
 import { Box } from '@rainbow-me/design-system';
 import {
   isCustomBuild,

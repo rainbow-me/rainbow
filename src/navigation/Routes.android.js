@@ -64,7 +64,7 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@/config/experimentalHooks';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
