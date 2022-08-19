@@ -9,7 +9,7 @@ import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
 import { useDimensions } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { position } from '@rainbow-me/styles';
 
 const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {

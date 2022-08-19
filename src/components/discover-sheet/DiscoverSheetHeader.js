@@ -10,7 +10,7 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';

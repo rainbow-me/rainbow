@@ -14,7 +14,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 

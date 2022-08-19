@@ -10,7 +10,7 @@ import {
   useExpandedStateNavigation,
   useSwapCurrencyHandlers,
 } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 function SwapActionButton({

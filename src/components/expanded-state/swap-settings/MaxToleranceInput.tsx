@@ -29,7 +29,7 @@ import {
 } from '@/helpers/utilities';
 import { useMagicAutofocus, useSwapSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { colors } from '@rainbow-me/styles';
 
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();

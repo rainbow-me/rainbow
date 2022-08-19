@@ -9,7 +9,7 @@ import {
 } from '@/helpers/utilities';
 import { useAccountSettings, useStepper } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 export default function SwapDetailsUniswapRow({ tradeDetails, network }) {
   const { navigate } = useNavigation();

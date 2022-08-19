@@ -24,7 +24,7 @@ import {
 } from '@/helpers/walletConnectNetworks';
 import { useWalletConnectConnections, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';

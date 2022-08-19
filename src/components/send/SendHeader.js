@@ -20,7 +20,7 @@ import useExperimentalFlag, {
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';

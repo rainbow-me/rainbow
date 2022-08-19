@@ -22,7 +22,7 @@ import {
 } from '@/config';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 export default () => {

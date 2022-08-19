@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 export default function SendButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();

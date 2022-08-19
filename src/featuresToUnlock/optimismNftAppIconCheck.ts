@@ -10,7 +10,7 @@ import config from '@/model/config';
 import { Navigation } from '@/navigation';
 import { opWrapABI } from '@/references';
 import { logger } from '@/utils';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const OP_WRAPPER_ADDRESS = {
   'op-kovan': '0x715da5e53526bedac9bd96e8fdb7efb185d1b6ca',

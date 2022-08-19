@@ -18,7 +18,7 @@ import {
 } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
 

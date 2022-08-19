@@ -10,7 +10,7 @@ import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
 import { useColorForAsset, useGas, useSwapCurrencies } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 

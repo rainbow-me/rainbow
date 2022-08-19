@@ -48,7 +48,7 @@ import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import store from '@/redux/store';
 import { walletsUpdate } from '@/redux/wallets';
 import { ETH_ADDRESS } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

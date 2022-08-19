@@ -24,7 +24,7 @@ import networkTypes from '@/helpers/networkTypes';
 import { times } from '@/helpers/utilities';
 import { useAccountSettings, useUserLists } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 

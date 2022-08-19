@@ -34,7 +34,7 @@ import {
   walletsLoadState,
   walletsSetSelected,
 } from '@/redux/wallets';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';

@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 import SheetActionButton from './SheetActionButton';
 import { useExpandedStateNavigation } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 function SendActionButton({ asset, color: givenColor, ...props }) {
   const { colors } = useTheme();

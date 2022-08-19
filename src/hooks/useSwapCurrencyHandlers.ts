@@ -19,7 +19,7 @@ import {
   updateSwapOutputCurrency,
 } from '@/redux/swap';
 import { ETH_ADDRESS } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;

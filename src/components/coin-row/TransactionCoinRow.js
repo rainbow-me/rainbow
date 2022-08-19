@@ -21,7 +21,7 @@ import {
 import { isValidDomainFormat } from '@/helpers/validators';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import {
   abbreviations,
   ethereumUtils,

@@ -8,7 +8,7 @@ import BalanceText from '../coin-row/BalanceText';
 import CoinName from '../coin-row/CoinName';
 import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 
 const formatPercentageString = percentString =>

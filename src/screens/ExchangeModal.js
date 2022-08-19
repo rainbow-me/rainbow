@@ -70,7 +70,7 @@ import {
   updateSwapTypeDetails,
 } from '@/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';

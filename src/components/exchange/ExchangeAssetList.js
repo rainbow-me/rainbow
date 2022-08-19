@@ -34,7 +34,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import store from '@/redux/store';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';

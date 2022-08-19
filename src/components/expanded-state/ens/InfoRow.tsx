@@ -24,7 +24,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();

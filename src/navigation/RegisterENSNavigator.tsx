@@ -20,7 +20,7 @@ import {
   useENSRegistrationForm,
   usePrevious,
 } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { useTheme } from '@rainbow-me/theme';
 import { deviceUtils } from '@rainbow-me/utils';
 

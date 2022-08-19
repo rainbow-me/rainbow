@@ -24,7 +24,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const onError = error => DelayedAlert({ title: error }, 500);
 

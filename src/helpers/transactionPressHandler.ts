@@ -4,7 +4,7 @@ import { isValidDomainFormat } from './validators';
 import { TransactionStatusTypes } from '@/entities';
 import TransactionActions from '@/helpers/transactionActions';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { colors } from '@rainbow-me/styles';
 import {
   abbreviations,

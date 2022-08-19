@@ -7,7 +7,7 @@ import { Centered } from '../../layout';
 import { Text } from '../../text';
 import { isL2Asset } from '@/handlers/assets';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';

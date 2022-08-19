@@ -9,7 +9,7 @@ import {
   useWallets,
 } from '@/hooks';
 
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 function BuyActionButton({ color: givenColor, ...props }) {
   const { colors } = useTheme();

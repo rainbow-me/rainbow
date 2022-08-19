@@ -13,7 +13,7 @@ import {
 import { rainbowFetch } from '../rainbow-fetch';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Navigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const APP_CENTER_READ_ONLY_TOKEN = ios
   ? APP_CENTER_READ_ONLY_TOKEN_IOS

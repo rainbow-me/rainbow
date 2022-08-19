@@ -34,7 +34,7 @@ import { analytics } from '@rainbow-me/analytics';
 
 import { useHideSplashScreen } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { position, shadow } from '@rainbow-me/styles';
 import { ThemeContextProps, useTheme } from '@rainbow-me/theme';

@@ -12,7 +12,7 @@ import {
   textRecordFields,
 } from '@/helpers/ens';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 type ImageSource = { imageUrl?: string | null };

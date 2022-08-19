@@ -80,7 +80,7 @@ import {
   POLYGON_BLOCK_EXPLORER_URL,
   supportedNativeCurrencies,
 } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;

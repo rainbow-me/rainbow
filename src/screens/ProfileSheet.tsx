@@ -25,7 +25,7 @@ import {
   usePersistentDominantColorFromImage,
 } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { useTheme } from '@rainbow-me/theme';
 import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 

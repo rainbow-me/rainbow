@@ -13,7 +13,7 @@ import {
   Text,
 } from '@/design-system';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { colors } from '@rainbow-me/styles';
 
 const RegisterContent = ({

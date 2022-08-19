@@ -35,7 +35,7 @@ import {
   useWalletsWithBalancesAndNames,
   useWebData,
 } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,

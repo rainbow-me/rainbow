@@ -10,7 +10,7 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { Column, Columns, Inset } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSAvatar, useENSRegistration } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { useTheme } from '@rainbow-me/theme';
 
 export default function ENSBriefTokenInfoRow({

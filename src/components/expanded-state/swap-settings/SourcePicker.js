@@ -10,7 +10,7 @@ import { Box, Column, Columns, Inline, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { Source } from '@/redux/swap';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 

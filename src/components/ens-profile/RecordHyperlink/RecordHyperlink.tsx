@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Text } from '@/design-system';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const ENS_REGEX = /[^\s]+.eth/g;
 

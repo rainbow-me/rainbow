@@ -12,7 +12,7 @@ import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { DPI_ADDRESS } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { fontWithWidth } from '@rainbow-me/styles';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';

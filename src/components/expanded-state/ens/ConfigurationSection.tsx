@@ -6,7 +6,7 @@ import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSRegistration } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 export default function ConfigurationSection({

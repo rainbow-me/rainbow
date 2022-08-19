@@ -10,7 +10,7 @@ import EdgeFade from './EdgeFade';
 import networkTypes from '@/helpers/networkTypes';
 import { useAccountSettings, useTopMovers } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const ErrorMessage = ({ colors, children }) => (

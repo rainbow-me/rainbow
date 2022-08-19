@@ -66,7 +66,7 @@ import {
   useShowcaseTokens,
 } from '@/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { lightModeThemeColors, position } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';

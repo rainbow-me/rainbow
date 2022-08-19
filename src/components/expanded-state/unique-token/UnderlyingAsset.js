@@ -8,7 +8,7 @@ import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { useAccountSettings, useColorForAsset } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';

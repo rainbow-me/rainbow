@@ -9,7 +9,7 @@ import { SheetActionButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { DAI_ADDRESS } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';

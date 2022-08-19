@@ -6,7 +6,7 @@ import { apiGetUniqueTokenFloorPrice } from '@/handlers/opensea-api';
 import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { useTheme } from '@rainbow-me/theme';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';

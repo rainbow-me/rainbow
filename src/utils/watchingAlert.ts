@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Navigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 export default function watchingAlert() {
   Alert.alert(

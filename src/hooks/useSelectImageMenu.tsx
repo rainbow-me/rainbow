@@ -11,7 +11,7 @@ import {
   UploadImageReturnData,
 } from '@/handlers/pinata';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 type Action = 'library' | 'nft';

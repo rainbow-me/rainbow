@@ -73,7 +73,7 @@ import {
   usePersistentDominantColorFromImage,
   useWalletSectionsData,
 } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;

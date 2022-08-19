@@ -12,7 +12,7 @@ import {
   useAccountAsset,
   useCoinListFinishEditingOptions,
 } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
 
 interface CoinCheckButtonProps {

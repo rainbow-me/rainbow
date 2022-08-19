@@ -13,7 +13,7 @@ import { isHexString } from '@/handlers/web3';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useImportingWallet, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { colors, padding } from '@rainbow-me/styles';
 import { abbreviations, profileUtils } from '@rainbow-me/utils';

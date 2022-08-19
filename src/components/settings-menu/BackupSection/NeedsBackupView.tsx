@@ -12,7 +12,7 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWallets } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { useTheme } from '@rainbow-me/theme';
 

@@ -8,7 +8,7 @@ import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { useCollectible } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 export default React.memo(function WrappedNFT({
   onPress,

@@ -7,7 +7,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { useWalletConnectConnections } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 
 const LabelText = styled(Text)({

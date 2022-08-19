@@ -28,7 +28,7 @@ import {
   useENSPendingRegistrations,
   useWallets,
 } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { useTheme } from '@rainbow-me/theme';
 import { watchingAlert } from '@rainbow-me/utils';
 

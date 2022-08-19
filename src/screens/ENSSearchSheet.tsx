@@ -31,7 +31,7 @@ import {
   useENSSearch,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { colors } from '@rainbow-me/styles';
 import { normalizeENS } from '@rainbow-me/utils';
 

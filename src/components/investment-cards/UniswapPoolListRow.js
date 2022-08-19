@@ -14,7 +14,7 @@ import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSele
 import { useAccountSettings, useGenericAsset } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 
 const BottomRowContainer = styled(Row)({

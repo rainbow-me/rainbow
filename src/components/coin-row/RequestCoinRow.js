@@ -17,7 +17,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useNavigation } from '@/navigation';
 import { removeRequest } from '@/redux/requests';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {

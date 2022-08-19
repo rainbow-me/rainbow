@@ -29,7 +29,7 @@ import {
   useImportingWallet,
   useWalletsWithBalancesAndNames,
 } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
 

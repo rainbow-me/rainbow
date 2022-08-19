@@ -30,7 +30,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { Source } from '@/redux/swap';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAndroidDisableGesturesOnFocus() {

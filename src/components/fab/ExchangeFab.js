@@ -11,7 +11,7 @@ import {
   ExchangeModalTypes,
 } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 

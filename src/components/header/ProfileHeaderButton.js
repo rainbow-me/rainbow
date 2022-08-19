@@ -6,7 +6,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 import { useAccountProfile, useRequests } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 export default function ProfileHeaderButton() {
   const { colors } = useTheme();

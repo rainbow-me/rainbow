@@ -13,7 +13,7 @@ import {
   useWebData,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();

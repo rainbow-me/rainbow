@@ -8,7 +8,7 @@ import { SheetHandleFixedToTop } from '../sheet';
 import { TruncatedText } from '../text';
 import { Inset } from '@/design-system';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { borders, padding } from '@rainbow-me/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';

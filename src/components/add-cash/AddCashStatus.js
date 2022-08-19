@@ -20,7 +20,7 @@ import {
 import { useDimensions, useTimeout } from '@/hooks';
 import { useNavigation } from '@/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 

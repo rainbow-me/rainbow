@@ -24,7 +24,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation/Navigation';
 import { removeRequest } from '@/redux/requests';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,

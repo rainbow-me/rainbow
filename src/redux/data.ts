@@ -73,7 +73,7 @@ import {
   ETH_COINGECKO_ID,
   shitcoins,
 } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { delay, isZero, pickBy } from '@rainbow-me/utilities';
 import {
   ethereumUtils,

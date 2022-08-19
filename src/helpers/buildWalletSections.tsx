@@ -24,7 +24,7 @@ import {
 } from './utilities';
 import { Network } from '.';
 import { ImgixImage } from '@/components/images';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const LOADING_ASSETS_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },

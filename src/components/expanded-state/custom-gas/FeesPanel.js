@@ -32,7 +32,7 @@ import {
   useTimeout,
 } from '@/hooks';
 import { gweiToWei, parseGasFeeParam } from '@/parsers';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';

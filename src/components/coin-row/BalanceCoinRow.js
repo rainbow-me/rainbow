@@ -14,7 +14,7 @@ import CoinRow from './CoinRow';
 import { useIsCoinListEditedSharedValue } from '@/helpers/SharedValuesContext';
 import { buildAssetUniqueIdentifier } from '@/helpers/assets';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@rainbow-me/styled-components';
 
 const editTranslateOffset = 37;
