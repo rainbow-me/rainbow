@@ -9,7 +9,7 @@ import { cancelNext, uncancelNext } from '../hooks/useMagicAutofocus';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
-import { getActiveRoute, useNavigation } from './Navigation';
+import { /*getActiveRoute,*/ useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import {
@@ -18,7 +18,7 @@ import {
   swapSettingsPreset,
 } from './effects';
 import Routes from './routesNames';
-import { useSwapCurrencies } from '@rainbow-me/hooks';
+//import { useSwapCurrencies } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -73,7 +73,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const { params } = useRoute();
 
     const tabTransitionPosition = useValue(0);
-    const { inputCurrency, outputCurrency } = useSwapCurrencies();
+    // const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
     useEffect(() => {
       // Workaround to fix weird keyboard focus issues upon immediate screen focus then unfocus
@@ -116,18 +116,20 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       [tabTransitionPosition, toggleGestureEnabled]
     );
 
+    /*
     const routeName = getActiveRoute()?.name;
 
     const enableSwipe =
       routeName === Routes.CURRENCY_SELECT_SCREEN &&
       (!!inputCurrency || !!outputCurrency);
+    */
 
     return (
       <FlexItem>
         <Tabs.Navigator
           pager={renderPager}
           position={tabTransitionPosition}
-          swipeEnabled={enableSwipe}
+          swipeEnabled={false}
           {...exchangeTabNavigatorConfig}
         >
           <Tabs.Screen
