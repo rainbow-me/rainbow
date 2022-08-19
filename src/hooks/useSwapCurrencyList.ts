@@ -15,7 +15,7 @@ import {
   RainbowToken,
   RainbowToken as RT,
   TokenSearchTokenListId,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import tokenSearch from '@rainbow-me/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';

@@ -13,7 +13,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSModifiedRegistration,

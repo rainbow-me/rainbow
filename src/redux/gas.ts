@@ -22,7 +22,7 @@ import {
   LegacySelectedGasFee,
   RainbowMeteorologyData,
   SelectedGasFee,
-} from '@rainbow-me/entities';
+} from '@/entities';
 
 import {
   polygonGasStationGetGasPrices,

@@ -4,7 +4,7 @@ import uniq from 'lodash/uniq';
 import { InteractionManager } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { UserList } from '@rainbow-me/entities';
+import { UserList } from '@/entities';
 import {
   getSelectedUserList,
   getUserLists,

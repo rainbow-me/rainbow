@@ -5,7 +5,7 @@ import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
 import { useImagePicker } from '.';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import {
   uploadImage,
   UploadImageReturnData,

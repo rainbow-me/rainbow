@@ -14,7 +14,7 @@ import {
   handleSignificantDecimals,
   multiply,
 } from './utilities';
-import { ENSRegistrationRecords, EthereumAddress } from '@rainbow-me/entities';
+import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
 import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import { gweiToWei } from '@rainbow-me/parsers';
 import {

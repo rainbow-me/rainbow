@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
-import { RainbowToken, SwappableAsset } from '@rainbow-me/entities';
+import { RainbowToken, SwappableAsset } from '@/entities';
 import { Network } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';

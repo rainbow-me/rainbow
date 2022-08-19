@@ -7,7 +7,7 @@ import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import {
   UniswapPairData,
   UniswapPairHistoricalData,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
 import { pickShallow } from '@rainbow-me/helpers/utilities';
 import {

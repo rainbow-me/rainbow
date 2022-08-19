@@ -5,7 +5,7 @@ import {
 } from 'react-native-dotenv';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import { useCollectible } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

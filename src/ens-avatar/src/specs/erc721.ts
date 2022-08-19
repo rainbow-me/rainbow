@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import { BaseProvider } from '@ethersproject/providers';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import { apiGetAccountUniqueToken } from '@rainbow-me/handlers/opensea-api';
 import { getNFTByTokenId } from '@rainbow-me/handlers/simplehash';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';

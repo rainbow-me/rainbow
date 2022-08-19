@@ -31,7 +31,7 @@ import {
   toHexNoLeadingZeros,
 } from './web3';
 import config from '@/model/config';
-import { Asset } from '@rainbow-me/entities';
+import { Asset } from '@/entities';
 import {
   add,
   convertRawAmountToDecimalFormat,

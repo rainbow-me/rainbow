@@ -14,7 +14,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { Records } from '@rainbow-me/entities';
+import { Records } from '@/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 import { useTheme } from '@rainbow-me/theme';

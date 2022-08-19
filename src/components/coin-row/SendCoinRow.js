@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';

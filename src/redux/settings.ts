@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
 import { analytics } from '@rainbow-me/analytics';
-import { NativeCurrencyKeys } from '@rainbow-me/entities';
+import { NativeCurrencyKeys } from '@/entities';
 import {
   getAppIcon,
   getFlashbotsEnabled,

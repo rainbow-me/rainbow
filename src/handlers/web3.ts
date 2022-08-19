@@ -21,7 +21,7 @@ import {
   AssetType,
   NewTransaction,
   ParsedAddressAsset,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { isUnstoppableAddressFormat } from '@rainbow-me/helpers/validators';

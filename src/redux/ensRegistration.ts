@@ -7,7 +7,7 @@ import {
   Records,
   RegistrationParameters,
   TransactionRegistrationParameters,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import {
   getLocalENSRegistrations,
   saveLocalENSRegistrations,

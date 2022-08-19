@@ -13,7 +13,7 @@ import {
   signingWalletAddress,
   signingWallet as signingWalletKeychain,
 } from '../utils/keychainConstants';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { ethereumUtils, logger } from '@rainbow-me/utils';

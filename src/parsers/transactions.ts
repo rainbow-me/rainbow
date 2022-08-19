@@ -23,7 +23,7 @@ import {
   ZerionTransaction,
   ZerionTransactionChange,
   ZerionTransactionStatus,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';

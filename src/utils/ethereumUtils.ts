@@ -34,7 +34,7 @@ import {
   RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
   getProviderForNetwork,

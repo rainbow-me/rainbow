@@ -5,7 +5,7 @@ import {
   Asset,
   SavingsAsset,
   UniswapFavoriteTokenData,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';

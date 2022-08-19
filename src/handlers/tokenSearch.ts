@@ -5,7 +5,7 @@ import {
   TokenSearchThreshold,
   TokenSearchTokenListId,
   TokenSearchUniswapAssetKey,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import logger from 'logger';
 
 const tokenSearchApi = new RainbowFetchClient({

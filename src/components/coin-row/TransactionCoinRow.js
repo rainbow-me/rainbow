@@ -12,7 +12,7 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes, TransactionTypes } from '@/entities';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,

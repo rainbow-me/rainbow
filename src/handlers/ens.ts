@@ -39,7 +39,7 @@ import {
   ENSRegistrationRecords,
   Records,
   UniqueAsset,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { Network } from '@rainbow-me/helpers';
 import {
   ENS_DOMAIN,

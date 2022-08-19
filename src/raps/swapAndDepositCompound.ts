@@ -11,7 +11,7 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
-import { Asset } from '@rainbow-me/entities';
+import { Asset } from '@/entities';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import {

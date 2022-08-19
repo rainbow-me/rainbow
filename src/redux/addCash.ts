@@ -10,7 +10,7 @@ import {
   RainbowTransaction,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,

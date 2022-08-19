@@ -1,7 +1,7 @@
 import { Quote } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
-import { SwappableAsset } from '@rainbow-me/entities';
+import { SwappableAsset } from '@/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 

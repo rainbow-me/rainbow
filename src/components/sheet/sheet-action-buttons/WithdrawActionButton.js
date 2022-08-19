@@ -4,7 +4,7 @@ import { Linking } from 'react-native';
 import { neverRerender } from '../../../utils';
 import SheetActionButton from './SheetActionButton';
 import { analytics } from '@rainbow-me/analytics';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 
 function WithdrawActionButton({
   color: givenColor,

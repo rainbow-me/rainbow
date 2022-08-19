@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@rainbow-me/analytics';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import isTestFlight from '@rainbow-me/helpers/isTestFlight';

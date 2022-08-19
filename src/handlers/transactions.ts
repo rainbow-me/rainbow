@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import { web3Provider } from './web3';
 import { metadataClient } from '@/apollo/client';
 import { CONTRACT_FUNCTION } from '@/apollo/queries';
-import { ZerionTransaction } from '@rainbow-me/entities';
+import { ZerionTransaction } from '@/entities';
 import store from '@rainbow-me/redux/store';
 import { transactionSignaturesDataAddNewSignature } from '@rainbow-me/redux/transactionSignatures';
 import {

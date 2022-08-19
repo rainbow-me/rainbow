@@ -1,4 +1,4 @@
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import supportedUriExtensions from '@rainbow-me/helpers/supportedUriExtensions';
 

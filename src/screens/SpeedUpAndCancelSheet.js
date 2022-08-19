@@ -31,7 +31,7 @@ import {
   removeRegistrationByName,
   saveCommitRegistrationParameters,
 } from '@/redux/ensRegistration';
-import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
+import { GasFeeTypes, TransactionStatusTypes } from '@/entities';
 import {
   getFlashbotsProvider,
   getProviderForNetwork,

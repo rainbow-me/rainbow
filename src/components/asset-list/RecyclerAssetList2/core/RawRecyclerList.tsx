@@ -22,7 +22,7 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import {
   useAccountSettings,
   useCoinListEdited,

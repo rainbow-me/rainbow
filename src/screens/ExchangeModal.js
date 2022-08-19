@@ -33,7 +33,7 @@ import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { Box, Row, Rows } from '@/design-system';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetType } from '@/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ExchangeModalTypes,

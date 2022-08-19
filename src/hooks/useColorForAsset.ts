@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
-import { AssetType, ParsedAddressAsset } from '@rainbow-me/entities';
+import { AssetType, ParsedAddressAsset } from '@/entities';
 import {
   getTokenMetadata,
   getUrlForTrustIconFallback,

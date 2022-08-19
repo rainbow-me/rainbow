@@ -1,5 +1,5 @@
 import { getGlobal, saveGlobal } from './common';
-import { NativeCurrencyKeys } from '@rainbow-me/entities';
+import { NativeCurrencyKeys } from '@/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export const IMAGE_METADATA = 'imageMetadata';

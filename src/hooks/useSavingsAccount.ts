@@ -8,7 +8,7 @@ import useAccountSettings from './useAccountSettings';
 import { useGenericAssets } from './useGenericAsset';
 import { compoundClient } from '@/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@/apollo/queries';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';

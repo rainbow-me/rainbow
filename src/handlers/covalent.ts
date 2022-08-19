@@ -6,7 +6,7 @@ import {
   COVALENT_IOS_API_KEY,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import Logger from 'logger';
 
 // A response from Covalent for the address balance API.

@@ -18,7 +18,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import { Network } from '@rainbow-me/helpers';
 import {
   useClipboard,

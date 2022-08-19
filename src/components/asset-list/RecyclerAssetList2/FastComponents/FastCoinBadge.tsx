@@ -6,7 +6,7 @@ import OptimismBadge from '@/assets/badges/optimismBadge.png';
 import OptimismBadgeDark from '@/assets/badges/optimismBadgeDark.png';
 import PolygonBadge from '@/assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '@/assets/badges/polygonBadgeDark.png';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetType } from '@/entities';
 
 interface FastChainBadgeProps {
   assetType: AssetType;

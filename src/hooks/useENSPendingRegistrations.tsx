@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
-import { ENSRegistrationState } from '@rainbow-me/entities';
+import { ENSRegistrationState } from '@/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useNavigation } from '@rainbow-me/navigation';
 import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';

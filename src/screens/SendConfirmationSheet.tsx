@@ -40,7 +40,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text } from '@/design-system';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,

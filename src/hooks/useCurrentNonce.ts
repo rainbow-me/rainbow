@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { AppState } from '@rainbow-me/redux/store';

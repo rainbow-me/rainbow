@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import { getHumanReadableDate, hasAddableContact } from './transactions';
 import { isValidDomainFormat } from './validators';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes } from '@/entities';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

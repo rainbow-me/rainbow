@@ -37,7 +37,7 @@ import {
   ZerionAsset,
   ZerionAssetFallback,
   ZerionTransaction,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import appEvents from '@rainbow-me/handlers/appEvents';
 import {
   getAccountAssetsData,

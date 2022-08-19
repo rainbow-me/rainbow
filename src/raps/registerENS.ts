@@ -7,7 +7,7 @@ import {
   RapActionTypes,
   RapENSAction,
 } from './common';
-import { Records } from '@rainbow-me/entities';
+import { Records } from '@/entities';
 import {
   formatRecordsForTransaction,
   getRapActionTypeForTxType,

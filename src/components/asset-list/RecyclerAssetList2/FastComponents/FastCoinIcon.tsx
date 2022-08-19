@@ -6,7 +6,7 @@ import { FastChainBadge } from './FastCoinBadge';
 import { FastFallbackCoinIconImage } from './FastFallbackCoinIconImage';
 import ContractInteraction from '@/assets/contractInteraction.png';
 import EthIcon from '@/assets/eth-icon.png';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetType } from '@/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { borders, fonts } from '@rainbow-me/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';

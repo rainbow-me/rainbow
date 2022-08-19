@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetType } from '@/entities';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,

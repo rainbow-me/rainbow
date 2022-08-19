@@ -9,7 +9,7 @@ import {
   EthereumAddress,
   RainbowToken,
   UniswapFavoriteTokenData,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import {
   getUniswapFavorites,

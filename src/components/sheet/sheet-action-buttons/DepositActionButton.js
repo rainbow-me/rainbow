@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { Linking } from 'react-native';
 import SheetActionButton from './SheetActionButton';
 import { analytics } from '@rainbow-me/analytics';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import { neverRerender } from '@rainbow-me/utils';
 
 function DepositActionButton({

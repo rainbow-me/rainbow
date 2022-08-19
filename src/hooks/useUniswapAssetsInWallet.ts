@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ParsedAddressAsset } from '@rainbow-me/entities';
+import { ParsedAddressAsset } from '@/entities';
 import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
 import NetworkTypes from '@rainbow-me/networkTypes';

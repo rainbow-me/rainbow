@@ -12,7 +12,7 @@ import { Centered, Row } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes } from '@/entities';
 import {
   ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,

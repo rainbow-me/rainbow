@@ -6,7 +6,7 @@ import {
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { analytics } from '@rainbow-me/analytics';
-import { ENSRegistrationRecords } from '@rainbow-me/entities';
+import { ENSRegistrationRecords } from '@/entities';
 import {
   estimateENSTransactionGasLimit,
   formatRecordsForTransaction,

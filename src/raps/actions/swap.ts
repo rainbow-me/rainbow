@@ -11,7 +11,7 @@ import {
   ProtocolType,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import {
   estimateSwapGasLimit,
   executeSwap,

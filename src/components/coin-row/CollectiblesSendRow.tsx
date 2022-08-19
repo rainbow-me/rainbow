@@ -10,7 +10,7 @@ import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { padding } from '@rainbow-me/styles';
 

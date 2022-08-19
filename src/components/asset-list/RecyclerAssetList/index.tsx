@@ -33,7 +33,7 @@ import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import {
   useCoinListEdited,
   useOpenFamilies,

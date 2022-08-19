@@ -14,7 +14,7 @@ import {
   Asset,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';

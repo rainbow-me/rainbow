@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
 import { analytics } from '@rainbow-me/analytics';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import walletTypes from '@rainbow-me/helpers/walletTypes';

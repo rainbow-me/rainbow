@@ -2,7 +2,7 @@ import { differenceInDays, differenceInYears } from 'date-fns';
 import { sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes } from '@/entities';
 import { AppState } from '@rainbow-me/redux/store';
 
 const DEFAULT_WEEKLY_LIMIT = 500;

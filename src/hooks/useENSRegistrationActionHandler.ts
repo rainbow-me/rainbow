@@ -13,7 +13,7 @@ import {
   useENSRegistration,
   useWalletENSAvatar,
 } from '.';
-import { Records, RegistrationParameters } from '@rainbow-me/entities';
+import { Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
 import { saveNameFromLabelhash } from '@rainbow-me/handlers/localstorage/ens';
 import { uploadImage } from '@rainbow-me/handlers/pinata';

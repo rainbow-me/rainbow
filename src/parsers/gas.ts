@@ -16,7 +16,7 @@ import {
   Numberish,
   RainbowMeteorologyData,
   SelectedGasFee,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
 import {

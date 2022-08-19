@@ -14,7 +14,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { RegistrationParameters } from '@rainbow-me/entities';
+import { RegistrationParameters } from '@/entities';
 import { useENSPendingRegistrations } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 

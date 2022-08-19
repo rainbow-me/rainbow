@@ -1,7 +1,7 @@
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { dataUpdateAsset } from './data';
-import { ParsedAddressAsset, SwappableAsset } from '@rainbow-me/entities';
+import { ParsedAddressAsset, SwappableAsset } from '@/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import { getCoingeckoIds } from '@rainbow-me/handlers/dispersion';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';

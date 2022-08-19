@@ -2,7 +2,7 @@ import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
-import { Records } from '@rainbow-me/entities';
+import { Records } from '@/entities';
 import {
   ENS_RECORDS,
   REGISTRATION_MODES,

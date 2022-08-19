@@ -24,7 +24,7 @@ import {
   ZerionAsset,
   ZerionAssetFallback,
   ZerionAssetPrice,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';

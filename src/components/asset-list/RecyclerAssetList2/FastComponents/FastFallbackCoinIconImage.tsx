@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetType } from '@/entities';
 import { useForceUpdate } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { ThemeContextProps } from '@rainbow-me/theme';

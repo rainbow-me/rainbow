@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
-import { Records } from '@rainbow-me/entities';
+import { Records } from '@/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 

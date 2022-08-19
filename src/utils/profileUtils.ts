@@ -1,5 +1,5 @@
 import colors from '../styles/colors';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 
 // avatars groups emojis with their respective color backgrounds in the `avatarBackgrounds` object in colors.js

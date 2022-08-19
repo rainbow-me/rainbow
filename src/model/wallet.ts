@@ -36,7 +36,7 @@ import profileUtils, {
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
   authenticateWithPIN,

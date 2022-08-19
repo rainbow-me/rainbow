@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import useIsMounted from './useIsMounted';
 import { applyENSMetadataFallbackToTokens } from '@/parsers/uniqueTokens';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
   getUniqueTokens,

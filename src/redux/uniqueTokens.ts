@@ -9,7 +9,7 @@ import {
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
 import { analytics } from '@rainbow-me/analytics';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
   getUniqueTokens,

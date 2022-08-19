@@ -1,6 +1,6 @@
 import { isNil } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
-import { EthereumAddress, NonceManager } from '@rainbow-me/entities';
+import { EthereumAddress, NonceManager } from '@/entities';
 import {
   getNonceManager,
   saveNonceManager,

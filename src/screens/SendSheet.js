@@ -26,7 +26,7 @@ import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {

@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import { analytics } from '@rainbow-me/analytics';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes } from '@/entities';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {

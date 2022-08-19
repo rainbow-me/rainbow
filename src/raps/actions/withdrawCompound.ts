@@ -10,7 +10,7 @@ import {
   ProtocolType,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';

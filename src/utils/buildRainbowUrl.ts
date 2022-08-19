@@ -1,4 +1,4 @@
-import { EthereumAddress, UniqueAsset } from '@rainbow-me/entities';
+import { EthereumAddress, UniqueAsset } from '@/entities';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 
 export default function buildRainbowUrl(

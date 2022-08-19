@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,

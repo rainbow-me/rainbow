@@ -3,7 +3,7 @@ import { Image } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import EthIcon from '@/assets/eth-icon.png';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';

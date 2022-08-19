@@ -9,7 +9,7 @@ import { Column } from '../layout';
 import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import {
   useColorForAsset,
   useDimensions,

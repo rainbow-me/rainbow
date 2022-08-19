@@ -5,7 +5,7 @@ import {
   IndexToken,
   RainbowToken,
   UniswapPoolData,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import UniswapAssetsCache from '@rainbow-me/utils/uniswapAssetsCache';
 import logger from 'logger';
 

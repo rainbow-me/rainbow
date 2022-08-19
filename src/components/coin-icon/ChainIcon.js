@@ -7,7 +7,7 @@ import OptimismBadgeDark from '../../assets/badges/optimismBadgeDark.png';
 import PolygonBadge from '../../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
 import { Centered } from '../layout';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetType } from '@/entities';
 import styled from '@rainbow-me/styled-components';
 
 const sizeConfigs = {

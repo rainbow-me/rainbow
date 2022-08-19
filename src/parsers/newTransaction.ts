@@ -4,7 +4,7 @@ import {
   RainbowTransaction,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
 import {

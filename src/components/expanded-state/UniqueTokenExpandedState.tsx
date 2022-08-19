@@ -51,7 +51,7 @@ import {
   Text,
   TextProps,
 } from '@/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import { Network } from '@rainbow-me/helpers';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';

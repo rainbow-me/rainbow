@@ -8,7 +8,7 @@ import {
   useENSRegistration,
   usePrevious,
 } from '.';
-import { Records, UniqueAsset } from '@rainbow-me/entities';
+import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';

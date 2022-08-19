@@ -1,4 +1,4 @@
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
 import { Network } from '@rainbow-me/helpers';
 
