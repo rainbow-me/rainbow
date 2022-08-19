@@ -8,7 +8,7 @@ import {
   getENSDomains,
   setENSDomains,
 } from '@/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
+import { queryClient } from '@/react-query/queryClient';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [
   'domains',

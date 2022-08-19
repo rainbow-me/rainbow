@@ -1,8 +1,8 @@
 import { useQuery } from 'react-query';
 import { fetchResolver } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { queryClient } from '@/react-query/queryClient';
+import { QueryConfig, UseQueryData } from '@/react-query/types';
 import { ensPublicResolverAddress } from '@rainbow-me/references';
 
 export const ensResolverQueryKey = (name: string) => ['ens-resolver', name];

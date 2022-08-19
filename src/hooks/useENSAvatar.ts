@@ -1,8 +1,8 @@
 import { useQuery } from 'react-query';
 import { fetchImage } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { queryClient } from '@/react-query/queryClient';
+import { QueryConfig, UseQueryData } from '@/react-query/types';
 
 export const ensAvatarQueryKey = (name: string) => ['ens-avatar', name];
 
