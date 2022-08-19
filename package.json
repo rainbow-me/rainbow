@@ -548,7 +548,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "prettier --write",
-      "eslint -c .eslintrc.js"
+      "eslint --cache"
     ]
   }
 }

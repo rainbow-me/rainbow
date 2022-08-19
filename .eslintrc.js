@@ -112,7 +112,9 @@ module.exports = {
     'import/no-named-as-default-member': 'off',
 
     /**
-     * From the docs: "The following rules do not have equivalent checks in TypeScript, so we recommend that you only run them at CI/push time, to lessen the local performance burden."
+     * From the docs: "The following rules do not have equivalent checks in
+     * TypeScript, so we recommend that you only run them at CI/push time, to
+     * lessen the local performance burden."
      */
     'import/no-named-as-default': 'off',
     'import/no-cycle': 'off',
