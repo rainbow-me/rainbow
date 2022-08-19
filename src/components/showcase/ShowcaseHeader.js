@@ -16,7 +16,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { colors, padding } from '@/styles';
-import { abbreviations, profileUtils } from '@rainbow-me/utils';
+import { abbreviations, profileUtils } from '@/utils';
 
 export const ShowcaseContext = createContext();
 

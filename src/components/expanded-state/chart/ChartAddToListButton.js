@@ -10,7 +10,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 const AddToListButtonPadding = 19;
 

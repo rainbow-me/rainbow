@@ -35,9 +35,9 @@ import {
   ethereumUtils,
   magicMemo,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
-import { getFullResUrl } from '@rainbow-me/utils/getFullResUrl';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+} from '@/utils';
+import { getFullResUrl } from '@/utils/getFullResUrl';
+import isSVGImage from '@/utils/isSVG';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',

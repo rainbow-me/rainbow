@@ -44,7 +44,7 @@ import {
 import { useDimensions, usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { colors, position } from '@/styles';
-import { safeAreaInsetValues } from '@rainbow-me/utils';
+import { safeAreaInsetValues } from '@/utils';
 
 const idsAtom = atom<string[]>({
   default: [],

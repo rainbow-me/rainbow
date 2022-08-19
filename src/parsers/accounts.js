@@ -11,8 +11,8 @@ import {
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
 } from '@/helpers/utilities';
-import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
-import { memoFn } from '@rainbow-me/utils/memoFn';
+import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
+import { memoFn } from '@/utils/memoFn';
 
 /**
  * @desc parse account assets

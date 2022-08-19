@@ -24,7 +24,7 @@ import {
   gasUpdateToCustomGasFee,
   gasUpdateTxFee,
 } from '@/redux/gas';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 const checkSufficientGas = (
   txFee: LegacyGasFee | GasFee,

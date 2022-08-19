@@ -4,7 +4,7 @@ import { Linking } from 'react-native';
 import SheetActionButton from './SheetActionButton';
 import { analytics } from '@rainbow-me/analytics';
 import { AssetTypes } from '@/entities';
-import { neverRerender } from '@rainbow-me/utils';
+import { neverRerender } from '@/utils';
 
 function DepositActionButton({
   color: givenColor,

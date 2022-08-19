@@ -13,7 +13,7 @@ import {
 } from '@/helpers/ens';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {

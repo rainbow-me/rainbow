@@ -34,7 +34,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { watchingAlert } from '@rainbow-me/utils';
+import { watchingAlert } from '@/utils';
 
 export const SavingsSheetEmptyHeight = 313;
 export const SavingsSheetHeight = android

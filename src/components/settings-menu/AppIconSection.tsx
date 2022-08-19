@@ -12,7 +12,7 @@ import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
-import Logger from '@rainbow-me/utils/logger';
+import Logger from '@/utils/logger';
 
 type AppIcon = {
   color: string;

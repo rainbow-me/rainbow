@@ -7,7 +7,7 @@ import {
 import { queryClient } from '@/react-query/queryClient';
 import { nonceManagerLoadState } from '@/redux/nonceManager';
 import { AppState } from '@/redux/store';
-import { promiseUtils } from '@rainbow-me/utils';
+import { promiseUtils } from '@/utils';
 import logger from 'logger';
 
 const loadWalletBalanceNamesToCache = () =>

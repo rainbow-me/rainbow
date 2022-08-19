@@ -31,7 +31,7 @@ import {
 import { useNavigation } from '@/navigation';
 import { Source } from '@/redux/swap';
 import Routes from '@/navigation/routesNames';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();

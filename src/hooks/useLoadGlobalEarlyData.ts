@@ -8,7 +8,7 @@ import {
   settingsLoadState,
 } from '@/redux/settings';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
-import { promiseUtils } from '@rainbow-me/utils';
+import { promiseUtils } from '@/utils';
 import logger from 'logger';
 
 export default function useLoadGlobalEarlyData() {

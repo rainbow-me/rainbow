@@ -7,7 +7,7 @@ import { SlackSheet } from '../components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
 import { accentColorAtom, textRecordFields } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@/hooks';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 export const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;

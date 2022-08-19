@@ -38,7 +38,7 @@ import { emitAssetRequest } from '@/redux/explorer';
 import { ETH_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
+import { magicMemo, safeAreaInsetValues } from '@/utils';
 
 const Spacer = styled.View({
   height: safeAreaInsetValues.bottom + 20,

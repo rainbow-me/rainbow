@@ -8,7 +8,7 @@ import { Text } from '../../text';
 import { useGas } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
-import { gasUtils } from '@rainbow-me/utils';
+import { gasUtils } from '@/utils';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 

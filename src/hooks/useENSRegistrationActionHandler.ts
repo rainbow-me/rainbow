@@ -28,7 +28,7 @@ import { loadWallet } from '@/model/wallet';
 import { executeRap } from '@/raps';
 import { timeUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { labelhash, logger } from '@rainbow-me/utils';
+import { labelhash, logger } from '@/utils';
 
 const NOOP = () => null;
 

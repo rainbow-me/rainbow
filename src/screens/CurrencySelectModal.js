@@ -52,7 +52,7 @@ import {
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { ethereumUtils, filterList } from '@rainbow-me/utils';
+import { ethereumUtils, filterList } from '@/utils';
 
 const storage = new MMKV();
 const getHasShownWarning = () =>

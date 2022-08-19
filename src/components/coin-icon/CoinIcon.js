@@ -14,7 +14,7 @@ import {
   isETH,
   magicMemo,
   CoinIcon as ReactCoinIcon,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 export const CoinIconSize = 40;
 

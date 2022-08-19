@@ -24,7 +24,7 @@ import {
   updateTransactionRegistrationParameters,
 } from '@/redux/ensRegistration';
 import store from '@/redux/store';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import logger from 'logger';
 const executeCommit = async (
   name?: string,

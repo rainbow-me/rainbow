@@ -8,7 +8,7 @@ import {
   isValidMnemonic,
   resolveUnstoppableDomain,
 } from '@/handlers/web3';
-import { sanitizeSeedPhrase } from '@rainbow-me/utils';
+import { sanitizeSeedPhrase } from '@/utils';
 
 // Currently supported Top Level Domains from Unstoppable Domains
 const supportedUnstoppableDomains = [

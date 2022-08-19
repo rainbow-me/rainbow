@@ -31,7 +31,7 @@ import {
   multiply,
   times,
 } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const formatItem = (

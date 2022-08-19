@@ -30,7 +30,7 @@ import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 

@@ -15,7 +15,7 @@ import {
   walletsSetSelected,
 } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import { doesWalletsContainAddress, logger } from '@rainbow-me/utils';
+import { doesWalletsContainAddress, logger } from '@/utils';
 
 export default function useWatchWallet({
   address: primaryAddress,

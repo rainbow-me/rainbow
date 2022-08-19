@@ -20,7 +20,7 @@ import {
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;

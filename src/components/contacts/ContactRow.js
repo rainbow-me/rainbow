@@ -25,7 +25,7 @@ import { margin } from '@/styles';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
+} from '@/utils/profileUtils';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({

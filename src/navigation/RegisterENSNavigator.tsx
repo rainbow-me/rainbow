@@ -22,7 +22,7 @@ import {
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const Swipe = createMaterialTopTabNavigator();
 

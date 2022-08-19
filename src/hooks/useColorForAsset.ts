@@ -7,7 +7,7 @@ import {
   getUrlForTrustIconFallback,
   isETH,
   pseudoRandomArrayItemFromString,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},

@@ -4,7 +4,7 @@ import TextInputMask from 'react-native-text-input-mask';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { buildTextStyles } from '@/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 const AndroidMaskWrapper = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,

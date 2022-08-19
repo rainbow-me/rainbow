@@ -30,7 +30,7 @@ import {
   useWalletsWithBalancesAndNames,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, haptics } from '@rainbow-me/utils';
+import { ethereumUtils, haptics } from '@/utils';
 import logger from 'logger';
 
 export const WalletDiagnosticsSheetHeight = '100%';

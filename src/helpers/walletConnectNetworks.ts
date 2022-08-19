@@ -1,6 +1,6 @@
 import networkInfo from './networkInfo';
 import store from '@/redux/store';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;

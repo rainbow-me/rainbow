@@ -26,7 +26,7 @@ import {
 import { add } from '@/helpers/utilities';
 import { useDimensions, useGas } from '@/hooks';
 import { useTheme } from '@/theme';
-import { gasUtils } from '@rainbow-me/utils';
+import { gasUtils } from '@/utils';
 
 type AnimationConfigOptions = {
   duration: number;

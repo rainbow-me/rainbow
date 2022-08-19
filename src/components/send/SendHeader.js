@@ -23,7 +23,7 @@ import { useClipboard, useDimensions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { profileUtils, showActionSheetWithOptions } from '@/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({

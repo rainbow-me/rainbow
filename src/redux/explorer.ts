@@ -47,7 +47,7 @@ import {
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
 } from '@/references';
-import { ethereumUtils, TokensListenedCache } from '@rainbow-me/utils';
+import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //

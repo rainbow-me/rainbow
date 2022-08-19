@@ -6,7 +6,7 @@ import {
   RainbowToken,
   UniswapPoolData,
 } from '@/entities';
-import UniswapAssetsCache from '@rainbow-me/utils/uniswapAssetsCache';
+import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
 import logger from 'logger';
 
 const dispersionApi = new RainbowFetchClient({

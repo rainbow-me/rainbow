@@ -12,7 +12,7 @@ import { getOneDayVolume } from './useUniswapPools';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { AppDispatch, AppState } from '@/redux/store';
 import { setPoolsDetails } from '@/redux/uniswapLiquidity';
-import { ethereumUtils, getBlocksFromTimestamps } from '@rainbow-me/utils';
+import { ethereumUtils, getBlocksFromTimestamps } from '@/utils';
 
 function cutIfOver10000(value: number) {
   return value > 10000 ? Math.round(value) : value;

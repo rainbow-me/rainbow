@@ -32,8 +32,8 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
-import Logger from '@rainbow-me/utils/logger';
+import { ethereumUtils } from '@/utils';
+import Logger from '@/utils/logger';
 
 const SWAP_POLLING_INTERVAL = 5000;
 enum DisplayValue {

@@ -12,7 +12,7 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useNavigation } from '@/navigation/Navigation';
 import { walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { showActionSheetWithOptions } from '@/utils';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();

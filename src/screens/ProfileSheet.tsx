@@ -27,7 +27,7 @@ import {
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
+import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;

@@ -27,7 +27,7 @@ import {
 } from '@/hooks';
 import { ensIntroMarqueeNames } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { watchingAlert } from '@rainbow-me/utils';
+import { watchingAlert } from '@/utils';
 
 const CARD_BORDER_WIDTH = 0.25;
 

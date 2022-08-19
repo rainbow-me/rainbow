@@ -10,7 +10,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Inline } from '@/design-system';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { magicMemo, showActionSheetWithOptions } from '@/utils';
 
 const HairlineSpace = '\u200a';
 

@@ -30,7 +30,7 @@ import {
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { watchingAlert } from '@rainbow-me/utils';
+import { watchingAlert } from '@/utils';
 
 const CardShadow: CustomShadow = {
   custom: {

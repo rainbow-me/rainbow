@@ -5,7 +5,7 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import { TransactionStatusTypes } from '@/entities';
 import { position } from '@/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 const StatusProps = {
   [TransactionStatusTypes.approved]: {

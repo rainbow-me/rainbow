@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { avatarBuilderStyles } from './avatarBuilderStyles';
 import { useTheme } from '@/theme';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 interface Props {
   title: string;

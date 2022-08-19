@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { ethereumUtils, isLowerCaseMatch } from '@rainbow-me/utils';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 
 export default function usePendingTransactions() {
   const pendingTransactions = useSelector(

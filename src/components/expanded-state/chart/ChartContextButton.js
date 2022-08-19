@@ -7,7 +7,7 @@ import {
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
 } from '@/hooks';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 const emojiSpacing = ios ? '' : '  ';
 

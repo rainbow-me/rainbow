@@ -5,7 +5,7 @@ import SendAssetFormField from './SendAssetFormField';
 import { useDimensions } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
 import styled from '@/styled-thing';
-import { removeLeadingZeros } from '@rainbow-me/utils';
+import { removeLeadingZeros } from '@/utils';
 
 const footerMargin = getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(Column).attrs({

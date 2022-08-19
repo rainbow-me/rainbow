@@ -19,7 +19,7 @@ import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@/entities';
 import { buildTransactionUniqueIdentifier } from '@/helpers/transactions';
 import styled from '@/styled-thing';
-import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,

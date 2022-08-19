@@ -44,11 +44,11 @@ import {
   useWallets,
 } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { showActionSheetWithOptions } from '@/utils';
 import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
-} from '@rainbow-me/utils/reviewAlert';
+} from '@/utils/reviewAlert';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 

@@ -27,7 +27,7 @@ import {
 } from '@/redux/explorer';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 export default async function handleDeeplink(
   url: any,

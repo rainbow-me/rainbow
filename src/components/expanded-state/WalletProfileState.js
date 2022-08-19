@@ -9,7 +9,7 @@ import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/walle
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
-import { profileUtils } from '@rainbow-me/utils';
+import { profileUtils } from '@/utils';
 
 export default function WalletProfileState({
   actionType,

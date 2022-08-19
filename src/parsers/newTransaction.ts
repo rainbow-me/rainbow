@@ -11,7 +11,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
 } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 /**
  * @desc parse transactions from native prices

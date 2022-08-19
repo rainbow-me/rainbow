@@ -12,7 +12,7 @@ import { useNavigation } from '@/navigation';
 import { Source } from '@/redux/swap';
 import Routes from '@/navigation/routesNames';
 
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { showActionSheetWithOptions } from '@/utils';
 
 const sourceMenuItems = () => {
   return Object.values(Source).map(source => ({

@@ -20,7 +20,7 @@ import {
 } from '@/redux/swap';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 

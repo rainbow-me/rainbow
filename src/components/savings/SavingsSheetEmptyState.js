@@ -12,7 +12,7 @@ import { DAI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo, watchingAlert } from '@rainbow-me/utils';
+import { magicMemo, watchingAlert } from '@/utils';
 
 const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,

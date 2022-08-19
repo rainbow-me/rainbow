@@ -38,7 +38,7 @@ import {
   migratedTokens,
 } from '@/references';
 import { delay } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import logger from 'logger';
 
 let lastUpdatePayload: FallbackOnChainAssetsPayload | null = null;

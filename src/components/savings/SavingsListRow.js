@@ -24,7 +24,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;

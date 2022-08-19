@@ -28,7 +28,7 @@ import {
   WBTC_ADDRESS,
   WETH_ADDRESS,
 } from '@/references';
-import { ethereumUtils, filterList, logger } from '@rainbow-me/utils';
+import { ethereumUtils, filterList, logger } from '@/utils';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =

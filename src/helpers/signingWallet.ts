@@ -16,7 +16,7 @@ import {
 import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { addHexPrefix } from '@/handlers/web3';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils, logger } from '@/utils';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);

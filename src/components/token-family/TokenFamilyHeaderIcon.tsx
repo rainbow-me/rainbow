@@ -7,7 +7,7 @@ import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { borders } from '@/styles';
 import { ThemeContextProps } from '@/theme';
-import { FallbackIcon, initials } from '@rainbow-me/utils';
+import { FallbackIcon, initials } from '@/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 type Props = {

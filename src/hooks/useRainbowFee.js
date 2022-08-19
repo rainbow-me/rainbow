@@ -7,7 +7,7 @@ import {
   subtract,
 } from '@/helpers/utilities';
 import { useAccountSettings, useSwapCurrencies } from '@/hooks';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 export default function useRainbowFee({ tradeDetails, network }) {
   const { inputCurrency } = useSwapCurrencies();

@@ -13,7 +13,7 @@ import {
   getUrlForTrustIconFallback,
   isETH,
   magicMemo,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

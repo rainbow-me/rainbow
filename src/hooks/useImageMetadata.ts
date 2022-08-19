@@ -8,7 +8,7 @@ import {
 } from '@/redux/imageMetadata';
 import { AppState } from '@/redux/store';
 import { position } from '@/styles';
-import { getDominantColorFromImage } from '@rainbow-me/utils';
+import { getDominantColorFromImage } from '@/utils';
 
 export default function useImageMetadata(imageUrl: string | null) {
   const dispatch = useDispatch();

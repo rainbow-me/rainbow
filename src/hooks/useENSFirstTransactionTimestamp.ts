@@ -4,7 +4,7 @@ import { fetchENSAddress } from './useENSAddress';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
 import { queryClient } from '@/react-query/queryClient';
 import { QueryConfig, UseQueryData } from '@/react-query/types';
-import { getFirstTransactionTimestamp } from '@rainbow-me/utils/ethereumUtils';
+import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
 
 const ensFirstTxTimestampQueryKey = (name: string) => [
   'first-transaction-timestamp',

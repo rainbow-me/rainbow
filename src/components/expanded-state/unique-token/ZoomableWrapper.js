@@ -21,7 +21,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { safeAreaInsetValues } from '@rainbow-me/utils';
+import { safeAreaInsetValues } from '@/utils';
 
 const adjustConfig = {
   duration: 300,

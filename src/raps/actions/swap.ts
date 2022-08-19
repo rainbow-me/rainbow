@@ -22,7 +22,7 @@ import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { greaterThan } from '@/helpers/utilities';
-import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
+import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from 'logger';
 
 const actionName = 'swap';

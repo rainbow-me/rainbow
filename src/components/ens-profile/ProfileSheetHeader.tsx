@@ -33,7 +33,7 @@ import {
   useFetchUniqueTokens,
   useOpenENSNFTHandler,
 } from '@/hooks';
-import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,

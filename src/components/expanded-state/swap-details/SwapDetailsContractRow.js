@@ -19,7 +19,7 @@ import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const SwapDetailsText = styled(Text).attrs({
   lineHeight: android ? 18 : 17,

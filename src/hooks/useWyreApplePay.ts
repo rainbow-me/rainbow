@@ -18,7 +18,7 @@ import useAccountSettings from './useAccountSettings';
 import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
 import { analytics } from '@rainbow-me/analytics';
-import { getTokenMetadata } from '@rainbow-me/utils';
+import { getTokenMetadata } from '@/utils';
 import logger from 'logger';
 
 export default function useWyreApplePay() {

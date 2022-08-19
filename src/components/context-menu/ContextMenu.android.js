@@ -4,7 +4,7 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { omitFlatten } from '@/helpers/utilities';
 import { padding } from '@/styles';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { showActionSheetWithOptions } from '@/utils';
 
 const ActionSheetProps = [
   'cancelButtonIndex',

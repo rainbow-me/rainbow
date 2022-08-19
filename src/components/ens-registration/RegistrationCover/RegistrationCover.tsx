@@ -22,7 +22,7 @@ import {
   useSelectImageMenu,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
+import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,

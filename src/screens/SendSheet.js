@@ -83,7 +83,7 @@ import {
   deviceUtils,
   ethereumUtils,
   getUniqueTokenType,
-} from '@rainbow-me/utils';
+} from '@/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);

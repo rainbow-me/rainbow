@@ -21,7 +21,7 @@ import {
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { abbreviations } from '@rainbow-me/utils';
+import { abbreviations } from '@/utils';
 
 const dropdownArrowWidth = 21;
 

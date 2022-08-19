@@ -11,7 +11,7 @@ import {
   useSwapCurrencyHandlers,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 function SwapActionButton({
   asset,

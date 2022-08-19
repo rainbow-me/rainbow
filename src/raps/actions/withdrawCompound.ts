@@ -23,7 +23,7 @@ import {
   savingsAssetsListByUnderlying,
 } from '@/references';
 import { convertAmountToRawAmount, isEqual } from '@/helpers/utilities';
-import { gasUtils } from '@rainbow-me/utils';
+import { gasUtils } from '@/utils';
 import logger from 'logger';
 
 const CTOKEN_DECIMALS = 8;

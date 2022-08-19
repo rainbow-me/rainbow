@@ -26,7 +26,7 @@ import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const containerStyles = {
   paddingLeft: 19,

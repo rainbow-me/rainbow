@@ -44,7 +44,7 @@ import {
   useRefreshAccountData,
 } from '@/hooks';
 import styled from '@/styled-thing';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {

@@ -42,7 +42,7 @@ import {
   deviceUtils,
   doesWalletsContainAddress,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 import logger from 'logger';
 

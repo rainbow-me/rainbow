@@ -2,7 +2,7 @@ import React from 'react';
 import { ButtonPressAnimation } from '../animations';
 import FloatingEmojis from './FloatingEmojis';
 import { useClipboard } from '@/hooks';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 const CopyFloatingEmojis = ({
   children,

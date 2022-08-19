@@ -8,7 +8,7 @@ import CoinRow from './CoinRow';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils, magicMemo } from '@rainbow-me/utils';
+import { ethereumUtils, magicMemo } from '@/utils';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;

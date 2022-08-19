@@ -7,7 +7,7 @@ import { useNavigation } from '@/navigation';
 import { removeExpiredRegistrations } from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
 import Routes from '@/navigation/routesNames';
-import { getENSNFTAvatarUrl } from '@rainbow-me/utils';
+import { getENSNFTAvatarUrl } from '@/utils';
 
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();

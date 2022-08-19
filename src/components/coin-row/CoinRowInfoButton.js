@@ -17,7 +17,7 @@ import {
   ethereumUtils,
   haptics,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const InfoButton = styled(Centered)({
   ...padding.object(8, 0),

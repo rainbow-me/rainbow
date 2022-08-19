@@ -49,7 +49,7 @@ import store from '@/redux/store';
 import { walletsUpdate } from '@/redux/wallets';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import logger from 'logger';
 
 const DevSection = () => {

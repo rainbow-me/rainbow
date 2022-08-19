@@ -34,7 +34,7 @@ import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
+import { ethereumUtils, sanitizeSeedPhrase } from '@/utils';
 import logger from 'logger';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {

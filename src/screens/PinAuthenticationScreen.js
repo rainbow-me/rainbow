@@ -18,7 +18,7 @@ import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { haptics } from '@rainbow-me/utils';
+import { haptics } from '@/utils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,

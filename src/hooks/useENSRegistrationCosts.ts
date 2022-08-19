@@ -35,7 +35,7 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { ethUnits, timeUnits } from '@/references';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
+import { ethereumUtils, gasUtils } from '@/utils';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',

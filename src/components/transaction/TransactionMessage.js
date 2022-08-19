@@ -7,7 +7,7 @@ import { Text } from '../text';
 import { isHexString } from '@/handlers/web3';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const horizontalPadding = 24;

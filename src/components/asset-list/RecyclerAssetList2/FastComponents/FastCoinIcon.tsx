@@ -14,7 +14,7 @@ import {
   FallbackIcon as CoinIconTextFallback,
   getTokenMetadata,
   isETH,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

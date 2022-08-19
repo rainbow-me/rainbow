@@ -7,7 +7,7 @@ import { Row } from '../layout';
 import { Label } from '../text';
 import { useClipboard, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-import { abbreviations, addressUtils } from '@rainbow-me/utils';
+import { abbreviations, addressUtils } from '@/utils';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',

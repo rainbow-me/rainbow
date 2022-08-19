@@ -8,7 +8,7 @@ import {
   ethereumUtils,
   haptics,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const buildBlockExplorerAction = (type: Network) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {

@@ -13,7 +13,7 @@ import {
 } from '@/helpers/ens';
 import { Network } from '@/helpers/networkTypes';
 import { timeUnits } from '@/references';
-import { ethereumUtils, validateENS } from '@rainbow-me/utils';
+import { ethereumUtils, validateENS } from '@/utils';
 
 const formatTime = (timestamp: string, abbreviated: boolean = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';

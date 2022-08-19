@@ -24,7 +24,7 @@ import {
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { haptics } from '@rainbow-me/utils';
+import { haptics } from '@/utils';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

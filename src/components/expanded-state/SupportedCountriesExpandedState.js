@@ -10,7 +10,7 @@ import { useDimensions } from '@/hooks';
 import { wyreSupportedCountries } from '@/references';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { neverRerender } from '@rainbow-me/utils';
+import { neverRerender } from '@/utils';
 
 const Panel = styled(FloatingPanels)(
   ({ deviceDimensions: { isTallPhone, width } }) => ({

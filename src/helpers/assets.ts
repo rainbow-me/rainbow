@@ -12,7 +12,7 @@ import {
   ethereumUtils,
   getUniqueTokenFormat,
   getUniqueTokenType,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const COINS_TO_SHOW = 5;
 

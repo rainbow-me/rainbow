@@ -14,7 +14,7 @@ import {
 import { useAccountSettings, useStepper } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',

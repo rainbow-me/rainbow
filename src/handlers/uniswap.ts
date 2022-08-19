@@ -45,7 +45,7 @@ import {
   ethUnits,
   UNISWAP_TESTNET_TOKEN_LIST,
 } from '@/references';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils, logger } from '@/utils';
 
 export enum Field {
   INPUT = 'INPUT',

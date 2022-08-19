@@ -15,7 +15,7 @@ import { DPI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { fontWithWidth } from '@/styles';
 import { handleSignificantDecimals } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {

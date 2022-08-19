@@ -9,7 +9,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 const NONE = 'None';
 

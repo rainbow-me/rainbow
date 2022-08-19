@@ -23,7 +23,7 @@ import {
   savingsAssetsListByUnderlying,
 } from '@/references';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { gasUtils } from '@rainbow-me/utils';
+import { gasUtils } from '@/utils';
 import logger from 'logger';
 
 export const getDepositGasLimit = (tokenToDeposit: Asset) =>

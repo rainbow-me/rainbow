@@ -19,7 +19,7 @@ import { estimateSwapGasLimit } from '@/handlers/uniswap';
 import store from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
 import { add } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters

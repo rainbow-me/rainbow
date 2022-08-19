@@ -43,7 +43,7 @@ import {
   deviceUtils,
   haptics,
   magicMemo,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 

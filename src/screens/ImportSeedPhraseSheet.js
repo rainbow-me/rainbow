@@ -27,7 +27,7 @@ import {
 import { sheetVerticalOffset } from '@/navigation/effects';
 import styled from '@/styled-thing';
 import { borders, padding } from '@/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const sheetBottomPadding = 19;
 

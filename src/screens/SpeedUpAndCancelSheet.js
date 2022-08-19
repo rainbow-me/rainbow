@@ -49,7 +49,7 @@ import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from 'logger';
 
 const { CUSTOM, URGENT } = gasUtils;

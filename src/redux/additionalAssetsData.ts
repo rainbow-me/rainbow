@@ -8,7 +8,7 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { AppDispatch, AppGetState, AppState } from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //

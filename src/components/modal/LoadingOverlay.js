@@ -8,7 +8,7 @@ import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { neverRerender } from '@rainbow-me/utils';
+import { neverRerender } from '@/utils';
 
 const Container = styled(Centered).attrs({
   flex: android ? 1 : undefined,

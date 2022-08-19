@@ -30,11 +30,11 @@ import {
   ensReverseRegistrarAddress,
 } from '@/references';
 import { colors } from '@/styles';
-import { labelhash } from '@rainbow-me/utils';
+import { labelhash } from '@/utils';
 import {
   encodeContenthash,
   isValidContenthash,
-} from '@rainbow-me/utils/contenthash';
+} from '@/utils/contenthash';
 
 export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;

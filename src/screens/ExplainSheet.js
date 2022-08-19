@@ -19,8 +19,8 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
+import { ethereumUtils, gasUtils } from '@/utils';
+import { cloudPlatformAccountName } from '@/utils/platform';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;

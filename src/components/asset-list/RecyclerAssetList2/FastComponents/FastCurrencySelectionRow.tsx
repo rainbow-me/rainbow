@@ -17,7 +17,7 @@ import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers';
 import { useAccountAsset } from '@/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils } from '@/utils';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? View

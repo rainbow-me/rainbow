@@ -22,7 +22,7 @@ import {
 import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 const Container = styled(Box).attrs({
   flex: 1,

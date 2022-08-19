@@ -13,7 +13,7 @@ import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+import isSVGImage from '@/utils/isSVG';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode

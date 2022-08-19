@@ -27,8 +27,8 @@ import {
   AddCashCurrencyAsset,
   AddCashCurrencyInfo,
 } from '@/references';
-import { ethereumUtils } from '@rainbow-me/utils';
-import maybeReviewAlert from '@rainbow-me/utils/reviewAlert';
+import { ethereumUtils } from '@/utils';
+import maybeReviewAlert from '@/utils/reviewAlert';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //

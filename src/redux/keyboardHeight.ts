@@ -6,7 +6,7 @@ import {
 } from '@/handlers/localstorage/globalSettings';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { AppGetState } from '@/redux/store';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 // -- Constants --------------------------------------- //
 const LOAD = 'keyboardHeight/LOAD';

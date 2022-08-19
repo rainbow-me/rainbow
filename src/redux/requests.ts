@@ -12,7 +12,7 @@ import {
 } from '@/helpers/dappNameHandler';
 import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //

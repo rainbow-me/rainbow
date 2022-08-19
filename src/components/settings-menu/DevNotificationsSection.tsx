@@ -6,7 +6,7 @@ import { ListFooter } from '../list';
 import { Box, Columns, Text } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 const topics = [
   'sent',

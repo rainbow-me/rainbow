@@ -10,7 +10,7 @@ import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const startCase = (string: string) =>
   string.charAt(0).toUpperCase() + string.slice(1);

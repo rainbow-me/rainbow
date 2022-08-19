@@ -11,7 +11,7 @@ import { GradientText, Text } from '../text';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 

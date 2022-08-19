@@ -22,7 +22,7 @@ import {
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
+} from '@/utils/profileUtils';
 
 const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);

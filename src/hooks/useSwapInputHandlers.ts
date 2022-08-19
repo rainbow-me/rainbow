@@ -17,7 +17,7 @@ import {
   updateSwapNativeAmount,
   updateSwapOutputAmount,
 } from '@/redux/swap';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 export default function useSwapInputHandlers() {
   const dispatch = useDispatch();

@@ -4,7 +4,7 @@ import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { Network } from '@/helpers';
 import { parseSimplehashNfts } from '@/parsers';
-import { logger } from '@rainbow-me/utils';
+import { logger } from '@/utils';
 
 interface SimplehashMarketplace {
   marketplace_name: string;

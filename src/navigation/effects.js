@@ -6,7 +6,7 @@ import { AvatarCircle } from '../components/profile';
 import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;

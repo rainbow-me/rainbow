@@ -79,7 +79,7 @@ import {
   ethereumUtils,
   isLowerCaseMatch,
   TokensListenedCache,
-} from '@rainbow-me/utils';
+} from '@/utils';
 import logger from 'logger';
 
 const storage = new MMKV();

@@ -26,7 +26,7 @@ import {
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 export const SelectENSSheetHeight = 400;
 

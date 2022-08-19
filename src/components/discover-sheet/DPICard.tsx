@@ -26,7 +26,7 @@ import store from '@/redux/store';
 import { DPI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 const ButtonShadow: ViewStyle = {
   shadowColor: 'black',

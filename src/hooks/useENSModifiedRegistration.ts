@@ -17,7 +17,7 @@ import {
   getENSNFTAvatarUrl,
   isENSNFTRecord,
   parseENSNFTRecord,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const getImageUrl = (
   key: 'avatar' | 'header',

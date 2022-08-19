@@ -12,7 +12,7 @@ import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import CoinRowInfoButton from './CoinRowInfoButton';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-import { haptics, neverRerender } from '@rainbow-me/utils';
+import { haptics, neverRerender } from '@/utils';
 
 const CoinRowPaddingTop = 9.5;
 const CoinRowPaddingBottom = 9.5;

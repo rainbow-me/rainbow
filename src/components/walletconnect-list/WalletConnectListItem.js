@@ -27,7 +27,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;

@@ -6,7 +6,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import styled from '@/styled-thing';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 
 const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
 

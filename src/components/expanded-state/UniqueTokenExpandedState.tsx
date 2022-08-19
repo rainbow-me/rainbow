@@ -75,7 +75,7 @@ import {
   getUniqueTokenType,
   magicMemo,
   safeAreaInsetValues,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,

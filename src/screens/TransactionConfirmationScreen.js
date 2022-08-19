@@ -95,9 +95,9 @@ import {
   multiply,
   omitFlatten,
 } from '@/helpers/utilities';
-import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
-import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -109,7 +109,7 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
-} from '@rainbow-me/utils/signingMethods';
+} from '@/utils/signingMethods';
 import logger from 'logger';
 
 const springConfig = {

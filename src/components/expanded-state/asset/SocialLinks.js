@@ -4,7 +4,7 @@ import React from 'react';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import styled from '@/styled-thing';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 const TWITTER_URL = 'https://twitter.com/';
 const TELEGRAM_URL = 'https://t.me/';

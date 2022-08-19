@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { ExchangeModalTypes } from '@/helpers';
 import { AppState } from '@/redux/store';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 export default function useSwapIsSufficientBalance(inputAmount: string | null) {
   const inputCurrencyUniqueId = useSelector(

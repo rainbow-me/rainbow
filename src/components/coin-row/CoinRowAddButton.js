@@ -8,7 +8,7 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 const AddButtonPadding = 19;
 

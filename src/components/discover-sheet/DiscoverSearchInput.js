@@ -18,7 +18,7 @@ import { analytics } from '@rainbow-me/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;

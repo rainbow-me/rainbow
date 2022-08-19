@@ -51,7 +51,7 @@ import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 
 const defaultCarouselHeight = 60;
 const baseHeight =

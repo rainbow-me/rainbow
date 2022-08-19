@@ -9,14 +9,14 @@ import {
   convertRawAmountToDecimalFormat,
   fromWei,
 } from '@/helpers/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import {
   isSignTypedData,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
   SIGN,
   SIGN_TRANSACTION,
-} from '@rainbow-me/utils/signingMethods';
+} from '@/utils/signingMethods';
 
 export const getRequestDisplayDetails = (
   payload,

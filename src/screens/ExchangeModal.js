@@ -73,8 +73,8 @@ import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
+import { ethereumUtils, gasUtils } from '@/utils';
+import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from 'logger';
 
 export const DEFAULT_SLIPPAGE_BIPS = {

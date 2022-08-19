@@ -11,7 +11,7 @@ import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
 import { Text } from '../text';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 

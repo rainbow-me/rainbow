@@ -11,7 +11,7 @@ import networkTypes from '@/helpers/networkTypes';
 import { useAccountSettings, useTopMovers } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 const ErrorMessage = ({ colors, children }) => (
   <Centered marginVertical={50}>

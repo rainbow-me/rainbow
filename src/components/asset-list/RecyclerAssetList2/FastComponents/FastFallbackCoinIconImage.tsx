@@ -4,7 +4,7 @@ import { AssetType } from '@/entities';
 import { useForceUpdate } from '@/hooks';
 import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
-import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
+import { getUrlForTrustIconFallback } from '@/utils';
 
 const ImageState = {
   ERROR: 'ERROR',

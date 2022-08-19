@@ -36,7 +36,7 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '@/helpers/utilities';
-import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
+import { ethereumUtils, getTokenMetadata } from '@/utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
 

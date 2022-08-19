@@ -58,7 +58,7 @@ import { EthereumWalletType } from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import store from '@/redux/store';
 import { setIsWalletLoading } from '@/redux/wallets';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 import logger from 'logger';
 
 const encryptor = new AesEncryptor();

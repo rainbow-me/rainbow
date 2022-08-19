@@ -24,7 +24,7 @@ import {
 } from '@/hooks';
 import { DAI_ADDRESS, ETH_ADDRESS } from '@/references';
 import { padding } from '@/styles';
-import { abbreviations } from '@rainbow-me/utils';
+import { abbreviations } from '@/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];
 const minimumPurchaseAmountUSD = 1;

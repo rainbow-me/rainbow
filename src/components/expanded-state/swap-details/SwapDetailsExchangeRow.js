@@ -20,7 +20,7 @@ import {
 import networkInfo from '@/helpers/networkInfo';
 import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { getExchangeIconUrl, magicMemo } from '@rainbow-me/utils';
+import { getExchangeIconUrl, magicMemo } from '@/utils';
 
 const parseExchangeName = name => {
   const networks = Object.keys(networkInfo).map(network =>

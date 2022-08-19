@@ -6,7 +6,7 @@ import {
 } from '.';
 import { ENSRegistrationState } from '@/entities';
 import { AppState } from '@/redux/store';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@/utils';
 
 /**
  * @description Returns the local ENS transactions for a given name.

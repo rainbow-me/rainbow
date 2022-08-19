@@ -77,7 +77,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from 'logger';
 
 const Container = styled(Centered).attrs({

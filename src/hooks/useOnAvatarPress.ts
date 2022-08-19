@@ -23,7 +23,7 @@ import {
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { buildRainbowUrl, showActionSheetWithOptions } from '@/utils';
 
 export default () => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();

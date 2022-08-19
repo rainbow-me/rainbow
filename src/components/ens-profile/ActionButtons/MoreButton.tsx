@@ -15,8 +15,8 @@ import {
 import { useNavigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@rainbow-me/utils';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+import { ethereumUtils } from '@/utils';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',

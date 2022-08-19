@@ -18,7 +18,7 @@ import { useAsyncEffect, useHardwareBack, useScanner } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const Camera = styled(RNCamera)({
   ...position.coverAsObject,

@@ -12,9 +12,9 @@ import {
   ENS_NFT_CONTRACT_ADDRESS,
   polygonAllowList,
 } from '@/references';
-import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
-import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
+import { getLowResUrl } from '@/utils/getLowResUrl';
+import isSVGImage from '@/utils/isSVG';
 
 const parseLastSalePrice = lastSale =>
   lastSale

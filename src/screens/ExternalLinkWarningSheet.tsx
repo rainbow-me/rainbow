@@ -11,7 +11,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { useDimensions } from '@/hooks';
 import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { formatURLForDisplay } from '@rainbow-me/utils';
+import { formatURLForDisplay } from '@/utils';
 
 export const ExternalLinkWarningSheetHeight = 380 + (android ? 20 : 0);
 

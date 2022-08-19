@@ -38,7 +38,7 @@ import {
 } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
+import { ethereumUtils, watchingAlert } from '@/utils';
 import logger from 'logger';
 
 // -- Variables --------------------------------------- //
