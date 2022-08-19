@@ -31,7 +31,7 @@ import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,
 } from '@/config/experimentalHooks';
-import { Box } from '@rainbow-me/design-system';
+import { Box } from '@/design-system';
 import {
   isCustomBuild,
   setOriginalDeploymentKey,

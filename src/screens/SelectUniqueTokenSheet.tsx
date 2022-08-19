@@ -3,7 +3,7 @@ import React, { useCallback, useContext, useEffect } from 'react';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { Box } from '@rainbow-me/design-system';
+import { Box } from '@/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { useWalletSectionsData } from '@rainbow-me/hooks';
 

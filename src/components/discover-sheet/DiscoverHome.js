@@ -10,7 +10,7 @@ import PulseIndex from './PulseIndexSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Columns, Inset, Stack } from '@rainbow-me/design-system';
+import { Columns, Inset, Stack } from '@/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 
 export default function DiscoverHome() {

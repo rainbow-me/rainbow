@@ -47,7 +47,7 @@ import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
-import { Text } from '@rainbow-me/design-system';
+import { Text } from '@/design-system';
 import {
   estimateGas,
   estimateGasWithPadding,

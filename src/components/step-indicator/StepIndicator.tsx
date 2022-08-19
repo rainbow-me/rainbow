@@ -7,7 +7,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, Columns, useForegroundColor } from '@rainbow-me/design-system';
+import { Box, Columns, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 

@@ -17,7 +17,7 @@ import {
   Space,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
 import {

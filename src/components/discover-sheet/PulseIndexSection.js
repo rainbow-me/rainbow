@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { analytics } from '@rainbow-me/analytics';
-import { Text } from '@rainbow-me/design-system';
+import { Text } from '@/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { DPI_ADDRESS } from '@rainbow-me/references';

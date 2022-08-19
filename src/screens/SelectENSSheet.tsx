@@ -15,7 +15,7 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   prefetchENSAvatar,
   prefetchENSCover,

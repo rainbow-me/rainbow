@@ -20,7 +20,7 @@ import {
   lightModeThemeColors,
 } from '../styles/colors';
 import currentColors from './currentColors';
-import { DesignSystemProvider } from '@rainbow-me/design-system';
+import { DesignSystemProvider } from '@/design-system';
 import { getTheme, saveTheme } from '@rainbow-me/handlers/localstorage/theme';
 import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
 

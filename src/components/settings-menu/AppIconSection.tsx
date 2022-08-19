@@ -8,7 +8,7 @@ import { UNLOCK_KEY_OPTIMISM_NFT_APP_ICON } from '@/featuresToUnlock';
 import AppIconOg from '@/assets/appIconOg.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPixel from '@/assets/appIconPixel.png';
-import { Box } from '@rainbow-me/design-system';
+import { Box } from '@/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '@rainbow-me/theme';

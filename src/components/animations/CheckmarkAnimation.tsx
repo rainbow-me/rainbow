@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { LargeCheckmarkIcon } from '../icons/svg/LargeCheckmarkIcon';
-import { Box } from '@rainbow-me/design-system';
+import { Box } from '@/design-system';
 import { colors } from '@rainbow-me/styles';
 
 export function CheckmarkAnimation() {

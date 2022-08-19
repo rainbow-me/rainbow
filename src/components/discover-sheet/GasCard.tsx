@@ -22,7 +22,7 @@ import {
   Text,
   useColorMode,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { add } from '@rainbow-me/helpers/utilities';
 import { useDimensions, useGas } from '@rainbow-me/hooks';
 import { useTheme } from '@rainbow-me/theme';

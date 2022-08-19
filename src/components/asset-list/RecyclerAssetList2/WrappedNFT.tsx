@@ -4,7 +4,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { UniqueTokenCard } from '../../unique-token';
-import { Box, BoxProps } from '@rainbow-me/design-system';
+import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { useCollectible } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';

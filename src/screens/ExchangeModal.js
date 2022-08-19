@@ -32,7 +32,7 @@ import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
-import { Box, Row, Rows } from '@rainbow-me/design-system';
+import { Box, Row, Rows } from '@/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {

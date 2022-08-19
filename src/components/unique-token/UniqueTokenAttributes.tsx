@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { sortList } from '../../helpers/sortList';
 import { magicMemo } from '../../utils';
 import Tag from './Tag';
-import { Inline } from '@rainbow-me/design-system';
+import { Inline } from '@/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import isHttpUrl from '@rainbow-me/helpers/isHttpUrl';
 import transformUniqueAssetTraitsForPresentation from '@rainbow-me/helpers/transformUniqueAssetTraitsForPresentation';

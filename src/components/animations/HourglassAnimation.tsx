@@ -12,7 +12,7 @@ import {
   BackgroundProvider,
   Box,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 type AnimationConfigOptions = {
   duration: number;

@@ -18,7 +18,7 @@ import {
   Text,
   useColorMode,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   prefetchENSAvatar,
   prefetchENSRecords,

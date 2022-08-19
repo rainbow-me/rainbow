@@ -6,7 +6,7 @@ import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { analytics } from '@rainbow-me/analytics';
-import { AccentColorProvider, Box, Text } from '@rainbow-me/design-system';
+import { AccentColorProvider, Box, Text } from '@/design-system';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';

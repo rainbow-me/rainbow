@@ -10,7 +10,7 @@ import {
   Columns,
   Divider,
   Stack,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 

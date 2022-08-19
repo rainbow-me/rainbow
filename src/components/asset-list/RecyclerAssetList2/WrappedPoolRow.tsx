@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { UniswapInvestmentRow } from '../../investment-cards';
-import { Bleed } from '@rainbow-me/design-system';
+import { Bleed } from '@/design-system';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default React.memo(function WrappedPoolRow({

@@ -12,7 +12,7 @@ import {
   Box,
   Divider,
   Rows,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
   useColorForAsset,

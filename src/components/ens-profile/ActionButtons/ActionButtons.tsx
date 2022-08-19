@@ -3,7 +3,7 @@ import EditButton from './EditButton';
 import MoreButton from './MoreButton';
 import SendButton from './SendButton';
 import WatchButton from './WatchButton';
-import { Inline } from '@rainbow-me/design-system';
+import { Inline } from '@/design-system';
 import { useWallets } from '@rainbow-me/hooks';
 
 export default function ActionButtons({

@@ -5,7 +5,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
-import { Box, Row, Rows } from '@rainbow-me/design-system';
+import { Box, Row, Rows } from '@/design-system';
 import { ExchangeModalTypes, NetworkTypes } from '@rainbow-me/helpers';
 import { useColorForAsset, useGas, useSwapCurrencies } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';

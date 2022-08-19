@@ -6,7 +6,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
-import { Text } from '@rainbow-me/design-system';
+import { Text } from '@/design-system';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { useHiddenTokens } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';

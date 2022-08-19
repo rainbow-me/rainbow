@@ -6,7 +6,7 @@ import OneInchExchange from '../../../assets/exchanges/oneinch.png';
 import ZeroXExchange from '../../../assets/exchanges/zerox.png';
 import { ButtonPressAnimation } from '../../animations';
 import { ContextMenuButton } from '../../context-menu';
-import { Box, Column, Columns, Inline, Text } from '@rainbow-me/design-system';
+import { Box, Column, Columns, Inline, Text } from '@/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { Source } from '@rainbow-me/redux/swap';

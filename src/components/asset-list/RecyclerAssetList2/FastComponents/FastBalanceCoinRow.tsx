@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '../../../animations';
 import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/asset/ChartExpandedState';
 import { ExtendedState } from '../core/RawRecyclerList';
 import FastCoinIcon from './FastCoinIcon';
-import { Text } from '@rainbow-me/design-system';
+import { Text } from '@/design-system';
 import {
   useAccountAsset,
   useCoinListFinishEditingOptions,

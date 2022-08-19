@@ -21,7 +21,7 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useDimensions,

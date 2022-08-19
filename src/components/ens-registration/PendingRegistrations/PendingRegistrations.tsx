@@ -13,7 +13,7 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { RegistrationParameters } from '@rainbow-me/entities';
 import { useENSPendingRegistrations } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';

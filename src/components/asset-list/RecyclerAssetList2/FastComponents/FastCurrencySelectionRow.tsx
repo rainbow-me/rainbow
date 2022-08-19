@@ -12,7 +12,7 @@ import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Text } from '@rainbow-me/design-system';
+import { Text } from '@/design-system';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { Network } from '@rainbow-me/helpers';
 import { useAccountAsset } from '@rainbow-me/hooks';

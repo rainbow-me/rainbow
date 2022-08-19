@@ -12,7 +12,7 @@ import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
-import { Box } from '@rainbow-me/design-system';
+import { Box } from '@/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useDimensions,

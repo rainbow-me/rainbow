@@ -9,7 +9,7 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useInterval } from '@rainbow-me/hooks';
 

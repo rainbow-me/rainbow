@@ -8,7 +8,7 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { analytics } from '@rainbow-me/analytics';
-import { Divider, Stack } from '@rainbow-me/design-system';
+import { Divider, Stack } from '@/design-system';
 import {
   useAccountSettings,
   useInitializeAccountData,

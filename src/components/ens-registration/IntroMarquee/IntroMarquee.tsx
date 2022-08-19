@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
-import { Box, Stack, Text } from '@rainbow-me/design-system';
+import { Box, Stack, Text } from '@/design-system';
 import { ensRecordsQueryKey, useENSRecords } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';

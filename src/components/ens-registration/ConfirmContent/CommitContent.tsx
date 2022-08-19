@@ -10,7 +10,7 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';

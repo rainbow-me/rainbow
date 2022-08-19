@@ -6,7 +6,7 @@ import {
   Box,
   Inset,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { useDimensions } from '@rainbow-me/hooks';
 import { useTheme } from '@rainbow-me/theme';
 

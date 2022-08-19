@@ -20,7 +20,7 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import store from '@rainbow-me/redux/store';
 import { DPI_ADDRESS } from '@rainbow-me/references';

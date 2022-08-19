@@ -8,7 +8,7 @@ import { CoinIcon } from './coin-icon';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
-import { Box } from '@rainbow-me/design-system';
+import { Box } from '@/design-system';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';

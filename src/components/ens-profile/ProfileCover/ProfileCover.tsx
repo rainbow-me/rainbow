@@ -4,7 +4,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
-import { Box, useForegroundColor } from '@rainbow-me/design-system';
+import { Box, useForegroundColor } from '@/design-system';
 import { useFadeImage } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';

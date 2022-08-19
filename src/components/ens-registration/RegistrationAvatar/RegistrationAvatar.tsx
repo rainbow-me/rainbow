@@ -16,7 +16,7 @@ import {
   Cover,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {

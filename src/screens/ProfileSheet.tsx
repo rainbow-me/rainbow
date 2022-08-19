@@ -13,7 +13,7 @@ import {
   Inline,
   Inset,
   Stack,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   useAccountSettings,

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
-import { Text } from '@rainbow-me/design-system';
+import { Text } from '@/design-system';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { position } from '@rainbow-me/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';

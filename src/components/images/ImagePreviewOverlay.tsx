@@ -40,7 +40,7 @@ import {
   BoxProps,
   Cover,
   useColorMode,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { useDimensions, usePersistentAspectRatio } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';

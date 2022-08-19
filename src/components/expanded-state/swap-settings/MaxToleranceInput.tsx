@@ -20,7 +20,7 @@ import {
   Inline,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { Network } from '@rainbow-me/helpers';
 import {
   add,

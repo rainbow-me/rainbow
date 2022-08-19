@@ -7,7 +7,7 @@ import { SheetActionButton } from '../../sheet';
 import { analytics } from '@rainbow-me/analytics';
 import BackupIcon from '@/assets/backupIcon.png';
 import BackupIconDark from '@/assets/backupIconDark.png';
-import { Box, Stack, Text } from '@rainbow-me/design-system';
+import { Box, Stack, Text } from '@/design-system';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';

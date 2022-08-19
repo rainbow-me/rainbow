@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
-import { BackgroundProvider, Box, Cover } from '@rainbow-me/design-system';
+import { BackgroundProvider, Box, Cover } from '@/design-system';
 import { useFadeImage } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';

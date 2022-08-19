@@ -3,7 +3,7 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
-import { Box, Inline } from '@rainbow-me/design-system';
+import { Box, Inline } from '@/design-system';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 

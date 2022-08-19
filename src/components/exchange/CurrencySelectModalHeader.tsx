@@ -6,7 +6,7 @@ import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { SheetHandleFixedToTop } from '../sheet';
 import { TruncatedText } from '../text';
-import { Inset } from '@rainbow-me/design-system';
+import { Inset } from '@/design-system';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

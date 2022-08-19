@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { CoinIcon } from '../../coin-icon';
 import { Centered } from '../../layout';
 import { Text, TruncatedText } from '../../text';
-import { Box, Column, Columns, Row, Rows } from '@rainbow-me/design-system';
+import { Box, Column, Columns, Row, Rows } from '@/design-system';
 import {
   useAccountSettings,
   useColorForAsset,

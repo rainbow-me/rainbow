@@ -14,7 +14,7 @@ import { BiometricButtonContent, Button } from '../buttons';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import SecretDisplayCard from './SecretDisplayCard';
-import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
+import { Box, Inline, Stack, Text } from '@/design-system';
 import WalletTypes, {
   EthereumWalletType,
 } from '@rainbow-me/helpers/walletTypes';

@@ -20,7 +20,7 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 import {
   useAccountSettings,

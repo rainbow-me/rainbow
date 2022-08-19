@@ -7,7 +7,7 @@ import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterS
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { Column, Columns, Inset } from '@rainbow-me/design-system';
+import { Column, Columns, Inset } from '@/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useENSAvatar, useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';

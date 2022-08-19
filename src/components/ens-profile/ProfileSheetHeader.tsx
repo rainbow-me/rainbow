@@ -22,7 +22,7 @@ import {
   Heading,
   Inset,
   Stack,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
   useENSAddress,

@@ -24,7 +24,7 @@ import {
   SheetActionButtonRow,
 } from '../components/sheet';
 import { analytics } from '@rainbow-me/analytics';
-import { Text } from '@rainbow-me/design-system';
+import { Text } from '@/design-system';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';

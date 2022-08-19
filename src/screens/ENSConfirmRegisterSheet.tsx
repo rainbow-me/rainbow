@@ -27,7 +27,7 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   accentColorAtom,
   ENS_DOMAIN,
