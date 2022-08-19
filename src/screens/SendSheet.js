@@ -67,7 +67,7 @@ import {
   useUserAccounts,
 } from '@/hooks';
 import { loadWallet, sendTransaction } from '@/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

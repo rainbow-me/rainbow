@@ -12,7 +12,7 @@ import { getContacts } from '@/handlers/localstorage/contacts';
 import { isHexString } from '@/handlers/web3';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useImportingWallet, useWallets } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { colors, padding } from '@rainbow-me/styles';

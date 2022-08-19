@@ -18,7 +18,7 @@ import { analytics } from '@rainbow-me/analytics';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useDimensions } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 

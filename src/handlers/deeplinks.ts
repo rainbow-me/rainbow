@@ -19,7 +19,7 @@ import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,
 } from '@/helpers/validators';
-import { Navigation } from '@rainbow-me/navigation';
+import { Navigation } from '@/navigation';
 import { scheduleActionOnAssetReceived } from '@rainbow-me/redux/data';
 import {
   emitAssetRequest,

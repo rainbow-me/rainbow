@@ -8,7 +8,7 @@ import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@/design-system';
 import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
 import { useColorForAsset, useGas, useSwapCurrencies } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { lightModeThemeColors } from '@rainbow-me/styles';

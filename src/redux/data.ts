@@ -54,8 +54,8 @@ import {
   web3Provider,
 } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import { Navigation } from '@rainbow-me/navigation';
-import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
+import { Navigation } from '@/navigation';
+import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@rainbow-me/networkTypes';
 import {
   getTitle,

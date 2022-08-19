@@ -5,7 +5,7 @@ import useAsset from './useAsset';
 import useWallets from './useWallets';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import AssetInputTypes from '@/helpers/assetInputTypes';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@rainbow-me/utils';
 
 export default function useExpandedStateNavigation(

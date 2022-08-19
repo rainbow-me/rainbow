@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';

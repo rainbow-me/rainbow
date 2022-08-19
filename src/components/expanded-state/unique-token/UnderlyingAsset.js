@@ -7,7 +7,7 @@ import UnderlyingAssetCoinRow from '../../coin-row/UnderlyingAssetCoinRow';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { useAccountSettings, useColorForAsset } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';

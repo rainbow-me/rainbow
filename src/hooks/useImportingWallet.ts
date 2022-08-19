@@ -31,7 +31,7 @@ import {
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { walletInit } from '@/model/wallet';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';

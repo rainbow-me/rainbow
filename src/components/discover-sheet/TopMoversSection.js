@@ -9,7 +9,7 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@/helpers/networkTypes';
 import { useAccountSettings, useTopMovers } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 

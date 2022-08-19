@@ -27,7 +27,7 @@ import {
   useUserAccounts,
   useWallets,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import {
   addressSetSelected,
   setWalletBackedUp,

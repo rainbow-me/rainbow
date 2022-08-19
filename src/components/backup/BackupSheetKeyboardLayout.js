@@ -7,7 +7,7 @@ import { Column } from '../layout';
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import KeyboardTypes from '@/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@/hooks';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 

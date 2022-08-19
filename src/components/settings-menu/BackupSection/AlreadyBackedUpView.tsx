@@ -15,7 +15,7 @@ import {
   useWalletCloudBackup,
   useWallets,
 } from '@/hooks';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { colors, position, shadow } from '@rainbow-me/styles';

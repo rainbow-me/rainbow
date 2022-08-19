@@ -14,7 +14,7 @@ import {
   useWalletManualBackup,
   useWallets,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 

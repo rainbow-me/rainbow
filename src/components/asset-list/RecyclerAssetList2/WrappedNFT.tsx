@@ -7,7 +7,7 @@ import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { useCollectible } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 
 export default React.memo(function WrappedNFT({

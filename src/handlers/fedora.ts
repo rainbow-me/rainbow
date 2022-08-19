@@ -12,7 +12,7 @@ import {
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { Navigation } from '@rainbow-me/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 
 const APP_CENTER_READ_ONLY_TOKEN = ios

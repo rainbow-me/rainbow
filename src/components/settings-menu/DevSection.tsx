@@ -41,8 +41,8 @@ import {
 import { ImgixImage } from '@/components/images';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
-import { Navigation } from '@rainbow-me/navigation';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { Navigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { explorerInit } from '@rainbow-me/redux/explorer';
 import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
 import store from '@rainbow-me/redux/store';

@@ -9,7 +9,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { abbreviations } from '@rainbow-me/utils';
 import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
 

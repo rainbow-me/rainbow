@@ -44,7 +44,7 @@ import { delayNext } from '@/hooks/useMagicAutofocus';
 import {
   getActiveRoute,
   useNavigation,
-} from '@rainbow-me/navigation/Navigation';
+} from '@/navigation/Navigation';
 import {
   emitAssetRequest,
   emitChartsRequest,

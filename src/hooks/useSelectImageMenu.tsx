@@ -10,7 +10,7 @@ import {
   uploadImage,
   UploadImageReturnData,
 } from '@/handlers/pinata';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 

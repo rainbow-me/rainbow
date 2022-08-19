@@ -7,7 +7,7 @@ import Skeleton from '../../skeleton/Skeleton';
 import { Box, useForegroundColor } from '@/design-system';
 import { useFadeImage } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
 

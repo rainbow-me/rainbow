@@ -21,7 +21,7 @@ import {
   useDimensions,
   useUserLists,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';

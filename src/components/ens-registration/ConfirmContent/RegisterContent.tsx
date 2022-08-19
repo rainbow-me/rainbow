@@ -12,7 +12,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 

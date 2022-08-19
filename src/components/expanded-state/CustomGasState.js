@@ -17,7 +17,7 @@ import {
   useGas,
   useKeyboardHeight,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';

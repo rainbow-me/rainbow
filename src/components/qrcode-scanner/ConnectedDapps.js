@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useWalletConnectConnections } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 

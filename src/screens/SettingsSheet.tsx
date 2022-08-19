@@ -27,7 +27,7 @@ import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
 import { Box } from '@/design-system';
 import { useWallets } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 
 function cardStyleInterpolator({
   current,

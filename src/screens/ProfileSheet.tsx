@@ -24,7 +24,7 @@ import {
   useExternalWalletSectionsData,
   usePersistentDominantColorFromImage,
 } from '@/hooks';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';

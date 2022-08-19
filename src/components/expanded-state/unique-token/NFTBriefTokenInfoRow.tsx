@@ -5,7 +5,7 @@ import { Columns } from '@/design-system';
 import { apiGetUniqueTokenFloorPrice } from '@/handlers/opensea-api';
 import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';

@@ -3,7 +3,7 @@ import { getHumanReadableDate, hasAddableContact } from './transactions';
 import { isValidDomainFormat } from './validators';
 import { TransactionStatusTypes } from '@/entities';
 import TransactionActions from '@/helpers/transactionActions';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {

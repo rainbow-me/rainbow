@@ -65,7 +65,7 @@ import {
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@/hooks';
-import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
+import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { lightModeThemeColors, position } from '@rainbow-me/styles';

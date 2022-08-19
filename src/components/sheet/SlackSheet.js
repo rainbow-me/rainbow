@@ -21,7 +21,7 @@ import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
 import { useDimensions } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 

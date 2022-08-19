@@ -12,7 +12,7 @@ import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { H1, TruncatedText } from '../text';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
 import { useAccountProfile, useDimensions } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, position } from '@rainbow-me/styles';

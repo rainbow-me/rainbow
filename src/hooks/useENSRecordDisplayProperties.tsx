@@ -11,7 +11,7 @@ import {
   REGISTRATION_MODES,
   textRecordFields,
 } from '@/helpers/ens';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 

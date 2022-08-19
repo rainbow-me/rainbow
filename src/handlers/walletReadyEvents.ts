@@ -15,7 +15,7 @@ import {
   RainbowAccount,
   RainbowWallet,
 } from '@/model/wallet';
-import { Navigation } from '@rainbow-me/navigation';
+import { Navigation } from '@/navigation';
 
 import store from '@rainbow-me/redux/store';
 import { checkKeychainIntegrity } from '@rainbow-me/redux/wallets';

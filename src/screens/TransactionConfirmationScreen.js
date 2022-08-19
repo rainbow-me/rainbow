@@ -80,7 +80,7 @@ import {
   signTransaction,
   signTypedDataMessage,
 } from '@/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';

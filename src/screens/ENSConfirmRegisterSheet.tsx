@@ -48,7 +48,7 @@ import {
   usePersistentDominantColorFromImage,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 

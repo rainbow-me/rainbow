@@ -18,7 +18,7 @@ import {
   useOnAvatarPress,
   useWallets,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { abbreviations } from '@rainbow-me/utils';

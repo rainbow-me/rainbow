@@ -20,7 +20,7 @@ import {
 } from '@/helpers/transactions';
 import { isValidDomainFormat } from '@/helpers/validators';
 import { useAccountSettings } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import {
   abbreviations,

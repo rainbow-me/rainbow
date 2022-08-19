@@ -10,7 +10,7 @@ import { Column, Row } from '../layout';
 import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { DPI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fontWithWidth } from '@rainbow-me/styles';

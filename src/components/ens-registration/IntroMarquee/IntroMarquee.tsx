@@ -5,7 +5,7 @@ import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@/design-system';
 import { ensRecordsQueryKey, useENSRecords } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

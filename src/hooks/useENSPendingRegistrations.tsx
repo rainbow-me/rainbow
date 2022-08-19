@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
 import { ENSRegistrationState } from '@/entities';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';

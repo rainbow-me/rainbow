@@ -77,7 +77,7 @@ import {
   isCustomBuild,
 } from '@/handlers/fedora';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
-import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
+import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';

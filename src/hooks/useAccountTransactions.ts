@@ -5,7 +5,7 @@ import NetworkTypes from '../helpers/networkTypes';
 import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { AppState } from '@rainbow-me/redux/store';
 import { useTheme } from '@rainbow-me/theme';
 

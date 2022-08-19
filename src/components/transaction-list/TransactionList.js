@@ -22,7 +22,7 @@ import {
   useSafeImageUri,
   useWallets,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

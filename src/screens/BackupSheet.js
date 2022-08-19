@@ -23,7 +23,7 @@ import {
   useWalletCloudBackup,
   useWallets,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 
 const onError = error => DelayedAlert({ title: error }, 500);

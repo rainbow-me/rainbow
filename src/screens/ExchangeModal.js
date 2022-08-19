@@ -58,7 +58,7 @@ import {
   useSwapSettings,
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import {
   executeRap,
   getSwapRapEstimationByType,

@@ -28,7 +28,7 @@ import {
   greaterThan,
 } from '@/helpers/utilities';
 import { useMagicAutofocus, useSwapSettings } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 

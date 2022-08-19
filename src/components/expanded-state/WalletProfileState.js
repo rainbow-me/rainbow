@@ -6,7 +6,7 @@ import { analytics } from '@rainbow-me/analytics';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';

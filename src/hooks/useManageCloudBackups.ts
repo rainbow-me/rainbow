@@ -9,7 +9,7 @@ import {
   fetchUserDataFromCloud,
 } from '@/handlers/cloudBackup';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';

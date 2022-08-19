@@ -8,7 +8,7 @@ import {
   WalletProfileState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 

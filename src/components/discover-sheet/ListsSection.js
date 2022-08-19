@@ -23,7 +23,7 @@ import { getTrendingAddresses } from '@/handlers/dispersion';
 import networkTypes from '@/helpers/networkTypes';
 import { times } from '@/helpers/utilities';
 import { useAccountSettings, useUserLists } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';

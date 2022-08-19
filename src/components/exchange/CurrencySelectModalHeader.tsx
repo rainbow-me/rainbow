@@ -7,7 +7,7 @@ import { Centered } from '../layout';
 import { SheetHandleFixedToTop } from '../sheet';
 import { TruncatedText } from '../text';
 import { Inset } from '@/design-system';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { borders, padding } from '@rainbow-me/styles';

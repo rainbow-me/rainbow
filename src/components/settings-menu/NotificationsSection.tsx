@@ -5,7 +5,7 @@ import { ContactAvatar } from '../contacts';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 

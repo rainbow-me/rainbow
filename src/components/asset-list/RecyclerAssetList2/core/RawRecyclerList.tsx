@@ -28,7 +28,7 @@ import {
   useCoinListEdited,
   useCoinListEditOptions,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { useTheme } from '@rainbow-me/theme';
 
 const dataProvider = new DataProvider((r1, r2) => {

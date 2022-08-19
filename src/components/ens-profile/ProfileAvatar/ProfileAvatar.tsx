@@ -7,7 +7,7 @@ import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, Cover } from '@/design-system';
 import { useFadeImage } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
 const size = 70;

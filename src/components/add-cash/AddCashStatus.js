@@ -18,7 +18,7 @@ import {
   WYRE_ORDER_STATUS_TYPES,
 } from '@/helpers/wyreStatusTypes';
 import { useDimensions, useTimeout } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

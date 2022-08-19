@@ -8,7 +8,7 @@ import {
   isZero,
 } from '@/helpers/utilities';
 import { useAccountSettings, useStepper } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 
 export default function SwapDetailsUniswapRow({ tradeDetails, network }) {

@@ -33,7 +33,7 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
 import {
   emitChartsRequest,

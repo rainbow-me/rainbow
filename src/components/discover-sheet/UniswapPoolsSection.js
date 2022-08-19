@@ -19,8 +19,8 @@ import {
   useLatestCallback,
   useUniswapPools,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { useRemoveNextToLast } from '@rainbow-me/navigation/useRemoveNextToLast';
+import { useNavigation } from '@/navigation';
+import { useRemoveNextToLast } from '@/navigation/useRemoveNextToLast';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

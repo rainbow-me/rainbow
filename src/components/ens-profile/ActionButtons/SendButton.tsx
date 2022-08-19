@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 
 export default function SendButton({ ensName }: { ensName?: string }) {

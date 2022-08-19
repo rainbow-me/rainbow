@@ -47,7 +47,7 @@ import {
   useDimensions,
   useGenericAsset,
 } from '@/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

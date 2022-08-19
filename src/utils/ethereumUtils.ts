@@ -62,7 +62,7 @@ import {
   EthereumPrivateKey,
   EthereumWalletSeed,
 } from '@/model/wallet';
-import { Navigation } from '@rainbow-me/navigation';
+import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import store from '@rainbow-me/redux/store';
 import {
