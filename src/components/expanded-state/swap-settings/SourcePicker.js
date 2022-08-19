@@ -7,7 +7,7 @@ import ZeroXExchange from '../../../assets/exchanges/zerox.png';
 import { ButtonPressAnimation } from '../../animations';
 import { ContextMenuButton } from '../../context-menu';
 import { Box, Column, Columns, Inline, Text } from '@/design-system';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { Source } from '@rainbow-me/redux/swap';
 import Routes from '@rainbow-me/routes';

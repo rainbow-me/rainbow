@@ -57,7 +57,7 @@ import {
   useSwapIsSufficientBalance,
   useSwapSettings,
 } from '@/hooks';
-import { loadWallet } from '@rainbow-me/model/wallet';
+import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import {
   executeRap,

@@ -79,7 +79,7 @@ import {
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
-} from '@rainbow-me/model/wallet';
+} from '@/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';

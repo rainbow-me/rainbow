@@ -9,7 +9,7 @@ import {
 } from '@/handlers/localstorage/walletBalances';
 import { web3Provider } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
-import { AllRainbowWallets } from '@rainbow-me/model/wallet';
+import { AllRainbowWallets } from '@/model/wallet';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { balanceCheckerContractAbi } from '@rainbow-me/references';
 import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';

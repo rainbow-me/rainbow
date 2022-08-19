@@ -9,7 +9,7 @@ import {
   useInitializeWallet,
   useWallets,
 } from '@/hooks';
-import { cleanUpWalletKeys, RainbowWallet } from '@rainbow-me/model/wallet';
+import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import {
   addressSetSelected,
   walletsSetSelected,

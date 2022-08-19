@@ -21,7 +21,7 @@ import {
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({

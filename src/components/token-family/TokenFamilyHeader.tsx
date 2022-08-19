@@ -7,7 +7,7 @@ import { useLatestCallback } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { Text } from '@/design-system';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
 export const TokenFamilyHeaderAnimationDuration = 200;

@@ -41,7 +41,7 @@ import {
 import { Network } from '@/helpers';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@/hooks';
-import { sendTransaction } from '@rainbow-me/model/wallet';
+import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';

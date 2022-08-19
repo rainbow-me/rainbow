@@ -23,7 +23,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import Routes from '@rainbow-me/routes';
 
 export function InfoRowSkeleton() {

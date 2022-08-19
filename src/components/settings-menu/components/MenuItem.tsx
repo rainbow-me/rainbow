@@ -6,7 +6,7 @@ import WarningIcon from '../../icons/svg/WarningIcon';
 import Chevron from '@/assets/chevronUpDown.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { useTheme } from '@rainbow-me/theme';
 
 interface ImageIconProps {

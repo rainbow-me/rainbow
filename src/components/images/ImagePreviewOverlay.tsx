@@ -42,7 +42,7 @@ import {
   useColorMode,
 } from '@/design-system';
 import { useDimensions, usePersistentAspectRatio } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { colors, position } from '@rainbow-me/styles';
 import { safeAreaInsetValues } from '@rainbow-me/utils';
 

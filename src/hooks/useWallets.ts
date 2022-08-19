@@ -10,7 +10,7 @@ import {
 import useInitializeWallet from './useInitializeWallet';
 import { toChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
+import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 

@@ -9,7 +9,7 @@ import { Monospace } from '../text';
 import { Text } from '@/design-system';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

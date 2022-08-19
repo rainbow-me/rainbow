@@ -14,7 +14,7 @@ import {
   isCloudinaryStorageLink,
   signUrl,
 } from '@/handlers/cloudinary';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 import logger from 'logger';
 
 export const imgixCacheStorage = new MMKV({

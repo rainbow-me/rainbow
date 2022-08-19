@@ -13,7 +13,7 @@ import {
 } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useDimensions } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 
 const CommitContent = ({
   duration,

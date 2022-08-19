@@ -23,7 +23,7 @@ import {
   useAccountENSDomains,
   useENSAvatar,
 } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { useTheme } from '@rainbow-me/theme';
 import { deviceUtils } from '@rainbow-me/utils';

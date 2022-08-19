@@ -50,7 +50,7 @@ import {
   getNameOwner,
 } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import {
   getOpenSeaCollectionUrl,
   handleAndSignImages,

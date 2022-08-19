@@ -7,7 +7,7 @@ import { EthereumAddress } from '@/entities';
 import { fetchAccountRegistrations } from '@/handlers/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
 import walletTypes from '@/helpers/walletTypes';
-import { RainbowWallet } from '@rainbow-me/model/wallet';
+import { RainbowWallet } from '@/model/wallet';
 
 export default function useTrackENSProfile() {
   const { walletNames, wallets } = useWallets();

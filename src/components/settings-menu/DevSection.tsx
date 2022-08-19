@@ -38,9 +38,9 @@ import {
   useUpdateAssetOnchainBalance,
   useWallets,
 } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { wipeKeychain } from '@rainbow-me/model/keychain';
-import { clearAllStorages } from '@rainbow-me/model/mmkv';
+import { ImgixImage } from '@/components/images';
+import { wipeKeychain } from '@/model/keychain';
+import { clearAllStorages } from '@/model/mmkv';
 import { Navigation } from '@rainbow-me/navigation';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { explorerInit } from '@rainbow-me/redux/explorer';

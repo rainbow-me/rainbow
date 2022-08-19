@@ -6,7 +6,7 @@ import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../theme/ThemeContext';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { position } from '@rainbow-me/styles';
 
 type SpinnerProps = {

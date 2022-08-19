@@ -8,7 +8,7 @@ import { rainbowFetch } from '../../rainbow-fetch';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@/entities';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 import logger from 'logger';
 
 export const rainbowListStorage = new MMKV({

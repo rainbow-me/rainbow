@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AssetType } from '@/entities';
 import { useForceUpdate } from '@/hooks';
-import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
+import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@rainbow-me/theme';
 import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
 

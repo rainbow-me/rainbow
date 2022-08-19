@@ -10,7 +10,7 @@ import BackupIconDark from '@/assets/backupIconDark.png';
 import { Box, Stack, Text } from '@/design-system';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWallets } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

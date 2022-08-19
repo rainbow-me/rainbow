@@ -61,7 +61,7 @@ import {
   WalletLibraryType,
   EthereumPrivateKey,
   EthereumWalletSeed,
-} from '@rainbow-me/model/wallet';
+} from '@/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import store from '@rainbow-me/redux/store';

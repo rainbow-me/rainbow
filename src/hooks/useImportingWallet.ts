@@ -30,7 +30,7 @@ import {
 } from '@/helpers/validators';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { walletInit } from '@rainbow-me/model/wallet';
+import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';

@@ -14,7 +14,7 @@ import {
   AllRainbowWallets,
   RainbowAccount,
   RainbowWallet,
-} from '@rainbow-me/model/wallet';
+} from '@/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
 
 import store from '@rainbow-me/redux/store';

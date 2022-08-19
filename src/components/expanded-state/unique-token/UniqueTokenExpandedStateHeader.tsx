@@ -26,7 +26,7 @@ import {
   useHiddenTokens,
   useShowcaseTokens,
 } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';

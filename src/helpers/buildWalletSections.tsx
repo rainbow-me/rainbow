@@ -23,7 +23,7 @@ import {
   multiply,
 } from './utilities';
 import { Network } from '.';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import Routes from '@rainbow-me/routes';
 
 const LOADING_ASSETS_PLACEHOLDER = [

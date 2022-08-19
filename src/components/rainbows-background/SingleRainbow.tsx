@@ -8,7 +8,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { RainbowAnimationDetails } from './types';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import styled from '@rainbow-me/styled-components';
 
 const INITIAL_SIZE = 375;

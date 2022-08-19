@@ -24,7 +24,7 @@ import {
   getRentPrice,
   REGISTRATION_STEPS,
 } from '@/helpers/ens';
-import { loadWallet } from '@rainbow-me/model/wallet';
+import { loadWallet } from '@/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
 import { timeUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

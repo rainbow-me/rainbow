@@ -8,7 +8,7 @@ import { Text } from '../text';
 import { analytics } from '@rainbow-me/analytics';
 import BackupIcon from '@/assets/backupIcon.png';
 import BackupIconDark from '@/assets/backupIconDark.png';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 

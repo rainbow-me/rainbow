@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import eyeSlash from '../../assets/sf-eye.slash.png';
 import { Text } from '@/design-system';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { borders } from '@rainbow-me/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';
 import { FallbackIcon, initials } from '@rainbow-me/utils';

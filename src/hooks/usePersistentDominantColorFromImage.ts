@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MMKV, useMMKVString } from 'react-native-mmkv';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 import { getDominantColorFromImage } from '@rainbow-me/utils';
 
 enum State {
