@@ -56,7 +56,7 @@ import {
 import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
-import { Network } from '@rainbow-me/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import {
   getTitle,
   getTransactionLabel,

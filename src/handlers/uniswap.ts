@@ -39,7 +39,7 @@ import {
   multiply,
   subtract,
 } from '@/helpers/utilities';
-import { Network } from '@rainbow-me/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import {
   erc20ABI,
   ethUnits,

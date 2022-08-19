@@ -7,7 +7,7 @@ import {
   NFT_API_URL,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import NetworkTypes, { Network } from '@rainbow-me/networkTypes';
+import NetworkTypes, { Network } from '@/helpers/networkTypes';
 import {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
