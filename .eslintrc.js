@@ -29,14 +29,14 @@ module.exports = {
     node: true,
   },
 
-  parser: "@typescript-eslint/parser",
+  parser: '@typescript-eslint/parser',
 
   parserOptions: {
     sourceType: 'module',
     ecmaFeatures: {
       jsx: true,
     },
-    project: ["./tsconfig.json"],
+    project: ['./tsconfig.json'],
   },
 
   extends: [
@@ -64,12 +64,12 @@ module.exports = {
   globals: globalVars,
 
   settings: {
-    react: {
+    'react': {
       version: 'detect',
     },
     'import/resolver': {
-      typescript: true,
-      node: true,
+      'typescript': true,
+      'node': true,
       'babel-module': true,
     },
   },
@@ -82,6 +82,7 @@ module.exports = {
     'prefer-spread': 'warn',
     'no-async-promise-executor': 'warn',
     'no-prototype-builtins': 'warn', // this one is probably fine
+    'no-irregular-whitespace': 'warn', // not a big deal most of the time
 
     // Some of these are OK while we transition to TS
     '@typescript-eslint/ban-ts-comment': 'warn',
@@ -97,7 +98,7 @@ module.exports = {
     'react/display-name': 'warn', // TODO easy fix
 
     // mimic default eslint
-    'eslint-comments/disable-enable-pair': ["error", {"allowWholeFile": true}],
+    'eslint-comments/disable-enable-pair': ['error', { allowWholeFile: true }],
 
     /**
      * @see https://typescript-eslint.io/docs/linting/troubleshooting/#eslint-plugin-import
@@ -117,5 +118,5 @@ module.exports = {
     'import/no-cycle': 'off',
     'import/no-unused-modules': 'off',
     'import/no-deprecated': 'off',
-  }
+  },
 };
