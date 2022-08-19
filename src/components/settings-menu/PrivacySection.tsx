@@ -11,7 +11,7 @@ import {
   useAccountProfile,
   useShowcaseTokens,
   useWebData,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 

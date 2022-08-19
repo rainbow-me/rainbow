@@ -20,7 +20,7 @@ import {
   useAccountSettings,
   useDimensions,
   useUserLists,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

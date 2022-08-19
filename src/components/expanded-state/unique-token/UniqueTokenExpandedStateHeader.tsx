@@ -25,7 +25,7 @@ import {
   useDimensions,
   useHiddenTokens,
   useShowcaseTokens,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';

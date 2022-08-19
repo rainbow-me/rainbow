@@ -9,7 +9,7 @@ import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useExpandedStateNavigation,
   useSwapCurrencyHandlers,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 

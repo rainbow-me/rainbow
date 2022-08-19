@@ -72,7 +72,7 @@ import {
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import Routes from '@rainbow-me/routes';
 
 const BottomActionHeight = ios ? 281 : 250;

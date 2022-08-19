@@ -26,7 +26,7 @@ import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
 import { Box } from '@/design-system';
-import { useWallets } from '@rainbow-me/hooks';
+import { useWallets } from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 
 function cardStyleInterpolator({

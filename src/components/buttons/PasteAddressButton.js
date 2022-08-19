@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import { checkIsValidAddressOrDomain } from '@/helpers/validators';
-import { useClipboard, useInvalidPaste } from '@rainbow-me/hooks';
+import { useClipboard, useInvalidPaste } from '@/hooks';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export default function PasteAddressButton({ onPress }) {

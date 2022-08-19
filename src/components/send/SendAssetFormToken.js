@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { Column } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { removeLeadingZeros } from '@rainbow-me/utils';

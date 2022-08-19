@@ -17,7 +17,7 @@ import {
   ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
 } from '@/helpers/wyreStatusTypes';
-import { useDimensions, useTimeout } from '@rainbow-me/hooks';
+import { useDimensions, useTimeout } from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

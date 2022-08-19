@@ -7,7 +7,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import { borders } from '@rainbow-me/styles';
 
 const Sheet = ({

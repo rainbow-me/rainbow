@@ -1,7 +1,7 @@
 import React, { createElement } from 'react';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 

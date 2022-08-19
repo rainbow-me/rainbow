@@ -39,8 +39,8 @@ import {
   usePrevious,
   useSwapCurrencies,
   useSwapCurrencyList,
-} from '@rainbow-me/hooks';
-import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
+} from '@/hooks';
+import { delayNext } from '@/hooks/useMagicAutofocus';
 import {
   getActiveRoute,
   useNavigation,

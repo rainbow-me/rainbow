@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import Toast from './Toast';
-import { useBooleanState, usePrevious } from '@rainbow-me/hooks';
+import { useBooleanState, usePrevious } from '@/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
 const CopyToast = ({ copiedText, copyCount }) => {

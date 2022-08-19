@@ -8,7 +8,7 @@ import { Icon } from '../icons';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 

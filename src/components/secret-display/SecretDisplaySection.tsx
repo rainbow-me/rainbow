@@ -18,7 +18,7 @@ import { Box, Inline, Stack, Text } from '@/design-system';
 import WalletTypes, {
   EthereumWalletType,
 } from '@/helpers/walletTypes';
-import { useWallets } from '@rainbow-me/hooks';
+import { useWallets } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, position, shadow } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';

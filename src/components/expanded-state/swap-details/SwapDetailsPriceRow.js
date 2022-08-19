@@ -7,7 +7,7 @@ import {
   divide,
   handleSignificantDecimals,
 } from '@/helpers/utilities';
-import { useStepper, useSwapCurrencies } from '@rainbow-me/hooks';
+import { useStepper, useSwapCurrencies } from '@/hooks';
 
 export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();

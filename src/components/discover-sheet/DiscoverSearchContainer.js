@@ -17,7 +17,7 @@ import DiscoverSearchInput from './DiscoverSearchInput';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { deviceUtils } from '@/utils';
 import { analytics } from '@rainbow-me/analytics';
-import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
+import { useDelayedValueWithLayoutAnimation } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 
 const CancelButton = styled(ButtonPressAnimation)({

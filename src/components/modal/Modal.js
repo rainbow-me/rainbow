@@ -4,7 +4,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 

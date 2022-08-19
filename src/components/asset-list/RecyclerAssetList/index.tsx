@@ -42,7 +42,7 @@ import {
   useOpenSmallBalances,
   usePrevious,
   useRefreshAccountData,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { deviceUtils } from '@rainbow-me/utils';
 

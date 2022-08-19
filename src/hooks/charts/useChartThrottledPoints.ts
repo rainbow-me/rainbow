@@ -6,7 +6,7 @@ import {
   useChartData,
   useChartDataLabels,
   useColorForAsset,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';

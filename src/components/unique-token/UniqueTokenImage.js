@@ -8,7 +8,7 @@ import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
 import { Text } from '@/design-system';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { useHiddenTokens } from '@rainbow-me/hooks';
+import { useHiddenTokens } from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';

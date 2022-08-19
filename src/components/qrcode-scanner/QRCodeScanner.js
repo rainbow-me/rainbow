@@ -14,7 +14,7 @@ import ConnectedDapps from './ConnectedDapps';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@/assets/simulator-fake-camera-image.jpg';
-import { useAsyncEffect, useHardwareBack, useScanner } from '@rainbow-me/hooks';
+import { useAsyncEffect, useHardwareBack, useScanner } from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

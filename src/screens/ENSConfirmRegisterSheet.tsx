@@ -46,7 +46,7 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

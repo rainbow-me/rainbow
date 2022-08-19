@@ -56,7 +56,7 @@ import {
   useSwapInputRefs,
   useSwapIsSufficientBalance,
   useSwapSettings,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import {

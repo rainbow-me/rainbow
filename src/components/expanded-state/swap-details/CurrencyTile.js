@@ -8,7 +8,7 @@ import {
   useAccountSettings,
   useColorForAsset,
   useDimensions,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';

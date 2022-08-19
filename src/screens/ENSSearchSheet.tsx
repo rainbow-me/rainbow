@@ -29,7 +29,7 @@ import {
   useENSRegistrationCosts,
   useENSRegistrationStepHandler,
   useENSSearch,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';

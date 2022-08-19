@@ -5,7 +5,7 @@ import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { Box } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { useWalletSectionsData } from '@rainbow-me/hooks';
+import { useWalletSectionsData } from '@/hooks';
 
 export default function SelectUniqueTokenSheet() {
   const { params } = useRoute<any>();

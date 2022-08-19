@@ -16,7 +16,7 @@ import {
 } from '@/design-system';
 import { Records } from '@/entities';
 import { ENS_RECORDS } from '@/helpers/ens';
-import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
+import { useENSRecordDisplayProperties } from '@/hooks';
 import { useTheme } from '@rainbow-me/theme';
 
 const getRecordType = (recordKey: string) => {

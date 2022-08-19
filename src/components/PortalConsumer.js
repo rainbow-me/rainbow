@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { LoadingOverlay } from './modal';
-import { useWallets } from '@rainbow-me/hooks';
+import { useWallets } from '@/hooks';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import { usePortal } from 'react-native-cool-modals/Portal';
 

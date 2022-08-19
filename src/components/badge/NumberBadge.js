@@ -9,7 +9,7 @@ import Animated, {
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { useTimeout } from '@rainbow-me/hooks';
+import { useTimeout } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';
 

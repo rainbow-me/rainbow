@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { isReanimatedAvailable } from '@/helpers';
-import { useKeyboardHeight } from '@rainbow-me/hooks';
+import { useKeyboardHeight } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 
 // we create this empty styled Animated.View so that parent components can pass

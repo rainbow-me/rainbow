@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 import SheetActionButton from './SheetActionButton';
-import { useExpandedStateNavigation } from '@rainbow-me/hooks';
+import { useExpandedStateNavigation } from '@/hooks';
 import Routes from '@rainbow-me/routes';
 
 function SendActionButton({ asset, color: givenColor, ...props }) {

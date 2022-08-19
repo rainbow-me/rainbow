@@ -6,7 +6,7 @@ import UniqueTokenImage from './UniqueTokenImage';
 import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
 import isSVGImage from '@rainbow-me/utils/isSVG';

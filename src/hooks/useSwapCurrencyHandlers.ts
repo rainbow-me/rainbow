@@ -9,7 +9,7 @@ import {
   Network,
 } from '@/helpers';
 import { updatePrecisionToDisplay } from '@/helpers/utilities';
-import { useSwapDerivedValues, useSwapInputHandlers } from '@rainbow-me/hooks';
+import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {

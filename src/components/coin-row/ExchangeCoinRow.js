@@ -10,7 +10,7 @@ import CoinRow from './CoinRow';
 import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import CoinRowInfoButton from './CoinRowInfoButton';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { haptics, neverRerender } from '@rainbow-me/utils';
 

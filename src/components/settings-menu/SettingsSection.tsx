@@ -42,7 +42,7 @@ import {
   useAccountSettings,
   useSendFeedback,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { Themes, useTheme } from '@rainbow-me/theme';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import {

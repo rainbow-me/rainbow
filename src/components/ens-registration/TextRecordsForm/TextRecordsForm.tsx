@@ -12,7 +12,7 @@ import {
   Stack,
 } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
-import { useENSRegistrationForm } from '@rainbow-me/hooks';
+import { useENSRegistrationForm } from '@/hooks';
 
 export default function TextRecordsForm({
   autoFocusKey,

@@ -11,7 +11,7 @@ import {
   Text,
 } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useInterval } from '@rainbow-me/hooks';
+import { useInterval } from '@/hooks';
 
 const MIN_LONG_PRESS_DURATION = 200;
 const LONG_PRESS_INTERVAL = 69;

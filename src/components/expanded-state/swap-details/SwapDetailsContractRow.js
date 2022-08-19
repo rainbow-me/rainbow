@@ -12,7 +12,7 @@ import Animated, {
 import { ButtonPressAnimation } from '../../animations';
 import { Text, TruncatedAddress } from '../../text';
 import SwapDetailsRow from './SwapDetailsRow';
-import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
+import { useClipboard, useColorForAsset } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 import {

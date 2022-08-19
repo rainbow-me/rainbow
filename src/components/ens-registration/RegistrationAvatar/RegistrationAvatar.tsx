@@ -24,7 +24,7 @@ import {
   useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
 

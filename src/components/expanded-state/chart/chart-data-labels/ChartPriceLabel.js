@@ -5,7 +5,7 @@ import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { NativeCurrencyKeys } from '@/entities';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';

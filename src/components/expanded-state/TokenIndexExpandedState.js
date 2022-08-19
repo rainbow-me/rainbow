@@ -22,7 +22,7 @@ import {
   useChartThrottledPoints,
   useDimensions,
   useDPI,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertRawAmountToNativeDisplay,

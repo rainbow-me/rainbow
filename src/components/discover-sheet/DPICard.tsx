@@ -21,7 +21,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@/hooks';
 import store from '@rainbow-me/redux/store';
 import { DPI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

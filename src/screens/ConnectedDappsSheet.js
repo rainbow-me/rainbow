@@ -7,7 +7,7 @@ import { Sheet, SheetHandleFixedToTop, SheetTitle } from '../components/sheet';
 import WalletConnectListItem, {
   WalletConnectListItemHeight,
 } from '../components/walletconnect-list/WalletConnectListItem';
-import { useWalletConnectConnections } from '@rainbow-me/hooks';
+import { useWalletConnectConnections } from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 

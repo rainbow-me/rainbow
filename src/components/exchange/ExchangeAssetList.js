@@ -31,7 +31,7 @@ import {
   useAndroidScrollViewGestureHandler,
   usePrevious,
   useUserLists,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';

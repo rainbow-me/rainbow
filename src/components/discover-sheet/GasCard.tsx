@@ -24,7 +24,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { add } from '@/helpers/utilities';
-import { useDimensions, useGas } from '@rainbow-me/hooks';
+import { useDimensions, useGas } from '@/hooks';
 import { useTheme } from '@rainbow-me/theme';
 import { gasUtils } from '@rainbow-me/utils';
 

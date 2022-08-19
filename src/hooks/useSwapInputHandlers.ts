@@ -10,7 +10,7 @@ import {
   subtract,
   toFixedDecimals,
 } from '@/helpers/utilities';
-import { useGas } from '@rainbow-me/hooks';
+import { useGas } from '@/hooks';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   updateSwapInputAmount,

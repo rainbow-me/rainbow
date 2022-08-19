@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, View } from 'react-native';
 import FloatingEmoji from './FloatingEmoji';
-import { useTimeout } from '@rainbow-me/hooks';
+import { useTimeout } from '@/hooks';
 import { position } from '@rainbow-me/styles';
 
 const EMPTY_ARRAY = [];

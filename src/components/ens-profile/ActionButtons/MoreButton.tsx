@@ -11,7 +11,7 @@ import {
   useContacts,
   useWallets,
   useWatchWallet,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

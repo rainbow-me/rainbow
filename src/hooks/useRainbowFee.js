@@ -6,7 +6,7 @@ import {
   multiply,
   subtract,
 } from '@/helpers/utilities';
-import { useAccountSettings, useSwapCurrencies } from '@rainbow-me/hooks';
+import { useAccountSettings, useSwapCurrencies } from '@/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useRainbowFee({ tradeDetails, network }) {

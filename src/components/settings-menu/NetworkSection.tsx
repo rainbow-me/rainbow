@@ -14,7 +14,7 @@ import {
   useInitializeAccountData,
   useLoadAccountData,
   useResetAccountState,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 
 const networks = values(networkInfo).filter(network => !network.layer2);
 

@@ -18,7 +18,7 @@ import {
   swapSettingsPreset,
 } from './effects';
 import Routes from './routesNames';
-import { useSwapCurrencies } from '@rainbow-me/hooks';
+import { useSwapCurrencies } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 

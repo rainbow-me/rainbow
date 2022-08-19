@@ -8,7 +8,7 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 import { formatURLForDisplay } from '@rainbow-me/utils';

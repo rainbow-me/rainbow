@@ -18,7 +18,7 @@ import Animated, {
 import vstyled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { safeAreaInsetValues } from '@rainbow-me/utils';

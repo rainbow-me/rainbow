@@ -19,7 +19,7 @@ import useExperimentalFlag, {
 } from '@/config/experimentalHooks';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useClipboard, useDimensions } from '@rainbow-me/hooks';
+import { useClipboard, useDimensions } from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

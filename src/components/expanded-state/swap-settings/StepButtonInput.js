@@ -5,7 +5,7 @@ import { Row } from '../../layout';
 import { Text } from '../../text';
 import InputPill from './InputPill';
 import { delay } from '@/helpers/utilities';
-import { usePrevious } from '@rainbow-me/hooks';
+import { usePrevious } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 
 const PLUS_ACTION_TYPE = 'plus';

@@ -2,7 +2,7 @@ import React from 'react';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
 import { Bleed, Box, Columns, Cover, Text } from '@/design-system';
-import { useSwapCurrencies } from '@rainbow-me/hooks';
+import { useSwapCurrencies } from '@/hooks';
 
 const containerPaddingTop = 34;
 export const SwapDetailsMastheadHeight =

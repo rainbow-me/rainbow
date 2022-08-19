@@ -12,7 +12,7 @@ import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding, position, shadow } from '@rainbow-me/styles';
 

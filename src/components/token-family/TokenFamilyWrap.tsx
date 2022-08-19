@@ -4,7 +4,7 @@ import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
 import { times } from '@/helpers/utilities';
-import { useTimeout } from '@rainbow-me/hooks';
+import { useTimeout } from '@/hooks';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
 type Props = {

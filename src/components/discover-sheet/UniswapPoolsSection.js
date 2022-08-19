@@ -18,7 +18,7 @@ import {
   useAccountSettings,
   useLatestCallback,
   useUniswapPools,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { useRemoveNextToLast } from '@rainbow-me/navigation/useRemoveNextToLast';
 import { parseAssetNative } from '@rainbow-me/parsers';

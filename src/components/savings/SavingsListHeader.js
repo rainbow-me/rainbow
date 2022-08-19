@@ -8,7 +8,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 

@@ -7,7 +7,7 @@ import {
   useAccountSettings,
   useExpandedStateNavigation,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 
 import Routes from '@rainbow-me/routes';
 

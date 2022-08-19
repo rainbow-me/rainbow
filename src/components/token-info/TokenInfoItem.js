@@ -7,7 +7,7 @@ import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { Column, Columns } from '@/design-system';
-import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
+import { useDelayedValueWithLayoutAnimation } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { useTheme } from '@rainbow-me/theme';
 

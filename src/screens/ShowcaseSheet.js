@@ -10,7 +10,7 @@ import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
 import { tokenFamilyItem } from '@/helpers/buildWalletSections';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
+import { useAccountSettings, useWallets } from '@/hooks';
 import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
 import styled from '@rainbow-me/styled-components';
 import { useTheme } from '@rainbow-me/theme';

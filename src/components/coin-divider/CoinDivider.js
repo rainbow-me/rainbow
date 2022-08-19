@@ -21,7 +21,7 @@ import {
   useCoinListFinishEditingOptions,
   useDimensions,
   useOpenSmallBalances,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

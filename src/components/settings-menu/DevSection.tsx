@@ -37,7 +37,7 @@ import {
   useResetAccountState,
   useUpdateAssetOnchainBalance,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { clearAllStorages } from '@rainbow-me/model/mmkv';

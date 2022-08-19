@@ -65,7 +65,7 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';

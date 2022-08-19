@@ -22,7 +22,7 @@ import {
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
 } from '@/helpers/walletConnectNetworks';
-import { useWalletConnectConnections, useWallets } from '@rainbow-me/hooks';
+import { useWalletConnectConnections, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

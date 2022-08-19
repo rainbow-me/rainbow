@@ -4,7 +4,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import EthIcon from '@/assets/eth-icon.png';
 import { AssetTypes } from '@/entities';
-import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
+import { useBooleanState, useColorForAsset } from '@/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { borders, fonts, position, shadow } from '@rainbow-me/styles';

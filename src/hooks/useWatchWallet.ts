@@ -8,7 +8,7 @@ import {
   useImportingWallet,
   useInitializeWallet,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { cleanUpWalletKeys, RainbowWallet } from '@rainbow-me/model/wallet';
 import {
   addressSetSelected,

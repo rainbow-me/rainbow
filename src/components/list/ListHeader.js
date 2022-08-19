@@ -14,7 +14,7 @@ import {
   useDimensions,
   useWallets,
   useWebData,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

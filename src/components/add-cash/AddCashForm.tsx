@@ -21,7 +21,7 @@ import {
   useAccountSettings,
   useDimensions,
   useIsWalletEthZero,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';

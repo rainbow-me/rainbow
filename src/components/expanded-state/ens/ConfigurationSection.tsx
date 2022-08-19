@@ -5,7 +5,7 @@ import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegister
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSRegistration } from '@rainbow-me/hooks';
+import { useENSRegistration } from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 

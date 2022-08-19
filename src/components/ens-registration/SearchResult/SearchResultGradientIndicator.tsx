@@ -7,7 +7,7 @@ import {
   Inset,
   Text,
 } from '@/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import { useTheme } from '@rainbow-me/theme';
 
 type Props = {

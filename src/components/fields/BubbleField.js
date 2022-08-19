@@ -3,7 +3,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { MiniButton } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 
 const BubbleInput = styled(ExchangeInput).attrs(

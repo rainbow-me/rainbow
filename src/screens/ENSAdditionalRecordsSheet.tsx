@@ -6,7 +6,7 @@ import SelectableButton from '../components/ens-registration/TextRecordsForm/Sel
 import { SlackSheet } from '../components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
 import { accentColorAtom, textRecordFields } from '@/helpers/ens';
-import { useENSRegistrationForm } from '@rainbow-me/hooks';
+import { useENSRegistrationForm } from '@/hooks';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const ENSAdditionalRecordsSheetHeight = 262;

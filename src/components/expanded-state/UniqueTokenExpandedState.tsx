@@ -64,7 +64,7 @@ import {
   useHiddenTokens,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

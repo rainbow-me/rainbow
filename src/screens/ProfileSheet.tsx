@@ -23,7 +23,7 @@ import {
   useENSFirstTransactionTimestamp,
   useExternalWalletSectionsData,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';

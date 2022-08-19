@@ -30,7 +30,7 @@ import {
   useGas,
   usePrevious,
   useTimeout,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

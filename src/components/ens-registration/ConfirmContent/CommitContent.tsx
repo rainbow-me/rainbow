@@ -12,7 +12,7 @@ import {
   Text,
 } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const CommitContent = ({

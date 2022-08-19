@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../../animations';
 import UnderlyingAssetCoinRow from '../../coin-row/UnderlyingAssetCoinRow';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
-import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
+import { useAccountSettings, useColorForAsset } from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';

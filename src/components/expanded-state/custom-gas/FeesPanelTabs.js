@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '../../animations';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
-import { useGas } from '@rainbow-me/hooks';
+import { useGas } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';

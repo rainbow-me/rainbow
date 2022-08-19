@@ -6,7 +6,7 @@ import EditAction from '@/helpers/EditAction';
 import {
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const emojiSpacing = ios ? '' : '  ';

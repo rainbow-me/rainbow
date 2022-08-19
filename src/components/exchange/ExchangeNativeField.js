@@ -3,7 +3,7 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { useColorForAsset } from '@rainbow-me/hooks';
+import { useColorForAsset } from '@/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { fonts } from '@rainbow-me/styles';

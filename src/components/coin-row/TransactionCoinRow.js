@@ -19,7 +19,7 @@ import {
   hasAddableContact,
 } from '@/helpers/transactions';
 import { isValidDomainFormat } from '@/helpers/validators';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import {

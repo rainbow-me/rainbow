@@ -9,7 +9,7 @@ import AppIconOg from '@/assets/appIconOg.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPixel from '@/assets/appIconPixel.png';
 import { Box } from '@/design-system';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '@rainbow-me/theme';
 import Logger from '@rainbow-me/utils/logger';

@@ -18,7 +18,7 @@ import {
   useAccountSettings,
   useDimensions,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';

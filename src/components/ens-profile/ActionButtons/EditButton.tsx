@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSRegistration } from '@rainbow-me/hooks';
+import { useENSRegistration } from '@/hooks';
 import Routes from '@rainbow-me/routes';
 
 export default function WatchButton({ ensName }: { ensName?: string }) {

@@ -26,7 +26,7 @@ import {
   useHardwareBackOnFocus,
   usePrevious,
   useSwapCurrencyList,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

@@ -31,7 +31,7 @@ import {
   useENSAvatar,
   useENSRecords,
   useENSRegistration,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 

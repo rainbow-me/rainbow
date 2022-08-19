@@ -13,8 +13,8 @@ import {
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
-import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
+import { useDimensions, useShakeAnimation } from '@/hooks';
+import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

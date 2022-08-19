@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { useWallets } from '@rainbow-me/hooks';
+import { useWallets } from '@/hooks';
 import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
 

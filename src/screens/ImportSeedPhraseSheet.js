@@ -23,7 +23,7 @@ import {
   useImportingWallet,
   useInvalidPaste,
   useKeyboardHeight,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import styled from '@rainbow-me/styled-components';
 import { borders, padding } from '@rainbow-me/styles';

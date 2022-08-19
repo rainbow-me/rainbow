@@ -71,7 +71,7 @@ import {
   useTransactionConfirmation,
   useWalletBalances,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import {
   loadWallet,
   sendTransaction,

@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
-import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
+import { useDimensions, useImageMetadata } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 

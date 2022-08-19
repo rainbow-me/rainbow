@@ -13,7 +13,7 @@ import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
-import { useAccountProfile } from '@rainbow-me/hooks';
+import { useAccountProfile } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding, shadow } from '@rainbow-me/styles';
 

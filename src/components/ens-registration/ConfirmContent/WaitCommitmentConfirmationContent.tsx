@@ -14,7 +14,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 
 const WaitCommitmentConfirmationContent = ({
   accentColor,

@@ -11,7 +11,7 @@ import {
   convertAmountToNativeDisplay,
   handleSignificantDecimals,
 } from '@/helpers/utilities';
-import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
+import { useAccountSettings, useStepper } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';

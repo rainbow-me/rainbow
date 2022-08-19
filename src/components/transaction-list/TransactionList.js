@@ -21,7 +21,7 @@ import {
   useOnAvatarPress,
   useSafeImageUri,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';

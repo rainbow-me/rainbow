@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { Text } from '@/design-system';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 function trim(val) {

@@ -6,7 +6,7 @@ import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { AssetType } from '@/entities';
-import { useColorForAsset } from '@rainbow-me/hooks';
+import { useColorForAsset } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 

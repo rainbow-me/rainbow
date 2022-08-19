@@ -5,7 +5,7 @@ import { OpacityToggler } from '../animations';
 import { UniswapInvestmentRow } from '../investment-cards';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { useAccountSettings, useOpenInvestmentCards } from '@rainbow-me/hooks';
+import { useAccountSettings, useOpenInvestmentCards } from '@/hooks';
 
 const renderInvestmentsListRow = item => (
   <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />

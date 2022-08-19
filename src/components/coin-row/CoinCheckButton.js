@@ -4,7 +4,7 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconIndicator, CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
-import { useCoinListFinishEditingOptions } from '@rainbow-me/hooks';
+import { useCoinListFinishEditingOptions } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders, padding, position, shadow } from '@rainbow-me/styles';
 

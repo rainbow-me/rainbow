@@ -18,7 +18,7 @@ import {
   useContacts,
   useENSAvatar,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,

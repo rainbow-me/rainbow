@@ -13,7 +13,7 @@ import {
   Inset,
   useHeadingStyle,
 } from '@/design-system';
-import { useDimensions, useMagicAutofocus } from '@rainbow-me/hooks';
+import { useDimensions, useMagicAutofocus } from '@/hooks';
 
 export type SearchInputProps = {
   isLoading?: boolean;

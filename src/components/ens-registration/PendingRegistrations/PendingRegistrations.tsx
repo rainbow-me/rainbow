@@ -15,7 +15,7 @@ import {
   Text,
 } from '@/design-system';
 import { RegistrationParameters } from '@/entities';
-import { useENSPendingRegistrations } from '@rainbow-me/hooks';
+import { useENSPendingRegistrations } from '@/hooks';
 import { colors } from '@rainbow-me/styles';
 
 const PendingRegistration = ({

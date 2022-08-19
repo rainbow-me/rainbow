@@ -8,7 +8,7 @@ import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 import { times } from '@/helpers/utilities';
-import { useRefreshAccountData } from '@rainbow-me/hooks';
+import { useRefreshAccountData } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 

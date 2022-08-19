@@ -11,7 +11,7 @@ import { Text } from '@/design-system';
 import {
   useAccountAsset,
   useCoinListFinishEditingOptions,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
 

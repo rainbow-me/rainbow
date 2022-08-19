@@ -5,7 +5,7 @@ import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { analytics } from '@rainbow-me/analytics';
 import { pickBy } from '@/helpers/utilities';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@/hooks';
 
 const languagesWithWalletTranslations = Object.keys(
   pickBy(resources, language => language?.translation?.wallet) // Only show languages that have 'wallet' translations available.

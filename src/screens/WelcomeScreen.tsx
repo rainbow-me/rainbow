@@ -32,7 +32,7 @@ import {
 import { cloudPlatform } from '../utils/platform';
 import { analytics } from '@rainbow-me/analytics';
 
-import { useHideSplashScreen } from '@rainbow-me/hooks';
+import { useHideSplashScreen } from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

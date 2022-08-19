@@ -7,7 +7,7 @@ import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { analytics } from '@rainbow-me/analytics';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 
 const GradientBackground = styled(RadialGradient).attrs(

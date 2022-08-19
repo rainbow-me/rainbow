@@ -6,7 +6,7 @@ import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import { wyreSupportedCountries } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';

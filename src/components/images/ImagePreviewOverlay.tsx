@@ -41,7 +41,7 @@ import {
   Cover,
   useColorMode,
 } from '@/design-system';
-import { useDimensions, usePersistentAspectRatio } from '@rainbow-me/hooks';
+import { useDimensions, usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 import { safeAreaInsetValues } from '@rainbow-me/utils';

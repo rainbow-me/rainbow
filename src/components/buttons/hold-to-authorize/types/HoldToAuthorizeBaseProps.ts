@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { DeviceDimensions } from '@rainbow-me/hooks';
+import { DeviceDimensions } from '@/hooks';
 import { Colors } from '@rainbow-me/styles';
 
 export interface HoldToAuthorizeBaseProps {

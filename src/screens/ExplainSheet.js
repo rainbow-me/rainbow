@@ -13,7 +13,7 @@ import AppIconOptimism from '@/assets/appIconOptimism.png';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';

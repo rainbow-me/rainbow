@@ -19,7 +19,7 @@ import {
   calculateCompoundInterestInDays,
   formatSavingsAmount,
 } from '@/helpers/savings';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';

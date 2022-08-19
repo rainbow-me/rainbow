@@ -15,7 +15,7 @@ import { useChartData } from '@rainbow-me/animated-charts';
 import { Network } from '@/helpers';
 import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
+import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 

@@ -27,7 +27,7 @@ import {
   useColorForAsset,
   useKeyboardHeight,
   useSwapSettings,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { Source } from '@rainbow-me/redux/swap';
 import Routes from '@rainbow-me/routes';

@@ -24,7 +24,7 @@ import {
   prefetchENSRecords,
   useAccountENSDomains,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@rainbow-me/utils';

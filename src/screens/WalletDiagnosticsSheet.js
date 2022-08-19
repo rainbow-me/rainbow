@@ -28,7 +28,7 @@ import {
   useDimensions,
   useImportingWallet,
   useWalletsWithBalancesAndNames,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';

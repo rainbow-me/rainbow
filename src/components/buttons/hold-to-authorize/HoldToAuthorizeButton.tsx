@@ -3,7 +3,7 @@ import React from 'react';
 import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import { BiometryTypes } from '@/helpers';
-import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
+import { useBiometryType, useDimensions } from '@/hooks';
 import { useTheme } from '@rainbow-me/theme';
 
 interface WrapperProps extends HoldToAuthorizeBaseProps {

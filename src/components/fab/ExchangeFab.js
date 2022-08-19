@@ -10,7 +10,7 @@ import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
 } from '@/helpers';
-import { useSwapCurrencyHandlers } from '@rainbow-me/hooks';
+import { useSwapCurrencyHandlers } from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';

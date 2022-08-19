@@ -32,7 +32,7 @@ import {
   useUserAccounts,
   useWallets,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
 import {

@@ -27,7 +27,7 @@ import {
   useAccountSettings,
   useCoinListEdited,
   useCoinListEditOptions,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { useTheme } from '@rainbow-me/theme';
 

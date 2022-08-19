@@ -23,7 +23,7 @@ import {
   useHeight,
   usePriceImpactDetails,
   useSwapCurrencies,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';

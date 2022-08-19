@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from '../text';
 import { BiometryTypes } from '@/helpers';
-import { useBiometryType } from '@rainbow-me/hooks';
+import { useBiometryType } from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { fonts } from '@rainbow-me/styles';
 

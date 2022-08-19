@@ -18,7 +18,7 @@ import {
   useShakeAnimation,
   useTimeout,
   useWyreApplePay,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
