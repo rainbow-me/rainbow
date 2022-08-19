@@ -1,7 +1,7 @@
 import { ApolloClient } from '@apollo/client';
 import { DocumentNode } from 'graphql';
-import { blockClient } from '@rainbow-me/apollo/client';
-import { GET_BLOCKS_QUERY } from '@rainbow-me/apollo/queries';
+import { blockClient } from '@/apollo/client';
+import { GET_BLOCKS_QUERY } from '@/apollo/queries';
 import logger from 'logger';
 
 async function splitQuery(

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
-import { EnsDomain } from '@rainbow-me/apollo/queries';
+import { EnsDomain } from '@/apollo/queries';
 import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
 import {
   getENSDomains,
