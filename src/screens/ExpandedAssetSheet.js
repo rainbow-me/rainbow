@@ -16,7 +16,7 @@ import { Centered } from '../components/layout';
 import { isUnknownOpenSeaENS } from '@/handlers/ens';
 import { useAsset, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 

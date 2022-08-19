@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo } from '@rainbow-me/utils';
 

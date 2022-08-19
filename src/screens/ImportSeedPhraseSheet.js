@@ -25,7 +25,7 @@ import {
   useKeyboardHeight,
 } from '@/hooks';
 import { sheetVerticalOffset } from '@/navigation/effects';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders, padding } from '@/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

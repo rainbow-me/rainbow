@@ -10,7 +10,7 @@ import { Br, GradientText, Text } from '../text';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { DAI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 

@@ -11,7 +11,7 @@ import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import { analytics } from '@rainbow-me/analytics';
 import { usePrevious, useSwapCurrencies } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 
 const defaultPriceImpactScale = 1.15;

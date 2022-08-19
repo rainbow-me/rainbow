@@ -13,7 +13,7 @@ import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import { useDimensions } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding, position, shadow } from '@/styles';
 
 const springConfig: WithSpringConfig = {

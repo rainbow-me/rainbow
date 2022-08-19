@@ -6,7 +6,7 @@ import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const FabShadow = [

@@ -3,7 +3,7 @@ import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Icon } from '../../../icons';
 import { useChartData } from '@rainbow-me/animated-charts';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const AnimatedMaskedView = Animated.createAnimatedComponent(MaskedView);
 

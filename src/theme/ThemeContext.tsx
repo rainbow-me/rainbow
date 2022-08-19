@@ -22,7 +22,7 @@ import {
 import currentColors from './currentColors';
 import { DesignSystemProvider } from '@/design-system';
 import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
-import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
+import { StyleThingThemeProvider } from '@/styled-thing';
 
 export const Themes = {
   DARK: 'dark',

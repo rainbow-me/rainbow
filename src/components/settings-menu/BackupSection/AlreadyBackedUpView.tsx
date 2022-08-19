@@ -17,7 +17,7 @@ import {
 } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { colors, position, shadow } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 

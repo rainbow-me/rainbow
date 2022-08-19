@@ -6,7 +6,7 @@ import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@/helpers/strings';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

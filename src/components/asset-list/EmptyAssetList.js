@@ -9,7 +9,7 @@ import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 import { times } from '@/helpers/utilities';
 import { useRefreshAccountData } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const Container = styled(Column)(position.sizeAsObject('100%'));

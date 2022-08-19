@@ -16,7 +16,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useDimensions, useShakeAnimation } from '@/hooks';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import { ImgixImage } from '@/components/images';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { haptics } from '@rainbow-me/utils';
 

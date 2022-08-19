@@ -7,7 +7,7 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({

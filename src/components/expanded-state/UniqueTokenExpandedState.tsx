@@ -67,7 +67,7 @@ import {
 } from '@/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 import {

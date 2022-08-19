@@ -5,7 +5,7 @@ import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
 
 Animated.addWhitelistedNativeProps({ color: true });

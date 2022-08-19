@@ -1,6 +1,6 @@
 import React from 'react';
 import { Emoji } from '../text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 

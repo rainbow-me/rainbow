@@ -18,7 +18,7 @@ import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@/entities';
 import { buildTransactionUniqueIdentifier } from '@/helpers/transactions';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const ViewTypes = {

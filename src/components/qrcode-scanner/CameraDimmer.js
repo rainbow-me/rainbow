@@ -3,7 +3,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { usePagerPosition } from '../../navigation/ScrollPositionContext';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Dim = styled(Animated.View)({
   flex: 1,

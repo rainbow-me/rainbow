@@ -8,7 +8,7 @@ import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { Column, Columns } from '@/design-system';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { useTheme } from '@rainbow-me/theme';
 
 const VerticalDivider = styled.View({

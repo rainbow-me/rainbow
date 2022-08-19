@@ -1,6 +1,6 @@
 import React, { Children } from 'react';
 import { FlexItem, Row } from '../../layout';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 const Container = styled(Row).attrs({

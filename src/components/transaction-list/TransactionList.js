@@ -25,7 +25,7 @@ import {
 import { useNavigation } from '@/navigation/Navigation';
 import { removeRequest } from '@/redux/requests';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import {
   abbreviations,
   ethereumUtils,

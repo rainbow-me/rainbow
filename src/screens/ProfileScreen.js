@@ -17,7 +17,7 @@ import {
   useRequests,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;

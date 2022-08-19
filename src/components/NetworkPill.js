@@ -1,7 +1,7 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { Centered, RowWithMargins } from '../components/layout';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const Container = styled(Centered)({

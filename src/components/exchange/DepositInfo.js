@@ -13,7 +13,7 @@ import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import PriceImpactWarning from './PriceImpactWarning';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 const springConfig = {

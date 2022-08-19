@@ -22,7 +22,7 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import { analytics } from '@rainbow-me/analytics';
 import { ImgixImage } from '@/components/images';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { colors, margin, padding } from '@/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';

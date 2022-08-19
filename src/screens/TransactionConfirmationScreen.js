@@ -84,7 +84,7 @@ import { useNavigation } from '@/navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { walletConnectRemovePendingRedirect } from '@/redux/walletconnect';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import {
   convertAmountToNativeDisplay,

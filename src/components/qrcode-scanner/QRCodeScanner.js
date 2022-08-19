@@ -16,7 +16,7 @@ import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@/assets/simulator-fake-camera-image.jpg';
 import { useAsyncEffect, useHardwareBack, useScanner } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

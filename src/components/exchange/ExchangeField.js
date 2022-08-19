@@ -7,7 +7,7 @@ import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { AssetType } from '@/entities';
 import { useColorForAsset } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders } from '@/styles';
 
 const ExchangeFieldHeight = android ? 64 : 38;

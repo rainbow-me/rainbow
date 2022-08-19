@@ -3,7 +3,7 @@ import { withThemeContext } from '../../theme/ThemeContext';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import Skeleton, { FakeAvatar, FakeRow, FakeText } from '../skeleton/Skeleton';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;

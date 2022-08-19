@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 import { Row } from '../../../components/layout';
 import { Text } from '../../text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { buildTextStyles, margin, padding } from '@/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 8;

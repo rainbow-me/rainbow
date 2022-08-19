@@ -22,7 +22,7 @@ import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@/components/images';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;

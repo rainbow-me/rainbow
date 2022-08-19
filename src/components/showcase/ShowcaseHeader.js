@@ -14,7 +14,7 @@ import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useImportingWallet, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { colors, padding } from '@/styles';
 import { abbreviations, profileUtils } from '@rainbow-me/utils';
 

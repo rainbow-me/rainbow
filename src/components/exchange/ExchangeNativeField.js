@@ -5,7 +5,7 @@ import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 
 const CurrencySymbol = styled(Text).attrs(({ height, color }) => ({

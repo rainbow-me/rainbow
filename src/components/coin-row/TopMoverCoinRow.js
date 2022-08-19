@@ -10,7 +10,7 @@ import { Centered, ColumnWithMargins, RowWithMargins } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import { analytics } from '@rainbow-me/analytics';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const TopMoverCoinIconSize = 36;
 const TopMoverCoinRowMargin = 8;

@@ -2,7 +2,7 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { Text } from '../text';
 import ContextMenu from './ContextMenu';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 
 const CircleButton = styled(RadialGradient).attrs(({ theme: { colors } }) => ({

@@ -3,7 +3,7 @@ import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ChartTypes from '@/helpers/chartTypes';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 const Container = styled(Centered)({

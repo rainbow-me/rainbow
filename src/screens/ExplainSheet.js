@@ -17,7 +17,7 @@ import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';

@@ -12,7 +12,7 @@ import {
 } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const FabShadow = [

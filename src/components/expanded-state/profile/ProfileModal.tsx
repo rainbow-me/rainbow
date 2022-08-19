@@ -10,7 +10,7 @@ import { AvatarCircle } from '../../profile';
 import { Text, TruncatedAddress } from '../../text';
 import ProfileModalContainer from './ProfileModalContainer';
 import ProfileNameInput from './ProfileNameInput';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 

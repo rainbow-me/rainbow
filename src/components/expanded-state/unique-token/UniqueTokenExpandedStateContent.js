@@ -7,7 +7,7 @@ import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
 import { usePersistentAspectRatio, useUniqueToken } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));

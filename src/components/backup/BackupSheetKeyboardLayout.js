@@ -8,7 +8,7 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import KeyboardTypes from '@/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 const Footer = styled(Column)(({ isTallPhone }) => ({

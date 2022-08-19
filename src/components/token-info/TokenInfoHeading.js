@@ -1,5 +1,5 @@
 import { Text } from '../text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
 
 const TokenInfoHeading = styled(Text).attrs(

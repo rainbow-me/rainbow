@@ -71,7 +71,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { chainAssets, rainbowTokenList } from '@/references';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import {
   convertAmountAndPriceToNativeDisplay,

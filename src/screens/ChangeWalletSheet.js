@@ -36,7 +36,7 @@ import {
   useWebData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import {
   abbreviations,
   deviceUtils,

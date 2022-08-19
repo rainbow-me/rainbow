@@ -6,7 +6,7 @@ import { Text } from '../../text';
 import GweiInputPill from './GweiInputPill';
 import { delay } from '@/helpers/utilities';
 import { usePrevious } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';

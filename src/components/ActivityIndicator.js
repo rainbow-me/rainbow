@@ -2,7 +2,7 @@ import React from 'react';
 import { UIActivityIndicator } from 'react-native-indicators';
 import { useTheme } from '../theme/ThemeContext';
 import { Centered } from './layout';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const Container = styled(Centered)(({ size }) =>

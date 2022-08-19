@@ -20,7 +20,7 @@ import {
   useSwapCurrencies,
 } from '@/hooks';
 import { SwapModalField } from '@/redux/swap';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 

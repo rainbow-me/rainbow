@@ -10,7 +10,7 @@ import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position, shadow } from '@/styles';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 

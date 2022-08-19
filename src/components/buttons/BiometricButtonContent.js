@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from '../text';
 import { BiometryTypes } from '@/helpers';
 import { useBiometryType } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 
 const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;

@@ -13,7 +13,7 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { useTheme } from '@rainbow-me/theme';
 
 const sx = StyleSheet.create({

@@ -19,7 +19,7 @@ import {
   useTimeout,
   useWyreApplePay,
 } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 

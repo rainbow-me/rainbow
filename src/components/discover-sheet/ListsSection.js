@@ -25,7 +25,7 @@ import { times } from '@/helpers/utilities';
 import { useAccountSettings, useUserLists } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const ListButton = styled(ButtonPressAnimation).attrs({

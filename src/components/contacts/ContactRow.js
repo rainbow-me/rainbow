@@ -20,7 +20,7 @@ import {
   isValidDomainFormat,
 } from '@/helpers/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import {
   addressHashedColorIndex,

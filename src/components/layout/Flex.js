@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { buildFlexStyles } from '@/styles';
 import { memoFn } from '@rainbow-me/utils/memoFn';
 

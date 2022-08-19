@@ -50,7 +50,7 @@ import {
   emitChartsRequest,
 } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, filterList } from '@rainbow-me/utils';
 

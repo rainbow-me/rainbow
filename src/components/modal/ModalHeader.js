@@ -4,7 +4,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 
 export const ModalHeaderHeight = 50;

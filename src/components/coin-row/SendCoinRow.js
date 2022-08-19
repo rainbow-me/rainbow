@@ -11,7 +11,7 @@ import CoinRow from './CoinRow';
 import { AssetTypes } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
 import { useColorForAsset } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;

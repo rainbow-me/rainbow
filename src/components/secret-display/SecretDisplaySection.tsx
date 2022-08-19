@@ -19,7 +19,7 @@ import WalletTypes, {
   EthereumWalletType,
 } from '@/helpers/walletTypes';
 import { useWallets } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { margin, position, shadow } from '@/styles';
 import { useTheme } from '@rainbow-me/theme';
 import logger from 'logger';

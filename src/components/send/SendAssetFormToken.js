@@ -4,7 +4,7 @@ import { Column } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 import { useDimensions } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { removeLeadingZeros } from '@rainbow-me/utils';
 
 const footerMargin = getSoftMenuBarHeight() / 2;

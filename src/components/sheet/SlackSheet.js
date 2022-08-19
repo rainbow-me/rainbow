@@ -22,7 +22,7 @@ import SheetHandleFixedToTop, {
 } from './SheetHandleFixedToTop';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const AndroidBackground = styled.View({

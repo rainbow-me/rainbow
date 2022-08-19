@@ -9,7 +9,7 @@ import CoinName from '../coin-row/CoinName';
 import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const formatPercentageString = percentString =>
   percentString ? percentString.toString().split('-').join('- ') : '-';

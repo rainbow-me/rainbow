@@ -6,7 +6,7 @@ import EthIcon from '@/assets/eth-icon.png';
 import { AssetTypes } from '@/entities';
 import { useBooleanState, useColorForAsset } from '@/hooks';
 import { ImageWithCachedMetadata } from '@/components/images';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders, fonts, position, shadow } from '@/styles';
 import {
   FallbackIcon,

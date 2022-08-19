@@ -8,7 +8,7 @@ import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { analytics } from '@rainbow-me/analytics';
 import { useDimensions } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const GradientBackground = styled(RadialGradient).attrs(
   ({ colorForAsset, theme: { colors }, width }) => {

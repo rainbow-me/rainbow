@@ -15,7 +15,7 @@ import { onWillPop } from './Navigation';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 

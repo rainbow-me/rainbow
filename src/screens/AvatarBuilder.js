@@ -15,7 +15,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
 import { useDimensions } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { useTheme } from '@rainbow-me/theme';
 
 const AvatarCircleHeight = 65;

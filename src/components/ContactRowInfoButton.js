@@ -10,7 +10,7 @@ import { CoinRowHeight } from './coin-row/CoinRow';
 import { Centered } from './layout';
 import { Text } from './text';
 import { useClipboard } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
 
 import {

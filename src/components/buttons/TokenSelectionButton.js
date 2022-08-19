@@ -8,7 +8,7 @@ import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import { AssetType } from '@/entities';
 import { useColorForAsset } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

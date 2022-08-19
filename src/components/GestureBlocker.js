@@ -9,7 +9,7 @@ import Animated, {
   useAnimatedGestureHandler,
 } from 'react-native-reanimated';
 import { useDimensions } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const NOOP = () => null;
 

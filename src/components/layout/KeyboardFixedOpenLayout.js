@@ -4,7 +4,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import Centered from './Centered';
 import keyboardTypes from '@/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const Container = styled.View({

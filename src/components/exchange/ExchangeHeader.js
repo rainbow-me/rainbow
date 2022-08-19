@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnWithMargins } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 const Container = styled(ColumnWithMargins).attrs({

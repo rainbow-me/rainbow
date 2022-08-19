@@ -23,7 +23,7 @@ import {
   useOpenSmallBalances,
 } from '@/hooks';
 import { emitChartsRequest } from '@/redux/explorer';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 export const CoinDividerHeight = 30;

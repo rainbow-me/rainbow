@@ -6,7 +6,7 @@ import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

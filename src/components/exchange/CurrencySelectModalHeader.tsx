@@ -9,7 +9,7 @@ import { TruncatedText } from '../text';
 import { Inset } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders, padding } from '@/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';
 

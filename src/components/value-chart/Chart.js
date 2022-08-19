@@ -18,7 +18,7 @@ import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@/helpers/chartTypes';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 export const { width: WIDTH } = Dimensions.get('window');

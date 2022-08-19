@@ -11,7 +11,7 @@ import {
 import UniqueTokenCard from './UniqueTokenCard';
 import { useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })({

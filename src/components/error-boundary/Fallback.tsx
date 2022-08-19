@@ -5,7 +5,7 @@ import RNExitApp from 'react-native-exit-app';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { useTheme } from '@rainbow-me/theme';
 import logger from 'logger';
 

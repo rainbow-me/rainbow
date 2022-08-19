@@ -15,7 +15,7 @@ import { useAccountSettings, useGenericAsset } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const BottomRowContainer = styled(Row)({
   marginBottom: 10,

@@ -23,7 +23,7 @@ import { useNavigation } from '@/navigation';
 import { useRemoveNextToLast } from '@/navigation/useRemoveNextToLast';
 import { parseAssetNative } from '@/parsers';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const INITIAL_PAGE_AMOUNT = 15;
 

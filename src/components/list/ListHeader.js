@@ -16,7 +16,7 @@ import {
   useWebData,
 } from '@/hooks';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 export const ListHeaderHeight = 50;

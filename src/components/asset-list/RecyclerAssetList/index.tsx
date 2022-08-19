@@ -43,7 +43,7 @@ import {
   usePrevious,
   useRefreshAccountData,
 } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {

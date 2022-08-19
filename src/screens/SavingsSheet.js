@@ -32,7 +32,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { watchingAlert } from '@rainbow-me/utils';
 

@@ -7,7 +7,7 @@ import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { NativeCurrencyKeys } from '@/entities';
 import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
 
 const ChartPriceRow = styled(Row)({});

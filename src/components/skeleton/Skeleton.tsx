@@ -8,7 +8,7 @@ import { deviceUtils } from '../../utils';
 import { ShimmerAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { Row } from '../layout';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;

@@ -28,7 +28,7 @@ import {
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { gasUtils } from '@rainbow-me/utils';
 

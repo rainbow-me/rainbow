@@ -11,7 +11,7 @@ import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

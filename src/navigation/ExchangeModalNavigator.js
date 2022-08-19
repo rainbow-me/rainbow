@@ -19,7 +19,7 @@ import {
 } from './effects';
 import Routes from './routesNames';
 import { useSwapCurrencies } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const Stack = createStackNavigator();

@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { RainbowAnimationDetails } from './types';
 import { ImgixImage } from '@/components/images';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const INITIAL_SIZE = 375;
 const BASE_DELAY = 69;

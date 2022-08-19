@@ -9,7 +9,7 @@ import ExchangeNotchMiddleDark from '@/assets/exchangeNotchMiddleDark.png';
 import ExchangeNotchRight from '@/assets/exchangeNotchRight.png';
 import ExchangeNotchRightDark from '@/assets/exchangeNotchRightDark.png';
 import { useDimensions } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const notchHeight = 48;
 const notchSideWidth = 78;

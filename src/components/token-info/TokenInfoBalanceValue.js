@@ -3,7 +3,7 @@ import { CoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
 import { useColorForAsset } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { magicMemo } from '@rainbow-me/utils';
 
 const InfoValue = styled(TokenInfoValue)(android ? { height: 37.7 } : {});

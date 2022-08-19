@@ -25,7 +25,7 @@ import {
   useSwapCurrencies,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { abbreviations } from '@rainbow-me/utils';
 

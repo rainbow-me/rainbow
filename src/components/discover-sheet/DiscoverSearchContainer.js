@@ -18,7 +18,7 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import { deviceUtils } from '@/utils';
 import { analytics } from '@rainbow-me/analytics';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const CancelButton = styled(ButtonPressAnimation)({
   marginTop: 27,

@@ -5,7 +5,7 @@ import { CoinIconIndicator, CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { useCoinListFinishEditingOptions } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { borders, padding, position, shadow } from '@/styles';
 
 const Container = styled.View({

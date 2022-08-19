@@ -7,7 +7,7 @@ import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
 } from '@/hooks';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
 import isSVGImage from '@rainbow-me/utils/isSVG';
 
