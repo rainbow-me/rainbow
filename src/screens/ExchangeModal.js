@@ -63,7 +63,7 @@ import {
   executeRap,
   getSwapRapEstimationByType,
   getSwapRapTypeByExchangeType,
-} from '@rainbow-me/raps';
+} from '@/raps';
 import {
   swapClearState,
   updateSwapSlippage,
