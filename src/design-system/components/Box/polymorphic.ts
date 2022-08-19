@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /*
 Adapted from Radix's react-polymorphic package
 https://github.com/radix-ui/primitives/tree/main/packages/react/polymorphic

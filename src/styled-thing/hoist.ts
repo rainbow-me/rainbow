@@ -89,7 +89,7 @@ type ExcludeList = {
   [key: string]: true;
 };
 
-type NonReactStatics<S extends OmniComponent, C extends ExcludeList = {}> = {
+type NonReactStatics<S extends OmniComponent, C extends ExcludeList = Record<string, never>> = {
   [key in Exclude<
     keyof S,
     S extends React.MemoExoticComponent<any>
@@ -103,7 +103,7 @@ type NonReactStatics<S extends OmniComponent, C extends ExcludeList = {}> = {
 export default function hoistNonReactStatics<
   T extends OmniComponent,
   S extends OmniComponent,
-  C extends ExcludeList = {}
+  C extends ExcludeList = Record<string, never>
 >(targetComponent: T, sourceComponent: S, excludelist?: C) {
   if (typeof sourceComponent !== 'string') {
     // don't hoist over string (html) components
@@ -115,7 +115,7 @@ export default function hoistNonReactStatics<
       }
     }
 
-    let keys: (String | Symbol)[] = getOwnPropertyNames(sourceComponent);
+    let keys: (string | symbol)[] = getOwnPropertyNames(sourceComponent);
 
     if (getOwnPropertySymbols) {
       keys = keys.concat(getOwnPropertySymbols(sourceComponent));

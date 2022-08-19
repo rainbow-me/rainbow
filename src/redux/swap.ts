@@ -202,7 +202,7 @@ export const updateSwapOutputCurrency = (
 };
 
 export const flipSwapCurrencies = (
-  outputIndependentField: Boolean,
+  outputIndependentField: boolean,
   independentValue?: string | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { inputCurrency, outputCurrency } = getState().swap;
