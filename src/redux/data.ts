@@ -74,7 +74,7 @@ import {
   shitcoins,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { delay, isZero, pickBy } from '@rainbow-me/utilities';
+import { delay, isZero, pickBy } from '@/helpers/utilities';
 import {
   ethereumUtils,
   isLowerCaseMatch,

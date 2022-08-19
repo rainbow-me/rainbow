@@ -33,7 +33,7 @@ import {
   lessThan,
   multiply,
   toFixedDecimals,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 type BigNumberish = number | string | BigNumber;
 

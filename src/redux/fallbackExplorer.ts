@@ -37,7 +37,7 @@ import {
   ETH_COINGECKO_ID,
   migratedTokens,
 } from '@/references';
-import { delay } from '@rainbow-me/utilities';
+import { delay } from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

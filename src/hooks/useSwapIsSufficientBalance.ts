@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { ExchangeModalTypes } from '@/helpers';
 import { AppState } from '@/redux/store';
-import { greaterThanOrEqualTo } from '@rainbow-me/utilities';
+import { greaterThanOrEqualTo } from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapIsSufficientBalance(inputAmount: string | null) {

@@ -14,7 +14,7 @@ import {
   greaterThanOrEqualTo,
   isPositive,
   subtract,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const PriceImpactWarningThreshold = 0.05;

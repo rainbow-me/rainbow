@@ -14,7 +14,7 @@ import { useNavigation } from '@/navigation';
 import { DPI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { fontWithWidth } from '@/styles';
-import { handleSignificantDecimals } from '@rainbow-me/utilities';
+import { handleSignificantDecimals } from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 

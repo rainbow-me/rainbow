@@ -4,7 +4,7 @@ import {
   convertAmountToNativeDisplay,
   divide,
   greaterThan,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 export const bigNumberFormat = memoFn(
   (

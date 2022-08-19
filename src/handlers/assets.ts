@@ -11,7 +11,7 @@ import {
 import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 const nativeAssetsPerNetwork = {
   [networkTypes.arbitrum]: ARBITRUM_ETH_ADDRESS,

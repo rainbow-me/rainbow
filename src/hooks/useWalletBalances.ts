@@ -12,7 +12,7 @@ import networkInfo from '@/helpers/networkInfo';
 import { AllRainbowWallets } from '@/model/wallet';
 import { queryClient } from '@/react-query/queryClient';
 import { balanceCheckerContractAbi } from '@/references';
-import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
+import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
 import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';

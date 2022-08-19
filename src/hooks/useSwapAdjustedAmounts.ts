@@ -8,7 +8,7 @@ import {
 import { AppState } from '@/redux/store';
 import { SwapModalField } from '@/redux/swap';
 import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS } from '@/references';
-import { fromWei, updatePrecisionToDisplay } from '@rainbow-me/utilities';
+import { fromWei, updatePrecisionToDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapAdjustedAmounts(tradeDetails: Quote) {

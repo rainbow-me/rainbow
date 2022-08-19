@@ -15,7 +15,7 @@ import { position } from '@/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 export const CurrencyTileHeight = android ? 153 : 143;
 

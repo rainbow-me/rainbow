@@ -8,7 +8,7 @@ import {
   convertHexToString,
   convertRawAmountToDecimalFormat,
   fromWei,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import {
   isSignTypedData,

@@ -10,7 +10,7 @@ import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 /**

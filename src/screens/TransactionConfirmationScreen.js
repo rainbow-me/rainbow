@@ -94,7 +94,7 @@ import {
   greaterThanOrEqualTo,
   multiply,
   omitFlatten,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
 import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';

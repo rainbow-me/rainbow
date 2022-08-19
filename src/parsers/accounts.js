@@ -10,7 +10,7 @@ import {
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
 import { memoFn } from '@rainbow-me/utils/memoFn';
 

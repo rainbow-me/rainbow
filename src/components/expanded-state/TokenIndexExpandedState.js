@@ -30,7 +30,7 @@ import {
   handleSignificantDecimals,
   multiply,
   times,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 

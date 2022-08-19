@@ -8,7 +8,7 @@ import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const NONE = 'None';

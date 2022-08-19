@@ -78,7 +78,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
   lessThan,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import {
   deviceUtils,
   ethereumUtils,

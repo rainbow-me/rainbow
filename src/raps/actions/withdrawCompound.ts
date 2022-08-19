@@ -22,7 +22,7 @@ import {
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '@/references';
-import { convertAmountToRawAmount, isEqual } from '@rainbow-me/utilities';
+import { convertAmountToRawAmount, isEqual } from '@/helpers/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

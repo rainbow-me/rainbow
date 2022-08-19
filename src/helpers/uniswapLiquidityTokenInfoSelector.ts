@@ -15,7 +15,7 @@ import {
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';
 
 const accountAddressSelector = (state: AppState) =>

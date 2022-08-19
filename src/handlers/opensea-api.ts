@@ -12,7 +12,7 @@ import {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
 } from '@/parsers';
-import { handleSignificantDecimals } from '@rainbow-me/utilities';
+import { handleSignificantDecimals } from '@/helpers/utilities';
 import logger from 'logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE: number = 50;

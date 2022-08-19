@@ -31,7 +31,7 @@ import {
   convertRawAmountToDecimalFormat,
   isZero,
   updatePrecisionToDisplay,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import Logger from '@rainbow-me/utils/logger';
 

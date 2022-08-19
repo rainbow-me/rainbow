@@ -47,7 +47,7 @@ import {
   weiToGwei,
 } from '@/parsers';
 import { ethUnits, supportedNativeCurrencies } from '@/references';
-import { multiply } from '@rainbow-me/utilities';
+import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

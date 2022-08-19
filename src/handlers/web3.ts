@@ -41,7 +41,7 @@ import {
   greaterThan,
   handleSignificantDecimals,
   multiply,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { fetchContractABI } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';

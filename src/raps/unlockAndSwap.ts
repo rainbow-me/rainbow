@@ -18,7 +18,7 @@ import { isNativeAsset } from '@/handlers/assets';
 import { estimateSwapGasLimit } from '@/handlers/uniswap';
 import store from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
-import { add } from '@rainbow-me/utilities';
+import { add } from '@/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export const estimateUnlockAndSwap = async (
