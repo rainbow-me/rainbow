@@ -13,7 +13,7 @@ import ImageAvatar from './ImageAvatar';
 import useExperimentalFlag, {
   PROFILES,
 } from '@/config/experimentalHooks';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchReverseRecord } from '@/handlers/ens';
 import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   isENSAddressFormat,

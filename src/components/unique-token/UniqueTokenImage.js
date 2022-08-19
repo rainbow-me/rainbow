@@ -7,7 +7,7 @@ import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
 import { Text } from '@/design-system';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
+import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';

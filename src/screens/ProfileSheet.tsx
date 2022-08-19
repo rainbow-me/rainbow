@@ -14,7 +14,7 @@ import {
   Inset,
   Stack,
 } from '@/design-system';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,

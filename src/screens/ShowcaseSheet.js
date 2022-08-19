@@ -7,7 +7,7 @@ import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
+import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';

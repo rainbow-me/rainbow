@@ -7,7 +7,7 @@ import {
   deleteAllBackups,
   fetchAllBackups,
   fetchUserDataFromCloud,
-} from '@rainbow-me/handlers/cloudBackup';
+} from '@/handlers/cloudBackup';
 import walletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';

@@ -13,7 +13,7 @@ import {
   getRapActionTypeForTxType,
   getTransactionTypeForRecords,
   recordsForTransactionAreValid,
-} from '@rainbow-me/handlers/ens';
+} from '@/handlers/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 
 export const createSetRecordsENSRap = async (

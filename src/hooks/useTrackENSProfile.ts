@@ -4,7 +4,7 @@ import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
 import { analytics } from '@rainbow-me/analytics';
 import { EthereumAddress } from '@/entities';
-import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
+import { fetchAccountRegistrations } from '@/handlers/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { RainbowWallet } from '@rainbow-me/model/wallet';

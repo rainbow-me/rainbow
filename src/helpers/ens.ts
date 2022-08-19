@@ -15,7 +15,7 @@ import {
   multiply,
 } from './utilities';
 import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
-import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, toHex } from '@/handlers/web3';
 import { gweiToWei } from '@rainbow-me/parsers';
 import {
   ENSBaseRegistrarImplementationABI,

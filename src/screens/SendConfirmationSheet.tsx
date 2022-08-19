@@ -46,9 +46,9 @@ import {
   estimateENSSetAddressGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
-} from '@rainbow-me/handlers/ens';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { estimateGasLimit } from '@rainbow-me/handlers/web3';
+} from '@/handlers/ens';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,

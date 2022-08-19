@@ -8,7 +8,7 @@ import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, {
   PROFILES,
 } from '@/config/experimentalHooks';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,

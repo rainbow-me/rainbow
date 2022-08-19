@@ -8,7 +8,7 @@ import {
   UniswapPairData,
   UniswapPairHistoricalData,
 } from '@/entities';
-import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
+import { getUniswapV2Pools } from '@/handlers/dispersion';
 import { pickShallow } from '@rainbow-me/helpers/utilities';
 import {
   emitAssetRequest,

@@ -17,8 +17,8 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
-} from '@rainbow-me/handlers/cloudBackup';
-import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
+} from '@/handlers/cloudBackup';
+import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import walletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import {

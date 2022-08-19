@@ -9,7 +9,7 @@ import {
 import {
   getUniswapPositions,
   saveUniswapPositions,
-} from '@rainbow-me/handlers/localstorage/uniswap';
+} from '@/handlers/localstorage/uniswap';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import {
   BUSD_ADDRESS,

@@ -2,7 +2,7 @@ import isNil from 'lodash/isNil';
 import toUpper from 'lodash/toUpper';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { isNativeAsset } from '@/handlers/assets';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   add,

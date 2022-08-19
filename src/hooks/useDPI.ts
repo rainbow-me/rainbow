@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { emitAssetRequest } from '../redux/explorer';
 import { AppState } from '../redux/store';
 import { IndexToken } from '@/entities';
-import { getDPIBalance } from '@rainbow-me/handlers/dispersion';
+import { getDPIBalance } from '@/handlers/dispersion';
 
 export default function useDPI() {
   const dispatch = useDispatch();

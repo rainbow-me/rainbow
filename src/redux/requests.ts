@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
-} from '@rainbow-me/handlers/localstorage/walletconnectRequests';
+} from '@/handlers/localstorage/walletconnectRequests';
 import {
   dappLogoOverride,
   dappNameOverride,

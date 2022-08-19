@@ -11,7 +11,7 @@ import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { analytics } from '@rainbow-me/analytics';
-import { handleQRScanner } from '@rainbow-me/handlers/fedora';
+import { handleQRScanner } from '@/handlers/fedora';
 import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,

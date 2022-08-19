@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import {
   computeSlippageAdjustedAmounts,
   Field,
-} from '@rainbow-me/handlers/uniswap';
+} from '@/handlers/uniswap';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS } from '@rainbow-me/references';

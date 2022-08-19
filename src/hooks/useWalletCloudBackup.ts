@@ -17,7 +17,7 @@ import { analytics } from '@rainbow-me/analytics';
 import {
   CLOUD_BACKUP_ERRORS,
   isCloudBackupAvailable,
-} from '@rainbow-me/handlers/cloudBackup';
+} from '@/handlers/cloudBackup';
 import { delay } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';

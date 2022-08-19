@@ -19,7 +19,7 @@ import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
 import { analytics } from '@rainbow-me/analytics';
-import { getTrendingAddresses } from '@rainbow-me/handlers/dispersion';
+import { getTrendingAddresses } from '@/handlers/dispersion';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { times } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';

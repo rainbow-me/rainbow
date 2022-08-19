@@ -37,20 +37,20 @@ import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { EthereumAddress } from '@/entities';
-import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
+import AesEncryptor from '@/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   authenticateWithPINAndCreateIfNeeded,
   getExistingPIN,
-} from '@rainbow-me/handlers/authentication';
-import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/authentication';
+import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
   isHexStringIgnorePrefix,
   isValidMnemonic,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';

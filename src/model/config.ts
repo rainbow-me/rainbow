@@ -37,11 +37,11 @@ import {
 import {
   getNetwork,
   saveNetwork,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
+} from '@/handlers/localstorage/globalSettings';
 import {
   setRpcEndpoints,
   web3SetHttpProvider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 
 import Logger from 'logger';
 

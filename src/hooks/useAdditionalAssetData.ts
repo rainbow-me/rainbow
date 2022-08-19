@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
 import { EthereumAddress } from '@/entities';
-import { getAdditionalAssetData } from '@rainbow-me/handlers/dispersion';
+import { getAdditionalAssetData } from '@/handlers/dispersion';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo, multiply } from '@rainbow-me/helpers/utilities';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';

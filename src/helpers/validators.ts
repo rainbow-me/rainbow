@@ -7,7 +7,7 @@ import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
   resolveUnstoppableDomain,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@rainbow-me/utils';
 
 // Currently supported Top Level Domains from Unstoppable Domains

@@ -13,7 +13,7 @@ import {
   Divider,
   Rows,
 } from '@/design-system';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { isNativeAsset } from '@/handlers/assets';
 import {
   useColorForAsset,
   useSwapAdjustedAmounts,

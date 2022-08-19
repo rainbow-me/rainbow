@@ -35,12 +35,12 @@ import {
   RainbowTransaction,
   SelectedGasFee,
 } from '@/entities';
-import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
+import { getOnchainAssetBalance } from '@/handlers/assets';
 import {
   getProviderForNetwork,
   isTestnetNetwork,
   toHex,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { Network } from '@rainbow-me/helpers/networkTypes';

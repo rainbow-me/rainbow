@@ -27,13 +27,13 @@ import {
 import {
   polygonGasStationGetGasPrices,
   rainbowMeteorologyGetData,
-} from '@rainbow-me/handlers/gasFees';
+} from '@/handlers/gasFees';
 import {
   getProviderForNetwork,
   isHardHat,
   isL2Network,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,

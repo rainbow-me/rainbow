@@ -13,7 +13,7 @@ import {
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
   fetchReverseRecord,
-} from '@rainbow-me/handlers/ens';
+} from '@/handlers/ens';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import {
   ENS_DOMAIN,

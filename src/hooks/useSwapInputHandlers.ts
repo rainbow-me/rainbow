@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { isNativeAsset } from '@/handlers/assets';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   greaterThan,

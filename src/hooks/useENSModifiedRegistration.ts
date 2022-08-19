@@ -9,7 +9,7 @@ import {
   usePrevious,
 } from '.';
 import { Records, UniqueAsset } from '@/entities';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
+import svgToPngIfNeeded from '@/handlers/svgs';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';

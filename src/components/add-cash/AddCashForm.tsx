@@ -16,7 +16,7 @@ import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
 import { analytics } from '@rainbow-me/analytics';
-import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { toChecksumAddress } from '@/handlers/web3';
 import {
   useAccountSettings,
   useDimensions,

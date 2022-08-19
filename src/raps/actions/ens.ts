@@ -10,8 +10,8 @@ import { ENSRegistrationRecords } from '@/entities';
 import {
   estimateENSTransactionGasLimit,
   formatRecordsForTransaction,
-} from '@rainbow-me/handlers/ens';
-import { toHex } from '@rainbow-me/handlers/web3';
+} from '@/handlers/ens';
+import { toHex } from '@/handlers/web3';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import {
   ENSRegistrationTransactionType,

@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
-import { getShowcaseTokens } from '@rainbow-me/handlers/localstorage/accountLocal';
+import { getShowcaseTokens } from '@/handlers/localstorage/accountLocal';
 import { getPreference } from '@rainbow-me/model/preferences';
 
 export const showcaseTokensQueryKey = ({ address }: { address?: string }) => [

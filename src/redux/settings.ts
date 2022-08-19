@@ -17,8 +17,8 @@ import {
   saveNativeCurrency,
   saveNetwork,
   saveTestnetsEnabled,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
-import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
+} from '@/handlers/localstorage/globalSettings';
+import { web3SetHttpProvider } from '@/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dataResetState } from '@rainbow-me/redux/data';
 import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';

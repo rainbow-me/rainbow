@@ -7,7 +7,7 @@ import { ParsedAddressAsset } from '@/entities';
 import {
   getLiquidity,
   saveLiquidity,
-} from '@rainbow-me/handlers/localstorage/uniswap';
+} from '@/handlers/localstorage/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 

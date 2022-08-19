@@ -35,7 +35,7 @@ import {
   estimateENSRenewGasLimit,
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
-} from '@rainbow-me/handlers/ens';
+} from '@/handlers/ens';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import logger from 'logger';

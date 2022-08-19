@@ -1,5 +1,5 @@
 import { PixelRatio } from 'react-native';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import { maybeSignUri } from '@/handlers/imgix';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';

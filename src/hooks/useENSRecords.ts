@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 import { Records } from '@/entities';
-import { fetchCoinAddresses, fetchRecords } from '@rainbow-me/handlers/ens';
-import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
+import { fetchCoinAddresses, fetchRecords } from '@/handlers/ens';
+import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';

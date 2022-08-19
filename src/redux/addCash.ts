@@ -14,8 +14,8 @@ import {
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
-import { trackWyreOrder, trackWyreTransfer } from '@rainbow-me/handlers/wyre';
+} from '@/handlers/localstorage/accountLocal';
+import { trackWyreOrder, trackWyreTransfer } from '@/handlers/wyre';
 import {
   WYRE_ORDER_STATUS_TYPES,
   WyreError,

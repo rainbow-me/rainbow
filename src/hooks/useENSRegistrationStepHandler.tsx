@@ -8,7 +8,7 @@ import {
   getProviderForNetwork,
   isHardHat,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import {
   ENS_SECONDS_PADDING,
   ENS_SECONDS_WAIT,

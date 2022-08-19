@@ -22,11 +22,11 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
+import { deleteAllBackups } from '@/handlers/cloudBackup';
 import {
   getProviderForNetwork,
   web3SetHttpProvider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';

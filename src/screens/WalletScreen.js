@@ -17,7 +17,7 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import useExperimentalFlag, {
   PROFILES,
 } from '@/config/experimentalHooks';
-import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
+import { prefetchENSIntroData } from '@/handlers/ens';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,

@@ -10,14 +10,14 @@ import {
   RainbowToken,
   UniswapFavoriteTokenData,
 } from '@/entities';
-import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
+import { getUniswapV2Tokens } from '@/handlers/dispersion';
 import {
   getUniswapFavorites,
   getUniswapFavoritesMetadata as getUniswapFavoritesMetadataLS,
   saveUniswapFavorites,
   saveUniswapFavoritesMetadata,
-} from '@rainbow-me/handlers/localstorage/uniswap';
-import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
+} from '@/handlers/localstorage/uniswap';
+import { getTestnetUniswapPairs } from '@/handlers/uniswap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   DefaultUniswapFavorites,

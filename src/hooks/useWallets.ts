@@ -8,7 +8,7 @@ import {
   walletsSetSelected,
 } from '../redux/wallets';
 import useInitializeWallet from './useInitializeWallet';
-import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { toChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
 import { AppState } from '@rainbow-me/redux/store';

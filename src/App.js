@@ -75,7 +75,7 @@ import { analytics } from '@rainbow-me/analytics';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
-} from '@rainbow-me/handlers/fedora';
+} from '@/handlers/fedora';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';

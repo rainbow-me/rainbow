@@ -15,8 +15,8 @@ import {
 import {
   estimateSwapGasLimit,
   executeSwap,
-} from '@rainbow-me/handlers/uniswap';
-import { isL2Network, toHex } from '@rainbow-me/handlers/web3';
+} from '@/handlers/uniswap';
+import { isL2Network, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@rainbow-me/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';

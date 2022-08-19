@@ -14,7 +14,7 @@ import { analytics } from '@rainbow-me/analytics';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
-} from '@rainbow-me/handlers/cloudBackup';
+} from '@/handlers/cloudBackup';
 import {
   useBooleanState,
   useDimensions,

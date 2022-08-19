@@ -17,7 +17,7 @@ import {
   RainbowMeteorologyData,
   SelectedGasFee,
 } from '@/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
+import { toHex } from '@/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
 import {
   ethUnits,

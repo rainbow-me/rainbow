@@ -51,7 +51,7 @@ import {
 import {
   getSeenOnchainDataDisclaimer,
   saveSeenOnchainDataDisclaimer,
-} from '@rainbow-me/handlers/localstorage/ens';
+} from '@/handlers/localstorage/ens';
 import {
   accentColorAtom,
   ENS_RECORDS,

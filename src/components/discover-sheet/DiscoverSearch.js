@@ -21,7 +21,7 @@ import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { fetchSuggestions } from '@rainbow-me/handlers/ens';
+import { fetchSuggestions } from '@/handlers/ens';
 import {
   useHardwareBackOnFocus,
   usePrevious,

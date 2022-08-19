@@ -37,7 +37,7 @@ import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { isL2Network, isTestnetNetwork } from '@rainbow-me/handlers/web3';
+import { isL2Network, isTestnetNetwork } from '@/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,

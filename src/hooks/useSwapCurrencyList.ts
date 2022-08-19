@@ -16,8 +16,8 @@ import {
   RainbowToken as RT,
   TokenSearchTokenListId,
 } from '@/entities';
-import tokenSearch from '@rainbow-me/handlers/tokenSearch';
-import { addHexPrefix, getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import tokenSearch from '@/handlers/tokenSearch';
+import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
 import {
   DAI_ADDRESS,

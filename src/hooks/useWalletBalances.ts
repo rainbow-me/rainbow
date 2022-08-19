@@ -6,8 +6,8 @@ import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
-} from '@rainbow-me/handlers/localstorage/walletBalances';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+} from '@/handlers/localstorage/walletBalances';
+import { web3Provider } from '@/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { AllRainbowWallets } from '@rainbow-me/model/wallet';
 import { queryClient } from '@rainbow-me/react-query/queryClient';

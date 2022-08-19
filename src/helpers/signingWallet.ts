@@ -14,8 +14,8 @@ import {
   signingWallet as signingWalletKeychain,
 } from '../utils/keychainConstants';
 import { EthereumAddress } from '@/entities';
-import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
-import { addHexPrefix } from '@rainbow-me/handlers/web3';
+import AesEncryptor from '@/handlers/aesEncryption';
+import { addHexPrefix } from '@/handlers/web3';
 import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {

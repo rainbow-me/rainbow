@@ -10,7 +10,7 @@ import {
   getUserLists,
   saveSelectedUserList,
   saveUserLists,
-} from '@rainbow-me/handlers/localstorage/userLists';
+} from '@/handlers/localstorage/userLists';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import { AppGetState, AppState } from '@rainbow-me/redux/store';
 import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';

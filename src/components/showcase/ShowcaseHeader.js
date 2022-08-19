@@ -8,8 +8,8 @@ import {
   SheetActionButtonRow,
 } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
-import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
-import { isHexString } from '@rainbow-me/handlers/web3';
+import { getContacts } from '@/handlers/localstorage/contacts';
+import { isHexString } from '@/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useImportingWallet, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';

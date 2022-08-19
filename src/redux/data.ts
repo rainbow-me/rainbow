@@ -38,7 +38,7 @@ import {
   ZerionAssetFallback,
   ZerionTransaction,
 } from '@/entities';
-import appEvents from '@rainbow-me/handlers/appEvents';
+import appEvents from '@/handlers/appEvents';
 import {
   getAccountAssetsData,
   getLocalPendingTransactions,
@@ -47,12 +47,12 @@ import {
   saveAccountEmptyState,
   saveLocalPendingTransactions,
   saveLocalTransactions,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import {
   getProviderForNetwork,
   isL2Network,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';

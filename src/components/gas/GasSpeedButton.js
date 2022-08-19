@@ -11,7 +11,7 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isL2Network } from '@rainbow-me/handlers/web3';
+import { isL2Network } from '@/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {

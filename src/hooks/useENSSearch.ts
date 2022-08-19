@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings, useENSLocalTransactions } from '.';
-import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
+import { fetchRegistrationDate } from '@/handlers/ens';
 import {
   ENS_DOMAIN,
   formatRentPrice,

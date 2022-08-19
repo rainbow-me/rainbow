@@ -27,8 +27,8 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes } from '@/entities';
-import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
-import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
+import { isL2Asset, isNativeAsset } from '@/handlers/assets';
+import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
   buildTransaction,
   createSignableTransaction,
@@ -37,7 +37,7 @@ import {
   isL2Network,
   resolveNameOrAddress,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import Network from '@rainbow-me/helpers/networkTypes';
 import {

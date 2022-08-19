@@ -1,5 +1,5 @@
 import contentHash from '@ensdomains/content-hash';
-import { isHexString } from '@rainbow-me/handlers/web3';
+import { isHexString } from '@/handlers/web3';
 
 const supportedCodecs = [
   'ipns-ns',

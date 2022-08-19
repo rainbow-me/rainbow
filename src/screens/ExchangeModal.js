@@ -34,7 +34,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { Box, Row, Rows } from '@/design-system';
 import { AssetType } from '@/entities';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork } from '@/handlers/web3';
 import {
   ExchangeModalTypes,
   isKeyboardOpen,

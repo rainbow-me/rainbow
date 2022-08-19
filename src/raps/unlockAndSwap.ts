@@ -14,8 +14,8 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
+import { isNativeAsset } from '@/handlers/assets';
+import { estimateSwapGasLimit } from '@/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';

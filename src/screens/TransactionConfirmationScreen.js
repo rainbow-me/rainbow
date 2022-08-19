@@ -56,7 +56,7 @@ import {
   isL2Network,
   isTestnetNetwork,
   toHex,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import { Network } from '@rainbow-me/helpers';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';

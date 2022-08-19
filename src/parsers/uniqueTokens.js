@@ -3,9 +3,9 @@ import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
 import { AssetTypes } from '@/entities';
-import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
+import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
+import { maybeSignUri } from '@/handlers/imgix';
+import svgToPngIfNeeded from '@/handlers/svgs';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { pickBy, pickShallow } from '@rainbow-me/helpers/utilities';
 import {

@@ -14,7 +14,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
+import { UploadImageReturnData } from '@/handlers/pinata';
 import {
   useENSModifiedRegistration,
   useENSRegistration,

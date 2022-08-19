@@ -4,7 +4,7 @@ import React, { Fragment } from 'react';
 import { OpacityToggler } from '../animations';
 import { UniswapInvestmentRow } from '../investment-cards';
 import SavingsListHeader from '../savings/SavingsListHeader';
-import { isTestnetNetwork } from '@rainbow-me/handlers/web3';
+import { isTestnetNetwork } from '@/handlers/web3';
 import { useAccountSettings, useOpenInvestmentCards } from '@rainbow-me/hooks';
 
 const renderInvestmentsListRow = item => (

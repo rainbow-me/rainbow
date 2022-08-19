@@ -12,7 +12,7 @@ import {
   SwapActionParameters,
 } from './common';
 import { Asset } from '@/entities';
-import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
+import { estimateSwapGasLimit } from '@/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import {
   ethUnits,

@@ -4,9 +4,9 @@ import { BaseProvider } from '@ethersproject/providers';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
 import { UniqueAsset } from '@/entities';
-import { apiGetAccountUniqueToken } from '@rainbow-me/handlers/opensea-api';
-import { getNFTByTokenId } from '@rainbow-me/handlers/simplehash';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
+import { apiGetAccountUniqueToken } from '@/handlers/opensea-api';
+import { getNFTByTokenId } from '@/handlers/simplehash';
+import svgToPngIfNeeded from '@/handlers/svgs';
 import { NetworkTypes } from '@rainbow-me/helpers';
 
 const abi = [

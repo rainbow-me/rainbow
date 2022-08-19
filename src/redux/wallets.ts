@@ -40,7 +40,7 @@ import {
 import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchReverseRecord } from '@/handlers/ens';
 import { WalletLoadingState } from '@rainbow-me/helpers/walletLoadingStates';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 

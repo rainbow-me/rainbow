@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import {
   getImageMetadata,
   saveImageMetadata,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
+} from '@/handlers/localstorage/globalSettings';
 import { AppGetState } from '@rainbow-me/redux/store';
 
 // -- Constants --------------------------------------- //

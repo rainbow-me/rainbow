@@ -37,7 +37,7 @@ import {
   getProviderForNetwork,
   isL2Network,
   toHex,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import { Network } from '@rainbow-me/helpers';
 import { greaterThan } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';

@@ -4,7 +4,7 @@ import { EthereumAddress, NonceManager } from '@/entities';
 import {
   getNonceManager,
   saveNonceManager,
-} from '@rainbow-me/handlers/localstorage/nonceManager';
+} from '@/handlers/localstorage/nonceManager';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import logger from 'logger';
 

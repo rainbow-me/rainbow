@@ -29,7 +29,7 @@ import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@rainbow-me/analytics';
-import { addHexPrefix } from '@rainbow-me/handlers/web3';
+import { addHexPrefix } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
 import {
   useAssetsInWallet,

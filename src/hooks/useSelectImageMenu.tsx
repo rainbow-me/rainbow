@@ -9,7 +9,7 @@ import { UniqueAsset } from '@/entities';
 import {
   uploadImage,
   UploadImageReturnData,
-} from '@rainbow-me/handlers/pinata';
+} from '@/handlers/pinata';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';

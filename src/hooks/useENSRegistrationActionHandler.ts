@@ -14,10 +14,10 @@ import {
   useWalletENSAvatar,
 } from '.';
 import { Records, RegistrationParameters } from '@/entities';
-import { fetchResolver } from '@rainbow-me/handlers/ens';
-import { saveNameFromLabelhash } from '@rainbow-me/handlers/localstorage/ens';
-import { uploadImage } from '@rainbow-me/handlers/pinata';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import { fetchResolver } from '@/handlers/ens';
+import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
+import { uploadImage } from '@/handlers/pinata';
+import { getProviderForNetwork } from '@/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,

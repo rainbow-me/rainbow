@@ -18,11 +18,11 @@ import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchReverseRecord } from '@/handlers/ens';
 import {
   resolveUnstoppableDomain,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,

@@ -9,7 +9,7 @@ import {
   LegacyGasFeeParams,
   ParsedAddressAsset,
 } from '@/entities';
-import { isL2Network } from '@rainbow-me/handlers/web3';
+import { isL2Network } from '@/handlers/web3';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   fromWei,

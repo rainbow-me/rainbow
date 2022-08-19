@@ -11,7 +11,7 @@ import {
 import {
   getLocalENSRegistrations,
   saveLocalENSRegistrations,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { omitFlatten } from '@rainbow-me/helpers/utilities';

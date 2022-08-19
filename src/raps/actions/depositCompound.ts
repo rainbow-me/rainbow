@@ -12,7 +12,7 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
+import { toHex } from '@/handlers/web3';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import {

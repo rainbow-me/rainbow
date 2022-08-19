@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
-} from '@rainbow-me/handlers/localstorage/walletBalances';
+} from '@/handlers/localstorage/walletBalances';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { nonceManagerLoadState } from '@rainbow-me/redux/nonceManager';
 import { AppState } from '@rainbow-me/redux/store';

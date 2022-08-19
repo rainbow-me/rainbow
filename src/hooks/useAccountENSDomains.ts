@@ -3,11 +3,11 @@ import { useQuery } from 'react-query';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
 import { EnsDomain } from '@/apollo/queries';
-import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
+import { fetchAccountRegistrations } from '@/handlers/ens';
 import {
   getENSDomains,
   setENSDomains,
-} from '@rainbow-me/handlers/localstorage/ens';
+} from '@/handlers/localstorage/ens';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [

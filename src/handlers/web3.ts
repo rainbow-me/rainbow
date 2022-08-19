@@ -22,7 +22,7 @@ import {
   NewTransaction,
   ParsedAddressAsset,
 } from '@/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { isUnstoppableAddressFormat } from '@rainbow-me/helpers/validators';
 import {

@@ -21,7 +21,7 @@ import {
 } from '../styles/colors';
 import currentColors from './currentColors';
 import { DesignSystemProvider } from '@/design-system';
-import { getTheme, saveTheme } from '@rainbow-me/handlers/localstorage/theme';
+import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
 import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
 
 export const Themes = {
