@@ -111,19 +111,9 @@ const swap = async (
     dispatch(
       additionalDataUpdateL2AssetToWatch({
         hash: swap?.hash || '',
-        inputCurrency: {
-          address: inputCurrency?.address,
-          decimals: inputCurrency?.decimals,
-          mainnetAddress: inputCurrency?.mainnet_address,
-          symbol: inputCurrency?.symbol,
-        },
+        inputCurrency,
         network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-        outputCurrency: {
-          address: outputCurrency?.address,
-          decimals: outputCurrency?.decimals,
-          mainnetAddress: outputCurrency?.mainnet_address,
-          symbol: outputCurrency?.symbol,
-        },
+        outputCurrency,
         userAddress: accountAddress,
       })
     );

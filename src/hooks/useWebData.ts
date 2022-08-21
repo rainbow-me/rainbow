@@ -13,9 +13,10 @@ import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
-const getAccountSymbol = (name: any) => {
+const getAccountSymbol = (name: string) => {
   if (!name) {
     return null;
   }
@@ -23,7 +24,7 @@ const getAccountSymbol = (name: any) => {
   return accountSymbol;
 };
 
-const wipeNotEmoji = (text: any) => {
+const wipeNotEmoji = (text: string) => {
   const characters = new GraphemeSplitter().splitGraphemes(text);
   if (characters.length !== 1) {
     return null;
@@ -36,9 +37,12 @@ export default function useWebData() {
   const dispatch = useDispatch();
   const { wallets } = useWallets();
 
-  const { showcaseTokens, webDataEnabled } = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
-    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
+  const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
+    ({
+      hiddenTokens: { hiddenTokens },
+      showcaseTokens: { webDataEnabled, showcaseTokens },
+    }: AppState) => ({
+      hiddenTokens,
       showcaseTokens,
       webDataEnabled,
     })
@@ -59,11 +63,18 @@ export default function useWebData() {
 
       await setPreference(
         PreferenceActionType.init,
+        'hidden',
+        accountAddress,
+        hiddenTokens
+      );
+
+      await setPreference(
+        PreferenceActionType.init,
         'profile',
         accountAddress,
         {
           accountColor: colors.avatarBackgrounds[accountColor],
-          accountSymbol: wipeNotEmoji(accountSymbol),
+          accountSymbol: wipeNotEmoji(accountSymbol as string),
         }
       );
 
@@ -75,6 +86,7 @@ export default function useWebData() {
       accountSymbol,
       colors.avatarBackgrounds,
       dispatch,
+      hiddenTokens,
     ]
   );
 
@@ -89,13 +101,13 @@ export default function useWebData() {
   const updateWebProfile = useCallback(
     async (address, name, color) => {
       if (!webDataEnabled) return;
-      const wallet = findWalletWithAccount(wallets, address);
+      const wallet = findWalletWithAccount(wallets!, address);
       // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color || accountColor,
         accountSymbol: wipeNotEmoji(
-          name ? getAccountSymbol(name) : accountSymbol
+          name ? getAccountSymbol(name)! : (accountSymbol as string)
         ),
       };
       await setPreference(
