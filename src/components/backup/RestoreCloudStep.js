@@ -157,15 +157,14 @@ export default function RestoreCloudStep({
     try {
       Keyboard.dismiss();
       setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET);
-      const success = await restoreCloudBackup(
+      const success = await restoreCloudBackup({
+        backupSelected: backupSelected?.name,
+        onAfterPINCreated: () =>
+          setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET),
+        onBeforePINCreated: () => setIsWalletLoading(null),
         password,
         userData,
-        backupSelected?.name,
-        //onBeforePINCreated
-        () => setIsWalletLoading(null),
-        //onAfterPINCreated
-        () => setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET)
-      );
+      });
       if (success) {
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);

@@ -147,13 +147,19 @@ export function findLatestBackUp(
   return filename;
 }
 
-export async function restoreCloudBackup(
-  password: BackupPassword,
-  userData: BackupUserData | null,
-  backupSelected: string | null,
+export async function restoreCloudBackup({
+  password,
+  userData,
+  backupSelected,
   onBeforePINCreated = NOOP,
-  onAfterPINCreated = NOOP
-): Promise<boolean> {
+  onAfterPINCreated = NOOP,
+}: {
+  password: BackupPassword;
+  userData: BackupUserData | null;
+  backupSelected: string | null;
+  onBeforePINCreated: () => void;
+  onAfterPINCreated: () => void;
+}): Promise<boolean> {
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
