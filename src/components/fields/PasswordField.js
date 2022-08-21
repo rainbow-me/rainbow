@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { View } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
@@ -24,7 +26,7 @@ const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
   top: 12,
 });
 
-const Container = styled.View(
+const Container = styled(ios ? TouchableWithoutFeedback : View)(
   android
     ? {
         marginTop: -30,
@@ -85,9 +87,10 @@ const PasswordField = (
 ) => {
   const { width: deviceWidth } = useDimensions();
   const { isDarkMode, colors } = useTheme();
+  const handleFocus = useCallback(() => ref?.current?.focus(), [ref]);
 
   return (
-    <Container>
+    <Container onPress={ios ? handleFocus : undefined}>
       <ShadowContainer
         deviceWidth={deviceWidth}
         isDarkMode={isDarkMode}
