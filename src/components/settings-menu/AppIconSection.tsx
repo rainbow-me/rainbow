@@ -8,6 +8,7 @@ import { UNLOCK_KEY_OPTIMISM_NFT_APP_ICON } from '@/featuresToUnlock';
 import AppIconOg from '@rainbow-me/assets/appIconOg.png';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import AppIconPixel from '@rainbow-me/assets/appIconPixel.png';
+import AppIconSmol from '@rainbow-me/assets/appIconSmol.png';
 import { Box } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -47,6 +48,13 @@ const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'Optimism',
     source: AppIconOptimism,
     unlock_key: UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
+  },
+  smol: {
+    color: 'TODO',
+    key: 'smol',
+    name: 'Smol',
+    source: AppIconSmol,
+    unlock_key: 'TODO',
   },
 };
 
