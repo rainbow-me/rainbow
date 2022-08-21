@@ -3,7 +3,7 @@ import useTimeout from './useTimeout';
 
 export default function useBooleanState(
   initialStateBoolean = false,
-  duration?: any
+  duration?: number
 ) {
   const [bool, setBool] = useState(initialStateBoolean);
 

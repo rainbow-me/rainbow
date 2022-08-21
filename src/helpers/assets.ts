@@ -331,7 +331,8 @@ export const buildBriefUniqueTokenList = (
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
   hiddenTokens: string[] = [],
-  listType: AssetListType = 'wallet'
+  listType: AssetListType = 'wallet',
+  isReadOnlyWallet = false
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
@@ -395,7 +396,7 @@ export const buildBriefUniqueTokenList = (
         // @ts-expect-error "index" does not exist in type.
         index,
         type: 'NFT',
-        uid: uniqueId,
+        uid: `selling-${uniqueId}`,
         uniqueId,
       });
     }
@@ -420,7 +421,11 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
-  if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet') {
+  if (
+    hiddenUniqueTokensIds.length > 0 &&
+    listType === 'wallet' &&
+    !isReadOnlyWallet
+  ) {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: lang.t('button.hidden'),
