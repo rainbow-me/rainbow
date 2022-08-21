@@ -74,22 +74,33 @@ export default function SwapDetailsContent({
             />
           )}
           {!detailsExpanded && (
-            <ButtonPressAnimation
-              onPress={() => setDetailsExpanded(!detailsExpanded)}
-              scaleTo={1.06}
+            <Box
+              style={{
+                // cancel out the extra padding below
+                marginVertical: -18,
+              }}
             >
-              <SwapDetailsRow
-                label={
-                  detailsExpanded
-                    ? lang.t('expanded_state.swap_details.hide_details')
-                    : lang.t('expanded_state.swap_details.show_details')
-                }
+              <ButtonPressAnimation
+                onPress={() => setDetailsExpanded(!detailsExpanded)}
+                scaleTo={1.06}
+                style={{
+                  // enlarge tap target for details button
+                  paddingVertical: 18,
+                }}
               >
-                <SwapDetailsValue>
-                  {detailsExpanded ? '􀁮' : '􀁰'}
-                </SwapDetailsValue>
-              </SwapDetailsRow>
-            </ButtonPressAnimation>
+                <SwapDetailsRow
+                  label={
+                    detailsExpanded
+                      ? lang.t('expanded_state.swap_details.hide_details')
+                      : lang.t('expanded_state.swap_details.show_details')
+                  }
+                >
+                  <SwapDetailsValue>
+                    {detailsExpanded ? '􀁮' : '􀁰'}
+                  </SwapDetailsValue>
+                </SwapDetailsRow>
+              </ButtonPressAnimation>
+            </Box>
           )}
           {detailsExpanded && (
             <Rows space="24px">

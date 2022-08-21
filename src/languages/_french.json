@@ -78,6 +78,13 @@
       }
     },
     "back_up": {
+      "already_backed_up": {
+        "backed_up": "Backed up :)",
+        "backed_up_manually": "Backed up manually :)",
+        "backed_up_message": "Your wallet is backed up :)",
+        "imported": "Imported :)",
+        "imported_message": "Your wallet was imported :)"
+      },
       "backup_deleted_successfully": "Backups Deleted Successfully :)",
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
@@ -165,6 +172,7 @@
       },
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet! :)",
+        "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings. :)",
         "copy_to_clipboard": "Copy to clipboard :)",
         "for_your_eyes_only": "For your eyes only :)",
         "private_key_title": "Private Key :)",
@@ -290,9 +298,11 @@
       "clear_async_storage": "Clear async storage :)",
       "clear_image_cache": "Clear Image Cache :)",
       "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
+      "clear_local_storage": "Clear local storage :)",
       "clear_mmkv_storage": "Clear MMKV storage :)",
       "connect_to_hardhat": "Connect to hardhat :)",
       "crash_app_render_error": "Crash app (render error) :)",
+      "enable_testnets": "Enable Testnets :)",
       "installing_update": "Installing update :)",
       "no_update": "No update :)",
       "not_applied": "NOT APPLIED :)",
@@ -300,9 +310,9 @@
       "remove_all_backups": "Remove all backups :)",
       "reset_keychain": "Reset Keychain :)",
       "restart_app": "Restart app :)",
-      "restore_default_experimental_config": "Restore default experimental config :)",
+      "reset_experimental_config": "Reset experimental config :)",
       "status": "Status :)",
-      "sync_codepush": "Sync codepush, current: %{codePushVersion} :)"
+      "sync_codepush": "Sync codepush :)"
     },
     "discover": {
       "dpi": {
@@ -1065,7 +1075,7 @@
       "done": "Terminé",
       "feedback_and_reports": "Feedback & Bug Reports :)",
       "feedback_and_support": "Feedback & Support :)",
-      "follow_twitter": "Follow Us on Twitter :)",
+      "follow_twitter": "Follow us on Twitter :)",
       "follow_us_on_twitter": "Follow Us on Twitter :)",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️ :)",
       "label": "Réglages",
@@ -1073,11 +1083,31 @@
       "learn": "Learn about Rainbow and Ethereum :)",
       "learn_short": "Learn about Rainbow :)",
       "network": "Réseau",
+      "notifications": "Notifications :)",
+      "notifications_section": {
+        "my_wallets": "My Wallets :)",
+        "watched_wallets": "Watched Wallets :)",
+        "allow_notifications": "Allow Notifications :)",
+        "sent": "Sent :)",
+        "received": "Received :)",
+        "purchased": "Purchased :)",
+        "sold": "Sold :)",
+        "minted": "Minted :)",
+        "swapped": "Swapped :)",
+        "approvals": "Approvals :)",
+        "contracts_and_more": "Contracts & More :)",
+        "all": "All :)",
+        "off": "Off :)",
+        "plus_n_more": "+ %{n} more :)"
+      },
       "privacy": "Privacy :)",
       "privacy_section": {
         "public_showcase": "Public Showcase :)",
-        "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at :)"
+        "when_public": "When public, your NFT Showcase will be visible on your Rainbow profile! :)",
+        "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at :)",
+        "view_profile": "View your profile :)"
       },
+      "restore": "Restore to original deployment :)",
       "review": "Review Rainbow :)",
       "share": "Share Rainbow:)",
       "share_rainbow": "Share Rainbow :)",

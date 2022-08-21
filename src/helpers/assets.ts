@@ -396,7 +396,7 @@ export const buildBriefUniqueTokenList = (
         // @ts-expect-error "index" does not exist in type.
         index,
         type: 'NFT',
-        uid: uniqueId,
+        uid: `selling-${uniqueId}`,
         uniqueId,
       });
     }

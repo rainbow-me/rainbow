@@ -11,13 +11,6 @@ const BubbleInput = styled(ExchangeInput).attrs(
     disableTabularNums: true,
     keyboardAppearance: isDarkMode ? 'dark' : 'light',
     letterSpacing: 'roundedTightest',
-    lineHeight: android
-      ? isTinyPhone
-        ? 27
-        : android || isSmallPhone
-        ? 31
-        : 38
-      : undefined,
     size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
     weight: 'semibold',
   })

@@ -39,6 +39,7 @@ const NetworkSwitcher = ({
   marginHorizontal = 19,
   currentChainId,
   setCurrentChainId,
+  testID,
   prominent,
 }) => {
   const radialGradientProps = {
@@ -81,6 +82,7 @@ const NetworkSwitcher = ({
         menuTitle=""
         onPressAndroid={onPressAndroid}
         onPressMenuItem={handleOnPressMenuItem}
+        testID={`${testID}-${currentChainId}`}
       >
         <Row
           borderRadius={16}
