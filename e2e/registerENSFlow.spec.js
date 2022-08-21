@@ -209,6 +209,16 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-search-clear-button');
   });
 
+  it('Should be able to type a name that has special characters', async () => {
+    await Helpers.checkIfVisible('ens-search-input');
+    await Helpers.typeText('ens-search-input', '‘invalidname', false);
+    await Helpers.waitAndTap('ens-search-clear-button');
+    await Helpers.typeText('ens-search-input', '&&&ivalidname', false);
+    await Helpers.waitAndTap('ens-search-clear-button');
+    await Helpers.typeText('ens-search-input', '‘invalidname‘', false);
+    await Helpers.waitAndTap('ens-search-clear-button');
+  });
+
   it('Should be able to type a name that is available and wait for fees', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', RANDOM_NAME, false);

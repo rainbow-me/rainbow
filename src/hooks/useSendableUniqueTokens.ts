@@ -1,13 +1,17 @@
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { UniqueAsset } from '@rainbow-me/entities';
 import { groupBy } from '@rainbow-me/helpers/utilities';
+import { AppState } from '@rainbow-me/redux/store';
 
-const uniqueTokensSelector = (state: any) => state.uniqueTokens.uniqueTokens;
+const uniqueTokensSelector = (state: AppState) =>
+  state.uniqueTokens.uniqueTokens;
 
-const sendableUniqueTokens = (uniqueTokens: any) => {
+const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
   const sendableUniqueTokens = uniqueTokens?.filter(
     (uniqueToken: any) => uniqueToken.isSendable
   );
+  // @ts-expect-error ts-migrate FIXME: Type 'undefined' is not assignable to type 'string'.
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
 
   const families = Object.keys(grouped).sort();

@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
+import { ImageOrVideo } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
@@ -60,11 +61,11 @@ export default () => {
   }, [accountENS]);
 
   const onAvatarRemovePhoto = useCallback(async () => {
-    const newWallets = {
+    const newWallets: typeof wallets = {
       ...wallets,
       [selectedWallet.id]: {
-        ...wallets[selectedWallet.id],
-        addresses: wallets[
+        ...wallets![selectedWallet.id],
+        addresses: wallets![
           selectedWallet.id
         ].addresses.map((account: RainbowAccount) =>
           account.address.toLowerCase() === accountAddress?.toLowerCase()
@@ -79,16 +80,16 @@ export default () => {
   }, [dispatch, selectedWallet, accountAddress, wallets]);
 
   const processPhoto = useCallback(
-    (image: any) => {
+    (image: ImageOrVideo | null) => {
       const stringIndex = image?.path.indexOf('/tmp');
       const imagePath = ios
         ? `~${image?.path.slice(stringIndex)}`
         : image?.path;
-      const newWallets = {
+      const newWallets: typeof wallets = {
         ...wallets,
         [selectedWallet.id]: {
-          ...wallets[selectedWallet.id],
-          addresses: wallets[
+          ...wallets![selectedWallet.id],
+          addresses: wallets![
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             account.address.toLowerCase() === accountAddress?.toLowerCase()

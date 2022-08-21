@@ -17,11 +17,11 @@ export default function useUpdateEmoji() {
   const saveInfo = useCallback(
     async (name, color) => {
       const walletId = selectedWallet.id;
-      const newWallets = {
+      const newWallets: typeof wallets = {
         ...wallets,
         [walletId]: {
-          ...wallets[walletId],
-          addresses: wallets[walletId].addresses.map(
+          ...wallets![walletId],
+          addresses: wallets![walletId].addresses.map(
             (singleAddress: { address: string }) =>
               singleAddress.address.toLowerCase() ===
               accountAddress.toLowerCase()
@@ -57,7 +57,7 @@ export default function useUpdateEmoji() {
   const setNextEmoji = useCallback(() => {
     const walletId = selectedWallet.id;
     const { label } =
-      wallets[walletId].addresses.find(
+      wallets![walletId].addresses.find(
         ({ address }: { address: string }) =>
           address.toLowerCase() === accountAddress.toLowerCase()
       ) || {};

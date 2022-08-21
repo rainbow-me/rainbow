@@ -138,7 +138,7 @@ export default function StepButtonInput({
         onChange={onChange}
         onFocus={onFocus}
         ref={inputRef}
-        testID={testID}
+        testID={`${testID}-${value}`}
         value={value}
       />
       <StepButton

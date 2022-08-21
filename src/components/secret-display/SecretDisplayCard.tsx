@@ -5,15 +5,18 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { times } from '@rainbow-me/helpers/utilities';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletTypes, {
+  EthereumWalletType,
+} from '@rainbow-me/helpers/walletTypes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, padding, position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import ShadowStack from 'react-native-shadow-stack';
 
 const CardBorderRadius = 25;
 
 const BackgroundGradient = styled(LinearGradient).attrs(
-  ({ theme: { colors } }) => ({
+  ({ theme: { colors } }: any) => ({
     colors: colors.gradients.offWhite,
     end: { x: 0.5, y: 1 },
     start: { x: 0.5, y: 0 },
@@ -24,7 +27,7 @@ const BackgroundGradient = styled(LinearGradient).attrs(
 });
 
 const CardShadow = styled(ShadowStack).attrs(
-  ({ theme: { colors, isDarkMode } }) => ({
+  ({ theme: { colors, isDarkMode } }: any) => ({
     ...position.coverAsObject,
     backgroundColor: isDarkMode ? colors.offWhite80 : colors.white,
     borderRadius: CardBorderRadius,
@@ -56,7 +59,11 @@ const GridText = styled(Text).attrs(({ weight = 'semibold' }) => ({
   weight,
 }))({});
 
-function SeedWordGrid({ seed }) {
+interface SeedWordGridProps {
+  seed: string;
+}
+
+function SeedWordGrid({ seed }: SeedWordGridProps) {
   const columns = useMemo(() => {
     const words = seed.split(' ');
     return [words.slice(0, words.length / 2), words.slice(words.length / 2)];
@@ -96,7 +103,15 @@ function SeedWordGrid({ seed }) {
   );
 }
 
-export default function SecretDisplayCard({ seed, type }) {
+interface SecretDisplayCardProps {
+  seed: string;
+  type: EthereumWalletType;
+}
+
+export default function SecretDisplayCard({
+  seed,
+  type,
+}: SecretDisplayCardProps) {
   return (
     <Centered>
       {ios && (

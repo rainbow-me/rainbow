@@ -1,8 +1,11 @@
 import { useRoute } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackCardInterpolationProps,
+} from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Animated, InteractionManager, View } from 'react-native';
+import { Animated, InteractionManager } from 'react-native';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   AppIconSection,
@@ -11,18 +14,18 @@ import {
   DevSection,
   LanguageSection,
   NetworkSection,
+  NotificationsSection,
   PrivacySection,
   SettingsSection,
-  UserDevSection,
+  WalletNotificationsSettings,
 } from '../components/settings-menu';
+import BackupSection from '../components/settings-menu/BackupSection/BackupSection';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
-import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
 import { Box } from '@rainbow-me/design-system';
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import { useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 
@@ -31,7 +34,7 @@ function cardStyleInterpolator({
   next,
   inverted,
   layouts: { screen },
-}) {
+}: StackCardInterpolationProps) {
   const translateFocused = Animated.multiply(
     current.progress.interpolate({
       inputRange: [0, 1],
@@ -67,7 +70,7 @@ const SettingsPages = {
     key: 'AppIconSection',
   },
   backup: {
-    component: View,
+    component: BackupSection,
     getTitle: () => lang.t('settings.backup'),
     key: 'BackupSection',
   },
@@ -82,7 +85,7 @@ const SettingsPages = {
     key: 'SettingsSection',
   },
   dev: {
-    component: IS_DEV || isTestFlight ? DevSection : UserDevSection,
+    component: DevSection,
     getTitle: () => lang.t('settings.dev'),
     key: 'DevSection',
   },
@@ -96,6 +99,11 @@ const SettingsPages = {
     getTitle: () => lang.t('settings.network'),
     key: 'NetworkSection',
   },
+  notifications: {
+    component: NotificationsSection,
+    getTitle: () => lang.t('settings.notifications'),
+    key: 'NotificationsSection',
+  },
   privacy: {
     component: PrivacySection,
     getTitle: () => lang.t('settings.privacy'),
@@ -108,24 +116,28 @@ const Stack = createStackNavigator();
 export default function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
-  const { params } = useRoute();
+  const { params } = useRoute<any>();
   const { colors } = useTheme();
 
   const getRealRoute = useCallback(
-    key => {
+    (key: any) => {
       let route = key;
-      let paramsToPass = {};
+      let paramsToPass: { imported?: boolean; type?: string } = {};
       if (key === SettingsPages.backup.key) {
         const walletId = params?.walletId;
         if (
           !walletId &&
-          Object.keys(wallets).filter(
-            key => wallets[key].type !== WalletTypes.readOnly
+          Object.keys(wallets!).filter(
+            key => wallets![key].type !== WalletTypes.readOnly
           ).length > 1
         ) {
-          route = 'WalletSelectionView';
+          route = 'BackupSection';
         } else {
-          if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
+          if (
+            wallets &&
+            Object.keys(wallets).length === 1 &&
+            (selectedWallet.imported || selectedWallet.backedUp)
+          ) {
             paramsToPass.imported = true;
             paramsToPass.type = 'AlreadyBackedUpView';
           }
@@ -134,11 +146,11 @@ export default function SettingsSheet() {
       }
       return { params: { ...params, ...paramsToPass }, route };
     },
-    [params, selectedWallet.imported, wallets]
+    [params, selectedWallet.backedUp, selectedWallet.imported, wallets]
   );
 
   const onPressSection = useCallback(
-    section => () => {
+    (section: any) => () => {
       const { params, route } = getRealRoute(section.key);
       navigate(route, params);
     },
@@ -169,15 +181,21 @@ export default function SettingsSheet() {
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Box
-      background="body"
+      background="cardBackdrop"
       flexGrow={1}
       testID="settings-sheet"
-      {...(android && { borderTopRadius: 30 })}
+      {...(android && { borderTopRadius: 30, marginTop: { custom: 8 } })}
     >
       <Stack.Navigator
+        // @ts-ignore
         screenOptions={{
           ...memoSettingsOptions,
           headerRight: renderHeaderRight,
+          headerStyle: {
+            ...memoSettingsOptions.headerStyle,
+            // ios MenuContainer scroll fix
+            ...(ios && { backgroundColor: colors.cardBackdrop }),
+          },
         }}
       >
         <Stack.Screen
@@ -196,6 +214,7 @@ export default function SettingsSheet() {
               onPressDev={onPressSection(SettingsPages.dev)}
               onPressLanguage={onPressSection(SettingsPages.language)}
               onPressNetwork={onPressSection(SettingsPages.network)}
+              onPressNotifications={onPressSection(SettingsPages.notifications)}
               onPressPrivacy={onPressSection(SettingsPages.privacy)}
             />
           )}
@@ -211,33 +230,31 @@ export default function SettingsSheet() {
                   cardStyleInterpolator,
                   title: getTitle(),
                 }}
+                // @ts-ignore
                 title={getTitle()}
               />
             )
         )}
-
-        <Stack.Screen
-          component={WalletSelectionView}
-          name="WalletSelectionView"
-          options={{
-            cardStyle: { backgroundColor: colors.white, marginTop: 6 },
-            cardStyleInterpolator,
-            title: lang.t('settings.backup'),
-          }}
-        />
         <Stack.Screen
           component={DevNotificationsSection}
           name="DevNotificationsSection"
           options={{
-            cardStyle: { backgroundColor: colors.white, marginTop: 6 },
             cardStyleInterpolator,
             title: lang.t('developer_settings.notifications_debug'),
           }}
         />
         <Stack.Screen
+          component={WalletNotificationsSettings}
+          name="WalletNotificationsSettings"
+          options={({ route }: any) => ({
+            cardStyleInterpolator,
+            title: route.params?.title,
+          })}
+        />
+        <Stack.Screen
           component={SettingsBackupView}
           name="SettingsBackupView"
-          options={({ route }) => ({
+          options={({ route }: any) => ({
             cardStyleInterpolator,
             title: route.params?.title || lang.t('settings.backup'),
           })}
@@ -245,7 +262,7 @@ export default function SettingsSheet() {
         <Stack.Screen
           component={ShowSecretView}
           name="ShowSecretView"
-          options={({ route }) => ({
+          options={({ route }: any) => ({
             cardStyleInterpolator,
             title: route.params?.title || lang.t('settings.backup'),
           })}

@@ -49,6 +49,7 @@ const isBalancesSectionEmptySelector = (state: any) =>
   state.isBalancesSectionEmpty;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingAssetsSelector = (state: any) => state.isLoadingAssets;
+const isReadOnlyWalletSelector = (state: any) => state.isReadOnlyWallet;
 const languageSelector = (state: any) => state.language;
 const networkSelector = (state: any) => state.network;
 const nativeCurrencySelector = (state: any) => state.nativeCurrency;
@@ -502,6 +503,7 @@ const briefUniqueTokenDataSelector = createSelector(
     sellingTokensSelector,
     hiddenTokensSelector,
     listTypeSelector,
+    isReadOnlyWalletSelector,
   ],
   buildBriefUniqueTokenList
 );
