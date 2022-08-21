@@ -16,6 +16,15 @@
 	<dict>
 		<key>CFBundleAlternateIcons</key>
 		<dict>
+		  <key>smol</key>
+    	<dict>
+        <key>UIPrerenderedIcon</key>
+        <false/>
+        <key>CFBundleIconFiles</key>
+        <array>
+          <string>smol</string>
+        </array>
+    	</dict>
 			<key>pixel</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>
