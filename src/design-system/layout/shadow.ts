@@ -1,5 +1,4 @@
-import { shadowColors } from '../color/palettes';
-import type { ShadowColor } from '../color/palettes';
+import { shadowColors, ShadowColor } from '../color/palettes';
 import { CustomColor } from '../color/useForegroundColor';
 
 export { shadowColors };

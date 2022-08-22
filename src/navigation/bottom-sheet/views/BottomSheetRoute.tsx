@@ -3,8 +3,7 @@ import BottomSheet, {
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { View } from 'react-native';
-import type { ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import {
   CONTAINER_HEIGHT,
   DEFAULT_BACKDROP_COLOR,
