@@ -89,6 +89,7 @@ module.exports = {
     'default-param-last': 'warn', // TODO
     'no-param-reassign': 'warn', // TODO
     'no-duplicate-imports': 'error',
+    'no-multi-assign': 'error',
 
     // Some of these are OK while we transition to TS
     '@typescript-eslint/ban-ts-comment': 'warn',
