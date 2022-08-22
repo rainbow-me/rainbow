@@ -602,12 +602,6 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfNotVisible('ens-text-record-LTC-error');
   });
 
-  it('Should unselect a field', async () => {
-    await Helpers.swipe('ens-edit-records-sheet', 'down');
-    await Helpers.waitAndTap('ens-selectable-attribute-bio');
-    await Helpers.checkIfNotVisible('ens-text-record-description');
-  });
-
   it('Should submit updated fields', async () => {
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
@@ -617,7 +611,6 @@ describe('Register ENS Flow', () => {
 
   it('Should confirm the update was successful', async () => {
     const {
-      description,
       discord,
       email,
       github,
@@ -628,7 +621,6 @@ describe('Register ENS Flow', () => {
       twitter,
       url,
     } = await getRecords(RAINBOW_TEST_WALLET_NAME);
-    if (description) throw new Error('description should be empty');
     if (discord !== RECORD_DISCORD)
       throw new Error('discord is incorrect.', discord);
     if (email !== RECORD_EMAIL) throw new Error('email is incorrect.', email);
