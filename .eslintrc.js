@@ -95,7 +95,7 @@ module.exports = {
     'no-nested-ternary': 'warn', // TODO
     'no-unneeded-ternary': 'warn', // TODO
 
-    '@typescript-eslint/ban-ts-comment': 'warn', // TODO
+    '@typescript-eslint/ban-ts-comment': ['warn', { 'ts-expect-error': 'allow-with-description' }], // TODO
     '@typescript-eslint/no-explicit-any': 'warn', // TODO
     '@typescript-eslint/no-inferrable-types': 'warn', // TODO
     '@typescript-eslint/no-empty-function': 'warn', // TODO
