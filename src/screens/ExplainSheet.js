@@ -11,6 +11,7 @@ import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { Box } from '@/design-system';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
+import AppIconSmol from '@rainbow-me/assets/appIconSmol.png';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
@@ -85,6 +86,29 @@ const OptimismAppIcon = () => {
     >
       <ImgixImage
         source={AppIconOptimism}
+        style={{
+          width: 64,
+          height: 64,
+        }}
+      />
+    </Box>
+  );
+};
+
+const SmolAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <Box
+      style={{
+        shadowColor: colors.shadowBlack,
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={AppIconSmol}
         style={{
           width: 64,
           height: 64,
@@ -177,18 +201,46 @@ const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
 const ENS_CONFIGURATION_EXPLAINER =
   'When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient’s address and make the recipient address the manager of the name.';
 
-const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
+const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.optimism_text');
+
+const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
+
+const SMOL = 'SMOL';
+const OPTIMISM = 'Optimism';
 
 export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
     extraHeight: -25,
     text: OPTIMISM_APP_ICON_EXPLAINER,
-    title: lang.t('explain.optimism_app_icon.title'),
+    title: lang.t('explain.icon_unlock.title', { partner: OPTIMISM }),
     button: {
-      label: lang.t('explain.optimism_app_icon.button'),
+      label: lang.t('explain.icon_unlock.button'),
       textColor: 'optimismRed',
       bgColor: 'optimismRed06',
+      onPress: (navigate, goBack, handleClose) => () => {
+        if (handleClose) handleClose();
+        if (goBack) goBack();
+        setTimeout(() => {
+          navigate(Routes.SETTINGS_SHEET);
+          setTimeout(() => {
+            navigate(Routes.SETTINGS_SHEET, {
+              screen: 'AppIconSection',
+            });
+          }, 300);
+        }, 300);
+      },
+    },
+  },
+  smol_app_icon: {
+    logo: <SmolAppIcon />,
+    extraHeight: -44,
+    text: SMOL_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: SMOL }),
+    button: {
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: 'smolPurple',
+      bgColor: 'smolPurple06',
       onPress: (navigate, goBack, handleClose) => () => {
         if (handleClose) handleClose();
         if (goBack) goBack();

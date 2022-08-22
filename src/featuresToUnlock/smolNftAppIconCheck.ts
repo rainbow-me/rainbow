@@ -29,7 +29,7 @@ export const smolNftAppIconCheck = async (
   featureCheckName: string,
   walletsToCheck: EthereumAddress[]
 ) => {
-  const currentNetwork = config.op_nft_network as OpNetworks;
+  const currentNetwork = config.arbitrum_mainnet_rpc;
   logger.log('Checking OP NFT  on network', currentNetwork);
   const p =
     // @ts-ignore-next-line
