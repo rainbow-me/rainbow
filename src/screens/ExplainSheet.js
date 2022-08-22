@@ -205,15 +205,12 @@ const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.optimism_text');
 
 const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
-const SMOL = 'SMOL';
-const OPTIMISM = 'Optimism';
-
 export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
     extraHeight: -25,
     text: OPTIMISM_APP_ICON_EXPLAINER,
-    title: lang.t('explain.icon_unlock.title', { partner: OPTIMISM }),
+    title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
     button: {
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'optimismRed',
@@ -236,7 +233,7 @@ export const explainers = (params, colors) => ({
     logo: <SmolAppIcon />,
     extraHeight: -44,
     text: SMOL_APP_ICON_EXPLAINER,
-    title: lang.t('explain.icon_unlock.title', { partner: SMOL }),
+    title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
     button: {
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'smolPurple',

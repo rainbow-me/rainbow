@@ -4,7 +4,7 @@ import { MMKV } from 'react-native-mmkv';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { UNLOCK_KEY_OPTIMISM_NFT_APP_ICON } from '@/featuresToUnlock';
+import { unlockableIcons } from '@/featuresToUnlock';
 import AppIconOg from '@rainbow-me/assets/appIconOg.png';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import AppIconPixel from '@rainbow-me/assets/appIconPixel.png';
@@ -47,14 +47,14 @@ const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     key: 'optimism',
     name: 'Optimism',
     source: AppIconOptimism,
-    unlock_key: UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
+    unlock_key: unlockableIcons.optimism.unlock_key,
   },
   smol: {
     color: 'TODO',
     key: 'smol',
     name: 'Smol',
     source: AppIconSmol,
-    unlock_key: 'TODO',
+    unlock_key: unlockableIcons.smol.unlock_key,
   },
 };
 

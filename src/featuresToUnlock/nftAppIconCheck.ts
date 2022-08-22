@@ -6,27 +6,20 @@ import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
 import Routes from '@rainbow-me/routes';
 
-export const UNLOCK_KEY_OPTIMISM_NFT_APP_ICON = 'optimism_nft_app_icon';
-
-const TOKEN_ADDRESSES: EthereumAddress[] = [
-  '0x81b30ff521D1fEB67EDE32db726D95714eb00637',
-];
-const NETWORK = Network.optimism;
-
-// This is a temp fix while we still use kovan optimism for testing.
-// Will be removed before release
-
 const mmkv = new MMKV();
 
-export const optimismNftAppIconCheck = async (
-  featureCheckName: string,
+export const nftAppIconCheck = async (
+  explainSheetType: string,
+  network: Network,
+  tokenAddresses: EthereumAddress[],
+  unlockKey: string,
   walletsToCheck: EthereumAddress[]
 ) => {
-  logger.log('Checking OP NFT  on network', NETWORK);
+  logger.log(`Checking ${unlockKey} on network ${network}`);
   try {
     const found = await checkIfWalletsOwnNft(
-      TOKEN_ADDRESSES,
-      NETWORK,
+      tokenAddresses,
+      network,
       walletsToCheck
     );
 
@@ -37,14 +30,14 @@ export const optimismNftAppIconCheck = async (
       if (found) {
         Navigation.handleAction(Routes.EXPLAIN_SHEET, {
           onClose: () => {
-            mmkv.set(featureCheckName, true);
+            mmkv.set(unlockKey, true);
             logger.log(
               'Feature check',
-              featureCheckName,
+              unlockKey,
               'set to true. Wont show up anymore!'
             );
           },
-          type: 'optimism_app_icon',
+          type: explainSheetType,
         });
         return true;
       }
