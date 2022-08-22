@@ -773,7 +773,7 @@ const ExplainSheet = () => {
         <Centered
           direction="column"
           height={sheetHeight}
-          testID="add-token-sheet"
+          testID={`explain-sheet-${type}`}
           width="100%"
         >
           <ColumnWithMargins

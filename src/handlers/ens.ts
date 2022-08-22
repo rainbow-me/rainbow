@@ -205,16 +205,20 @@ export const fetchEnsTokens = async ({
         ).toString(),
       },
     });
-    return data?.account?.registrations?.map(registration => {
-      const tokenId = BigNumber.from(registration.domain.labelhash).toString();
-      const token = buildEnsToken({
-        contractAddress,
-        imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
-        name: registration.domain.name,
-        tokenId,
-      });
-      return token;
-    });
+    return (
+      data?.account?.registrations?.map(registration => {
+        const tokenId = BigNumber.from(
+          registration.domain.labelhash
+        ).toString();
+        const token = buildEnsToken({
+          contractAddress,
+          imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
+          name: registration.domain.name,
+          tokenId,
+        });
+        return token;
+      }) || []
+    );
   } catch (error) {
     logger.sentry('ENS: Error getting ENS unique tokens', error);
     captureException(new Error('ENS: Error getting ENS unique tokens'));

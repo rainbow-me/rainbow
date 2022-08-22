@@ -37,8 +37,12 @@ export default function useWebData() {
   const dispatch = useDispatch();
   const { wallets } = useWallets();
 
-  const { showcaseTokens, webDataEnabled } = useSelector(
-    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
+  const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
+    ({
+      hiddenTokens: { hiddenTokens },
+      showcaseTokens: { webDataEnabled, showcaseTokens },
+    }: AppState) => ({
+      hiddenTokens,
       showcaseTokens,
       webDataEnabled,
     })
@@ -59,6 +63,13 @@ export default function useWebData() {
 
       await setPreference(
         PreferenceActionType.init,
+        'hidden',
+        accountAddress,
+        hiddenTokens
+      );
+
+      await setPreference(
+        PreferenceActionType.init,
         'profile',
         accountAddress,
         {
@@ -75,6 +86,7 @@ export default function useWebData() {
       accountSymbol,
       colors.avatarBackgrounds,
       dispatch,
+      hiddenTokens,
     ]
   );
 

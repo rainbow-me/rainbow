@@ -4,8 +4,11 @@ import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import networkInfo from '../../helpers/networkInfo';
 import { settingsUpdateNetwork } from '../../redux/settings';
-import { RadioList, RadioListItem } from '../radio-list';
+import Menu from './components/Menu';
+import MenuContainer from './components/MenuContainer';
+import MenuItem from './components/MenuItem';
 import { analytics } from '@rainbow-me/analytics';
+import { Divider, Stack } from '@rainbow-me/design-system';
 import {
   useAccountSettings,
   useInitializeAccountData,
@@ -15,7 +18,11 @@ import {
 
 const networks = values(networkInfo).filter(network => !network.layer2);
 
-const NetworkSection = props => {
+interface NetworkSectionProps {
+  inDevSection?: boolean;
+}
+
+const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const { network, testnetsEnabled } = useAccountSettings();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
@@ -35,23 +42,36 @@ const NetworkSection = props => {
     [dispatch, initializeAccountData, loadAccountData, resetAccountState]
   );
 
-  return (
-    <RadioList
-      extraData={network}
-      items={networks.map(({ disabled, name, value, testnet }) => ({
-        disabled: (!testnetsEnabled && testnet) || disabled,
-        key: value,
-        label: name,
-        selected: network.toLowerCase() === value.toLowerCase(),
-        testID: `${value}-network`,
-        value,
-      }))}
-      marginTop={7}
-      onChange={onNetworkChange}
-      renderItem={RadioListItem}
-      value={network}
-      {...props}
-    />
+  const renderNetworkList = useCallback(() => {
+    return networks.map(({ disabled, name, value, testnet }: any) => (
+      <MenuItem
+        disabled={(!testnetsEnabled && testnet) || disabled}
+        key={value}
+        onPress={() => onNetworkChange(value)}
+        rightComponent={
+          value === network && <MenuItem.StatusIcon status="selected" />
+        }
+        size={52}
+        testID={`${value}-network`}
+        titleComponent={
+          <MenuItem.Title
+            disabled={(!testnetsEnabled && testnet) || disabled}
+            text={name}
+            weight={inDevSection ? 'medium' : 'semibold'}
+          />
+        }
+      />
+    ));
+  }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
+
+  return inDevSection ? (
+    <Stack separator={<Divider color="divider60" />}>
+      {renderNetworkList()}
+    </Stack>
+  ) : (
+    <MenuContainer>
+      <Menu>{renderNetworkList()}</Menu>
+    </MenuContainer>
   );
 };
 

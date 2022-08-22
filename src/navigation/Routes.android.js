@@ -65,7 +65,6 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import { deviceUtils } from '@/utils';
 import useExperimentalFlag, {
-  NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 
@@ -253,7 +252,6 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
-  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
@@ -359,13 +357,6 @@ function BSNavigator() {
           height: deviceUtils.dimensions.height - StatusBar.currentHeight,
         }}
       />
-      {notificationsEnabled && (
-        <BSStack.Screen
-          component={SettingsSheet}
-          name={Routes.SETTINGS_SHEET_V2}
-          options={{ ...bottomSheetPreset, height: '97%' }}
-        />
-      )}
     </BSStack.Navigator>
   );
 }

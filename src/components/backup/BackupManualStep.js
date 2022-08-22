@@ -129,7 +129,6 @@ export default function BackupManualStep() {
         paddingHorizontal={30}
       >
         <SecretDisplaySection
-          isSmallPhone={isSmallPhone}
           onSecretLoaded={setSecretLoaded}
           onWalletTypeIdentified={setType}
         />

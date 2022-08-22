@@ -24,7 +24,6 @@ import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsSheet from '../screens/SettingsSheet';
-import SettingsSheetV2 from '../screens/SettingsSheetV2';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
@@ -71,7 +70,6 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, {
-  NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
@@ -233,7 +231,6 @@ const MainStack = isNativeStackAvailable
 function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -252,13 +249,6 @@ function NativeStackNavigator() {
         name={Routes.SETTINGS_SHEET}
         {...settingsSheetConfig}
       />
-      {notificationsEnabled && (
-        <NativeStack.Screen
-          component={SettingsSheetV2}
-          name={Routes.SETTINGS_SHEET_V2}
-          {...settingsSheetConfig}
-        />
-      )}
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}

@@ -36,13 +36,13 @@ PODS:
   - Firebase/RemoteConfig (8.14.0):
     - Firebase/CoreOnly
     - FirebaseRemoteConfig (~> 8.14.0)
-  - FirebaseABTesting (8.15.0):
+  - FirebaseABTesting (8.14.0):
     - FirebaseCore (~> 8.0)
   - FirebaseCore (8.14.0):
     - FirebaseCoreDiagnostics (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
-  - FirebaseCoreDiagnostics (8.15.0):
+  - FirebaseCoreDiagnostics (8.14.0):
     - GoogleDataTransport (~> 9.1)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
@@ -54,7 +54,7 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseInstallations (8.15.0):
+  - FirebaseInstallations (8.14.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/UserDefaults (~> 7.7)
@@ -134,7 +134,7 @@ PODS:
     - RNPermissions
   - Permission-Notifications (3.0.5):
     - RNPermissions
-  - PromisesObjC (2.1.0)
+  - PromisesObjC (2.0.0)
   - Rainbow-Internals (0.1.0):
     - React-Core
   - RCT-Folly (2021.06.28.00-v2):
@@ -1014,11 +1014,11 @@ SPEC CHECKSUMS:
   FBLazyVector: 2c76493a346ef8cacf1f442926a39f805fffec1f
   FBReactNativeSpec: 371350f24afa87b6aba606972ec959dcd4a95c9a
   Firebase: 7e8fe528c161b9271d365217a74c16aaf834578e
-  FirebaseABTesting: 10cbce8db9985ae2e3847ea44e9947dd18f94e10
+  FirebaseABTesting: aaa0e096c9fc9972ce6806d596e8fcc077d4371f
   FirebaseCore: b84a44ee7ba999e0f9f76d198a9c7f60a797b848
-  FirebaseCoreDiagnostics: 92e07a649aeb66352b319d43bdd2ee3942af84cb
+  FirebaseCoreDiagnostics: fd0c8490f34287229c1d6c103d3a55f81ec85712
   FirebaseCrashlytics: 079ef36f5c4b7161188928faec40fa276ebefd84
-  FirebaseInstallations: 40bd9054049b2eae9a2c38ef1c3dd213df3605cd
+  FirebaseInstallations: 7d1d967a307c12f1aadd76844fc321cef699b1ce
   FirebaseMessaging: 5ebc42d281567658a2cb72b9ef3506e4a1a1a6e4
   FirebaseRemoteConfig: a5d9188d8f57f602636f111eca6460ebe32b9b71
   FLAnimatedImage: 8f3e854ebf9680b71f0b6e700939687fc4d82b4b
@@ -1041,7 +1041,7 @@ SPEC CHECKSUMS:
   Permission-Camera: ac603073e4128e51e6ca3c39129778f05b4082fa
   Permission-FaceID: 9b1f0d42ee7aa2c830844964e739676fe6b634bd
   Permission-Notifications: 16ccd862111103378a7bab9fb1c5c71addffc348
-  PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
+  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Rainbow-Internals: 6e69837f173f2017e4fff07e64d77d429e5a958c
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: 00581111c53531e39e3c6346ef0d2c0cf52a5a37

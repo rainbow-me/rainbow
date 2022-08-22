@@ -124,20 +124,40 @@ export default function CurrencySelectModal() {
     }
   }, [chainId]);
 
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
-      return assetsInWallet?.filter(asset => !hiddenCoinsObj[asset.uniqueId]);
+      let filteredAssetsInWallet = assetsInWallet?.filter(
+        asset => !hiddenCoinsObj[asset.uniqueId]
+      );
+      //TODO: remove this once BACK-219 is fixed
+      if (fromDiscover && defaultOutputAsset?.implementations) {
+        const outputTokenNetworks = Object.keys(
+          defaultOutputAsset?.implementations
+        );
+
+        filteredAssetsInWallet = filteredAssetsInWallet.filter(asset => {
+          const network = ethereumUtils.getNetworkFromType(asset.type);
+          return outputTokenNetworks.includes(network);
+        });
+      }
+      return filteredAssetsInWallet;
     }
     return [];
-  }, [type, assetsInWallet, hiddenCoinsObj]);
+  }, [
+    type,
+    assetsInWallet,
+    fromDiscover,
+    defaultOutputAsset?.implementations,
+    hiddenCoinsObj,
+  ]);
 
   const {
     swapCurrencyList,
     swapCurrencyListLoading,
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
-
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const checkForSameNetwork = useCallback(
     (newAsset, selectAsset, type) => {
@@ -489,6 +509,7 @@ export default function CurrencySelectModal() {
                 colors={colors}
                 currentChainId={currentChainId}
                 setCurrentChainId={setCurrentChainId}
+                testID="currency-select-network-switcher"
               />
             )}
             {type === null || type === undefined ? null : (

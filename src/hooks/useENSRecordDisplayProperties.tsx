@@ -46,7 +46,7 @@ const links = {
   [ENS_RECORDS.github]: 'https://github.com/',
   [ENS_RECORDS.instagram]: 'https://instagram.com/',
   [ENS_RECORDS.reddit]: 'https://reddit.com/',
-  [ENS_RECORDS.telegram]: 'https://telegram.com/',
+  [ENS_RECORDS.telegram]: 'https://t.me/',
 } as { [key: string]: string };
 
 export default function useENSRecordDisplayProperties({
