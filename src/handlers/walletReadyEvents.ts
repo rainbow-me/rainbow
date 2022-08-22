@@ -91,7 +91,7 @@ export const runWalletBackupStatusChecks = () => {
   return;
 };
 
-export const runFeatureUnlockChecks = () => {
+export const runFeatureUnlockChecks = async () => {
   const {
     wallets,
   }: {
@@ -124,7 +124,7 @@ export const runFeatureUnlockChecks = () => {
 
   const mmkv = new MMKV();
 
-  featuresToUnlock.forEach(async feature => {
+  for (const feature of featuresToUnlock) {
     // Check if it was handled already
     const handled = mmkv.getBoolean(feature.name);
     logger.log(`${feature.name} was handled?`, handled);
@@ -133,6 +133,11 @@ export const runFeatureUnlockChecks = () => {
       logger.log(`${feature.name} being checked`);
       const result = await feature.check(feature.name, walletsToCheck);
       logger.log(`${feature.name} check result:`, result);
+      if (result) {
+        // exit early if we found a feature to unlock
+        // because we don't want to show two sheets at the same time
+        break;
+      }
     }
-  });
+  }
 };
