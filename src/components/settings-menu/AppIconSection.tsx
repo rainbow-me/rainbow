@@ -4,7 +4,7 @@ import { MMKV } from 'react-native-mmkv';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { unlockableIcons } from '@/featuresToUnlock';
+import { unlockableAppIcons } from '@/featuresToUnlock';
 import AppIconOg from '@rainbow-me/assets/appIconOg.png';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import AppIconPixel from '@rainbow-me/assets/appIconPixel.png';
@@ -16,7 +16,7 @@ import { useTheme } from '@rainbow-me/theme';
 import Logger from '@rainbow-me/utils/logger';
 
 type AppIcon = {
-  color: string;
+  accentColor?: string;
   key: string;
   name: string;
   source: StaticImageData;
@@ -24,13 +24,13 @@ type AppIcon = {
 
 const supportedAppIcons: { [key: string]: AppIcon } = {
   og: {
-    color: 'rainbowBlue',
+    accentColor: 'rainbowBlue',
     key: 'og',
     name: 'OG',
     source: AppIconOg,
   },
   pixel: {
-    color: 'rainbowBlue',
+    accentColor: 'rainbowBlue',
     key: 'pixel',
     name: 'Pixel',
     source: AppIconPixel,
@@ -43,18 +43,18 @@ type LockedAppIcon = AppIcon & {
 
 const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
   optimism: {
-    color: 'optimismRed',
+    accentColor: 'optimismRed',
     key: 'optimism',
     name: 'Optimism',
     source: AppIconOptimism,
-    unlock_key: unlockableIcons.optimism.unlock_key,
+    unlock_key: unlockableAppIcons.optimism.unlock_key,
   },
   smol: {
-    color: 'TODO',
+    accentColor: 'smolPurple',
     key: 'smol',
-    name: 'Smol',
+    name: 'SMOL',
     source: AppIconSmol,
-    unlock_key: unlockableIcons.smol.unlock_key,
+    unlock_key: unlockableAppIcons.smol.unlock_key,
   },
 };
 
@@ -90,37 +90,40 @@ const AppIconSection = () => {
   return (
     <MenuContainer>
       <Menu>
-        {appIconListItemsWithUnlocked.map(({ key, name, color, source }) => (
-          <MenuItem
-            key={key}
-            leftComponent={
-              <Box
-                style={{
-                  shadowColor: isDarkMode
-                    ? colors.shadowBlack
-                    : (colors as any)[color] || colors.shadowBlack,
-                  shadowOffset: { height: 4, width: 0 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 4,
-                }}
-              >
-                <ImgixImage
-                  source={source as Source}
+        {appIconListItemsWithUnlocked.map(
+          ({ key, name, accentColor, source }) => (
+            <MenuItem
+              key={key}
+              leftComponent={
+                <Box
                   style={{
-                    height: 36,
-                    width: 36,
+                    shadowColor: isDarkMode
+                      ? colors.shadowBlack
+                      : (accentColor && (colors as any)[accentColor]) ||
+                        colors.shadowBlack,
+                    shadowOffset: { height: 4, width: 0 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4,
                   }}
-                />
-              </Box>
-            }
-            onPress={() => onSelectIcon(key)}
-            rightComponent={
-              key === appIcon && <MenuItem.StatusIcon status="selected" />
-            }
-            size={60}
-            titleComponent={<MenuItem.Title text={name} />}
-          />
-        ))}
+                >
+                  <ImgixImage
+                    source={source as Source}
+                    style={{
+                      height: 36,
+                      width: 36,
+                    }}
+                  />
+                </Box>
+              }
+              onPress={() => onSelectIcon(key)}
+              rightComponent={
+                key === appIcon && <MenuItem.StatusIcon status="selected" />
+              }
+              size={60}
+              titleComponent={<MenuItem.Title text={name} />}
+            />
+          )
+        )}
       </Menu>
     </MenuContainer>
   );

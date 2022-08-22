@@ -15,21 +15,24 @@ const SMOL_BRAINS_PETS_NFT_ADDRESS: EthereumAddress =
 const SMOL_BODIES_PETS_NFT_ADDRESS: EthereumAddress =
   '0xae0d0c4cc3335fd49402781e406adf3f02d41bca';
 
-interface UnlockableIcon {
+interface UnlockableAppIcon {
   token_addresses: EthereumAddress[];
   unlock_key: string;
   network: Network;
+  explain_sheet_key: string;
   explain_sheet_type: string;
 }
 
-export const unlockableIcons: { [key: string]: UnlockableIcon } = {
+export const unlockableAppIcons: { [key: string]: UnlockableAppIcon } = {
   optimism: {
+    explain_sheet_key: 'optimism_nft_app_icon_explainer',
     explain_sheet_type: 'optimism_app_icon',
     network: Network.optimism,
     token_addresses: [OPTIMISTIC_EXPLORER_NFT_ADDRESS],
     unlock_key: 'optimism_nft_app_icon',
   },
   smol: {
+    explain_sheet_key: 'smol_nft_app_icon_explainer',
     explain_sheet_type: 'smol_app_icon',
     network: Network.arbitrum,
     token_addresses: [

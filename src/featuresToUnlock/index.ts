@@ -1,2 +1,2 @@
-export * from './nftAppIconCheck';
-export * from './unlockableIcons';
+export * from './unlockableAppIconCheck';
+export * from './unlockableAppIcons';

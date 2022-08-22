@@ -96,11 +96,11 @@ const OptimismAppIcon = () => {
 };
 
 const SmolAppIcon = () => {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   return (
     <Box
       style={{
-        shadowColor: colors.shadowBlack,
+        shadowColor: isDarkMode ? colors.shadowBlack : colors.smolPurple,
         shadowOffset: { height: 4, width: 0 },
         shadowOpacity: 0.3,
         shadowRadius: 12,
