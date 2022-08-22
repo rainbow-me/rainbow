@@ -153,7 +153,10 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
       );
     } else {
       document = backups.files.find((file: any) => {
-        return file.name === `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
+        return (
+          file.name === `${REMOTE_BACKUP_WALLET_DIR}/${filename}` ||
+          file.name === filename
+        );
       });
     }
 
