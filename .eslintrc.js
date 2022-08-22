@@ -75,14 +75,19 @@ module.exports = {
   },
 
   rules: {
-    // TODO can fix all of these
-    'no-var': 'warn',
-    'prefer-const': 'warn',
-    'prefer-rest-params': 'warn',
-    'prefer-spread': 'warn',
-    'no-async-promise-executor': 'warn',
+    'no-var': 'warn', // TODO
+    'prefer-const': 'warn', // TODO
+    'prefer-rest-params': 'warn', // TODO
+    'prefer-spread': 'warn', // TODO
+    'prefer-object-spread': 'error',
+    'no-async-promise-executor': 'warn', // TODO
+    'no-await-in-loop': 'warn', // TODO
     'no-prototype-builtins': 'warn', // this one is probably fine
     'no-irregular-whitespace': 'warn', // not a big deal most of the time
+    'no-promise-executor-return': 'warn', // TODO
+    'require-atomic-updates': 'warn', // TODO
+    'default-param-last': 'warn', // TODO
+    'no-param-reassign': 'warn', // TODO
 
     // Some of these are OK while we transition to TS
     '@typescript-eslint/ban-ts-comment': 'warn',
