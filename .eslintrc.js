@@ -78,9 +78,9 @@ module.exports = {
     'prefer-object-spread': 'error',
     'no-duplicate-imports': 'error',
     'no-multi-assign': 'error',
-    'spaced-comment': 'error',
     'no-prototype-builtins': 'warn', // this one is probably fine
     'no-irregular-whitespace': 'warn', // not a big deal most of the time
+    'spaced-comment': 'warn', // TODO
     'no-var': 'warn', // TODO
     'prefer-const': 'warn', // TODO
     'prefer-rest-params': 'warn', // TODO
