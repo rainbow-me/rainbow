@@ -123,7 +123,7 @@ const BottomSheetRoute = ({
     if (removing === true && ref.current) {
       // close keyboard before closing the modal
       // more: https://github.com/gorhom/react-native-bottom-sheet/issues/1072
-      if (isKeyboardOpen()) {
+      if (isKeyboardOpen() && android) {
         Keyboard.dismiss();
 
         pWaitFor(() => !isKeyboardOpen(), {
