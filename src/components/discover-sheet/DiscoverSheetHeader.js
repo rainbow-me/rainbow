@@ -13,7 +13,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const Header = styled.View({
   flexDirection: 'row',

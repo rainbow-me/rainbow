@@ -6,7 +6,7 @@ import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { borders } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {

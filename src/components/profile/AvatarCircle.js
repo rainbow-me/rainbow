@@ -8,7 +8,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useAccountProfile, useLatestCallback } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const AvatarCircleSize = 65;
 

@@ -7,7 +7,7 @@ import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const FieldAccessoryBadgeSize = 22;
 const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(

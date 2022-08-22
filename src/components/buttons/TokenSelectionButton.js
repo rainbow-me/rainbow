@@ -10,7 +10,7 @@ import { useColorForAsset } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const TokenSelectionButtonHeight = 46;
 const TokenSelectionButtonMaxWidth = 130;

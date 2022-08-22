@@ -17,7 +17,7 @@ import {
 } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],

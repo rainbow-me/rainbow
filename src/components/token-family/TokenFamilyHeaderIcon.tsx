@@ -8,7 +8,7 @@ import { ImgixImage } from '@/components/images';
 import { borders } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon, initials } from '@/utils';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 type Props = {
   familyName: string;

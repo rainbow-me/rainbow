@@ -25,7 +25,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { magicMemo } from '@/utils';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 60;

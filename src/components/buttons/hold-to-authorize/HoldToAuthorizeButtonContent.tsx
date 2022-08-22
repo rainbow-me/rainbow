@@ -40,7 +40,7 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { haptics } from '@/utils';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 

@@ -8,7 +8,7 @@ import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@/helpers/strings';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const addChartsStyling = isCharts =>
   isCharts ? { position: 'absolute', width: '100%' } : {};

@@ -8,7 +8,7 @@ import HeaderButton from './HeaderButton';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const DiscoverButtonShadowsFactory = colors => [
   [0, 7, 21, colors.shadow, 0.06],

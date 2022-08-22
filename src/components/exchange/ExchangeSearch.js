@@ -25,7 +25,7 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { colors, margin, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 export const ExchangeSearchHeight = 40;
 const DoneButtonWidth = 52;

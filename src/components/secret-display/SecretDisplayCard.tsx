@@ -11,7 +11,7 @@ import WalletTypes, {
 import styled from '@/styled-thing';
 import { fonts, padding, position } from '@/styles';
 import { useTheme } from '@/theme';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const CardBorderRadius = 25;
 

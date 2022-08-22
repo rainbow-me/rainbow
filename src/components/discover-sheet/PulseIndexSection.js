@@ -16,7 +16,7 @@ import Routes from '@/navigation/routesNames';
 import { fontWithWidth } from '@/styles';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
   const change = `${parseFloat(

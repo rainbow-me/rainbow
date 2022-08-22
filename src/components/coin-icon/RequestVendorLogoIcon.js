@@ -9,7 +9,7 @@ import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = colors => ({
