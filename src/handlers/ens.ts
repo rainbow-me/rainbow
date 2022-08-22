@@ -61,7 +61,7 @@ import {
   ethUnits,
 } from '@/references';
 import { labelhash, logger, profileUtils } from '@/utils';
-import { AvatarResolver } from 'ens-avatar';
+import { AvatarResolver } from '@/ens-avatar/src';
 
 const DUMMY_RECORDS = {
   'description': 'description',
