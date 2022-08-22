@@ -80,7 +80,7 @@ import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
-import { Portal } from 'react-native-cool-modals/Portal';
+import { Portal } from '@/react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 

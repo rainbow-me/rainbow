@@ -32,7 +32,7 @@ import {
   times,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import { ModalContext } from 'react-native-cool-modals/NativeStackView';
+import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 
 const formatItem = (
   { address, name, price, symbol, color },

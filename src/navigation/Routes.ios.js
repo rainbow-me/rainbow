@@ -74,7 +74,7 @@ import useExperimentalFlag, {
 } from '@/config/experimentalHooks';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
-import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
+import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
