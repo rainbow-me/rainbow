@@ -406,7 +406,7 @@ describe('Register ENS Flow', () => {
     await Helpers.tapByText('View Profile');
     await Helpers.checkIfExists('profile-sheet');
     await Helpers.checkIfExistsByText('rainbowtestwallet.eth');
-    await Helpers.checkIfExistsByText('Test2');
+    await Helpers.checkIfExistsByText('Test 2');
     await Helpers.swipe('profile-sheet', 'down');
   });
 
