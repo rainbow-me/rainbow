@@ -19,11 +19,7 @@ import {
   isENSAddressFormat,
   isValidDomainFormat,
 } from '@rainbow-me/helpers/validators';
-import {
-  useContacts,
-  useDimensions,
-  useENSProfileImages,
-} from '@rainbow-me/hooks';
+import { useContacts, useDimensions, useENSAvatar } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
 import {
@@ -111,7 +107,7 @@ const ContactRow = (
 
   const [ensName, setENSName] = useState(initialENSName);
 
-  const { data: images } = useENSProfileImages(ensName, {
+  const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: profilesEnabled && Boolean(ensName),
   });
 
@@ -161,7 +157,7 @@ const ContactRow = (
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 
-  const imageAvatar = profilesEnabled ? images?.avatarUrl : image;
+  const imageAvatar = profilesEnabled ? ensAvatar?.imageUrl : image;
 
   const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
     address,

@@ -1,5 +1,8 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Source } from 'react-native-fast-image';
+import eyeSlash from '../../assets/sf-eye.slash.png';
 import { Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';
@@ -20,7 +23,7 @@ const shadowsFactory = (colors: ThemeContextProps['colors']) => [
 
 const sx = StyleSheet.create({
   trophy: {
-    marginRight: 4,
+    width: 30,
   },
 });
 
@@ -42,6 +45,38 @@ export default React.memo(function TokenFamilyHeaderIcon({
         <Text align="center" containsEmoji size="16px">
           🏆
         </Text>
+      </View>
+    );
+  }
+
+  if (familyName === 'Selling') {
+    return (
+      <View style={sx.trophy}>
+        <Text align="center" containsEmoji size="16px">
+          💸
+        </Text>
+      </View>
+    );
+  }
+
+  if (familyName === lang.t('button.hidden')) {
+    return (
+      <View
+        style={[
+          sx.trophy,
+          {
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            paddingTop: 3,
+          },
+        ]}
+      >
+        <ImgixImage
+          source={eyeSlash as Source}
+          style={{ height: 17, width: 25 }}
+          tintColor={colors.blueGreyDark60}
+        />
       </View>
     );
   }

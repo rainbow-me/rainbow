@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
@@ -11,6 +10,7 @@ import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
+import { analytics } from '@rainbow-me/analytics';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 import { times } from '@rainbow-me/helpers/utilities';
@@ -118,6 +118,7 @@ export default function UniswapPools({
   token,
   hideIfEmpty,
   initialPageAmount = INITIAL_PAGE_AMOUNT,
+  marginTop,
   ShowMoreButton = DefaultShowMoreButton,
   forceShowAll,
   alwaysShowMoreButton,
@@ -306,7 +307,7 @@ export default function UniswapPools({
   }
 
   return (
-    <Column marginTop={32}>
+    <Column marginTop={marginTop}>
       <Row marginBottom={12} paddingHorizontal={19}>
         <PoolEmoji>🐋</PoolEmoji>
         <Text size="larger" testID="pools-section" weight="heavy">

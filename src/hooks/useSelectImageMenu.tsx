@@ -105,11 +105,11 @@ export default function useSelectImageMenu({
     useCallback(() => {
       isFocused.current = true;
       const dismiss = () => (isFocused.current = false);
-      // @ts-expect-error `dismiss` is valid event
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"dismiss"' is not assignable to ... Remove this comment to see the full error message
       dangerouslyGetParent()?.addListener('dismiss', dismiss);
       return () => {
         isFocused.current = false;
-        // @ts-expect-error `dismiss` is valid event
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"dismiss"' is not assignable to ... Remove this comment to see the full error message
         dangerouslyGetParent()?.removeListener('dismiss', dismiss);
       };
     }, [dangerouslyGetParent])
@@ -133,8 +133,6 @@ export default function useSelectImageMenu({
     const stringIndex = image?.path.indexOf('/tmp');
     const tmpPath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
 
-    onChangeImage?.({ image: { ...image, tmpPath } });
-
     if (uploadToIPFS) {
       onUploading?.({ image });
       try {
@@ -152,6 +150,8 @@ export default function useSelectImageMenu({
         if (!isFocused.current || isRemoved.current) return;
         onUploadError?.({ error: err, image });
       }
+    } else {
+      onChangeImage?.({ image: { ...image, tmpPath } });
     }
   }, [
     imagePickerOptions,
@@ -167,7 +167,7 @@ export default function useSelectImageMenu({
 
   const handleSelectNFT = useCallback(() => {
     navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
-      onSelect: (asset: any) => onChangeImage?.({ asset }),
+      onSelect: (asset: UniqueAsset) => onChangeImage?.({ asset }),
       springDamping: 1,
       topOffset: 0,
     });
@@ -176,6 +176,7 @@ export default function useSelectImageMenu({
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'library') {
+        isRemoved.current = false;
         handleSelectImage();
       }
       if (actionKey === 'nft') {
@@ -192,7 +193,7 @@ export default function useSelectImageMenu({
   const handleAndroidPress = useCallback(() => {
     const actionSheetOptions = menuItems
       .map(item => items[item]?.actionTitle)
-      .filter(Boolean) as any;
+      .filter(Boolean);
 
     showActionSheetWithOptions(
       {
@@ -200,6 +201,7 @@ export default function useSelectImageMenu({
       },
       async (buttonIndex: Number) => {
         if (buttonIndex === 0) {
+          isRemoved.current = false;
           handleSelectImage();
         } else if (buttonIndex === 1) {
           handleSelectNFT();
@@ -231,5 +233,5 @@ export default function useSelectImageMenu({
     [handleAndroidPress, handlePressMenuItem, menuItems, testID]
   );
 
-  return { ContextMenu, isUploading };
+  return { ContextMenu, handleSelectImage, handleSelectNFT, isUploading };
 }

@@ -1,28 +1,27 @@
-import analytics from '@segment/analytics-react-native';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
+import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
+import { analytics } from '@rainbow-me/analytics';
 import { EthereumAddress } from '@rainbow-me/entities';
-import {
-  fetchAccountRegistrations,
-  fetchProfile,
-} from '@rainbow-me/handlers/ens';
+import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
+import { RainbowWallet } from '@rainbow-me/model/wallet';
 
 export default function useTrackENSProfile() {
   const { walletNames, wallets } = useWallets();
 
   const addresses = useMemo(
     () =>
-      Object.values(wallets || {})
-        .filter((wallet: any) => wallet?.type !== walletTypes.readOnly)
+      Object.values<RainbowWallet | undefined>(wallets || {})
+        .filter(wallet => wallet?.type !== walletTypes.readOnly)
         .reduce(
-          (addresses: EthereumAddress[], wallet: any) =>
+          (addresses: EthereumAddress[], wallet: RainbowWallet | undefined) =>
             addresses.concat(
               wallet?.addresses.map(
                 ({ address }: { address: EthereumAddress }) => address
-              )
+              )!
             ),
           []
         ),
@@ -39,16 +38,16 @@ export default function useTrackENSProfile() {
     for (const i in addresses) {
       const ens = walletNames[addresses[i]];
       if (ens) {
-        const profile = await fetchProfile(ens);
+        const { records } = await fetchENSRecords(ens);
         const registrations = await fetchAccountRegistrations(addresses[i]);
         data.numberOfENSOwned +=
           registrations?.data?.account?.registrations?.length || 0;
         data.numberOfENSWithAvatarOrCoverSet +=
-          profile?.records?.avatar || profile?.records?.cover ? 1 : 0;
+          records?.avatar || records?.header ? 1 : 0;
 
-        data.numberOfENSWithOtherMetadataSet = Object.keys(
-          profile?.records || {}
-        ).some(key => key !== ENS_RECORDS.cover && key !== ENS_RECORDS.avatar)
+        data.numberOfENSWithOtherMetadataSet = Object.keys(records ?? {}).some(
+          key => key !== ENS_RECORDS.header && key !== ENS_RECORDS.avatar
+        )
           ? 1
           : 0;
         data.numberOfENSWithPrimaryNameSet += 1;
@@ -64,7 +63,7 @@ export default function useTrackENSProfile() {
   );
 
   const trackENSProfile = useCallback(() => {
-    isSuccess && analytics.identify(null, data);
+    isSuccess && analytics.identify(undefined, data);
   }, [isSuccess, data]);
 
   return { trackENSProfile };

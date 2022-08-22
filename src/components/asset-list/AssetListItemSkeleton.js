@@ -1,10 +1,4 @@
-import React, { useEffect } from 'react';
-import {
-  Easing,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
 import { withThemeContext } from '../../theme/ThemeContext';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
@@ -41,24 +35,10 @@ function AssetListItemSkeleton({
   descendingOpacity,
   ignorePaddingHorizontal,
   colors,
+  ...rest
 }) {
-  const progress = useSharedValue(0);
-
-  useEffect(() => {
-    if (!animated) {
-      return;
-    }
-    progress.value = withRepeat(
-      withTiming(1, {
-        duration: 1250,
-        easing: Easing.linear,
-      }),
-      -1
-    );
-  }, [animated, progress]);
-
   return (
-    <Container descendingOpacity={descendingOpacity} index={index}>
+    <Container descendingOpacity={descendingOpacity} index={index} {...rest}>
       <Skeleton animated={animated}>
         <Wrapper
           ignorePaddingHorizontal={ignorePaddingHorizontal}

@@ -39,7 +39,6 @@ function useEvent<T>(
 ): MutableRefObject<WorkletEventHandler<T> | null> {
   const initRef = useRef<WorkletEventHandler<T> | null>(null);
   if (initRef.current === null) {
-    // @ts-ignore
     initRef.current = new WorkletEventHandlerClass(handler, eventNames);
   } else if (rebuild) {
     initRef.current.updateWorklet(handler);

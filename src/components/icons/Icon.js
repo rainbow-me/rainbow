@@ -25,7 +25,6 @@ import DOGEIcon from './svg/DOGEIcon';
 import DiscordIcon from './svg/DiscordIcon';
 import DotIcon from './svg/DotIcon';
 import DoubleCaretIcon from './svg/DoubleCaretIcon';
-import DoubleChevronIcon from './svg/DoubleChevronIcon';
 import EmojiActivitiesIcon from './svg/EmojiActivitiesIcon';
 import EmojiAnimalsIcon from './svg/EmojiAnimalsIcon';
 import EmojiFlagsIcon from './svg/EmojiFlagsIcon';
@@ -100,7 +99,6 @@ const IconTypes = {
   dogeCoin: DOGEIcon,
   dot: DotIcon,
   doubleCaret: DoubleCaretIcon,
-  doubleChevron: DoubleChevronIcon,
   emojiActivities: EmojiActivitiesIcon,
   emojiAnimals: EmojiAnimalsIcon,
   emojiFlags: EmojiFlagsIcon,

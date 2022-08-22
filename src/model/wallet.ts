@@ -18,7 +18,6 @@ import {
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
@@ -36,6 +35,7 @@ import profileUtils, {
 } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import match from '@/utils/match';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
@@ -373,8 +373,8 @@ export const signMessage = async (
     logger.sentry('about to sign message', message);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
-    if (!wallet) return null;
     try {
+      if (!wallet) return null;
       const result = await wallet.signMessage(arrayify(message));
       return { result };
     } catch (error) {
@@ -404,8 +404,8 @@ export const signPersonalMessage = async (
     logger.sentry('about to sign personal message', message);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
-    if (!wallet) return null;
     try {
+      if (!wallet) return null;
       const result = await wallet.signMessage(
         typeof message === 'string' && isHexString(addHexPrefix(message))
           ? arrayify(addHexPrefix(message))
@@ -522,7 +522,7 @@ const loadPrivateKey = async (
 
       const privateKeyData = await getPrivateKey(addressToUse);
 
-      privateKey = privateKeyData?.privateKey;
+      privateKey = privateKeyData?.privateKey ?? null;
 
       let userPIN = null;
       if (android) {
@@ -922,7 +922,11 @@ export const createWallet = async (
           ? (walletResult as Wallet)
           : new Wallet(pkey);
       setTimeout(() => {
-        dispatch(setIsWalletLoading(null));
+        // on android we need to call this logic in more specific places
+        if (ios || !isImported) {
+          // !imported = new wallet - then we use this logic for dismissing the loading state
+          dispatch(setIsWalletLoading(null));
+        }
       }, 2000);
 
       return ethersWallet;
@@ -960,7 +964,7 @@ export const getPrivateKey = async (
       authenticationPrompt,
     })) as PrivateKeyData;
 
-    return pkey;
+    return pkey || null;
   } catch (error) {
     logger.sentry('Error in getPrivateKey');
     captureException(error);
@@ -992,7 +996,7 @@ export const getSeedPhrase = async (
       authenticationPrompt,
     })) as SeedPhraseData;
 
-    return seedPhraseData;
+    return seedPhraseData || null;
   } catch (error) {
     logger.sentry('Error in getSeedPhrase');
     captureException(error);
@@ -1318,8 +1322,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
     } else {
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
-      seedPhrase = seedData?.seedphrase;
-
+      seedPhrase = seedData?.seedphrase ?? null;
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();

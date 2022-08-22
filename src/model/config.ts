@@ -50,14 +50,16 @@ export interface RainbowConfig extends Record<string, any> {
   data_api_key?: string;
   data_endpoint?: string;
   data_origin?: string;
+  default_slippage_bips?: string;
   ethereum_goerli_rpc?: string;
   ethereum_kovan_rpc?: string;
   ethereum_mainnet_rpc?: string;
   ethereum_rinkeby_rpc?: string;
   ethereum_ropsten_rpc?: string;
+  op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
-  op_nft_network?: string;
+  trace_call_block_number_offset?: number;
 }
 
 const DEFAULT_CONFIG = {
@@ -65,6 +67,12 @@ const DEFAULT_CONFIG = {
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
   data_origin: DATA_ORIGIN,
+  default_slippage_bips: JSON.stringify({
+    arbitrum: 200,
+    mainnet: 100,
+    optimism: 200,
+    polygon: 200,
+  }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_kovan_rpc: __DEV__ ? ETHEREUM_KOVAN_RPC_DEV : ETHEREUM_KOVAN_RPC,
   ethereum_mainnet_rpc: __DEV__
@@ -79,6 +87,7 @@ const DEFAULT_CONFIG = {
   op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
+  trace_call_block_number_offset: 20,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -105,7 +114,11 @@ const init = async () => {
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
-      config[key] = entry.asString();
+      if (key === 'default_slippage_bips') {
+        config[key] = JSON.parse(entry.asString());
+      } else {
+        config[key] = entry.asString();
+      }
     });
   } catch (e) {
     Logger.sentry('error getting remote config', e);

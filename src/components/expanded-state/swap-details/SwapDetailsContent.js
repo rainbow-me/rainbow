@@ -1,25 +1,31 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { ColumnWithMargins } from '../../layout';
+import { useSelector } from 'react-redux';
+import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
+import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
+import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
-import SwapDetailsRow, {
-  SwapDetailsRowHeight,
-  SwapDetailsValue,
-} from './SwapDetailsRow';
-import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
-import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
+import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
+import {
+  AccentColorProvider,
+  Box,
+  Divider,
+  Rows,
+} from '@rainbow-me/design-system';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import {
+  useColorForAsset,
+  useSwapAdjustedAmounts,
+  useSwapCurrencies,
+} from '@rainbow-me/hooks';
+import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
-import { isETH } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
-const contentRowMargin = 24;
-export const SwapDetailsContentMinHeight =
-  (SwapDetailsRowHeight + contentRowMargin) * 4;
-
-const Container = styled(ColumnWithMargins).attrs({
+const Container = styled(Box).attrs({
   flex: 1,
-  margin: contentRowMargin,
 })(({ isHighPriceImpact }) =>
   padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
 );
@@ -27,9 +33,6 @@ const Container = styled(ColumnWithMargins).attrs({
 export default function SwapDetailsContent({
   isHighPriceImpact,
   onCopySwapDetailsText,
-  priceImpactColor,
-  priceImpactNativeAmount,
-  priceImpactPercentDisplay,
   tradeDetails,
   ...props
 }) {
@@ -37,46 +40,91 @@ export default function SwapDetailsContent({
   const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(
     tradeDetails
   );
+  const inputAsExact = useSelector(
+    state => state.swap.independentField !== SwapModalField.output
+  );
 
-  const showPriceImpact =
-    (!isHighPriceImpact || priceImpactNativeAmount) &&
-    priceImpactPercentDisplay;
+  const [detailsExpanded, setDetailsExpanded] = useState(false);
 
+  const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
+  const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+    inputCurrency?.type
+  );
   return (
-    <Container
-      isHighPriceImpact={isHighPriceImpact}
-      testID="swap-details-state"
-      {...props}
-    >
-      {showPriceImpact && (
-        <SwapDetailsRow label={lang.t('expanded_state.swap.price_impact')}>
-          <SwapDetailsValue
-            color={priceImpactColor}
-            letterSpacing="roundedTight"
-          >
-            {priceImpactPercentDisplay}
-          </SwapDetailsValue>
-        </SwapDetailsRow>
-      )}
-      <SwapDetailsRow label={receivedSoldLabel}>
-        <SwapDetailsValue letterSpacing="roundedTight">
-          {amountReceivedSold}
-        </SwapDetailsValue>
-      </SwapDetailsRow>
-      <SwapDetailsPriceRow tradeDetails={tradeDetails} />
-      {!isETH(inputCurrency?.address) && (
-        <SwapDetailsContractRow
-          asset={inputCurrency}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-        />
-      )}
-      {!isETH(outputCurrency?.address) && (
-        <SwapDetailsContractRow
-          asset={outputCurrency}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-        />
-      )}
-      <SwapDetailsUniswapRow />
-    </Container>
+    <AccentColorProvider color={colorForAsset}>
+      <Container
+        isHighPriceImpact={isHighPriceImpact}
+        testID="swap-details-state"
+        {...props}
+      >
+        <Rows space="24px">
+          <SwapDetailsRow label={receivedSoldLabel}>
+            <SwapDetailsValue letterSpacing="roundedTight">
+              {amountReceivedSold}{' '}
+              {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
+            </SwapDetailsValue>
+          </SwapDetailsRow>
+          {tradeDetails?.protocols && (
+            <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
+          )}
+          {tradeDetails.feePercentageBasisPoints !== 0 && (
+            <SwapDetailsFeeRow
+              network={inputCurrencyNetwork}
+              tradeDetails={tradeDetails}
+            />
+          )}
+          {!detailsExpanded && (
+            <Box
+              style={{
+                // cancel out the extra padding below
+                marginVertical: -18,
+              }}
+            >
+              <ButtonPressAnimation
+                onPress={() => setDetailsExpanded(!detailsExpanded)}
+                scaleTo={1.06}
+                style={{
+                  // enlarge tap target for details button
+                  paddingVertical: 18,
+                }}
+              >
+                <SwapDetailsRow
+                  label={
+                    detailsExpanded
+                      ? lang.t('expanded_state.swap_details.hide_details')
+                      : lang.t('expanded_state.swap_details.show_details')
+                  }
+                >
+                  <SwapDetailsValue>
+                    {detailsExpanded ? '􀁮' : '􀁰'}
+                  </SwapDetailsValue>
+                </SwapDetailsRow>
+              </ButtonPressAnimation>
+            </Box>
+          )}
+          {detailsExpanded && (
+            <Rows space="24px">
+              <Divider />
+              <SwapDetailsPriceRow tradeDetails={tradeDetails} />
+              {!isNativeAsset(inputCurrency?.address, inputCurrencyNetwork) && (
+                <SwapDetailsContractRow
+                  asset={inputCurrency}
+                  onCopySwapDetailsText={onCopySwapDetailsText}
+                />
+              )}
+              {!isNativeAsset(
+                outputCurrency?.address,
+                inputCurrencyNetwork
+              ) && (
+                <SwapDetailsContractRow
+                  asset={outputCurrency}
+                  onCopySwapDetailsText={onCopySwapDetailsText}
+                />
+              )}
+            </Rows>
+          )}
+        </Rows>
+      </Container>
+    </AccentColorProvider>
   );
 }

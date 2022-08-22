@@ -5,9 +5,12 @@ export const colors = {
   appleBlueLight: '#1F87FF',
   black: '#000000',
   blackTint: '#12131a',
+  dark: '#1E2028',
+  darker: '#12131A',
   grey: 'rgb(60, 66, 82)',
   grey06: 'rgba(60, 66, 82, 0.06)',
   grey10: 'rgba(60, 66, 82, 0.1)',
+  grey15: 'rgba(60, 66, 82, 0.15)',
   grey20: 'rgba(60, 66, 82, 0.2)',
   grey25: 'rgba(60, 66, 82, 0.25)',
   grey30: 'rgba(60, 66, 82, 0.3)',
@@ -17,10 +20,12 @@ export const colors = {
   grey70: 'rgba(60, 66, 82, 0.7)',
   grey80: 'rgba(60, 66, 82, 0.8)',
   greyDark: '#25292E',
+  offwhite: '#F5F5F7',
   paleBlue: '#579DFF',
   sky: '#E0E8FF',
   sky06: 'rgba(224, 232, 255, 0.06)',
   sky10: 'rgba(224, 232, 255, 0.1)',
+  sky15: 'rgba(224, 232, 255, 0.15)',
   sky20: 'rgba(224, 232, 255, 0.2)',
   sky25: 'rgba(224, 232, 255, 0.25)',
   sky30: 'rgba(224, 232, 255, 0.3)',
@@ -33,6 +38,7 @@ export const colors = {
   white: '#FFFFFF',
   white06: 'rgba(255, 255, 255, 0.06)',
   white10: 'rgba(255, 255, 255, 0.1)',
+  white15: 'rgba(255, 255, 255, 0.15)',
   white20: 'rgba(255, 255, 255, 0.2)',
   white25: 'rgba(255, 255, 255, 0.25)',
   white30: 'rgba(255, 255, 255, 0.3)',
@@ -53,7 +59,12 @@ export type ContextualColorValue<Value> = {
   darkTinted?: Value;
 };
 
-export type BackgroundColor = 'body' | 'action' | 'swap';
+export type BackgroundColor =
+  | 'body'
+  | 'action'
+  | 'swap'
+  | 'card'
+  | 'cardBackdrop';
 
 export type BackgroundColorValue = {
   color: string;
@@ -97,6 +108,26 @@ export const backgroundColors: Record<
       mode: 'lightTinted',
     },
   },
+  card: {
+    dark: {
+      color: colors.dark,
+      mode: 'dark',
+    },
+    light: {
+      color: colors.white,
+      mode: 'light',
+    },
+  },
+  cardBackdrop: {
+    dark: {
+      color: colors.darker,
+      mode: 'dark',
+    },
+    light: {
+      color: colors.offwhite,
+      mode: 'light',
+    },
+  },
   swap: {
     color: colors.swapPurple,
     mode: 'darkTinted',
@@ -114,6 +145,7 @@ export type ForegroundColor =
   | 'secondary'
   | 'secondary06'
   | 'secondary10'
+  | 'secondary15'
   | 'secondary20'
   | 'secondary25'
   | 'secondary30'
@@ -178,6 +210,11 @@ export const foregroundColors: Record<
     dark: colors.sky10,
     darkTinted: colors.white10,
     light: colors.grey10,
+  },
+  secondary15: {
+    dark: colors.sky15,
+    darkTinted: colors.white15,
+    light: colors.grey15,
   },
   secondary20: {
     dark: colors.sky20,

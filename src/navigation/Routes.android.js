@@ -49,7 +49,6 @@ import {
   androidRecievePreset,
   bottomSheetPreset,
   emojiPreset,
-  ensPreset,
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
@@ -64,7 +63,6 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, {
-  NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 
@@ -72,22 +70,6 @@ const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
-
-function SendFlowNavigator({ route: { params } }) {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.SEND_SHEET}
-    >
-      <Stack.Screen
-        component={SendSheet}
-        initialParams={params}
-        name={Routes.SEND_SHEET}
-        options={sheetPreset}
-      />
-    </Stack.Navigator>
-  );
-}
 
 function ImportSeedPhraseFlowNavigator() {
   return (
@@ -126,8 +108,6 @@ function AddCashFlowNavigator() {
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
-  const profilesEnabled = useExperimentalFlag(PROFILES);
-
   return (
     <Stack.Navigator
       initialRouteName={initialRoute}
@@ -164,40 +144,6 @@ function MainNavigator() {
           cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
         }}
       />
-      {profilesEnabled && (
-        <>
-          <Stack.Screen
-            component={RegisterENSNavigator}
-            name={Routes.REGISTER_ENS_NAVIGATOR}
-            options={ensPreset}
-          />
-          <Stack.Screen
-            component={ENSConfirmRegisterSheet}
-            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
-            options={ensPreset}
-          />
-          <Stack.Screen
-            component={ENSAdditionalRecordsSheet}
-            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
-            options={ensPreset}
-          />
-          <Stack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_SHEET}
-            options={ensPreset}
-          />
-          <Stack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_PREVIEW_SHEET}
-            options={ensPreset}
-          />
-          <Stack.Screen
-            component={SelectENSSheet}
-            name={Routes.SELECT_ENS_SHEET}
-            options={ensPreset}
-          />
-        </>
-      )}
       <Stack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
@@ -294,22 +240,23 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={expandedPreset}
       />
+      <OuterStack.Screen
+        component={SendSheet}
+        name={Routes.SEND_SHEET_NAVIGATOR}
+        options={expandedPresetWithSmallGestureResponseDistance}
+      />
     </OuterStack.Navigator>
   );
 }
 
 function BSNavigator() {
-  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
     <BSStack.Navigator>
       <BSStack.Screen
         component={MainOuterNavigator}
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
-      <BSStack.Screen
-        component={SendFlowNavigator}
-        name={Routes.SEND_SHEET_NAVIGATOR}
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}
@@ -323,13 +270,6 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen
-        component={SelectUniqueTokenSheet}
-        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
-        options={{
-          height: '95%',
-        }}
-      />
-      <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
       />
@@ -338,6 +278,43 @@ function BSNavigator() {
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         options={expandedPresetWithSmallGestureResponseDistance}
       />
+      {profilesEnabled && (
+        <>
+          <BSStack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+          />
+          <BSStack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_SHEET}
+          />
+          <BSStack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+          />
+          <BSStack.Screen
+            component={ENSAdditionalRecordsSheet}
+            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
+          />
+          <BSStack.Screen
+            component={SelectENSSheet}
+            name={Routes.SELECT_ENS_SHEET}
+          />
+          <BSStack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_PREVIEW_SHEET}
+          />
+          <BSStack.Screen
+            component={SelectUniqueTokenSheet}
+            name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
+            options={{ ...bottomSheetPreset, height: '95%' }}
+          />
+          <BSStack.Screen
+            component={SpeedUpAndCancelSheet}
+            name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET}
+          />
+        </>
+      )}
       <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
@@ -375,13 +352,6 @@ function BSNavigator() {
         name={Routes.SETTINGS_SHEET}
         options={{ ...bottomSheetPreset, height: '97%' }}
       />
-      {notificationsEnabled && (
-        <BSStack.Screen
-          component={SettingsSheet}
-          name={Routes.SETTINGS_SHEET_V2}
-          options={{ ...bottomSheetPreset, height: '97%' }}
-        />
-      )}
     </BSStack.Navigator>
   );
 }

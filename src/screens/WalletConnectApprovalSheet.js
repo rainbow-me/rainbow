@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -24,6 +23,7 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
 } from '../components/sheet';
+import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@rainbow-me/design-system';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
@@ -151,7 +151,6 @@ export default function WalletConnectApprovalSheet() {
     const approvalAccountInfo = getAccountProfileInfo(
       approvalAccount.wallet,
       walletNames,
-      approvalNetwork,
       approvalAccount.address
     );
     return {
@@ -161,12 +160,7 @@ export default function WalletConnectApprovalSheet() {
         approvalAccountInfo.accountName ||
         approvalAccount.address,
     };
-  }, [
-    walletNames,
-    approvalNetwork,
-    approvalAccount.wallet,
-    approvalAccount.address,
-  ]);
+  }, [walletNames, approvalAccount.wallet, approvalAccount.address]);
 
   const approvalNetworkInfo = useMemo(() => {
     const value = networkInfo[approvalNetwork]?.value;
@@ -267,11 +261,14 @@ export default function WalletConnectApprovalSheet() {
   }, [approvalAccount.address, goBack, type]);
 
   useEffect(() => {
+    const waitingTime = (Date.now() - receivedTimestamp) / 1000;
     InteractionManager.runAfterInteractions(() => {
       analytics.track('Received wc connection', {
         dappName,
         dappUrl,
-        waitingTime: (Date.now() - receivedTimestamp) / 1000,
+        waitingTime: isNaN(waitingTime)
+          ? 'Error calculating waiting time.'
+          : waitingTime,
       });
     });
   }, [dappName, dappUrl, receivedTimestamp]);

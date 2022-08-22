@@ -1,5 +1,4 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
@@ -13,7 +12,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ActivityIndicator, Alert, InteractionManager } from 'react-native';
+import { ActivityIndicator, InteractionManager } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -43,16 +42,22 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
+import { FLASHBOTS_WC } from '../config/experimental';
+import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@rainbow-me/analytics';
 import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,
   estimateGasWithPadding,
+  getFlashbotsProvider,
   getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
   toHex,
 } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
@@ -230,19 +235,19 @@ export default function TransactionConfirmationScreen() {
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
       walletNames,
-      currentNetwork,
       address
     );
     return {
       ...profileInfo,
       address,
     };
-  }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
+  }, [walletConnector?._accounts, walletNames, wallets]);
 
   const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
+  const flashbotsEnabled = useExperimentalFlag(FLASHBOTS_WC);
 
   useEffect(() => {
     setCurrentNetwork(
@@ -252,11 +257,17 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     const initProvider = async () => {
-      const p = await getProviderForNetwork(currentNetwork);
+      let p;
+      if (currentNetwork === Network.mainnet && flashbotsEnabled) {
+        p = await getFlashbotsProvider(currentNetwork);
+      } else {
+        p = await getProviderForNetwork(currentNetwork);
+      }
+
       setProvider(p);
     };
     currentNetwork && initProvider();
-  }, [currentNetwork]);
+  }, [currentNetwork, flashbotsEnabled]);
 
   useEffect(() => {
     const getNativeAsset = async () => {

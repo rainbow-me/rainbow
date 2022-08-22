@@ -1,6 +1,5 @@
 import './languages';
 import messaging from '@react-native-firebase/messaging';
-import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
@@ -17,7 +16,6 @@ import {
 import codePush from 'react-native-code-push';
 import {
   IS_TESTING,
-  REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
@@ -41,6 +39,7 @@ import {
 } from './config/debug';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
+import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import {
@@ -60,6 +59,7 @@ import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
+import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
@@ -68,8 +68,10 @@ import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { MainThemeProvider } from './theme/ThemeContext';
+import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
+import { analytics } from '@rainbow-me/analytics';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
@@ -266,14 +268,6 @@ class App extends Component {
       analytics.identify(identifier);
       analytics.track('First App Open');
     }
-
-    await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
-      ios: {
-        trackDeepLinks: true,
-      },
-      trackAppLifecycleEvents: true,
-      trackAttributionData: true,
-    });
   };
 
   handleAppStateChange = async nextAppState => {
@@ -298,13 +292,20 @@ class App extends Component {
   };
 
   handleTransactionConfirmed = tx => {
-    const network = tx.network || networkTypes.mainnet;
+    const network = tx.chainId
+      ? ethereumUtils.getNetworkFromChainId(tx.chainId)
+      : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
     const updateBalancesAfter = (timeout, isL2, network) => {
       setTimeout(() => {
         logger.log('Reloading balances for network', network);
         if (isL2) {
-          store.dispatch(explorerInitL2(network));
+          if (tx.internalType === TransactionType.trade) {
+            store.dispatch(additionalDataUpdateL2AssetBalance(tx));
+          } else if (tx.internalType !== TransactionType.authorize) {
+            // for swaps, we don't want to trigger update balances on unlock txs
+            store.dispatch(explorerInitL2(network));
+          }
         } else {
           store.dispatch(
             fetchOnchainBalances({ keepPolling: false, withPrices: false })
