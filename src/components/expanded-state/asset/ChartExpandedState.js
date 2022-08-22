@@ -36,7 +36,7 @@ import {
 import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
-import { ChartPathProvider } from '@rainbow-me/animated-charts';
+import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import { isL2Network, isTestnetNetwork } from '@/handlers/web3';
 import AssetInputTypes from '@/helpers/assetInputTypes';
 import {

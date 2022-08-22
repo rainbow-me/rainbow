@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Icon } from '../../../icons';
-import { useChartData } from '@rainbow-me/animated-charts';
+import { useChartData } from '@/react-native-animated-charts/src';
 import styled from '@/styled-thing';
 
 const AnimatedMaskedView = Animated.createAnimatedComponent(MaskedView);

@@ -3,7 +3,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useRatio } from './useRatio';
-import { ChartXLabel, useChartData } from '@rainbow-me/animated-charts';
+import { ChartXLabel, useChartData } from '@/react-native-animated-charts/src';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
 

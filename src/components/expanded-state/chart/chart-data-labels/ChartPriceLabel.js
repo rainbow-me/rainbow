@@ -3,7 +3,7 @@ import { PixelRatio, Text } from 'react-native';
 import { useWorkletCallback } from 'react-native-reanimated';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
-import { ChartYLabel } from '@rainbow-me/animated-charts';
+import { ChartYLabel } from '@/react-native-animated-charts/src';
 import { NativeCurrencyKeys } from '@/entities';
 import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';

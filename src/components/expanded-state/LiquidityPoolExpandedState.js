@@ -20,7 +20,7 @@ import { Text } from '../text';
 import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
-import { ChartPathProvider } from '@rainbow-me/animated-charts';
+import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import { toChecksumAddress } from '@/handlers/web3';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import chartTypes from '@/helpers/chartTypes';

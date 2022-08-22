@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
-import { useChartData } from '@rainbow-me/animated-charts';
+import { useChartData } from '@/react-native-animated-charts/src';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';

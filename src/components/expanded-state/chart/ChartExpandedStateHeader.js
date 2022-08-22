@@ -11,7 +11,7 @@ import {
   ChartPercentChangeLabel,
   ChartPriceLabel,
 } from './chart-data-labels';
-import { useChartData } from '@rainbow-me/animated-charts';
+import { useChartData } from '@/react-native-animated-charts/src';
 import { Network } from '@/helpers';
 import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';

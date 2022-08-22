@@ -15,7 +15,7 @@ import { Text } from '../text';
 import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { ChartPathProvider } from '@rainbow-me/animated-charts';
+import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,

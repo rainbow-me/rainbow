@@ -1,6 +1,6 @@
 import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
+import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
 import {
   useAccountSettings,
   useChartData,
