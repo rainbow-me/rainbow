@@ -474,7 +474,6 @@ describe('Register ENS Flow', () => {
     // Fill "Website" field
     await Helpers.checkIfVisible('ens-text-record-url');
     await Helpers.typeText('ens-text-record-url', 'abc', false);
-    await Helpers.tapByText('Got it');
     await Helpers.waitAndTap('ens-text-record-url-error');
     await Helpers.checkIfElementByTextToExist('Invalid URL');
     await Helpers.tapByText('OK');
