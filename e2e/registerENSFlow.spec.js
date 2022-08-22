@@ -292,7 +292,6 @@ describe('Register ENS Flow', () => {
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
     await Helpers.waitAndTap('use-select-image-avatar');
-    await Helpers.tapByText('Choose an NFT');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
