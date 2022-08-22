@@ -21,7 +21,7 @@ import {
 import { delay } from '@/helpers/utilities';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 function getUserError(e: Error) {
   switch (e.message) {

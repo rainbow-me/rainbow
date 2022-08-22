@@ -75,7 +75,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,

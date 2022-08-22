@@ -13,7 +13,7 @@ import {
   parseAccountUniqueTokensPolygon,
 } from '@/parsers';
 import { handleSignificantDecimals } from '@/helpers/utilities';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE: number = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL: number = 2000;

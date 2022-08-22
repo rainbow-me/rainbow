@@ -12,7 +12,7 @@ import { toChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const walletSelector = createSelector(
   ({

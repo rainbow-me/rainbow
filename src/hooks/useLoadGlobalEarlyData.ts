@@ -9,7 +9,7 @@ import {
 } from '@/redux/settings';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { promiseUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useLoadGlobalEarlyData() {
   const dispatch = useDispatch();

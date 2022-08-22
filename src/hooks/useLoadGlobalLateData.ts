@@ -8,7 +8,7 @@ import { queryClient } from '@/react-query/queryClient';
 import { nonceManagerLoadState } from '@/redux/nonceManager';
 import { AppState } from '@/redux/store';
 import { promiseUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const loadWalletBalanceNamesToCache = () =>
   queryClient.prefetchQuery(WALLET_BALANCES_FROM_STORAGE, getWalletBalances);

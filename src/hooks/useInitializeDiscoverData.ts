@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { userListsLoadState } from '../redux/userLists';
 import { AppState } from '@/redux/store';
 import { topMoversLoadState } from '@/redux/topMovers';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useInitializeDiscoverData() {
   const dispatch = useDispatch();

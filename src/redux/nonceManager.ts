@@ -6,7 +6,7 @@ import {
   saveNonceManager,
 } from '@/handlers/localstorage/nonceManager';
 import { Network } from '@/helpers/networkTypes';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 interface NonceManagerLoadSuccessAction {
   type: typeof NONCE_MANAGER_LOAD_SUCCESS;

@@ -15,7 +15,7 @@ import {
   signUrl,
 } from '@/handlers/cloudinary';
 import { STORAGE_IDS } from '@/model/mmkv';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const imgixCacheStorage = new MMKV({
   id: STORAGE_IDS.IMGIX_CACHE,

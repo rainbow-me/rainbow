@@ -38,7 +38,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position, shadow } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,

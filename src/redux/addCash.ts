@@ -29,7 +29,7 @@ import {
 } from '@/references';
 import { ethereumUtils } from '@/utils';
 import maybeReviewAlert from '@/utils/reviewAlert';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 

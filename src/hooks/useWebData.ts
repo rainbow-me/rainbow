@@ -14,7 +14,7 @@ import { containsEmoji } from '@/helpers/strings';
 import WalletTypes from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {

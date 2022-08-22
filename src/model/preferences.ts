@@ -5,7 +5,7 @@ import {
   getSignatureForSigningWalletAndCreateSignatureIfNeeded,
   signWithSigningWallet,
 } from '@/helpers/signingWallet';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export enum PreferenceActionType {
   update = 'update',

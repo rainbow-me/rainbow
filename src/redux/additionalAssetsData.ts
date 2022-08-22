@@ -9,7 +9,7 @@ import { Network } from '@/helpers';
 import { AppDispatch, AppGetState, AppState } from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
 import { ethereumUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
 const ADDITIONAL_ASSET_DATA_COINGECKO_IDS =

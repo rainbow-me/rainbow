@@ -26,7 +26,7 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@/redux/data';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();

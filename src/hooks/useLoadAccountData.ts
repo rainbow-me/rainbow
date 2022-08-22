@@ -13,7 +13,7 @@ import { uniswapPositionsLoadState } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 import { ensRegistrationsLoadState } from '@/redux/ensRegistration';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();

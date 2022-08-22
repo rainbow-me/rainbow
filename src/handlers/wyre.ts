@@ -25,7 +25,7 @@ import { RAINBOW_FETCH_ERROR, RainbowFetchClient } from '../rainbow-fetch';
 import NetworkTypes from '@/helpers/networkTypes';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@/references';
 import { subtract } from '@/helpers/utilities';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';

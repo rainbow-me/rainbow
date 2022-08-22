@@ -84,7 +84,7 @@ import {
   ethereumUtils,
   getUniqueTokenType,
 } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);

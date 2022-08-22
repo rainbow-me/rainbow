@@ -78,7 +78,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { getUniqueTokenType, promiseUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

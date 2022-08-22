@@ -39,7 +39,7 @@ import {
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;

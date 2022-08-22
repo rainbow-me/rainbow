@@ -20,7 +20,7 @@ import {
   balanceCheckerContractAbiOVM,
   chainAssets,
 } from '@/references';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 /**
  * The last `ChainAsset`s update payload. Used for skipping redundant payloads.

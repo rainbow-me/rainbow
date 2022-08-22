@@ -38,7 +38,7 @@ import {
 } from '@/handlers/ens';
 import { ExchangeModalTypes } from '@/helpers';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const {
   commitENS,

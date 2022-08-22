@@ -48,7 +48,7 @@ import {
   MATIC_MAINNET_ADDRESS,
 } from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';

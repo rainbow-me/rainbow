@@ -7,7 +7,7 @@ import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 // @ts-ignore
 const Spacer = styled(View)<{ height: number }>({

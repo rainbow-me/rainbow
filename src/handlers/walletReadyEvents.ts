@@ -20,7 +20,7 @@ import { Navigation } from '@/navigation';
 import store from '@/redux/store';
 import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 

@@ -19,7 +19,7 @@ import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
 import { analytics } from '@/analytics';
 import { getTokenMetadata } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useWyreApplePay() {
   const dispatch = useDispatch();

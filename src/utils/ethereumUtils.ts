@@ -81,7 +81,7 @@ import {
   supportedNativeCurrencies,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const { RNBip39 } = NativeModules;
 

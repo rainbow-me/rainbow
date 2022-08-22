@@ -11,7 +11,7 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();

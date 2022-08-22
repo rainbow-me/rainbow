@@ -20,7 +20,7 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function RestoreSheet() {
   const { goBack, navigate, setParams } = useNavigation();

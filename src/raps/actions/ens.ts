@@ -25,7 +25,7 @@ import {
 } from '@/redux/ensRegistration';
 import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 const executeCommit = async (
   name?: string,
   duration?: number,

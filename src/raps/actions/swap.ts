@@ -23,7 +23,7 @@ import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { greaterThan } from '@/helpers/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const actionName = 'swap';
 

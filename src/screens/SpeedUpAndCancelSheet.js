@@ -50,7 +50,7 @@ import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { gasUtils, safeAreaInsetValues } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const { CUSTOM, URGENT } = gasUtils;
 

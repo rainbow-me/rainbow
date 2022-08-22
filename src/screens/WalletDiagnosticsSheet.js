@@ -31,7 +31,7 @@ import {
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, haptics } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const WalletDiagnosticsSheetHeight = '100%';
 const LoadingSpinner = android ? Spinner : ActivityIndicator;

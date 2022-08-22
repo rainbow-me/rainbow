@@ -65,7 +65,7 @@ import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { DefaultTokenLists } from '@/references';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default async function runMigrations() {
   // get current version

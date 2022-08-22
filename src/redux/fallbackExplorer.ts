@@ -39,7 +39,7 @@ import {
 } from '@/references';
 import { delay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 let lastUpdatePayload: FallbackOnChainAssetsPayload | null = null;
 

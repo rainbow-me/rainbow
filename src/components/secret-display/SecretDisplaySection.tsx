@@ -22,7 +22,7 @@ import { useWallets } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin, position, shadow } from '@/styles';
 import { useTheme } from '@/theme';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }: any) => ({
   color: colors.appleBlue,

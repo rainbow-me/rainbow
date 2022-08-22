@@ -27,7 +27,7 @@ import {
 } from './wallet';
 import { analytics } from '@/analytics';
 
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 type BackupPassword = string;
 

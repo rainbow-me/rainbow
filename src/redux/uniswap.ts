@@ -26,7 +26,7 @@ import {
   rainbowTokenList,
   WETH_ADDRESS,
 } from '@/references';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
 

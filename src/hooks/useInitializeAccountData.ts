@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '@/redux/usersPositions';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();

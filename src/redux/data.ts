@@ -80,7 +80,7 @@ import {
   isLowerCaseMatch,
   TokensListenedCache,
 } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const storage = new MMKV();
 

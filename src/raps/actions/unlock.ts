@@ -22,7 +22,7 @@ import store from '@/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@/references';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const estimateApprove = async (
   owner: string,

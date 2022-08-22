@@ -35,7 +35,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, sanitizeSeedPhrase } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();

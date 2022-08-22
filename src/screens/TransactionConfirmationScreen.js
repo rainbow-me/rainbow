@@ -110,7 +110,7 @@ import {
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
 } from '@/utils/signingMethods';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const springConfig = {
   damping: 500,

@@ -44,7 +44,7 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { fetchContractABI } from '@/utils/ethereumUtils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;

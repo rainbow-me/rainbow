@@ -6,7 +6,7 @@ import {
   TokenSearchTokenListId,
   TokenSearchUniswapAssetKey,
 } from '@/entities';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const tokenSearchApi = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v2',

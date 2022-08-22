@@ -13,7 +13,7 @@ import {
 import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
 import { ethereumUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 

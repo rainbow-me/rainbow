@@ -20,7 +20,7 @@ import {
   UniswapPoolAddressDetailsFull,
 } from '@/redux/uniswapLiquidity';
 import { WETH_ADDRESS } from '@/references';
-import logger from 'logger';
+import logger from '@/utils/logger';
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
 export const SORT_DIRECTION = {

@@ -7,7 +7,7 @@ import {
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import { EthereumAddress } from '@/entities';
-import Logger from 'logger';
+import Logger from '@/utils/logger';
 
 // A response from Covalent for the address balance API.
 // See https://www.covalenthq.com/docs/api/#/0/Get%20historical%20portfolio%20value%20over%20time/USD/1.

@@ -50,7 +50,7 @@ import { walletsUpdate } from '@/redux/wallets';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const DevSection = () => {
   const { navigate } = useNavigation();

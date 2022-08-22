@@ -24,7 +24,7 @@ import {
 } from '@/references';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { gasUtils } from '@/utils';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const getDepositGasLimit = (tokenToDeposit: Asset) =>
   tokenToDeposit.address === ETH_ADDRESS

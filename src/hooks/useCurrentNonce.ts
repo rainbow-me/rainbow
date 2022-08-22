@@ -4,7 +4,7 @@ import { EthereumAddress } from '@/entities';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
 import { AppState } from '@/redux/store';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useCurrentNonce(
   accountAddress: EthereumAddress,

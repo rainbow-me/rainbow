@@ -2,7 +2,7 @@ import { ApolloClient } from '@apollo/client';
 import { DocumentNode } from 'graphql';
 import { blockClient } from '@/apollo/client';
 import { GET_BLOCKS_QUERY } from '@/apollo/queries';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 async function splitQuery(
   query: DocumentNode,

@@ -19,7 +19,7 @@ import {
   savingsAssetsListByUnderlying,
 } from '@/references';
 import { add } from '@/helpers/utilities';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const estimateSwapAndDepositCompound = async (
   swapParameters: SwapActionParameters

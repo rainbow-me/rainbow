@@ -6,7 +6,7 @@ import * as keychain from '../model/keychain';
 import { Navigation } from '../navigation';
 import { pinKey } from '../utils/keychainConstants';
 import Routes from '@/navigation/routesNames';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const encryptor = new AesEncryptor();
 
