@@ -5,7 +5,7 @@ import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
-import toLocaleStringPolyfill from '@rainbow-me/helpers/toLocaleStringPolyfill';
+import toLocaleStringPolyfill from '@/helpers/toLocaleStringPolyfill';
 import logger from '@/utils/logger';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
