@@ -22,7 +22,7 @@ export default function ConfirmExchangeButton({
   disabled,
   loading,
   isHighPriceImpact,
-  qouteError,
+  quoteError,
   onPressViewDetails,
   onSubmit,
   testID,
@@ -73,7 +73,7 @@ export default function ConfirmExchangeButton({
     : darkModeThemeColors.blueGreyDark04;
 
   const { buttonColor, shadowsForAsset } = useMemo(() => {
-    const color = qouteError
+    const color = quoteError
       ? disabledButtonColor
       : asset.address === ETH_ADDRESS
       ? colors.appleBlue
@@ -96,7 +96,7 @@ export default function ConfirmExchangeButton({
     colorForAsset,
     colors,
     disabledButtonColor,
-    qouteError,
+    quoteError,
     isDarkMode,
     isSwapDetailsRoute,
   ]);
@@ -134,8 +134,8 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.enter_amount');
   }
 
-  if (qouteError) {
-    const error = handleSwapErrorCodes(qouteError);
+  if (quoteError) {
+    const error = handleSwapErrorCodes(quoteError);
     label = error.buttonLabel;
     explainerType = error.explainerType;
   }
@@ -169,12 +169,12 @@ export default function ConfirmExchangeButton({
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
             disableLongPress={
-              (shouldOpenSwapDetails && !qouteError) ||
+              (shouldOpenSwapDetails && !quoteError) ||
               loading ||
               isSwapSubmitting
             }
-            disableShimmerAnimation={qouteError}
-            disabled={isDisabled && !qouteError}
+            disableShimmerAnimation={quoteError}
+            disabled={isDisabled && !quoteError}
             disabledBackgroundColor={
               isSwapSubmitting ? buttonColor : disabledButtonColor
             }
@@ -193,7 +193,7 @@ export default function ConfirmExchangeButton({
             }
             shadows={
               isSwapDetailsRoute
-                ? isDisabled || qouteError
+                ? isDisabled || quoteError
                   ? shadows.disabled
                   : shadowsForAsset
                 : shadows.default
