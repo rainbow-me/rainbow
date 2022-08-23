@@ -1,7 +1,7 @@
 import { MMKV } from 'react-native-mmkv';
 import { checkIfWalletsOwnNft } from './tokenGatedUtils';
+import { UnlockableAppIcon } from './unlockableFeatures';
 import { EthereumAddress } from '@/entities';
-import { Network } from '@/helpers';
 import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
 import Routes from '@rainbow-me/routes';
@@ -11,20 +11,20 @@ const mmkv = new MMKV();
 /**
  * Checks if an nft-locked app icon is unlockable, and unlocks it if so w/ corresponding explain sheet.
  *
- * @param explainSheetType ExplainSheet type to navigate to
- * @param network Network that unlocking NFTs exist on
- * @param tokenAddresses Array of addresses of unlocking NFTs
- * @param unlockKey MMKV key to unlock feature
- * @param walletsToCheck Array of wallet addresses that should be checked for feature unlockability
- * @returns true if new feature is unlocked, otherwise false
+ * @param appIconFeature the custom app icon to try and unlock
+ * @returns true if appIconFeature is unlocked, otherwise false
  */
 export const nftLockedAppIconCheck = async (
-  explainSheetType: string,
-  network: Network,
-  tokenAddresses: EthereumAddress[],
-  unlockKey: string,
+  appIconFeature: UnlockableAppIcon,
   walletsToCheck: EthereumAddress[]
 ) => {
+  const {
+    explainSheetType,
+    network,
+    unlockKey,
+    unlockingNfts,
+  } = appIconFeature;
+
   const handled = mmkv.getBoolean(unlockKey);
   logger.log(`${unlockKey} was handled?`, handled);
 
@@ -33,7 +33,7 @@ export const nftLockedAppIconCheck = async (
   logger.log(`Checking ${unlockKey} on network ${network}`);
   try {
     const found = await checkIfWalletsOwnNft(
-      tokenAddresses,
+      unlockingNfts,
       network,
       walletsToCheck
     );
