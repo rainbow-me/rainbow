@@ -16,6 +16,11 @@ const Wrapper = styled.View({
   marginTop: ({ insets }) => insets.top,
 });
 
+/**
+ * This component mimics adjustResize for all the components when adjustPan used.
+ * But it also uses the biggest keyboard height we recorder to reduce jittering
+ * See TEAM1-106 for more context
+ */
 export default function AndroidKeyboardLayoutFixer({ ...props }) {
   const insets = useSafeArea();
   const keyboardHeight = useKeyboardMaxArea();

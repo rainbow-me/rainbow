@@ -67,17 +67,32 @@ const getHasShownWarning = () =>
 const setHasShownWarning = () =>
   storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
 
+const TINY_ANDROID_PADDING = 4;
+
 const TabTransitionAnimation = styled(Animated.View)(
   position.sizeAsObject('100%')
 );
 
+const Flex = styled.View({
+  flex: 1,
+});
+
+// This component reacts to the keyboard height and pushes the content up
+// It kinda mimcs the way adjustResize works but we won't break other screens with that
+// since when you change adjustResize during the navigation - it can push content
+// on the other screen up too
 function AndroidWrapper({ children }) {
   const insets = useSafeArea();
   const keyboardHeight = useKeyboardArea();
-  const marginBottom = keyboardHeight > 0 ? insets.top + 4 + keyboardHeight : 0;
+
+  const marginBottom = keyboardHeight > 0 
+    // tiny padding adds a tiny space between the keyboard and the view
+    //  to match how it looks on iOS
+    ? insets.top + TINY_ANDROID_PADDING + keyboardHeight 
+    : 0;
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 1, marginBottom }}>{children}</View>
+    <Flex>
+      <Flex style={{ marginBottom }}>{children}</Flex>
     </View>
   );
 }
