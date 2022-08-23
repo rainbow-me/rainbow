@@ -4,7 +4,7 @@ import { MMKV } from 'react-native-mmkv';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { OptimismIcon, SmolIcon } from '@/featuresToUnlock/unlockableFeatures';
+import { OptimismIcon, SmolIcon } from '@/featuresToUnlock/unlockableAppIcons';
 import AppIconOg from '@rainbow-me/assets/appIconOg.png';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import AppIconPixel from '@rainbow-me/assets/appIconPixel.png';

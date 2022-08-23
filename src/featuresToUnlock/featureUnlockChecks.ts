@@ -1,5 +1,5 @@
-import { nftLockedAppIconCheck } from './nftLockedAppIconCheck';
-import { OptimismIcon, SmolIcon } from './unlockableFeatures';
+import { unlockableAppIconCheck } from './unlockableAppIconCheck';
+import { OptimismIcon, SmolIcon } from './unlockableAppIcons';
 import { EthereumAddress } from '@/entities';
 
 // a FeatureUnlockCheck fn should take in a list of wallet addresses to check for feature unlockability
@@ -11,7 +11,7 @@ type FeatureUnlockCheck = (
 // the ordering of this list is IMPORTANT, this is the order that features will be unlocked
 export const featureUnlockChecks: FeatureUnlockCheck[] = [
   async (walletsToCheck: EthereumAddress[]) =>
-    await nftLockedAppIconCheck(OptimismIcon, walletsToCheck),
+    await unlockableAppIconCheck(OptimismIcon, walletsToCheck),
   async (walletsToCheck: EthereumAddress[]) =>
-    await nftLockedAppIconCheck(SmolIcon, walletsToCheck),
+    await unlockableAppIconCheck(SmolIcon, walletsToCheck),
 ];

@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { checkIfWalletsOwnNft } from './tokenGatedUtils';
-import { UnlockableAppIcon } from './unlockableFeatures';
+import { UnlockableAppIcon } from './unlockableAppIcons';
 import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
@@ -14,7 +14,7 @@ const mmkv = new MMKV();
  * @param appIconFeature the custom app icon to try and unlock
  * @returns true if appIconFeature unlocked state changes to true, otherwise false
  */
-export const nftLockedAppIconCheck = async (
+export const unlockableAppIconCheck = async (
   appIconFeature: UnlockableAppIcon,
   walletsToCheck: EthereumAddress[]
 ) => {
