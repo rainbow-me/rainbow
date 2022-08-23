@@ -59,9 +59,79 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('settings-sheet');
     await Helpers.waitAndTap('developer-section');
     await Helpers.checkIfVisible('developer-settings-sheet');
+    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should go to swap and open review sheet on mainnet swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.waitAndTap('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.waitAndTap('swaps-details-show-details-button');
+    await Helpers.checkIfVisible('swaps-details-price-row');
+    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+  it('Should go to swap and open review sheet on optimism swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'OP', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-OP-optimism');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-optimism');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.waitAndTap('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.waitAndTap('swaps-details-show-details-button');
+    await Helpers.checkIfVisible('swaps-details-price-row');
+    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+  it('Should go to swap and open review sheet on polygon swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-polygon');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText('currency-select-search-input', 'WETH', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.waitAndTap('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.waitAndTap('swaps-details-show-details-button');
+    await Helpers.checkIfVisible('swaps-details-price-row');
+    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+  xit('Should go to swap and open review sheet on arbitrum swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-arbitrum');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.waitAndTap('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.waitAndTap('swaps-details-show-details-button');
+    await Helpers.checkIfVisible('swaps-details-price-row');
+    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
 
   it('Should display currency selection screen on swap-fab press', async () => {
