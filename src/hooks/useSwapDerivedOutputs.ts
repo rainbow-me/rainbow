@@ -556,8 +556,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   });
 
   return {
-    errorCode: data?.quoteError || null,
     loading: isLoading && Boolean(independentValue),
+    quoteError: data?.quoteError || null,
     resetSwapInputs,
     result: data?.result || {
       derivedValues,
