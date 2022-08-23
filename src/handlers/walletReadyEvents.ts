@@ -112,7 +112,10 @@ export const runFeatureUnlockChecks = async () => {
   if (!walletsToCheck.length) return;
 
   // short circuits once the first feature is unlocked
-  featureUnlockChecks.some(
-    async checkFeature => await checkFeature(walletsToCheck)
-  );
+  for (const featureUnlockCheck of featureUnlockChecks) {
+    const unlockNow = await featureUnlockCheck(walletsToCheck);
+    if (unlockNow) {
+      return;
+    }
+  }
 };

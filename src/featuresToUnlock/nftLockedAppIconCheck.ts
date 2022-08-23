@@ -26,6 +26,7 @@ export const nftLockedAppIconCheck = async (
   } = appIconFeature;
 
   const handled = mmkv.getBoolean(unlockKey);
+
   logger.log(`${unlockKey} was handled?`, handled);
 
   if (handled) return false;
