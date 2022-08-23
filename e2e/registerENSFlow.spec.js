@@ -702,7 +702,7 @@ describe('Register ENS Flow', () => {
       throw new Error('Resolved address is wrong');
     if (primaryName !== RAINBOW_WALLET_NAME)
       throw new Error('Resolved primary name is wrong');
-    if (name) throw new Error('name name is wrong');
+    if (name) throw new Error('name is wrong');
     if (owner !== RAINBOW_WALLET_ADDRESS)
       throw new Error('Owner not set correctly');
   });
