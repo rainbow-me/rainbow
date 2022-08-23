@@ -52,11 +52,11 @@ export default function useFetchUniqueTokens({
     })();
   }, [address, network]);
 
-  // Make the first query to retrive the unique tokens.
+  // Make the first query to retrieve the unique tokens.
   const uniqueTokensQuery = useQuery<UniqueAsset[]>(
     uniqueTokensQueryKey({ address }),
     async () => {
-      if (!address) return null;
+      if (!address) return [];
 
       const { storedTokens, hasStoredTokens } = await getStoredUniqueTokens({
         address,

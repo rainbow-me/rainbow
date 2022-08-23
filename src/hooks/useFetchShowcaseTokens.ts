@@ -18,7 +18,7 @@ export default function useFetchShowcaseTokens({
   return useQuery<string[]>(
     showcaseTokensQueryKey({ address }),
     async () => {
-      if (!address) return null;
+      if (!address) return [];
 
       let showcaseTokens = await getShowcaseTokens(address, network);
       const showcaseTokensFromCloud = (await getPreference(

@@ -18,7 +18,7 @@ export default function useFetchHiddenTokens({
   return useQuery(
     hiddenTokensQueryKey({ address }),
     async () => {
-      if (!address) return null;
+      if (!address) return [];
       let hiddenTokens = await getHiddenTokens(address, network);
       const hiddenTokensFromCloud = (await getPreference('hidden', address)) as
         | any
