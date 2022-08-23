@@ -40,6 +40,7 @@ export interface UniswapPoolAddressDetailsFull {
   symbol: string;
   token0: UniswapPoolToken;
   token1: UniswapPoolToken;
+  tokens?: [UniswapPoolToken, UniswapPoolToken];
   tokenNames: string;
   type: string;
 }

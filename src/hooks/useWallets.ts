@@ -10,10 +10,19 @@ import {
 import useInitializeWallet from './useInitializeWallet';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
+import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
 const walletSelector = createSelector(
-  ({ wallets: { isWalletLoading, selected = {}, walletNames, wallets } }) => ({
+  ({
+    wallets: {
+      isWalletLoading,
+      selected = {} as RainbowWallet,
+      walletNames,
+      wallets,
+    },
+  }: AppState) => ({
     isWalletLoading,
     selectedWallet: selected as any,
     walletNames,
@@ -37,7 +46,6 @@ export default function useWallets() {
     selectedWallet,
     walletNames,
     wallets,
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'OutputParametricSelector<{ walle... Remove this comment to see the full error message
   } = useSelector(walletSelector);
 
   const setIsWalletLoading = useCallback(
@@ -55,19 +63,18 @@ export default function useWallets() {
     return bool;
   }, [selectedWallet, wallets]);
 
-  const switchToWalletWithAddress = async (address: any) => {
-    const walletKey = Object.keys(wallets).find(key => {
+  const switchToWalletWithAddress = async (address: string) => {
+    const walletKey = Object.keys(wallets!).find(key => {
       // Addresses
-      return wallets[key].addresses.find(
-        (account: any) =>
+      return wallets![key].addresses.find(
+        (account: RainbowAccount) =>
           account.address.toLowerCase() === address.toLowerCase()
       );
     });
 
     if (!walletKey) return;
-    const p1 = dispatch(walletsSetSelected(wallets[walletKey]));
-    // @ts-expect-error ts-migrate FIXME: Not assignable.
-    const p2 = dispatch(addressSetSelected(toChecksumAddress(address)));
+    const p1 = dispatch(walletsSetSelected(wallets![walletKey]));
+    const p2 = dispatch(addressSetSelected(toChecksumAddress(address)!));
     await Promise.all([p1, p2]);
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
     return initializeWallet(null, null, null, false, false, null, true);

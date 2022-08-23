@@ -13,6 +13,7 @@ export default function ShowSecretView() {
 
   return (
     <Centered flex={1} paddingBottom={ModalHeaderHeight}>
+      {/* @ts-ignore */}
       <SecretDisplaySection />
     </Centered>
   );
