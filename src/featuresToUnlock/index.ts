@@ -1,2 +1,1 @@
-export * from './unlockableAppIconCheck';
-export * from './unlockableAppIcons';
+export * from './featureUnlockChecks';

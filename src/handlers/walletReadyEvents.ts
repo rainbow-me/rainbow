@@ -1,10 +1,9 @@
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import { EthereumAddress } from '@/entities';
-import { unlockableAppIconCheck, unlockableAppIcons } from '@/featuresToUnlock';
+import { featureUnlockChecks } from '@/featuresToUnlock';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -111,37 +110,9 @@ export const runFeatureUnlockChecks = async () => {
   logger.log('WALLETS TO CHECK', walletsToCheck);
 
   if (!walletsToCheck.length) return;
-  const mmkv = new MMKV();
 
-  let explainSheetType;
-
-  for (const iconName in unlockableAppIcons) {
-    const unlockableIcon = unlockableAppIcons[iconName];
-    // Check if it was handled already
-    const handled = mmkv.getBoolean(unlockableIcon.unlock_key);
-    logger.log(`${unlockableIcon.unlock_key} was handled?`, handled);
-    if (!handled) {
-      // if not handled yet, check again
-      logger.log(`${unlockableIcon.unlock_key} being checked`);
-      const result = await unlockableAppIconCheck(
-        unlockableIcon.network,
-        unlockableIcon.token_addresses,
-        unlockableIcon.unlock_key,
-        walletsToCheck
-      );
-      logger.log(`${unlockableIcon.unlock_key} check result:`, result);
-    }
-    if (
-      !explainSheetType &&
-      !mmkv.getBoolean(unlockableIcon.explain_sheet_key)
-    ) {
-      mmkv.set(unlockableIcon.explain_sheet_key, true);
-      explainSheetType = unlockableIcon.explain_sheet_type;
-    }
-  }
-  if (explainSheetType) {
-    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-      type: explainSheetType,
-    });
-  }
+  // short circuits once the first feature is unlocked
+  featureUnlockChecks.some(
+    async checkFeature => await checkFeature(walletsToCheck)
+  );
 };
