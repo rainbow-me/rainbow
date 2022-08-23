@@ -209,7 +209,7 @@ export const textRecordFields = {
       message: lang.t('profiles.create.invalid_username', {
         app: lang.t('profiles.create.discord'),
       }),
-      validator: value => /^([\w#.])*$/.test(value),
+      validator: value => /^(\w)+#[0-9]{4}$/.test(value),
     },
   },
   [ENS_RECORDS.github]: {
