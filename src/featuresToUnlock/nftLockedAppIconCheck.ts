@@ -12,7 +12,7 @@ const mmkv = new MMKV();
  * Checks if an nft-locked app icon is unlockable, and unlocks it if so w/ corresponding explain sheet.
  *
  * @param appIconFeature the custom app icon to try and unlock
- * @returns true if appIconFeature is unlocked, otherwise false
+ * @returns true if appIconFeature unlocked state changes to true, otherwise false
  */
 export const nftLockedAppIconCheck = async (
   appIconFeature: UnlockableAppIcon,
