@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
 import { ParsedAddressAsset, UniqueAsset } from '@rainbow-me/entities';

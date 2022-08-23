@@ -1,6 +1,7 @@
 import './languages';
 import messaging from '@react-native-firebase/messaging';
 import * as Sentry from '@sentry/react-native';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
@@ -25,7 +26,6 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
-import { QueryClientProvider } from 'react-query';
 import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';

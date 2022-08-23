@@ -1,9 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
+import { useMutation } from '@tanstack/react-query';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import { useMutation } from 'react-query';
 import { useImagePicker } from '.';
 import { UniqueAsset } from '@rainbow-me/entities';
 import {
@@ -89,7 +89,7 @@ export default function useSelectImageMenu({
   const { navigate, dangerouslyGetParent } = useNavigation();
   const { openPicker } = useImagePicker();
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(
-    'ensImageUpload',
+    ['ensImageUpload'],
     uploadImage
   );
 

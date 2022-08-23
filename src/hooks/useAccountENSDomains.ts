@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { useQuery } from 'react-query';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
 import { EnsDomain } from '@rainbow-me/apollo/queries';

@@ -11,7 +11,7 @@ import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const loadWalletBalanceNamesToCache = () =>
-  queryClient.prefetchQuery(WALLET_BALANCES_FROM_STORAGE, getWalletBalances);
+  queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
 
 export default function useLoadGlobalLateData() {
   const dispatch = useDispatch();
