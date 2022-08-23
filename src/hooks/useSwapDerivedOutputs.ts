@@ -104,9 +104,9 @@ const getInputAmount = async (
           msg: quoteError.message,
         });
         return {
-          errorCode: quoteError,
           inputAmount: null,
           inputAmountDisplay: null,
+          quoteError: quoteError,
           tradeDetails: null,
         };
       }
@@ -204,9 +204,9 @@ const getOutputAmount = async (
           msg: quoteError.message,
         });
         return {
-          errorCode: quoteError,
           outputAmount: null,
           outputAmountDisplay: null,
+          quoteError,
           tradeDetails: null,
         };
       }
@@ -305,12 +305,12 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       updateSwapQuote({
         derivedValues,
         displayValues,
-        errorCode: null,
+        quoteError: null,
         tradeDetails: null,
       })
     );
     return {
-      errorCode: null,
+      quoteError: null,
       result: { derivedValues, displayValues, tradeDetails: null },
     };
   }, [dispatch]);
@@ -338,7 +338,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       }
 
       return {
-        errorCode: null,
+        quoteError: null,
         result: {
           derivedValues,
           displayValues,
@@ -353,7 +353,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     const inputToken = inputCurrency;
     const outputToken = outputCurrency;
     const slippagePercentage = slippageInBips / 100;
-    let errorCode: QuoteError | undefined;
+    let quoteError: QuoteError | undefined;
 
     if (independentField === SwapModalField.input) {
       derivedValues[SwapModalField.input] = independentValue;
@@ -372,7 +372,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
-        errorCode: newErrorCode,
+        quoteError: newQuoteError,
       } = await getOutputAmount(
         independentValue,
         inputToken,
@@ -387,7 +387,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       if (derivedValues[SwapModalField.input] !== independentValue) return;
 
       tradeDetails = newTradeDetails;
-      errorCode = newErrorCode;
+      quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
       // @ts-ignore next-line
       displayValues[DisplayValue.output] = outputAmount
@@ -421,7 +421,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
-        errorCode: newErrorCode,
+        quoteError: newQuoteError,
       } = await getOutputAmount(
         inputAmount,
         inputToken,
@@ -436,14 +436,14 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       if (derivedValues[SwapModalField.native] !== independentValue) return;
 
       tradeDetails = newTradeDetails;
-      errorCode = newErrorCode;
+      quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
       displayValues[DisplayValue.output] =
         outputAmountDisplay?.toString() || null;
     } else {
       if (!outputToken || !inputToken) {
         return {
-          errorCode: null,
+          quoteError: null,
           result: {
             derivedValues,
             displayValues,
@@ -459,7 +459,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         inputAmount,
         inputAmountDisplay,
         tradeDetails: newTradeDetails,
-        errorCode: newErrorCode,
+        quoteError: newQuoteError,
       } = await getInputAmount(
         independentValue,
         inputToken,
@@ -472,7 +472,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       );
       // if original value changed, ignore new quote
       if (derivedValues[SwapModalField.output] !== independentValue) return;
-      errorCode = newErrorCode;
+      quoteError = newQuoteError;
 
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.input] = inputAmount || '0';
@@ -491,7 +491,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       derivedValues,
       displayValues,
       doneLoadingReserves: true,
-      errorCode,
+      quoteError,
       tradeDetails,
     };
 
@@ -517,7 +517,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       type,
     });
 
-    return { errorCode, result: data };
+    return { quoteError, result: data };
   }, [
     accountAddress,
     chainId,
@@ -556,7 +556,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   });
 
   return {
-    errorCode: data?.errorCode || null,
+    errorCode: data?.quoteError || null,
     loading: isLoading && Boolean(independentValue),
     resetSwapInputs,
     result: data?.result || {

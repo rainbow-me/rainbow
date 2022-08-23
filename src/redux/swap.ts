@@ -31,7 +31,7 @@ interface SwapState {
   derivedValues: any;
   displayValues: any;
   depositCurrency: SwappableAsset | null;
-  errorCode: QuoteError | null;
+  quoteError: QuoteError | null;
   inputCurrency: SwappableAsset | null;
   independentField: SwapModalField;
   independentValue: string | null;
@@ -237,13 +237,13 @@ const INITIAL_STATE: SwapState = {
   depositCurrency: null,
   derivedValues: null,
   displayValues: null,
-  errorCode: null,
   flipCurrenciesUpdate: false,
   independentField: SwapModalField.input,
   independentValue: null,
   inputCurrency: null,
   maxInputUpdate: false,
   outputCurrency: null,
+  quoteError: null,
   slippageInBips: 100,
   source: Source.AggregatorRainbow,
   tradeDetails: null,
@@ -258,7 +258,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         derivedValues: action.payload.derivedValues,
         displayValues: action.payload.displayValues,
-        errorCode: action.payload.errorCode,
+        quoteError: action.payload.quoteError,
         tradeDetails: action.payload.tradeDetails,
       };
     case SWAP_UPDATE_TYPE_DETAILS:

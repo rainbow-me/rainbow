@@ -1,32 +1,34 @@
 import { QuoteError } from '@rainbow-me/swaps';
 import lang from 'i18n-js';
 
-export interface ExchangeErrorCode extends QuoteError {
+export interface ExchangeQuoteError extends QuoteError {
   buttonLabel: string;
-  explainer: string;
+  explainerType: string;
 }
 
-export default function handleSwapErrorCodes(error: QuoteError) {
-  const { error_code: errorCode } = error;
+export default function handleSwapErrorCodes(
+  quoteError: QuoteError
+): ExchangeQuoteError {
+  const { error_code: errorCode } = quoteError;
   switch (errorCode) {
     case 501:
       return {
         buttonLabel: lang.t('button.confirm_exchange.no_quote_available'),
         explainerType: 'noQuote',
-        ...error,
+        ...quoteError,
       };
     case 502:
       return {
         buttonLabel: lang.t('button.confirm_exchange.insufficient_liquidity'),
         explainerType: 'insufficientLiquidity',
-        ...error,
+        ...quoteError,
       };
 
     default:
       return {
         buttonLabel: lang.t('button.confirm_exchange.no_quote_available'),
         explainerType: 'noQuote',
-        ...error,
+        ...quoteError,
       };
   }
 }

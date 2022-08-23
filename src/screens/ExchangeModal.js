@@ -340,7 +340,7 @@ export default function ExchangeModal({
     },
     loading,
     resetSwapInputs,
-    errorCode,
+    quoteError,
   } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
@@ -725,13 +725,13 @@ export default function ExchangeModal({
       currentNetwork,
       disabled:
         !Number(inputAmount) || (!loading && !tradeDetails && !isSavings),
-      errorCode,
       inputAmount,
       isAuthorizing,
       isHighPriceImpact: debouncedIsHighPriceImpact,
       isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
+      quoteError,
       tradeDetails,
       type,
     }),
@@ -745,7 +745,7 @@ export default function ExchangeModal({
       testID,
       tradeDetails,
       type,
-      errorCode,
+      quoteError,
       isSufficientBalance,
     ]
   );
