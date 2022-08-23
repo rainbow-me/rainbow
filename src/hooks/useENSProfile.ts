@@ -39,7 +39,7 @@ async function fetchENSProfile(
     avatar,
     header,
     owner,
-    { coinAddresses, records },
+    { coinAddresses, contenthash, records },
     { registration, registrant },
     resolver,
   ] = await Promise.all([
@@ -63,6 +63,7 @@ async function fetchENSProfile(
   const profile = {
     address,
     coinAddresses,
+    contenthash,
     images: {
       avatar,
       header,

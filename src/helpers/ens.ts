@@ -63,6 +63,7 @@ export enum ENS_RECORDS {
   displayName = 'me.rainbow.displayName',
   header = 'header',
   content = 'content',
+  contenthash = 'contenthash',
   url = 'url',
   email = 'email',
   website = 'website',
@@ -355,10 +356,10 @@ export const textRecordFields = {
       validator: value => validateCoinRecordValue(value, ENS_RECORDS.DOGE),
     },
   },
-  [ENS_RECORDS.content]: {
-    id: 'content',
+  [ENS_RECORDS.contenthash]: {
+    id: 'contenthash',
     inputProps: {},
-    key: ENS_RECORDS.content,
+    key: ENS_RECORDS.contenthash,
     label: lang.t('profiles.create.content'),
     placeholder: lang.t('profiles.create.content_placeholder'),
     validation: {
@@ -372,6 +373,7 @@ export const textRecordFields = {
 
 export const deprecatedTextRecordFields = {
   [ENS_RECORDS.displayName]: ENS_RECORDS.name,
+  [ENS_RECORDS.content]: ENS_RECORDS.contenthash,
 } as {
   [key in ENS_RECORDS]: ENS_RECORDS;
 };
@@ -481,7 +483,9 @@ const setupMulticallRecords = (
     );
   }
   // content hash address
-  const contentHashAssociatedRecord = records.contentHash;
+  const { encoded: contentHashAssociatedRecord } = encodeContenthash(
+    records.contentHash || ''
+  );
   if (
     Boolean(contentHashAssociatedRecord) &&
     typeof contentHashAssociatedRecord === 'string' &&

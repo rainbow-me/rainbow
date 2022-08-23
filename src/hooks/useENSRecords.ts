@@ -1,6 +1,10 @@
 import { useQuery } from 'react-query';
 import { Records } from '@rainbow-me/entities';
-import { fetchCoinAddresses, fetchRecords } from '@rainbow-me/handlers/ens';
+import {
+  fetchCoinAddresses,
+  fetchContenthash,
+  fetchRecords,
+} from '@rainbow-me/handlers/ens';
 import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
@@ -25,6 +29,7 @@ export async function fetchENSRecords(
 ) {
   const cachedRecords: {
     coinAddresses: { [key in ENS_RECORDS]: string };
+    contenthash?: string;
     records: Partial<Records>;
   } | null = await getENSData('records', name);
 
@@ -35,9 +40,12 @@ export async function fetchENSRecords(
     );
     if (cacheFirst) return cachedRecords;
   }
-  const records = await fetchRecords(name, { supportedOnly });
-  const coinAddresses = await fetchCoinAddresses(name, { supportedOnly });
-  const data = { coinAddresses, records };
+  const [records, coinAddresses, contenthash] = await Promise.all([
+    fetchRecords(name, { supportedOnly }),
+    fetchCoinAddresses(name, { supportedOnly }),
+    fetchContenthash(name),
+  ]);
+  const data = { coinAddresses, contenthash, records };
   saveENSData('records', name, data);
   return data;
 }

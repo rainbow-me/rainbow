@@ -493,6 +493,13 @@ export const fetchCoinAddresses = async (
   return coinAddresses;
 };
 
+export const fetchContenthash = async (ensName: string) => {
+  const provider = await getProviderForNetwork();
+  const resolver = await provider.getResolver(ensName);
+  const contenthash = await resolver?.getContentHash();
+  return contenthash;
+};
+
 export const fetchOwner = async (ensName: string) => {
   const ownerAddress = await getNameOwner(ensName);
 
@@ -938,7 +945,7 @@ export const formatRecordsForTransaction = (
             coinAddress.push({ address: value, key });
           }
           return;
-        case ENS_RECORDS.content:
+        case ENS_RECORDS.contenthash:
           if (value || value === '') {
             contentHash = value;
           }
