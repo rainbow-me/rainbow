@@ -45,15 +45,13 @@ export const nftLockedAppIconCheck = async (
 
     setTimeout(() => {
       if (found) {
+        mmkv.set(unlockKey, true);
+        logger.log(
+          'Feature check',
+          unlockKey,
+          'set to true. Wont show up anymore!'
+        );
         Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-          onClose: () => {
-            mmkv.set(unlockKey, true);
-            logger.log(
-              'Feature check',
-              unlockKey,
-              'set to true. Wont show up anymore!'
-            );
-          },
           type: explainSheetType,
         });
         return true;
