@@ -102,6 +102,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'warn', // TODO
     '@typescript-eslint/no-non-null-asserted-optional-chain': 'warn', // TODO MUST FIX
 
+    'react/jsx-props-no-spreading': 'warn',
     'react/prop-types': 'warn', // TODO will be fixed after TS migration
     'react/display-name': 'warn', // TODO easy fix
 
