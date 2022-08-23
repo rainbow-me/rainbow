@@ -2,7 +2,6 @@ import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
-import pWaitFor from 'p-wait-for';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Keyboard, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
@@ -122,16 +121,10 @@ const BottomSheetRoute = ({
   useEffect(() => {
     if (removing === true && ref.current) {
       // close keyboard before closing the modal
-      // more: https://github.com/gorhom/react-native-bottom-sheet/issues/1072
       if (isKeyboardOpen() && android) {
         Keyboard.dismiss();
 
-        pWaitFor(() => !isKeyboardOpen(), {
-          interval: 16,
-          timeout: 500,
-        }).then(() => {
-          ref?.current?.close();
-        });
+        ref.current.close();
       } else {
         ref.current.close();
       }

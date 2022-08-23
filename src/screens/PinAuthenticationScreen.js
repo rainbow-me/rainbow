@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Keyboard } from 'react-native';
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
@@ -47,6 +48,10 @@ const PinAuthenticationScreen = () => {
   );
 
   const finished = useRef(false);
+
+  useEffect(() => {
+    Keyboard.dismiss();
+  }, []);
 
   useEffect(() => {
     // See if the user previously tried and aborted
