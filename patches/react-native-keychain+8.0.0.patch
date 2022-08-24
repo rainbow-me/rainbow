@@ -96,8 +96,20 @@ index 1e7021c..464f13c 100644
  -(NSArray<NSString*>*)getAllServicesForSecurityClasses:(NSArray *)secItemClasses
  {
    NSMutableDictionary *query = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/.DS_Store b/node_modules/react-native-keychain/android/src/main/java/com/.DS_Store
+new file mode 100644
+index 0000000..ebef32a
+Binary files /dev/null and b/node_modules/react-native-keychain/android/src/main/java/com/.DS_Store differ
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/.DS_Store b/node_modules/react-native-keychain/android/src/main/java/com/oblador/.DS_Store
+new file mode 100644
+index 0000000..2757c7e
+Binary files /dev/null and b/node_modules/react-native-keychain/android/src/main/java/com/oblador/.DS_Store differ
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/.DS_Store b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/.DS_Store
+new file mode 100644
+index 0000000..cb30b2f
+Binary files /dev/null and b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/.DS_Store differ
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
-index 6ca68cb..72426ca 100644
+index 6ca68cb..bcfe877 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 @@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -108,7 +120,17 @@ index 6ca68cb..72426ca 100644
  import com.oblador.keychain.PrefsStorage.ResultSet;
  import com.oblador.keychain.cipherStorage.CipherStorage;
  import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionResult;
-@@ -149,6 +150,11 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+@@ -37,6 +38,9 @@ import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.CompletionException;
++import java.util.concurrent.ExecutionException;
+ import java.util.concurrent.TimeUnit;
+ 
+ import javax.crypto.Cipher;
+@@ -149,6 +153,11 @@ public class KeychainModule extends ReactContextBaseJavaModule {
      }
    }
  
@@ -120,10 +142,53 @@ index 6ca68cb..72426ca 100644
    /** Allow initialization in chain. */
    public static KeychainModule withWarming(@NonNull final ReactApplicationContext reactContext) {
      final KeychainModule instance = new KeychainModule(reactContext);
-@@ -327,6 +333,36 @@ public class KeychainModule extends ReactContextBaseJavaModule {
-     }
-   }
+@@ -303,27 +312,73 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+         cipher = getCipherStorageByName(storageName);
+       }
  
+-      final DecryptionResult decryptionResult = decryptCredentials(alias, cipher, resultSet, rules, promptInfo);
++      CipherStorage finalCipher = cipher;
++      decryptCredentials(alias, finalCipher, resultSet, rules, promptInfo).handle((decryptionResult, e) -> {
++        if (e == null) {
++          final WritableMap credentials = Arguments.createMap();
++          credentials.putString(Maps.SERVICE, alias);
++          credentials.putString(Maps.USERNAME, decryptionResult.username);
++          credentials.putString(Maps.PASSWORD, decryptionResult.password);
++          credentials.putString(Maps.STORAGE, finalCipher.getCipherStorageName());
++
++          promise.resolve(credentials);
++          return null;
++        }
++        if(e instanceof CompletionException)
++          e = e.getCause();
++        if (e instanceof KeyStoreAccessException) {
++          Log.e(KEYCHAIN_MODULE, e.getMessage());
++
++          promise.reject(Errors.E_KEYSTORE_ACCESS_ERROR, e);
++        } else if (e instanceof CryptoFailedException) {
++          Log.e(KEYCHAIN_MODULE, e.getMessage());
++
++          promise.reject(Errors.E_CRYPTO_FAILED, e);
++        } else {
++          Log.e(KEYCHAIN_MODULE, e.getMessage(), e);
++
++          promise.reject(Errors.E_UNKNOWN_ERROR, e);
++        }
++        return null;
++      });
++    } catch (Throwable fail) {
++      Log.e(KEYCHAIN_MODULE, fail.getMessage(), fail);
+ 
+-      final WritableMap credentials = Arguments.createMap();
+-      credentials.putString(Maps.SERVICE, alias);
+-      credentials.putString(Maps.USERNAME, decryptionResult.username);
+-      credentials.putString(Maps.PASSWORD, decryptionResult.password);
+-      credentials.putString(Maps.STORAGE, cipher.getCipherStorageName());
++      promise.reject(Errors.E_UNKNOWN_ERROR, fail);
++    }
++  }
+ 
+-      promise.resolve(credentials);
 +  @ReactMethod
 +  public void getAllInternetCredentialsForServer(ReadableMap options, Promise promise) {
 +    try {
@@ -135,7 +200,7 @@ index 6ca68cb..72426ca 100644
 +        String service = (String)data.get("service");
 +        final String rules = getSecurityRulesOrDefault(options);
 +        final PromptInfo promptInfo = getPromptInfo(options);
-+        final DecryptionResult decryptionResult = decryptCredentials(service, currentCipherStorage, resultSet, rules, promptInfo);
++        final DecryptionResult decryptionResult = decryptCredentials(service, currentCipherStorage, resultSet, rules, promptInfo).get();
 +        WritableMap credentials = Arguments.createMap();
 +        credentials.putString("service", service);
 +        credentials.putString("username", decryptionResult.username);
@@ -145,18 +210,94 @@ index 6ca68cb..72426ca 100644
 +      WritableMap result = Arguments.createMap();
 +      result.putArray("results", allCredentials);
 +      promise.resolve(result);
-+    } catch (KeyStoreAccessException e) {
-+      Log.e(KEYCHAIN_MODULE, e.getMessage());
-+      promise.reject(Errors.E_KEYSTORE_ACCESS_ERROR, e);
-+    } catch (CryptoFailedException e) {
-+      Log.e(KEYCHAIN_MODULE, e.getMessage());
-+      promise.reject(Errors.E_CRYPTO_FAILED, e);
-+    }
-+  }
-+
-   @ReactMethod
-   public void getAllGenericPasswordServices(@NonNull final Promise promise) {
-     try {
+     } catch (KeyStoreAccessException e) {
+       Log.e(KEYCHAIN_MODULE, e.getMessage());
+-
+       promise.reject(Errors.E_KEYSTORE_ACCESS_ERROR, e);
+     } catch (CryptoFailedException e) {
+       Log.e(KEYCHAIN_MODULE, e.getMessage());
+-
+       promise.reject(Errors.E_CRYPTO_FAILED, e);
+-    } catch (Throwable fail) {
+-      Log.e(KEYCHAIN_MODULE, fail.getMessage(), fail);
+-
+-      promise.reject(Errors.E_UNKNOWN_ERROR, fail);
++    } catch (ExecutionException e) {
++      e.printStackTrace();
++    } catch (InterruptedException e) {
++      e.printStackTrace();
+     }
+   }
+ 
+@@ -633,7 +688,7 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+    * results set then executed migration.
+    */
+   @NonNull
+-  private DecryptionResult decryptCredentials(@NonNull final String alias,
++  private CompletableFuture<DecryptionResult> decryptCredentials(@NonNull final String alias,
+                                               @NonNull final CipherStorage current,
+                                               @NonNull final ResultSet resultSet,
+                                               @Rules @NonNull final String rules,
+@@ -654,37 +709,37 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+     }
+ 
+     // decrypt using the older cipher storage
+-    final DecryptionResult decryptionResult = decryptToResult(alias, oldStorage, resultSet, promptInfo);
+-
+-    if (Rules.AUTOMATIC_UPGRADE.equals(rules)) {
+-      try {
+-        // encrypt using the current cipher storage
+-        migrateCipherStorage(alias, current, oldStorage, decryptionResult);
+-      } catch (CryptoFailedException e) {
+-        Log.w(KEYCHAIN_MODULE, "Migrating to a less safe storage is not allowed. Keeping the old one");
++    return decryptToResult(alias, oldStorage, resultSet, promptInfo).thenApply(decryptionResult -> {
++      if (Rules.AUTOMATIC_UPGRADE.equals(rules)) {
++        try {
++          // encrypt using the current cipher storage
++          migrateCipherStorage(alias, current, oldStorage, decryptionResult);
++        } catch (CryptoFailedException e) {
++          Log.w(KEYCHAIN_MODULE, "Migrating to a less safe storage is not allowed. Keeping the old one");
++        } catch (KeyStoreAccessException e) {
++          throw new CompletionException(e);
++        }
+       }
+-    }
+ 
+-    return decryptionResult;
++      return decryptionResult;
++    });
+   }
+ 
+   /** Try to decrypt with provided storage. */
+   @NonNull
+-  private DecryptionResult decryptToResult(@NonNull final String alias,
+-                                           @NonNull final CipherStorage storage,
+-                                           @NonNull final ResultSet resultSet,
+-                                           @NonNull final PromptInfo promptInfo)
++  private CompletableFuture<DecryptionResult> decryptToResult(@NonNull final String alias,
++                                                             @NonNull final CipherStorage storage,
++                                                             @NonNull final ResultSet resultSet,
++                                                             @NonNull final PromptInfo promptInfo)
+     throws CryptoFailedException {
+     final DecryptionResultHandler handler = getInteractiveHandler(storage, promptInfo);
+-    storage.decrypt(handler, alias, resultSet.username, resultSet.password, SecurityLevel.ANY);
+-
+-    CryptoFailedException.reThrowOnError(handler.getError());
+-
+-    if (null == handler.getResult()) {
+-      throw new CryptoFailedException("No decryption results and no error. Something deeply wrong!");
+-    }
++    return storage.decrypt(handler, alias, resultSet.username, resultSet.password, SecurityLevel.ANY).thenApply((decryptionResult) -> {
++      if (null == decryptionResult) {
++        throw new CompletionException(new CryptoFailedException("No decryption results and no error. Something deeply wrong!"));
++      }
+ 
+-    return handler.getResult();
++      return decryptionResult;
++    });
+   }
+ 
+   /** Get instance of handler that resolves access to the keystore on system request. */
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
 index b7ecd51..9bfa595 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
@@ -196,6 +337,856 @@ index b7ecd51..9bfa595 100644
 +    return data;
 +   }
  }
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorage.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorage.java
+index 5d7817f..0d902e0 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorage.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorage.java
+@@ -10,6 +10,7 @@ import com.oblador.keychain.exceptions.KeyStoreAccessException;
+ 
+ import java.security.Key;
+ import java.util.Set;
++import java.util.concurrent.CompletableFuture;
+ 
+ @SuppressWarnings({"unused", "WeakerAccess"})
+ public interface CipherStorage {
+@@ -92,19 +93,21 @@ public interface CipherStorage {
+    * That can happens during migration from one version of library to another.
+    */
+   @NonNull
+-  DecryptionResult decrypt(@NonNull final String alias,
+-                           @NonNull final byte[] username,
+-                           @NonNull final byte[] password,
+-                           @NonNull final SecurityLevel level)
+-    throws CryptoFailedException;
++  CompletableFuture<DecryptionResult> decrypt(@NonNull final String alias,
++                                              @NonNull final byte[] username,
++                                              @NonNull final byte[] password,
++                                              @NonNull final SecurityLevel level)
++            throws CryptoFailedException;
+ 
+-  /** Decrypt the credentials but redirect results of operation to handler. */
+-  void decrypt(@NonNull final DecryptionResultHandler handler,
+-               @NonNull final String alias,
+-               @NonNull final byte[] username,
+-               @NonNull final byte[] password,
+-               @NonNull final SecurityLevel level)
+-    throws CryptoFailedException;
++  /**
++   * Decrypt the credentials but redirect results of operation to handler.
++   */
++  CompletableFuture<DecryptionResult> decrypt(@NonNull final DecryptionResultHandler handler,
++                                              @NonNull final String alias,
++                                              @NonNull final byte[] username,
++                                              @NonNull final byte[] password,
++                                              @NonNull final SecurityLevel level)
++            throws CryptoFailedException;
+ 
+   /** Remove key (by alias) from storage. */
+   void removeKey(@NonNull final String alias) throws KeyStoreAccessException;
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageFacebookConceal.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageFacebookConceal.java
+index 0dfc55a..b393f28 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageFacebookConceal.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageFacebookConceal.java
+@@ -22,6 +22,7 @@ import com.oblador.keychain.exceptions.CryptoFailedException;
+ 
+ import java.security.GeneralSecurityException;
+ import java.security.Key;
++import java.util.concurrent.CompletableFuture;
+ 
+ /**
+  * @see <a href="https://github.com/facebook/conceal">Conceal Project</a>
+@@ -96,10 +97,10 @@ public class CipherStorageFacebookConceal extends CipherStorageBase {
+ 
+   @NonNull
+   @Override
+-  public DecryptionResult decrypt(@NonNull final String alias,
+-                                  @NonNull final byte[] username,
+-                                  @NonNull final byte[] password,
+-                                  @NonNull final SecurityLevel level)
++  public CompletableFuture<DecryptionResult> decrypt(@NonNull final String alias,
++                                                     @NonNull final byte[] username,
++                                                     @NonNull final byte[] password,
++                                                     @NonNull final SecurityLevel level)
+     throws CryptoFailedException {
+ 
+     throwIfInsufficientLevel(level);
+@@ -112,30 +113,25 @@ public class CipherStorageFacebookConceal extends CipherStorageBase {
+       final byte[] decryptedUsername = crypto.decrypt(username, usernameEntity);
+       final byte[] decryptedPassword = crypto.decrypt(password, passwordEntity);
+ 
+-      return new DecryptionResult(
++      return CompletableFuture.supplyAsync(() -> new DecryptionResult(
+         new String(decryptedUsername, UTF8),
+         new String(decryptedPassword, UTF8),
+-        SecurityLevel.ANY);
++        SecurityLevel.ANY));
+     } catch (Throwable fail) {
+       throw new CryptoFailedException("Decryption failed for alias: " + alias, fail);
+     }
+   }
+ 
+-  /** redirect call to default {@link #decrypt(String, byte[], byte[], SecurityLevel)} method. */
++  /**
++   * redirect call to default {@link #decrypt(String, byte[], byte[], SecurityLevel)} method.
++   */
+   @Override
+-  public void decrypt(@NonNull DecryptionResultHandler handler,
+-                      @NonNull String service,
+-                      @NonNull byte[] username,
+-                      @NonNull byte[] password,
+-                      @NonNull final SecurityLevel level) {
+-
+-    try {
+-      final DecryptionResult results = decrypt(service, username, password, level);
+-
+-      handler.onDecrypt(results, null);
+-    } catch (Throwable fail) {
+-      handler.onDecrypt(null, fail);
+-    }
++  public CompletableFuture<DecryptionResult> decrypt(@NonNull DecryptionResultHandler handler,
++                                                     @NonNull String service,
++                                                     @NonNull byte[] username,
++                                                     @NonNull byte[] password,
++                                                     @NonNull final SecurityLevel level) throws CryptoFailedException {
++    return decrypt(service, username, password, level);
+   }
+ 
+   @Override
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.java
+index 7dbcc8b..8ab10ab 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.java
+@@ -20,6 +20,8 @@ import java.io.IOException;
+ import java.security.GeneralSecurityException;
+ import java.security.Key;
+ import java.security.spec.KeySpec;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.CompletionException;
+ import java.util.concurrent.atomic.AtomicInteger;
+ 
+ import javax.crypto.Cipher;
+@@ -128,10 +130,10 @@ public class CipherStorageKeystoreAesCbc extends CipherStorageBase {
+ 
+   @Override
+   @NonNull
+-  public DecryptionResult decrypt(@NonNull final String alias,
+-                                  @NonNull final byte[] username,
+-                                  @NonNull final byte[] password,
+-                                  @NonNull final SecurityLevel level)
++  public CompletableFuture<DecryptionResult> decrypt(@NonNull final String alias,
++                                                    @NonNull final byte[] username,
++                                                    @NonNull final byte[] password,
++                                                    @NonNull final SecurityLevel level)
+     throws CryptoFailedException {
+ 
+     throwIfInsufficientLevel(level);
+@@ -139,35 +141,33 @@ public class CipherStorageKeystoreAesCbc extends CipherStorageBase {
+     final String safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName());
+     final AtomicInteger retries = new AtomicInteger(1);
+ 
+-    try {
+-      final Key key = extractGeneratedKey(safeAlias, level, retries);
+-
+-      return new DecryptionResult(
+-        decryptBytes(key, username),
+-        decryptBytes(key, password),
+-        getSecurityLevel(key));
+-    } catch (GeneralSecurityException e) {
+-      throw new CryptoFailedException("Could not decrypt data with alias: " + alias, e);
+-    } catch (Throwable fail) {
+-      throw new CryptoFailedException("Unknown error with alias: " + alias +
+-        ", error: " + fail.getMessage(), fail);
+-    }
++    return CompletableFuture.supplyAsync(() -> {
++      try {
++        return extractGeneratedKey(safeAlias, level, retries);
++      } catch (GeneralSecurityException e) {
++        throw new CompletionException(new CryptoFailedException("Could not decrypt data with alias: " + alias, e));
++      }
++    }).thenApply(key -> {
++      try {
++        return new DecryptionResult(
++                decryptBytes(key, username),
++                decryptBytes(key, password),
++                getSecurityLevel(key));
++      } catch (Throwable fail) {
++        throw new CompletionException(new CryptoFailedException("Unknown error with alias: " + alias +
++                ", error: " + fail.getMessage(), fail));
++      }
++    });
+   }
+ 
+   /** Redirect call to {@link #decrypt(String, byte[], byte[], SecurityLevel)} method. */
+   @Override
+-  public void decrypt(@NonNull final DecryptionResultHandler handler,
++  public CompletableFuture<DecryptionResult> decrypt(@NonNull final DecryptionResultHandler handler,
+                       @NonNull final String service,
+                       @NonNull final byte[] username,
+                       @NonNull final byte[] password,
+-                      @NonNull final SecurityLevel level) {
+-    try {
+-      final DecryptionResult results = decrypt(service, username, password, level);
+-
+-      handler.onDecrypt(results, null);
+-    } catch (Throwable fail) {
+-      handler.onDecrypt(null, fail);
+-    }
++                      @NonNull final SecurityLevel level) throws CryptoFailedException {
++    return decrypt(service, username, password, level);
+   }
+   //endregion
+ 
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
+index b191bdc..1a54622 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
+@@ -31,6 +31,8 @@ import java.security.PublicKey;
+ import java.security.cert.Certificate;
+ import java.security.spec.InvalidKeySpecException;
+ import java.security.spec.X509EncodedKeySpec;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.CompletionException;
+ import java.util.concurrent.atomic.AtomicInteger;
+ 
+ import javax.crypto.NoSuchPaddingException;
+@@ -86,63 +88,46 @@ public class CipherStorageKeystoreRsaEcb extends CipherStorageBase {
+ 
+   @NonNull
+   @Override
+-  public DecryptionResult decrypt(@NonNull String alias,
+-                                  @NonNull byte[] username,
+-                                  @NonNull byte[] password,
+-                                  @NonNull final SecurityLevel level)
++  public CompletableFuture<DecryptionResult> decrypt(@NonNull String alias,
++                                                     @NonNull byte[] username,
++                                                     @NonNull byte[] password,
++                                                     @NonNull final SecurityLevel level)
+     throws CryptoFailedException {
+ 
+     final DecryptionResultHandlerNonInteractive handler = new DecryptionResultHandlerNonInteractive();
+-    decrypt(handler, alias, username, password, level);
+-
+-    CryptoFailedException.reThrowOnError(handler.getError());
+-
+-    if (null == handler.getResult()) {
+-      throw new CryptoFailedException("No decryption results and no error. Something deeply wrong!");
+-    }
+-
+-    return handler.getResult();
++    return decrypt(handler, alias, username, password, level);
+   }
+ 
+   @Override
+   @SuppressLint("NewApi")
+-  public void decrypt(@NonNull DecryptionResultHandler handler,
+-                      @NonNull String alias,
+-                      @NonNull byte[] username,
+-                      @NonNull byte[] password,
+-                      @NonNull final SecurityLevel level)
++  public CompletableFuture<DecryptionResult> decrypt(final @NonNull DecryptionResultHandler handler,
++                                                     @NonNull String alias,
++                                                     @NonNull byte[] username,
++                                                     @NonNull byte[] password,
++                                                     @NonNull SecurityLevel level)
+     throws CryptoFailedException {
+-
+     throwIfInsufficientLevel(level);
+ 
+     final String safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName());
+     final AtomicInteger retries = new AtomicInteger(1);
+-    boolean shouldAskPermissions = false;
+-
+-    Key key = null;
+ 
+-    try {
+-      // key is always NOT NULL otherwise GeneralSecurityException raised
+-      key = extractGeneratedKey(safeAlias, level, retries);
+-
+-      final DecryptionResult results = new DecryptionResult(
+-        decryptBytes(key, username),
+-        decryptBytes(key, password)
+-      );
+-
+-      handler.onDecrypt(results, null);
+-    } catch (final UserNotAuthenticatedException ex) {
+-      Log.d(LOG_TAG, "Unlock of keystore is needed. Error: " + ex.getMessage(), ex);
+-
+-      // expected that KEY instance is extracted and we caught exception on decryptBytes operation
+-      @SuppressWarnings("ConstantConditions") final DecryptionContext context =
+-        new DecryptionContext(safeAlias, key, password, username);
+-
+-      handler.askAccessPermissions(context);
+-    } catch (final Throwable fail) {
+-      // any other exception treated as a failure
+-      handler.onDecrypt(null, fail);
+-    }
++    return CompletableFuture.supplyAsync(() -> {
++        try {
++            return extractGeneratedKey(safeAlias, level, retries);
++        } catch (GeneralSecurityException e) {
++            throw new CompletionException(e);
++        }
++    }).thenCompose(key -> {
++        // key is always NOT NULL otherwise GeneralSecurityException raised
++        // expected that KEY instance is extracted and we caught exception on decryptBytes operation
++
++        final DecryptionContext ctx = new DecryptionContext(safeAlias, key, password, username);
++
++        return handler.authenticate(() -> new DecryptionResult(
++                decryptBytes(ctx.key, ctx.username),
++                decryptBytes(ctx.key, ctx.password)
++        ));
++    });
+   }
+ 
+   //endregion
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/AuthSerialQueue.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/AuthSerialQueue.java
+new file mode 100644
+index 0000000..4cccc8f
+--- /dev/null
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/AuthSerialQueue.java
+@@ -0,0 +1,71 @@
++package com.oblador.keychain.decryptionHandler;
++
++import com.oblador.keychain.cipherStorage.CipherStorage;
++
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.CompletionException;
++import java.util.concurrent.ConcurrentLinkedQueue;
++import java.util.concurrent.atomic.AtomicBoolean;
++import java.util.concurrent.locks.ReentrantLock;
++
++interface AuthCb {
++    void run(final CompletableFuture<CipherStorage.DecryptionResult> cb);
++}
++
++public class AuthSerialQueue {
++    private final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<>();
++    /**
++     * Lock is needed to not call a job is there is already one in progress
++     */
++    private final AtomicBoolean lock = new AtomicBoolean(false);
++
++    /**
++     * So we want to run auth related things in serial order
++     * but at the same time we don't want to lock a thread.
++     * For that reason we utilize a queue that stores `Runnable`s
++     * for every `Runnable` we create a `CompletableFuture`,
++     * that must be `completed` by that callback.
++     * Only after that the next `Runnable` will be started.
++     */
++    public CompletableFuture<CipherStorage.DecryptionResult> add(AuthCb cb) {
++        final CompletableFuture<CipherStorage.DecryptionResult> intention = new CompletableFuture<>();
++        CompletableFuture<CipherStorage.DecryptionResult> queueLoop = intention.handle(((decryptionResult, throwable) -> {
++            lock.set(false);
++            this.flush();
++            if (throwable != null) {
++                if(throwable instanceof CompletionException)
++                    throwable = throwable.getCause();
++                throw new CompletionException(throwable);
++            }
++            return decryptionResult;
++        }));
++
++        queue.add(() -> {
++            try {
++                cb.run(intention);
++            } catch (Throwable err) {
++                intention.completeExceptionally(err);
++            }
++        });
++
++        flush();
++
++        return queueLoop;
++    }
++
++    private void flush() {
++        if (lock.get()) {
++            return;
++        }
++
++        final Runnable job = queue.poll();
++
++        // All work is done for now
++        if (job == null) {
++            return;
++        }
++
++        lock.set(true);
++        job.run();
++    }
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandler.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandler.java
+index ece0fc8..74ba732 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandler.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandler.java
+@@ -6,24 +6,11 @@ import androidx.annotation.Nullable;
+ import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionContext;
+ import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionResult;
+ 
++import java.util.concurrent.CompletableFuture;
++import java.util.function.Supplier;
++
+ /** Handler that allows to inject some actions during decrypt operations. */
+ public interface DecryptionResultHandler {
+   /** Ask user for interaction, often its unlock of keystore by biometric data providing. */
+-  void askAccessPermissions(@NonNull final DecryptionContext context);
+-
+-  /**
+-   *
+-   */
+-  void onDecrypt(@Nullable final DecryptionResult decryptionResult, @Nullable final Throwable error);
+-
+-  /** Get reference on results. */
+-  @Nullable
+-  DecryptionResult getResult();
+-
+-  /** Get reference on capture error. */
+-  @Nullable
+-  Throwable getError();
+-
+-  /** Block thread and wait for any result of execution. */
+-  void waitResult();
++  CompletableFuture<DecryptionResult> authenticate(@NonNull final DecryptionResultJob job);
+ }
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerInteractiveBiometric.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerInteractiveBiometric.java
+index aaebcbd..b6e78a0 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerInteractiveBiometric.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerInteractiveBiometric.java
+@@ -1,11 +1,13 @@
+ package com.oblador.keychain.decryptionHandler;
+ 
+ import android.os.Looper;
++import android.security.keystore.UserNotAuthenticatedException;
+ import android.util.Log;
+ 
+ import androidx.annotation.NonNull;
+ import androidx.annotation.Nullable;
+ import androidx.biometric.BiometricPrompt;
++import androidx.core.content.ContextCompat;
+ import androidx.fragment.app.FragmentActivity;
+ 
+ import com.facebook.react.bridge.AssertionException;
+@@ -17,103 +19,94 @@ import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionContext;
+ import com.oblador.keychain.cipherStorage.CipherStorageBase;
+ import com.oblador.keychain.exceptions.CryptoFailedException;
+ 
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ConcurrentLinkedQueue;
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.Executors;
++import java.util.concurrent.locks.ReentrantLock;
++import java.util.function.Consumer;
+ 
+-public class DecryptionResultHandlerInteractiveBiometric extends BiometricPrompt.AuthenticationCallback implements DecryptionResultHandler {
+-  protected CipherStorage.DecryptionResult result;
+-  protected Throwable error;
++public class DecryptionResultHandlerInteractiveBiometric implements DecryptionResultHandler {
+   protected final ReactApplicationContext reactContext;
+   protected final CipherStorageBase storage;
+-  protected final Executor executor = Executors.newSingleThreadExecutor();
+-  protected CipherStorage.DecryptionContext context;
++  protected final Executor executor;
++
++  protected DecryptionResultJob job;
++
+   protected BiometricPrompt.PromptInfo promptInfo;
++  protected BiometricPrompt prompt;
++  protected InteractiveBiometryHandlers handlers;
++
++  protected final AuthSerialQueue authQueue = new AuthSerialQueue();
+ 
+   /** Logging tag. */
+   protected static final String LOG_TAG = DecryptionResultHandlerInteractiveBiometric.class.getSimpleName();
+ 
+-  public DecryptionResultHandlerInteractiveBiometric(
+-                                                     @NonNull ReactApplicationContext reactContext,
++  public DecryptionResultHandlerInteractiveBiometric(@NonNull ReactApplicationContext reactContext,
+                                                      @NonNull final CipherStorage storage,
+                                                      @NonNull final BiometricPrompt.PromptInfo promptInfo) {
+     this.reactContext = reactContext;
+     this.storage = (CipherStorageBase) storage;
+     this.promptInfo = promptInfo;
+-  }
+-
+-  @Override
+-  public void askAccessPermissions(@NonNull final DecryptionContext context) {
+-    this.context = context;
+-
+-    if (!DeviceAvailability.isPermissionsGranted(reactContext)) {
+-      final CryptoFailedException failure = new CryptoFailedException(
+-        "Could not start fingerprint Authentication. No permissions granted.");
+ 
+-      onDecrypt(null, failure);
+-    } else {
+-      startAuthentication();
+-    }
+-  }
+-
+-  @Override
+-  public void onDecrypt(@Nullable final DecryptionResult decryptionResult, @Nullable final Throwable error) {
+-    this.result = decryptionResult;
+-    this.error = error;
+-
+-    synchronized (this) {
+-      notifyAll();
+-    }
++    executor = ContextCompat.getMainExecutor(reactContext);
++    handlers = provideHandlers();
++    prompt = new BiometricPrompt(getCurrentActivity(), executor, handlers);
+   }
+ 
+-  @Nullable
+-  @Override
+-  public CipherStorage.DecryptionResult getResult() {
+-    return result;
++  protected InteractiveBiometryHandlers provideHandlers() {
++    return new InteractiveBiometryHandlers();
+   }
+ 
+-  @Nullable
+-  @Override
+-  public Throwable getError() {
+-    return error;
+-  }
+-
+-  /** Called when an unrecoverable error has been encountered and the operation is complete. */
+-  @Override
+-  public void onAuthenticationError(final int errorCode, @NonNull final CharSequence errString) {
+-    final CryptoFailedException error = new CryptoFailedException("code: " + errorCode + ", msg: " + errString);
+-
+-    onDecrypt(null, error);
++  public CompletableFuture<DecryptionResult> authenticate(@NonNull DecryptionResultJob job) {
++    return authQueue.add(asyncResult -> {
++      try {
++        asyncResult.complete(job.get());
++      } catch (final UserNotAuthenticatedException ex) {
++        Log.d(LOG_TAG, "Unlock of keystore is needed. Error: " + ex.getMessage(), ex);
++
++        // Since the queue is serial I think it's OK to reassign it here
++        this.job = job;
++
++        handlers.setOnAuth(() -> {
++          try {
++            asyncResult.complete(job.get());
++          } catch (final Throwable fail) {
++            // any other exception treated as a failure
++            asyncResult.completeExceptionally(fail);
++          }
++        }).setOnError(asyncResult::completeExceptionally);
++
++        askAccessPermissions(asyncResult);
++      } catch (final Throwable fail) {
++        // any other exception treated as a failure
++        asyncResult.completeExceptionally(fail);
++      }
++    });
+   }
+ 
+-  /** Called when a biometric is recognized. */
+-  @Override
+-  public void onAuthenticationSucceeded(@NonNull final BiometricPrompt.AuthenticationResult result) {
+-    try {
+-      if (null == context) throw new NullPointerException("Decrypt context is not assigned yet.");
+-
+-      final CipherStorage.DecryptionResult decrypted = new CipherStorage.DecryptionResult(
+-        storage.decryptBytes(context.key, context.username),
+-        storage.decryptBytes(context.key, context.password)
+-      );
++  protected void askAccessPermissions(CompletableFuture<DecryptionResult> asyncResult) {
++    if (!DeviceAvailability.isPermissionsGranted(reactContext)) {
++      final CryptoFailedException failure = new CryptoFailedException(
++              "Could not start fingerprint Authentication. No permissions granted.");
+ 
+-      onDecrypt(decrypted, null);
+-    } catch (Throwable fail) {
+-      onDecrypt(null, fail);
++      asyncResult.completeExceptionally(failure);
++    } else {
++      startAuthentication();
+     }
+   }
+ 
+   /** trigger interactive authentication. */
+-  public void startAuthentication() {
++  protected void startAuthentication() {
+     FragmentActivity activity = getCurrentActivity();
+ 
+     // code can be executed only from MAIN thread
+     if (Thread.currentThread() != Looper.getMainLooper().getThread()) {
+       activity.runOnUiThread(this::startAuthentication);
+-      waitResult();
+       return;
+     }
+ 
+-    authenticateWithPrompt(activity);
++    prompt.authenticate(promptInfo);
+   }
+ 
+   protected FragmentActivity getCurrentActivity() {
+@@ -123,29 +116,36 @@ public class DecryptionResultHandlerInteractiveBiometric extends BiometricPrompt
+     return activity;
+   }
+ 
+-  protected BiometricPrompt authenticateWithPrompt(@NonNull final FragmentActivity activity) {
+-    final BiometricPrompt prompt = new BiometricPrompt(activity, executor, this);
+-    prompt.authenticate(this.promptInfo);
++  static class InteractiveBiometryHandlers extends BiometricPrompt.AuthenticationCallback {
++    private Runnable cb;
++    private Consumer<Throwable> errCb;
+ 
+-    return prompt;
+-  }
++    public InteractiveBiometryHandlers setOnAuth(Runnable cb) {
++      this.cb = cb;
++      return this;
++    }
+ 
+-  /** Block current NON-main thread and wait for user authentication results. */
+-  @Override
+-  public void waitResult() {
+-    if (Thread.currentThread() == Looper.getMainLooper().getThread())
+-      throw new AssertionException("method should not be executed from MAIN thread");
++    public InteractiveBiometryHandlers setOnError(Consumer<Throwable> errCb) {
++      this.errCb = errCb;
++      return this;
++    }
+ 
+-    Log.i(LOG_TAG, "blocking thread. waiting for done UI operation.");
++    /** Called when an unrecoverable error has been encountered and the operation is complete. */
++    @Override
++    public void onAuthenticationError(final int errorCode, @NonNull final CharSequence errString) {
++      super.onAuthenticationError(errorCode, errString);
+ 
+-    try {
+-      synchronized (this) {
+-        wait();
+-      }
+-    } catch (InterruptedException ignored) {
+-      /* shutdown sequence */
++      final CryptoFailedException error = new CryptoFailedException("code: " + errorCode + ", msg: " + errString);
++
++      this.errCb.accept(error);
+     }
+ 
+-    Log.i(LOG_TAG, "unblocking thread.");
++    /** Called when a biometric is recognized. */
++    @Override
++    public void onAuthenticationSucceeded(@NonNull final BiometricPrompt.AuthenticationResult result) {
++      super.onAuthenticationSucceeded(result);
++
++      this.cb.run();
++    }
+   }
+ }
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerInteractiveBiometricManualRetry.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerInteractiveBiometricManualRetry.java
+index 1f08bec..b4fe11c 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerInteractiveBiometricManualRetry.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerInteractiveBiometricManualRetry.java
+@@ -11,79 +11,65 @@ import com.facebook.react.bridge.ReactApplicationContext;
+ import com.oblador.keychain.cipherStorage.CipherStorage;
+ 
+ public class DecryptionResultHandlerInteractiveBiometricManualRetry extends DecryptionResultHandlerInteractiveBiometric implements DecryptionResultHandler {
+-  private BiometricPrompt presentedPrompt;
+-  private Boolean didFailBiometric = false;
+-
+   public DecryptionResultHandlerInteractiveBiometricManualRetry(@NonNull ReactApplicationContext reactContext,
+                                                                 @NonNull CipherStorage storage,
+                                                                 @NonNull BiometricPrompt.PromptInfo promptInfo) {
+     super(reactContext, storage, promptInfo);
+   }
+ 
+-  /** Manually cancel current (invisible) authentication to clear the fragment. */
+-  private void cancelPresentedAuthentication() {
+-    Log.d(LOG_TAG, "Cancelling authentication");
+-    if (presentedPrompt == null) {
+-      return;
+-    }
+-
+-    try {
+-      presentedPrompt.cancelAuthentication();
+-    } catch (Exception e) {
+-      e.printStackTrace();
+-    } finally {
+-      this.presentedPrompt = null;
+-    }
++  @Override
++  protected InteractiveBiometryHandlers provideHandlers() {
++    return new InteractiveManualRetryBiometryHandlers();
+   }
+ 
+-  /** Called when an unrecoverable error has been encountered and the operation is complete. */
+-  @Override
+-  public void onAuthenticationError(final int errorCode, @NonNull final CharSequence errString) {
+-    if (didFailBiometric) {
+-      this.presentedPrompt = null;
+-      this.didFailBiometric = false;
+-      retryAuthentication();
+-      return;
+-    }
++  class InteractiveManualRetryBiometryHandlers extends DecryptionResultHandlerInteractiveBiometric.InteractiveBiometryHandlers {
++    private Boolean didFailBiometric = false;
+ 
+-    super.onAuthenticationError(errorCode, errString);
+-  }
++    /** Manually cancel current (invisible) authentication to clear the fragment. */
++    private void cancelPresentedAuthentication() {
++      Log.d(LOG_TAG, "Cancelling authentication");
++      if (prompt == null) {
++        return;
++      }
+ 
+-  /** Called when a biometric (e.g. fingerprint, face, etc.) is presented but not recognized as belonging to the user. */
+-  @Override
+-  public void onAuthenticationFailed() {
+-    Log.d(LOG_TAG, "Authentication failed: biometric not recognized.");
+-    if (presentedPrompt != null) {
+-      this.didFailBiometric = true;
+-      cancelPresentedAuthentication();
++      try {
++        prompt.cancelAuthentication();
++      } catch (Exception e) {
++        e.printStackTrace();
++      }
+     }
+-  }
+-
+-  /** Called when a biometric is recognized. */
+-  @Override
+-  public void onAuthenticationSucceeded(@NonNull final BiometricPrompt.AuthenticationResult result) {
+-    this.presentedPrompt = null;
+-    this.didFailBiometric = false;
+ 
+-    super.onAuthenticationSucceeded(result);
+-  }
++    /** Called when an unrecoverable error has been encountered and the operation is complete. */
++    @Override
++    public void onAuthenticationError(final int errorCode, @NonNull final CharSequence errString) {
++      if (didFailBiometric) {
++        this.didFailBiometric = false;
++        retryAuthentication();
++        return;
++      }
+ 
+-  /** trigger interactive authentication. */
+-  @Override
+-  public void startAuthentication() {
+-    FragmentActivity activity = getCurrentActivity();
++      super.onAuthenticationError(errorCode, errString);
++    }
+ 
+-    // code can be executed only from MAIN thread
+-    if (Thread.currentThread() != Looper.getMainLooper().getThread()) {
+-      activity.runOnUiThread(this::startAuthentication);
+-      waitResult();
+-      return;
++    /** Called when a biometric (e.g. fingerprint, face, etc.) is presented but not recognized as belonging to the user. */
++    @Override
++    public void onAuthenticationFailed() {
++      Log.d(LOG_TAG, "Authentication failed: biometric not recognized.");
++      if (prompt != null) {
++        this.didFailBiometric = true;
++        cancelPresentedAuthentication();
++      }
+     }
+ 
+-    this.presentedPrompt = authenticateWithPrompt(activity);
++    /** Called when a biometric is recognized. */
++    @Override
++    public void onAuthenticationSucceeded(@NonNull final BiometricPrompt.AuthenticationResult result) {
++      this.didFailBiometric = false;
++
++      super.onAuthenticationSucceeded(result);
++    }
+   }
+ 
+-  /** trigger interactive authentication without invoking another waitResult() */
+   protected void retryAuthentication() {
+     Log.d(LOG_TAG, "Retrying biometric authentication.");
+ 
+@@ -104,6 +90,6 @@ public class DecryptionResultHandlerInteractiveBiometricManualRetry extends Decr
+       return;
+     }
+ 
+-    this.presentedPrompt = authenticateWithPrompt(activity);
++    startAuthentication();
+   }
+ }
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerNonInteractive.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerNonInteractive.java
+index c9edcb3..e07cf1c 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerNonInteractive.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultHandlerNonInteractive.java
+@@ -7,39 +7,19 @@ import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionContext;
+ import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionResult;
+ import com.oblador.keychain.exceptions.CryptoFailedException;
+ 
+-public class DecryptionResultHandlerNonInteractive implements DecryptionResultHandler {
+-  private DecryptionResult result;
+-  private Throwable error;
+-
+-  @Override
+-  public void askAccessPermissions(@NonNull final DecryptionContext context) {
+-    final CryptoFailedException failure = new CryptoFailedException(
+-      "Non interactive decryption mode.");
+-
+-    onDecrypt(null, failure);
+-  }
+-
+-  @Override
+-  public void onDecrypt(@Nullable final DecryptionResult decryptionResult,
+-                        @Nullable final Throwable error) {
+-    this.result = decryptionResult;
+-    this.error = error;
+-  }
++import java.io.IOException;
++import java.security.GeneralSecurityException;
++import java.util.concurrent.CompletableFuture;
+ 
+-  @Nullable
++public class DecryptionResultHandlerNonInteractive implements DecryptionResultHandler {
+   @Override
+-  public DecryptionResult getResult() {
++  public CompletableFuture<DecryptionResult> authenticate(@NonNull DecryptionResultJob job) {
++    final CompletableFuture<DecryptionResult> result = new CompletableFuture<>();
++    try {
++      result.complete(job.get());
++    } catch (final Throwable fail) {
++      result.completeExceptionally(fail);
++    }
+     return result;
+   }
+-
+-  @Nullable
+-  @Override
+-  public Throwable getError() {
+-    return error;
+-  }
+-
+-  @Override
+-  public void waitResult() {
+-    /* do nothing, expected synchronized call in one thread */
+-  }
+ }
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultJob.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultJob.java
+new file mode 100644
+index 0000000..b547df3
+--- /dev/null
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/decryptionHandler/DecryptionResultJob.java
+@@ -0,0 +1,12 @@
++package com.oblador.keychain.decryptionHandler;
++
++import android.security.keystore.UserNotAuthenticatedException;
++
++import com.oblador.keychain.cipherStorage.CipherStorage;
++
++import java.io.IOException;
++import java.security.GeneralSecurityException;
++
++public interface DecryptionResultJob {
++    CipherStorage.DecryptionResult get() throws UserNotAuthenticatedException, IOException, GeneralSecurityException;
++}
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
 index 75c0d5c..e99d235 100644
 --- a/node_modules/react-native-keychain/index.js
