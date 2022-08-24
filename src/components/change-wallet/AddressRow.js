@@ -113,7 +113,6 @@ export default function AddressRow({
   getEditMenuItems,
   getOnMenuItemPress,
   onPress,
-  watchOnly,
 }) {
   const {
     address,
@@ -287,26 +286,19 @@ export default function AddressRow({
       {ios ? (
         <ButtonPressAnimation
           enableHapticFeedback={!editMode}
-          onLongPress={!watchOnly ? showIOSMenu : onPress}
           onPress={editMode ? showIOSMenu : onPress}
           scaleTo={editMode ? 1 : 0.98}
         >
           {content}
         </ButtonPressAnimation>
       ) : !editMode ? (
-        <ContextMenuButton
-          menuConfig={menuConfig}
-          onPressMenuItem={handlePressMenuItem}
-          shouldOpenOnLongPress
+        <ButtonPressAnimation
+          enableHapticFeedback
+          onPress={onPress}
+          scaleTo={0.98}
         >
-          <ButtonPressAnimation
-            enableHapticFeedback={!editMode}
-            onPress={onPress}
-            scaleTo={0.98}
-          >
-            {content}
-          </ButtonPressAnimation>
-        </ContextMenuButton>
+          {content}
+        </ButtonPressAnimation>
       ) : (
         content
       )}
