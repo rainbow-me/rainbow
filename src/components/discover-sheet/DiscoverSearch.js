@@ -102,6 +102,11 @@ export default function DiscoverSearch() {
 
         return section;
       });
+
+      list = list.map((section, index) => ({
+        ...section,
+        key: `${section.key}-${index}`,
+      }));
     }
     return list.filter(section => section.data.length > 0);
   }, [swapCurrencyList, ensResults]);
@@ -188,7 +193,7 @@ export default function DiscoverSearch() {
           {
             color: colors.appleBlue,
             data: ensResults,
-            key: `􀉮 ${lang.t('discover.search.profiles')}`,
+            key: 'profiles',
             title: `􀉮 ${lang.t('discover.search.profiles')}`,
           },
         ];

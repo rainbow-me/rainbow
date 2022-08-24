@@ -122,7 +122,7 @@ const ExchangeIconStack = magicMemo(
   ['protocols']
 );
 
-export default function SwapDetailsExchangeRow({ protocols }) {
+export default function SwapDetailsExchangeRow({ protocols, testID }) {
   const steps = useMemo(() => {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
@@ -228,7 +228,7 @@ export default function SwapDetailsExchangeRow({ protocols }) {
     );
   } else if (protocols?.length > 0) {
     return (
-      <Rows>
+      <Rows testID={testID}>
         <Columns alignVertical="center" space="4px">
           <Column>
             <SwapDetailsLabel>
