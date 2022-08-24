@@ -93,7 +93,7 @@ function AndroidWrapper({ children }) {
   return (
     <Flex>
       <Flex style={{ marginBottom }}>{children}</Flex>
-    </View>
+    </Flex>
   );
 }
 
