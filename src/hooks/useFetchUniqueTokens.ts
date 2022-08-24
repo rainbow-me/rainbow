@@ -152,8 +152,10 @@ export default function useFetchUniqueTokens({
         ).filter((token: any) => token.familyName !== 'POAP');
 
         // Fetch poaps
-        const poaps = (await fetchPoaps(address)) || [];
-        tokens = [...tokens, ...poaps];
+        const poaps = await fetchPoaps(address);
+        if (poaps) {
+          tokens = [...tokens, ...poaps];
+        }
 
         // Fetch Polygon tokens until all have fetched
         const polygonTokens = await fetchMore({ network: Network.polygon });
