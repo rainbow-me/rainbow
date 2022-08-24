@@ -49,6 +49,7 @@ export enum ENSRegistrationTransactionType {
   RENEW = 'renew',
   SET_ADDR = 'setAddr',
   RECLAIM = 'reclaim',
+  SET_CONTENTHASH = 'setContenthash',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
@@ -482,15 +483,13 @@ const setupMulticallRecords = (
       ])
     );
   }
-  // content hash address
-  const { encoded: contentHashAssociatedRecord } = encodeContenthash(
-    records.contentHash || ''
-  );
-  if (
-    Boolean(contentHashAssociatedRecord) &&
-    typeof contentHashAssociatedRecord === 'string' &&
-    parseInt(contentHashAssociatedRecord, 16) !== 0
-  ) {
+  if (typeof records.contenthash === 'string') {
+    // content hash address
+    const { encoded: encodedContentHash } = encodeContenthash(
+      records.contenthash || ''
+    );
+    const contentHashAssociatedRecord =
+      records.contenthash === '' ? Buffer.from('') : encodedContentHash;
     data.push(
       resolver.encodeFunctionData('setContenthash', [
         namehash,
@@ -658,6 +657,19 @@ const getENSExecutionDetails = async ({
       const record = records?.text[0];
       const namehash = hash(name);
       args = [namehash, record.key, record.value];
+      contract = await getENSPublicResolverContract(wallet, resolverAddress);
+      break;
+    }
+    case ENSRegistrationTransactionType.SET_CONTENTHASH: {
+      if (!name || !records || typeof records?.contenthash !== 'string')
+        throw new Error('Bad arguments for contenthash');
+      const namehash = hash(name);
+      const { encoded: encodedContentHash } = encodeContenthash(
+        records?.contenthash || ''
+      );
+      const contentHash =
+        records.contenthash === '' ? Buffer.from('') : encodedContentHash;
+      args = [namehash, contentHash];
       contract = await getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
