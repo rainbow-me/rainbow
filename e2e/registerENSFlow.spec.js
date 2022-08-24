@@ -610,6 +610,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should update a field', async () => {
+    await Helpers.waitAndTap('ens-selectable-attribute-me.rainbow.displayName');
     await Helpers.typeText(
       'ens-text-record-me.rainbow.displayName',
       ' Guy',
