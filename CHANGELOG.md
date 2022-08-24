@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.7.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.2)
+### Changed
+* Hide NFTs
+* Bug fixes
+
 ## [1.7.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.1)
 ### Changed
 * Profiles bugfixes
