@@ -75,6 +75,7 @@ const getRecords = async ensName => {
     publicResolverABI,
     provider
   );
+  const resolver = await provider.getResolver(ensName);
   const hashName = hash(ensName);
   const [
     avatar,
@@ -92,7 +93,7 @@ const getRecords = async ensName => {
     reddit,
   ] = await Promise.all([
     publicResolver.text(hashName, 'avatar'),
-    provider.getContentHash(ensName),
+    resolver.getContentHash(ensName),
     publicResolver.text(hashName, 'description'),
     publicResolver.text(hashName, 'name'),
     publicResolver.text(hashName, 'url'),
