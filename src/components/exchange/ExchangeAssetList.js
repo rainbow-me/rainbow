@@ -221,7 +221,7 @@ const ExchangeAssetList = (
         <Header>
           <HeaderBackground />
           <HeaderTitleWrapper>
-            <TitleComponent color={section.color}>
+            <TitleComponent color={section.color} testID={section.key}>
               {`${section.title}${isVerified ? '  􀅵' : ' '}`}
             </TitleComponent>
           </HeaderTitleWrapper>

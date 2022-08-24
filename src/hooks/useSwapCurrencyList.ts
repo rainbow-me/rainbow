@@ -390,7 +390,7 @@ const useSwapCurrencyList = (
       if (lowLiquidityAssetsWithoutImport?.length) {
         list.push({
           data: lowLiquidityAssetsWithoutImport,
-          key: 'lowLiqudiity',
+          key: 'lowLiquidity',
           title: tokenSectionTypes.lowLiquidityTokenSection,
         });
       }

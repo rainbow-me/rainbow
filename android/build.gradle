@@ -68,4 +68,13 @@ allprojects {
         }
         maven { url 'https://www.jitpack.io' }
     }
+    afterEvaluate { project ->
+        if (!project.name.equalsIgnoreCase("app") && project.hasProperty("android")) {
+            android {
+                defaultConfig {
+                    minSdkVersion 21
+                }
+            }
+        }
+    }
 }
