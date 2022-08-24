@@ -27,6 +27,7 @@ import SendSheet from '../screens/SendSheet';
 import SettingsSheet from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
+import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -57,6 +58,7 @@ import {
   settingsSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
+  swapsPromoSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -311,6 +313,11 @@ function NativeStackNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         {...explainSheetConfig}
+      />
+      <NativeStack.Screen
+        component={SwapsPromoSheet}
+        name={Routes.SWAPS_PROMO_SHEET}
+        {...swapsPromoSheetConfig}
       />
       <NativeStack.Screen
         component={ExternalLinkWarningSheet}
