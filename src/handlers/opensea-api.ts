@@ -41,6 +41,7 @@ export const apiGetAccountUniqueTokens = async (
           },
           method: 'get',
           params: {
+            include_orders: 'true',
             // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
             limit: UNIQUE_TOKENS_LIMIT_PER_PAGE,
             // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message

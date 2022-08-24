@@ -22,7 +22,7 @@ import Routes from '@rainbow-me/routes';
 import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export default function useScanner(enabled: any, onSuccess: any) {
+export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
   const profilesEnabled = useExperimentalFlag(PROFILES);

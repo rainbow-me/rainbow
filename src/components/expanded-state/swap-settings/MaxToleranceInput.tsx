@@ -101,7 +101,7 @@ export const MaxToleranceInput = forwardRef(
       [updateSwapSlippage, setSlippageValue]
     );
 
-    const openExplainer = () => {
+    const openSlippageExplainer = () => {
       Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'slippage',
@@ -116,8 +116,9 @@ export const MaxToleranceInput = forwardRef(
               as={ButtonPressAnimation}
               marginVertical="-12px"
               // @ts-expect-error
-              onPress={openExplainer}
+              onPress={openSlippageExplainer}
               paddingVertical="12px"
+              testID="swap-slippage-label"
             >
               <Inline alignVertical="center">
                 <Text size="16px" weight="bold">
