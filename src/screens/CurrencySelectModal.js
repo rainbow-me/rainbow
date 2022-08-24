@@ -9,13 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  InteractionManager,
-  Keyboard,
-  Linking,
-  StatusBar,
-  View,
-} from 'react-native';
+import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -85,11 +79,12 @@ function AndroidWrapper({ children }) {
   const insets = useSafeArea();
   const keyboardHeight = useKeyboardArea();
 
-  const marginBottom = keyboardHeight > 0 
-    // tiny padding adds a tiny space between the keyboard and the view
-    //  to match how it looks on iOS
-    ? insets.top + TINY_ANDROID_PADDING + keyboardHeight 
-    : 0;
+  const marginBottom =
+    keyboardHeight > 0
+      ? // tiny padding adds a tiny space between the keyboard and the view
+        //  to match how it looks on iOS
+        insets.top + TINY_ANDROID_PADDING + keyboardHeight
+      : 0;
   return (
     <Flex>
       <Flex style={{ marginBottom }}>{children}</Flex>
