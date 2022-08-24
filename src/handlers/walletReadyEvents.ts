@@ -1,4 +1,3 @@
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';

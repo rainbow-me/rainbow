@@ -2,7 +2,6 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Easing,

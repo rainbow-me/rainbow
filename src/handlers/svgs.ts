@@ -4,11 +4,8 @@ import { image as cloudinaryImage } from 'cloudinary/lib/cloudinary';
 import cloudinaryConfig from 'cloudinary/lib/config';
 import { PixelRatio } from 'react-native';
 import {
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   CLOUDINARY_API_KEY as apiKey,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   CLOUDINARY_API_SECRET as apiSecret,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   CLOUDINARY_CLOUD_NAME as cloudName,
 } from 'react-native-dotenv';
 import { deviceUtils } from '@rainbow-me/utils';

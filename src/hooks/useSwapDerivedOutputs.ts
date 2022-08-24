@@ -5,9 +5,7 @@ import {
   QuoteError,
 } from '@rainbow-me/swaps';
 import { useCallback, useMemo } from 'react';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';

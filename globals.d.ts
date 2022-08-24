@@ -5,10 +5,13 @@ declare let __DEV__: boolean;
 declare let IS_DEV: boolean;
 
 declare module 'react-native-dotenv' {
-  export const IS_TESTING: boolean;
+  export const IS_TESTING: 'true' | 'false';
   export const ENABLE_DEV_MODE: number; // TODO
   export const SENTRY_ENDPOINT: string;
-  export const SENTRY_ENVIRONMENT: 'production' | 'development'; // TODO
+  export const SENTRY_ENVIRONMENT:
+    | 'production'
+    | 'development'
+    | 'LocalRelease'; // TODO
   export const ARBITRUM_MAINNET_RPC: string;
   export const DATA_API_KEY: string;
   export const DATA_ENDPOINT: string;
