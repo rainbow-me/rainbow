@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 // @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import SpinnerImageSource from '../assets/spinner.png';
@@ -12,6 +13,7 @@ type SpinnerProps = {
   color?: string;
   duration?: number;
   size?: 'small' | 'large' | number;
+  style?: StyleProp<ViewStyle>;
 };
 
 const Spinner = ({

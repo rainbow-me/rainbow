@@ -1,11 +1,19 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
+import {
+  useAccountSettings,
+  useENSAddress,
+  useFetchUniqueTokens,
+  useOpenENSNFTHandler,
+} from '@/hooks';
+import { AppState } from '@/redux/store';
 import {
   Bleed,
   Box,
@@ -59,10 +67,12 @@ export function InfoRowSkeleton() {
 }
 
 export default function InfoRow({
+  ensName,
   explainSheetType,
   icon = undefined,
   isImage = false,
   label,
+  url,
   wrapValue = children => children,
   value = undefined,
   switchValue,
@@ -70,10 +80,12 @@ export default function InfoRow({
   useAccentColor,
   onSwitchChange,
 }: {
+  ensName?: string;
   explainSheetType?: string;
   icon?: string;
   isImage?: boolean;
   label: string;
+  url?: string;
   wrapValue?: (children: React.ReactNode) => React.ReactNode;
   value?: string;
   switchValue?: boolean;
@@ -116,16 +128,7 @@ export default function InfoRow({
       </Box>
       {wrapValue(
         isImage ? (
-          <>
-            {value && (
-              <ImagePreviewOverlayTarget
-                aspectRatioType="cover"
-                imageUrl={value}
-              >
-                <Box as={ImgixImage} height="full" source={{ uri: value }} />
-              </ImagePreviewOverlayTarget>
-            )}
-          </>
+          <ImageValue ensName={ensName} url={url} value={value} />
         ) : (
           <Box
             borderRadius={16}
@@ -147,11 +150,12 @@ export default function InfoRow({
                 : useAccentColor
                 ? accentColor + '10'
                 : 'rgba(255, 255, 255, 0.08)',
+              maxWidth: android ? 250 : undefined,
               opacity: show ? 1 : 0,
             }}
           >
             <Inline alignVertical="center" space="6px">
-              {icon && (
+              {icon ? (
                 <Bleed vertical="6px">
                   <Icon
                     color={colors.whiteLabel}
@@ -160,8 +164,8 @@ export default function InfoRow({
                     width="18"
                   />
                 </Bleed>
-              )}
-              {value && (
+              ) : null}
+              {value ? (
                 <Text
                   align={isMultiline ? 'left' : 'center'}
                   color={useAccentColor ? 'accent' : undefined}
@@ -170,13 +174,16 @@ export default function InfoRow({
                 >
                   {value}
                 </Text>
-              )}
+              ) : null}
               {isSwitch && (
                 <Switch
                   disabled={switchDisabled || switchValue}
                   onValueChange={onSwitchChange}
                   testID="ens-reverse-record-switch"
-                  trackColor={{ false: colors.white, true: accentColor }}
+                  trackColor={{
+                    false: android ? colors.lightGrey : colors.white,
+                    true: accentColor,
+                  }}
                   value={switchValue}
                 />
               )}
@@ -185,5 +192,45 @@ export default function InfoRow({
         )
       )}
     </Inline>
+  );
+}
+
+function ImageValue({
+  ensName,
+  url,
+  value,
+}: {
+  ensName?: string;
+  url?: string;
+  value?: string;
+}) {
+  const { accountAddress } = useAccountSettings();
+
+  const { data: address } = useENSAddress(ensName || '');
+
+  const uniqueTokensAccount = useSelector(
+    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
+  );
+  const { data: uniqueTokensProfile } = useFetchUniqueTokens({
+    address: address ?? '',
+    // Don't want to refetch tokens if we already have them.
+    staleTime: Infinity,
+  });
+  const isSelf = address === accountAddress;
+  const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;
+
+  const { onPress } = useOpenENSNFTHandler({ uniqueTokens, value });
+  const enableZoomOnPress = !onPress;
+
+  if (!url) return null;
+  return (
+    <ImagePreviewOverlayTarget
+      aspectRatioType="cover"
+      enableZoomOnPress={ios && enableZoomOnPress}
+      imageUrl={url}
+      onPress={onPress}
+    >
+      <Box as={ImgixImage} height="full" source={{ uri: url }} />
+    </ImagePreviewOverlayTarget>
   );
 }

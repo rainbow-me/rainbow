@@ -59,7 +59,9 @@ export default function ConfigurationSection({
                   startRegistration(name, REGISTRATION_MODES.SET_NAME);
                   navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
                     externalAvatarUrl,
-                    longFormHeight: ENSConfirmUpdateSheetHeight,
+                    longFormHeight:
+                      ENSConfirmUpdateSheetHeight +
+                      (externalAvatarUrl ? 70 : 0),
                     mode: REGISTRATION_MODES.SET_NAME,
                     name,
                   });

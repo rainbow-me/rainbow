@@ -10,11 +10,15 @@ import {
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { defaultConfig } from '@rainbow-me/config/experimental';
 import { PROFILES } from '@rainbow-me/config/experimentalHooks';
 import { setDeploymentKey } from '@rainbow-me/handlers/fedora';
 import { delay } from '@rainbow-me/helpers/utilities';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import {
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import { scheduleActionOnAssetReceived } from '@rainbow-me/redux/data';
 import {
@@ -118,10 +122,13 @@ export default async function handleDeeplink(
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
           if (isValid) {
             const profilesEnabled = defaultConfig?.[PROFILES]?.value;
+            const ensName = isENSAddressFormat(addressOrENS)
+              ? addressOrENS
+              : await fetchReverseRecordWithRetry(addressOrENS);
             return Navigation.handleAction(
               profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
               {
-                address: addressOrENS,
+                address: ensName || addressOrENS,
                 fromRoute: 'Deeplink',
               }
             );

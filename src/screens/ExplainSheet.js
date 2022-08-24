@@ -151,26 +151,31 @@ const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
 });
 
 const ENS_PRIMARY_NAME_EXPLAINER =
-  'Setting a primary ENS name makes your Ethereum address point to your .eth name, enabling dapps to find and display it when you connect your wallet.';
+  'People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to “primary.”';
 
 const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
   'The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
 
 const ENS_ON_CHAIN_DATA_WARNING_TITLE = 'Heads up!';
 
-const ENS_PRIMARY_NAME_TITLE = 'What is a primary ENS name?';
+const ENS_PRIMARY_NAME_TITLE = 'What does it mean to set my ENS name?';
 
-const ENS_MANAGER_TITLE = `Who is the .eth manager?`;
+const ENS_MANAGER_TITLE = `What is the .eth manager?`;
 
-const ENS_MANAGER_EXPLAINER = `The manager of a .eth name registration. The manager may transfer ownership, set a resolver or TTL, as well as create or reassign subdomains`;
+const ENS_MANAGER_EXPLAINER = `The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name’s controller.`;
 
-const ENS_OWNER_TITLE = `Who is the .eth owner?`;
+const ENS_OWNER_TITLE = `What is the .eth name owner?`;
 
-const ENS_OWNER_EXPLAINER = `The owner of a .eth name registration. The owner may transfer the registration or reclaim ownership of the name in the registry if required.`;
+const ENS_OWNER_EXPLAINER = `The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name’s registrant.`;
 
 const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
 
 const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
+
+const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
+
+const ENS_CONFIGURATION_EXPLAINER =
+  'When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient’s address and make the recipient address the manager of the name.';
 
 const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
 
@@ -234,19 +239,19 @@ export const explainers = (params, colors) => ({
     }),
   },
   ens_primary_name: {
-    extraHeight: -70,
+    extraHeight: 50,
     emoji: '❓',
     text: ENS_PRIMARY_NAME_EXPLAINER,
     title: ENS_PRIMARY_NAME_TITLE,
   },
   ens_manager: {
-    extraHeight: -80,
+    extraHeight: -30,
     emoji: '❓',
     text: ENS_MANAGER_EXPLAINER,
     title: ENS_MANAGER_TITLE,
   },
   ens_owner: {
-    extraHeight: -80,
+    extraHeight: 0,
     emoji: '❓',
     text: ENS_OWNER_EXPLAINER,
     title: ENS_OWNER_TITLE,
@@ -256,6 +261,12 @@ export const explainers = (params, colors) => ({
     emoji: '❓',
     text: ENS_RESOLVER_EXPLAINER,
     title: ENS_RESOLVER_TITLE,
+  },
+  ens_configuration: {
+    extraHeight: android ? 100 : 80,
+    emoji: '❓',
+    text: ENS_CONFIGURATION_EXPLAINER,
+    title: ENS_CONFIGURATION_TITLE,
   },
   ensOnChainDataWarning: {
     extraHeight: -30,
