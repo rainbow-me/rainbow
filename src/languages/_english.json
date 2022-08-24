@@ -206,6 +206,7 @@
         "invalid_fee": "Invalid Fee",
         "invalid_fee_lowercase": "Invalid fee",
         "loading": "Loading...",
+        "no_quote_available": "􀅵 No Quote Available",
         "review": "Review",
         "submitting": "Submitting",
         "swap": "Hold to Swap",
@@ -659,6 +660,10 @@
         "fragment2": "Read more",
         "fragment3": " about AMMs and token liquidity.",
         "title": "Insufficient Liquidity"
+      },
+      "no_quote": {
+        "title": "No quote available",
+        "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
       "go_to_hop_with_icon": {
         "text": "Go to the Hop Bridge 􀮶"

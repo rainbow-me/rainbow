@@ -5,10 +5,17 @@ import React, { useCallback, useMemo } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { ChainBadge, CoinIcon } from '../components/coin-icon';
-import { Centered, Column, ColumnWithMargins, Row } from '../components/layout';
+import {
+  Centered,
+  Column,
+  ColumnWithMargins,
+  Row,
+  RowWithMargins,
+} from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
 import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
 import AppIconSmol from '@rainbow-me/assets/appIconSmol.png';
@@ -523,6 +530,19 @@ export const explainers = (params, colors) => ({
         </Text>
         {lang.t('explain.insufficient_liquidity.fragment3')}
       </Text>
+    ),
+  },
+  noQuote: {
+    extraHeight: -90,
+    emoji: '🏦',
+    title: lang.t('explain.no_quote.title'),
+    text: lang.t('explain.no_quote.text'),
+    logo: (
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <CoinIcon size={40} {...params?.inputCurrency} />
+        <DoubleChevron />
+        <CoinIcon size={40} {...params?.outputCurrency} />
+      </RowWithMargins>
     ),
   },
   availableNetworks: {
