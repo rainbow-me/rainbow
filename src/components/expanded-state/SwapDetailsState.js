@@ -154,8 +154,9 @@ export default function SwapDetailsState({
         additionalTopPadding={android}
         borderRadius={39}
         contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
+        testID="swap-details-sheet"
       >
-        <Header>
+        <Header testID="swap-details-header">
           <SheetTitle weight="heavy">
             {lang.t('expanded_state.swap_details.review')}
           </SheetTitle>

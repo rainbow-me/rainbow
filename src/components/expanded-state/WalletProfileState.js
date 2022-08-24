@@ -66,7 +66,7 @@ export default function WalletProfileState({
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
     };
-    if (ios || actionType !== 'Create') {
+    if (actionType !== 'Create') {
       callback();
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
