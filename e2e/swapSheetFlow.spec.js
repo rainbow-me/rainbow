@@ -116,7 +116,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.swipe('swap-details-sheet', 'down', 'slow');
     await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
-  xit('Should go to swap and open review sheet on arbitrum swap', async () => {
+  it.skip('Should go to swap and open review sheet on arbitrum swap', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
