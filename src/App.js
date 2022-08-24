@@ -43,7 +43,7 @@ import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import {
-  runFeatureUnlockChecks,
+  runFeatureAndCampaignChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
@@ -207,7 +207,7 @@ class App extends Component {
       runWalletBackupStatusChecks();
       if (ios) {
         InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => runFeatureUnlockChecks(), 2000);
+          setTimeout(() => runFeatureAndCampaignChecks(), 2000);
         });
       }
     }
