@@ -422,6 +422,7 @@ describe('Register ENS Flow', () => {
 
   it('Should select ENS attributes in the Edit Profile Sheet', async () => {
     // Select all the attributes
+    await Helpers.waitAndTap('ens-selectable-attribute-name');
     await Helpers.waitAndTap('ens-selectable-attribute-website');
     await Helpers.waitAndTap('ens-selectable-attribute-twitter');
     await Helpers.waitAndTap('ens-selectable-attribute-email');
@@ -610,7 +611,6 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should update a field', async () => {
-    await Helpers.waitAndTap('ens-selectable-attribute-me.rainbow.displayName');
     await Helpers.typeText(
       'ens-text-record-me.rainbow.displayName',
       ' Guy',
