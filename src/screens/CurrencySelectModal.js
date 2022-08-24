@@ -3,7 +3,6 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import uniqBy from 'lodash/uniqBy';
 import { matchSorter } from 'match-sorter';
 import React, {
-  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -14,6 +13,7 @@ import { InteractionManager, Keyboard, Linking } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { useTheme } from 'styled-components';
 import { useDebounce } from 'use-debounce';
@@ -28,6 +28,7 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
+import { useKeyboardArea } from '@/hooks/useKeyboardArea';
 import { analytics } from '@rainbow-me/analytics';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
@@ -60,12 +61,39 @@ const getHasShownWarning = () =>
 const setHasShownWarning = () =>
   storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
 
+const TINY_ANDROID_PADDING = 4;
+
 const TabTransitionAnimation = styled(Animated.View)(
   position.sizeAsObject('100%')
 );
 
+const Flex = styled.View({
+  flex: 1,
+});
+
+// This component reacts to the keyboard height and pushes the content up
+// It kinda mimcs the way adjustResize works but we won't break other screens with that
+// since when you change adjustResize during the navigation - it can push content
+// on the other screen up too
+function AndroidWrapper({ children }) {
+  const insets = useSafeArea();
+  const keyboardHeight = useKeyboardArea();
+
+  const marginBottom =
+    keyboardHeight > 0
+      ? // tiny padding adds a tiny space between the keyboard and the view
+        //  to match how it looks on iOS
+        insets.top + TINY_ANDROID_PADDING + keyboardHeight
+      : 0;
+  return (
+    <Flex>
+      <Flex style={{ marginBottom }}>{children}</Flex>
+    </Flex>
+  );
+}
+
 const headerlessSection = data => [{ data, title: '' }];
-const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+const Wrapper = ios ? KeyboardFixedOpenLayout : AndroidWrapper;
 
 const searchWalletCurrencyList = (searchList, query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);

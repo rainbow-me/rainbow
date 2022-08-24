@@ -50,6 +50,7 @@ import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
+import { trackKeyboardMaxHeight } from './hooks/useKeyboardArea';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -177,6 +178,8 @@ class App extends Component {
       }
     );
 
+    this.keyboardHeightListener = trackKeyboardMaxHeight();
+
     this.branchListener = branchListener(this.handleOpenLinkingURL);
 
     // Walletconnect uses direct deeplinks
@@ -220,6 +223,7 @@ class App extends Component {
     this.foregroundNotificationListener?.();
     this.backgroundNotificationListener?.();
     this.branchListener?.();
+    this.keyboardHeightListener();
   }
 
   identifyFlow = async () => {

@@ -245,4 +245,4 @@ const ExchangeSearch = (
   );
 };
 
-export default React.forwardRef(ExchangeSearch);
+export default React.memo(React.forwardRef(ExchangeSearch));
