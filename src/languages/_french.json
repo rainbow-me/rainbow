@@ -205,6 +205,7 @@
         "invalid_fee": "Frais Non Valides",
         "invalid_fee_lowercase": "Frais non valides",
         "loading": "Loading... :)",
+        "no_quote_available": "􀅵 No Quote Available :)",
         "review": "Review :)",
         "submitting": "Submitting :)",
         "swap": "Tenir pour Swap",
@@ -649,6 +650,10 @@
         "fragment2": "Read more :)",
         "fragment3": " about AMMs and token liquidity. :)",
         "title": "Insufficient Liquidity :)"
+      },
+      "no_quote": {
+        "title": "No quote available",
+        "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
       "unverified": {
         "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
