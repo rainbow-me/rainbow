@@ -205,7 +205,7 @@ export const uniqueTokensResetState = () => (
 
 /**
  * Fetches unique tokens via API, updates state, and saves to local storage,
- * as long as the current network is mainnet lol.
+ * as long as the current network is mainnet.
  */
 export const uniqueTokensRefreshState = () => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
