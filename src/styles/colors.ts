@@ -140,6 +140,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     shadowGrey: '#6F6F6F', // '111, 111, 111'
     shimmer: '#EDEEF1', // '237, 238, 241'
     skeleton: '#F6F7F8', // '246, 247, 248'
+    smolPurple: '#7D50E6', // '125, 80, 230'
+    smolPurple06: 'rgba(125, 80, 230, 0.06)', // '125, 80, 230, 0.06'
     stackBackground: '#000000', // '0, 0, 0'
     swapPurple: '#575CFF', // '87, 92, 255'
     transparent: 'transparent',
