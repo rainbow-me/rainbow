@@ -32,7 +32,10 @@ export const swapsCampaignAction = async () => {
   }, 1000);
 };
 
-export type SwapsPromoCampaignExclusion = 'no_assets' | 'already_swapped';
+export enum SwapsPromoCampaignExclusion {
+  noAssets = 'no_assets',
+  alreadySwapped = 'already_swapped',
+}
 
 export const swapsCampaignCheck = async (): Promise<
   SwapsPromoCampaignExclusion | GenericCampaignCheckResponse
@@ -48,8 +51,9 @@ export const swapsCampaignCheck = async (): Promise<
     selected: RainbowWallet | undefined;
   } = store.getState().wallets;
 
-  // if there's no wallet then stop
-  if (!currentWallet) return GenericCampaignCheckResponse.nonstarter;
+  // if there's no wallet or the current wallet is read only then stop
+  if (!currentWallet || currentWallet.type === WalletTypes.readOnly)
+    return GenericCampaignCheckResponse.nonstarter;
 
   const {
     accountAddress,
@@ -57,10 +61,6 @@ export const swapsCampaignCheck = async (): Promise<
 
   // transactions are loaded from the current wallet
   const { transactions } = store.getState().data;
-
-  // if the current wallet is read only then stop
-  if (currentWallet.type === WalletTypes.readOnly)
-    return GenericCampaignCheckResponse.nonstarter;
 
   const networks: Network[] = (Object.keys(networkInfo) as Network[]).filter(
     (network: any): boolean => networkInfo[network].exchange_enabled
@@ -80,7 +80,7 @@ export const swapsCampaignCheck = async (): Promise<
   });
 
   // if the wallet has no native asset balances then stop
-  if (!hasBalance) return 'no_assets';
+  if (!hasBalance) return SwapsPromoCampaignExclusion.noAssets;
 
   const swapsLaunchDate = new Date('2022-07-26');
   const isAfterSwapsLaunch = (tx: RainbowTransaction): boolean => {
@@ -105,7 +105,7 @@ export const swapsCampaignCheck = async (): Promise<
     SwapsPromoCampaign.action();
     return GenericCampaignCheckResponse.activated;
   }
-  return 'already_swapped';
+  return SwapsPromoCampaignExclusion.alreadySwapped;
 };
 
 export const SwapsPromoCampaign: Campaign = {
