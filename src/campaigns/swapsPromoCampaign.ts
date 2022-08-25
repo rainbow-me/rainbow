@@ -101,7 +101,7 @@ export const swapsCampaignCheck = async (): Promise<
   const hasSwapped = !!transactions.filter(isAfterSwapsLaunch).find(isSwapTx);
 
   // if they have not swapped yet, trigger campaign action
-  if (!hasSwapped) {
+  if (!hasSwapped && transactions.length) {
     SwapsPromoCampaign.action();
     return GenericCampaignCheckResponse.activated;
   }
