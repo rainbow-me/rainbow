@@ -72,7 +72,7 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network, accountAddress } = useAccountSettings();
+  const { network: currentNetwork, accountAddress } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
@@ -217,10 +217,11 @@ export default function WalletScreen() {
   // (mainnet & rinkeby)
   const fabs = useMemo(
     () =>
-      [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(
-        e => !!e
-      ),
-    [network]
+      [
+        !!networkInfo[currentNetwork]?.exchange_enabled && ExchangeFab,
+        SendFab,
+      ].filter(e => !!e),
+    [currentNetwork]
   );
 
   const isLoadingAssets =
@@ -248,7 +249,7 @@ export default function WalletScreen() {
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
-          network={network}
+          network={currentNetwork}
           walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>
