@@ -23,6 +23,11 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { abbreviations } from '@/utils';
 
+// NOTE:
+// If you’re trying to edit this file for iOS and you’re not seeing any changes,
+// that’s because iOS is using the Swift version — TransactionListViewHeader.
+// Only Android is using this file at the moment.
+
 const dropdownArrowWidth = 21;
 
 const FloatingEmojisRegion = styled(FloatingEmojis).attrs({

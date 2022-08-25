@@ -22,7 +22,7 @@ export {
 export { default as emojis } from './emojis.json';
 export { default as ensIntroMarqueeNames } from './ens-intro-marquee-names.json';
 export { default as erc20ABI } from './erc20-abi.json';
-export { default as opWrapABI } from './op-wrap-abi.json';
+export { default as tokenGateCheckerAbi } from './token-gate-checker-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';

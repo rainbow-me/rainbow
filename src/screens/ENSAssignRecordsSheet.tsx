@@ -471,7 +471,11 @@ function HideKeyboardButton({ color }: { color: string }) {
 
   return (
     <Box as={Animated.View} style={style}>
-      <ButtonPressAnimation onPress={() => Keyboard.dismiss()} scaleTo={0.8}>
+      <ButtonPressAnimation
+        onPress={() => Keyboard.dismiss()}
+        scaleTo={0.8}
+        testID="hide-keyboard-button"
+      >
         <AccentColorProvider color={color}>
           <Box
             background="accent"

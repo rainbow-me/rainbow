@@ -205,6 +205,7 @@
         "invalid_fee": "Frais Non Valides",
         "invalid_fee_lowercase": "Frais non valides",
         "loading": "Loading... :)",
+        "no_quote_available": "􀅵 No Quote Available :)",
         "review": "Review :)",
         "submitting": "Submitting :)",
         "swap": "Tenir pour Swap",
@@ -572,9 +573,10 @@
       }
     },
     "explain": {
-      "optimism_app_icon": {
-        "title": "You've unlocked\nRainbow 􀆄 Optimism :)",
-        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+      "icon_unlock": {
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon! :)",
+        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "title": "You've unlocked\nRainbow 􀆄 %{partner} :)",
         "button": "Snag the icon :)"
       },
       "output_disabled": {
@@ -586,11 +588,6 @@
         "text": "%{tokenSymbol} is also available on %{networks}. To get %{tokenSymbol} on these networks, use a Bridge like Hop. :)",
         "title_plural": "Available on %{length} Networks :)",
         "title_singular": "Available on the %{network} Network :)"
-      },
-      "optimism_app_icon": {
-        "title": "You've unlocked\nRainbow 􀆄 Optimism :)",
-        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
-        "button": "Snag the icon :)"
       },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum. :)",
@@ -649,6 +646,10 @@
         "fragment2": "Read more :)",
         "fragment3": " about AMMs and token liquidity. :)",
         "title": "Insufficient Liquidity :)"
+      },
+      "no_quote": {
+        "title": "No quote available",
+        "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
       "unverified": {
         "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",

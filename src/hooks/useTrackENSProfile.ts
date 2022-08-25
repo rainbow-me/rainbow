@@ -4,7 +4,7 @@ import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
 import { analytics } from '@/analytics';
 import { EthereumAddress } from '@/entities';
-import { fetchAccountRegistrations } from '@/handlers/ens';
+import { fetchAccountDomains } from '@/handlers/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
 import walletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
@@ -39,7 +39,7 @@ export default function useTrackENSProfile() {
       const ens = walletNames[addresses[i]];
       if (ens) {
         const { records } = await fetchENSRecords(ens);
-        const registrations = await fetchAccountRegistrations(addresses[i]);
+        const registrations = await fetchAccountDomains(addresses[i]);
         data.numberOfENSOwned +=
           registrations?.data?.account?.registrations?.length || 0;
         data.numberOfENSWithAvatarOrCoverSet +=

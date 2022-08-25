@@ -103,19 +103,12 @@ const getInputAmount = async (
           code: quoteError.error_code,
           msg: quoteError.message,
         });
-        if (
-          // insufficient liquidity
-          quoteError.error_code === 502 ||
-          // Unsupported Token
-          quoteError.error_code === 501
-        ) {
-          return {
-            inputAmount: null,
-            inputAmountDisplay: null,
-            noLiquidity: true,
-            tradeDetails: null,
-          };
-        }
+        return {
+          inputAmount: null,
+          inputAmountDisplay: null,
+          quoteError: quoteError,
+          tradeDetails: null,
+        };
       }
       return {
         inputAmount: null,
@@ -210,19 +203,12 @@ const getOutputAmount = async (
           code: quoteError.error_code,
           msg: quoteError.message,
         });
-        if (
-          // insufficient liquidity
-          quoteError.error_code === 502 ||
-          // Unsupported Token
-          quoteError.error_code === 501
-        ) {
-          return {
-            noLiquidity: true,
-            outputAmount: null,
-            outputAmountDisplay: null,
-            tradeDetails: null,
-          };
-        }
+        return {
+          outputAmount: null,
+          outputAmountDisplay: null,
+          quoteError,
+          tradeDetails: null,
+        };
       }
       return {
         outputAmount: null,
@@ -319,11 +305,12 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       updateSwapQuote({
         derivedValues,
         displayValues,
+        quoteError: null,
         tradeDetails: null,
       })
     );
     return {
-      insufficientLiquidity: false,
+      quoteError: null,
       result: { derivedValues, displayValues, tradeDetails: null },
     };
   }, [dispatch]);
@@ -351,7 +338,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       }
 
       return {
-        insufficientLiquidity: false,
+        quoteError: null,
         result: {
           derivedValues,
           displayValues,
@@ -366,7 +353,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     const inputToken = inputCurrency;
     const outputToken = outputCurrency;
     const slippagePercentage = slippageInBips / 100;
-    let insufficientLiquidity = false;
+    let quoteError: QuoteError | undefined;
 
     if (independentField === SwapModalField.input) {
       derivedValues[SwapModalField.input] = independentValue;
@@ -385,7 +372,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
-        noLiquidity,
+        quoteError: newQuoteError,
       } = await getOutputAmount(
         independentValue,
         inputToken,
@@ -399,8 +386,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       // if original value changed, ignore new quote
       if (derivedValues[SwapModalField.input] !== independentValue) return;
 
-      insufficientLiquidity = !!noLiquidity;
       tradeDetails = newTradeDetails;
+      quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
       // @ts-ignore next-line
       displayValues[DisplayValue.output] = outputAmount
@@ -434,6 +421,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
+        quoteError: newQuoteError,
       } = await getOutputAmount(
         inputAmount,
         inputToken,
@@ -448,13 +436,14 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       if (derivedValues[SwapModalField.native] !== independentValue) return;
 
       tradeDetails = newTradeDetails;
+      quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
       displayValues[DisplayValue.output] =
         outputAmountDisplay?.toString() || null;
     } else {
       if (!outputToken || !inputToken) {
         return {
-          insufficientLiquidity: false,
+          quoteError: null,
           result: {
             derivedValues,
             displayValues,
@@ -470,7 +459,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         inputAmount,
         inputAmountDisplay,
         tradeDetails: newTradeDetails,
-        noLiquidity,
+        quoteError: newQuoteError,
       } = await getInputAmount(
         independentValue,
         inputToken,
@@ -483,8 +472,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       );
       // if original value changed, ignore new quote
       if (derivedValues[SwapModalField.output] !== independentValue) return;
+      quoteError = newQuoteError;
 
-      insufficientLiquidity = !!noLiquidity;
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.input] = inputAmount || '0';
       // @ts-ignore next-line
@@ -502,6 +491,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       derivedValues,
       displayValues,
       doneLoadingReserves: true,
+      quoteError,
       tradeDetails,
     };
 
@@ -527,7 +517,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       type,
     });
 
-    return { insufficientLiquidity, result: data };
+    return { quoteError, result: data };
   }, [
     accountAddress,
     chainId,
@@ -566,8 +556,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   });
 
   return {
-    insufficientLiquidity: data?.insufficientLiquidity || false,
     loading: isLoading && Boolean(independentValue),
+    quoteError: data?.quoteError || null,
     resetSwapInputs,
     result: data?.result || {
       derivedValues,

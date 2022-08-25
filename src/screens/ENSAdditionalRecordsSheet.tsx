@@ -53,7 +53,7 @@ export default function ENSAdditionalRecordsSheet() {
           paddingHorizontal="19px"
           paddingVertical="24px"
           style={boxStyle}
-          testID="ens-confirm-register-sheet"
+          testID="ens-additional-records-sheet"
         >
           <Inline space="10px">
             {Object.values(textRecordFields).map((textRecordField, i) => {

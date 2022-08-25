@@ -39,6 +39,19 @@ export default function useInitializeWallet() {
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
+  const getWalletStatusForPerformanceMetrics = (
+    isNew: boolean,
+    isImporting: boolean
+  ): string => {
+    if (isNew) {
+      return 'new';
+    } else if (isImporting) {
+      return 'imported';
+    } else {
+      return 'old';
+    }
+  };
+
   const initializeWallet = useCallback(
     async (
       seedPhrase,
@@ -138,7 +151,13 @@ export default function useInitializeWallet() {
 
         logger.sentry('💰 Wallet initialized');
         PerformanceTracking.finishMeasuring(
-          PerformanceMetrics.useInitializeWallet
+          PerformanceMetrics.useInitializeWallet,
+          {
+            walletStatus: getWalletStatusForPerformanceMetrics(
+              isNew,
+              isImporting
+            ),
+          }
         );
 
         dispatch(checkPendingTransactionsOnInitialize(walletAddress));
