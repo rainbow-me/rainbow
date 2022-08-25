@@ -28,6 +28,7 @@ import VersionNumber from 'react-native-version-number';
 import { QueryClientProvider } from 'react-query';
 import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
+import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FedoraToast, OfflineToast } from './components/toasts';
@@ -205,11 +206,13 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runWalletBackupStatusChecks();
-      if (ios) {
-        InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => runFeatureAndCampaignChecks(), 2000);
-        });
-      }
+
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(
+          () => (ios ? runFeatureAndCampaignChecks() : runCampaignChecks()),
+          2000
+        );
+      });
     }
   }
 
