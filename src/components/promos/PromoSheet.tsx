@@ -152,7 +152,7 @@ const PromoSheet = ({
               </Row>
               <Row height="content">
                 <Inset
-                  bottom={isSmallPhone ? '24px' : '42px'}
+                  bottom={isSmallPhone && ios ? '24px' : '42px'}
                   horizontal="19px"
                 >
                   <Stack space="12px">
