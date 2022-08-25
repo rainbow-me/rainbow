@@ -219,7 +219,10 @@ export const maybeSignUri = (
   return externalImageUri;
 };
 
-export const maybeSignSource = (source: Source, options?: {}): Source => {
+export const maybeSignSource = (
+  source: Source,
+  options?: Record<string, unknown>
+): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
     return {

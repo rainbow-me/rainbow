@@ -137,7 +137,6 @@ export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
   return function wrapper(this: any, ...args: Parameters<Fn>): ReturnType<Fn> {
     const startTime = performance.now();
 
-    // eslint-disable-next-line babel/no-invalid-this
     const res = fn.apply(this, args);
 
     const durationInMs = performance.now() - startTime;

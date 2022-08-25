@@ -68,9 +68,7 @@ export default function ProfileScreen({ navigation }) {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const addCashSupportedNetworks =
-    (IS_DEV && network === NetworkTypes.kovan) ||
-    network === NetworkTypes.mainnet;
+  const addCashSupportedNetworks = network === NetworkTypes.mainnet;
   const addCashAvailable =
     IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 

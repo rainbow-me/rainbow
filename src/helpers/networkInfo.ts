@@ -11,39 +11,6 @@ const networkInfo = {
     name: 'Ethereum',
     value: networkTypes.mainnet,
   },
-  [`${networkTypes.ropsten}`]: {
-    balance_checker_contract_address:
-      '0xf17adbb5094639142ca1c2add4ce0a0ef146c3f9',
-    color: '#ff4a8d',
-    disabled: false,
-    exchange_enabled: false,
-    faucet_url: `http://faucet.metamask.io/`,
-    name: 'Ropsten',
-    testnet: true,
-    value: networkTypes.ropsten,
-  },
-  [`${networkTypes.kovan}`]: {
-    balance_checker_contract_address:
-      '0xf3352813b612a2d198e437691557069316b84ebe',
-    color: '#7057ff',
-    disabled: false,
-    exchange_enabled: false,
-    faucet_url: `https://faucet.kovan.network/`,
-    name: 'Kovan',
-    testnet: true,
-    value: networkTypes.kovan,
-  },
-  [`${networkTypes.rinkeby}`]: {
-    balance_checker_contract_address:
-      '0xc55386617db7b4021d87750daaed485eb3ab0154',
-    color: '#f6c343',
-    disabled: false,
-    exchange_enabled: false,
-    faucet_url: 'https://faucet.rinkeby.io/',
-    name: 'Rinkeby',
-    testnet: true,
-    value: networkTypes.rinkeby,
-  },
   [`${networkTypes.goerli}`]: {
     balance_checker_contract_address:
       '0xf3352813b612a2d198e437691557069316b84ebe',
