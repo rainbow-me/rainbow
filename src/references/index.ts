@@ -1,11 +1,7 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists.json';
-import {
-  Asset,
-  SavingsAsset,
-  UniswapFavoriteTokenData,
-} from '@/entities';
+import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
 export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
@@ -108,10 +104,6 @@ export const TRANSFER_EVENT_KECCAK =
 export const AddCashCurrencies: {
   [key in Network]?: { [currency: string]: string };
 } = {
-  kovan: {
-    DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',
-    ETH: ETH_ADDRESS,
-  },
   mainnet: {
     DAI: DAI_ADDRESS,
     ETH: ETH_ADDRESS,
@@ -125,18 +117,6 @@ export const AddCashCurrencyInfo: {
     [currency: string]: AddCashCurrencyAsset;
   };
 } = {
-  kovan: {
-    '0xc4375b7de8af5a38a93548eb8453a498222c4ff2': {
-      decimals: 18,
-      name: 'Dai',
-      symbol: 'DAI',
-    },
-    'eth': {
-      decimals: 18,
-      name: 'Ethereum',
-      symbol: 'ETH',
-    },
-  },
   mainnet: {
     [DAI_ADDRESS]: {
       decimals: 18,
@@ -165,12 +145,6 @@ export type TokenListsExtendedRecord = Record<
 
 export const DefaultUniswapFavorites = {
   mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],
-  rinkeby: [
-    // Ethereum
-    ETH_ADDRESS,
-    // DAI
-    '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea',
-  ],
 };
 
 export const DefaultUniswapFavoritesMeta: Record<

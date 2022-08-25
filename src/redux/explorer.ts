@@ -38,15 +38,15 @@ import { AppGetState, AppState } from './store';
 import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
-import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
+import {
+  checkForTheMerge,
+  getProviderForNetwork,
+  isHardHat,
+} from '@/handlers/web3';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
-import {
-  DPI_ADDRESS,
-  ETH_ADDRESS,
-  MATIC_MAINNET_ADDRESS,
-} from '@/references';
+import { DPI_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 
@@ -578,6 +578,7 @@ export const explorerInit = () => async (
   // if we're not on mainnnet
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
+  checkForTheMerge(provider, network);
   if (
     isHardHat(providerUrl) ||
     network !== Network.mainnet ||

@@ -48,10 +48,12 @@ import { lightModeThemeColors } from '../styles/colors';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
+import config from '@/model/config';
 import {
   estimateGas,
   estimateGasWithPadding,
   getFlashbotsProvider,
+  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
@@ -245,7 +247,10 @@ export default function TransactionConfirmationScreen() {
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
-  const flashbotsEnabled = useExperimentalFlag(FLASHBOTS_WC);
+  const disableFlashbotsPostMerge =
+    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const flashbotsEnabled =
+    useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
   useEffect(() => {
     setCurrentNetwork(

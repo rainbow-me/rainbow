@@ -30,12 +30,7 @@ import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import networkTypes from '@/helpers/networkTypes';
-import {
-  convertHexToString,
-  delay,
-  omitBy,
-  pickBy,
-} from '@/helpers/utilities';
+import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
@@ -527,8 +522,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       );
       const supportedChains = [
         networkTypes.mainnet,
-        networkTypes.ropsten,
-        networkTypes.kovan,
         networkTypes.goerli,
         networkTypes.polygon,
         networkTypes.optimism,
