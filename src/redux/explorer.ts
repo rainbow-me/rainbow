@@ -38,7 +38,11 @@ import { AppGetState, AppState } from './store';
 import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import { ZerionAsset } from '@rainbow-me/entities';
-import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
+import {
+  checkForTheMerge,
+  getProviderForNetwork,
+  isHardHat,
+} from '@rainbow-me/handlers/web3';
 import ChartTypes, { ChartType } from '@rainbow-me/helpers/chartTypes';
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import { Network } from '@rainbow-me/helpers/networkTypes';
@@ -578,6 +582,7 @@ export const explorerInit = () => async (
   // if we're not on mainnnet
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
+  checkForTheMerge(provider, network);
   if (
     isHardHat(providerUrl) ||
     network !== Network.mainnet ||
