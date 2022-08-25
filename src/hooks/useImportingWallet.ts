@@ -4,7 +4,7 @@ import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
-import { IS_TESTING } from 'react-native-dotenv';
+import { DEV_PKEY, IS_TESTING, TEST_SEEDS } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { fetchENSAvatar } from './useENSAvatar';
@@ -37,9 +37,6 @@ import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const RAINBOW_TEST_WALLET_ADDRESS =
-  '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
-
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
@@ -64,7 +61,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const inputRef = useRef(null);
 
   const checkTestWallet = async () => {
-    if (__DEV__ && resolvedAddress === RAINBOW_TEST_WALLET_ADDRESS) {
+    if (seedPhrase === TEST_SEEDS || seedPhrase === DEV_PKEY) {
       InteractionManager.runAfterInteractions(() => {
         setTimeout(() => {
           Alert.alert(
@@ -396,6 +393,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     showImportModal,
     profilesEnabled,
     setIsWalletLoading,
+    checkTestWallet,
   ]);
 
   useEffect(() => {

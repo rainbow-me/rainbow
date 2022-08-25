@@ -10,8 +10,9 @@ describe('Hidden tokens flow', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.checkIfElementByTextIsVisible('OK', 40000);
     await Helpers.tapByText('OK');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
+    await Helpers.checkIfVisible('wallet-screen');
   });
 
   it('NFT is hideable', async () => {

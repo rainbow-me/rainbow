@@ -44,9 +44,12 @@ describe('Swap Sheet Interaction Flow', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
-    await Helpers.checkIfVisible('wallet-screen', 40000);
+    await Helpers.checkIfElementByTextIsVisible('OK', 40000);
+    await Helpers.tapByText('OK');
+    await Helpers.checkIfVisible('wallet-screen');
     await Helpers.enableSynchronization();
   });
+  /*
 
   it('Should send ETH to test wallet"', async () => {
     await Helpers.sendETHtoTestWallet();
@@ -787,7 +790,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('max-priority-fee-input');
     await Helpers.typeText('max-priority-fee-input', '2\n', false);
   });
-
+*/
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();

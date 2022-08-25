@@ -54,8 +54,9 @@ describe('Send Sheet Interaction Flow', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
+    await Helpers.checkIfElementByTextIsVisible('OK', 40000);
     await Helpers.tapByText('OK');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
+    await Helpers.checkIfVisible('wallet-screen');
     await Helpers.enableSynchronization();
   });
 

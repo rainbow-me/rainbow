@@ -109,8 +109,9 @@ describe('Hardhat Transaction Flow', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
+    await Helpers.checkIfElementByTextIsVisible('OK', 60000);
     await Helpers.tapByText('OK');
-    await Helpers.checkIfVisible('wallet-screen', 80000);
+    await Helpers.checkIfVisible('wallet-screen');
     await Helpers.enableSynchronization();
   });
 
