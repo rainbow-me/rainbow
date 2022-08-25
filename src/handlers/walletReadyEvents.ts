@@ -2,6 +2,7 @@
 import { IS_TESTING } from 'react-native-dotenv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
+import { activeCampaigns } from '@/campaigns/activeCampaignsCheck';
 import { EthereumAddress } from '@/entities';
 import { featureUnlockChecks } from '@/featuresToUnlock';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -87,7 +88,7 @@ export const runWalletBackupStatusChecks = () => {
   return;
 };
 
-export const runFeatureUnlockChecks = async () => {
+export const runFeatureUnlockChecks = async (): Promise<boolean> => {
   const {
     wallets,
   }: {
@@ -95,7 +96,7 @@ export const runFeatureUnlockChecks = async () => {
   } = store.getState().wallets;
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
-  if (!wallets) return;
+  if (!wallets) return false;
   const walletsToCheck: EthereumAddress[] = [];
 
   Object.values(wallets).forEach(wallet => {
@@ -109,13 +110,35 @@ export const runFeatureUnlockChecks = async () => {
 
   logger.log('WALLETS TO CHECK', walletsToCheck);
 
-  if (!walletsToCheck.length) return;
+  if (!walletsToCheck.length) return false;
+
+  logger.log('Feature Unlocks: Running Checks');
 
   // short circuits once the first feature is unlocked
   for (const featureUnlockCheck of featureUnlockChecks) {
     const unlockNow = await featureUnlockCheck(walletsToCheck);
     if (unlockNow) {
-      return;
+      return true;
     }
+  }
+  return false;
+};
+
+export const runCampaignChecks = async (): Promise<boolean> => {
+  logger.log('Campaigns: Running Checks');
+  for (const campaign of activeCampaigns) {
+    const shownCampaign = await campaign.check();
+    if (shownCampaign) {
+      return true;
+    }
+    return false;
+  }
+  return false;
+};
+
+export const runFeatureAndCampaignChecks = async () => {
+  const showingFeatureUnlock: boolean = await runFeatureUnlockChecks();
+  if (!showingFeatureUnlock) {
+    await runCampaignChecks();
   }
 };
