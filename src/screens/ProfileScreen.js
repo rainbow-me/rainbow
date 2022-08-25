@@ -84,8 +84,8 @@ export default function ProfileScreen({ navigation }) {
     <ProfileScreenPage testID="profile-screen">
       <Header align="center" justify="space-between">
         <HeaderButton
-          onPress={onPressSettings}
           onLongPress={onLongPressSettings}
+          onPress={onPressSettings}
           opacityTouchable={false}
           radiusAndroid={42}
           radiusWrapperStyle={{

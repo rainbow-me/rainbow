@@ -10,7 +10,6 @@ const buildRgba = memoFn(
 );
 
 const darkModeColors = {
-  almostBlack: '#0D0D0D',
   appleBlue: '#1F87FF',
   black: '#FFFFFF',
   blueGreyDark: '#E0E8FF',
@@ -84,7 +83,6 @@ const avatarBackgrounds = [
 
 const getColorsByTheme = (darkMode?: boolean) => {
   let base = {
-    almostBlack: '#0D0D0D', // '14, 118, 253'
     appleBlue: '#0E76FD', // '13, 13, 13'
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
