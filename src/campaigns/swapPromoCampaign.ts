@@ -2,10 +2,12 @@ import { MMKV } from 'react-native-mmkv';
 import { Campaign } from './campaignChecks';
 import { EthereumAddress } from '@/entities';
 
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
-import { logger } from '@/utils';
+import { ethereumUtils, logger } from '@/utils';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 
@@ -40,6 +42,9 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   }: {
     selected: RainbowWallet | undefined;
   } = store.getState().wallets;
+  const {
+    accountAddress,
+  }: { accountAddress: EthereumAddress } = store.getState().settings;
 
   // transactions are loaded from the current wallet
   const { transactions } = store.getState().data;
@@ -50,6 +55,26 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   // if the current wallet is read only then stop
   if (currentWallet.type === WalletTypes.readOnly) return false;
 
+  const networks: Network[] = (Object.keys(networkInfo) as Network[]).filter(
+    (network: any): boolean => networkInfo[network].exchange_enabled
+  );
+
+  // check native asset balances on networks that support swaps
+  let hasBalance = false;
+  await networks.forEach(async (network: Network) => {
+    const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
+      network,
+      accountAddress
+    );
+    const balance = Number(nativeAsset?.balance?.amount);
+    if (balance > 0) {
+      hasBalance = true;
+    }
+  });
+
+  // if the wallet has no native asset balances then stop
+  if (!hasBalance) return false;
+
   let hasSwapped: boolean = false;
   let index: number = 0;
   while (!hasSwapped) {
@@ -59,7 +84,7 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
     index++;
   }
   // if they have swapped, trigger campaign action
-  if (hasSwapped) {
+  if (!hasSwapped) {
     SwapPromoCampaign.action();
     return true;
   }
