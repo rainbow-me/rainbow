@@ -1,7 +1,7 @@
 import {
-  SwapPromoCampaign,
-  SwapPromoCampaignExclusions,
-} from './swapPromoCampaign';
+  SwapsPromoCampaign,
+  SwapsPromoCampaignExclusion,
+} from './swapsPromoCampaign';
 import { analytics } from '@/analytics';
 import { logger } from '@/utils';
 
@@ -22,7 +22,7 @@ export enum GenericCampaignCheckResponse {
 
 export type CampaignCheckResponse =
   | GenericCampaignCheckResponse
-  | SwapPromoCampaignExclusions;
+  | SwapsPromoCampaignExclusion;
 
 export interface Campaign {
   action(): Promise<void>; // Function to call on activating the campaign
@@ -32,7 +32,7 @@ export interface Campaign {
 }
 
 // the ordering of this list is IMPORTANT, this is the order that campaigns will be run
-export const activeCampaigns: Campaign[] = [SwapPromoCampaign];
+export const activeCampaigns: Campaign[] = [SwapsPromoCampaign];
 
 export const runCampaignChecks = async (): Promise<boolean> => {
   logger.log('Campaigns: Running Checks');

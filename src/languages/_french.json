@@ -1027,7 +1027,7 @@
       }
     },
     "promos": {
-      "swaps": {
+      "swaps_launch": {
         "primary_button": "􀖅 Try a swap :)",
         "secondary_button": "Maybe later :)",
         "info_row_1": {

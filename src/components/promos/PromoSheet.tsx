@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useReducer } from 'react';
 import { StatusBar } from 'react-native';
 import {
   SheetActionButton,
@@ -27,8 +27,6 @@ import { useTheme } from '@rainbow-me/theme';
 
 const MIN_HEIGHT = 740;
 
-type Promo = 'swaps';
-
 interface PromoSheetProps {
   onPress: () => void;
   iconGradient: string[];
@@ -36,7 +34,6 @@ interface PromoSheetProps {
   headerImageAspectRatio: number;
   backgroundImage?: StaticImageData;
   backgroundColor: string;
-  promoType: Promo;
   accentColor: string;
   sheetHandleColor?: string;
   icon1: string;
@@ -52,7 +49,6 @@ const PromoSheet = ({
   headerImageAspectRatio,
   backgroundImage,
   backgroundColor,
-  promoType,
   accentColor,
   sheetHandleColor,
   icon1,
@@ -64,24 +60,30 @@ const PromoSheet = ({
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const renderedAt = Date.now();
+  const [activated, activate] = useReducer(() => true, false);
 
-  const dismiss = useCallback(() => {
-    const timeElapsed = (Date.now() - renderedAt) / 1000;
-    analytics.track('Dismissed Feature Promo', {
-      campaign: campaignKey,
-      time_viewed: timeElapsed,
-    });
-    goBack();
-  }, [campaignKey, goBack, renderedAt]);
+  useEffect(
+    () => () => {
+      if (!activated) {
+        const timeElapsed = (Date.now() - renderedAt) / 1000;
+        analytics.track('Dismissed Feature Promo', {
+          campaign: campaignKey,
+          time_viewed: timeElapsed,
+        });
+      }
+    },
+    [activated, campaignKey, renderedAt]
+  );
 
   const engage = useCallback(() => {
+    activate();
     const timeElapsed = (Date.now() - renderedAt) / 1000;
     analytics.track('Activated Feature Promo Action', {
       campaign: campaignKey,
       time_viewed: timeElapsed,
     });
     onPress();
-  }, [campaignKey, onPress, renderedAt]);
+  }, [activate, campaignKey, onPress, renderedAt]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -136,10 +138,10 @@ const PromoSheet = ({
                     </Box>
                     <Stack alignHorizontal="center" space={{ custom: 13 }}>
                       <Text color="secondary60" size="15px" weight="heavy">
-                        {lang.t(`promos.${promoType}.subheader`)}
+                        {lang.t(`promos.${campaignKey}.subheader`)}
                       </Text>
                       <Heading size="30px" weight="heavy">
-                        {lang.t(`promos.${promoType}.header`)}
+                        {lang.t(`promos.${campaignKey}.header`)}
                       </Heading>
                     </Stack>
                   </Box>
@@ -147,27 +149,27 @@ const PromoSheet = ({
                     <Stack space={isSmallPhone ? '24px' : '36px'}>
                       <InfoRow
                         description={lang.t(
-                          `promos.${promoType}.info_row_1.description`
+                          `promos.${campaignKey}.info_row_1.description`
                         )}
                         gradient={iconGradient}
                         icon={icon1}
-                        title={lang.t(`promos.${promoType}.info_row_1.title`)}
+                        title={lang.t(`promos.${campaignKey}.info_row_1.title`)}
                       />
                       <InfoRow
                         description={lang.t(
-                          `promos.${promoType}.info_row_2.description`
+                          `promos.${campaignKey}.info_row_2.description`
                         )}
                         gradient={iconGradient}
                         icon={icon2}
-                        title={lang.t(`promos.${promoType}.info_row_2.title`)}
+                        title={lang.t(`promos.${campaignKey}.info_row_2.title`)}
                       />
                       <InfoRow
                         description={lang.t(
-                          `promos.${promoType}.info_row_3.description`
+                          `promos.${campaignKey}.info_row_3.description`
                         )}
                         gradient={iconGradient}
                         icon={icon3}
-                        title={lang.t(`promos.${promoType}.info_row_3.title`)}
+                        title={lang.t(`promos.${campaignKey}.info_row_3.title`)}
                       />
                     </Stack>
                   </Inset>
@@ -182,7 +184,7 @@ const PromoSheet = ({
                     <SheetActionButton
                       color={accentColor}
                       // @ts-expect-error JavaScript component
-                      label={lang.t(`promos.${promoType}.primary_button`)}
+                      label={lang.t(`promos.${campaignKey}.primary_button`)}
                       lightShadows
                       onPress={engage}
                       textColor={backgroundColor}
@@ -193,8 +195,8 @@ const PromoSheet = ({
                       color={colors.transparent}
                       isTransparent
                       // @ts-expect-error JavaScript component
-                      label={lang.t(`promos.${promoType}.secondary_button`)}
-                      onPress={dismiss}
+                      label={lang.t(`promos.${campaignKey}.secondary_button`)}
+                      onPress={goBack}
                       textColor={accentColor}
                       textSize="large"
                       weight="heavy"

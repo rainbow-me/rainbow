@@ -51,7 +51,6 @@ export default function SwapsPromoSheet() {
       icon3="􀙨"
       iconGradient={colors.gradients.swapPurpleTintToSwapPurple}
       onPress={navigateToSwaps}
-      promoType="swaps"
       sheetHandleColor={colors.whiteLabel}
     />
   );

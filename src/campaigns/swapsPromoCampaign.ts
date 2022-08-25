@@ -12,7 +12,6 @@ import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { ethereumUtils, logger } from '@/utils';
-import { analytics } from '@rainbow-me/analytics';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 
@@ -27,17 +26,16 @@ export const swapsCampaignAction = async () => {
 
   mmkv.set(CampaignKey.swapsLaunch, true);
   setTimeout(() => {
-    logger.log('triggering swap promo action');
-    analytics.track('Presented Feature Promo', { campaign: 'swaps_launch' });
+    logger.log('triggering swaps promo action');
 
     Navigation.handleAction(Routes.SWAPS_PROMO_SHEET, {});
   }, 1000);
 };
 
-export type SwapPromoCampaignExclusions = 'no_assets' | 'already_swapped';
+export type SwapsPromoCampaignExclusion = 'no_assets' | 'already_swapped';
 
 export const swapsCampaignCheck = async (): Promise<
-  SwapPromoCampaignExclusions | GenericCampaignCheckResponse
+  SwapsPromoCampaignExclusion | GenericCampaignCheckResponse
 > => {
   const hasShownCampaign = mmkv.getBoolean(CampaignKey.swapsLaunch);
 
@@ -104,13 +102,13 @@ export const swapsCampaignCheck = async (): Promise<
 
   // if they have not swapped yet, trigger campaign action
   if (!hasSwapped) {
-    SwapPromoCampaign.action();
+    SwapsPromoCampaign.action();
     return GenericCampaignCheckResponse.activated;
   }
   return 'already_swapped';
 };
 
-export const SwapPromoCampaign: Campaign = {
+export const SwapsPromoCampaign: Campaign = {
   action: async () => await swapsCampaignAction(),
   campaignKey: CampaignKey.swapsLaunch,
   check: async () => await swapsCampaignCheck(),
