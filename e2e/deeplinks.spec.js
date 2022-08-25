@@ -55,6 +55,7 @@ describe('Deeplinks spec', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
+    await Helpers.tapByText('OK');
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
   });

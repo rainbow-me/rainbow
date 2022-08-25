@@ -9,8 +9,8 @@ describe('Hidden tokens flow', () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.waitAndTap('import-sheet-button');
-
     await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.tapByText('OK');
     await Helpers.checkIfVisible('wallet-screen', 40000);
   });
 

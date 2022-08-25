@@ -20,6 +20,7 @@ describe('Watched showcase and hidden actions flow', () => {
     }
     await Helpers.enableSynchronization();
 
+    await Helpers.tapByText('OK');
     // Tap an NFT.
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tap('token-family-header-ENS');
