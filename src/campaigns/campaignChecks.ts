@@ -6,7 +6,7 @@ export enum CampaignKey {
 }
 
 export interface Campaign {
-  action: Function; // Function to call on activating the campaign
+  action(): Promise<void>; // Function to call on activating the campaign
   campaignKey: CampaignKey; // MMKV key to track if the campaign should be run
   check(): Promise<boolean>; // Function that checks if the campaign should be shown
 }

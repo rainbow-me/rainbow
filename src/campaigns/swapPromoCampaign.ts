@@ -20,12 +20,11 @@ const mmkv = new MMKV();
 export const swapsCampaignAction = async () => {
   logger.log('Campaign: Showing Swaps Promo');
 
-  //mmkv.set(swapsCampaignKey, true);
+  mmkv.set(CampaignKey.swapsLaunch, true);
   setTimeout(() => {
     logger.log('triggering swap promo action');
 
     Navigation.handleAction(Routes.SWAPS_PROMO_SHEET, {});
-    return true;
   }, 1000);
 };
 
@@ -81,7 +80,7 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
     }
     index++;
   }
-  // if they have swapped, trigger campaign action
+  // if they have not swapped yet, trigger campaign action
   if (!hasSwapped) {
     SwapPromoCampaign.action();
     return true;
@@ -90,7 +89,7 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
 };
 
 export const SwapPromoCampaign: Campaign = {
-  action: () => swapsCampaignAction(),
+  action: async () => await swapsCampaignAction(),
   campaignKey: CampaignKey.swapsLaunch,
   check: async () => await swapsCampaignCheck(),
 };
