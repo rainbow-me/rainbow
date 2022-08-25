@@ -73,10 +73,21 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   // if the wallet has no native asset balances then stop
   if (!hasBalance) return false;
 
+  const swapsLaunchDate = new Date('2022-07-26');
   let hasSwapped: boolean = false;
+  let timeCheck: boolean = false;
   let index: number = 0;
-  while (!hasSwapped) {
-    if (transactions[index].to === RAINBOW_ROUTER_ADDRESS) {
+  while (!hasSwapped && !timeCheck) {
+    const currentTransaction = transactions[index];
+    if (currentTransaction.minedAt) {
+      const txDate = new Date(currentTransaction.minedAt * 1000);
+
+      // we dont care about tx's before we launched swaps
+      if (txDate < swapsLaunchDate) {
+        timeCheck = true;
+      }
+    }
+    if (currentTransaction.to === RAINBOW_ROUTER_ADDRESS) {
       hasSwapped = true;
     }
     index++;
