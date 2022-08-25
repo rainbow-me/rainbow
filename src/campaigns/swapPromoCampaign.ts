@@ -1,5 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
-import { Campaign } from './campaignType';
+import { Campaign } from './campaignChecks';
 import { EthereumAddress } from '@/entities';
 
 import WalletTypes from '@/helpers/walletTypes';

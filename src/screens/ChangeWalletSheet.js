@@ -25,7 +25,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { runCampaignChecks } from '@/handlers/walletReadyEvents';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';

@@ -2,7 +2,7 @@
 import { IS_TESTING } from 'react-native-dotenv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
-import { activeCampaigns } from '@/campaigns/activeCampaignsCheck';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import { EthereumAddress } from '@/entities';
 import { featureUnlockChecks } from '@/featuresToUnlock';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -120,18 +120,6 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
     if (unlockNow) {
       return true;
     }
-  }
-  return false;
-};
-
-export const runCampaignChecks = async (): Promise<boolean> => {
-  logger.log('Campaigns: Running Checks');
-  for (const campaign of activeCampaigns) {
-    const shownCampaign = await campaign.check();
-    if (shownCampaign) {
-      return true;
-    }
-    return false;
   }
   return false;
 };
