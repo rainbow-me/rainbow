@@ -37,6 +37,9 @@ import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
 import logger from 'logger';
 
+const RAINBOW_TEST_WALLET_ADDRESS =
+  '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
+
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
@@ -59,6 +62,18 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const inputRef = useRef(null);
+
+  const checkTestWallet = async () => {
+    if (__DEV__ && resolvedAddress === RAINBOW_TEST_WALLET_ADDRESS) {
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          Alert.alert(
+            'This Wallet is for e2e tests ONLY! \n\n Do not use this wallet for anything else!'
+          );
+        }, 1000);
+      });
+    }
+  };
 
   useEffect(() => {
     android &&
@@ -296,8 +311,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                       params: { initialized: true },
                       screen: Routes.WALLET_SCREEN,
                     });
+                    checkTestWallet();
                   } else {
                     navigate(Routes.WALLET_SCREEN, { initialized: true });
+                    checkTestWallet();
                   }
                   if (android) {
                     handleSetImporting(false);
