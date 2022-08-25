@@ -1,14 +1,34 @@
-import { SwapPromoCampaign } from './swapPromoCampaign';
+import {
+  SwapPromoCampaign,
+  SwapPromoCampaignExclusions,
+} from './swapPromoCampaign';
+import { analytics } from '@/analytics';
 import { logger } from '@/utils';
 
 export enum CampaignKey {
   swapsLaunch = 'swaps_launch',
 }
 
+export enum CampaignCheckType {
+  wallet = 'wallet',
+  device = 'device',
+  deviceOrWallet = 'device | wallet',
+}
+
+export enum GenericCampaignCheckResponse {
+  activated = 'activated',
+  nonstarter = 'nonstarter',
+}
+
+export type CampaignCheckResponse =
+  | GenericCampaignCheckResponse
+  | SwapPromoCampaignExclusions;
+
 export interface Campaign {
   action(): Promise<void>; // Function to call on activating the campaign
   campaignKey: CampaignKey; // MMKV key to track if the campaign should be run
-  check(): Promise<boolean>; // Function that checks if the campaign should be shown
+  check(): Promise<CampaignCheckResponse>; // Function that checks if the campaign should be shown
+  checkType: CampaignCheckType; //
 }
 
 // the ordering of this list is IMPORTANT, this is the order that campaigns will be run
@@ -17,10 +37,21 @@ export const activeCampaigns: Campaign[] = [SwapPromoCampaign];
 export const runCampaignChecks = async (): Promise<boolean> => {
   logger.log('Campaigns: Running Checks');
   for (const campaign of activeCampaigns) {
-    const shownCampaign = await campaign.check();
-    if (shownCampaign) {
+    const response = await campaign.check();
+    if (response === GenericCampaignCheckResponse.activated) {
+      analytics.track('Viewed Feature Promo', {
+        campaign: campaign.campaignKey,
+      });
       return true;
     }
+    if (response !== GenericCampaignCheckResponse.nonstarter) {
+      analytics.track('Excluded from Feature Promo', {
+        campaign: campaign.campaignKey,
+        exclusion: response,
+        type: campaign.checkType,
+      });
+    }
+
     return false;
   }
   return false;

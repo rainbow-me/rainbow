@@ -1,13 +1,18 @@
 import { MMKV } from 'react-native-mmkv';
-import { Campaign, CampaignKey } from './campaignChecks';
+import {
+  Campaign,
+  CampaignCheckType,
+  CampaignKey,
+  GenericCampaignCheckResponse,
+} from './campaignChecks';
 import { EthereumAddress, RainbowTransaction } from '@/entities';
-
 import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { ethereumUtils, logger } from '@/utils';
+import { analytics } from '@rainbow-me/analytics';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 
@@ -23,16 +28,21 @@ export const swapsCampaignAction = async () => {
   mmkv.set(CampaignKey.swapsLaunch, true);
   setTimeout(() => {
     logger.log('triggering swap promo action');
+    analytics.track('Presented Feature Promo', { campaign: 'swaps_launch' });
 
     Navigation.handleAction(Routes.SWAPS_PROMO_SHEET, {});
   }, 1000);
 };
 
-export const swapsCampaignCheck = async (): Promise<boolean> => {
+export type SwapPromoCampaignExclusions = 'no_assets' | 'already_swapped';
+
+export const swapsCampaignCheck = async (): Promise<
+  SwapPromoCampaignExclusions | GenericCampaignCheckResponse
+> => {
   const hasShownCampaign = mmkv.getBoolean(CampaignKey.swapsLaunch);
 
   // we only want to show this campaign once
-  if (hasShownCampaign) return false;
+  if (hasShownCampaign) return GenericCampaignCheckResponse.nonstarter;
 
   const {
     selected: currentWallet,
@@ -41,7 +51,7 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   } = store.getState().wallets;
 
   // if there's no wallet then stop
-  if (!currentWallet) return false;
+  if (!currentWallet) return GenericCampaignCheckResponse.nonstarter;
 
   const {
     accountAddress,
@@ -51,7 +61,8 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   const { transactions } = store.getState().data;
 
   // if the current wallet is read only then stop
-  if (currentWallet.type === WalletTypes.readOnly) return false;
+  if (currentWallet.type === WalletTypes.readOnly)
+    return GenericCampaignCheckResponse.nonstarter;
 
   const networks: Network[] = (Object.keys(networkInfo) as Network[]).filter(
     (network: any): boolean => networkInfo[network].exchange_enabled
@@ -71,7 +82,7 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   });
 
   // if the wallet has no native asset balances then stop
-  if (!hasBalance) return false;
+  if (!hasBalance) return 'no_assets';
 
   const swapsLaunchDate = new Date('2022-07-26');
   const isAfterSwapsLaunch = (tx: RainbowTransaction): boolean => {
@@ -94,13 +105,14 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   // if they have not swapped yet, trigger campaign action
   if (!hasSwapped) {
     SwapPromoCampaign.action();
-    return true;
+    return GenericCampaignCheckResponse.activated;
   }
-  return false;
+  return 'already_swapped';
 };
 
 export const SwapPromoCampaign: Campaign = {
   action: async () => await swapsCampaignAction(),
   campaignKey: CampaignKey.swapsLaunch,
   check: async () => await swapsCampaignCheck(),
+  checkType: CampaignCheckType.deviceOrWallet,
 };

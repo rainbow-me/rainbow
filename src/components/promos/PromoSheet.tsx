@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
 import {
   SheetActionButton,
@@ -7,7 +7,9 @@ import {
   SlackSheet,
 } from '../../components/sheet';
 import InfoRow from './InfoRow';
+import { CampaignKey } from '@/campaigns/campaignChecks';
 import { ImgixImage } from '@/components/images';
+import { analytics } from '@rainbow-me/analytics';
 import {
   AccentColorProvider,
   Box,
@@ -40,6 +42,7 @@ interface PromoSheetProps {
   icon1: string;
   icon2: string;
   icon3: string;
+  campaignKey: CampaignKey;
 }
 
 const PromoSheet = ({
@@ -55,10 +58,30 @@ const PromoSheet = ({
   icon1,
   icon2,
   icon3,
+  campaignKey,
 }: PromoSheetProps) => {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
+  const renderedAt = Date.now();
+
+  const dismiss = useCallback(() => {
+    const timeElapsed = (Date.now() - renderedAt) / 1000;
+    analytics.track('Dismissed Feature Promo', {
+      campaign: campaignKey,
+      time_viewed: timeElapsed,
+    });
+    goBack();
+  }, [campaignKey, goBack, renderedAt]);
+
+  const engage = useCallback(() => {
+    const timeElapsed = (Date.now() - renderedAt) / 1000;
+    analytics.track('Activated Feature Promo Action', {
+      campaign: campaignKey,
+      time_viewed: timeElapsed,
+    });
+    onPress();
+  }, [campaignKey, onPress, renderedAt]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -161,7 +184,7 @@ const PromoSheet = ({
                       // @ts-expect-error JavaScript component
                       label={lang.t(`promos.${promoType}.primary_button`)}
                       lightShadows
-                      onPress={onPress}
+                      onPress={engage}
                       textColor={backgroundColor}
                       textSize="large"
                       weight="heavy"
@@ -171,7 +194,7 @@ const PromoSheet = ({
                       isTransparent
                       // @ts-expect-error JavaScript component
                       label={lang.t(`promos.${promoType}.secondary_button`)}
-                      onPress={goBack}
+                      onPress={dismiss}
                       textColor={accentColor}
                       textSize="large"
                       weight="heavy"

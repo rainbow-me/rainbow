@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { useNavigation } from '../navigation/Navigation';
+import { CampaignKey } from '@/campaigns/campaignChecks';
 import { PromoSheet } from '@/components/promos';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
@@ -42,6 +43,7 @@ export default function SwapsPromoSheet() {
       accentColor={colors.whiteLabel}
       backgroundColor={colors.trueBlack}
       backgroundImage={SwapsPromoBackground}
+      campaignKey={CampaignKey.swapsLaunch}
       headerImage={SwapsPromoHeader}
       headerImageAspectRatio={HEADER_WIDTH / HEADER_HEIGHT}
       icon1="􀖅"
