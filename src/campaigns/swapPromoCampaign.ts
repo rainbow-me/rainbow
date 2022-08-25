@@ -39,15 +39,16 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   }: {
     selected: RainbowWallet | undefined;
   } = store.getState().wallets;
+
+  // if there's no wallet then stop
+  if (!currentWallet) return false;
+
   const {
     accountAddress,
   }: { accountAddress: EthereumAddress } = store.getState().settings;
 
   // transactions are loaded from the current wallet
   const { transactions } = store.getState().data;
-
-  // if there's no wallet then stop
-  if (!currentWallet) return false;
 
   // if the current wallet is read only then stop
   if (currentWallet.type === WalletTypes.readOnly) return false;
