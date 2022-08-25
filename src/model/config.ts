@@ -96,6 +96,8 @@ const init = async () => {
       const [key, entry] = $;
       if (key === 'default_slippage_bips') {
         config[key] = JSON.parse(entry.asString());
+      } else if (key === 'flashbots_enabled') {
+        config[key] = entry.asBoolean();
       } else {
         config[key] = entry.asString();
       }

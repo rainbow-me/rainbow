@@ -34,7 +34,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@rainbow-me/analytics';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import { getHasMerged, getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ExchangeModalTypes,
   isKeyboardOpen,
@@ -361,7 +361,12 @@ export default function ExchangeModal({
     loading
   );
   const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
-  const swapSupportsFlashbots = currentNetwork === Network.mainnet;
+  // For a limited period after the merge we need to block the use of flashbots.
+  // This line should be removed after reenabling flashbots in remote config.
+  const hideFlashbotsPostMerge =
+    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const swapSupportsFlashbots =
+    currentNetwork === Network.mainnet && !hideFlashbotsPostMerge;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
