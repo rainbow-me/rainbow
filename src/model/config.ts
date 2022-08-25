@@ -39,6 +39,7 @@ export interface RainbowConfig extends Record<string, any> {
   data_endpoint?: string;
   data_origin?: string;
   default_slippage_bips?: string;
+  flashbots_enabled?: boolean;
   ethereum_goerli_rpc?: string;
   ethereum_mainnet_rpc?: string;
   op_nft_network?: string;
@@ -62,6 +63,7 @@ const DEFAULT_CONFIG = {
   ethereum_mainnet_rpc: __DEV__
     ? ETHEREUM_MAINNET_RPC_DEV
     : ETHEREUM_MAINNET_RPC,
+  flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
