@@ -46,6 +46,9 @@ const sx = StyleSheet.create({
   coinCheckIcon: {
     width: 60,
   },
+  contextMenuAndroid: {
+    flex: 1,
+  },
   editIcon: {
     color: '#0E76FD',
     fontFamily: fonts.family.SFProRounded,
@@ -64,7 +67,6 @@ const sx = StyleSheet.create({
   rightContent: {
     flex: 0,
     flexDirection: 'row',
-    marginLeft: 48,
   },
 });
 
@@ -194,7 +196,7 @@ export default function AddressRow({
   }, [menuConfig, onMenuItemPress]);
 
   const leftSide = (
-    <Row align="center" height={59}>
+    <Row align="center" flex={1} height={59} paddingRight={48}>
       {accountImage ? (
         <ImageAvatar image={accountImage} marginRight={10} size="medium" />
       ) : (
@@ -244,6 +246,7 @@ export default function AddressRow({
           <ContextMenuButton
             menuConfig={editMode ? menuConfig : emptyMenu}
             onPressMenuItem={handlePressMenuItem}
+            style={sx.contextMenuAndroid}
           >
             {leftSide}
           </ContextMenuButton>
