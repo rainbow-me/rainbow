@@ -44,7 +44,9 @@ export default function SwapsPromoSheet() {
 
   const navigateToSwaps = useCallback(() => {
     goBack();
-    delay(300).then(() => navigate(Routes.EXCHANGE_MODAL));
+    delay(300).then(() =>
+      navigate(Routes.EXCHANGE_MODAL, { fromDiscover: false })
+    );
   }, [goBack, navigate]);
 
   const contentHeight =
@@ -61,7 +63,7 @@ export default function SwapsPromoSheet() {
       scrollEnabled={false}
     >
       <StatusBar barStyle="light-content" />
-      <AccentColorProvider color={colors.black}>
+      <AccentColorProvider color={colors.trueBlack}>
         <Box
           background="accent"
           style={{ height: contentHeight }}
@@ -71,22 +73,27 @@ export default function SwapsPromoSheet() {
           <Box as={ImgixImage} height="full" source={SwapsPromoBackground}>
             <Rows>
               <Row>
-                <Stack space={{ custom: 54 }}>
+                <Stack space={{ custom: isSmallPhone ? 46 : 54 }}>
                   <Box>
-                    <Box height={{ custom: 265 }} width="full">
+                    <Box
+                      height={{ custom: isSmallPhone ? 195 : 265 }}
+                      width="full"
+                    >
                       {/* @ts-ignore */}
                       <Box
                         as={ImgixImage}
                         height={{ custom: deviceWidth * (285 / 390) }}
                         resizeMode="center"
+                        {...(isSmallPhone && { marginTop: { custom: -70 } })}
                         source={SwapsPromoHeader}
                         width="full"
                       >
                         {/* @ts-ignore */}
                         <SheetHandle
                           alignSelf="center"
-                          color={colors.white}
-                          style={{ marginTop: 5 }}
+                          color={colors.whiteLabel}
+                          position="absolute"
+                          style={{ marginTop: isSmallPhone ? 75 : 5 }}
                         />
                       </Box>
                     </Box>
@@ -127,15 +134,19 @@ export default function SwapsPromoSheet() {
                 </Stack>
               </Row>
               <Row height="content">
-                <Inset bottom="42px" horizontal="19px">
+                <Inset
+                  bottom={isSmallPhone ? '24px' : '42px'}
+                  horizontal="19px"
+                >
                   <Stack space="12px">
                     <SheetActionButton
-                      color={colors.white}
+                      color={colors.whiteLabel}
                       // @ts-expect-error JavaScript component
                       label={lang.t('promos.swaps.primary_button')}
                       lightShadows
                       onPress={navigateToSwaps}
                       textColor={colors.almostBlack}
+                      textSize="large"
                       weight="heavy"
                     />
                     <SheetActionButton
@@ -144,9 +155,9 @@ export default function SwapsPromoSheet() {
                       // @ts-expect-error JavaScript component
                       label={lang.t('promos.swaps.secondary_button')}
                       onPress={goBack}
-                      textColor={colors.white}
-                      textSize="lmedium"
-                      weight="bold"
+                      textColor={colors.whiteLabel}
+                      textSize="large"
+                      weight="heavy"
                     />
                   </Stack>
                 </Inset>

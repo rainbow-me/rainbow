@@ -60,9 +60,10 @@ export default function ProfileScreen({ navigation }) {
     navigate,
   ]);
 
-  // const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_SHEET), [
-  //   navigate,
-  // ]);
+  const onLongPressSettings = useCallback(
+    () => navigate(Routes.SETTINGS_SHEET),
+    [navigate]
+  );
 
   const onPressSettings = useCallback(
     () => navigate(Routes.SWAPS_PROMO_SHEET),
@@ -84,6 +85,7 @@ export default function ProfileScreen({ navigation }) {
       <Header align="center" justify="space-between">
         <HeaderButton
           onPress={onPressSettings}
+          onLongPress={onLongPressSettings}
           opacityTouchable={false}
           radiusAndroid={42}
           radiusWrapperStyle={{
