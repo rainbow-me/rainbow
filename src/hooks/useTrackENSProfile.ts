@@ -7,20 +7,21 @@ import { EthereumAddress } from '@rainbow-me/entities';
 import { fetchAccountDomains } from '@rainbow-me/handlers/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
+import { RainbowWallet } from '@rainbow-me/model/wallet';
 
 export default function useTrackENSProfile() {
   const { walletNames, wallets } = useWallets();
 
   const addresses = useMemo(
     () =>
-      Object.values(wallets || {})
-        .filter((wallet: any) => wallet?.type !== walletTypes.readOnly)
+      Object.values<RainbowWallet | undefined>(wallets || {})
+        .filter(wallet => wallet?.type !== walletTypes.readOnly)
         .reduce(
-          (addresses: EthereumAddress[], wallet: any) =>
+          (addresses: EthereumAddress[], wallet: RainbowWallet | undefined) =>
             addresses.concat(
               wallet?.addresses.map(
                 ({ address }: { address: EthereumAddress }) => address
-              )
+              )!
             ),
           []
         ),

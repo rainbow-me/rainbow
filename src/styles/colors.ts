@@ -21,6 +21,7 @@ const darkModeColors = {
   blueGreyDarker: '#000000',
   blueGreyDarkLight: '#1E2027',
   brightRed: '#FF5252',
+  cardBackdrop: '#12131A',
   dark: '#E0E8FF',
   darkGrey: '#333333',
   darkModeDark: '#404656',
@@ -95,6 +96,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     blueGreyDarker: '#0F0F11', // '15, 15, 17'
     blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
     brightRed: '#FF7171', // '255, 113, 113'
+    cardBackdrop: '#F5F5F7', // '245, 245, 247'
     chartGreen: '#66D28F', // '102, 210, 143'
     dark: '#25292E', // '37, 41, 46'
     darkGrey: '#71778A', // '113, 119, 138'
@@ -138,6 +140,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     shadowGrey: '#6F6F6F', // '111, 111, 111'
     shimmer: '#EDEEF1', // '237, 238, 241'
     skeleton: '#F6F7F8', // '246, 247, 248'
+    smolPurple: '#7D50E6', // '125, 80, 230'
+    smolPurple06: 'rgba(125, 80, 230, 0.06)', // '125, 80, 230, 0.06'
     stackBackground: '#000000', // '0, 0, 0'
     swapPurple: '#575CFF', // '87, 92, 255'
     transparent: 'transparent',

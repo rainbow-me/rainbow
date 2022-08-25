@@ -3,8 +3,9 @@ import BottomSheet, {
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
+import { isKeyboardOpen } from '../../../helpers';
 import {
   CONTAINER_HEIGHT,
   DEFAULT_BACKDROP_COLOR,
@@ -119,7 +120,14 @@ const BottomSheetRoute = ({
   //#region effects
   useEffect(() => {
     if (removing === true && ref.current) {
-      ref.current.close();
+      // close keyboard before closing the modal
+      if (isKeyboardOpen() && android) {
+        Keyboard.dismiss();
+
+        ref.current.close();
+      } else {
+        ref.current.close();
+      }
     }
   }, [removing]);
   //#endregion

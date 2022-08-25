@@ -73,7 +73,7 @@ import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
@@ -212,6 +212,7 @@ export default function ExchangeModal({
     startPollingGasFees,
     stopPollingGasFees,
     updateDefaultGasLimit,
+    updateGasFeeOption,
     updateTxFee,
     txNetwork,
     isGasReady,
@@ -282,6 +283,31 @@ export default function ExchangeModal({
     title,
     type,
   });
+  const speedUrgentSelected = useRef(false);
+
+  useEffect(() => {
+    if (
+      !speedUrgentSelected.current &&
+      !isEmpty(gasFeeParamsBySpeed) &&
+      (currentNetwork === Network.mainnet || currentNetwork === Network.polygon)
+    ) {
+      // Default to fast for networks with speed options
+      updateGasFeeOption(gasUtils.FAST);
+      speedUrgentSelected.current = true;
+    }
+  }, [
+    currentNetwork,
+    gasFeeParamsBySpeed,
+    selectedGasFee,
+    updateGasFeeOption,
+    updateTxFee,
+  ]);
+
+  useEffect(() => {
+    if (currentNetwork !== prevTxNetwork) {
+      speedUrgentSelected.current = false;
+    }
+  }, [currentNetwork, prevTxNetwork]);
 
   const defaultGasLimit = useMemo(() => {
     const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
@@ -314,7 +340,7 @@ export default function ExchangeModal({
     },
     loading,
     resetSwapInputs,
-    insufficientLiquidity,
+    quoteError,
   } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
@@ -558,12 +584,16 @@ export default function ExchangeModal({
         analytics.track(`Completed ${type}`, {
           aggregator: tradeDetails?.source || '',
           amountInUSD,
+          gasSetting: selectedGasFee?.option,
           inputTokenAddress: inputCurrency?.address || '',
           inputTokenName: inputCurrency?.name || '',
           inputTokenSymbol: inputCurrency?.symbol || '',
           isHighPriceImpact: debouncedIsHighPriceImpact,
+          legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
           liquiditySources: tradeDetails?.protocols || [],
+          maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
           network: currentNetwork,
+          networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
           outputTokenAddress: outputCurrency?.address || '',
           outputTokenName: outputCurrency?.name || '',
           outputTokenSymbol: outputCurrency?.symbol || '',
@@ -634,12 +664,16 @@ export default function ExchangeModal({
       analytics.track(`Submitted ${type}`, {
         aggregator: tradeDetails?.source || '',
         amountInUSD,
+        gasSetting: selectedGasFee?.option,
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
         isHighPriceImpact: debouncedIsHighPriceImpact,
+        legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
         liquiditySources: tradeDetails?.protocols || [],
+        maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
         network: currentNetwork,
+        networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
         outputTokenAddress: outputCurrency?.address || '',
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
@@ -664,7 +698,7 @@ export default function ExchangeModal({
   }, [
     outputPriceValue,
     outputAmount,
-    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
+    selectedGasFee,
     submit,
     nativeCurrency,
     nativeAmount,
@@ -674,6 +708,7 @@ export default function ExchangeModal({
     inputCurrency?.symbol,
     inputAmount,
     priceOfEther,
+    slippageInBips,
     type,
     tradeDetails?.source,
     tradeDetails?.protocols,
@@ -683,7 +718,6 @@ export default function ExchangeModal({
     outputCurrency?.name,
     outputCurrency?.symbol,
     priceImpactPercentDisplay,
-    slippageInBips,
   ]);
 
   const confirmButtonProps = useMemoOne(
@@ -692,12 +726,12 @@ export default function ExchangeModal({
       disabled:
         !Number(inputAmount) || (!loading && !tradeDetails && !isSavings),
       inputAmount,
-      insufficientLiquidity,
       isAuthorizing,
       isHighPriceImpact: debouncedIsHighPriceImpact,
       isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
+      quoteError,
       tradeDetails,
       type,
     }),
@@ -711,7 +745,7 @@ export default function ExchangeModal({
       testID,
       tradeDetails,
       type,
-      insufficientLiquidity,
+      quoteError,
       isSufficientBalance,
     ]
   );

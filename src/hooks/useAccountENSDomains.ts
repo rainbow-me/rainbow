@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
-import { UseQueryData } from '@/react-query/types';
+import { EnsDomain } from '@rainbow-me/apollo/queries';
 import { fetchAccountDomains } from '@rainbow-me/handlers/ens';
 import {
   getENSDomains,
@@ -26,9 +26,12 @@ async function fetchAccountENSDomains({
   const result = await fetchAccountDomains(accountAddress);
   const { domains: controlledDomains, registrations } =
     result.data?.account || {};
-  const registarDomains = registrations.map(({ domain }) => domain);
+  const registarDomains = registrations?.map(({ domain }) => domain);
 
-  const domains = uniqBy([...controlledDomains, ...registarDomains], 'name');
+  const domains = uniqBy(
+    [...(controlledDomains || []), ...(registarDomains || [])],
+    'name'
+  );
   return domains.map(domain => {
     prefetchENSAvatar(domain.name, { cacheFirst: true });
     return domain;
@@ -64,7 +67,7 @@ export default function useAccountENSDomains() {
   const { accountAddress, accountENS } = useAccountProfile();
 
   const { data: domains, isLoading, isFetched, isSuccess } = useQuery<
-    UseQueryData<typeof fetchENSDomainsWithCache>
+    EnsDomain[]
   >(
     queryKey({ accountAddress }),
     async () => fetchENSDomainsWithCache({ accountAddress }),
