@@ -171,7 +171,7 @@ export const ENS_SUGGESTIONS = gql`
   query lookup($name: String!, $amount: Int!) {
     domains(
       first: $amount
-      # where: { name_starts_with: $name, resolvedAddress_not: \"${AddressZero}\" }
+      where: { name_starts_with: $name, resolvedAddress_not: \"${AddressZero}\" }
       orderBy: labelName
       orderDirection: asc
     ) {
