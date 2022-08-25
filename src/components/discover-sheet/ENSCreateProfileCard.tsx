@@ -64,7 +64,7 @@ export default function ENSCreateProfileCard() {
     () => ({
       borderColor: `rgba(0, 0, 0, ${colorMode === 'dark' ? '0' : '0.1'})`,
       borderWidth: CARD_BORDER_WIDTH,
-      overflow: 'hidden' as 'hidden',
+      overflow: 'hidden' as const,
     }),
     [colorMode]
   );

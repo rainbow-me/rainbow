@@ -130,7 +130,6 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const response = await getPreference('showcase', accountAddress);
       // If the showcase is populated, just updated it
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'ids' does not exist on type 'Object'.
       if (response?.ids?.length > 0) {
         setPreference(
           PreferenceActionType.update,
@@ -152,7 +151,6 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const response = await getPreference('hidden', accountAddress);
       // If the showcase is populated, just updated it
-      // @ts-expect-error
       if (response?.ids?.length > 0) {
         setPreference(
           PreferenceActionType.update,
@@ -182,7 +180,6 @@ export default function useWebData() {
         if (webDataEnabled) {
           const response = await getPreference('showcase', accountAddress);
           // If the showcase is populated, nothing to do
-          // @ts-expect-error ts-migrate(2339) FIXME: Property 'ids' does not exist on type 'Object'.
           if (response?.ids?.length > 0) {
             logger.log('showcase already initialized. skipping');
           } else {

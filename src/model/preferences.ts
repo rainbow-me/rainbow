@@ -17,7 +17,7 @@ export enum PreferenceActionType {
 export interface PreferencesResponse {
   success: boolean;
   reason: string;
-  data?: Object | undefined;
+  data?: Record<string, unknown> | undefined;
 }
 
 export const PREFS_ENDPOINT = 'https://api.rainbow.me';
@@ -34,7 +34,7 @@ export async function setPreference(
   action: PreferenceActionType,
   key: string,
   address: EthereumAddress,
-  value?: Object | undefined
+  value?: any | undefined
 ): Promise<boolean> {
   try {
     const signature = await getSignatureForSigningWalletAndCreateSignatureIfNeeded(
@@ -76,7 +76,7 @@ export async function setPreference(
 export async function getPreference(
   key: string,
   address: EthereumAddress
-): Promise<Object | null> {
+): Promise<any | null> {
   try {
     const response = await preferencesAPI.get(`${PREFS_ENDPOINT}/${key}`, {
       params: { address },

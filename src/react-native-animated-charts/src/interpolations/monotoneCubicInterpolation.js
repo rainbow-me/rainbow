@@ -1,3 +1,4 @@
+/* eslint-disable no-multi-assign */
 import { addExtremesIfNeeded } from '../helpers/extremesHelpers';
 
 export default function monotoneCubicInterpolation({

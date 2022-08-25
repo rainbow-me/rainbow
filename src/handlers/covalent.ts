@@ -36,7 +36,7 @@ interface CovalentAddressBalanceResponseData {
 }
 
 export const getAssetsFromCovalent = async (
-  chainId: Number,
+  chainId: number,
   accountAddress: EthereumAddress,
   currency: string
 ): Promise<CovalentAddressBalanceResponseData | null> => {

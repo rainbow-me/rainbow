@@ -176,6 +176,8 @@ export default function BackupCloudStep() {
         minimumLength: cloudBackupPasswordMinLength,
       });
     } else if (
+      // TODO FIXME This branch of the if/else will never execute
+      // eslint-disable-next-line no-dupe-else-if
       password !== '' &&
       password.length < cloudBackupPasswordMinLength &&
       !passwordRef.current?.isFocused()

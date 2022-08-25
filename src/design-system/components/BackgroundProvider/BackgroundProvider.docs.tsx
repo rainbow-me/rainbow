@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import { Docs } from '../../docs/types';
 
 import * as examples from './BackgroundProvider.examples';

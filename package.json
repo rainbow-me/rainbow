@@ -37,7 +37,7 @@
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx}'",
     "lint": "yarn lint:ts && yarn lint:js",
-    "lint:js": "eslint --cache --ext '.ts,.tsx,.js,.jsx' .",
+    "lint:js": "eslint --cache .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "preview": "git reset && git commit -m \"/preview\" --allow-empty",
@@ -320,9 +320,8 @@
     "chai": "4.2.0",
     "detox": "19.7.1",
     "dotenv": "8.2.0",
-    "eslint": "7.32.0",
-    "eslint-config-rainbow": "2.0.0",
-    "eslint-import-resolver-babel-module": "5.3.1",
+    "eslint": "8.22.0",
+    "eslint-config-rainbow": "4.0.0",
     "ethereum-waffle": "3.4.0",
     "ethers": "5.6.8",
     "graphql": "15.3.0",
@@ -544,7 +543,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "prettier --write",
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js"
+      "eslint --cache"
     ]
   }
 }
