@@ -1,5 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
-import { Campaign } from './campaignChecks';
+import { Campaign, CampaignKey } from './campaignChecks';
 import { EthereumAddress } from '@/entities';
 
 import networkInfo from '@/helpers/networkInfo';
@@ -17,8 +17,6 @@ const RAINBOW_ROUTER_ADDRESS: EthereumAddress =
 
 const mmkv = new MMKV();
 
-const swapsCampaignKey = 'swap_promo_campaign';
-
 export const swapsCampaignAction = async () => {
   logger.log('Campaign: Showing Swaps Promo');
 
@@ -32,7 +30,7 @@ export const swapsCampaignAction = async () => {
 };
 
 export const swapsCampaignCheck = async (): Promise<boolean> => {
-  const hasShownCampaign = mmkv.getBoolean(swapsCampaignKey);
+  const hasShownCampaign = mmkv.getBoolean(CampaignKey.swapsLaunch);
 
   // we only want to show this campaign once
   if (hasShownCampaign) return false;
@@ -93,6 +91,6 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
 
 export const SwapPromoCampaign: Campaign = {
   action: () => swapsCampaignAction(),
-  campaignKey: swapsCampaignKey,
+  campaignKey: CampaignKey.swapsLaunch,
   check: async () => await swapsCampaignCheck(),
 };
