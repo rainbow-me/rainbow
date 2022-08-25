@@ -193,63 +193,63 @@ export default function AddressRow({
     );
   }, [menuConfig, onMenuItemPress]);
 
+  const leftSide = (
+    <Row align="center" height={59}>
+      {accountImage ? (
+        <ImageAvatar image={accountImage} marginRight={10} size="medium" />
+      ) : (
+        <ContactAvatar
+          color={accountColor}
+          marginRight={10}
+          size="medium"
+          value={
+            returnStringFirstEmoji(label) ||
+            profileUtils.addressHashedEmoji(address) ||
+            label ||
+            ens
+          }
+        />
+      )}
+      <ColumnWithMargins margin={android ? -6 : 3}>
+        {cleanedUpLabel || ens ? (
+          <StyledTruncatedText
+            color={colors.dark}
+            testID={`change-wallet-address-row-label-${cleanedUpLabel || ens}`}
+          >
+            {cleanedUpLabel || ens}
+          </StyledTruncatedText>
+        ) : (
+          <TruncatedAddress
+            address={address}
+            color={colors.dark}
+            firstSectionLength={6}
+            size="smaller"
+            style={sx.accountLabel}
+            testID={`change-wallet-address-row-address-${address}`}
+            truncationLength={4}
+            weight="medium"
+          />
+        )}
+        <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+          {cleanedUpBalance || 0} ETH
+        </StyledBottomRowText>
+      </ColumnWithMargins>
+    </Row>
+  );
+
   const content = (
     <Row align="center">
       <Row flex={1} height={59}>
-        <ContextMenuButton
-          menuConfig={editMode ? menuConfig : emptyMenu}
-          onPressMenuItem={handlePressMenuItem}
-        >
-          <Row align="center" height={59}>
-            {accountImage ? (
-              <ImageAvatar
-                image={accountImage}
-                marginRight={10}
-                size="medium"
-              />
-            ) : (
-              <ContactAvatar
-                color={accountColor}
-                marginRight={10}
-                size="medium"
-                value={
-                  returnStringFirstEmoji(label) ||
-                  profileUtils.addressHashedEmoji(address) ||
-                  label ||
-                  ens
-                }
-              />
-            )}
-            <ColumnWithMargins margin={android ? -6 : 3}>
-              {cleanedUpLabel || ens ? (
-                <StyledTruncatedText
-                  color={colors.dark}
-                  testID={`change-wallet-address-row-label-${
-                    cleanedUpLabel || ens
-                  }`}
-                >
-                  {cleanedUpLabel || ens}
-                </StyledTruncatedText>
-              ) : (
-                <TruncatedAddress
-                  address={address}
-                  color={colors.dark}
-                  firstSectionLength={6}
-                  size="smaller"
-                  style={sx.accountLabel}
-                  testID={`change-wallet-address-row-address-${address}`}
-                  truncationLength={4}
-                  weight="medium"
-                />
-              )}
-              <StyledBottomRowText
-                color={colors.alpha(colors.blueGreyDark, 0.5)}
-              >
-                {cleanedUpBalance || 0} ETH
-              </StyledBottomRowText>
-            </ColumnWithMargins>
-          </Row>
-        </ContextMenuButton>
+        {editMode && android ? (
+          <ContextMenuButton
+            menuConfig={editMode ? menuConfig : emptyMenu}
+            onPressMenuItem={handlePressMenuItem}
+          >
+            {leftSide}
+          </ContextMenuButton>
+        ) : (
+          leftSide
+        )}
       </Row>
       <Column style={sx.rightContent}>
         {isReadOnly && (
@@ -283,19 +283,11 @@ export default function AddressRow({
 
   return (
     <View style={sx.accountRow}>
-      {ios ? (
+      {ios || !editMode ? (
         <ButtonPressAnimation
           enableHapticFeedback={!editMode}
           onPress={editMode ? showIOSMenu : onPress}
           scaleTo={editMode ? 1 : 0.98}
-        >
-          {content}
-        </ButtonPressAnimation>
-      ) : !editMode ? (
-        <ButtonPressAnimation
-          enableHapticFeedback
-          onPress={onPress}
-          scaleTo={0.98}
         >
           {content}
         </ButtonPressAnimation>
