@@ -77,7 +77,7 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   let hasSwapped: boolean = false;
   let timeCheck: boolean = false;
   let index: number = 0;
-  while (!hasSwapped && !timeCheck) {
+  while (!hasSwapped && !timeCheck && index <= transactions.length - 1) {
     const currentTransaction = transactions[index];
     if (currentTransaction.minedAt) {
       const txDate = new Date(currentTransaction.minedAt * 1000);
