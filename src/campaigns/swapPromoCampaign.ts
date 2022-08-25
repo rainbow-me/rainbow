@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { Campaign, CampaignKey } from './campaignChecks';
-import { EthereumAddress } from '@/entities';
+import { EthereumAddress, RainbowTransaction } from '@/entities';
 
 import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
@@ -74,24 +74,23 @@ export const swapsCampaignCheck = async (): Promise<boolean> => {
   if (!hasBalance) return false;
 
   const swapsLaunchDate = new Date('2022-07-26');
-  let hasSwapped: boolean = false;
-  let timeCheck: boolean = false;
-  let index: number = 0;
-  while (!hasSwapped && !timeCheck && index <= transactions.length - 1) {
-    const currentTransaction = transactions[index];
-    if (currentTransaction.minedAt) {
-      const txDate = new Date(currentTransaction.minedAt * 1000);
+  const isAfterSwapsLaunch = (tx: RainbowTransaction): boolean => {
+    if (tx.minedAt) {
+      const txDate = new Date(tx.minedAt * 1000);
+      return txDate > swapsLaunchDate;
+    }
+    return false;
+  };
 
-      // we dont care about tx's before we launched swaps
-      if (txDate < swapsLaunchDate) {
-        timeCheck = true;
-      }
+  const isSwapTx = (tx: RainbowTransaction): boolean => {
+    if (tx.to === RAINBOW_ROUTER_ADDRESS) {
+      return true;
     }
-    if (currentTransaction.to === RAINBOW_ROUTER_ADDRESS) {
-      hasSwapped = true;
-    }
-    index++;
-  }
+    return false;
+  };
+
+  const hasSwapped = !!transactions.filter(isAfterSwapsLaunch).find(isSwapTx);
+
   // if they have not swapped yet, trigger campaign action
   if (!hasSwapped) {
     SwapPromoCampaign.action();
