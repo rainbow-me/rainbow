@@ -1,0 +1,13 @@
+# https://api.thegraph.com/subgraphs/name/ensdomains/ens
+
+query getDomainsByName($name: String!) {
+  domains(where: { name: $name }) {
+    name
+    labelhash
+    resolver {
+      addr {
+        id
+      }
+    }
+  }
+}

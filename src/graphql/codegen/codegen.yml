@@ -1,0 +1,8 @@
+generates:
+  ../__generated__/ens.ts:
+    schema: "https://api.thegraph.com/subgraphs/name/ensdomains/ens"
+    documents: "../ens.graphql"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-generic-sdk"
