@@ -201,7 +201,7 @@ export default function AlreadyBackedUpView() {
               }
             >
               <Box
-                background="accent"
+                background="card"
                 borderRadius={56}
                 height={{ custom: 48 }}
                 justifyContent="center"
