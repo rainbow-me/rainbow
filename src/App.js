@@ -247,23 +247,31 @@ class App extends Component {
     const type = remoteMessage?.data?.type;
     if (type && remoteMessage?.notification !== undefined) {
       global.console.log('sending');
-      const image = remoteMessage?.data?.fcm_options?.image;
+      const image = ios
+        ? remoteMessage?.data?.fcm_options?.image
+        : remoteMessage?.notification?.android?.imageUrl;
       // eslint-disable-next-line no-unused-vars
       const { fcm_options, ...data } = remoteMessage?.data;
-      try {
-        notifee.displayNotification({
-          android: { channelId: ANDROID_DEFAULT_CHANNEL_ID },
-          data,
-          ios: {
-            attachments: [{ url: image }],
-            foregroundPresentationOptions: {
-              badge: true,
-              banner: true,
-              list: true,
-            },
+      const notification = {
+        ...remoteMessage.notification,
+        android: { channelId: ANDROID_DEFAULT_CHANNEL_ID },
+        data,
+        ios: {
+          foregroundPresentationOptions: {
+            badge: true,
+            banner: true,
+            list: true,
           },
-          ...remoteMessage.notification,
-        });
+        },
+      };
+
+      if (image) {
+        notification.ios.attachments = [{ url: image }];
+        notification.android.largeIcon = image;
+      }
+
+      try {
+        notifee.displayNotification(notification);
       } catch (e) {
         global.console.log(e);
       }
