@@ -34,7 +34,6 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
   flexGrow: 1,
 });
 
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
   'Monthly': {
     label: lang.t('savings.earnings.monthly'),
@@ -65,7 +64,6 @@ const steps = {
     days: 365 * 100,
   },
 };
-/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 const rowStyle = padding.object(15, 19, 19);
 

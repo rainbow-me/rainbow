@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 const fs = require('fs');
 const path = require('path');
 const { parse: babelParse } = require('@babel/parser');
@@ -23,26 +22,9 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
   );
 
 module.exports = {
-  extends: 'rainbow',
-  settings: {
-    'import/resolver': {
-      'node': {
-        extensions: [
-          '.js',
-          '.ios.js',
-          '.android.js',
-          '.native.js',
-          '.ts',
-          '.tsx',
-        ],
-      },
-      'babel-module': {
-        alias: {},
-      },
-    },
+  extends: ['rainbow'],
+  parserOptions: {
+    project: ['./tsconfig.json'],
   },
-  plugins: [],
   globals: globalVars,
-  rules: {},
-  env: { browser: true, node: true },
 };

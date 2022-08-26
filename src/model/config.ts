@@ -14,21 +14,9 @@ import {
   // @ts-ignore
   ETHEREUM_GOERLI_RPC_DEV,
   // @ts-ignore
-  ETHEREUM_KOVAN_RPC,
-  // @ts-ignore
-  ETHEREUM_KOVAN_RPC_DEV,
-  // @ts-ignore
   ETHEREUM_MAINNET_RPC,
   // @ts-ignore
   ETHEREUM_MAINNET_RPC_DEV,
-  // @ts-ignore
-  ETHEREUM_RINKEBY_RPC,
-  // @ts-ignore
-  ETHEREUM_RINKEBY_RPC_DEV,
-  // @ts-ignore
-  ETHEREUM_ROPSTEN_RPC,
-  // @ts-ignore
-  ETHEREUM_ROPSTEN_RPC_DEV,
   // @ts-ignore
   OPTIMISM_MAINNET_RPC,
   // @ts-ignore
@@ -51,11 +39,9 @@ export interface RainbowConfig extends Record<string, any> {
   data_endpoint?: string;
   data_origin?: string;
   default_slippage_bips?: string;
+  flashbots_enabled?: boolean;
   ethereum_goerli_rpc?: string;
-  ethereum_kovan_rpc?: string;
   ethereum_mainnet_rpc?: string;
-  ethereum_rinkeby_rpc?: string;
-  ethereum_ropsten_rpc?: string;
   op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
@@ -74,16 +60,10 @@ const DEFAULT_CONFIG = {
     polygon: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
-  ethereum_kovan_rpc: __DEV__ ? ETHEREUM_KOVAN_RPC_DEV : ETHEREUM_KOVAN_RPC,
   ethereum_mainnet_rpc: __DEV__
     ? ETHEREUM_MAINNET_RPC_DEV
     : ETHEREUM_MAINNET_RPC,
-  ethereum_rinkeby_rpc: __DEV__
-    ? ETHEREUM_RINKEBY_RPC_DEV
-    : ETHEREUM_RINKEBY_RPC,
-  ethereum_ropsten_rpc: __DEV__
-    ? ETHEREUM_ROPSTEN_RPC_DEV
-    : ETHEREUM_ROPSTEN_RPC,
+  flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
@@ -116,6 +96,8 @@ const init = async () => {
       const [key, entry] = $;
       if (key === 'default_slippage_bips') {
         config[key] = JSON.parse(entry.asString());
+      } else if (key === 'flashbots_enabled') {
+        config[key] = entry.asBoolean();
       } else {
         config[key] = entry.asString();
       }

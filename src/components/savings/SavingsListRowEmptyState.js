@@ -11,7 +11,6 @@ const ButtonBorderRadius = 15;
 
 const sxFactory = (darkMode, colors) =>
   StyleSheet.create({
-    // eslint-disable-next-line react-native/no-unused-styles
     button: {
       ...position.centeredAsObject,
       ...shadow.buildAsObject(

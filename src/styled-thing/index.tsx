@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
+/* eslint-disable no-multi-assign */
 import React from 'react';
 import isEqual from 'react-fast-compare';
 import { css } from 'styled-components';

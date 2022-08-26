@@ -157,7 +157,7 @@ export default () => {
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
   const callback = useCallback(
-    async (buttonIndex: Number) => {
+    async (buttonIndex: number) => {
       if (buttonIndex === 0) {
         if (isENSProfile) {
           if (!isReadOnly) {
@@ -289,7 +289,7 @@ export default () => {
             : undefined,
         options: avatarActionSheetOptions,
       },
-      (buttonIndex: Number) => callback(buttonIndex)
+      (buttonIndex: number) => callback(buttonIndex)
     );
   }, [avatarActionSheetOptions, hasENSAvatar, accountImage, callback]);
 

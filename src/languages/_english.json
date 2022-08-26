@@ -1087,6 +1087,26 @@
         "since": "Since"
       }
     },
+    "promos": {
+      "swaps_launch": {
+        "primary_button": "􀖅 Try a swap",
+        "secondary_button": "Maybe later",
+        "info_row_1": {
+          "title": "Swap all your favorite tokens",
+          "description": "Rainbow searches everywhere to find the best rate for your trade."
+        },
+        "info_row_2": {
+          "title": "Swap directly on L2",
+          "description": "Fast and cheap swaps on Arbitrum, Optimism and Polygon."
+        },
+        "info_row_3": {
+          "title": "Flashbots protection",
+          "description": "Price protection, plus no fees on failed swaps. Enable in swap settings."
+        },
+        "header": "Swaps on Rainbow",
+        "subheader": "REINTRODUCING"
+      }
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Are you enjoying Rainbow? 🥰",

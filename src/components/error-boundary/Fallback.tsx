@@ -10,7 +10,7 @@ import { useTheme } from '@rainbow-me/theme';
 import logger from 'logger';
 
 // @ts-ignore
-const Spacer = styled(View)<{ height: Number }>({
+const Spacer = styled(View)<{ height: number }>({
   // @ts-ignore
   height: ({ height }) => height,
 });

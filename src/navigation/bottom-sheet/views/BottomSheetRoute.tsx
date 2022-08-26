@@ -3,8 +3,7 @@ import BottomSheet, {
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Keyboard, View } from 'react-native';
-import type { ViewStyle } from 'react-native';
+import { Keyboard, View, ViewStyle } from 'react-native';
 import { isKeyboardOpen } from '../../../helpers';
 import {
   CONTAINER_HEIGHT,

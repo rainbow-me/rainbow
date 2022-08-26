@@ -13,7 +13,9 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
+import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
@@ -23,11 +25,14 @@ import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  useInitializeAccountData,
   useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadAccountData,
   useLoadAccountLateData,
   useLoadGlobalLateData,
   usePortfolios,
+  useResetAccountState,
   useTrackENSProfile,
   useUserAccounts,
   useWallets,
@@ -72,12 +77,32 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network, accountAddress } = useAccountSettings();
+  const { network: currentNetwork, accountAddress } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
+  const dispatch = useDispatch();
+  const resetAccountState = useResetAccountState();
+  const loadAccountData = useLoadAccountData();
+  const initializeAccountData = useInitializeAccountData();
+
+  const revertToMainnet = useCallback(async () => {
+    await resetAccountState();
+    await dispatch(settingsUpdateNetwork(Network.mainnet));
+    InteractionManager.runAfterInteractions(async () => {
+      await loadAccountData(Network.mainnet);
+      initializeAccountData();
+    });
+  }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
+
+  useEffect(() => {
+    const supportedNetworks = [Network.mainnet, Network.goerli];
+    if (!supportedNetworks.includes(currentNetwork)) {
+      revertToMainnet();
+    }
+  }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
@@ -106,8 +131,6 @@ export default function WalletScreen() {
   }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
 
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
-
-  const dispatch = useDispatch();
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -214,13 +237,14 @@ export default function WalletScreen() {
   }, [profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
-  // (mainnet & rinkeby)
+  // (mainnet)
   const fabs = useMemo(
     () =>
-      [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(
-        e => !!e
-      ),
-    [network]
+      [
+        !!networkInfo[currentNetwork]?.exchange_enabled && ExchangeFab,
+        SendFab,
+      ].filter(e => !!e),
+    [currentNetwork]
   );
 
   const isLoadingAssets =
@@ -248,7 +272,7 @@ export default function WalletScreen() {
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
-          network={network}
+          network={currentNetwork}
           walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>

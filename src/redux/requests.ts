@@ -63,7 +63,7 @@ export interface RequestData {
   /**
    * The display details loaded for the request.
    */
-  displayDetails: RequestDisplayDetails | null | {};
+  displayDetails: RequestDisplayDetails | null | Record<string, never>;
 
   /**
    * The image URL for the dapp, or undefined.

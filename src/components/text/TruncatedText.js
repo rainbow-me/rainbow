@@ -14,6 +14,7 @@ export default function TruncatedText(props) {
   return (
     <TruncatedTextComponent
       {...props}
+      // eslint-disable-next-line react/no-children-prop
       children={props.children === false ? '' : props.children}
     />
   );
