@@ -20,6 +20,18 @@ import { STORAGE_IDS } from '@/model/mmkv';
 const RAINBOW_ROUTER_ADDRESS: EthereumAddress =
   '0x00000000009726632680fb29d3f7a9734e3010e2';
 
+const swapsLaunchDate = new Date('2022-07-26');
+const isAfterSwapsLaunch = (tx: RainbowTransaction): boolean => {
+  if (tx.minedAt) {
+    const txDate = new Date(tx.minedAt * 1000);
+    return txDate > swapsLaunchDate;
+  }
+  return false;
+};
+
+const isSwapTx = (tx: RainbowTransaction): boolean =>
+  tx?.to?.toLowerCase() === RAINBOW_ROUTER_ADDRESS;
+
 const mmkv = new MMKV();
 
 export const swapsCampaignAction = async () => {
@@ -87,22 +99,6 @@ export const swapsCampaignCheck = async (): Promise<
 
   // if the wallet has no native asset balances then stop
   if (!hasBalance) return SwapsPromoCampaignExclusion.noAssets;
-
-  const swapsLaunchDate = new Date('2022-07-26');
-  const isAfterSwapsLaunch = (tx: RainbowTransaction): boolean => {
-    if (tx.minedAt) {
-      const txDate = new Date(tx.minedAt * 1000);
-      return txDate > swapsLaunchDate;
-    }
-    return false;
-  };
-
-  const isSwapTx = (tx: RainbowTransaction): boolean => {
-    if (tx.to === RAINBOW_ROUTER_ADDRESS) {
-      return true;
-    }
-    return false;
-  };
 
   const hasSwapped = !!transactions.filter(isAfterSwapsLaunch).find(isSwapTx);
 
