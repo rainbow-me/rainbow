@@ -4,20 +4,20 @@ import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import { EthereumAddress } from '@/entities';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletTypes from '@/helpers/walletTypes';
 import { featureUnlockChecks } from '@/featuresToUnlock';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   AllRainbowWallets,
   RainbowAccount,
   RainbowWallet,
-} from '@rainbow-me/model/wallet';
-import { Navigation } from '@rainbow-me/navigation';
+} from '@/model/wallet';
+import { Navigation } from '@/navigation';
 
-import store from '@rainbow-me/redux/store';
-import { checkKeychainIntegrity } from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
+import store from '@/redux/store';
+import { checkKeychainIntegrity } from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 

@@ -24,11 +24,11 @@ import {
   usePrevious,
   usePriceImpactDetails,
   useSwapCurrencies,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import { abbreviations } from '@/utils';
 
 const springConfig = {
   damping: 500,

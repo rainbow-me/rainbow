@@ -3,13 +3,13 @@ import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
-import { EnsDomain } from '@rainbow-me/apollo/queries';
-import { fetchAccountDomains } from '@rainbow-me/handlers/ens';
+import { EnsDomain } from '@/apollo/queries';
+import { fetchAccountDomains } from '@/handlers/ens';
 import {
   getENSDomains,
   setENSDomains,
-} from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
+} from '@/handlers/localstorage/ens';
+import { queryClient } from '@/react-query/queryClient';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [
   'domains',

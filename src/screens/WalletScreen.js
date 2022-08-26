@@ -16,11 +16,9 @@ import { Page, RowWithMargins } from '../components/layout';
 import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { prefetchENSIntroData } from '@/handlers/ens';
+import networkInfo from '@/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
@@ -37,16 +35,13 @@ import {
   useUserAccounts,
   useWallets,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { updateRefetchSavings } from '@rainbow-me/redux/data';
-import {
-  emitChartsRequest,
-  emitPortfolioRequest,
-} from '@rainbow-me/redux/explorer';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { updateRefetchSavings } from '@/redux/data';
+import { emitChartsRequest, emitPortfolioRequest } from '@/redux/explorer';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,

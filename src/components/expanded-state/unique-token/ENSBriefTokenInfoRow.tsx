@@ -6,12 +6,12 @@ import { InteractionManager } from 'react-native';
 import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { Column, Columns, Inset } from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useENSAvatar, useENSRegistration } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import { Column, Columns, Inset } from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useENSAvatar, useENSRegistration } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 export default function ENSBriefTokenInfoRow({
   color,

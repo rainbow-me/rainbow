@@ -13,10 +13,10 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { RegistrationParameters } from '@rainbow-me/entities';
-import { useENSPendingRegistrations } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
+} from '@/design-system';
+import { RegistrationParameters } from '@/entities';
+import { useENSPendingRegistrations } from '@/hooks';
+import { colors } from '@/styles';
 
 const PendingRegistration = ({
   registration,

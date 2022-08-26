@@ -23,20 +23,20 @@ import {
   ZerionTransaction,
   ZerionTransactionChange,
   ZerionTransactionStatus,
-} from '@rainbow-me/entities';
-import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/entities';
+import { getTransactionMethodName } from '@/handlers/transactions';
+import { isL2Network } from '@/handlers/web3';
+import { Network } from '@/helpers/networkTypes';
 import {
   ETH_ADDRESS,
   savingsAssetsList,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
-} from '@rainbow-me/utilities';
-import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethereumUtils, getTokenMetadata } from '@/utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
 

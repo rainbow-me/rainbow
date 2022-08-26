@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/react-native';
 import { RainbowFetchClient } from '../rainbow-fetch';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import {
   getSignatureForSigningWalletAndCreateSignatureIfNeeded,
   signWithSigningWallet,
-} from '@rainbow-me/helpers/signingWallet';
-import logger from 'logger';
+} from '@/helpers/signingWallet';
+import logger from '@/utils/logger';
 
 export enum PreferenceActionType {
   update = 'update',

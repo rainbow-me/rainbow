@@ -9,10 +9,10 @@ import {
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { getOneDayVolume } from './useUniswapPools';
-import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import { AppDispatch, AppState } from '@rainbow-me/redux/store';
-import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
-import { ethereumUtils, getBlocksFromTimestamps } from '@rainbow-me/utils';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { AppDispatch, AppState } from '@/redux/store';
+import { setPoolsDetails } from '@/redux/uniswapLiquidity';
+import { ethereumUtils, getBlocksFromTimestamps } from '@/utils';
 
 function cutIfOver10000(value: number) {
   return value > 10000 ? Math.round(value) : value;

@@ -1,9 +1,9 @@
 import { isNil, keys } from 'lodash';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { analytics } from '@rainbow-me/analytics';
-import { AppState } from '@rainbow-me/redux/store';
-import logger from 'logger';
+import { analytics } from '@/analytics';
+import { AppState } from '@/redux/store';
+import logger from '@/utils/logger';
 
 export default function usePortfolios() {
   const portfolios = useSelector(

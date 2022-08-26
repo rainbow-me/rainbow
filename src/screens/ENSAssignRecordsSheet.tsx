@@ -47,18 +47,18 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   getSeenOnchainDataDisclaimer,
   saveSeenOnchainDataDisclaimer,
-} from '@rainbow-me/handlers/localstorage/ens';
+} from '@/handlers/localstorage/ens';
 import {
   accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
   TextRecordField,
   textRecordFields,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,
@@ -72,8 +72,8 @@ import {
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;

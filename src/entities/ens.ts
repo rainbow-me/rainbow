@@ -1,3 +1,3 @@
-import { useENSProfile } from '@rainbow-me/hooks';
+import { useENSProfile } from '@/hooks';
 
 export type ENSProfile = ReturnType<typeof useENSProfile>;

@@ -4,12 +4,12 @@ import { useSelector } from 'react-redux';
 import {
   computeSlippageAdjustedAmounts,
   Field,
-} from '@rainbow-me/handlers/uniswap';
-import { AppState } from '@rainbow-me/redux/store';
-import { SwapModalField } from '@rainbow-me/redux/swap';
-import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS } from '@rainbow-me/references';
-import { fromWei, updatePrecisionToDisplay } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/handlers/uniswap';
+import { AppState } from '@/redux/store';
+import { SwapModalField } from '@/redux/swap';
+import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS } from '@/references';
+import { fromWei, updatePrecisionToDisplay } from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 
 export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
   const inputCurrency = useSelector(

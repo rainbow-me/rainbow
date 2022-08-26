@@ -63,9 +63,7 @@ import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();

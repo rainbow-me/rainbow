@@ -20,7 +20,7 @@ import {
   UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 interface AnonymousKey {
   length: number;

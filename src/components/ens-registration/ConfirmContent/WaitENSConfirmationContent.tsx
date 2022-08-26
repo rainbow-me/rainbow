@@ -10,8 +10,8 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { ENS_SECONDS_WAIT } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { ENS_SECONDS_WAIT } from '@/helpers/ens';
 
 const WaitENSConfirmationContent = ({
   seconds,

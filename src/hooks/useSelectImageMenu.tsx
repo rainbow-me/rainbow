@@ -5,14 +5,14 @@ import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
 import { useImagePicker } from '.';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import {
   uploadImage,
   UploadImageReturnData,
-} from '@rainbow-me/handlers/pinata';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+} from '@/handlers/pinata';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { showActionSheetWithOptions } from '@/utils';
 
 type Action = 'library' | 'nft';
 

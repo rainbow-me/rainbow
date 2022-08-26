@@ -25,13 +25,10 @@ import {
 import {
   getNetwork,
   saveNetwork,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
-import {
-  setRpcEndpoints,
-  web3SetHttpProvider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/localstorage/globalSettings';
+import { setRpcEndpoints, web3SetHttpProvider } from '@/handlers/web3';
 
-import Logger from 'logger';
+import Logger from '@/utils/logger';
 
 export interface RainbowConfig extends Record<string, any> {
   arbitrum_mainnet_rpc?: string;

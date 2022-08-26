@@ -72,17 +72,14 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import { STORAGE_IDS } from './model/mmkv';
-import {
-  CODE_PUSH_DEPLOYMENT_KEY,
-  isCustomBuild,
-} from '@rainbow-me/handlers/fedora';
-import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
-import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
-import { Portal } from 'react-native-cool-modals/Portal';
+import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
+import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
+import { InitialRouteContext } from '@/navigation/initialRoute';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
+import { Portal } from '@/react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 

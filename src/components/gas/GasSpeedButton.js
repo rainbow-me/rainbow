@@ -11,26 +11,26 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { isL2Network } from '@/handlers/web3';
+import networkInfo from '@/helpers/networkInfo';
+import networkTypes from '@/helpers/networkTypes';
 import {
   add,
   greaterThan,
   toFixedDecimals,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
   useGas,
   usePrevious,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth, margin, padding } from '@/styles';
+import { gasUtils } from '@/utils';
 
 const {
   GAS_EMOJIS,

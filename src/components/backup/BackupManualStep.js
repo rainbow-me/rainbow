@@ -7,16 +7,16 @@ import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Nbsp, Text } from '../text';
-import { analytics } from '@rainbow-me/analytics';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { analytics } from '@/analytics';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   useDimensions,
   useWalletManualBackup,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const Content = styled(Column).attrs({
   align: 'center',

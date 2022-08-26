@@ -14,12 +14,12 @@ import {
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
-import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { haptics } from '@rainbow-me/utils';
+import { useDimensions, useShakeAnimation } from '@/hooks';
+import { useBlockBackButton } from '@/hooks/useBlockBackButton';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { haptics } from '@/utils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,

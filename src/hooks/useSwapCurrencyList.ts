@@ -15,10 +15,10 @@ import {
   RainbowToken,
   RainbowToken as RT,
   TokenSearchTokenListId,
-} from '@rainbow-me/entities';
-import tokenSearch from '@rainbow-me/handlers/tokenSearch';
-import { addHexPrefix, getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
+} from '@/entities';
+import tokenSearch from '@/handlers/tokenSearch';
+import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
+import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import {
   DAI_ADDRESS,
   erc20ABI,
@@ -27,8 +27,8 @@ import {
   USDC_ADDRESS,
   WBTC_ADDRESS,
   WETH_ADDRESS,
-} from '@rainbow-me/references';
-import { ethereumUtils, filterList, logger } from '@rainbow-me/utils';
+} from '@/references';
+import { ethereumUtils, filterList, logger } from '@/utils';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =

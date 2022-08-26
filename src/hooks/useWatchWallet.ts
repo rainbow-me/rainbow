@@ -8,14 +8,14 @@ import {
   useImportingWallet,
   useInitializeWallet,
   useWallets,
-} from '@rainbow-me/hooks';
-import { cleanUpWalletKeys, RainbowWallet } from '@rainbow-me/model/wallet';
+} from '@/hooks';
+import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import {
   addressSetSelected,
   walletsSetSelected,
-} from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import { doesWalletsContainAddress, logger } from '@rainbow-me/utils';
+} from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import { doesWalletsContainAddress, logger } from '@/utils';
 
 export default function useWatchWallet({
   address: primaryAddress,

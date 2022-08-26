@@ -9,12 +9,12 @@ import {
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import { containsEmoji } from '@rainbow-me/helpers/strings';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import { AppState } from '@rainbow-me/redux/store';
-import logger from 'logger';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { containsEmoji } from '@/helpers/strings';
+import WalletTypes from '@/helpers/walletTypes';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { AppState } from '@/redux/store';
+import logger from '@/utils/logger';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {

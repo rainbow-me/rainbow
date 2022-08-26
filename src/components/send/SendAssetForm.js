@@ -9,15 +9,15 @@ import { Column } from '../layout';
 import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import {
   useColorForAsset,
   useDimensions,
   useKeyboardHeight,
-} from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+} from '@/hooks';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],

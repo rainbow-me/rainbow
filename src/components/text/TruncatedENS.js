@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import Text from './Text';
-import { abbreviations } from '@rainbow-me/utils';
+import { abbreviations } from '@/utils';
 
 const TruncatedENS = ({ ens, truncationLength, ...props }, ref) => {
   const text = useMemo(

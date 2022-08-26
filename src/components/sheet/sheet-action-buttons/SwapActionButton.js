@@ -4,14 +4,14 @@ import SheetActionButton from './SheetActionButton';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
-} from '@rainbow-me/helpers';
-import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+} from '@/helpers';
+import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useExpandedStateNavigation,
   useSwapCurrencyHandlers,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
 
 function SwapActionButton({
   asset,

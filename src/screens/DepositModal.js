@@ -1,10 +1,10 @@
 import React from 'react';
 import ExchangeModal from './ExchangeModal';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@/helpers';
 import {
   ExchangeNavigatorFactory,
   useStatusBarManaging,
-} from '@rainbow-me/navigation';
+} from '@/navigation';
 
 const DepositModal = props => {
   // eslint-disable-next-line react-hooks/rules-of-hooks

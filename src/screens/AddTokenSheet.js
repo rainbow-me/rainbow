@@ -20,11 +20,11 @@ import {
   useAccountSettings,
   useDimensions,
   useUserLists,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { haptics } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { haptics } from '@/utils';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

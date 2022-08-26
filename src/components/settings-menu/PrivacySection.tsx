@@ -6,14 +6,14 @@ import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@/config/experimentalHooks';
 import {
   useAccountProfile,
   useShowcaseTokens,
   useWebData,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();

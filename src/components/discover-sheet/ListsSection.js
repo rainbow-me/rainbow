@@ -18,15 +18,15 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
-import { analytics } from '@rainbow-me/analytics';
-import { getTrendingAddresses } from '@rainbow-me/handlers/dispersion';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { times } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { analytics } from '@/analytics';
+import { getTrendingAddresses } from '@/handlers/dispersion';
+import networkTypes from '@/helpers/networkTypes';
+import { times } from '@/helpers/utilities';
+import { useAccountSettings, useUserLists } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { ethereumUtils } from '@/utils';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,

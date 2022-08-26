@@ -10,10 +10,10 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useDimensions } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+} from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useDimensions } from '@/hooks';
+import { ImgixImage } from '@/components/images';
 
 const CommitContent = ({
   duration,

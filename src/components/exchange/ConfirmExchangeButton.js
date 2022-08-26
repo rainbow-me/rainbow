@@ -5,15 +5,15 @@ import React, { useCallback, useMemo } from 'react';
 import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
+import { Box, Row, Rows } from '@/design-system';
+import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
+import { useColorForAsset, useGas, useSwapCurrencies } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { lightModeThemeColors } from '@/styles';
+import { useTheme } from '@/theme';
 import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
-import { Box, Row, Rows } from '@rainbow-me/design-system';
-import { ExchangeModalTypes, NetworkTypes } from '@rainbow-me/helpers';
-import { useColorForAsset, useGas, useSwapCurrencies } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { lightModeThemeColors } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
 
 const NOOP = () => null;
 

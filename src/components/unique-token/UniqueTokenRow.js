@@ -9,10 +9,10 @@ import {
   UniqueTokenRowPadding,
 } from './CardSize';
 import UniqueTokenCard from './UniqueTokenCard';
-import { useWallets } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { useWallets } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   ...padding.object(0, UniqueTokenRowPadding),

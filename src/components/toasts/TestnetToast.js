@@ -4,8 +4,8 @@ import networkTypes from '../../helpers/networkTypes';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
-import { isHardHat } from '@rainbow-me/handlers/web3';
-import { useInternetStatus } from '@rainbow-me/hooks';
+import { isHardHat } from '@/handlers/web3';
+import { useInternetStatus } from '@/hooks';
 
 const TestnetToast = ({ network, web3Provider }) => {
   const isConnected = useInternetStatus();

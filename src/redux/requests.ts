@@ -1,19 +1,19 @@
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
-} from '@rainbow-me/handlers/localstorage/walletconnectRequests';
+} from '@/handlers/localstorage/walletconnectRequests';
 import {
   dappLogoOverride,
   dappNameOverride,
-} from '@rainbow-me/helpers/dappNameHandler';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
-import { getRequestDisplayDetails } from '@rainbow-me/parsers';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/helpers/dappNameHandler';
+import { omitFlatten } from '@/helpers/utilities';
+import { getRequestDisplayDetails } from '@/parsers';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 

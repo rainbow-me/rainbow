@@ -11,9 +11,9 @@ import useWallets from './useWallets';
 import {
   getENSProfile,
   saveENSProfile,
-} from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+} from '@/handlers/localstorage/ens';
+import { queryClient } from '@/react-query/queryClient';
+import { QueryConfig, UseQueryData } from '@/react-query/types';
 
 const queryKey = (
   name: string,
