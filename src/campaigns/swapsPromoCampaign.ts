@@ -14,7 +14,7 @@ import { Navigation } from '@/navigation';
 import { ethereumUtils, logger } from '@/utils';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
-import { STORAGE_IDS } from '@/model/mmkv';
+import { STORAGE_KEYS } from '@/model/mmkv';
 
 // Rainbow Router
 const RAINBOW_ROUTER_ADDRESS: EthereumAddress =
@@ -36,6 +36,7 @@ export const swapsCampaignAction = async () => {
 export enum SwapsPromoCampaignExclusion {
   noAssets = 'no_assets',
   alreadySwapped = 'already_swapped',
+  firstLaunch = 'first_launch',
 }
 
 export const swapsCampaignCheck = async (): Promise<
@@ -55,6 +56,10 @@ export const swapsCampaignCheck = async (): Promise<
   // if there's no wallet or the current wallet is read only then stop
   if (!currentWallet || currentWallet.type === WalletTypes.readOnly)
     return GenericCampaignCheckResponse.nonstarter;
+
+  const isFirstLaunch = mmkv.getBoolean(STORAGE_KEYS.FIRST_APP_LAUNCH);
+
+  if (isFirstLaunch) return SwapsPromoCampaignExclusion.firstLaunch;
 
   const {
     accountAddress,
@@ -101,11 +106,8 @@ export const swapsCampaignCheck = async (): Promise<
 
   const hasSwapped = !!transactions.filter(isAfterSwapsLaunch).find(isSwapTx);
 
-  const isFirstOpen = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
-
-  // if they have not swapped yet and it's not their
-  // first time opening Rainbow, trigger campaign action
-  if (!hasSwapped && !isFirstOpen) {
+  // if they have not swapped yet, trigger campaign action
+  if (!hasSwapped) {
     SwapsPromoCampaign.action();
     return GenericCampaignCheckResponse.activated;
   }
