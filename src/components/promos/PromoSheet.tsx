@@ -109,102 +109,105 @@ const PromoSheet = ({
           testID="ens-intro-sheet"
         >
           {/* @ts-ignore */}
-          <Box as={ImgixImage} height="full" source={backgroundImage}>
-            <Rows>
-              <Row>
-                <Stack space={{ custom: isSmallPhone ? 46 : 54 }}>
-                  <Box>
-                    <Box
-                      height={{ custom: isSmallPhone ? 195 : 265 }}
-                      width="full"
-                    >
-                      {/* @ts-ignore */}
-                      <Box
-                        as={ImgixImage}
-                        height={{
-                          custom: deviceWidth / headerImageAspectRatio,
-                        }}
-                        {...(isSmallPhone && { marginTop: { custom: -70 } })}
-                        source={headerImage}
-                        width="full"
-                      >
-                        {/* @ts-ignore */}
-                        <SheetHandle
-                          alignSelf="center"
-                          color={sheetHandleColor}
-                          style={{ marginTop: isSmallPhone ? 75 : 5 }}
-                        />
-                      </Box>
-                    </Box>
-                    <Stack alignHorizontal="center" space={{ custom: 13 }}>
-                      <Text color="secondary60" size="15px" weight="heavy">
-                        {lang.t(`promos.${campaignKey}.subheader`)}
-                      </Text>
-                      <Heading size="30px" weight="heavy">
-                        {lang.t(`promos.${campaignKey}.header`)}
-                      </Heading>
-                    </Stack>
-                  </Box>
-                  <Inset horizontal={{ custom: 43.5 }}>
-                    <Stack space={isSmallPhone ? '24px' : '36px'}>
-                      <InfoRow
-                        description={lang.t(
-                          `promos.${campaignKey}.info_row_1.description`
-                        )}
-                        gradient={iconGradient}
-                        icon={icon1}
-                        title={lang.t(`promos.${campaignKey}.info_row_1.title`)}
-                      />
-                      <InfoRow
-                        description={lang.t(
-                          `promos.${campaignKey}.info_row_2.description`
-                        )}
-                        gradient={iconGradient}
-                        icon={icon2}
-                        title={lang.t(`promos.${campaignKey}.info_row_2.title`)}
-                      />
-                      <InfoRow
-                        description={lang.t(
-                          `promos.${campaignKey}.info_row_3.description`
-                        )}
-                        gradient={iconGradient}
-                        icon={icon3}
-                        title={lang.t(`promos.${campaignKey}.info_row_3.title`)}
-                      />
-                    </Stack>
-                  </Inset>
-                </Stack>
-              </Row>
-              <Row height="content">
-                <Inset
-                  bottom={isSmallPhone && ios ? '24px' : '42px'}
-                  horizontal="19px"
+          <Box
+            as={ImgixImage}
+            height="full"
+            source={backgroundImage}
+            justifyContent="space-between"
+          >
+            <Box>
+              <Box height={{ custom: isSmallPhone ? 195 : 265 }} width="full">
+                {/* @ts-ignore */}
+                <Box
+                  as={ImgixImage}
+                  height={{
+                    custom: deviceWidth / headerImageAspectRatio,
+                  }}
+                  {...(isSmallPhone && { marginTop: { custom: -70 } })}
+                  source={headerImage}
+                  width="full"
                 >
-                  <Stack space="12px">
-                    <SheetActionButton
-                      color={accentColor}
-                      // @ts-expect-error JavaScript component
-                      label={lang.t(`promos.${campaignKey}.primary_button`)}
-                      lightShadows
-                      onPress={engage}
-                      textColor={backgroundColor}
-                      textSize="large"
-                      weight="heavy"
-                    />
-                    <SheetActionButton
-                      color={colors.transparent}
-                      isTransparent
-                      // @ts-expect-error JavaScript component
-                      label={lang.t(`promos.${campaignKey}.secondary_button`)}
-                      onPress={goBack}
-                      textColor={accentColor}
-                      textSize="large"
-                      weight="heavy"
-                    />
-                  </Stack>
-                </Inset>
-              </Row>
-            </Rows>
+                  {/* @ts-ignore */}
+                  <SheetHandle
+                    alignSelf="center"
+                    color={sheetHandleColor}
+                    style={{ marginTop: isSmallPhone ? 75 : 5 }}
+                  />
+                </Box>
+              </Box>
+              <Stack alignHorizontal="center" space={{ custom: 13 }}>
+                <Text color="secondary60" size="15px" weight="heavy">
+                  {lang.t(`promos.${campaignKey}.subheader`)}
+                </Text>
+                <Heading size="30px" weight="heavy">
+                  {lang.t(`promos.${campaignKey}.header`)}
+                </Heading>
+              </Stack>
+            </Box>
+            <Inset horizontal={{ custom: 43.5 }}>
+              <Rows
+                space={isSmallPhone ? '24px' : '36px'}
+                alignVertical="center"
+              >
+                <Row height="content">
+                  <InfoRow
+                    description={lang.t(
+                      `promos.${campaignKey}.info_row_1.description`
+                    )}
+                    gradient={iconGradient}
+                    icon={icon1}
+                    title={lang.t(`promos.${campaignKey}.info_row_1.title`)}
+                  />
+                </Row>
+                <Row height="content">
+                  <InfoRow
+                    description={lang.t(
+                      `promos.${campaignKey}.info_row_2.description`
+                    )}
+                    gradient={iconGradient}
+                    icon={icon2}
+                    title={lang.t(`promos.${campaignKey}.info_row_2.title`)}
+                  />
+                </Row>
+                <Row height="content">
+                  <InfoRow
+                    description={lang.t(
+                      `promos.${campaignKey}.info_row_3.description`
+                    )}
+                    gradient={iconGradient}
+                    icon={icon3}
+                    title={lang.t(`promos.${campaignKey}.info_row_3.title`)}
+                  />
+                </Row>
+              </Rows>
+            </Inset>
+            <Inset
+              bottom={(isSmallPhone && ios) || android ? '34px' : '42px'}
+              horizontal="19px"
+            >
+              <Stack space="12px">
+                <SheetActionButton
+                  color={accentColor}
+                  // @ts-expect-error JavaScript component
+                  label={lang.t(`promos.${campaignKey}.primary_button`)}
+                  lightShadows
+                  onPress={engage}
+                  textColor={backgroundColor}
+                  textSize="large"
+                  weight="heavy"
+                />
+                <SheetActionButton
+                  color={colors.transparent}
+                  isTransparent
+                  // @ts-expect-error JavaScript component
+                  label={lang.t(`promos.${campaignKey}.secondary_button`)}
+                  onPress={goBack}
+                  textColor={accentColor}
+                  textSize="large"
+                  weight="heavy"
+                />
+              </Stack>
+            </Inset>
           </Box>
         </Box>
       </AccentColorProvider>
