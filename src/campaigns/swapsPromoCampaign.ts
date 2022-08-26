@@ -14,7 +14,7 @@ import { Navigation } from '@/navigation';
 import { ethereumUtils, logger } from '@/utils';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
-import { STORAGE_KEYS } from '@/model/mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 // Rainbow Router
 const RAINBOW_ROUTER_ADDRESS: EthereumAddress =
@@ -57,7 +57,7 @@ export const swapsCampaignCheck = async (): Promise<
   if (!currentWallet || currentWallet.type === WalletTypes.readOnly)
     return GenericCampaignCheckResponse.nonstarter;
 
-  const isFirstLaunch = mmkv.getBoolean(STORAGE_KEYS.FIRST_APP_LAUNCH);
+  const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
 
   if (isFirstLaunch) return SwapsPromoCampaignExclusion.firstLaunch;
 

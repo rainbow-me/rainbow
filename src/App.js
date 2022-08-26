@@ -73,7 +73,7 @@ import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { analytics } from '@rainbow-me/analytics';
-import { STORAGE_KEYS } from './model/mmkv';
+import { STORAGE_IDS } from './model/mmkv';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
@@ -273,9 +273,9 @@ class App extends Component {
       await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
       analytics.track('First App Open');
-      mmkv.set(STORAGE_KEYS.FIRST_APP_LAUNCH, true);
-    } else if (mmkv.getBoolean(STORAGE_KEYS.FIRST_APP_LAUNCH)) {
-      mmkv.set(STORAGE_KEYS.FIRST_APP_LAUNCH, false);
+      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, true);
+    } else if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
+      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
     }
   };
 
