@@ -24,7 +24,7 @@ export default function ContextMenuAndroid({
 
     if (menuItems) {
       items.push(
-        ...menuItems?.map(item => ({
+        ...(menuItems || []).map(item => ({
           id: item.actionKey,
           image: item.icon?.iconValue,
           title: item.actionTitle,

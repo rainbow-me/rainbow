@@ -126,7 +126,7 @@ export type BottomSheetNavigationOptions = Partial<
   offsetY?: number;
 };
 
-export type BottomSheetNavigationConfig = {};
+export type BottomSheetNavigationConfig = Record<string, unknown>;
 
 export type TransitionSpec =
   | {

@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';

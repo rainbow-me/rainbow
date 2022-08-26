@@ -9,8 +9,8 @@ import debounce from 'lodash/debounce';
 import sortBy from 'lodash/sortBy';
 import { ensClient } from '../apollo/client';
 import {
+  ENS_ACCOUNT_DOMAINS,
   ENS_ACCOUNT_REGISTRATIONS,
-  ENS_ALL_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_NAME_FROM_LABELHASH,
@@ -18,7 +18,7 @@ import {
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
-  EnsAccountRegistratonsData,
+  EnsAccountDomainsData,
   EnsGetCoinTypesData,
   EnsGetNameFromLabelhash,
   EnsGetRecordsData,
@@ -196,7 +196,7 @@ export const fetchEnsTokens = async ({
   timeAgo: Duration;
 }) => {
   try {
-    const { data } = await ensClient.query<EnsAccountRegistratonsData>({
+    const { data } = await ensClient.query<EnsAccountDomainsData>({
       query: ENS_ACCOUNT_REGISTRATIONS,
       variables: {
         address: address.toLowerCase(),
@@ -381,9 +381,9 @@ export const fetchRegistrationDate = async (recipient: string) => {
   }
 };
 
-export const fetchAccountRegistrations = async (address: string) => {
-  const registrations = await ensClient.query<EnsAccountRegistratonsData>({
-    query: ENS_ALL_ACCOUNT_REGISTRATIONS,
+export const fetchAccountDomains = async (address: string) => {
+  const registrations = await ensClient.query<EnsAccountDomainsData>({
+    query: ENS_ACCOUNT_DOMAINS,
     variables: {
       address: address?.toLowerCase(),
     },

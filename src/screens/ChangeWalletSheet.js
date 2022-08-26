@@ -25,6 +25,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import { analytics } from '@rainbow-me/analytics';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
@@ -165,7 +166,14 @@ export default function ChangeWalletSheet() {
         await Promise.all([p1, p2]);
 
         initializeWallet(null, null, null, false, false, null, true);
-        !fromDeletion && goBack();
+        if (!fromDeletion) {
+          goBack();
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(async () => {
+              await runCampaignChecks();
+            }, 5000);
+          });
+        }
       } catch (e) {
         logger.log('error while switching account', e);
       }

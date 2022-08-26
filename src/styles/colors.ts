@@ -83,7 +83,7 @@ const avatarBackgrounds = [
 
 const getColorsByTheme = (darkMode?: boolean) => {
   let base = {
-    appleBlue: '#0E76FD', // '14, 118, 253'
+    appleBlue: '#0E76FD', // '13, 13, 13'
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
     blueGreyDark04: '#222326', // this color is blueGreyDark at 4% over white
@@ -186,12 +186,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
   let networkColors = {
     arbitrum: '#2D374B',
     goerli: '#f6c343',
-    kovan: '#7057ff',
     mainnet: '#25292E',
     optimism: '#FF4040',
     polygon: '#8247E5',
-    rinkeby: '#f6c343',
-    ropsten: '#ff4a8d',
   };
 
   let gradients = {
@@ -215,6 +212,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     sendBackground: ['#FAFAFA00', '#FAFAFAFF'],
     success: ['#FAFF00', '#2CCC00'],
     successTint: ['#FFFFF0', '#FCFEFB'],
+    swapPurpleTintToSwapPurple: ['#7D85FF', base.swapPurple],
     transparentToAppleBlue: [
       buildRgba(base.appleBlue, 0.02),
       buildRgba(base.appleBlue, 0.06),
@@ -330,6 +328,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       sendBackground: ['#12131A00', '#12131AFF'],
       success: ['#FAFF00', '#2CCC00'],
       successTint: ['#202118', '#141E18'],
+      swapPurpleTintToSwapPurple: ['#7D85FF', base.swapPurple],
       transparentToAppleBlue: [
         buildRgba(base.appleBlue, 0.02),
         buildRgba(base.appleBlue, 0.06),
@@ -366,12 +365,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
     networkColors = {
       arbitrum: '#ADBFE3',
       goerli: '#f6c343',
-      kovan: '#7057ff',
       mainnet: '#E0E8FF',
       optimism: '#FF6A6A',
       polygon: '#A275EE',
-      rinkeby: '#f6c343',
-      ropsten: '#ff4a8d',
     };
   }
 

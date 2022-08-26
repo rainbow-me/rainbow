@@ -70,7 +70,7 @@ interface AddCashState {
   /**
    * The current Wyre transfer or order error, if there is one.
    */
-  error: {} | WyreError;
+  error: Record<string, never> | WyreError;
 
   /**
    * An array of past transactions.

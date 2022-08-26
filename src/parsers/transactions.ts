@@ -297,7 +297,7 @@ const parseTransactionWithEmptyChanges = async (
       description: methodName || 'Signed',
       from: txn.address_from,
       hash: `${txn.hash}-${0}`,
-      minedAt: txn.mined_at || txn.signed_at!,
+      minedAt: txn.mined_at,
       name: methodName || 'Signed',
       native: nativeDisplay,
       network,
@@ -382,7 +382,7 @@ const parseTransaction = async (
           description,
           from: internalTxn.address_from ?? txn.address_from,
           hash: `${txn.hash}-${index}`,
-          minedAt: txn.mined_at || txn.signed_at!,
+          minedAt: txn.mined_at,
           name: updatedAsset.name,
           native: isL2Network(network)
             ? { amount: '', display: '' }

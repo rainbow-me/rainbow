@@ -19,7 +19,7 @@ import {
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
-
+import { MMKV } from 'react-native-mmkv';
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -28,6 +28,7 @@ import VersionNumber from 'react-native-version-number';
 import { QueryClientProvider } from 'react-query';
 import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
+import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FedoraToast, OfflineToast } from './components/toasts';
@@ -43,7 +44,7 @@ import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import {
-  runFeatureUnlockChecks,
+  runFeatureAndCampaignChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
@@ -73,6 +74,7 @@ import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { analytics } from '@rainbow-me/analytics';
+import { STORAGE_IDS } from './model/mmkv';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
@@ -86,6 +88,8 @@ import { Portal } from 'react-native-cool-modals/Portal';
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
+
+const mmkv = new MMKV();
 
 // We need to disable React Navigation instrumentation for E2E tests
 // because detox doesn't like setTimeout calls that are used inside
@@ -208,11 +212,13 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runWalletBackupStatusChecks();
-      if (ios) {
-        InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => runFeatureUnlockChecks(), 2000);
-        });
-      }
+
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(
+          () => (ios ? runFeatureAndCampaignChecks() : runCampaignChecks()),
+          2000
+        );
+      });
     }
   }
 
@@ -271,6 +277,9 @@ class App extends Component {
       await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
       analytics.track('First App Open');
+      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, true);
+    } else if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
+      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
     }
   };
 

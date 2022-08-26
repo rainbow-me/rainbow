@@ -113,6 +113,7 @@ export default function ListHeader({
         <Content>
           {title && (
             <Row align="center">
+              {/* eslint-disable-next-line react/no-children-prop */}
               {createElement(titleRenderer, { children: title })}
               {title === 'Collectibles' && (
                 <Column align="flex-end" flex={1}>

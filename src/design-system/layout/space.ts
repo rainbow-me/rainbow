@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 export const space = {
   '1px': 1,
   '2px': 2,

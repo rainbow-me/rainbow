@@ -61,8 +61,6 @@ import {
   DEFAULT_HD_PATH,
   identifyWalletType,
   WalletLibraryType,
-} from '@rainbow-me/model/wallet';
-import type {
   EthereumPrivateKey,
   EthereumWalletSeed,
 } from '@rainbow-me/model/wallet';
