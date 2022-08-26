@@ -19,7 +19,7 @@ import {
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
-
+import { MMKV } from 'react-native-mmkv';
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -73,6 +73,7 @@ import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { analytics } from '@rainbow-me/analytics';
+import STORAGE_IDS from './model/mmkv';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
@@ -86,6 +87,8 @@ import { Portal } from 'react-native-cool-modals/Portal';
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
+
+const mmkv = new MMKV();
 
 // We need to disable React Navigation instrumentation for E2E tests
 // because detox doesn't like setTimeout calls that are used inside
@@ -270,6 +273,11 @@ class App extends Component {
       await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
       analytics.track('First App Open');
+      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, true);
+    } else {
+      if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
+        mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
+      }
     }
   };
 

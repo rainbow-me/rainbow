@@ -14,6 +14,7 @@ import { Navigation } from '@/navigation';
 import { ethereumUtils, logger } from '@/utils';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 // Rainbow Router
 const RAINBOW_ROUTER_ADDRESS: EthereumAddress =
@@ -100,8 +101,11 @@ export const swapsCampaignCheck = async (): Promise<
 
   const hasSwapped = !!transactions.filter(isAfterSwapsLaunch).find(isSwapTx);
 
-  // if they have not swapped yet, trigger campaign action
-  if (!hasSwapped && transactions.length) {
+  const isFirstOpen = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
+
+  // if they have not swapped yet and it's not their
+  // first time opening Rainbow, trigger campaign action
+  if (!hasSwapped && !isFirstOpen) {
     SwapsPromoCampaign.action();
     return GenericCampaignCheckResponse.activated;
   }
