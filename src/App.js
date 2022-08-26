@@ -263,7 +263,7 @@ class App extends Component {
 
   handleInitializeAnalytics = async () => {
     // Comment the line below to debug analytics
-    // if (__DEV__) return false;
+    if (__DEV__) return false;
     const storedIdentifier = await keychain.loadString(analyticsUserIdentifier);
 
     if (!storedIdentifier) {
