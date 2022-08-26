@@ -86,6 +86,7 @@
     "@gorhom/bottom-sheet": "4.4.3",
     "@lavamoat/preinstall-always-fail": "1.0.0",
     "@metamask/eth-sig-util": "4.0.0",
+    "@notifee/react-native": "5.6.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/react-native-payments": "1.1.5",
     "@rainbow-me/swaps": "0.1.14",

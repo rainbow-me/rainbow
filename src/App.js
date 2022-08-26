@@ -1,4 +1,5 @@
 import './languages';
+import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
@@ -12,6 +13,7 @@ import {
   LogBox,
   View,
 } from 'react-native';
+
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import {
@@ -72,6 +74,7 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
+import { setupNotifications } from '@/notificaitons/setup';
 import { analytics } from '@/analytics';
 import { STORAGE_IDS } from './model/mmkv';
 import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
@@ -163,21 +166,15 @@ class App extends Component {
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
+    setupNotifications();
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
-
     this.foregroundNotificationListener = messaging().onMessage(
-      this.onRemoteNotification
+      this.onForegroundRemoteNotification
     );
-
     this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
-      async remoteMessage => {
-        setTimeout(() => {
-          this.onPushNotificationOpened(remoteMessage?.data?.topic);
-        }, WALLETCONNECT_SYNC_DELAY);
-      }
+      this.onBackgroundRemoteNotification
     );
-
     this.branchListener = branchListener(this.handleOpenLinkingURL);
 
     // Walletconnect uses direct deeplinks
@@ -236,26 +233,44 @@ class App extends Component {
     store.dispatch(uniswapPairsInit());
   }
 
-  onRemoteNotification = notification => {
+  onForegroundRemoteNotification = async remoteMessage => {
+    global.console.log(
+      'RECEIVED NOTIFICATION:\n' + JSON.stringify(remoteMessage)
+    );
+    const type = remoteMessage?.data?.type;
+    if (type && remoteMessage?.notification !== undefined) {
+      global.console.log('sending');
+      // TODO: Implement image handling
+      // const image = remoteMessage?.data?.fcm_options?.image;
+      // eslint-disable-next-line no-unused-vars
+      const { fcm_options, ...data } = remoteMessage?.data;
+      notifee.displayNotification({
+        data,
+        ...remoteMessage.notification,
+      });
+    } else {
+      this.handleWalletConnectNotification(remoteMessage);
+    }
+  };
+
+  onBackgroundRemoteNotification = async remoteMessage => {
+    this.handleWalletConnectNotification(remoteMessage);
+  };
+
+  handleWalletConnectNotification = remoteMessage => {
+    const topic = remoteMessage?.data?.topic;
+    const { requestsForTopic } = this.props;
     setTimeout(() => {
-      this.onPushNotificationOpened(notification?.data?.topic);
+      const requests = requestsForTopic(topic);
+      if (requests) {
+        // WC requests will open automatically
+        return false;
+      }
     }, WALLETCONNECT_SYNC_DELAY);
   };
 
   handleOpenLinkingURL = url => {
     handleDeeplink(url, this.state.initialRoute);
-  };
-
-  onPushNotificationOpened = topic => {
-    const { requestsForTopic } = this.props;
-    const requests = requestsForTopic(topic);
-    if (requests) {
-      // WC requests will open automatically
-      return false;
-    }
-    // In the future, here  is where we should
-    // handle all other kinds of push notifications
-    // For ex. incoming txs, etc.
   };
 
   handleInitializeAnalytics = async () => {
