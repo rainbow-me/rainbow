@@ -28,6 +28,7 @@ import {
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import {
   useAccountSettings,
   useInitializeWallet,
@@ -165,7 +166,14 @@ export default function ChangeWalletSheet() {
         await Promise.all([p1, p2]);
 
         initializeWallet(null, null, null, false, false, null, true);
-        !fromDeletion && goBack();
+        if (!fromDeletion) {
+          goBack();
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(async () => {
+              await runCampaignChecks();
+            }, 5000);
+          });
+        }
       } catch (e) {
         logger.log('error while switching account', e);
       }

@@ -27,6 +27,7 @@ import SendSheet from '../screens/SendSheet';
 import SettingsSheet from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
+import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -57,6 +58,7 @@ import {
   settingsSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
+  swapsPromoSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -69,9 +71,7 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
@@ -311,6 +311,11 @@ function NativeStackNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         {...explainSheetConfig}
+      />
+      <NativeStack.Screen
+        component={SwapsPromoSheet}
+        name={Routes.SWAPS_PROMO_SHEET}
+        {...swapsPromoSheetConfig}
       />
       <NativeStack.Screen
         component={ExternalLinkWarningSheet}

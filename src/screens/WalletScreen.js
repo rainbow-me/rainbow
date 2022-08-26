@@ -72,7 +72,7 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network, accountAddress } = useAccountSettings();
+  const { network: currentNetwork, accountAddress } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
@@ -94,10 +94,10 @@ export default function WalletScreen() {
 
   useEffect(() => {
     const supportedNetworks = [Network.mainnet, Network.goerli];
-    if (!supportedNetworks.includes(network)) {
+    if (!supportedNetworks.includes(currentNetwork)) {
       revertToMainnet();
     }
-  }, [network, revertToMainnet]);
+  }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
@@ -235,10 +235,11 @@ export default function WalletScreen() {
   // (mainnet)
   const fabs = useMemo(
     () =>
-      [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(
-        e => !!e
-      ),
-    [network]
+      [
+        !!networkInfo[currentNetwork]?.exchange_enabled && ExchangeFab,
+        SendFab,
+      ].filter(e => !!e),
+    [currentNetwork]
   );
 
   const isLoadingAssets =
@@ -266,7 +267,7 @@ export default function WalletScreen() {
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
-          network={network}
+          network={currentNetwork}
           walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>
