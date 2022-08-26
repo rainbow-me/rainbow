@@ -4162,6 +4162,11 @@
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
 
+"@notifee/react-native@5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-5.6.0.tgz#a34998c98ad93482e4452b4d2cfb405b4f5f59ce"
+  integrity sha512-MBV863fQx5qFDXKQ+3i9EkVeFAGVERmOOpk4gADx17WpZJSLNhVCnXRA1CEP0bJ4B39G6Z2SiadRl19E5GeWiQ==
+
 "@npmcli/node-gyp@^1.0.2":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@npmcli/node-gyp/-/node-gyp-1.0.3.tgz#a912e637418ffc5f2db375e93b85837691a43a33"

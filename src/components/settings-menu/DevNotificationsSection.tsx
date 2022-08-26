@@ -1,47 +1,15 @@
-import messaging from '@react-native-firebase/messaging';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { MiniButton } from '../buttons';
 import { ListFooter } from '../list';
+import {
+  subscribeToTransactionTopics,
+  unsubscribeFromTransactionTopics,
+} from '@/notificaitons/subscriptions';
 import { Box, Columns, Text } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-
-const topics = [
-  'sent',
-  'received',
-  'purchased',
-  'sold',
-  'minted',
-  'swapped',
-  'approvals',
-  'other',
-];
-
-const firebaseSubscribeTopics = async (
-  type: string,
-  chainId: number,
-  address: string
-) => {
-  topics.forEach(topic => {
-    messaging().subscribeToTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
-  });
-};
-
-const firebaseUnsubscribeTopics = async (
-  type: string,
-  chainId: number,
-  address: string
-) => {
-  topics.forEach(topic => {
-    messaging().unsubscribeFromTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
-  });
-};
 
 const DevNotificationsSection = () => {
   const { colors } = useTheme();
@@ -78,8 +46,8 @@ const DevNotificationsSection = () => {
       [address]: { subscription: 'off', tx: state[address].tx },
     }));
 
-    firebaseUnsubscribeTopics('watcher', chainId, address);
-    firebaseUnsubscribeTopics('owner', chainId, address);
+    unsubscribeFromTransactionTopics('watcher', chainId, address);
+    unsubscribeFromTransactionTopics('owner', chainId, address);
   };
 
   const unsubscribeAll = async (type: string) => {
@@ -89,7 +57,7 @@ const DevNotificationsSection = () => {
         [wallet.address]: { subscription: 'off', tx: state[wallet.address].tx },
       }));
 
-      firebaseUnsubscribeTopics(type, chainId, wallet.address);
+      unsubscribeFromTransactionTopics(type, chainId, wallet.address);
     });
   };
 
@@ -100,11 +68,11 @@ const DevNotificationsSection = () => {
     }));
 
     if (type === 'owner') {
-      firebaseUnsubscribeTopics('watcher', chainId, address);
-      firebaseSubscribeTopics('owner', chainId, address);
+      unsubscribeFromTransactionTopics('watcher', chainId, address);
+      subscribeToTransactionTopics('owner', chainId, address);
     } else {
-      firebaseUnsubscribeTopics('owner', chainId, address);
-      firebaseSubscribeTopics('watcher', chainId, address);
+      unsubscribeFromTransactionTopics('owner', chainId, address);
+      subscribeToTransactionTopics('watcher', chainId, address);
     }
   };
 
@@ -119,11 +87,11 @@ const DevNotificationsSection = () => {
       }));
 
       if (type === 'owner') {
-        firebaseUnsubscribeTopics('watcher', chainId, wallet.address);
-        firebaseSubscribeTopics('owner', chainId, wallet.address);
+        unsubscribeFromTransactionTopics('watcher', chainId, wallet.address);
+        subscribeToTransactionTopics('owner', chainId, wallet.address);
       } else {
-        firebaseUnsubscribeTopics('owner', chainId, wallet.address);
-        firebaseSubscribeTopics('watcher', chainId, wallet.address);
+        unsubscribeFromTransactionTopics('owner', chainId, wallet.address);
+        subscribeToTransactionTopics('watcher', chainId, wallet.address);
       }
     });
   };
