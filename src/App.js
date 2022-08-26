@@ -74,6 +74,7 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
+import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notificaitons/constants';
 import { setupNotifications } from '@/notificaitons/setup';
 import { analytics } from '@/analytics';
 import { STORAGE_IDS } from './model/mmkv';
@@ -240,14 +241,26 @@ class App extends Component {
     const type = remoteMessage?.data?.type;
     if (type && remoteMessage?.notification !== undefined) {
       global.console.log('sending');
-      // TODO: Implement image handling
-      // const image = remoteMessage?.data?.fcm_options?.image;
+      const image = remoteMessage?.data?.fcm_options?.image;
       // eslint-disable-next-line no-unused-vars
       const { fcm_options, ...data } = remoteMessage?.data;
-      notifee.displayNotification({
-        data,
-        ...remoteMessage.notification,
-      });
+      try {
+        notifee.displayNotification({
+          android: { channelId: ANDROID_DEFAULT_CHANNEL_ID },
+          data,
+          ios: {
+            attachments: [{ url: image }],
+            foregroundPresentationOptions: {
+              badge: true,
+              banner: true,
+              list: true,
+            },
+          },
+          ...remoteMessage.notification,
+        });
+      } catch (e) {
+        global.console.log(e);
+      }
     } else {
       this.handleWalletConnectNotification(remoteMessage);
     }
