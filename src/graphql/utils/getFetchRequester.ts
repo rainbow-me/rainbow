@@ -5,7 +5,7 @@ const allowedOperations = ['mutation', 'query'];
 
 type Options = Pick<RainbowFetchRequestOpts, 'timeout' | 'headers'>;
 
-export function getRequester(url: string) {
+export function getFetchRequester(url: string) {
   return async function requester<
     TResponse = unknown,
     TVariables = Record<string, unknown>
@@ -15,12 +15,11 @@ export function getRequester(url: string) {
     options?: Options
   ): Promise<TResponse> {
     const definitions = node.definitions.filter(
-      d =>
-        d.kind === 'OperationDefinition' &&
-        allowedOperations.includes(d.operation)
+      (definition) =>
+        definition.kind === 'OperationDefinition' &&
+        allowedOperations.includes(definition.operation)
     );
 
-    // Valid document should contain *single* query or mutation unless it's has a fragment
     if (definitions.length !== 1) {
       throw new Error('Node must contain a single query or mutation');
     }

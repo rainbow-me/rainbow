@@ -1,5 +1,25 @@
 # https://api.thegraph.com/subgraphs/name/ensdomains/ens
 
+query getEnsSuggestions($name: String!, $first: Int!) {
+  domains(
+    first: $first
+    where: { name_starts_with: $name, resolvedAddress_not: "0x0000000000000000000000000000000000000000" }
+    orderBy: labelName
+    orderDirection: asc
+  ) {
+    name
+    resolver {
+      texts
+      addr {
+        id
+      }
+    }
+    owner {
+      id
+    }
+  }
+}
+
 query getDomainsByName($name: String!) {
   domains(where: { name: $name }) {
     name
