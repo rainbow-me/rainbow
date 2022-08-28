@@ -1,3 +1,4 @@
+import { EnsDomainFieldsFragment } from '@/graphql/__generated__/ens';
 import { getGlobal, saveGlobal } from './common';
 
 export type ENSDataType =
@@ -70,11 +71,5 @@ export const saveSeenOnchainDataDisclaimer = (value: boolean) =>
 export const getENSDomains = (key: string) =>
   getGlobal(ensDomains(key), null, ensProfileVersion);
 
-export const setENSDomains = (
-  key: string,
-  value: {
-    name: string;
-    owner: { id: string };
-    labelhash: string;
-  }[]
-) => saveGlobal(ensDomains(key), value);
+export const setENSDomains = (key: string, value: EnsDomainFieldsFragment[]) =>
+  saveGlobal(ensDomains(key), value);

@@ -8,7 +8,6 @@ import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
-  ENS_ACCOUNT_DOMAINS,
   ENS_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
@@ -35,11 +34,7 @@ import {
   saveENSData,
 } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
-import {
-  ENSRegistrationRecords,
-  Records,
-  UniqueAsset,
-} from '@/entities';
+import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
 import {
   ENS_DOMAIN,
@@ -51,10 +46,7 @@ import {
 } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
-import {
-  getOpenSeaCollectionUrl,
-  handleAndSignImages,
-} from '@/parsers';
+import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
@@ -62,6 +54,7 @@ import {
 } from '@/references';
 import { labelhash, logger, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
+import { ensFetcher } from '@/graphql/fetchers';
 
 const DUMMY_RECORDS = {
   'description': 'description',
@@ -381,13 +374,10 @@ export const fetchRegistrationDate = async (recipient: string) => {
 };
 
 export const fetchAccountDomains = async (address: string) => {
-  const registrations = await ensClient.query<EnsAccountDomainsData>({
-    query: ENS_ACCOUNT_DOMAINS,
-    variables: {
-      address: address?.toLowerCase(),
-    },
+  const domains = await ensFetcher.getDomainsByAddress({
+    address: address?.toLowerCase(),
   });
-  return registrations;
+  return domains;
 };
 
 export const fetchImage = async (
