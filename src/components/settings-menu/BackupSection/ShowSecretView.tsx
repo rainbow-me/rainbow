@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Centered } from '../../layout';
 import { ModalHeaderHeight } from '../../modal';
 import SecretDisplaySection from '../../secret-display/SecretDisplaySection';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 
 export default function ShowSecretView() {
   useEffect(() => {

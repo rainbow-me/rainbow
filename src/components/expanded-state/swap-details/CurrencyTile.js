@@ -3,19 +3,19 @@ import { useSelector } from 'react-redux';
 import { CoinIcon } from '../../coin-icon';
 import { Centered } from '../../layout';
 import { Text, TruncatedText } from '../../text';
-import { Box, Column, Columns, Row, Rows } from '@rainbow-me/design-system';
+import { Box, Column, Columns, Row, Rows } from '@/design-system';
 import {
   useAccountSettings,
   useColorForAsset,
   useDimensions,
-} from '@rainbow-me/hooks';
-import { SwapModalField } from '@rainbow-me/redux/swap';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+} from '@/hooks';
+import { SwapModalField } from '@/redux/swap';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 export const CurrencyTileHeight = android ? 153 : 143;
 

@@ -4,7 +4,7 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
-import { ethUnits } from '@rainbow-me/references';
+import { ethUnits } from '@/references';
 
 export const estimateWithdrawFromCompound = () => ethUnits.basic_withdrawal;
 

@@ -13,12 +13,12 @@ import { ErrorText } from '../text';
 import ConnectedDapps from './ConnectedDapps';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
-import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
-import { useAsyncEffect, useHardwareBack, useScanner } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import SimulatorFakeCameraImageSource from '@/assets/simulator-fake-camera-image.jpg';
+import { useAsyncEffect, useHardwareBack, useScanner } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { deviceUtils } from '@/utils';
 
 const Camera = styled(RNCamera)({
   ...position.coverAsObject,

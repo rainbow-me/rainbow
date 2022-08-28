@@ -1,6 +1,6 @@
 import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 
 export enum CellType {
   ASSETS_HEADER = 'ASSETS_HEADER',

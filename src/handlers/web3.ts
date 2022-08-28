@@ -20,14 +20,10 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import { RainbowConfig } from '../model/config';
 import { STORAGE_IDS } from '@/model/mmkv';
-import {
-  AssetType,
-  NewTransaction,
-  ParsedAddressAsset,
-} from '@rainbow-me/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { isUnstoppableAddressFormat } from '@rainbow-me/helpers/validators';
+import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
+import { isNativeAsset } from '@/handlers/assets';
+import { Network } from '@/helpers/networkTypes';
+import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
@@ -35,7 +31,7 @@ import {
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -44,10 +40,10 @@ import {
   greaterThan,
   handleSignificantDecimals,
   multiply,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
-import { fetchContractABI } from '@rainbow-me/utils/ethereumUtils';
-import logger from 'logger';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
+import { fetchContractABI } from '@/utils/ethereumUtils';
+import logger from '@/utils/logger';
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;

@@ -11,15 +11,15 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
-import { Asset } from '@rainbow-me/entities';
-import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
-import store from '@rainbow-me/redux/store';
+import { Asset } from '@/entities';
+import { estimateSwapGasLimit } from '@/handlers/uniswap';
+import store from '@/redux/store';
 import {
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '@rainbow-me/references';
-import { add } from '@rainbow-me/utilities';
-import logger from 'logger';
+} from '@/references';
+import { add } from '@/helpers/utilities';
+import logger from '@/utils/logger';
 
 export const estimateSwapAndDepositCompound = async (
   swapParameters: SwapActionParameters

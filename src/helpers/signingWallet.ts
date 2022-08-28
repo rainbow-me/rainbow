@@ -13,10 +13,10 @@ import {
   signingWalletAddress,
   signingWallet as signingWalletKeychain,
 } from '../utils/keychainConstants';
-import { EthereumAddress } from '@rainbow-me/entities';
-import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
-import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { EthereumAddress } from '@/entities';
+import AesEncryptor from '@/handlers/aesEncryption';
+import { addHexPrefix } from '@/handlers/web3';
+import { ethereumUtils, logger } from '@/utils';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);

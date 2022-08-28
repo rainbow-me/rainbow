@@ -8,23 +8,23 @@ import {
 } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
-import { analytics } from '@rainbow-me/analytics';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
+import { analytics } from '@/analytics';
+import { UniqueAsset } from '@/entities';
+import { fetchEnsTokens } from '@/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueToken,
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
-} from '@rainbow-me/handlers/opensea-api';
-import { fetchPoaps } from '@rainbow-me/handlers/poap';
-import { getNftsByWalletAddress } from '@rainbow-me/handlers/simplehash';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
+} from '@/handlers/opensea-api';
+import { fetchPoaps } from '@/handlers/poap';
+import { getNftsByWalletAddress } from '@/handlers/simplehash';
+import { Network } from '@/helpers/networkTypes';
+import { dedupeAssetsWithFamilies, getFamilies } from '@/parsers';
 
 // -- Constants ------------------------------------------------------------- //
 

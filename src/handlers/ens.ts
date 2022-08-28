@@ -39,8 +39,8 @@ import {
   ENSRegistrationRecords,
   Records,
   UniqueAsset,
-} from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers';
+} from '@/entities';
+import { Network } from '@/helpers';
 import {
   ENS_DOMAIN,
   ENS_RECORDS,
@@ -48,20 +48,20 @@ import {
   generateSalt,
   getENSExecutionDetails,
   getNameOwner,
-} from '@rainbow-me/helpers/ens';
-import { add } from '@rainbow-me/helpers/utilities';
-import { ImgixImage } from '@rainbow-me/images';
+} from '@/helpers/ens';
+import { add } from '@/helpers/utilities';
+import { ImgixImage } from '@/components/images';
 import {
   getOpenSeaCollectionUrl,
   handleAndSignImages,
-} from '@rainbow-me/parsers';
+} from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
   ethUnits,
-} from '@rainbow-me/references';
-import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
-import { AvatarResolver } from 'ens-avatar';
+} from '@/references';
+import { labelhash, logger, profileUtils } from '@/utils';
+import { AvatarResolver } from '@/ens-avatar/src';
 
 const DUMMY_RECORDS = {
   'description': 'description',

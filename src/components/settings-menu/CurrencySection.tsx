@@ -5,9 +5,9 @@ import { CoinIcon } from '../coin-icon';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { analytics } from '@rainbow-me/analytics';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import { emojis, supportedNativeCurrencies } from '@rainbow-me/references';
+import { analytics } from '@/analytics';
+import { useAccountSettings } from '@/hooks';
+import { emojis, supportedNativeCurrencies } from '@/references';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
   name,

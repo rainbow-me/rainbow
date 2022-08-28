@@ -13,8 +13,8 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
 
 const WaitCommitmentConfirmationContent = ({
   accentColor,

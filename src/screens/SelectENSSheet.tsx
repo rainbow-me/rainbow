@@ -15,18 +15,18 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   prefetchENSAvatar,
   prefetchENSCover,
   prefetchENSRecords,
   useAccountENSDomains,
   useENSAvatar,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import { useTheme } from '@rainbow-me/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import { useTheme } from '@/theme';
+import { deviceUtils } from '@/utils';
 
 export const SelectENSSheetHeight = 400;
 

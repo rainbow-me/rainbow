@@ -2,25 +2,25 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetType } from '@/entities';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
   Network,
-} from '@rainbow-me/helpers';
-import { updatePrecisionToDisplay } from '@rainbow-me/helpers/utilities';
-import { useSwapDerivedValues, useSwapInputHandlers } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+} from '@/helpers';
+import { updatePrecisionToDisplay } from '@/helpers/utilities';
+import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { emitAssetRequest } from '@/redux/explorer';
 import {
   flipSwapCurrencies,
   updateSwapDepositCurrency,
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
-} from '@rainbow-me/redux/swap';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/redux/swap';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 

@@ -5,9 +5,9 @@ import {
   IndexToken,
   RainbowToken,
   UniswapPoolData,
-} from '@rainbow-me/entities';
-import UniswapAssetsCache from '@rainbow-me/utils/uniswapAssetsCache';
-import logger from 'logger';
+} from '@/entities';
+import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
+import logger from '@/utils/logger';
 
 const dispersionApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',

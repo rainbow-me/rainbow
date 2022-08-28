@@ -5,8 +5,8 @@ import { Contract } from '@ethersproject/contracts';
 import WalletConnect from '@walletconnect/client';
 import { convertUtf8ToHex } from '@walletconnect/utils';
 import * as Helpers from './helpers';
-import kittiesABI from '@rainbow-me/references/cryptokitties-abi.json';
-import erc20ABI from '@rainbow-me/references/erc20-abi.json';
+import kittiesABI from '@/references/cryptokitties-abi.json';
+import erc20ABI from '@/references/erc20-abi.json';
 
 let connector = null;
 let uri = null;

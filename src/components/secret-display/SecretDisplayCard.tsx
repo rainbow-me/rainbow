@@ -4,14 +4,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { times } from '@rainbow-me/helpers/utilities';
+import { times } from '@/helpers/utilities';
 import WalletTypes, {
   EthereumWalletType,
-} from '@rainbow-me/helpers/walletTypes';
-import styled from '@rainbow-me/styled-components';
-import { fonts, padding, position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
-import ShadowStack from 'react-native-shadow-stack';
+} from '@/helpers/walletTypes';
+import styled from '@/styled-thing';
+import { fonts, padding, position } from '@/styles';
+import { useTheme } from '@/theme';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const CardBorderRadius = 25;
 

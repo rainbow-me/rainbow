@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import Svg, { Circle, ClipPath, Defs, G, Image, Rect } from 'react-native-svg';
 import RainbowLogo from '../../assets/rainbow-og.png';
 import { magicMemo } from '../../utils';
-import useSafeImageUri from '@rainbow-me/hooks/useSafeImageUri';
+import useSafeImageUri from '@/hooks/useSafeImageUri';
 
 const generateMatrix = (value, errorCorrectionLevel) => {
   const arr = Array.prototype.slice.call(

@@ -5,8 +5,8 @@ import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const ButtonSizeTypes = {
   default: {

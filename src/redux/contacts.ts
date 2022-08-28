@@ -2,10 +2,10 @@ import { Dispatch } from 'redux';
 import {
   getContacts,
   saveContacts,
-} from '@rainbow-me/handlers/localstorage/contacts';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
-import { AppGetState } from '@rainbow-me/redux/store';
+} from '@/handlers/localstorage/contacts';
+import { Network } from '@/helpers/networkTypes';
+import { omitFlatten } from '@/helpers/utilities';
+import { AppGetState } from '@/redux/store';
 
 // -- Constants --------------------------------------- //
 const CONTACTS_UPDATE = 'contacts/CONTACTS_UPDATE';

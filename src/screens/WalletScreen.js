@@ -16,11 +16,9 @@ import { Page, RowWithMargins } from '../components/layout';
 import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { prefetchENSIntroData } from '@/handlers/ens';
+import networkInfo from '@/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
@@ -37,16 +35,13 @@ import {
   useUserAccounts,
   useWallets,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { updateRefetchSavings } from '@rainbow-me/redux/data';
-import {
-  emitChartsRequest,
-  emitPortfolioRequest,
-} from '@rainbow-me/redux/explorer';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { updateRefetchSavings } from '@/redux/data';
+import { emitChartsRequest, emitPortfolioRequest } from '@/redux/explorer';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -77,7 +72,7 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network, accountAddress } = useAccountSettings();
+  const { network: currentNetwork, accountAddress } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
@@ -99,10 +94,10 @@ export default function WalletScreen() {
 
   useEffect(() => {
     const supportedNetworks = [Network.mainnet, Network.goerli];
-    if (!supportedNetworks.includes(network)) {
+    if (!supportedNetworks.includes(currentNetwork)) {
       revertToMainnet();
     }
-  }, [network, revertToMainnet]);
+  }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
@@ -240,10 +235,11 @@ export default function WalletScreen() {
   // (mainnet)
   const fabs = useMemo(
     () =>
-      [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(
-        e => !!e
-      ),
-    [network]
+      [
+        !!networkInfo[currentNetwork]?.exchange_enabled && ExchangeFab,
+        SendFab,
+      ].filter(e => !!e),
+    [currentNetwork]
   );
 
   const isLoadingAssets =
@@ -271,7 +267,7 @@ export default function WalletScreen() {
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
-          network={network}
+          network={currentNetwork}
           walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>

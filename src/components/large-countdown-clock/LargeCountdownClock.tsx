@@ -16,7 +16,7 @@ import {
   Box,
   useForegroundColor,
   useTextStyle,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 type LargeCountdownClockProps = {
   initialSeconds?: number;

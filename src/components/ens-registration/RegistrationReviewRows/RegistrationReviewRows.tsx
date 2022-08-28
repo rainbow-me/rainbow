@@ -9,9 +9,9 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useInterval } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useInterval } from '@/hooks';
 
 const MIN_LONG_PRESS_DURATION = 200;
 const LONG_PRESS_INTERVAL = 69;

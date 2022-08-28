@@ -26,24 +26,24 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';
-import { TokenSectionTypes } from '@rainbow-me/helpers';
+import { TokenSectionTypes } from '@/helpers';
 import {
   useAndroidScrollViewGestureHandler,
   usePrevious,
   useUserLists,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import store from '@rainbow-me/redux/store';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import store from '@/redux/store';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { useTheme } from '@/theme';
 import {
   abbreviations,
   deviceUtils,
   haptics,
   magicMemo,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 

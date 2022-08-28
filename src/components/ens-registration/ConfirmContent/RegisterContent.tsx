@@ -11,10 +11,10 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+} from '@/design-system';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 const RegisterContent = ({
   accentColor,

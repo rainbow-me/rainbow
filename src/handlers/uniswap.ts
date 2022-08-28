@@ -31,21 +31,21 @@ import {
   toHexNoLeadingZeros,
 } from './web3';
 import config from '@/model/config';
-import { Asset } from '@rainbow-me/entities';
+import { Asset } from '@/entities';
 import {
   add,
   convertRawAmountToDecimalFormat,
   divide,
   multiply,
   subtract,
-} from '@rainbow-me/helpers/utilities';
-import { Network } from '@rainbow-me/networkTypes';
+} from '@/helpers/utilities';
+import { Network } from '@/helpers/networkTypes';
 import {
   erc20ABI,
   ethUnits,
   UNISWAP_TESTNET_TOKEN_LIST,
-} from '@rainbow-me/references';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+} from '@/references';
+import { ethereumUtils, logger } from '@/utils';
 
 export enum Field {
   INPUT = 'INPUT',

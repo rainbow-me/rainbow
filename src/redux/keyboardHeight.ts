@@ -3,10 +3,10 @@ import { Dispatch } from 'redux';
 import {
   getKeyboardHeight as loadKeyboardHeights,
   setKeyboardHeight as saveKeyboardHeight,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
-import { KeyboardType } from '@rainbow-me/helpers/keyboardTypes';
-import { AppGetState } from '@rainbow-me/redux/store';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/handlers/localstorage/globalSettings';
+import { KeyboardType } from '@/helpers/keyboardTypes';
+import { AppGetState } from '@/redux/store';
+import { deviceUtils } from '@/utils';
 
 // -- Constants --------------------------------------- //
 const LOAD = 'keyboardHeight/LOAD';

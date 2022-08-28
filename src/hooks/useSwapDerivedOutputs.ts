@@ -12,17 +12,17 @@ import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
-import { analytics } from '@rainbow-me/analytics';
-import { EthereumAddress } from '@rainbow-me/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { analytics } from '@/analytics';
+import { EthereumAddress } from '@/entities';
+import { isNativeAsset } from '@/handlers/assets';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
-import { AppState } from '@rainbow-me/redux/store';
+import isTestFlight from '@/helpers/isTestFlight';
+import { AppState } from '@/redux/store';
 import {
   Source,
   SwapModalField,
   updateSwapQuote,
-} from '@rainbow-me/redux/swap';
+} from '@/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -31,9 +31,9 @@ import {
   convertRawAmountToDecimalFormat,
   isZero,
   updatePrecisionToDisplay,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
-import Logger from '@rainbow-me/utils/logger';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
+import Logger from '@/utils/logger';
 
 const SWAP_POLLING_INTERVAL = 5000;
 enum DisplayValue {

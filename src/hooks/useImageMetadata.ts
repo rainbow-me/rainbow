@@ -5,10 +5,10 @@ import useDimensions from './useDimensions';
 import {
   ImageMetadata,
   updateImageMetadataCache,
-} from '@rainbow-me/redux/imageMetadata';
-import { AppState } from '@rainbow-me/redux/store';
-import { position } from '@rainbow-me/styles';
-import { getDominantColorFromImage } from '@rainbow-me/utils';
+} from '@/redux/imageMetadata';
+import { AppState } from '@/redux/store';
+import { position } from '@/styles';
+import { getDominantColorFromImage } from '@/utils';
 
 export default function useImageMetadata(imageUrl: string | null) {
   const dispatch = useDispatch();

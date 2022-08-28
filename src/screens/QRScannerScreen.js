@@ -11,10 +11,10 @@ import {
   EmulatorPasteUriButton,
   QRCodeScanner,
 } from '../components/qrcode-scanner';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const Background = styled.View({
   backgroundColor: 'black',

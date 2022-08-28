@@ -5,7 +5,7 @@ import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
 import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 

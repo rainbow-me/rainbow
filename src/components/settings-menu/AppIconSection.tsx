@@ -4,16 +4,16 @@ import { MMKV } from 'react-native-mmkv';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import AppIconOg from '@/assets/appIconOg.png';
+import AppIconOptimism from '@/assets/appIconOptimism.png';
+import AppIconPixel from '@/assets/appIconPixel.png';
+import AppIconSmol from '@/assets/appIconSmol.png';
+import { Box } from '@/design-system';
+import { useAccountSettings } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useTheme } from '@/theme';
+import Logger from '@/utils/logger';
 import { OptimismIcon, SmolIcon } from '@/featuresToUnlock/unlockableAppIcons';
-import AppIconOg from '@rainbow-me/assets/appIconOg.png';
-import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
-import AppIconPixel from '@rainbow-me/assets/appIconPixel.png';
-import AppIconSmol from '@rainbow-me/assets/appIconSmol.png';
-import { Box } from '@rainbow-me/design-system';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { useTheme } from '@rainbow-me/theme';
-import Logger from '@rainbow-me/utils/logger';
 
 type AppIcon = {
   accentColor?: string;

@@ -1,12 +1,8 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists.json';
-import {
-  Asset,
-  SavingsAsset,
-  UniswapFavoriteTokenData,
-} from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
+import { Network } from '@/helpers/networkTypes';
 export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';

@@ -1,8 +1,8 @@
 import React, { LegacyRef, useMemo } from 'react';
 import { requireNativeComponent, View, ViewStyle } from 'react-native';
 import { BaseButtonAnimationProps, TransformOrigin } from './types';
-import styled from '@rainbow-me/styled-components';
-import { HapticFeedback, HapticFeedbackType } from '@rainbow-me/utils/haptics';
+import styled from '@/styled-thing';
+import { HapticFeedback, HapticFeedbackType } from '@/utils/haptics';
 
 interface Props extends BaseButtonAnimationProps {
   compensateForTransformOrigin?: boolean;

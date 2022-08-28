@@ -23,17 +23,17 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountENSDomains,
   useDimensions,
   useENSAvatar,
   useENSRecords,
   useENSRegistration,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 enum AnotherENSEnum {
   search = 'search',

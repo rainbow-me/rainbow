@@ -16,14 +16,14 @@ import {
   Numberish,
   RainbowMeteorologyData,
   SelectedGasFee,
-} from '@rainbow-me/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
-import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
+} from '@/entities';
+import { toHex } from '@/handlers/web3';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import {
   ethUnits,
   supportedNativeCurrencies,
   timeUnits,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   add,
   convertRawAmountToBalance,
@@ -33,7 +33,7 @@ import {
   lessThan,
   multiply,
   toFixedDecimals,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 type BigNumberish = number | string | BigNumber;
 

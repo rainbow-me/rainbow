@@ -2,12 +2,12 @@ import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
-import { analytics } from '@rainbow-me/analytics';
-import { EthereumAddress } from '@rainbow-me/entities';
-import { fetchAccountDomains } from '@rainbow-me/handlers/ens';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-import walletTypes from '@rainbow-me/helpers/walletTypes';
-import { RainbowWallet } from '@rainbow-me/model/wallet';
+import { analytics } from '@/analytics';
+import { EthereumAddress } from '@/entities';
+import { fetchAccountDomains } from '@/handlers/ens';
+import { ENS_RECORDS } from '@/helpers/ens';
+import walletTypes from '@/helpers/walletTypes';
+import { RainbowWallet } from '@/model/wallet';
 
 export default function useTrackENSProfile() {
   const { walletNames, wallets } = useWallets();

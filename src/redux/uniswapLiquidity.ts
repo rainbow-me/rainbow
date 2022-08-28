@@ -3,11 +3,11 @@ import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
-import { ParsedAddressAsset } from '@rainbow-me/entities';
+import { ParsedAddressAsset } from '@/entities';
 import {
   getLiquidity,
   saveLiquidity,
-} from '@rainbow-me/handlers/localstorage/uniswap';
+} from '@/handlers/localstorage/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 

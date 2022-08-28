@@ -6,9 +6,9 @@ import {
   Box,
   Inset,
   Text,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { useTheme } from '@/theme';
 
 type Props = {
   type: 'availability' | 'expiration' | 'price';

@@ -7,22 +7,22 @@ import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+} from '@/config/experimentalHooks';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+} from '@/helpers/emojiHandler';
 import {
   useAccountSettings,
   useContacts,
   useENSAvatar,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
+} from '@/utils/profileUtils';
 
 const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);

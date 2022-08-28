@@ -46,9 +46,9 @@ import { FLASHBOTS_WC } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@/analytics';
+import { Text } from '@/design-system';
 import config from '@/model/config';
-import { analytics } from '@rainbow-me/analytics';
-import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,
   estimateGasWithPadding,
@@ -58,12 +58,12 @@ import {
   isL2Network,
   isTestnetNetwork,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { isDappAuthenticated } from '@/helpers/dappNameHandler';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -73,7 +73,7 @@ import {
   useTransactionConfirmation,
   useWalletBalances,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import {
   loadWallet,
   sendTransaction,
@@ -81,13 +81,13 @@ import {
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
-} from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+} from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { walletConnectRemovePendingRedirect } from '@/redux/walletconnect';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -96,10 +96,10 @@ import {
   greaterThanOrEqualTo,
   multiply,
   omitFlatten,
-} from '@rainbow-me/utilities';
-import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
-import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
+} from '@/helpers/utilities';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -111,8 +111,8 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
-} from '@rainbow-me/utils/signingMethods';
-import logger from 'logger';
+} from '@/utils/signingMethods';
+import logger from '@/utils/logger';
 
 const springConfig = {
   damping: 500,

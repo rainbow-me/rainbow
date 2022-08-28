@@ -9,12 +9,12 @@ import {
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import { containsEmoji } from '@rainbow-me/helpers/strings';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import { AppState } from '@rainbow-me/redux/store';
-import logger from 'logger';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { containsEmoji } from '@/helpers/strings';
+import WalletTypes from '@/helpers/walletTypes';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { AppState } from '@/redux/store';
+import logger from '@/utils/logger';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -93,7 +93,6 @@ export default function useWebData() {
   const wipeWebData = useCallback(async () => {
     if (!webDataEnabled) return;
     await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
-    await setPreference(PreferenceActionType.wipe, 'hidden', accountAddress);
     await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
     dispatch(updateWebDataEnabled(false, accountAddress));
   }, [accountAddress, dispatch, webDataEnabled]);
@@ -148,7 +147,6 @@ export default function useWebData() {
 
   const updateWebHidden = useCallback(
     async assetIds => {
-      if (!webDataEnabled) return;
       const response = await getPreference('hidden', accountAddress);
       // If the showcase is populated, just updated it
       if (response?.ids?.length > 0) {
@@ -169,7 +167,7 @@ export default function useWebData() {
         logger.log('hidden initialized!');
       }
     },
-    [accountAddress, webDataEnabled]
+    [accountAddress]
   );
 
   const initializeShowcaseIfNeeded = useCallback(async () => {

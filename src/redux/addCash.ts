@@ -3,33 +3,33 @@ import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
 import { AppGetState, AppState } from './store';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
   RainbowTransaction,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
-import { trackWyreOrder, trackWyreTransfer } from '@rainbow-me/handlers/wyre';
+} from '@/handlers/localstorage/accountLocal';
+import { trackWyreOrder, trackWyreTransfer } from '@/handlers/wyre';
 import {
   WYRE_ORDER_STATUS_TYPES,
   WyreError,
   WyreOrderStatusType,
   WyreReferenceInfo,
-} from '@rainbow-me/helpers/wyreStatusTypes';
+} from '@/helpers/wyreStatusTypes';
 import {
   AddCashCurrencies,
   AddCashCurrencyAsset,
   AddCashCurrencyInfo,
-} from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
-import maybeReviewAlert from '@rainbow-me/utils/reviewAlert';
-import logger from 'logger';
+} from '@/references';
+import { ethereumUtils } from '@/utils';
+import maybeReviewAlert from '@/utils/reviewAlert';
+import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 

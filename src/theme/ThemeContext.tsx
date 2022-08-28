@@ -20,9 +20,9 @@ import {
   lightModeThemeColors,
 } from '../styles/colors';
 import currentColors from './currentColors';
-import { DesignSystemProvider } from '@rainbow-me/design-system';
-import { getTheme, saveTheme } from '@rainbow-me/handlers/localstorage/theme';
-import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
+import { DesignSystemProvider } from '@/design-system';
+import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
+import { StyleThingThemeProvider } from '@/styled-thing';
 
 export const Themes = {
   DARK: 'dark',
