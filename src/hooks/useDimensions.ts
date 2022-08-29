@@ -1,5 +1,4 @@
 import { ScaledSize, useWindowDimensions } from 'react-native';
-import { analytics } from '@/analytics';
 
 const deviceDimensions = {
   iphone6: {
@@ -31,7 +30,6 @@ export interface DeviceDimensions extends ScaledSize {
 
 export default function useDimensions(): DeviceDimensions {
   const { height, width, ...restOfDimensions } = useWindowDimensions();
-  analytics.identify(undefined, { screenWidth: width, screenHeight: height });
   return {
     height,
     isLargePhone: width >= deviceDimensions.iphoneX.width,
