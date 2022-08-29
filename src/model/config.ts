@@ -29,6 +29,7 @@ import {
 import { setRpcEndpoints, web3SetHttpProvider } from '@/handlers/web3';
 
 import Logger from '@/utils/logger';
+import { Network } from '@/helpers';
 
 export interface RainbowConfig extends Record<string, any> {
   arbitrum_mainnet_rpc?: string;
@@ -106,7 +107,11 @@ const init = async () => {
   } finally {
     Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
     // UPDATE THE PROVIDER AFTER LOADING THE NEW CONFIG
-    const currentNetwork = await getNetwork();
+    let currentNetwork = await getNetwork();
+    const supportedNetworks = [Network.mainnet, Network.goerli];
+    if (!supportedNetworks.includes(currentNetwork)) {
+      currentNetwork = Network.mainnet;
+    }
     setRpcEndpoints(config);
     web3SetHttpProvider(currentNetwork);
     saveNetwork(currentNetwork);
