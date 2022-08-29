@@ -23,7 +23,7 @@ import {
   CurrencySelectModalHeader,
   ExchangeSearch,
 } from '../components/exchange';
-import NetworkSwitcher from '../components/exchange/NetworkSwitcher';
+import { NetworkSwitcher as NetworkSwitcherv1 } from '../components/exchange/NetworkSwitcher';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
@@ -41,18 +41,13 @@ import {
   useSwapCurrencyList,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
-import {
-  getActiveRoute,
-  useNavigation,
-} from '@/navigation/Navigation';
-import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@/redux/explorer';
+import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, filterList } from '@/utils';
+import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
 
 const storage = new MMKV();
 const getHasShownWarning = () =>
@@ -476,6 +471,11 @@ export default function CurrencySelectModal() {
       { translateX: (1 - scrollPosition.value) * 8 },
     ],
   }));
+
+  const crosschainEnabled = false;
+  const NetworkSwitcher = crosschainEnabled
+    ? NetworkSwitcherv1
+    : NetworkSwitcherv2;
 
   return (
     <Wrapper>
