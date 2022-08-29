@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
+import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import {
   AnimatedExchangeFloatingPanels,
   ConfirmExchangeButton,
@@ -136,13 +137,15 @@ export default function ExchangeModal({
   const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
   const {
+    params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
+  } = useRoute();
+  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+
+  const {
     slippageInBips,
     maxInputUpdate,
     flipCurrenciesUpdate,
   } = useSwapSettings();
-  const {
-    params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
-  } = useRoute();
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
@@ -168,6 +171,7 @@ export default function ExchangeModal({
     let newOutput = defaultOutputAsset;
 
     if (
+      !crosschainEnabled &&
       defaultInputAsset &&
       defaultOutputAsset &&
       defaultInputAsset.type !== defaultOutputAsset.type
@@ -197,7 +201,7 @@ export default function ExchangeModal({
     } else {
       return newOutput;
     }
-  }, [defaultInputAsset, defaultOutputAsset]);
+  }, [crosschainEnabled, defaultInputAsset, defaultOutputAsset]);
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
