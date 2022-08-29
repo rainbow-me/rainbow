@@ -248,10 +248,10 @@ class App extends Component {
     if (type && remoteMessage?.notification !== undefined) {
       global.console.log('sending');
       const image = ios
-        ? remoteMessage?.data?.fcm_options?.image
-        : remoteMessage?.notification?.android?.imageUrl;
+        ? remoteMessage.data?.fcm_options?.image
+        : remoteMessage.notification?.android?.imageUrl;
       // eslint-disable-next-line no-unused-vars
-      const { fcm_options, ...data } = remoteMessage?.data;
+      const { fcm_options, ...data } = remoteMessage.data;
       const notification = {
         ...remoteMessage.notification,
         android: { channelId: ANDROID_DEFAULT_CHANNEL_ID },
