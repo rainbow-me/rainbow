@@ -5,7 +5,7 @@ import { ListFooter } from '../list';
 import {
   subscribeToTransactionTopics,
   unsubscribeFromTransactionTopics,
-} from '@/notificaitons/subscriptions';
+} from '@/notifications/subscriptions';
 import { Box, Columns, Text } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';

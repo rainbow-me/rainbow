@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import RemoteMessage = FirebaseMessagingTypes.RemoteMessage;
-import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notificaitons/constants';
+import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notifications/constants';
 import notifee, { AndroidStyle, Notification } from '@notifee/react-native';
 import { logger } from '@/utils';
 
