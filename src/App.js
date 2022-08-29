@@ -74,8 +74,8 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
-import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notificaitons/constants';
-import { setupNotifications } from '@/notificaitons/setup';
+import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notifications/constants';
+import { setupNotifications } from '@/notifications/setup';
 import { analytics } from '@/analytics';
 import { STORAGE_IDS } from './model/mmkv';
 import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
@@ -84,7 +84,7 @@ import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
-import { handleShowingForegroundNotification } from '@/notificaitons/foreground';
+import { handleShowingForegroundNotification } from '@/notifications/foreground';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 

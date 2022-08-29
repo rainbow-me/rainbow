@@ -5,7 +5,7 @@ import { ListFooter } from '../list';
 import {
   subscribeToTransactionTopics,
   unsubscribeFromTransactionTopics,
-} from '@/notificaitons/subscriptions';
+} from '@/notifications/subscriptions';
 import { Box, Columns, Text } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';
@@ -17,7 +17,7 @@ const DevNotificationsSection = () => {
   const { chainId } = useAccountSettings();
   const [loading, setLoading] = useState<boolean>(true);
   const walletIDs = Object.keys(wallets!);
-  let allWallets: any[] = useMemo(() => [], []);
+  const allWallets: any[] = useMemo(() => [], []);
   const [notificationState, setNotificationState] = useState<any>({});
 
   useEffect(() => {
