@@ -1,5 +1,5 @@
 import './languages';
-import notifee from '@notifee/react-native';
+import notifee, { AndroidStyle } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
@@ -262,6 +262,10 @@ class App extends Component {
       if (image) {
         notification.ios.attachments = [{ url: image }];
         notification.android.largeIcon = image;
+        notification.android.style = {
+          picture: image,
+          type: AndroidStyle.BIGPICTURE,
+        };
       }
 
       try {
