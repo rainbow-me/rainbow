@@ -13,7 +13,7 @@ export const REVIEW_ANDROID = 'reviewAndroid';
 export const PROFILES = 'ENS Profiles';
 export const L2_TXS = 'L2 Transactions';
 export const FLASHBOTS_WC = 'Flashbots for WC';
-export const CROSSCHAIN_SWAPS = 'crossChainSwaps';
+export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 
 export const defaultConfig = {
   // this flag is not reactive. We use this in a static context
