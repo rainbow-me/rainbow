@@ -27,6 +27,7 @@ import {
   WETH_ADDRESS,
 } from '@/references';
 import logger from '@/utils/logger';
+import { ethereumUtils } from '@/utils';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -181,6 +182,21 @@ export const uniswapPairsInit = () => (
 export const uniswapResetState = () => (
   dispatch: Dispatch<UniswapClearStateAction>
 ) => dispatch({ type: UNISWAP_CLEAR_STATE });
+
+const parseFavoriteAddress = (favorite: string) => {
+  if (favorite.includes('_')) {
+    const [address, network] = favorite.split('_');
+    return {
+      address,
+      chainId: ethereumUtils.getChainIdFromNetwork(network as Network),
+    };
+  }
+
+  return {
+    address: favorite,
+    chainId: 1,
+  };
+};
 
 /**
  * Loads uniswap favorites metadata from local storage or fetches new data
