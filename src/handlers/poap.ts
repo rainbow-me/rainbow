@@ -7,7 +7,7 @@ import logger from 'logger';
 
 export const fetchPoaps = async (address: string) => {
   try {
-    const url = `https://api.poap.xyz/actions/scan/${address}`;
+    const url = `https://api.poap.tech/actions/scan/${address}`;
     const data = await rainbowFetch(url, {
       headers: {
         'x-api-key': POAP_API_KEY,
