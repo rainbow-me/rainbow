@@ -8,7 +8,6 @@ import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
-  ENS_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_NAME_FROM_LABELHASH,
@@ -16,7 +15,6 @@ import {
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
-  EnsAccountDomainsData,
   EnsGetCoinTypesData,
   EnsGetNameFromLabelhash,
   EnsGetRecordsData,
@@ -188,28 +186,32 @@ export const fetchEnsTokens = async ({
   timeAgo: Duration;
 }) => {
   try {
-    const { data } = await ensClient.query<EnsAccountDomainsData>({
-      query: ENS_ACCOUNT_REGISTRATIONS,
-      variables: {
-        address: address.toLowerCase(),
-        registrationDate_gt: Math.floor(
-          sub(new Date(), timeAgo).getTime() / 1000
-        ).toString(),
-      },
+    const data = await ensFetcher.getRegistrationsByAddress({
+      address: address.toLowerCase(),
+      registrationDate_gt: Math.floor(
+        sub(new Date(), timeAgo).getTime() / 1000
+      ).toString(),
     });
+
     return (
-      data?.account?.registrations?.map(registration => {
-        const tokenId = BigNumber.from(
-          registration.domain.labelhash
-        ).toString();
-        const token = buildEnsToken({
-          contractAddress,
-          imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
-          name: registration.domain.name,
-          tokenId,
-        });
-        return token;
-      }) || []
+      data?.account?.registrations
+        ?.map(registration => {
+          if (!registration.domain) return;
+
+          const tokenId = BigNumber.from(
+            registration.domain.labelhash
+          ).toString();
+          const token = buildEnsToken({
+            contractAddress,
+            imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
+            name: registration.domain.name || '',
+            tokenId,
+          });
+          return token;
+        })
+        .filter(
+          <TToken>(token: TToken | null | undefined): token is TToken => !!token
+        ) || []
     );
   } catch (error) {
     logger.sentry('ENS: Error getting ENS unique tokens', error);
