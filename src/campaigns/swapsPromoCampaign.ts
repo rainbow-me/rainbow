@@ -49,7 +49,6 @@ export enum SwapsPromoCampaignExclusion {
   noAssets = 'no_assets',
   alreadySwapped = 'already_swapped',
   firstLaunch = 'first_launch',
-  wrongNetwork = 'wrong_network',
 }
 
 export const swapsCampaignCheck = async (): Promise<
@@ -76,14 +75,8 @@ export const swapsCampaignCheck = async (): Promise<
 
   const {
     accountAddress,
-    network: currentNetwork,
-  }: {
-    accountAddress: EthereumAddress;
-    network: Network;
-  } = store.getState().settings;
+  }: { accountAddress: EthereumAddress } = store.getState().settings;
 
-  if (currentNetwork !== Network.mainnet)
-    return SwapsPromoCampaignExclusion.wrongNetwork;
   // transactions are loaded from the current wallet
   const { transactions } = store.getState().data;
 
