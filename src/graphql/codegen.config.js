@@ -1,12 +1,13 @@
-const { schemas } = require('./schemas');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { config } = require('./config');
 
 module.exports = {
-  generates: Object.entries(schemas).reduce((config, [key, value]) => {
+  generates: Object.entries(config).reduce((config, [key, value]) => {
     return {
       ...config,
       [`./__generated__/${key}.ts`]: {
-        schema: [{ [value.url]: { method: value.method || 'POST' } }],
-        documents: value.files,
+        schema: [{ [value.schema.url]: { method: value.schema.method } }],
+        documents: [value.file],
         plugins: [
           'typescript',
           'typescript-operations',

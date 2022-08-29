@@ -1,5 +1,3 @@
-const { schemas } = require('./schemas');
-
 module.exports = {
   extends: ['../../.eslintrc.js'],
   overrides: [
