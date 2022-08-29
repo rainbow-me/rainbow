@@ -7,12 +7,12 @@ import {
   deleteAllBackups,
   fetchAllBackups,
   fetchUserDataFromCloud,
-} from '@rainbow-me/handlers/cloudBackup';
-import walletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { walletsUpdate } from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+} from '@/handlers/cloudBackup';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { useNavigation } from '@/navigation/Navigation';
+import { walletsUpdate } from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import { showActionSheetWithOptions } from '@/utils';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();

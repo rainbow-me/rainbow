@@ -4,9 +4,9 @@ import { CoinIcon } from '../coin-icon';
 import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { getTokenMetadata } from '@rainbow-me/utils';
+import { ETH_ADDRESS } from '@/references';
+import styled from '@/styled-thing';
+import { getTokenMetadata } from '@/utils';
 
 const CurrencyItemHeight = 40;
 

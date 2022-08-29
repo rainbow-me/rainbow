@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated, { Easing, FadeInDown, FadeOut } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const AnimatedContainer = styled(Animated.View)({
   flex: 1,

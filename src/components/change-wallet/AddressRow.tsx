@@ -12,21 +12,20 @@ import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import useExperimentalFlag, {
-  NOTIFICATIONS,
-} from '@rainbow-me/config/experimentalHooks';
+import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
+} from '@/helpers/emojiHandler';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth, getFontSize } from '@/styles';
 import {
   abbreviations,
   deviceUtils,
   profileUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
+import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -35,8 +34,7 @@ const sx = StyleSheet.create({
   accountLabel: {
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
-    // @ts-ignore
-    fontWeight: fonts.weight.medium,
+    fontWeight: fonts.weight.medium as '500',
     letterSpacing: fonts.letterSpacing.roundedMedium,
     maxWidth: maxAccountLabelWidth,
   },
@@ -46,8 +44,7 @@ const sx = StyleSheet.create({
     marginLeft: 19,
   },
   bottomRowText: {
-    // @ts-ignore
-    fontWeight: fonts.weight.medium,
+    fontWeight: fonts.weight.medium as '500',
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
   coinCheckIcon: {
@@ -57,8 +54,7 @@ const sx = StyleSheet.create({
     color: '#0E76FD',
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.large),
-    // @ts-ignore
-    fontWeight: fonts.weight.heavy,
+    fontWeight: fonts.weight.heavy as '800',
     textAlign: 'center',
   },
   gradient: {
@@ -83,13 +79,11 @@ const gradientProps = {
 
 const StyledTruncatedText = styled(TruncatedText)({
   ...sx.accountLabel,
-  // @ts-ignore
   ...fontWithWidth(sx.accountLabel.fontWeight),
 });
 
 const StyledBottomRowText = styled(BottomRowText)({
   ...sx.bottomRowText,
-  // @ts-ignore
   ...fontWithWidth(sx.bottomRowText.fontWeight),
 });
 
@@ -128,7 +122,7 @@ export default function AddressRow({
   data,
   editMode,
 }: {
-  contextMenuActions: any;
+  contextMenuActions: EditWalletContextMenuActions;
   data: any;
   editMode: boolean;
 }) {
@@ -155,7 +149,9 @@ export default function AddressRow({
 
   const cleanedUpLabel = useMemo(
     () =>
-      removeFirstEmojiFromString(label) || abbreviations.address(address, 4, 6),
+      removeFirstEmojiFromString(label) ||
+      abbreviations.address(address, 4, 6) ||
+      '',
     [address, label]
   );
 

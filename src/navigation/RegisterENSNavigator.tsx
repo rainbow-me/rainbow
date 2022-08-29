@@ -12,17 +12,17 @@ import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
-import { Box } from '@rainbow-me/design-system';
-import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { Box } from '@/design-system';
+import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useDimensions,
   useENSRegistration,
   useENSRegistrationForm,
   usePrevious,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
+import { deviceUtils } from '@/utils';
 
 const Swipe = createMaterialTopTabNavigator();
 

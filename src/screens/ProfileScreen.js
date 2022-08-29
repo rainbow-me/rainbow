@@ -15,10 +15,10 @@ import {
   useAccountTransactions,
   useContacts,
   useRequests,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -68,9 +68,7 @@ export default function ProfileScreen({ navigation }) {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const addCashSupportedNetworks =
-    (IS_DEV && network === NetworkTypes.kovan) ||
-    network === NetworkTypes.mainnet;
+  const addCashSupportedNetworks = network === NetworkTypes.mainnet;
   const addCashAvailable =
     IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 

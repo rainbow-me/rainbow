@@ -4,8 +4,8 @@ import {
   EMOJIS_CONTAINER_HORIZONTAL_MARGIN,
   EMOJIS_TOP_OFFSET,
 } from './constants';
-import { useTheme } from '@rainbow-me/theme';
-import { magicMemo } from '@rainbow-me/utils';
+import { useTheme } from '@/theme';
+import { magicMemo } from '@/utils';
 
 interface Props {
   emojisRows: string[][];

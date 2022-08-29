@@ -7,9 +7,9 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, Columns, useForegroundColor } from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
-import { magicMemo } from '@rainbow-me/utils';
+import { Box, Columns, useForegroundColor } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { magicMemo } from '@/utils';
 
 const PULSE_STEP_DURATION = 1000;
 const STEP_SPACING = 9;

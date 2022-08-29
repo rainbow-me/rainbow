@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ParsedAddressAsset } from '@rainbow-me/entities';
-import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
-import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
-import NetworkTypes from '@rainbow-me/networkTypes';
-import { AppState } from '@rainbow-me/redux/store';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ParsedAddressAsset } from '@/entities';
+import { getUniswapV2Tokens } from '@/handlers/dispersion';
+import { sortAssetsByNativeAmountSelector } from '@/helpers/assetSelectors';
+import NetworkTypes from '@/helpers/networkTypes';
+import { AppState } from '@/redux/store';
+import { ETH_ADDRESS } from '@/references';
 
 const networkSelector = (state: AppState) => state.settings.network;
 

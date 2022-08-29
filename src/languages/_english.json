@@ -206,6 +206,7 @@
         "invalid_fee": "Invalid Fee",
         "invalid_fee_lowercase": "Invalid fee",
         "loading": "Loading...",
+        "no_quote_available": "􀅵 No Quote Available",
         "review": "Review",
         "submitting": "Submitting",
         "swap": "Hold to Swap",
@@ -572,9 +573,10 @@
       }
     },
     "explain": {
-      "optimism_app_icon": {
-        "title": "You've unlocked\nRainbow 􀆄 Optimism",
-        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+      "icon_unlock": {
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon!",
+        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+        "title": "You've unlocked\nRainbow 􀆄 %{partner}",
         "button": "Snag the icon"
       },
       "output_disabled": {
@@ -586,11 +588,6 @@
         "text": "%{tokenSymbol} is available on %{networks}. To move %{tokenSymbol} between networks, use a Bridge like Hop.",
         "title_plural": "Available on %{length} Networks",
         "title_singular": "Available on the %{network} Network"
-      },
-      "optimism_app_icon": {
-        "title": "You've unlocked\nRainbow 􀆄 Optimism",
-        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "button": "Snag the icon"
       },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
@@ -663,6 +660,10 @@
         "fragment2": "Read more",
         "fragment3": " about AMMs and token liquidity.",
         "title": "Insufficient Liquidity"
+      },
+      "no_quote": {
+        "title": "No quote available",
+        "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
       "go_to_hop_with_icon": {
         "text": "Go to the Hop Bridge 􀮶"
@@ -1084,6 +1085,26 @@
       },
       "records": {
         "since": "Since"
+      }
+    },
+    "promos": {
+      "swaps_launch": {
+        "primary_button": "􀖅 Try a swap",
+        "secondary_button": "Maybe later",
+        "info_row_1": {
+          "title": "Swap all your favorite tokens",
+          "description": "Rainbow searches everywhere to find the best rate for your trade."
+        },
+        "info_row_2": {
+          "title": "Swap directly on L2",
+          "description": "Fast and cheap swaps on Arbitrum, Optimism and Polygon."
+        },
+        "info_row_3": {
+          "title": "Flashbots protection",
+          "description": "Price protection, plus no fees on failed swaps. Enable in swap settings."
+        },
+        "header": "Swaps on Rainbow",
+        "subheader": "REINTRODUCING"
       }
     },
     "review": {

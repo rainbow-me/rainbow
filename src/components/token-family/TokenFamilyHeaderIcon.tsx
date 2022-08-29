@@ -3,12 +3,12 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import eyeSlash from '../../assets/sf-eye.slash.png';
-import { Text } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
-import { borders } from '@rainbow-me/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
-import { FallbackIcon, initials } from '@rainbow-me/utils';
-import ShadowStack from 'react-native-shadow-stack';
+import { Text } from '@/design-system';
+import { ImgixImage } from '@/components/images';
+import { borders } from '@/styles';
+import { ThemeContextProps } from '@/theme';
+import { FallbackIcon, initials } from '@/utils';
+import ShadowStack from '@/react-native-shadow-stack';
 
 type Props = {
   familyName: string;
@@ -44,6 +44,16 @@ export default React.memo(function TokenFamilyHeaderIcon({
       <View style={sx.trophy}>
         <Text align="center" containsEmoji size="16px">
           🏆
+        </Text>
+      </View>
+    );
+  }
+
+  if (familyName === 'Selling') {
+    return (
+      <View style={sx.trophy}>
+        <Text align="center" containsEmoji size="16px">
+          💸
         </Text>
       </View>
     );

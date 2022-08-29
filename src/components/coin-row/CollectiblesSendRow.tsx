@@ -10,9 +10,9 @@ import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { UniqueAsset } from '@rainbow-me/entities';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { padding } from '@rainbow-me/styles';
+import { UniqueAsset } from '@/entities';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { padding } from '@/styles';
 
 const dividerHeight = 22;
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;

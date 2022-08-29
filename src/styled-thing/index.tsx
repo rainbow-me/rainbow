@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
+/* eslint-disable no-multi-assign */
 import React from 'react';
 import isEqual from 'react-fast-compare';
 import { css } from 'styled-components';
@@ -108,7 +109,7 @@ export default function styled(Component: any) {
     if (__DEV__) {
       if (Array.isArray(styles)) {
         throw new TypeError(
-          '@rainbow-me/styled-components only support object syntax.\nUse the function call with an object as an argument instead of template literal string, for example styled({}) instead of styled``\nSee https://github.com/rainbow-me/rainbow/pull/2730'
+          '@/styled-thing only support object syntax.\nUse the function call with an object as an argument instead of template literal string, for example styled({}) instead of styled``\nSee https://github.com/rainbow-me/rainbow/pull/2730'
         );
       }
     }

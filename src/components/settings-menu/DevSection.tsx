@@ -22,14 +22,11 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
-import {
-  getProviderForNetwork,
-  web3SetHttpProvider,
-} from '@rainbow-me/handlers/web3';
-import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { deleteAllBackups } from '@/handlers/cloudBackup';
+import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
+import { RainbowContext } from '@/helpers/RainbowContext';
+import isTestFlight from '@/helpers/isTestFlight';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useInitializeAccountData,
@@ -37,20 +34,20 @@ import {
   useResetAccountState,
   useUpdateAssetOnchainBalance,
   useWallets,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { wipeKeychain } from '@rainbow-me/model/keychain';
-import { clearAllStorages } from '@rainbow-me/model/mmkv';
-import { Navigation } from '@rainbow-me/navigation';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { explorerInit } from '@rainbow-me/redux/explorer';
-import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
-import store from '@rainbow-me/redux/store';
-import { walletsUpdate } from '@rainbow-me/redux/wallets';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { wipeKeychain } from '@/model/keychain';
+import { clearAllStorages } from '@/model/mmkv';
+import { Navigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
+import { explorerInit } from '@/redux/explorer';
+import { clearImageMetadataCache } from '@/redux/imageMetadata';
+import store from '@/redux/store';
+import { walletsUpdate } from '@/redux/wallets';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const DevSection = () => {
   const { navigate } = useNavigation();

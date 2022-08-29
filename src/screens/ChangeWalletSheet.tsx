@@ -25,25 +25,27 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { analytics } from '@rainbow-me/analytics';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import { analytics } from '@/analytics';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import {
   useAccountSettings,
   useInitializeWallet,
   useWallets,
   useWalletsWithBalancesAndNames,
   useWebData,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 import {
   deviceUtils,
   doesWalletsContainAddress,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/utils';
+import logger from '@/utils/logger';
+import { useTheme } from '@/theme';
+import { EthereumAddress } from '@/entities';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;
@@ -104,6 +106,12 @@ const getWalletRowCount = (wallets: any) => {
     });
   }
   return count;
+};
+
+export type EditWalletContextMenuActions = {
+  edit: (walletId: string, address: EthereumAddress) => void;
+  notifications: (walletName: string) => void;
+  remove: (walletId: string, address: EthereumAddress) => void;
 };
 
 export default function ChangeWalletSheet() {
@@ -169,7 +177,14 @@ export default function ChangeWalletSheet() {
         await Promise.all([p1, p2]);
         // @ts-ignore
         initializeWallet(null, null, null, false, false, null, true);
-        !fromDeletion && goBack();
+        if (!fromDeletion) {
+          goBack();
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(async () => {
+              await runCampaignChecks();
+            }, 5000);
+          });
+        }
       } catch (e) {
         logger.log('error while switching account', e);
       }
@@ -545,11 +560,13 @@ export default function ChangeWalletSheet() {
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
-        contextMenuActions={{
-          edit: onPressEdit,
-          notifications: onPressNotifications,
-          remove: onPressRemove,
-        }}
+        contextMenuActions={
+          {
+            edit: onPressEdit,
+            notifications: onPressNotifications,
+            remove: onPressRemove,
+          } as EditWalletContextMenuActions
+        }
         currentWallet={currentSelectedWallet}
         editMode={editMode}
         height={listHeight}

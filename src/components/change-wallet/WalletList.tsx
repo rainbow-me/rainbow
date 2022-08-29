@@ -24,9 +24,10 @@ import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
 import { EthereumAddress } from '@rainbow-me/entities';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { useAccountSettings } from '@/hooks';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -100,12 +101,12 @@ const WalletListFooter = styled(Column)({
 interface Props {
   accountAddress: EthereumAddress;
   allWallets: any;
-  contextMenuActions: any;
+  contextMenuActions: EditWalletContextMenuActions;
   currentWallet: any;
   editMode: boolean;
   height: number;
   onChangeAccount: (
-    walletId: any,
+    walletId: string,
     address: EthereumAddress | undefined
   ) => void;
   onPressAddAccount: () => void;
@@ -134,6 +135,7 @@ export default function WalletList({
   const scrollView = useRef(null);
   const { network } = useAccountSettings();
   const opacityAnimation = useSharedValue(0);
+  const emptyOpacityAnimation = useSharedValue(1);
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -201,9 +203,13 @@ export default function WalletList({
     if (rows?.length && !ready) {
       setTimeout(() => {
         setReady(true);
+        emptyOpacityAnimation.value = withTiming(0, {
+          duration: transitionDuration,
+          easing: Easing.out(Easing.ease),
+        });
       }, 50);
     }
-  }, [rows, ready]);
+  }, [rows, ready, emptyOpacityAnimation]);
 
   useLayoutEffect(() => {
     if (ready) {

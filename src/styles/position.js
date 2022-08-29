@@ -1,7 +1,7 @@
 import { upperFirst } from 'lodash';
 import { StyleSheet } from 'react-native';
 import buildLayoutStyles from './buildLayoutStyles';
-import { memoFn } from '@rainbow-me/utils/memoFn';
+import { memoFn } from '@/utils/memoFn';
 
 const position = {};
 

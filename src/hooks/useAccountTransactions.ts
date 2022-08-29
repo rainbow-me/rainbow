@@ -5,9 +5,9 @@ import NetworkTypes from '../helpers/networkTypes';
 import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
-import { useNavigation } from '@rainbow-me/navigation';
-import { AppState } from '@rainbow-me/redux/store';
-import { useTheme } from '@rainbow-me/theme';
+import { useNavigation } from '@/navigation';
+import { AppState } from '@/redux/store';
+import { useTheme } from '@/theme';
 
 export const NOE_PAGE = 30;
 

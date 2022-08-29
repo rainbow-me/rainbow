@@ -20,18 +20,18 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 import {
   useAccountSettings,
   useColorForAsset,
   useKeyboardHeight,
   useSwapSettings,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { Source } from '@rainbow-me/redux/swap';
-import Routes from '@rainbow-me/routes';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { Source } from '@/redux/swap';
+import Routes from '@/navigation/routesNames';
+import { deviceUtils } from '@/utils';
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -114,7 +114,7 @@ export default function SwapSettingsState({ asset }) {
     updateSource(Source.AggregatorRainbow);
   }, [settingsChangeFlashbotsEnabled, updateSource]);
 
-  const openExplainer = () => {
+  const openFlashbotsExplainer = () => {
     Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       type: 'flashbots',
@@ -149,9 +149,10 @@ export default function SwapSettingsState({ asset }) {
                 <Column width="content">
                   <Box
                     as={ButtonPressAnimation}
+                    testID="swap-settings-flashbots-label"
                     {...(ios ? { marginVertical: '-12px' } : {})}
                     // @ts-expect-error
-                    onPress={openExplainer}
+                    onPress={openFlashbotsExplainer}
                     paddingVertical="12px"
                   >
                     <Text color="primary" size="16px" weight="bold">
@@ -165,7 +166,7 @@ export default function SwapSettingsState({ asset }) {
                 <Column width="content">
                   <Switch
                     onValueChange={toggleFlashbotsEnabled}
-                    testID="swap-settings-flashbots-switch"
+                    testID={`swap-settings-flashbots-switch-${flashbotsEnabled}`}
                     trackColor={{ false: '#767577', true: colorForAsset }}
                     value={flashbotsEnabled}
                   />
@@ -184,7 +185,10 @@ export default function SwapSettingsState({ asset }) {
         <Inset horizontal="24px" top="24px">
           <Columns alignHorizontal="justify">
             <Column width="content">
-              <ButtonPressAnimation onPress={resetToDefaults}>
+              <ButtonPressAnimation
+                onPress={resetToDefaults}
+                testID="swap-settings-defaults-button"
+              >
                 <Box
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}

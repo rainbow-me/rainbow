@@ -2,8 +2,8 @@ import React from 'react';
 import { ColumnWithMargins } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   align: 'center',
