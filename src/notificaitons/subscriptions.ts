@@ -7,9 +7,6 @@ export const subscribeToTransactionTopics = async (
   address: string
 ) => {
   transactionTopics.forEach(topic => {
-    global.console.log(
-      `Subscribed to ${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
     messaging().subscribeToTopic(
       `${type}_${chainId}_${address.toLowerCase()}_${topic}`
     );
@@ -22,9 +19,6 @@ export const unsubscribeFromTransactionTopics = async (
   address: string
 ) => {
   transactionTopics.forEach(topic => {
-    global.console.log(
-      `Unsubscribed from ${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
     messaging().unsubscribeFromTopic(
       `${type}_${chainId}_${address.toLowerCase()}_${topic}`
     );
