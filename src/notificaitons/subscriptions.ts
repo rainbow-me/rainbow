@@ -1,12 +1,12 @@
 import messaging from '@react-native-firebase/messaging';
-import { transactionTopics } from './constants';
+import { TRANSACTION_TOPICS } from './constants';
 
 export const subscribeToTransactionTopics = async (
   type: string,
   chainId: number,
   address: string
 ) => {
-  transactionTopics.forEach(topic => {
+  TRANSACTION_TOPICS.forEach(topic => {
     messaging().subscribeToTopic(
       `${type}_${chainId}_${address.toLowerCase()}_${topic}`
     );
@@ -18,7 +18,7 @@ export const unsubscribeFromTransactionTopics = async (
   chainId: number,
   address: string
 ) => {
-  transactionTopics.forEach(topic => {
+  TRANSACTION_TOPICS.forEach(topic => {
     messaging().unsubscribeFromTopic(
       `${type}_${chainId}_${address.toLowerCase()}_${topic}`
     );

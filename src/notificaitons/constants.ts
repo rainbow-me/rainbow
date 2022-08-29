@@ -1,6 +1,6 @@
 export const ANDROID_DEFAULT_CHANNEL_ID = 'default';
 
-export const transactionTopics = [
+export const TRANSACTION_TOPICS = [
   'sent',
   'received',
   'purchased',
