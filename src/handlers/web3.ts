@@ -191,7 +191,12 @@ export const getFlashbotsProvider = async () => {
 export const getProviderForNetwork = async (
   network: Network | string = Network.mainnet
 ): Promise<StaticJsonRpcProvider> => {
-  if (isNetworkEnum(network) && networkProviders[network]) {
+  const supportedNetworks = [Network.mainnet, Network.goerli];
+  if (
+    isNetworkEnum(network) &&
+    networkProviders[network] &&
+    supportedNetworks.includes(network)
+  ) {
     return networkProviders[network]!;
   }
 
@@ -200,10 +205,17 @@ export const getProviderForNetwork = async (
     networkProviders[Network.mainnet] = provider;
     return provider;
   } else {
-    const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    const provider = new StaticJsonRpcProvider(rpcEndpoints[network], chainId);
-    if (!networkProviders[network]) {
-      networkProviders[network] = provider;
+    let supportedNetwork = network;
+    if (!supportedNetworks.includes(network)) {
+      supportedNetwork = Network.mainnet;
+    }
+    const chainId = ethereumUtils.getChainIdFromNetwork(supportedNetwork);
+    const provider = new StaticJsonRpcProvider(
+      rpcEndpoints[supportedNetwork],
+      chainId
+    );
+    if (!networkProviders[supportedNetwork]) {
+      networkProviders[supportedNetwork] = provider;
     }
     await provider.ready;
     return provider;
@@ -329,7 +341,7 @@ export async function estimateGasWithPadding(
   contractCallEstimateGas: Contract['estimateGas'][string] | null = null,
   callArguments: any[] | null = null,
   provider: StaticJsonRpcProvider | null = null,
-  paddingFactor: number = 1.1
+  paddingFactor = 1.1
 ): Promise<string | null> {
   try {
     const p = provider || web3Provider;
@@ -810,7 +822,7 @@ export const estimateGasLimit = async (
     recipient: string;
     amount: number;
   },
-  addPadding: boolean = false,
+  addPadding = false,
   provider: StaticJsonRpcProvider | null = null,
   network: Network = Network.mainnet
 ): Promise<string | null> => {
