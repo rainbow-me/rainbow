@@ -88,6 +88,7 @@ import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
+import { handleShowingForegroundNotification } from '@/notificaitons/foreground';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
@@ -241,44 +242,9 @@ class App extends Component {
   }
 
   onForegroundRemoteNotification = async remoteMessage => {
-    global.console.log(
-      'RECEIVED NOTIFICATION:\n' + JSON.stringify(remoteMessage)
-    );
     const type = remoteMessage?.data?.type;
     if (type && remoteMessage?.notification !== undefined) {
-      global.console.log('sending');
-      const image = ios
-        ? remoteMessage.data?.fcm_options?.image
-        : remoteMessage.notification?.android?.imageUrl;
-      // eslint-disable-next-line no-unused-vars
-      const { fcm_options, ...data } = remoteMessage.data;
-      const notification = {
-        ...remoteMessage.notification,
-        android: { channelId: ANDROID_DEFAULT_CHANNEL_ID },
-        data,
-        ios: {
-          foregroundPresentationOptions: {
-            badge: true,
-            banner: true,
-            list: true,
-          },
-        },
-      };
-
-      if (image) {
-        notification.ios.attachments = [{ url: image }];
-        notification.android.largeIcon = image;
-        notification.android.style = {
-          picture: image,
-          type: AndroidStyle.BIGPICTURE,
-        };
-      }
-
-      try {
-        notifee.displayNotification(notification);
-      } catch (e) {
-        global.console.log(e);
-      }
+      handleShowingForegroundNotification(remoteMessage);
     } else {
       this.handleWalletConnectNotification(remoteMessage);
     }
