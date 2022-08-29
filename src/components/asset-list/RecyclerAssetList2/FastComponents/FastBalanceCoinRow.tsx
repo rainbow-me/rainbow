@@ -8,10 +8,7 @@ import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/as
 import { ExtendedState } from '../core/RawRecyclerList';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@/design-system';
-import {
-  useAccountAsset,
-  useCoinListFinishEditingOptions,
-} from '@/hooks';
+import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 
@@ -153,12 +150,17 @@ const MemoizedBalanceCoinRow = React.memo(
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
               <View style={sx.row}>
                 <View style={sx.textWrapper}>
-                  <Text numberOfLines={1} size="16px">
+                  <Text numberOfLines={1} size="16px" weight="semibold">
                     {item.name}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: valueColor }} size="16px">
+                <Text
+                  align="right"
+                  color={{ custom: valueColor }}
+                  size="16px"
+                  weight="medium"
+                >
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
                 </Text>
@@ -170,12 +172,18 @@ const MemoizedBalanceCoinRow = React.memo(
                     color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
                     size="14px"
+                    weight="medium"
                   >
                     {nativeDisplay ?? ''}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: changeColor }} size="14px">
+                <Text
+                  align="right"
+                  color={{ custom: changeColor }}
+                  size="14px"
+                  weight="medium"
+                >
                   {percentageChangeDisplay}
                 </Text>
               </View>

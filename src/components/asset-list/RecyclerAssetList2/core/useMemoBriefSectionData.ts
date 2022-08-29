@@ -96,7 +96,7 @@ export default function useMemoBriefSectionData({
         }
 
         if (
-          data.type === CellType.ASSETS_HEADER ||
+          data.type === CellType.ASSETS_PROFILE_HEADER_COMPACT ||
           data.type === CellType.NFTS_HEADER
         ) {
           stickyHeaders.push(index);

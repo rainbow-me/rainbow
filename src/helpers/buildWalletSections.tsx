@@ -395,13 +395,14 @@ const withBriefBalanceSection = (
 
   return [
     {
-      type: 'ASSETS_HEADER',
-      uid: 'assets-header',
+      type: 'ASSETS_PROFILE_HEADER_COMPACT',
+      uid: 'assets-profile-header-compact',
       value: totalValue,
     },
     {
-      type: 'ASSETS_HEADER_SPACE_AFTER',
-      uid: 'assets-header-space-after',
+      type: 'ASSETS_PROFILE_HEADER',
+      uid: 'assets-profile-header',
+      value: totalValue,
     },
     ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),
   ];

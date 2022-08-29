@@ -7,6 +7,10 @@ import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
 import { deviceUtils } from '@/utils';
+import {
+  AssetListProfileAvatarSize,
+  EmojiAvatar,
+} from '@/components/asset-list/AssetListProfileHeader';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
@@ -325,6 +329,42 @@ export const emojiPreset = {
   gestureEnabled: false,
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: emojiOpenSpec },
+};
+
+export const emojiPresetWallet = {
+  ...emojiPreset,
+  cardOverlay: ({ style }) => {
+    const backgroundOpacity = style.opacity.interpolate({
+      inputRange: [-1, 0, 0.975, 2],
+      outputRange: [0, 0, 1, 1],
+    });
+
+    return (
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          backgroundColor:
+            colors.theme === 'dark'
+              ? colors.themedColors.offWhite
+              : 'rgb(51, 54, 59)',
+          height: deviceUtils.dimensions.height + 50,
+          opacity: backgroundOpacity,
+          position: 'absolute',
+          width: deviceUtils.dimensions.width,
+        }}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            top: HeaderHeightWithStatusBar + 14,
+          }}
+        >
+          <EmojiAvatar size={AssetListProfileAvatarSize} />
+        </View>
+      </Animated.View>
+    );
+  },
+  cardStyle: { marginTop: 24, ...emojiPreset.cardStyle },
 };
 
 export const exchangePreset = {

@@ -62,6 +62,7 @@ import {
 } from './config';
 import {
   emojiPreset,
+  emojiPresetWallet,
   exchangePreset,
   overlayExpandedPreset,
   sheetPreset,
@@ -156,6 +157,11 @@ function MainNavigator() {
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
+      />
+      <Stack.Screen
+        component={AvatarBuilder}
+        name={Routes.AVATAR_BUILDER_WALLET}
+        options={emojiPresetWallet}
       />
     </Stack.Navigator>
   );

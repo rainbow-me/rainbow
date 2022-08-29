@@ -33,9 +33,11 @@ export { Context as StickyHeaderContext };
 function StickyHeaderInternal({
   name,
   children,
+  offset = 0,
 }: {
   name: string;
-  children: React.ReactChildren;
+  children: React.ReactNode;
+  offset?: number;
 }) {
   const context = useContext(Context);
   if (!context) {
@@ -48,6 +50,12 @@ function StickyHeaderInternal({
   const animatedStyle = useMemo(
     () => ({
       backgroundColor: 'white',
+      opacity: offset
+        ? position!.interpolate({
+            inputRange: [0, offset, offset],
+            outputRange: [0, 0, 1],
+          })
+        : 1,
       transform: range
         ? [
             {
@@ -61,7 +69,7 @@ function StickyHeaderInternal({
           ]
         : [],
     }),
-    [last, position, range]
+    [last, offset, position, range]
   );
   const ref = useRef<Animated.View>() as MutableRefObject<Animated.View>;
   const onLayout = useCallback(() => {

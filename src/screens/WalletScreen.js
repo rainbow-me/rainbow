@@ -1,24 +1,20 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, isEmpty, keys } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
-import {
-  DiscoverHeaderButton,
-  Header,
-  ProfileHeaderButton,
-  ScanHeaderButton,
-} from '../components/header';
-import { Page, RowWithMargins } from '../components/layout';
+import { Page } from '../components/layout';
 import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import networkInfo from '@/helpers/networkInfo';
+import { jumpToShort } from '@/components/discover-sheet/DiscoverSheet';
+import { Navbar } from '@/components/navbar/Navbar';
+import { NavbarIconButton } from '@/components/navbar/NavbarIconButton';
+import { Inline } from '@/design-system';
 import {
   useAccountEmptyState,
   useAccountSettings,
@@ -33,7 +29,6 @@ import {
   useResetAccountState,
   useTrackENSProfile,
   useUserAccounts,
-  useWallets,
   useWalletSectionsData,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -48,7 +43,7 @@ const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   pointerEvents: isVisible ? 'none' : 'auto',
 }))({
   elevation: 1,
-  paddingTop: 5,
+  // paddingTop: 5,
   zIndex: 1,
 });
 
@@ -70,7 +65,6 @@ export default function WalletScreen() {
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
   const { isCoinListEdited } = useCoinListEdited();
-  const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
   const { network: currentNetwork, accountAddress } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
@@ -231,46 +225,61 @@ export default function WalletScreen() {
     }
   }, [profilesEnabled, trackENSProfile, walletReady]);
 
-  // Show the exchange fab only for supported networks
-  // (mainnet)
-  const fabs = useMemo(
-    () =>
-      [
-        !!networkInfo[currentNetwork]?.exchange_enabled && ExchangeFab,
-        SendFab,
-      ].filter(e => !!e),
-    [currentNetwork]
-  );
-
   const isLoadingAssets =
     useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
 
   return (
     <WalletPage testID="wallet-screen">
-      <FabWrapper
-        disabled={isAccountEmpty || !!params?.emptyWallet}
-        fabs={fabs}
-        isCoinListEdited={isCoinListEdited}
-        isReadOnlyWallet={isReadOnlyWallet}
-      >
-        <HeaderOpacityToggler isVisible={isCoinListEdited}>
-          <Header justify="space-between">
-            <ProfileHeaderButton />
-            <RowWithMargins margin={10}>
-              <DiscoverHeaderButton />
-              <ScanHeaderButton />
-            </RowWithMargins>
-          </Header>
-        </HeaderOpacityToggler>
-        <AssetList
-          disableRefreshControl={isLoadingAssets}
-          isEmpty={isAccountEmpty || !!params?.emptyWallet}
-          isLoading={android && isLoadingAssets}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
+      <HeaderOpacityToggler isVisible={isCoinListEdited}>
+        <Navbar
+          leftComponent={<TransactionHistoryButton />}
+          rightComponent={
+            <Inline space={{ custom: 17 }}>
+              <DiscoverButton />
+              <QRScannerButton />
+            </Inline>
+          }
         />
-      </FabWrapper>
+      </HeaderOpacityToggler>
+      <AssetList
+        disableRefreshControl={isLoadingAssets}
+        isEmpty={isAccountEmpty || !!params?.emptyWallet}
+        isLoading={android && isLoadingAssets}
+        isWalletEthZero={isWalletEthZero}
+        network={currentNetwork}
+        walletBriefSectionsData={walletBriefSectionsData}
+      />
     </WalletPage>
   );
+}
+
+function TransactionHistoryButton() {
+  const { navigate } = useNavigation();
+
+  const onPress = useCallback(() => {
+    navigate(Routes.PROFILE_SCREEN);
+  }, [navigate]);
+
+  return <NavbarIconButton icon="􀐫" onPress={onPress} />;
+}
+
+function DiscoverButton() {
+  const { navigate } = useNavigation();
+
+  const onPress = useCallback(() => {
+    navigate(Routes.QR_SCANNER_SCREEN);
+  }, [navigate]);
+
+  return <NavbarIconButton icon="􀎬" onPress={onPress} />;
+}
+
+function QRScannerButton() {
+  const { navigate } = useNavigation();
+
+  const onPress = useCallback(() => {
+    jumpToShort();
+    navigate(Routes.QR_SCANNER_SCREEN);
+  }, [navigate]);
+
+  return <NavbarIconButton icon="􀎹" onPress={onPress} />;
 }

@@ -5,6 +5,7 @@ import { TokenFamilyHeaderHeight } from '../../../token-family';
 import { UniqueTokenRow } from '../../../unique-token';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { AssetListItemSkeletonHeight } from '../../AssetListItemSkeleton';
+import { AssetListProfileHeaderHeight } from '../../AssetListProfileHeader';
 import { CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
 
@@ -13,8 +14,11 @@ type Dim = {
   height: number;
 };
 const ViewDimensions: Record<CellType, Dim> = {
-  [CellType.ASSETS_HEADER]: { height: AssetListHeaderHeight },
-  [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 6 },
+  [CellType.ASSETS_PROFILE_HEADER]: {
+    height: AssetListProfileHeaderHeight + 16 - 52,
+  },
+  [CellType.ASSETS_PROFILE_HEADER_COMPACT]: { height: 52 },
+  [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 16 },
   [CellType.COIN]: { height: CoinRowHeight },
   [CellType.COIN_DIVIDER]: { height: CoinDividerContainerHeight },
   [CellType.SAVINGS_HEADER_SPACE_BEFORE]: { height: 7 },

@@ -1,5 +1,9 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
+import {
+  AssetListProfileHeader,
+  AssetListProfileHeaderCompact,
+} from '../../AssetListProfileHeader';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
@@ -48,11 +52,14 @@ function rowRenderer(
           extendedState={extendedState}
         />
       );
-    case CellType.ASSETS_HEADER:
+    case CellType.ASSETS_PROFILE_HEADER:
       return (
-        // @ts-expect-error JavaScript component
-        <AssetListHeader totalValue={(data as AssetsHeaderExtraData).value} />
+        <AssetListProfileHeader
+          totalValue={(data as AssetsHeaderExtraData).value}
+        />
       );
+    case CellType.ASSETS_PROFILE_HEADER_COMPACT:
+      return <AssetListProfileHeaderCompact />;
     case CellType.COIN:
       return (
         <FastBalanceCoinRow

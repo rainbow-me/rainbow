@@ -3,8 +3,9 @@ import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/Re
 import { UniqueAsset } from '@/entities';
 
 export enum CellType {
-  ASSETS_HEADER = 'ASSETS_HEADER',
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
+  ASSETS_PROFILE_HEADER = 'ASSETS_PROFILE_HEADER',
+  ASSETS_PROFILE_HEADER_COMPACT = 'ASSETS_PROFILE_HEADER_COMPACT',
   COIN = 'COIN',
   COIN_DIVIDER = 'COIN_DIVIDER',
   SAVINGS_HEADER = 'SAVINGS_HEADER',
@@ -42,7 +43,7 @@ export type CoinDividerExtraData = {
   defaultToEditButton: boolean;
 };
 export type AssetsHeaderExtraData = {
-  type: CellType.ASSETS_HEADER;
+  type: CellType.ASSETS_PROFILE_HEADER_COMPACT;
   value: number;
 };
 export type PoolsHeaderExtraData = {
