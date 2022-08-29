@@ -1,4 +1,4 @@
-import { config } from './config';
+import { config } from './codegen.config';
 import { getFetchRequester } from './utils/getFetchRequester';
 import { getSdk as getEnsSdk } from './__generated__/ens';
 import { getSdk as getMetadataSdk } from './__generated__/metadata';

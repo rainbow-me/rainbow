@@ -77,15 +77,15 @@ If you wish to add a new query that involves interacting with a GraphQL API that
 exports.config = {
   ens: {
     schema: { url: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens', method: 'POST' },
-    file: './queries/ens.graphql',
+    document: './queries/ens.graphql',
   },
   metadata: {
     schema: { url: 'https://metadata.p.rainbow.me/v1/graph', method: 'GET' },
-    file: './queries/metadata.graphql',
+    document: './queries/metadata.graphql',
   },
 + example: {
 +   schema: { url: 'https://example.com/graphql' },
-+   file: './queries/example.graphql',
++   document: './queries/example.graphql',
 + },
 };
 ```
