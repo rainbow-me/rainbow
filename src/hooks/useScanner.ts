@@ -10,17 +10,17 @@ import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { analytics } from '@rainbow-me/analytics';
-import { handleQRScanner } from '@rainbow-me/handlers/fedora';
+import { analytics } from '@/analytics';
+import { handleQRScanner } from '@/handlers/fedora';
 import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
-import { Navigation } from '@rainbow-me/navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/helpers/validators';
+import { Navigation } from '@/navigation';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { addressUtils, ethereumUtils, haptics } from '@/utils';
+import logger from '@/utils/logger';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate } = useNavigation();

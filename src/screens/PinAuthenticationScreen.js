@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Keyboard } from 'react-native';
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
@@ -13,12 +14,12 @@ import {
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
-import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { haptics } from '@rainbow-me/utils';
+import { useDimensions, useShakeAnimation } from '@/hooks';
+import { useBlockBackButton } from '@/hooks/useBlockBackButton';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { haptics } from '@/utils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
@@ -47,6 +48,10 @@ const PinAuthenticationScreen = () => {
   );
 
   const finished = useRef(false);
+
+  useEffect(() => {
+    Keyboard.dismiss();
+  }, []);
 
   useEffect(() => {
     // See if the user previously tried and aborted

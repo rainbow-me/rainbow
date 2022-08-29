@@ -3,8 +3,8 @@ import React, { useCallback, useState } from 'react';
 import { Linking } from 'react-native';
 import { neverRerender } from '../../../utils';
 import SheetActionButton from './SheetActionButton';
-import { analytics } from '@rainbow-me/analytics';
-import { AssetTypes } from '@rainbow-me/entities';
+import { analytics } from '@/analytics';
+import { AssetTypes } from '@/entities';
 
 function WithdrawActionButton({
   color: givenColor,

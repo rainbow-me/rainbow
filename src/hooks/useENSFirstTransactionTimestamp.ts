@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import PQueue from 'p-queue/dist';
 import { fetchENSAddress } from './useENSAddress';
-import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
-import { getFirstTransactionTimestamp } from '@rainbow-me/utils/ethereumUtils';
+import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
+import { queryClient } from '@/react-query/queryClient';
+import { QueryConfig, UseQueryData } from '@/react-query/types';
+import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
 
 const ensFirstTxTimestampQueryKey = (name: string) => [
   'first-transaction-timestamp',

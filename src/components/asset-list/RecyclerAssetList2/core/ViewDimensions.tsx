@@ -6,7 +6,7 @@ import { UniqueTokenRow } from '../../../unique-token';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { AssetListItemSkeletonHeight } from '../../AssetListItemSkeleton';
 import { CellType } from './ViewTypes';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 type Dim = {
   width?: number;

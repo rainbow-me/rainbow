@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useIsMounted from './useIsMounted';
 import { applyENSMetadataFallbackToTokens } from '@/parsers/uniqueTokens';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
+import { UniqueAsset } from '@/entities';
+import { fetchEnsTokens } from '@/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
-} from '@rainbow-me/handlers/opensea-api';
-import { fetchPoaps } from '@rainbow-me/handlers/poap';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/opensea-api';
+import { fetchPoaps } from '@/handlers/poap';
+import { Network } from '@/helpers/networkTypes';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',

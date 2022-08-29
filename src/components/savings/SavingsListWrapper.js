@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 import { OpacityToggler } from '../animations';
 import SavingsListHeader from './SavingsListHeader';
 import SavingsListRow from './SavingsListRow';
-import { useFrameDelayedValue, useOpenSavings } from '@rainbow-me/hooks';
+import { useFrameDelayedValue, useOpenSavings } from '@/hooks';
 
 const renderSavingsListRow = item =>
   item?.underlying ? (

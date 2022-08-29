@@ -1,5 +1,5 @@
 import { EthereumAddress } from '.';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 
 interface NetworkNonceInfo {
   nonce: number;

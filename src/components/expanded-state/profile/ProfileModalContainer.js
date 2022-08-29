@@ -4,7 +4,7 @@ import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 import TouchableBackdrop from '../../TouchableBackdrop';
 import { AssetPanel, FloatingPanels } from '../../floating-panels';
 import { KeyboardFixedOpenLayout } from '../../layout';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions } from '@/hooks';
 
 export default function ProfileModalContainer({ onPressBackdrop, ...props }) {
   const { width: deviceWidth } = useDimensions();

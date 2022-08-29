@@ -66,31 +66,5 @@
             "name": "0x",
             "symbol": "ZRX"
         }
-    },
-    "rinkeby": {
-        "0xebf1a11532b93a529b5bc942b4baa98647913002": {
-            "address": "0xDA5B056Cfb861282B4b59d29c9B395bcC238D29B",
-            "decimals": 8,
-            "name": "Basic Attention Token",
-            "symbol": "BAT"
-        },
-        "0x6d7f0754ffeb405d23c51ce938289d4835be3b14": {
-            "address": "0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea",
-            "decimals": 8,
-            "name": "Dai",
-            "symbol": "DAI"
-        },
-        "0xd6801a1dffcd0a410336ef88def4320d6df1883e": {
-            "address": "eth",
-            "decimals": 8,
-            "name": "Ether",
-            "symbol": "ETH"
-        },
-        "0x52201ff1720134bbbbb2f6bc97bf3715490ec19b": {
-            "address": "0xF22e3F33768354c9805d046af3C0926f27741B43",
-            "decimals": 8,
-            "name": "0x",
-            "symbol": "ZRX"
-        }
     }
 }

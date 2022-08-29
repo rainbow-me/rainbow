@@ -3,10 +3,10 @@ import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
-import Routes from '@rainbow-me/routes';
-import { lightModeThemeColors } from '@rainbow-me/styles';
-import { currentColors as colors } from '@rainbow-me/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+import Routes from '@/navigation/routesNames';
+import { lightModeThemeColors } from '@/styles';
+import { currentColors as colors } from '@/theme';
+import { deviceUtils } from '@/utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;

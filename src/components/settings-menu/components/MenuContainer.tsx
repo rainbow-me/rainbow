@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { Box, Inset, Stack } from '@rainbow-me/design-system';
+import { Box, Inset, Stack } from '@/design-system';
 
 interface MenuContainerProps {
   children: React.ReactNode;

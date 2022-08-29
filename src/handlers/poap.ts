@@ -2,8 +2,8 @@ import { captureException } from '@sentry/react-native';
 // @ts-ignore
 import { POAP_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import { parsePoaps } from '@rainbow-me/parsers';
-import logger from 'logger';
+import { parsePoaps } from '@/parsers';
+import logger from '@/utils/logger';
 
 export const fetchPoaps = async (address: string) => {
   try {

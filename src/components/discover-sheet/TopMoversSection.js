@@ -7,11 +7,11 @@ import { Centered, Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { useAccountSettings, useTopMovers } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+import networkTypes from '@/helpers/networkTypes';
+import { useAccountSettings, useTopMovers } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
 
 const ErrorMessage = ({ colors, children }) => (
   <Centered marginVertical={50}>

@@ -2,16 +2,8 @@ import lang from 'i18n-js';
 import React from 'react';
 import LargeCountdownClock from '../../../components/large-countdown-clock/LargeCountdownClock';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
-import {
-  Box,
-  Heading,
-  Inset,
-  Row,
-  Rows,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
-import { ENS_SECONDS_WAIT } from '@rainbow-me/helpers/ens';
+import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { ENS_SECONDS_WAIT } from '@/helpers/ens';
 
 const WaitENSConfirmationContent = ({
   seconds,

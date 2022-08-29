@@ -3,10 +3,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { MiniButton } from '../buttons';
 import { ListFooter } from '../list';
-import { Box, Columns, Text } from '@rainbow-me/design-system';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
-import { useTheme } from '@rainbow-me/theme';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+import { Box, Columns, Text } from '@/design-system';
+import { useAccountSettings, useWallets } from '@/hooks';
+import { useTheme } from '@/theme';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 const topics = [
   'sent',

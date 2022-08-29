@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
-import { getShowcaseTokens } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getPreference } from '@rainbow-me/model/preferences';
+import { getShowcaseTokens } from '@/handlers/localstorage/accountLocal';
+import { getPreference } from '@/model/preferences';
 
 export const showcaseTokensQueryKey = ({ address }: { address?: string }) => [
   'showcase-tokens',

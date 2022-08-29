@@ -12,7 +12,7 @@ import Animated, {
 import RNRestart from 'react-native-restart';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Button = styled(ButtonPressAnimation)({
   alignItems: 'center',

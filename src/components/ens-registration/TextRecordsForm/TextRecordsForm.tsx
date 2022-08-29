@@ -4,15 +4,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
-import {
-  Box,
-  Column,
-  Columns,
-  Divider,
-  Stack,
-} from '@rainbow-me/design-system';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-import { useENSRegistrationForm } from '@rainbow-me/hooks';
+import { Box, Column, Columns, Divider, Stack } from '@/design-system';
+import { ENS_RECORDS } from '@/helpers/ens';
+import { useENSRegistrationForm } from '@/hooks';
 
 export default function TextRecordsForm({
   autoFocusKey,

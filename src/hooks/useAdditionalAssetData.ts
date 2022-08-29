@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
-import { EthereumAddress } from '@rainbow-me/entities';
-import { getAdditionalAssetData } from '@rainbow-me/handlers/dispersion';
-import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import { greaterThanOrEqualTo, multiply } from '@rainbow-me/helpers/utilities';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
+import { EthereumAddress } from '@/entities';
+import { getAdditionalAssetData } from '@/handlers/dispersion';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
 
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,
