@@ -5,8 +5,8 @@ import { useTheme } from '../../theme/ThemeContext';
 import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { borders } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import { borders } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
@@ -103,11 +103,18 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
     colors,
   ]);
 
+  const backgroundColor =
+    typeof color === 'number'
+      ? // sometimes the color is gonna be missing so we fallback to white
+        // otherwise there will be only shadows without the the placeholder "circle"
+        colors.avatarBackgrounds[color] ?? 'white'
+      : color;
+
   return (
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors.avatarBackgrounds[color] || color}
+      backgroundColor={backgroundColor}
       shadows={shadows}
     >
       <Centered flex={1}>

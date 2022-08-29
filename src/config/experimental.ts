@@ -1,5 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 /**
  * This file contains flags for enabling features which are still in development.

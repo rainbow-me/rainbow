@@ -12,8 +12,8 @@ import {
   Inset,
   Text,
   useTextStyle,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
 
 const textSize = 16;
 

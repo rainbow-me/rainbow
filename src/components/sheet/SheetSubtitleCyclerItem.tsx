@@ -8,9 +8,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 

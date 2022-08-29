@@ -1,16 +1,16 @@
 import lang from 'i18n-js';
 import { getHumanReadableDate, hasAddableContact } from './transactions';
 import { isValidDomainFormat } from './validators';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
-import TransactionActions from '@rainbow-me/helpers/transactionActions';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { TransactionStatusTypes } from '@/entities';
+import TransactionActions from '@/helpers/transactionActions';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const startCase = (string: string) =>
   string.charAt(0).toUpperCase() + string.slice(1);

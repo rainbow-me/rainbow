@@ -1,5 +1,5 @@
-import { RainbowToken } from '@rainbow-me/entities';
-import { rainbowTokenList } from '@rainbow-me/references';
+import { RainbowToken } from '@/entities';
+import { rainbowTokenList } from '@/references';
 
 export default function getTokenMetadata(
   tokenAddress: string | undefined

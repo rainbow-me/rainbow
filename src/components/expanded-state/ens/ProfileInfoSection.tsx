@@ -2,13 +2,10 @@ import { partition } from 'lodash';
 import React, { useMemo } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
-import { Stack } from '@rainbow-me/design-system';
-import { Records } from '@rainbow-me/entities';
-import {
-  deprecatedTextRecordFields,
-  ENS_RECORDS,
-} from '@rainbow-me/helpers/ens';
-import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
+import { Stack } from '@/design-system';
+import { Records } from '@/entities';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
+import { useENSRecordDisplayProperties } from '@/hooks';
 
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];
 const topRecordKeys = [

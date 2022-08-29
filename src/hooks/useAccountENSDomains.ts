@@ -1,14 +1,12 @@
+import { uniqBy } from 'lodash';
 import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
-import { EnsDomain } from '@rainbow-me/apollo/queries';
-import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
-import {
-  getENSDomains,
-  setENSDomains,
-} from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
+import { EnsDomain } from '@/apollo/queries';
+import { fetchAccountDomains } from '@/handlers/ens';
+import { getENSDomains, setENSDomains } from '@/handlers/localstorage/ens';
+import { queryClient } from '@/react-query/queryClient';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [
   'domains',
@@ -22,9 +20,16 @@ async function fetchAccountENSDomains({
 }: {
   accountAddress: string;
 }) {
-  const result = await fetchAccountRegistrations(accountAddress);
-  const registrations = result.data?.account?.registrations || [];
-  return registrations.map(({ domain }) => {
+  const result = await fetchAccountDomains(accountAddress);
+  const { domains: controlledDomains, registrations } =
+    result.data?.account || {};
+  const registarDomains = registrations?.map(({ domain }) => domain);
+
+  const domains = uniqBy(
+    [...(controlledDomains || []), ...(registarDomains || [])],
+    'name'
+  );
+  return domains.map(domain => {
     prefetchENSAvatar(domain.name, { cacheFirst: true });
     return domain;
   });
@@ -68,15 +73,19 @@ export default function useAccountENSDomains() {
     }
   );
 
-  const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
-    const ownedDomains = domains?.filter(
+  const {
+    controlledDomains,
+    primaryDomain,
+    nonPrimaryDomains,
+  } = useMemo(() => {
+    const controlledDomains = domains?.filter(
       ({ owner }) => owner?.id?.toLowerCase() === accountAddress?.toLowerCase()
     );
     return {
+      controlledDomains,
       nonPrimaryDomains:
-        ownedDomains?.filter(({ name }) => accountENS !== name) || [],
-      ownedDomains,
-      primaryDomain: ownedDomains?.find(({ name }) => accountENS === name),
+        controlledDomains?.filter(({ name }) => accountENS !== name) || [],
+      primaryDomain: controlledDomains?.find(({ name }) => accountENS === name),
     };
   }, [accountAddress, accountENS, domains]);
 
@@ -89,12 +98,12 @@ export default function useAccountENSDomains() {
   }, [nonPrimaryDomains, primaryDomain]);
 
   return {
+    controlledDomains,
     domains,
     isFetched,
     isLoading,
     isSuccess,
     nonPrimaryDomains,
-    ownedDomains,
     primaryDomain,
     uniqueDomain,
   };

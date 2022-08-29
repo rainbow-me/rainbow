@@ -13,14 +13,11 @@ import {
   Inset,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import { Records } from '@rainbow-me/entities';
-import {
-  deprecatedTextRecordFields,
-  ENS_RECORDS,
-} from '@rainbow-me/helpers/ens';
-import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/design-system';
+import { Records } from '@/entities';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
+import { useENSRecordDisplayProperties } from '@/hooks';
+import { useTheme } from '@/theme';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {

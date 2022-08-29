@@ -12,8 +12,8 @@ import {
   Heading,
   Inset,
   useHeadingStyle,
-} from '@rainbow-me/design-system';
-import { useDimensions, useMagicAutofocus } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions, useMagicAutofocus } from '@/hooks';
 
 export type SearchInputProps = {
   isLoading?: boolean;

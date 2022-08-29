@@ -5,10 +5,10 @@ import { jumpToShort } from '../discover-sheet/DiscoverSheet';
 import Icon from '../icons/Icon';
 import { Row, RowWithMargins } from '../layout';
 import HeaderButton from './HeaderButton';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const ScanButtonShadowsFactory = colors => [
   [0, 7, 21, colors.shadow, 0.06],

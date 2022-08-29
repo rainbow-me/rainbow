@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
-import { RainbowToken, SwappableAsset } from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers';
-import { AppState } from '@rainbow-me/redux/store';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
-import { useTheme } from '@rainbow-me/theme';
+import { RainbowToken, SwappableAsset } from '@/entities';
+import { Network } from '@/helpers';
+import { AppState } from '@/redux/store';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
+import { useTheme } from '@/theme';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeAmount,
@@ -14,8 +14,8 @@ import {
   greaterThanOrEqualTo,
   isPositive,
   subtract,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;

@@ -1,5 +1,5 @@
 import { isValidDomainFormat } from '../helpers/validators';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 
 const defaultNumCharsPerSection = 6;
 

@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 const fs = require('fs');
 const path = require('path');
 const { parse: babelParse } = require('@babel/parser');
@@ -23,26 +22,23 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
   );
 
 module.exports = {
-  extends: 'rainbow',
-  settings: {
-    'import/resolver': {
-      'node': {
-        extensions: [
-          '.js',
-          '.ios.js',
-          '.android.js',
-          '.native.js',
-          '.ts',
-          '.tsx',
+  extends: ['rainbow'],
+  parserOptions: {
+    project: ['./tsconfig.json'],
+  },
+  globals: globalVars,
+  rules: {
+    'no-restricted-imports': [
+      'warn',
+      {
+        patterns: [
+          {
+            group: ['@react-navigation/core'],
+            message:
+              'You probably want to use @/navigation instead, to ensure that all of our customizations are applied.',
+          },
         ],
       },
-      'babel-module': {
-        alias: {},
-      },
-    },
+    ],
   },
-  plugins: [],
-  globals: globalVars,
-  rules: {},
-  env: { browser: true, node: true },
 };

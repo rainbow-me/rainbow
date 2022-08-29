@@ -14,10 +14,10 @@ import {
   useDimensions,
   useWallets,
   useWebData,
-} from '@rainbow-me/hooks';
-import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+} from '@/hooks';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 export const ListHeaderHeight = 50;
 
@@ -113,6 +113,7 @@ export default function ListHeader({
         <Content>
           {title && (
             <Row align="center">
+              {/* eslint-disable-next-line react/no-children-prop */}
               {createElement(titleRenderer, { children: title })}
               {title === 'Collectibles' && (
                 <Column align="flex-end" flex={1}>

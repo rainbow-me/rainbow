@@ -3,10 +3,10 @@ import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import useAccountSettings from './useAccountSettings';
 import useGenericAsset from './useGenericAsset';
-import { AssetType } from '@rainbow-me/entities';
-import { parseAssetNative } from '@rainbow-me/parsers';
-import { AppState } from '@rainbow-me/redux/store';
-import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
+import { AssetType } from '@/entities';
+import { parseAssetNative } from '@/parsers';
+import { AppState } from '@/redux/store';
+import { ETH_ADDRESS, ETH_ICON_URL } from '@/references';
 
 const getZeroEth = () => {
   return {

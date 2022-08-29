@@ -11,13 +11,13 @@ import {
   ChartPercentChangeLabel,
   ChartPriceLabel,
 } from './chart-data-labels';
-import { useChartData } from '@rainbow-me/animated-charts';
-import { Network } from '@rainbow-me/helpers';
-import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { useChartData } from '@/react-native-animated-charts/src';
+import { Network } from '@/helpers';
+import ChartTypes from '@/helpers/chartTypes';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAccountSettings, useBooleanState } from '@/hooks';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 

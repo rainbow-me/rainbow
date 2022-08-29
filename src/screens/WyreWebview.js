@@ -5,8 +5,8 @@ import { WebView } from 'react-native-webview';
 import Spinner from '../components/Spinner';
 import { Centered, FlexItem } from '../components/layout';
 import { reserveWyreOrder } from '../handlers/wyre';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
+import { useAccountSettings } from '@/hooks';
+import styled from '@/styled-thing';
 
 const Container = styled(FlexItem)({
   backgroundColor: ({ theme: { colors } }) => colors.white,

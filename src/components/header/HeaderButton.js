@@ -1,6 +1,6 @@
 import { ButtonPressAnimation } from '../animations';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const HeaderButton = styled(ButtonPressAnimation).attrs(
   ({ scaleTo = 0.8, opacityTouchable = true }) => ({

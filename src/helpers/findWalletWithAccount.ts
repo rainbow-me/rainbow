@@ -1,4 +1,4 @@
-import { RainbowWallet } from '@rainbow-me/model/wallet';
+import { RainbowWallet } from '@/model/wallet';
 
 export function findWalletWithAccount(
   wallets: { [key: string]: RainbowWallet },

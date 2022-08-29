@@ -1,4 +1,4 @@
-import { Colors } from '@rainbow-me/styles';
+import { Colors } from '@/styles';
 
 export const getButtonDisabledBgColor = (colors: Colors) => ({
   dark: colors.darkGrey,

@@ -14,7 +14,7 @@ import logger from './logger';
  * @param {Function} fn - pure function with at least single argument
  * @returns {Function} - same function with a cache
  */
-export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
+export function memoFn<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => TReturn,
   keyMaker?: (...args: TArgs) => string
 ): typeof fn {
@@ -32,7 +32,6 @@ export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
       }
 
       // Call it anyway to not break stuff
-      // eslint-disable-next-line babel/no-invalid-this
       return fn.apply(this, args);
     }
 
@@ -56,7 +55,6 @@ export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
           }
 
           // Call it anyway to not break stuff
-          // eslint-disable-next-line babel/no-invalid-this
           return fn.apply(this, args);
         }
       }
@@ -74,7 +72,6 @@ export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
 
       return cache.get(key)!; // we did a check for that key already
     } else {
-      // eslint-disable-next-line babel/no-invalid-this
       const res = fn.apply(this, args);
       // store in cache for future usage
       cache.set(key, res);

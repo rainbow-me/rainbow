@@ -19,19 +19,19 @@ import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import { analytics } from '@rainbow-me/analytics';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { fetchSuggestions } from '@rainbow-me/handlers/ens';
+import { analytics } from '@/analytics';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import { fetchSuggestions } from '@/handlers/ens';
 import {
   useHardwareBackOnFocus,
   usePrevious,
   useSwapCurrencyList,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
+import { ethereumUtils } from '@/utils';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
