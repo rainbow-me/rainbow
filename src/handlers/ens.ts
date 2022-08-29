@@ -6,10 +6,8 @@ import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { ensClient } from '../apollo/client';
+import { ensClient as ensClientDeprecated } from '../apollo/client';
 import {
-  ENS_ACCOUNT_DOMAINS,
-  ENS_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_NAME_FROM_LABELHASH,
@@ -17,7 +15,6 @@ import {
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
-  EnsAccountDomainsData,
   EnsGetCoinTypesData,
   EnsGetNameFromLabelhash,
   EnsGetRecordsData,
@@ -35,11 +32,7 @@ import {
   saveENSData,
 } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
-import {
-  ENSRegistrationRecords,
-  Records,
-  UniqueAsset,
-} from '@/entities';
+import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
 import {
   ENS_DOMAIN,
@@ -51,10 +44,7 @@ import {
 } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
-import {
-  getOpenSeaCollectionUrl,
-  handleAndSignImages,
-} from '@/parsers';
+import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
@@ -62,6 +52,7 @@ import {
 } from '@/references';
 import { labelhash, logger, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
+import { ensClient } from '@/graphql';
 
 const DUMMY_RECORDS = {
   'description': 'description',
@@ -167,12 +158,14 @@ export const fetchMetadata = async ({
 
     let name = await getNameFromLabelhash(labelhash);
     if (!name) {
-      const { data } = await ensClient.query<EnsGetNameFromLabelhash>({
-        query: ENS_GET_NAME_FROM_LABELHASH,
-        variables: {
-          labelhash,
-        },
-      });
+      const { data } = await ensClientDeprecated.query<EnsGetNameFromLabelhash>(
+        {
+          query: ENS_GET_NAME_FROM_LABELHASH,
+          variables: {
+            labelhash,
+          },
+        }
+      );
       name = `${data.domains[0].labelName}.eth`;
     }
 
@@ -195,28 +188,32 @@ export const fetchEnsTokens = async ({
   timeAgo: Duration;
 }) => {
   try {
-    const { data } = await ensClient.query<EnsAccountDomainsData>({
-      query: ENS_ACCOUNT_REGISTRATIONS,
-      variables: {
-        address: address.toLowerCase(),
-        registrationDate_gt: Math.floor(
-          sub(new Date(), timeAgo).getTime() / 1000
-        ).toString(),
-      },
+    const data = await ensClient.getRegistrationsByAddress({
+      address: address.toLowerCase(),
+      registrationDate_gt: Math.floor(
+        sub(new Date(), timeAgo).getTime() / 1000
+      ).toString(),
     });
+
     return (
-      data?.account?.registrations?.map(registration => {
-        const tokenId = BigNumber.from(
-          registration.domain.labelhash
-        ).toString();
-        const token = buildEnsToken({
-          contractAddress,
-          imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
-          name: registration.domain.name,
-          tokenId,
-        });
-        return token;
-      }) || []
+      data?.account?.registrations
+        ?.map(registration => {
+          if (!registration.domain) return;
+
+          const tokenId = BigNumber.from(
+            registration.domain.labelhash
+          ).toString();
+          const token = buildEnsToken({
+            contractAddress,
+            imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
+            name: registration.domain.name || '',
+            tokenId,
+          });
+          return token;
+        })
+        .filter(
+          <TToken>(token: TToken | null | undefined): token is TToken => !!token
+        ) || []
     );
   } catch (error) {
     logger.sentry('ENS: Error getting ENS unique tokens', error);
@@ -279,7 +276,7 @@ export const fetchSuggestions = async (
     }[] = [];
     setIsFetching(true);
     const recpt = recipient.toLowerCase();
-    let result = await ensClient.query({
+    let result = await ensClientDeprecated.query({
       query: ENS_SUGGESTIONS,
       variables: {
         amount: 8,
@@ -358,14 +355,14 @@ export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 export const fetchRegistrationDate = async (recipient: string) => {
   if (recipient.length > 2) {
     const recpt = recipient.toLowerCase();
-    const result = await ensClient.query({
+    const result = await ensClientDeprecated.query({
       query: ENS_DOMAINS,
       variables: {
         name: recpt,
       },
     });
     const labelHash = result?.data?.domains?.[0]?.labelhash;
-    const registrations = await ensClient.query({
+    const registrations = await ensClientDeprecated.query({
       query: ENS_REGISTRATIONS,
       variables: {
         labelHash,
@@ -381,13 +378,10 @@ export const fetchRegistrationDate = async (recipient: string) => {
 };
 
 export const fetchAccountDomains = async (address: string) => {
-  const registrations = await ensClient.query<EnsAccountDomainsData>({
-    query: ENS_ACCOUNT_DOMAINS,
-    variables: {
-      address: address?.toLowerCase(),
-    },
+  const domains = await ensClient.getDomainsByAddress({
+    address: address?.toLowerCase(),
   });
-  return registrations;
+  return domains;
 };
 
 export const fetchImage = async (
@@ -417,7 +411,7 @@ export const fetchRecords = async (
   ensName: string,
   { supportedOnly = true }: { supportedOnly?: boolean } = {}
 ) => {
-  const response = await ensClient.query<EnsGetRecordsData>({
+  const response = await ensClientDeprecated.query<EnsGetRecordsData>({
     query: ENS_GET_RECORDS,
     variables: {
       name: ensName,
@@ -449,7 +443,7 @@ export const fetchCoinAddresses = async (
   ensName: string,
   { supportedOnly = true }: { supportedOnly?: boolean } = {}
 ): Promise<{ [key in ENS_RECORDS]: string }> => {
-  const response = await ensClient.query<EnsGetCoinTypesData>({
+  const response = await ensClientDeprecated.query<EnsGetCoinTypesData>({
     query: ENS_GET_COIN_TYPES,
     variables: {
       name: ensName,
@@ -509,7 +503,7 @@ export const fetchOwner = async (ensName: string) => {
 };
 
 export const fetchRegistration = async (ensName: string) => {
-  const response = await ensClient.query<EnsGetRegistrationData>({
+  const response = await ensClientDeprecated.query<EnsGetRegistrationData>({
     query: ENS_GET_REGISTRATION,
     variables: {
       id: labelhash(ensName.replace(ENS_DOMAIN, '')),
