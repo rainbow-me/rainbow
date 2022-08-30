@@ -10,7 +10,7 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
-import { Text, TruncatedAddress, TruncatedText } from '../text';
+import { Text, TruncatedText } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
 import {
@@ -26,6 +26,7 @@ import {
   showActionSheetWithOptions,
 } from '@/utils';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
+import { toChecksumAddress } from '@/handlers/web3';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -147,13 +148,23 @@ export default function AddressRow({
     cleanedUpBalance = '0';
   }
 
-  const cleanedUpLabel = useMemo(
+  const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [
+    label,
+  ]);
+
+  const emoji = useMemo(
     () =>
-      removeFirstEmojiFromString(label) ||
-      abbreviations.address(address, 4, 6) ||
-      '',
-    [address, label]
+      returnStringFirstEmoji(cleanedUpLabel) ||
+      profileUtils.addressHashedEmoji(address),
+    [address, cleanedUpLabel]
   );
+
+  const displayAddress = useMemo(
+    () => abbreviations.address(toChecksumAddress(address) || '', 4, 6),
+    [address]
+  );
+
+  const walletName = cleanedUpLabel || ens || displayAddress;
 
   const linearGradientProps = useMemo(
     () => ({
@@ -197,9 +208,9 @@ export default function AddressRow({
           },
         },
       ],
-      menuTitle: cleanedUpLabel,
+      menuTitle: walletName,
     };
-  }, [cleanedUpLabel, notificationsEnabled]);
+  }, [walletName, notificationsEnabled]);
 
   const onPressAndroidActions = useCallback(() => {
     const androidActions = notificationsEnabled
@@ -215,14 +226,14 @@ export default function AddressRow({
         destructiveButtonIndex: notificationsEnabled ? 2 : 1,
         options: androidActions,
         showSeparators: true,
-        title: cleanedUpLabel,
+        title: walletName,
       },
       (idx: number) => {
         if (idx === 0) {
           contextMenuActions?.edit(walletId, address);
         } else if (idx === 1) {
           if (notificationsEnabled) {
-            contextMenuActions?.notifications(cleanedUpLabel);
+            contextMenuActions?.notifications(walletName);
           } else {
             contextMenuActions?.remove(walletId, address);
           }
@@ -233,13 +244,7 @@ export default function AddressRow({
         }
       }
     );
-  }, [
-    cleanedUpLabel,
-    contextMenuActions,
-    walletId,
-    address,
-    notificationsEnabled,
-  ]);
+  }, [notificationsEnabled, contextMenuActions, walletId, address, walletName]);
 
   const handleSelectMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -248,7 +253,7 @@ export default function AddressRow({
           contextMenuActions?.remove(walletId, address);
           break;
         case ContextMenuKeys.Notifications:
-          contextMenuActions?.notifications(cleanedUpLabel);
+          contextMenuActions?.notifications(walletName);
           break;
         case ContextMenuKeys.Edit:
           contextMenuActions?.edit(walletId, address);
@@ -257,7 +262,7 @@ export default function AddressRow({
           break;
       }
     },
-    [address, contextMenuActions, cleanedUpLabel, walletId]
+    [address, contextMenuActions, walletName, walletId]
   );
 
   return (
@@ -271,36 +276,16 @@ export default function AddressRow({
               color={accountColor}
               marginRight={10}
               size="medium"
-              value={
-                returnStringFirstEmoji(cleanedUpLabel) ||
-                profileUtils.addressHashedEmoji(address) ||
-                cleanedUpLabel ||
-                ens
-              }
+              value={emoji}
             />
           )}
           <ColumnWithMargins margin={android ? -6 : 3}>
-            {cleanedUpLabel || ens ? (
-              <StyledTruncatedText
-                color={colors.dark}
-                testID={`change-wallet-address-row-label-${
-                  cleanedUpLabel || ens
-                }`}
-              >
-                {cleanedUpLabel || ens}
-              </StyledTruncatedText>
-            ) : (
-              <TruncatedAddress
-                address={address}
-                color={colors.dark}
-                firstSectionLength={6}
-                size="smaller"
-                style={sx.accountLabel}
-                testID={`change-wallet-address-row-address-${address}`}
-                truncationLength={4}
-                weight="medium"
-              />
-            )}
+            <StyledTruncatedText
+              color={colors.dark}
+              testID={`change-wallet-address-row-label-${walletName}`}
+            >
+              {walletName}
+            </StyledTruncatedText>
             <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
               {cleanedUpBalance || 0} ETH
             </StyledBottomRowText>
