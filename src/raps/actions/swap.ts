@@ -39,7 +39,7 @@ const swap = async (
   const { accountAddress } = store.getState().settings;
   const { inputCurrency, outputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
-  let gasParams = parseGasParamsForTransaction(selectedGasFee);
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   const isL2 = isL2Network(
     ethereumUtils.getNetworkFromChainId(parameters?.chainId || ChainId.mainnet)
@@ -153,7 +153,7 @@ const swap = async (
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider as any
+      wallet?.provider
     )
   );
   return swap?.nonce;

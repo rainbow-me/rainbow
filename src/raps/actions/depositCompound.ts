@@ -25,6 +25,7 @@ import {
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { gasUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { parseGasParamsForTransaction } from '@/parsers';
 
 export const getDepositGasLimit = (tokenToDeposit: Asset) =>
   tokenToDeposit.address === ETH_ADDRESS
@@ -57,10 +58,10 @@ const depositCompound = async (
     tokenToDeposit.decimals
   );
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
 
-  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-  let maxPriorityFeePerGas =
-    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+  let maxFeePerGas = gasParams.maxFeePerGas;
+  let maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
   if (!maxFeePerGas) {
     maxFeePerGas = gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;

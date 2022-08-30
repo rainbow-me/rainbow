@@ -26,6 +26,7 @@ import {
 import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { parseGasParamsForTransaction } from '@/parsers';
 const executeCommit = async (
   name?: string,
   duration?: number,
@@ -294,6 +295,7 @@ const ensAction = async (
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
+
   const {
     name,
     duration,
@@ -345,9 +347,9 @@ const ensAction = async (
   let maxFeePerGas;
   let maxPriorityFeePerGas;
   try {
-    maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-    maxPriorityFeePerGas =
-      selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
+    maxFeePerGas = gasParams.maxFeePerGas;
+    maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
     logger.sentry(`[${actionName}] about to ${type}`, {
       ...parameters,
@@ -369,7 +371,6 @@ const ensAction = async (
           nonce
         );
         dispatch(
-          // @ts-ignore
           saveCommitRegistrationParameters({
             commitTransactionHash: tx?.hash,
             duration,
@@ -412,7 +413,6 @@ const ensAction = async (
           nonce
         );
         dispatch(
-          // @ts-ignore
           updateTransactionRegistrationParameters({
             registerTransactionHash: tx?.hash,
           })
