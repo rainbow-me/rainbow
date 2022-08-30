@@ -236,6 +236,7 @@ export default function WalletList({
                 contextMenuActions={contextMenuActions}
                 data={item}
                 editMode={editMode}
+                onPress={item.onPress}
               />
             </Column>
           );

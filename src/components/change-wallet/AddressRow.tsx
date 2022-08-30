@@ -114,15 +114,19 @@ const ContextMenuKeys = {
   Remove: 'remove',
 };
 
+interface AddressRowProps {
+  contextMenuActions: EditWalletContextMenuActions;
+  data: any;
+  editMode: boolean;
+  onPress: () => void;
+}
+
 export default function AddressRow({
   contextMenuActions,
   data,
   editMode,
-}: {
-  contextMenuActions: EditWalletContextMenuActions;
-  data: any;
-  editMode: boolean;
-}) {
+  onPress,
+}: AddressRowProps) {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const {
@@ -251,66 +255,78 @@ export default function AddressRow({
 
   return (
     <View style={sx.accountRow}>
-      <Row align="center">
-        <Row align="center" flex={1} height={59}>
-          {accountImage ? (
-            <ImageAvatar image={accountImage} marginRight={10} size="medium" />
-          ) : (
-            <ContactAvatar
-              color={accountColor}
-              marginRight={10}
-              size="medium"
-              value={emoji}
-            />
-          )}
-          <ColumnWithMargins margin={android ? -6 : 3}>
-            <StyledTruncatedText
-              color={colors.dark}
-              testID={`change-wallet-address-row-label-${walletName}`}
-            >
-              {walletName}
-            </StyledTruncatedText>
-            <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-              {cleanedUpBalance || 0} ETH
-            </StyledBottomRowText>
-          </ColumnWithMargins>
-        </Row>
-        <Column style={sx.rightContent}>
-          {isReadOnly && (
-            <LinearGradient
-              {...linearGradientProps}
-              // @ts-ignore
-              marginRight={editMode || isSelected ? -9 : 19}
-            >
-              <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                {lang.t('wallet.change_wallet.watching')}
-              </ReadOnlyText>
-            </LinearGradient>
-          )}
-          {!editMode && isSelected && (
-            // @ts-ignore
-            <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
-          )}
-          {editMode &&
-            (ios ? (
-              <ContextMenuButton
-                isMenuPrimaryAction
-                menuConfig={menuConfig}
-                onPressMenuItem={handleSelectMenuItem}
-              >
-                <OptionsIcon onPress={NOOP} />
-              </ContextMenuButton>
+      <ButtonPressAnimation
+        onPress={onPress}
+        disabled={editMode}
+        scaleTo={0.98}
+      >
+        <Row align="center">
+          <Row align="center" flex={1} height={59}>
+            {accountImage ? (
+              <ImageAvatar
+                image={accountImage}
+                marginRight={10}
+                size="medium"
+              />
             ) : (
-              <ContextMenuAndroid
-                menuConfig={menuConfig}
-                isAnchoredToRight
-                onPressMenuItem={handleSelectMenuItem}
+              <ContactAvatar
+                color={accountColor}
+                marginRight={10}
+                size="medium"
+                value={emoji}
+              />
+            )}
+            <ColumnWithMargins margin={android ? -6 : 3}>
+              <StyledTruncatedText
+                color={colors.dark}
+                testID={`change-wallet-address-row-label-${walletName}`}
               >
-                <OptionsIcon onPress={NOOP} />
-              </ContextMenuAndroid>
-            ))}
-        </Column>
-      </Row>
+                {walletName}
+              </StyledTruncatedText>
+              <StyledBottomRowText
+                color={colors.alpha(colors.blueGreyDark, 0.5)}
+              >
+                {cleanedUpBalance || 0} ETH
+              </StyledBottomRowText>
+            </ColumnWithMargins>
+          </Row>
+          <Column style={sx.rightContent}>
+            {isReadOnly && (
+              <LinearGradient
+                {...linearGradientProps}
+                // @ts-ignore
+                marginRight={editMode || isSelected ? -9 : 19}
+              >
+                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+                  {lang.t('wallet.change_wallet.watching')}
+                </ReadOnlyText>
+              </LinearGradient>
+            )}
+            {!editMode && isSelected && (
+              // @ts-ignore
+              <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
+            )}
+            {editMode &&
+              (ios ? (
+                <ContextMenuButton
+                  isMenuPrimaryAction
+                  menuConfig={menuConfig}
+                  onPressMenuItem={handleSelectMenuItem}
+                >
+                  <OptionsIcon onPress={NOOP} />
+                </ContextMenuButton>
+              ) : (
+                <ContextMenuAndroid
+                  menuConfig={menuConfig}
+                  isAnchoredToRight
+                  onPressMenuItem={handleSelectMenuItem}
+                >
+                  <OptionsIcon onPress={NOOP} />
+                </ContextMenuAndroid>
+              ))}
+          </Column>
+        </Row>
+      </ButtonPressAnimation>
     </View>
   );
 }
