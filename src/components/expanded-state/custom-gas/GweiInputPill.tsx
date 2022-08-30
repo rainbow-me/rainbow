@@ -4,31 +4,14 @@ import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 // @ts-expect-error
 import TextInputMask from 'react-native-text-input-mask';
-import { Row } from '../../layout';
 import { ButtonPressAnimation } from '../../animations';
-import { Text } from '../../text';
 import styled from '@/styled-thing';
 import { buildTextStyles, margin, padding } from '@/styles';
 import { useTheme } from '@/theme';
 import { TextInput } from 'react-native';
+import { Box, Inline, Inset, Text } from '@/design-system';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
-
-const GweiPill = styled(LinearGradient).attrs(
-  // @ts-expect-error
-  ({ theme: { colors, isDarkMode } }) => ({
-    colors: colors.gradients.lightGreyTransparent,
-    end: isDarkMode ? { x: 0, y: 0 } : { x: 0.5, y: 1 },
-    start: isDarkMode ? { x: 0.5, y: 1 } : { x: 0, y: 0 },
-  })
-)({
-  borderRadius: 15,
-  height: 40,
-  ...(ios ? { height: 40 } : padding.object(10, 12)),
-  maxWidth: 130,
-  minWidth: 108,
-  ...(android ? { marginHorizontal: 5 } : {}),
-});
 
 const GweiNumberInput = styled(TextInputMask).attrs(
   // @ts-expect-error
@@ -42,13 +25,7 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     textAlign: 'left',
     timing: 'linear',
     weight: 'heavy',
-    ...(ios && {
-      height: '100%',
-      left: 22,
-      paddingLeft: 28,
-      paddingRight: 72,
-      paddingVertical: 10.5,
-    }),
+    maxWidth: 80,
   })
 )(
   // @ts-expect-error
@@ -64,21 +41,6 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     ),
   })
 );
-
-const GweiLabel = styled(Text).attrs(() => ({
-  align: 'center',
-  pointerEvents: 'none',
-  size: 'lmedium',
-  weight: 'heavy',
-}))({
-  ...margin.object(
-    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-    0,
-    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-    0
-  ),
-  ...(ios ? { right: 50, top: 10.5 } : {}),
-});
 
 function GweiInputPill(
   {
@@ -102,7 +64,7 @@ function GweiInputPill(
   },
   ref: React.Ref<TextInput | undefined>
 ) {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const onChangeText = useCallback(
     (text: string) => {
@@ -113,30 +75,48 @@ function GweiInputPill(
   );
 
   return (
-    <ButtonPressAnimation onPress={onPress}>
-      <GweiPill>
-        <Row alignSelf="center" marginHorizontal={-40}>
-          <GweiNumberInput
-            allowFontScaling={false}
-            contextMenuHidden
-            editable={editable}
-            mask="[9999]{.}[999]"
-            onBlur={onBlur}
-            onChangeText={onChangeText}
-            onFocus={onFocus}
-            placeholder="0"
-            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
-            ref={ref}
-            selectionColor={color}
-            spellCheck={false}
-            style={{ color: colors.dark }}
-            testID={testID}
-            value={value}
-          />
-          {IS_TESTING !== 'true' && <GweiLabel> Gwei</GweiLabel>}
-        </Row>
-      </GweiPill>
-    </ButtonPressAnimation>
+    <Box
+      as={ButtonPressAnimation}
+      // @ts-expect-error
+      onPress={onPress}
+    >
+      <Box
+        as={LinearGradient}
+        height="40px"
+        borderRadius={15}
+        colors={colors.gradients.lightGreyTransparent}
+        end={isDarkMode ? { x: 0, y: 0 } : { x: 0.5, y: 1 }}
+        start={isDarkMode ? { x: 0.5, y: 1 } : { x: 0, y: 0 }}
+      >
+        <Inset vertical="10px" horizontal="12px">
+          <Inline alignVertical="center">
+            <GweiNumberInput
+              allowFontScaling={false}
+              contextMenuHidden
+              editable={editable}
+              mask="[9999]{.}[999]"
+              onBlur={onBlur}
+              onChangeText={onChangeText}
+              onFocus={onFocus}
+              placeholder="0"
+              placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
+              ref={ref}
+              selectionColor={color}
+              spellCheck={false}
+              style={{ color: colors.dark }}
+              testID={testID}
+              value={value}
+            />
+            {IS_TESTING !== 'true' && (
+              <Text align="center" size="16px" weight="heavy">
+                {' '}
+                Gwei
+              </Text>
+            )}
+          </Inline>
+        </Inset>
+      </Box>
+    </Box>
   );
 }
 
