@@ -18,9 +18,12 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
   Box,
+  Column,
+  Columns,
   Cover,
   Heading,
   Inline,
+  Inset,
   Stack,
   Text,
   useColorMode,
@@ -66,8 +69,7 @@ export function AssetListProfileWrapper({
   return (
     <Box
       alignItems="center"
-      paddingHorizontal={`${horizontalInset}px`}
-      paddingTop="10px"
+      paddingTop="8px"
       width="full"
       marginTop={{ custom: -AssetListProfileHeaderCompactHeight }}
     >
@@ -165,9 +167,29 @@ export function AssetListProfileAvatar({
             justifyContent="center"
             shadow={
               hasLoaded
-                ? colorMode === 'dark'
-                  ? '30px light'
-                  : '30px light accent'
+                ? {
+                    custom: {
+                      ios: [
+                        {
+                          offset: { x: 0, y: 2 },
+                          blur: 8,
+                          opacity: 0.08,
+                          color: 'shadow',
+                        },
+                        {
+                          offset: { x: 0, y: 8 },
+                          blur: 24,
+                          opacity: 0.3,
+                          color: colorMode === 'dark' ? 'shadow' : 'accent',
+                        },
+                      ],
+                      android: {
+                        elevation: 30,
+                        opacity: 0.8,
+                        color: colorMode === 'dark' ? 'shadow' : 'accent',
+                      },
+                    },
+                  }
                 : undefined
             }
             style={{
@@ -221,23 +243,25 @@ export function EmojiAvatar({ size }: { size: number }) {
       : colors.skeleton;
 
   return (
-    <AccentColorProvider color={accentColor}>
-      <Box
-        background="accent"
-        borderRadius={size / 2}
-        height={{ custom: size }}
-        width={{ custom: size }}
-      >
-        <Cover alignHorizontal="center" alignVertical="center">
-          <Box>
-            <NativeText style={{ fontSize: 48 }}>
-              {typeof accountSymbol === 'string' &&
-                getFirstGrapheme(accountSymbol.toUpperCase())}
-            </NativeText>
-          </Box>
-        </Cover>
-      </Box>
-    </AccentColorProvider>
+    <AssetListProfileWrapper>
+      <AccentColorProvider color={accentColor}>
+        <Box
+          background="accent"
+          borderRadius={size / 2}
+          height={{ custom: size }}
+          width={{ custom: size }}
+        >
+          <Cover alignHorizontal="center" alignVertical="center">
+            <Box>
+              <NativeText style={{ fontSize: 48 }}>
+                {typeof accountSymbol === 'string' &&
+                  getFirstGrapheme(accountSymbol.toUpperCase())}
+              </NativeText>
+            </Box>
+          </Cover>
+        </Box>
+      </AccentColorProvider>
+    </AssetListProfileWrapper>
   );
 }
 
@@ -372,22 +396,34 @@ export function AssetListProfileActionButtons() {
 
   if (!hasLoaded) return null;
   return (
-    <AccentColorProvider color={accentColor}>
-      <Inline space="24px" wrap={false}>
-        <Animated.View style={[expandStyle]}>
-          <CopyButton />
-        </Animated.View>
-        <Animated.View style={[expandStyle]}>
-          <SwapButton />
-        </Animated.View>
-        <Animated.View style={[expandStyle]}>
-          <SendButton />
-        </Animated.View>
-        <Animated.View style={[expandStyle]}>
-          <MoreButton />
-        </Animated.View>
-      </Inline>
-    </AccentColorProvider>
+    <Box width="full">
+      <Inset horizontal={{ custom: 17 }}>
+        <AccentColorProvider color={accentColor}>
+          <Columns>
+            <Column>
+              <Animated.View style={[expandStyle]}>
+                <CopyButton />
+              </Animated.View>
+            </Column>
+            <Column>
+              <Animated.View style={[expandStyle]}>
+                <SwapButton />
+              </Animated.View>
+            </Column>
+            <Column>
+              <Animated.View style={[expandStyle]}>
+                <SendButton />
+              </Animated.View>
+            </Column>
+            <Column>
+              <Animated.View style={[expandStyle]}>
+                <MoreButton />
+              </Animated.View>
+            </Column>
+          </Columns>
+        </AccentColorProvider>
+      </Inset>
+    </Box>
   );
 }
 
@@ -435,7 +471,7 @@ function ActionButton({
           }}
           width={{ custom: 60 }}
         >
-          <Text size="icon 23px" weight="bold">
+          <Text align="center" size="icon 23px" weight="bold">
             {icon}
           </Text>
         </Box>
