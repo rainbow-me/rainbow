@@ -16,7 +16,6 @@ const CaretDownIcon = ({ color, ...props }: SvgProps) => (
       stroke={color}
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeOpacity={0.6}
       strokeWidth={2.5}
     />
   </Svg>

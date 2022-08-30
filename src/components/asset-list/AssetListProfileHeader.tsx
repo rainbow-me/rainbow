@@ -34,6 +34,7 @@ import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
   useDimensions,
+  useLatestCallback,
   useOnAvatarPress,
   usePersistentDominantColorFromImage,
   useSwapCurrencyHandlers,
@@ -54,6 +55,7 @@ import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
 import { FloatingEmojis } from '../floating-emojis';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
+import ContextMenu from '../native-context-menu/contextMenu';
 
 export const AssetListProfileHeaderHeight = 240;
 export const AssetListProfileHeaderCompactHeight = 52;
@@ -110,11 +112,36 @@ export function AssetListProfileAvatar({
 
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
-  const { onAvatarPress } = useOnAvatarPress({ screenType: 'wallet' });
+  const {
+    avatarActionSheetOptions,
+    onAvatarPress: onAvatarPressActionSheet,
+    onAvatarPressProfile,
+    onSelectionCallback,
+  } = useOnAvatarPress({ screenType: 'wallet' });
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     maybeSignUri(accountImage ?? '') ?? ''
   );
+
+  const ContextMenuButton =
+    ios || onAvatarPressProfile ? React.Fragment : ContextMenu;
+
+  const menuConfig = React.useMemo(
+    () => ({
+      menuItems: avatarActionSheetOptions?.map(label => ({
+        actionKey: label,
+        actionTitle: label,
+      })),
+    }),
+    [avatarActionSheetOptions]
+  );
+
+  const handlePressMenuItem = useLatestCallback((e: any) => {
+    const index = menuConfig.menuItems?.findIndex(
+      item => item.actionKey === e.nativeEvent.actionKey
+    );
+    onSelectionCallback(index);
+  });
 
   let accentColor = colors.skeleton;
   if (accountImage) {
@@ -158,76 +185,85 @@ export function AssetListProfileAvatar({
   return (
     <AccentColorProvider color={accentColor}>
       <Animated.View style={[expandStyle]}>
-        <ButtonPressAnimation onPress={onAvatarPress} scale={0.8}>
-          <Box
-            alignItems="center"
-            background="accent"
-            borderRadius={size / 2}
-            height={{ custom: size }}
-            justifyContent="center"
-            shadow={
-              hasLoaded
-                ? {
-                    custom: {
-                      ios: [
-                        {
-                          offset: { x: 0, y: 2 },
-                          blur: 8,
-                          opacity: 0.08,
-                          color: 'shadow',
-                        },
-                        {
-                          offset: { x: 0, y: 8 },
-                          blur: 24,
-                          opacity: 0.3,
+        <ContextMenuButton
+          /* @ts-expect-error – JS component */
+          menuConfig={menuConfig}
+          onPressMenuItem={handlePressMenuItem}
+        >
+          <ButtonPressAnimation
+            onPress={ios ? onAvatarPressActionSheet : onAvatarPressProfile}
+            scale={0.8}
+          >
+            <Box
+              alignItems="center"
+              background="accent"
+              borderRadius={size / 2}
+              height={{ custom: size }}
+              justifyContent="center"
+              shadow={
+                hasLoaded
+                  ? {
+                      custom: {
+                        ios: [
+                          {
+                            offset: { x: 0, y: 2 },
+                            blur: 8,
+                            opacity: 0.08,
+                            color: 'shadow',
+                          },
+                          {
+                            offset: { x: 0, y: 8 },
+                            blur: 24,
+                            opacity: 0.3,
+                            color: colorMode === 'dark' ? 'shadow' : 'accent',
+                          },
+                        ],
+                        android: {
+                          elevation: 30,
+                          opacity: 0.8,
                           color: colorMode === 'dark' ? 'shadow' : 'accent',
                         },
-                      ],
-                      android: {
-                        elevation: 30,
-                        opacity: 0.8,
-                        color: colorMode === 'dark' ? 'shadow' : 'accent',
                       },
-                    },
-                  }
-                : undefined
-            }
-            style={{
-              backgroundColor: accountImage ? colors.skeleton : accentColor,
-            }}
-            width={{ custom: size }}
-          >
-            <>
-              {!hasLoaded && (
-                <Cover alignHorizontal="center">
-                  <Box height={{ custom: size }} width="full">
-                    <Skeleton animated>
-                      <Box
-                        background="body"
-                        borderRadius={size / 2}
-                        height={{ custom: size }}
-                        width={{ custom: size }}
-                      />
-                    </Skeleton>
-                  </Box>
-                </Cover>
-              )}
-              <Animated.View style={[fadeInStyle]}>
-                {accountImage ? (
-                  <Box
-                    as={ImgixImage}
-                    borderRadius={size / 2}
-                    height={{ custom: size }}
-                    source={{ uri: accountImage }}
-                    width={{ custom: size }}
-                  />
-                ) : (
-                  <EmojiAvatar size={size} />
+                    }
+                  : undefined
+              }
+              style={{
+                backgroundColor: accountImage ? colors.skeleton : accentColor,
+              }}
+              width={{ custom: size }}
+            >
+              <>
+                {!hasLoaded && (
+                  <Cover alignHorizontal="center">
+                    <Box height={{ custom: size }} width="full">
+                      <Skeleton animated>
+                        <Box
+                          background="body"
+                          borderRadius={size / 2}
+                          height={{ custom: size }}
+                          width={{ custom: size }}
+                        />
+                      </Skeleton>
+                    </Box>
+                  </Cover>
                 )}
-              </Animated.View>
-            </>
-          </Box>
-        </ButtonPressAnimation>
+                <Animated.View style={[fadeInStyle]}>
+                  {accountImage ? (
+                    <Box
+                      as={ImgixImage}
+                      borderRadius={size / 2}
+                      height={{ custom: size }}
+                      source={{ uri: accountImage }}
+                      width={{ custom: size }}
+                    />
+                  ) : (
+                    <EmojiAvatar size={size} />
+                  )}
+                </Animated.View>
+              </>
+            </Box>
+          </ButtonPressAnimation>
+        </ContextMenuButton>
       </Animated.View>
     </AccentColorProvider>
   );
@@ -243,25 +279,23 @@ export function EmojiAvatar({ size }: { size: number }) {
       : colors.skeleton;
 
   return (
-    <AssetListProfileWrapper>
-      <AccentColorProvider color={accentColor}>
-        <Box
-          background="accent"
-          borderRadius={size / 2}
-          height={{ custom: size }}
-          width={{ custom: size }}
-        >
-          <Cover alignHorizontal="center" alignVertical="center">
-            <Box>
-              <NativeText style={{ fontSize: 48 }}>
-                {typeof accountSymbol === 'string' &&
-                  getFirstGrapheme(accountSymbol.toUpperCase())}
-              </NativeText>
-            </Box>
-          </Cover>
-        </Box>
-      </AccentColorProvider>
-    </AssetListProfileWrapper>
+    <AccentColorProvider color={accentColor}>
+      <Box
+        background="accent"
+        borderRadius={size / 2}
+        height={{ custom: size }}
+        width={{ custom: size }}
+      >
+        <Cover alignHorizontal="center" alignVertical="center">
+          <Box>
+            <NativeText style={{ fontSize: ios ? 48 : 36, color: 'white' }}>
+              {typeof accountSymbol === 'string' &&
+                getFirstGrapheme(accountSymbol.toUpperCase())}
+            </NativeText>
+          </Box>
+        </Cover>
+      </Box>
+    </AccentColorProvider>
   );
 }
 
@@ -280,7 +314,7 @@ export function AssetListProfileName() {
     navigate(Routes.CHANGE_WALLET_SHEET);
   };
 
-  const iconColor = useForegroundColor('secondary');
+  const iconColor = useForegroundColor('secondary60');
 
   const name = accountENS
     ? abbreviateEnsForDisplay(accountENS, 20)
@@ -372,7 +406,7 @@ export function AssetListProfileActionButtons() {
     accentColor = colors.avatarBackgrounds[accountColor];
   }
 
-  const hasAvatarLoaded = !accountImage && accountColor;
+  const hasAvatarLoaded = !accountImage && accountColor !== undefined;
   const hasImageColorLoaded = state === 2 || state === 3;
   const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
 
@@ -434,7 +468,7 @@ function ActionButton({
 }: {
   children: string;
   icon: string;
-  onPress: PressableProps['onPress'];
+  onPress?: PressableProps['onPress'];
 }) {
   const { colorMode } = useColorMode();
   return (
@@ -595,18 +629,43 @@ function MoreButton() {
     }
   };
 
-  const items = {
-    addCash: 'Add Cash',
-    myQRCode: 'My QR Code',
-    cancel: 'Cancel',
-  };
+  const items = React.useMemo(
+    () => ({
+      addCash: 'Add Cash',
+      myQRCode: 'My QR Code',
+      cancel: 'Cancel',
+    }),
+    []
+  );
   const options = [
     items.addCash,
     items.myQRCode,
     ios ? items.cancel : null,
   ].filter(x => x);
 
-  const handlePress = () => {
+  const ContextMenuButton = ios ? React.Fragment : ContextMenu;
+
+  const menuConfig = React.useMemo(
+    () => ({
+      menuItems: options.map((label, i) => ({
+        actionKey: i.toString(),
+        actionTitle: label,
+      })),
+    }),
+    [options]
+  );
+
+  const handlePressMenuItem = useLatestCallback((e: any) => {
+    console.log(e.nativeEvent);
+    if (options[e.nativeEvent.actionKey] === items.addCash) {
+      handlePressAddCash();
+    }
+    if (options[e.nativeEvent.actionKey] === items.myQRCode) {
+      navigate(Routes.RECEIVE_MODAL);
+    }
+  });
+
+  const handlePressIOS = () => {
     showActionSheetWithOptions(
       { options, cancelButtonIndex: options.length - 1 },
       (index: number) => {
@@ -621,8 +680,14 @@ function MoreButton() {
   };
 
   return (
-    <ActionButton icon="􀍡" onPress={handlePress}>
-      More
-    </ActionButton>
+    <ContextMenuButton
+      // @ts-expect-error – JS component
+      menuConfig={menuConfig}
+      onPressMenuItem={handlePressMenuItem}
+    >
+      <ActionButton icon="􀍡" onPress={ios ? handlePressIOS : undefined}>
+        More
+      </ActionButton>
+    </ContextMenuButton>
   );
 }

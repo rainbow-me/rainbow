@@ -220,12 +220,16 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     .filter(option => Boolean(option))
     .concat(ios ? ['Cancel'] : []);
 
+  const onAvatarPressProfile = useCallback(() => {
+    navigate(Routes.PROFILE_SHEET, {
+      address: accountENS,
+      fromRoute: 'ProfileAvatar',
+    });
+  }, [accountENS, navigate]);
+
   const onAvatarPress = useCallback(() => {
     if (hasENSAvatar && accountENS) {
-      navigate(Routes.PROFILE_SHEET, {
-        address: accountENS,
-        fromRoute: 'ProfileAvatar',
-      });
+      onAvatarPressProfile();
     } else {
       showActionSheetWithOptions(
         {
@@ -241,8 +245,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     }
   }, [
     hasENSAvatar,
-    navigate,
     accountENS,
+    onAvatarPressProfile,
     avatarActionSheetOptions,
     accountImage,
     callback,
@@ -289,6 +293,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarPress,
+    onAvatarPressProfile:
+      hasENSAvatar && accountENS ? onAvatarPressProfile : undefined,
     onAvatarRemovePhoto,
     onAvatarWebProfile,
     onSelectionCallback: callback,

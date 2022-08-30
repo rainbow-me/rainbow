@@ -117,8 +117,8 @@ export default function AvatarCircle({
           marginBottom={12}
           shadows={shadows[overlayStyles ? 'overlay' : 'default']}
           {...(android && {
-            height: 64,
-            width: 64,
+            height: 60,
+            width: 60,
           })}
         >
           {image ? (
