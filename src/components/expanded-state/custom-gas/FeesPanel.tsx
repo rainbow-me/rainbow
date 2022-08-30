@@ -60,18 +60,21 @@ const PanelLabel = styled(Text).attrs({
   weight: 'heavy',
 })(margin.object(0, 12, 0, 0));
 
+// @ts-expect-error
 const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.yellowFavorite,
   size: 'smedium',
   weight: 'heavy',
 }))({});
 
+// @ts-expect-error
 const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.red,
   size: 'smedium',
   weight: 'heavy',
 }))({});
 
+// @ts-expect-error
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
   size: 'smedium',
@@ -82,9 +85,11 @@ const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
 }))({});
 
+// @ts-expect-error
 const Label = styled(Text).attrs(({ size }) => ({
   lineHeight: 'normal',
   size: size || 'lmedium',
+  // @ts-expect-error
 }))(({ weight }) => fontWithWidth(weight || fonts.weight.semibold));
 
 const GAS_FEE_INCREMENT = 3;
@@ -125,7 +130,9 @@ export default function FeesPanel({
   currentGasTrend: keyof typeof GAS_TRENDS;
   colorForAsset: string;
   setCanGoBack: React.Dispatch<React.SetStateAction<boolean>>;
-  validateGasParams: Ref<() => void | null>;
+  validateGasParams: React.MutableRefObject<
+    (callback?: () => void) => void | undefined
+  >;
   openCustomOptions: (focusTo: string) => void;
 }) {
   const {
@@ -140,7 +147,8 @@ export default function FeesPanel({
   const { colors } = useTheme();
 
   const {
-    params: { type, focusTo, flashbotTransaction = false } = {},
+    // @ts-expect-error ts-migrate(2339)
+    params: { type, focusTo, flashbotTransaction = false },
   } = useRoute();
 
   const isFocused = useIsFocused();
@@ -497,6 +505,7 @@ export default function FeesPanel({
     const navigationRoutes = dangerouslyGetState().routes;
     const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
     const lastRouteType =
+      // @ts-expect-error
       navigationRoutes?.[navigationRoutes.length - 1]?.params?.type;
     if (
       lastRouteName === 'ExplainSheet' &&
@@ -646,7 +655,7 @@ export default function FeesPanel({
     [maxPriorityFeeWarning, onAlertProceeded, openCustomOptions]
   );
 
-  // validateGasParams?.current = (callback: () => void) => validateParams(callback);
+  validateGasParams.current = callback => validateParams(callback);
 
   const validateParams = useCallback(
     callback => {
