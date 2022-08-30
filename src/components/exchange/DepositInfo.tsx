@@ -10,8 +10,8 @@ import Animated, {
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import PriceImpactWarning from './PriceImpactWarning';
-import { Box, Inline, Inset, Text } from '@rainbow-me/design-system';
-import { SwappableAsset } from '@rainbow-me/entities';
+import { Box, Inline, Inset, Text } from '@/design-system';
+import { SwappableAsset } from '@/entities';
 
 const springConfig = {
   damping: 14,

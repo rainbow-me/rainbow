@@ -4,8 +4,8 @@ import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
-import { Network } from '@rainbow-me/helpers';
-import styled from '@rainbow-me/styled-components';
+import { Network } from '@/helpers';
+import styled from '@/styled-thing';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
   paddingTop: android ? 0 : 6,

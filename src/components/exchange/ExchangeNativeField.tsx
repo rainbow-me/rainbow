@@ -10,11 +10,11 @@ import { TextInput, TouchableWithoutFeedback } from 'react-native';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { fonts } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useColorForAsset } from '@/hooks';
+import { supportedNativeCurrencies } from '@/references';
+import styled from '@/styled-thing';
+import { fonts } from '@/styles';
+import { useTheme } from '@/theme';
 
 interface CurrencySymbolProps {
   height: number;

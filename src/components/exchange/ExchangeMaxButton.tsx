@@ -2,10 +2,10 @@ import lang from 'i18n-js';
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
-import { Box, Inline } from '@rainbow-me/design-system';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
+import { Box, Inline } from '@/design-system';
+import { useColorForAsset } from '@/hooks';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
 const Container = styled(ButtonPressAnimation)({
   marginRight: 4,

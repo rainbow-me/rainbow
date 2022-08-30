@@ -8,9 +8,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
-import { analytics } from '@rainbow-me/analytics';
-import { Box } from '@rainbow-me/design-system';
-import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
+import { analytics } from '@/analytics';
+import { Box } from '@/design-system';
+import { usePrevious, useSwapCurrencies } from '@/hooks';
 
 const defaultPriceImpactScale = 1.15;
 const timingConfig = {

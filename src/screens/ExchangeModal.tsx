@@ -39,17 +39,13 @@ import { KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import { Box, Row, Rows } from '@rainbow-me/design-system';
-import { AssetType, ExchangeAsset } from '@rainbow-me/entities';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import {
-  ExchangeModalTypes,
-  isKeyboardOpen,
-  Network,
-} from '@rainbow-me/helpers';
-import { KeyboardType } from '@rainbow-me/helpers/keyboardTypes';
-import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
+import { analytics } from '@/analytics';
+import { Box, Row, Rows } from '@/design-system';
+import { AssetType, ExchangeAsset } from '@/entities';
+import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
+import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
+import { KeyboardType } from '@/helpers/keyboardTypes';
+import { divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -76,11 +72,11 @@ import {
   TypeSpecificParameters,
   updateSwapSlippage,
   updateSwapTypeDetails,
-} from '@rainbow-me/redux/swap';
-import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
+} from '@/redux/swap';
+import { ETH_ADDRESS, ethUnits } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils, gasUtils } from '@/utils';
+import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from 'logger';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
@@ -99,7 +95,7 @@ export const getDefaultSlippageFromConfig = (network: Network) => {
     [network: string]: number;
   };
   const slippage =
-    (configSlippage?.[network] as {}) ?? DEFAULT_SLIPPAGE_BIPS[network] ?? 100;
+    configSlippage?.[network] ?? DEFAULT_SLIPPAGE_BIPS[network] ?? 100;
   return slippage;
 };
 const NOOP = () => null;
@@ -358,7 +354,6 @@ export default function ExchangeModal({
     },
     loading,
     resetSwapInputs,
-    insufficientLiquidity,
     quoteError,
   } = useSwapDerivedOutputs(Number(chainId), type);
 

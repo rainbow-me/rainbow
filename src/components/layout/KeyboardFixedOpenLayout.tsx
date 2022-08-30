@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { Box } from '@rainbow-me/design-system';
-import { KeyboardType } from '@rainbow-me/helpers/keyboardTypes';
-import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
+import { Box } from '@/design-system';
+import { KeyboardType } from '@/helpers/keyboardTypes';
+import { useDimensions, useKeyboardHeight } from '@/hooks';
 
 interface KeyboardFixedOpenLayoutProps {
   additionalPadding?: number;

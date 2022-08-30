@@ -1,6 +1,6 @@
 import React from 'react';
 import { SheetHandle } from '../sheet';
-import { Heading, Inset, Stack } from '@rainbow-me/design-system';
+import { Heading, Inset, Stack } from '@/design-system';
 
 interface ExchangeHeaderProps {
   testID: string;

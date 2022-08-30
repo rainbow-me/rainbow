@@ -4,7 +4,7 @@ import { UnlockableAppIcon } from './unlockableAppIcons';
 import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const mmkv = new MMKV();
 

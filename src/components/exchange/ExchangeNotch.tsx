@@ -6,10 +6,10 @@ import ExchangeNotchMiddle from '@/assets/exchangeNotchMiddle.png';
 import ExchangeNotchMiddleDark from '@/assets/exchangeNotchMiddleDark.png';
 import ExchangeNotchRight from '@/assets/exchangeNotchRight.png';
 import ExchangeNotchRightDark from '@/assets/exchangeNotchRightDark.png';
-import { Box } from '@rainbow-me/design-system';
+import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const notchHeight = 48;
 const notchSideWidth = 78;
