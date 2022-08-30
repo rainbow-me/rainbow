@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
-import { Box, Inline, Text } from '@/design-system';
+import { Box, Text } from '@/design-system';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
@@ -33,18 +33,21 @@ export default function ExchangeMaxButton({
 
   return (
     <Container disabled={disabled} onPress={onPress} testID={testID}>
-      <Inline>
-        <Box height="30px" paddingHorizontal="19px" paddingTop="3px">
-          <Text
-            weight="bold"
-            align="center"
-            size="16px"
-            color={{ custom: colorForAsset || colors.appleBlue }}
-          >
-            􀜍 {lang.t('exchange.max')}
-          </Text>
-        </Box>
-      </Inline>
+      <Box
+        height="30px"
+        paddingHorizontal="19px"
+        paddingTop="3px"
+        justifyContent="center"
+      >
+        <Text
+          weight="bold"
+          align="center"
+          size="16px"
+          color={{ custom: colorForAsset || colors.appleBlue }}
+        >
+          􀜍 {lang.t('exchange.max')}
+        </Text>
+      </Box>
     </Container>
   );
 }
