@@ -13,7 +13,7 @@ import {
   saveAccountLocal,
   saveGlobal,
 } from './common';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 
 const ASSETS = 'uniswapassets';
 const LIQUIDITY = 'uniswapliquidity';

@@ -20,12 +20,12 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { analytics } from '@rainbow-me/analytics';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { colors, margin, padding } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
-import ShadowStack from 'react-native-shadow-stack';
+import { analytics } from '@/analytics';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
+import { colors, margin, padding } from '@/styles';
+import { deviceUtils } from '@/utils';
+import ShadowStack from '@/react-native-shadow-stack';
 
 export const ExchangeSearchHeight = 40;
 const DoneButtonWidth = 52;

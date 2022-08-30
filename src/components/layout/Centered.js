@@ -1,5 +1,5 @@
 import Flex from './Flex';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Centered = styled(Flex).attrs({
   align: 'center',

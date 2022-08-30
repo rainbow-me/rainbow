@@ -59,6 +59,7 @@ const Routes = {
   SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',
   SWAP_DETAILS_SHEET: 'SwapDetailsSheet',
   SWAP_SETTINGS_SHEET: 'SwapSettingsSheet',
+  SWAPS_PROMO_SHEET: 'SwapsPromoSheet',
   SWIPE_LAYOUT: 'SwipeLayout',
   TOKEN_INDEX_SCREEN: 'TokenIndexScreen',
   TOKEN_INDEX_SHEET: 'TokenIndexSheet',

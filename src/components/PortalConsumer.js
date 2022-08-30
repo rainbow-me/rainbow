@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { LoadingOverlay } from './modal';
-import { useWallets } from '@rainbow-me/hooks';
-import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
-import { usePortal } from 'react-native-cool-modals/Portal';
+import { useWallets } from '@/hooks';
+import { sheetVerticalOffset } from '@/navigation/effects';
+import { usePortal } from '@/react-native-cool-modals/Portal';
 
 export default function PortalConsumer() {
   const { isWalletLoading } = useWallets();

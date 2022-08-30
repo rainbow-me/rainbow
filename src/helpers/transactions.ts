@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes, TransactionTypes } from '@/entities';
 
 export const buildTransactionUniqueIdentifier = ({
   hash,

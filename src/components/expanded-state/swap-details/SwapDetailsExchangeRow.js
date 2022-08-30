@@ -16,11 +16,11 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { usePrevious, useStepper } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { getExchangeIconUrl, magicMemo } from '@rainbow-me/utils';
+} from '@/design-system';
+import networkInfo from '@/helpers/networkInfo';
+import { usePrevious, useStepper } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { getExchangeIconUrl, magicMemo } from '@/utils';
 
 const parseExchangeName = name => {
   const networks = Object.keys(networkInfo).map(network =>
@@ -122,7 +122,7 @@ const ExchangeIconStack = magicMemo(
   ['protocols']
 );
 
-export default function SwapDetailsExchangeRow({ protocols }) {
+export default function SwapDetailsExchangeRow({ protocols, testID }) {
   const steps = useMemo(() => {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
@@ -228,7 +228,7 @@ export default function SwapDetailsExchangeRow({ protocols }) {
     );
   } else if (protocols?.length > 0) {
     return (
-      <Rows>
+      <Rows testID={testID}>
         <Columns alignVertical="center" space="4px">
           <Column>
             <SwapDetailsLabel>

@@ -15,10 +15,10 @@ import { RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { useNavigation } from '@rainbow-me/navigation';
-import { removeRequest } from '@rainbow-me/redux/requests';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+import { useNavigation } from '@/navigation';
+import { removeRequest } from '@/redux/requests';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);

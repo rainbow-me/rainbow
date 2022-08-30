@@ -3,9 +3,9 @@ import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useRatio } from './useRatio';
-import { ChartXLabel, useChartData } from '@rainbow-me/animated-charts';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import { ChartXLabel, useChartData } from '@/react-native-animated-charts/src';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth } from '@/styles';
 
 const Label = styled(ChartXLabel)({
   ...fontWithWidth(fonts.weight.semibold),
