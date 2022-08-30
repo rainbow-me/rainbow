@@ -1,16 +1,21 @@
 import React, { useCallback } from 'react';
+// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
+// @ts-expect-error
 import TextInputMask from 'react-native-text-input-mask';
-import { Row } from '../../../components/layout';
+import { Row } from '../../layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
 import styled from '@/styled-thing';
 import { buildTextStyles, margin, padding } from '@/styles';
+import { useTheme } from '@/theme';
+import { TextInput } from 'react-native';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
 const GweiPill = styled(LinearGradient).attrs(
+  // @ts-expect-error
   ({ theme: { colors, isDarkMode } }) => ({
     colors: colors.gradients.lightGreyTransparent,
     end: isDarkMode ? { x: 0, y: 0 } : { x: 0.5, y: 1 },
@@ -26,6 +31,7 @@ const GweiPill = styled(LinearGradient).attrs(
 });
 
 const GweiNumberInput = styled(TextInputMask).attrs(
+  // @ts-expect-error
   ({ theme: { colors }, value }) => ({
     color: !value && colors.alpha(colors.blueGreyDark, 0.4),
     interval: 1,
@@ -44,16 +50,20 @@ const GweiNumberInput = styled(TextInputMask).attrs(
       paddingVertical: 10.5,
     }),
   })
-)(props => ({
-  ...buildTextStyles.object(props),
-  ...(android ? padding.object(0, 0, 0, 0) : {}),
-  ...margin.object(
-    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-    0,
-    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-    0
-  ),
-}));
+)(
+  // @ts-expect-error
+  props => ({
+    // @ts-expect-error
+    ...buildTextStyles.object(props),
+    ...(android ? padding.object(0, 0, 0, 0) : {}),
+    ...margin.object(
+      android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+      0,
+      android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+      0
+    ),
+  })
+);
 
 const GweiLabel = styled(Text).attrs(() => ({
   align: 'center',
@@ -72,21 +82,30 @@ const GweiLabel = styled(Text).attrs(() => ({
 
 function GweiInputPill(
   {
+    color,
+    editable = true,
     value,
     onPress,
     onChange: onChangeCallback,
     onFocus,
     onBlur,
     testID,
-    color,
-    editable = true,
+  }: {
+    color: string;
+    editable: boolean;
+    value: string;
+    onPress: () => void;
+    onChange: (test: string) => void;
+    onFocus: () => void;
+    onBlur: () => void;
+    testID: string;
   },
-  ref
+  ref: React.Ref<TextInput | undefined>
 ) {
   const { colors } = useTheme();
 
   const onChangeText = useCallback(
-    text => {
+    (text: string) => {
       text = text === '.' || text === ',' ? `0${text}` : text;
       onChangeCallback(text);
     },

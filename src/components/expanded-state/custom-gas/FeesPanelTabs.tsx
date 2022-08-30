@@ -23,6 +23,7 @@ const TabPillsContainer = styled(Row).attrs({
 const TabPillWrapper = styled(View).attrs({})({
   ...padding.object(5, 10),
   ...margin.object(0, 5, 0, 5),
+  // @ts-expect-error
   backgroundColor: ({ isSelected, color, theme: { colors } }) =>
     isSelected
       ? color || colors.appleBlue
@@ -30,6 +31,7 @@ const TabPillWrapper = styled(View).attrs({})({
   borderRadius: 15,
   height: 30,
   lineHeight: 20,
+  // @ts-expect-error
   shadowColor: ({ color, isSelected, theme: { colors, isDarkMode } }) =>
     isSelected
       ? isDarkMode
@@ -46,6 +48,7 @@ const TabPillText = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })({
+  // @ts-expect-error
   color: ({ isSelected, theme: { colors }, color }) =>
     isSelected
       ? colors.whiteLabel
@@ -65,10 +68,15 @@ const TabPill = ({
   handleOnPressTabPill,
   color,
   testID,
+}: {
+  label: string;
+  isSelected: boolean;
+  handleOnPressTabPill: (label: string) => void;
+  color: string;
+  testID?: string;
 }) => {
-  const handleOnPress = () => {
-    handleOnPressTabPill(label);
-  };
+  const handleOnPress = () => handleOnPressTabPill(label);
+
   return (
     <ButtonPressAnimation onPress={handleOnPress} scaleTo={0.8} testID={testID}>
       <TabPillWrapper color={color} isSelected={isSelected}>
@@ -83,6 +91,9 @@ const TabPill = ({
 export default function FeesPanelTabs({
   colorForAsset,
   speeds = GasSpeedOrder,
+}: {
+  colorForAsset: string;
+  speeds: typeof GasSpeedOrder;
 }) {
   const {
     updateGasFeeOption,
@@ -91,7 +102,7 @@ export default function FeesPanelTabs({
     updateToCustomGasFee,
   } = useGas();
 
-  const handleOnPressTabPill = label => {
+  const handleOnPressTabPill = (label: string) => {
     if (label === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
       const gasFeeParams = gasFeeParamsBySpeed[URGENT];
       updateToCustomGasFee({
