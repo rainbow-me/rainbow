@@ -266,7 +266,7 @@ export default function ChangeWalletSheet() {
                     color: args.color,
                     label: args.name,
                   };
-                  let updatedWalletAddresses = [...walletAddresses];
+                  const updatedWalletAddresses = [...walletAddresses];
                   updatedWalletAddresses[
                     walletAddressIndex
                   ] = updatedWalletAddress;

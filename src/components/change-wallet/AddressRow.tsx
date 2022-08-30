@@ -5,6 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
+import ConditionalWrap from 'conditional-wrap';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
@@ -255,10 +256,13 @@ export default function AddressRow({
 
   return (
     <View style={sx.accountRow}>
-      <ButtonPressAnimation
-        onPress={onPress}
-        disabled={editMode}
-        scaleTo={0.98}
+      <ConditionalWrap
+        condition={!editMode}
+        wrap={(children: React.ReactNode) => (
+          <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+            {children}
+          </ButtonPressAnimation>
+        )}
       >
         <Row align="center">
           <Row align="center" flex={1} height={59}>
@@ -326,7 +330,7 @@ export default function AddressRow({
               ))}
           </Column>
         </Row>
-      </ButtonPressAnimation>
+      </ConditionalWrap>
     </View>
   );
 }
