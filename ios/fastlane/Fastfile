@@ -56,7 +56,6 @@ platform :ios do
     )
 
     match(
-      force: true,
       type: "appstore"
     )
     
