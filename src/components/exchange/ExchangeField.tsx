@@ -110,7 +110,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       mainnet_address: mainnetAddress,
       type: mainnetAddress ? AssetType.token : type,
     },
-    colors.appleBlue
+    address ? undefined : colors.appleBlue
   );
   const handleFocusField = useCallback(() => {
     inputRef?.current?.focus();
