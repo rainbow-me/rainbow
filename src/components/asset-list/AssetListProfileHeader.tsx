@@ -334,13 +334,60 @@ export function AssetListProfileBalance({
 export const AssetListProfileActionButtonsHeight = 80;
 
 export function AssetListProfileActionButtons() {
+  const { colors } = useTheme();
+  const { accountColor, accountImage } = useAccountProfile();
+
+  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
+    maybeSignUri(accountImage ?? '') ?? ''
+  );
+
+  let accentColor = colors.white;
+  if (accountImage) {
+    accentColor = dominantColor || colors.white;
+  } else if (typeof accountColor === 'number') {
+    accentColor = colors.avatarBackgrounds[accountColor];
+  }
+
+  const hasAvatarLoaded = !accountImage && accountColor;
+  const hasImageColorLoaded = state === 2 || state === 3;
+  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
+
+  const scale = useDerivedValue(() => {
+    return hasLoaded ? 1 : 0.9;
+  });
+  const expandStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: withSpring(scale.value, {
+            damping: 12,
+            restDisplacementThreshold: 0.001,
+            restSpeedThreshold: 0.001,
+            stiffness: 280,
+          }),
+        },
+      ],
+    };
+  });
+
+  if (!hasLoaded) return null;
   return (
-    <Inline space="24px" wrap={false}>
-      <CopyButton />
-      <SwapButton />
-      <SendButton />
-      <MoreButton />
-    </Inline>
+    <AccentColorProvider color={accentColor}>
+      <Inline space="24px" wrap={false}>
+        <Animated.View style={[expandStyle]}>
+          <CopyButton />
+        </Animated.View>
+        <Animated.View style={[expandStyle]}>
+          <SwapButton />
+        </Animated.View>
+        <Animated.View style={[expandStyle]}>
+          <SendButton />
+        </Animated.View>
+        <Animated.View style={[expandStyle]}>
+          <MoreButton />
+        </Animated.View>
+      </Inline>
+    </AccentColorProvider>
   );
 }
 
@@ -359,11 +406,33 @@ function ActionButton({
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"
-          background="body"
+          background="accent"
           borderRadius={60}
           height={{ custom: 60 }}
           justifyContent="center"
-          shadow={colorMode !== 'dark' ? `21px light` : '21px light'}
+          shadow={{
+            custom: {
+              ios: [
+                {
+                  offset: { x: 0, y: 8 },
+                  blur: 24,
+                  opacity: 0.3,
+                  color: colorMode === 'dark' ? 'shadow' : 'accent',
+                },
+                {
+                  offset: { x: 0, y: 2 },
+                  blur: 6,
+                  opacity: 0.04,
+                  color: 'shadow',
+                },
+              ],
+              android: {
+                elevation: 21,
+                opacity: 1,
+                color: colorMode === 'dark' ? 'shadow' : 'accent',
+              },
+            },
+          }}
           width={{ custom: 60 }}
         >
           <Text size="icon 23px" weight="bold">

@@ -164,12 +164,7 @@ export default function ProfileMasthead({
 
   const { colors } = useTheme();
   return (
-    <Column
-      align="center"
-      height={addCashAvailable ? 216 : 141}
-      marginBottom={24}
-      marginTop={0}
-    >
+    <Column align="center" height={120} marginBottom={24} marginTop={0}>
       {/* [AvatarCircle -> ImageAvatar -> ImgixImage], so no need to sign accountImage here. */}
       <AvatarCircle
         accountColor={accountColor}

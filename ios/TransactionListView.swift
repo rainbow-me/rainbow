@@ -25,9 +25,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
   @objc var addCashAvailable: Bool = true {
     didSet {
-      header.addCash.isHidden = addCashAvailable
-      header.addCash.isHidden = !addCashAvailable
-      header.frame.size.height = addCashAvailable ? 216 : 141
+      header.frame.size.height = 120
       headerSeparator.frame.origin.y = header.frame.size.height - 2
     }
   }
@@ -244,33 +242,6 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     ])
   }
 
-  @objc func onPressInCopyAddress(_ sender: UIButton) {
-    header.copyAddress.animateTapStart(scale: 0.86)
-  }
-  @objc func onPressOutCopyAddress(_ sender: UIButton) {
-    header.copyAddress.animateTapEnd(useHaptic: "selection")
-  }
-
-  @objc func onReceivePressed(_ sender: UIButton) {
-    self.onReceivePress([:])
-  }
-  @objc func onPressInReceive(_ sender: UIButton) {
-    header.receive.animateTapStart(scale: 0.86)
-  }
-  @objc func onPressOutReceive(_ sender: UIButton) {
-    header.receive.animateTapEnd(useHaptic: "selection")
-  }
-
-  @objc func onAddCashPressed(_ sender: UIButton) {
-    self.onAddCashPress([:])
-  }
-  @objc func onPressInAddCash(_ sender: UIButton) {
-    header.addCash.animateTapStart(scale: 0.9)
-  }
-  @objc func onPressOutAddCash(_ sender: UIButton) {
-    header.addCash.animateTapEnd(useHaptic: "selection")
-  }
-
   var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
 
   let tableView = TransitionListTableView()
@@ -319,30 +290,6 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchCancel)
     header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchUpOutside)
 
-    header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
-    header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDown)
-    header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDragInside)
-    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchUpInside)
-    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchDragOutside)
-    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchCancel)
-    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchUpOutside)
-
-    header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
-    header.receive.addTarget(self, action: #selector(onPressInReceive(_:)), for: .touchDown)
-    header.receive.addTarget(self, action: #selector(onPressInReceive(_:)), for: .touchDragInside)
-    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchUpInside)
-    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchDragOutside)
-    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchCancel)
-    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchUpOutside)
-
-    header.addCash.addTarget(self, action: #selector(onAddCashPressed(_:)), for: .touchUpInside)
-    header.addCash.addTarget(self, action: #selector(onPressInAddCash(_:)), for: .touchDown)
-    header.addCash.addTarget(self, action: #selector(onPressInAddCash(_:)), for: .touchDragInside)
-    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpInside)
-    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchDragOutside)
-    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchCancel)
-    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpOutside)
-
 
     let dropdownImage = UIImage(named: "caret-down")?.withRenderingMode(.alwaysTemplate)
     header.accountDropdown.contentMode = UIView.ContentMode.scaleAspectFit
@@ -350,11 +297,6 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountDropdown.frame.size.height = 9
     header.accountDropdown.image = dropdownImage
     header.accountDropdown.tintColor = UIColor.RainbowTheme.Transactions.dark;
-
-    header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
-    header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)
-    header.addCashLabel.titleLabel?.textAlignment = .center
-    header.addCashLabel.titleLabel?.addCharacterSpacing(kernValue: 0.4)
 
     let secondShadowLayer = CAShapeLayer()
     let radius = header.accountBackground.frame.width / 2.0
@@ -391,7 +333,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   /// React Native is known to re-render only first-level subviews. Since our tableView is a custom view that we add as a second-level subview, we need to relayout it manually
   override func layoutSubviews() {
     tableView.frame = self.bounds
-    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: addCashAvailable ? 216 : 141)
+    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 120)
     headerSeparator.frame = CGRect(x: 19, y: header.frame.size.height - 2, width: tableView.bounds.width - 19, height: 2)
     headerSeparator.roundLeftCorners()
   }
