@@ -41,13 +41,18 @@ import {
   useSwapCurrencyList,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
-import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
-import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+import {
+  getActiveRoute,
+  useNavigation,
+} from '@/navigation/Navigation';
+import {
+  emitAssetRequest,
+  emitChartsRequest,
+} from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, filterList } from '@/utils';
-import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 
 const storage = new MMKV();
 const getHasShownWarning = () =>
@@ -78,7 +83,6 @@ const searchWalletCurrencyList = (searchList, query) => {
 };
 
 export default function CurrencySelectModal() {
-  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
   const { goBack, navigate, dangerouslyGetState } = useNavigation();
@@ -162,8 +166,7 @@ export default function CurrencySelectModal() {
       if (
         otherAsset &&
         newAsset?.type !== otherAsset?.type &&
-        !hasShownWarning &&
-        !crosschainEnabled
+        !hasShownWarning
       ) {
         Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
@@ -183,7 +186,7 @@ export default function CurrencySelectModal() {
       }
       return false;
     },
-    [crosschainEnabled, inputCurrency, navigate, outputCurrency]
+    [inputCurrency, navigate, outputCurrency]
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const routeName = getActiveRoute()?.name;

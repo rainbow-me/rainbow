@@ -4,8 +4,6 @@ import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@/entities';
 import { ExchangeModalTypes } from '@/helpers';
 import { AppDispatch, AppGetState } from '@/redux/store';
-import { defaultConfig } from '@/config/experimental';
-import { CROSSCHAIN_SWAPS } from '@/config/experimentalHooks';
 
 export interface SwapAmount {
   display: string | null;
@@ -131,7 +129,6 @@ export const updateSwapInputCurrency = (
   newInputCurrency: SwappableAsset | null,
   ignoreTypeCheck = false
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const crosschainEnabled = defaultConfig?.[CROSSCHAIN_SWAPS]?.value;
   const {
     depositCurrency,
     independentField,
@@ -150,8 +147,7 @@ export const updateSwapInputCurrency = (
       type === ExchangeModalTypes.swap &&
       newInputCurrency?.type !== outputCurrency?.type &&
       newInputCurrency &&
-      !ignoreTypeCheck &&
-      !crosschainEnabled
+      !ignoreTypeCheck
     ) {
       dispatch(updateSwapOutputCurrency(null, true));
     }
@@ -177,7 +173,6 @@ export const updateSwapOutputCurrency = (
   newOutputCurrency: SwappableAsset | null,
   ignoreTypeCheck = false
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const crosschainEnabled = defaultConfig?.[CROSSCHAIN_SWAPS]?.value;
   const { independentField, inputCurrency, type } = getState().swap;
   if (
     newOutputCurrency?.address === inputCurrency?.address &&
@@ -189,8 +184,7 @@ export const updateSwapOutputCurrency = (
       type === ExchangeModalTypes.swap &&
       newOutputCurrency?.type !== inputCurrency?.type &&
       newOutputCurrency &&
-      !ignoreTypeCheck &&
-      !crosschainEnabled
+      !ignoreTypeCheck
     ) {
       dispatch(updateSwapInputCurrency(null, true));
     }
