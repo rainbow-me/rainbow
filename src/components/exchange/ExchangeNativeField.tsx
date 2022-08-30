@@ -15,6 +15,7 @@ import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { Box, Text } from '@/design-system';
+import { NativeCurrencyKey } from '@/entities';
 
 const NativeInput = styled(ExchangeInput).attrs({
   letterSpacing: fonts.letterSpacing.roundedTight,
@@ -36,8 +37,6 @@ interface ExchangeNativeFieldProps {
   updateOnFocus: boolean;
   testID: string;
 }
-
-type SupportedNativeCurrencies = keyof typeof supportedNativeCurrencies;
 
 const ExchangeNativeField: ForwardRefRenderFunction<
   TextInput,
@@ -68,7 +67,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
   const [value, setValue] = useState(nativeAmount);
 
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
-    nativeCurrency as SupportedNativeCurrencies
+    nativeCurrency as NativeCurrencyKey
   ];
 
   const handleFocusNativeField = useCallback(
