@@ -14,11 +14,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
-import {
-  add,
-  greaterThan,
-  toFixedDecimals,
-} from '@/helpers/utilities';
+import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -311,7 +307,7 @@ const GasSpeedButton = ({
   const openGasHelper = useCallback(() => {
     Keyboard.dismiss();
     const network = currentNetwork ?? networkTypes.mainnet;
-    const networkName = networkInfo[network].name;
+    const networkName = networkInfo[network]?.name;
     navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
   }, [currentNetwork, navigate]);
 
