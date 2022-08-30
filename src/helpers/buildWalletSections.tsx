@@ -395,13 +395,38 @@ const withBriefBalanceSection = (
 
   return [
     {
-      type: 'ASSETS_PROFILE_HEADER_COMPACT',
+      type: 'PROFILE_HEADER_COMPACT',
       uid: 'assets-profile-header-compact',
       value: totalValue,
     },
     {
-      type: 'ASSETS_PROFILE_HEADER',
-      uid: 'assets-profile-header',
+      type: 'PROFILE_HEADER_AVATAR',
+      uid: 'profile-avatar',
+    },
+    {
+      type: 'PROFILE_HEADER_AVATAR_SPACE_AFTER',
+      uid: 'profile-avatar-space-after',
+    },
+    {
+      type: 'PROFILE_HEADER_NAME',
+      uid: 'profile-name',
+    },
+    {
+      type: 'PROFILE_HEADER_NAME_SPACE_AFTER',
+      uid: 'profile-name-space-after',
+    },
+    {
+      type: 'PROFILE_HEADER_BALANCE',
+      uid: 'profile-balance',
+      value: totalValue,
+    },
+    {
+      type: 'PROFILE_HEADER_BALANCE_SPACE_AFTER',
+      uid: 'profile-balance-space-after',
+    },
+    {
+      type: 'PROFILE_HEADER_ACTION_BUTTONS',
+      uid: 'profile-action-buttons',
       value: totalValue,
     },
     ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),

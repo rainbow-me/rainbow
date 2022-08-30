@@ -5,7 +5,13 @@ import { TokenFamilyHeaderHeight } from '../../../token-family';
 import { UniqueTokenRow } from '../../../unique-token';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { AssetListItemSkeletonHeight } from '../../AssetListItemSkeleton';
-import { AssetListProfileHeaderHeight } from '../../AssetListProfileHeader';
+import {
+  AssetListProfileActionButtonsHeight,
+  AssetListProfileAvatarHeight,
+  AssetListProfileBalanceHeight,
+  AssetListProfileHeaderHeight,
+  AssetListProfileNameHeight,
+} from '../../AssetListProfileHeader';
 import { CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
 
@@ -14,10 +20,7 @@ type Dim = {
   height: number;
 };
 const ViewDimensions: Record<CellType, Dim> = {
-  [CellType.ASSETS_PROFILE_HEADER]: {
-    height: AssetListProfileHeaderHeight + 16 - 52,
-  },
-  [CellType.ASSETS_PROFILE_HEADER_COMPACT]: { height: 52 },
+  [CellType.PROFILE_HEADER_COMPACT]: { height: 52 },
   [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 16 },
   [CellType.COIN]: { height: CoinRowHeight },
   [CellType.COIN_DIVIDER]: { height: CoinDividerContainerHeight },
@@ -25,6 +28,16 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.SAVINGS_HEADER]: { height: SavingsListHeader.height },
   [CellType.SAVINGS]: { height: SavingsCoinRowHeight },
   [CellType.POOLS_HEADER]: { height: SavingsListHeader.height },
+  [CellType.PROFILE_HEADER_ACTION_BUTTONS]: {
+    height: AssetListProfileActionButtonsHeight - 19,
+  },
+  [CellType.PROFILE_HEADER_ACTION_BUTTONS_SPACE_AFTER]: { height: 15 },
+  [CellType.PROFILE_HEADER_AVATAR]: { height: AssetListProfileAvatarHeight },
+  [CellType.PROFILE_HEADER_AVATAR_SPACE_AFTER]: { height: 15 },
+  [CellType.PROFILE_HEADER_NAME]: { height: AssetListProfileNameHeight },
+  [CellType.PROFILE_HEADER_NAME_SPACE_AFTER]: { height: 19 },
+  [CellType.PROFILE_HEADER_BALANCE]: { height: AssetListProfileBalanceHeight },
+  [CellType.PROFILE_HEADER_BALANCE_SPACE_AFTER]: { height: 24 },
   [CellType.UNISWAP_POOL]: { height: CoinRowHeight },
   [CellType.NFTS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.NFTS_HEADER_SPACE_BEFORE]: { height: 24 },

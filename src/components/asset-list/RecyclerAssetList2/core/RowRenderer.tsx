@@ -1,8 +1,12 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
 import {
-  AssetListProfileHeader,
+  AssetListProfileActionButtons,
+  AssetListProfileAvatar,
+  AssetListProfileBalance,
   AssetListProfileHeaderCompact,
+  AssetListProfileName,
+  AssetListProfileWrapper,
 } from '../../AssetListProfileHeader';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
@@ -40,6 +44,10 @@ function rowRenderer(
     case CellType.NFT_SPACE_AFTER:
     case CellType.NFTS_HEADER_SPACE_AFTER:
     case CellType.NFTS_HEADER_SPACE_BEFORE:
+    case CellType.PROFILE_HEADER_ACTION_BUTTONS_SPACE_AFTER:
+    case CellType.PROFILE_HEADER_AVATAR_SPACE_AFTER:
+    case CellType.PROFILE_HEADER_BALANCE_SPACE_AFTER:
+    case CellType.PROFILE_HEADER_NAME_SPACE_AFTER:
     case CellType.SAVINGS_HEADER_SPACE_BEFORE:
       return null;
     case CellType.COIN_DIVIDER:
@@ -52,13 +60,7 @@ function rowRenderer(
           extendedState={extendedState}
         />
       );
-    case CellType.ASSETS_PROFILE_HEADER:
-      return (
-        <AssetListProfileHeader
-          totalValue={(data as AssetsHeaderExtraData).value}
-        />
-      );
-    case CellType.ASSETS_PROFILE_HEADER_COMPACT:
+    case CellType.PROFILE_HEADER_COMPACT:
       return <AssetListProfileHeaderCompact />;
     case CellType.COIN:
       return (
@@ -79,6 +81,32 @@ function rowRenderer(
     case CellType.POOLS_HEADER:
       return (
         <WrappedPoolsListHeader value={(data as PoolsHeaderExtraData).value} />
+      );
+    case CellType.PROFILE_HEADER_ACTION_BUTTONS:
+      return (
+        <AssetListProfileWrapper>
+          <AssetListProfileActionButtons />
+        </AssetListProfileWrapper>
+      );
+    case CellType.PROFILE_HEADER_AVATAR:
+      return (
+        <AssetListProfileWrapper>
+          <AssetListProfileAvatar />
+        </AssetListProfileWrapper>
+      );
+    case CellType.PROFILE_HEADER_BALANCE:
+      return (
+        <AssetListProfileWrapper>
+          <AssetListProfileBalance
+            totalValue={(data as AssetsHeaderExtraData).value}
+          />
+        </AssetListProfileWrapper>
+      );
+    case CellType.PROFILE_HEADER_NAME:
+      return (
+        <AssetListProfileWrapper>
+          <AssetListProfileName />
+        </AssetListProfileWrapper>
       );
     case CellType.UNISWAP_POOL:
       return (

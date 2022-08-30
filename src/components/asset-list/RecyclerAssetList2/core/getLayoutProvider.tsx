@@ -57,8 +57,9 @@ const getLayoutProvider = (
   for (let i = 0; i < briefSectionsData.length; i++) {
     const val = briefSectionsData[i];
     if (
-      val.type === CellType.ASSETS_PROFILE_HEADER ||
-      val.type === CellType.ASSETS_PROFILE_HEADER_COMPACT ||
+      val.type === CellType.PROFILE_HEADER_AVATAR ||
+      val.type === CellType.PROFILE_HEADER_NAME ||
+      val.type === CellType.PROFILE_HEADER_COMPACT ||
       val.type === CellType.NFTS_HEADER ||
       (val.type === CellType.COIN_DIVIDER && isCoinListEdited)
     ) {

@@ -17,12 +17,10 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
   Box,
-  BoxProps,
   Columns,
   Cover,
   Heading,
   Inline,
-  Inset,
   Text,
   useColorMode,
   useForegroundColor,
@@ -52,41 +50,27 @@ export const AssetListProfileHeaderCompactHeight = 52;
 const horizontalInset = 19;
 const accountNameLeftOffset = 15;
 
-type AssetListProfileHeaderProps = {
-  totalValue: number;
-};
-
-export function AssetListProfileHeader({
-  totalValue,
-}: AssetListProfileHeaderProps) {
+export function AssetListProfileWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <Box
       alignItems="center"
-      height={{ custom: AssetListProfileHeaderHeight }}
       paddingHorizontal={`${horizontalInset}px`}
       paddingTop="10px"
       width="full"
       marginTop={{ custom: -AssetListProfileHeaderCompactHeight }}
     >
-      <Avatar />
-      <Box height={{ custom: 15 }} />
-      <Inset left={`${accountNameLeftOffset}px`}>
-        <AccountName />
-      </Inset>
-      <Box height={{ custom: 19 }} />
-      <Balance totalValue={totalValue} />
-      <Box height={{ custom: 24 }} />
-      <Columns space="10px">
-        <SwapButton />
-        <SendButton />
-      </Columns>
+      {children}
     </Box>
   );
 }
 
 export function AssetListProfileHeaderCompact() {
   return (
-    <StickyHeader name="test" offset={AssetListProfileHeaderHeight}>
+    <StickyHeader name="test" offset={140}>
       <Box
         background="body"
         justifyContent="center"
@@ -94,31 +78,19 @@ export function AssetListProfileHeaderCompact() {
         paddingHorizontal={`${horizontalInset}px`}
         width="full"
       >
-        <AccountName />
+        <AssetListProfileName />
       </Box>
     </StickyHeader>
   );
 }
 
 // ///////////////////////////////////////////////////////////////
-// Box w/ Prevent Layout Shift
-
-function PreventLayoutShift({
-  children,
-  height,
-}: {
-  children: BoxProps['children'];
-  height: BoxProps['height'];
-}) {
-  return <Box height={height}>{children}</Box>;
-}
-
-// ///////////////////////////////////////////////////////////////
 // Account Avatar
 
+export const AssetListProfileAvatarHeight = 80;
 export const AssetListProfileAvatarSize = 80;
 
-export function Avatar({
+export function AssetListProfileAvatar({
   size = AssetListProfileAvatarSize,
 }: {
   size?: number;
@@ -264,7 +236,9 @@ export function EmojiAvatar({ size }: { size: number }) {
 // ///////////////////////////////////////////////////////////////
 // Account Name
 
-function AccountName() {
+export const AssetListProfileNameHeight = 16;
+
+export function AssetListProfileName() {
   const { accountENS, accountName } = useAccountProfile();
 
   const { width: deviceWidth } = useDimensions();
@@ -287,7 +261,7 @@ function AccountName() {
     horizontalInset * 2;
 
   return (
-    <PreventLayoutShift height={{ custom: 16 }}>
+    <>
       {name && (
         <ButtonPressAnimation onPress={onPressName} scale={0.8}>
           <Inline alignVertical="center" space="4px" wrap={false}>
@@ -305,14 +279,20 @@ function AccountName() {
           </Inline>
         </ButtonPressAnimation>
       )}
-    </PreventLayoutShift>
+    </>
   );
 }
 
 // ///////////////////////////////////////////////////////////////
 // Balance
 
-function Balance({ totalValue }: { totalValue: string }) {
+export const AssetListProfileBalanceHeight = 24;
+
+export function AssetListProfileBalance({
+  totalValue,
+}: {
+  totalValue: string;
+}) {
   const isLoadingAssets = useSelector(
     (state: AppState) => state.data.isLoadingAssets
   );
@@ -320,7 +300,7 @@ function Balance({ totalValue }: { totalValue: string }) {
   const placeholderWidth = 200;
 
   return (
-    <PreventLayoutShift height={{ custom: 24 }}>
+    <>
       {isLoadingAssets ? (
         <Box height={{ custom: 34 }} width={{ custom: placeholderWidth }}>
           <Skeleton>
@@ -330,18 +310,29 @@ function Balance({ totalValue }: { totalValue: string }) {
       ) : (
         <Heading
           numberOfLines={1}
-          size={totalValue.length > 14 ? '26px' : '34px'}
+          size={totalValue?.length > 14 ? '26px' : '34px'}
           weight="heavy"
         >
           {totalValue}
         </Heading>
       )}
-    </PreventLayoutShift>
+    </>
   );
 }
 
 // ///////////////////////////////////////////////////////////////
 // Buttons
+
+export const AssetListProfileActionButtonsHeight = 46;
+
+export function AssetListProfileActionButtons() {
+  return (
+    <Columns space="10px">
+      <SwapButton />
+      <SendButton />
+    </Columns>
+  );
+}
 
 function ActionButton({
   children,
@@ -401,7 +392,7 @@ function SwapButton() {
 
   return (
     <ActionButton color="swap" onPress={handlePress}>
-      􀄬 Swap
+      􀖅 Swap
     </ActionButton>
   );
 }
