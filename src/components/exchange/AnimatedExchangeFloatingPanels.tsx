@@ -31,7 +31,7 @@ export default function AnimatedExchangeFloatingPanels(
 
   return (
     <Animated.View style={style}>
-      <AnimatedPanels {...props} />
+      <AnimatedPanels>{props.children}</AnimatedPanels>
     </Animated.View>
   );
 }

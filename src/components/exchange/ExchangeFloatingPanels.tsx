@@ -6,7 +6,7 @@ const ExchangeFloatingPanels = React.forwardRef<View>((props, ref) => {
   const children = props.children!;
   return (
     <Box ref={ref}>
-      <Stack {...props}>{children}</Stack>
+      <Stack>{children}</Stack>
     </Box>
   );
 });
