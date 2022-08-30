@@ -785,6 +785,7 @@ export default function FeesPanel({
             plusAction={addMaxFee}
             testID="max-base-fee-input"
             value={maxBaseFee}
+            editable
           />
         </PanelColumn>
       </MiddlePanelRow>

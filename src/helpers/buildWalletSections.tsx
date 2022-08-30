@@ -216,7 +216,7 @@ const withBriefBalanceSavingsSection = (
   network: any
 ) => {
   let totalUnderlyingNativeValue = '0';
-  for (let saving of savings) {
+  for (const saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
     totalUnderlyingNativeValue = add(
       totalUnderlyingNativeValue,

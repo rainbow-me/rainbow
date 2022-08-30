@@ -7,6 +7,7 @@ import GweiInputPill from './GweiInputPill';
 import { delay } from '@/helpers/utilities';
 import { usePrevious } from '@/hooks';
 import styled from '@/styled-thing';
+import { TextInput } from 'react-native';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
@@ -20,6 +21,7 @@ const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
   scaleTo: 0.75,
 }))({});
 
+// @ts-expect-error
 const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
   lineHeight: 40,
@@ -28,12 +30,19 @@ const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
 }))({});
 
 const GweiStepButton = ({
-  type,
+  buttonColor,
   onLongPress,
   onLongPressEnded,
   onPress,
+  type,
   shouldLongPressHoldPress,
-  buttonColor,
+}: {
+  buttonColor: string;
+  onLongPress: () => void;
+  onLongPressEnded: () => void;
+  onPress: () => void;
+  type: string;
+  shouldLongPressHoldPress: boolean;
 }) => {
   return (
     <StepButtonWrapper
@@ -50,20 +59,31 @@ const GweiStepButton = ({
 };
 
 export default function FeesGweiInput({
+  buttonColor,
+  editable = true,
+  inputRef,
   value,
-  plusAction,
   minusAction,
   onChange,
   onPress,
   onBlur,
-  buttonColor,
+  plusAction,
   testID,
-  inputRef,
-  editable = true,
+}: {
+  buttonColor: string;
+  editable: boolean;
+  inputRef: React.MutableRefObject<TextInput | undefined>;
+  value: string;
+  minusAction: () => void;
+  onChange: (text: string) => void;
+  onPress: () => void;
+  onBlur: () => void;
+  plusAction: () => void;
+  testID: string;
 }) {
-  const longPressHandle = useRef(null);
-  const [trigger, setTrigger] = useState(false);
-  const [actionType, setActionType] = useState(null);
+  const longPressHandle = useRef<boolean | null>(null);
+  const [trigger, setTrigger] = useState<boolean>(false);
+  const [actionType, setActionType] = useState<string | null>(null);
   const prevTrigger = usePrevious(trigger);
 
   const onMinusPress = useCallback(() => {

@@ -677,7 +677,7 @@ function RecyclerAssetList({
         }
       });
 
-      let balancesRows = [];
+      const balancesRows = [];
       let coinDividerHeight = 0;
 
       balances?.data?.forEach(element => {
@@ -692,7 +692,7 @@ function RecyclerAssetList({
         }
       });
       const balancesHeight = balancesRows.length * CoinRowHeight;
-      //-3 for pixel perfection
+      // -3 for pixel perfection
       const smallBalancesHeight =
         ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
           isCoinListEdited: isCoinListEdited,
