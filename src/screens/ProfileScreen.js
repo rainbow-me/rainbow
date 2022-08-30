@@ -2,14 +2,11 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import { ActivityList } from '../components/activity-list';
-import { BackButton, Header, HeaderButton } from '../components/header';
-import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
-import { useTheme } from '../theme/ThemeContext';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -19,6 +16,8 @@ import {
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import Navbar from '@/components/navbar/Navbar';
+import CaretRightIcon from '@/components/icons/svg/CaretRightIcon';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -28,7 +27,6 @@ const ProfileScreenPage = styled(Page)({
 });
 
 export default function ProfileScreen({ navigation }) {
-  const { colors } = useTheme();
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
@@ -74,28 +72,18 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <ProfileScreenPage testID="profile-screen">
-      <Header align="center" justify="space-between">
-        <HeaderButton
-          onPress={onPressSettings}
-          opacityTouchable={false}
-          radiusAndroid={42}
-          radiusWrapperStyle={{
-            alignItems: 'center',
-            height: 42,
-            justifyContent: 'center',
-            marginLeft: 5,
-            width: 42,
-          }}
-          testID="settings-button"
-        >
-          <Icon color={colors.black} name="gear" />
-        </HeaderButton>
-        <BackButton
-          color={colors.black}
-          direction="right"
-          onPress={onPressBackButton}
-        />
-      </Header>
+      <Navbar
+        leftComponent={
+          <Navbar.Item onPress={onPressSettings}>
+            <Navbar.TextIcon icon="􀣋" />
+          </Navbar.Item>
+        }
+        rightComponent={
+          <Navbar.Item onPress={onPressBackButton}>
+            <Navbar.SvgIcon icon={CaretRightIcon} />
+          </Navbar.Item>
+        }
+      />
       {network === NetworkTypes.mainnet && ios ? (
         <TransactionList
           addCashAvailable={addCashAvailable}

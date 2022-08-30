@@ -48,7 +48,7 @@ export default React.memo(function UniswapCoinRow({
             </View>
             <View style={sx.innerContainer}>
               <View style={sx.row}>
-                <Text numberOfLines={1} size="16px" weight="regular">
+                <Text numberOfLines={1} size="16px" weight="semibold">
                   {item.tokenNames}
                 </Text>
               </View>
@@ -56,6 +56,7 @@ export default React.memo(function UniswapCoinRow({
                 <Text
                   color={{ custom: item.theme.colors.blueGreyDark50 }}
                   size="14px"
+                  weight="medium"
                 >
                   {item.symbol}
                 </Text>

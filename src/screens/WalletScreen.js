@@ -12,8 +12,7 @@ import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
 import { jumpToShort } from '@/components/discover-sheet/DiscoverSheet';
-import { Navbar } from '@/components/navbar/Navbar';
-import { NavbarIconButton } from '@/components/navbar/NavbarIconButton';
+import Navbar from '@/components/navbar/Navbar';
 import { Inline } from '@/design-system';
 import {
   useAccountEmptyState,
@@ -225,6 +224,21 @@ export default function WalletScreen() {
     }
   }, [profilesEnabled, trackENSProfile, walletReady]);
 
+  const { navigate } = useNavigation();
+
+  const handlePressTransactionHistory = useCallback(() => {
+    navigate(Routes.PROFILE_SCREEN);
+  }, [navigate]);
+
+  const handlePressQRScanner = useCallback(() => {
+    jumpToShort();
+    navigate(Routes.QR_SCANNER_SCREEN);
+  }, [navigate]);
+
+  const handlePressDiscover = useCallback(() => {
+    navigate(Routes.QR_SCANNER_SCREEN);
+  }, [navigate]);
+
   const isLoadingAssets =
     useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
 
@@ -232,11 +246,19 @@ export default function WalletScreen() {
     <WalletPage testID="wallet-screen">
       <HeaderOpacityToggler isVisible={isCoinListEdited}>
         <Navbar
-          leftComponent={<TransactionHistoryButton />}
+          leftComponent={
+            <Navbar.Item onPress={handlePressTransactionHistory}>
+              <Navbar.TextIcon icon="􀐫" />
+            </Navbar.Item>
+          }
           rightComponent={
             <Inline space={{ custom: 17 }}>
-              <DiscoverButton />
-              <QRScannerButton />
+              <Navbar.Item onPress={handlePressQRScanner}>
+                <Navbar.TextIcon icon="􀎬" />
+              </Navbar.Item>
+              <Navbar.Item onPress={handlePressDiscover}>
+                <Navbar.TextIcon icon="􀎹" />
+              </Navbar.Item>
             </Inline>
           }
         />
@@ -251,35 +273,4 @@ export default function WalletScreen() {
       />
     </WalletPage>
   );
-}
-
-function TransactionHistoryButton() {
-  const { navigate } = useNavigation();
-
-  const onPress = useCallback(() => {
-    navigate(Routes.PROFILE_SCREEN);
-  }, [navigate]);
-
-  return <NavbarIconButton icon="􀐫" onPress={onPress} />;
-}
-
-function DiscoverButton() {
-  const { navigate } = useNavigation();
-
-  const onPress = useCallback(() => {
-    navigate(Routes.QR_SCANNER_SCREEN);
-  }, [navigate]);
-
-  return <NavbarIconButton icon="􀎬" onPress={onPress} />;
-}
-
-function QRScannerButton() {
-  const { navigate } = useNavigation();
-
-  const onPress = useCallback(() => {
-    jumpToShort();
-    navigate(Routes.QR_SCANNER_SCREEN);
-  }, [navigate]);
-
-  return <NavbarIconButton icon="􀎹" onPress={onPress} />;
 }
