@@ -2,19 +2,20 @@ import { useEffect, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
-import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
+import { ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { AppState } from '@/redux/store';
+import { revalidateUniqueToken } from '@/redux/uniqueTokens';
 
 export default function useCollectible(
-  initialAsset: any,
+  initialAsset: Partial<ParsedAddressAsset>,
   { revalidateInBackground = false } = {},
-  externalAddress?: any
+  externalAddress?: string
 ) {
   // Retrieve the unique tokens belonging to the current account address.
   const selfUniqueTokens = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'uniqueTokens' does not exist on type 'De... Remove this comment to see the full error message
-    ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
+    ({ uniqueTokens: { uniqueTokens } }: AppState) => uniqueTokens
   );
-  const { data: externalUniqueTokens } = useQuery(
+  const { data: externalUniqueTokens } = useQuery<UniqueAsset[]>(
     uniqueTokensQueryKey({ address: externalAddress }),
     // We just want to watch for changes in the query key,
     // so just supplying a noop function & staleTime of Infinity.
@@ -30,8 +31,9 @@ export default function useCollectible(
   );
 
   const asset = useMemo(() => {
-    let matched = uniqueTokens.find(
-      (uniqueToken: any) => uniqueToken.uniqueId === initialAsset?.uniqueId
+    let matched = uniqueTokens!.find(
+      (uniqueToken: UniqueAsset) =>
+        uniqueToken.uniqueId === initialAsset?.uniqueId
     );
     return matched || initialAsset;
   }, [initialAsset, uniqueTokens]);
@@ -40,7 +42,7 @@ export default function useCollectible(
     contractAddress: asset?.asset_contract?.address,
     enabled: revalidateInBackground && !isExternal,
     isExternal,
-    tokenId: asset?.id,
+    tokenId: asset?.id!,
   });
 
   return { ...asset, isExternal };
@@ -51,7 +53,12 @@ function useRevalidateInBackground({
   tokenId,
   isExternal,
   enabled,
-}: any) {
+}: {
+  contractAddress: string | undefined;
+  tokenId: string;
+  isExternal: boolean;
+  enabled: boolean;
+}) {
   const dispatch = useDispatch();
   useEffect(() => {
     // If `forceUpdate` is truthy, we want to force refresh the metadata from OpenSea &

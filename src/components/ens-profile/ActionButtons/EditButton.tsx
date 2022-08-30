@@ -2,9 +2,9 @@ import { useNavigation } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useENSRegistration } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useENSRegistration } from '@/hooks';
+import Routes from '@/navigation/routesNames';
 
 export default function WatchButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();
@@ -21,7 +21,11 @@ export default function WatchButton({ ensName }: { ensName?: string }) {
   }, [ensName, navigate, startRegistration]);
 
   return (
-    <ActionButton onPress={handlePressEdit} variant="outlined">
+    <ActionButton
+      onPress={handlePressEdit}
+      testID="edit-profile-button"
+      variant="outlined"
+    >
       {lang.t('profiles.actions.edit_profile')}
     </ActionButton>
   );

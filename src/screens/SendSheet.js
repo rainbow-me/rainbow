@@ -11,7 +11,6 @@ import React, {
 } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
@@ -23,12 +22,13 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { AssetTypes } from '@rainbow-me/entities';
-import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
-import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
+import { analytics } from '@/analytics';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import { AssetTypes } from '@/entities';
+import { isL2Asset, isNativeAsset } from '@/handlers/assets';
+import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
   buildTransaction,
   createSignableTransaction,
@@ -37,14 +37,14 @@ import {
   isL2Network,
   resolveNameOrAddress,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import Network from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import Network from '@/helpers/networkTypes';
 import {
   checkIsValidAddressOrDomain,
   checkIsValidAddressOrDomainFormat,
   isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/validators';
 import {
   prefetchENSAvatar,
   prefetchENSCover,
@@ -65,26 +65,22 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
-} from '@rainbow-me/hooks';
-import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { borders } from '@rainbow-me/styles';
+} from '@/hooks';
+import { loadWallet, sendTransaction } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { chainAssets, rainbowTokenList } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { borders } from '@/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
   lessThan,
-} from '@rainbow-me/utilities';
-import {
-  deviceUtils,
-  ethereumUtils,
-  getUniqueTokenType,
-} from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/helpers/utilities';
+import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
+import logger from '@/utils/logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -103,12 +99,6 @@ const SheetContainer = styled(Column).attrs({
   ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
   backgroundColor: ({ theme: { colors } }) => colors.white,
   height: isNativeStackAvailable || android ? sheetHeight : '100%',
-  width: '100%',
-});
-
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ showAssetForm, theme: { colors } }) =>
-    showAssetForm ? colors.lighterGrey : colors.white,
   width: '100%',
 });
 
@@ -776,12 +766,21 @@ export default function SendSheet(props) {
       });
       return;
     }
-
+    const uniqueTokenType = getUniqueTokenType(selected);
+    const isENS = uniqueTokenType === 'ENS';
+    const checkboxes = getDefaultCheckboxes({
+      ensProfile,
+      isENS: true,
+      network,
+      toAddress: recipient,
+    });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
+      checkboxes,
       ensProfile,
+      isENS,
       isL2,
       isNft,
       network: currentNetwork,
@@ -799,6 +798,7 @@ export default function SendSheet(props) {
     isNft,
     nativeCurrencyInputRef,
     navigate,
+    network,
     profilesEnabled,
     recipient,
     selected,
@@ -945,7 +945,10 @@ export default function SendSheet(props) {
           isValidAddress={isValidAddress}
           nickname={nickname}
           onChangeAddressInput={onChangeInput}
-          onPressPaste={setRecipient}
+          onPressPaste={recipient => {
+            checkAddress(recipient);
+            setRecipient(recipient);
+          }}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
@@ -1021,9 +1024,6 @@ export default function SendSheet(props) {
             }
           />
         )}
-        {android && showAssetForm ? (
-          <KeyboardSizeView showAssetForm={showAssetForm} />
-        ) : null}
       </SheetContainer>
     </Container>
   );

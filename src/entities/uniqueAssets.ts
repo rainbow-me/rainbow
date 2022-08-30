@@ -11,7 +11,6 @@ interface UniqueAssetLastSale {
 
 export interface UniqueAsset {
   animation_url?: string | null;
-  current_price?: string | null;
   description?: string | null;
   external_link?: string | null;
   image_original_url?: string | null;
@@ -21,12 +20,6 @@ export interface UniqueAsset {
   last_sale?: UniqueAssetLastSale | null;
   name: string;
   permalink: string;
-  sell_orders?: {
-    current_price: string;
-    payment_token_contract?: {
-      symbol: string;
-    };
-  }[];
   traits: UniqueAssetTrait[];
   asset_contract: AssetContract;
   background: string | null;
@@ -64,6 +57,7 @@ export interface UniqueAsset {
   urlSuffixForAsset: string;
   isPoap?: boolean;
   network: Network;
+  seaport_sell_orders?: SeaportOrder[];
 }
 
 export interface UniqueAssetTrait {
@@ -71,4 +65,64 @@ export interface UniqueAssetTrait {
   value: string | number | null | undefined;
   display_type: string;
   max_value: string | number | null | undefined;
+}
+
+export interface SeaportOrder {
+  created_date: string;
+  closing_date: string | null;
+  listing_time: number;
+  expiration_time: number;
+  order_hash: string | null;
+  protocol_data: {
+    parameters: {
+      offerer: string;
+      zone: string;
+      zone_hash: string;
+      start_time: number;
+      end_time: number;
+      order_type: number;
+      salt: string;
+      conduitKey: string;
+      nonce: string;
+      offer: {
+        itemType: number;
+        token: string;
+        identifier_or_criteria: string;
+        startAmount: string;
+        endAmount: string;
+      }[];
+      consideration: {
+        itemType: number;
+        token: string;
+        identifier_or_criteria: string;
+        startAmount: string;
+        endAmount: string;
+        recipient: string;
+      }[];
+    };
+  };
+  protocol_address: string | null;
+  maker: SeaportAccount;
+  taker: SeaportAccount | null;
+  current_price: string;
+  maker_fees: SeaportFees;
+  taker_fees: SeaportFees;
+  side: number;
+  order_type: number;
+  canceled: boolean;
+  finalized: boolean;
+  marked_invalid: boolean;
+  client_signature: string | null;
+}
+
+interface SeaportAccount {
+  user: string;
+  profile_img_url: string;
+  address: string;
+  config: string;
+}
+
+interface SeaportFees {
+  account: SeaportAccount;
+  basis_points: string;
 }

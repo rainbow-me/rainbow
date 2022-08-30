@@ -1,4 +1,4 @@
-import { rainbowTokenList } from '@rainbow-me/references';
+import { rainbowTokenList } from '@/references';
 
 export default function checkTokenIsScam(
   name: string,

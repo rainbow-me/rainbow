@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
 import { MMKV, useMMKVNumber } from 'react-native-mmkv';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 const storage = new MMKV({
   id: STORAGE_IDS.ASPECT_RATIO,
@@ -27,7 +27,7 @@ export default function usePersistentAspectRatio(url: string): Result {
       setState(State.loading);
       Image.getSize(
         url,
-        (width: any, height: any) => {
+        (width: number, height: number) => {
           setAspectRatio(width / height);
           setState(State.loaded);
         },

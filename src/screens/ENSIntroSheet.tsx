@@ -23,17 +23,17 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountENSDomains,
   useDimensions,
   useENSAvatar,
   useENSRecords,
   useENSRegistration,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -49,10 +49,10 @@ export default function ENSIntroSheet() {
   const { params } = useRoute<any>();
 
   const {
+    controlledDomains,
     isLoading,
     isFetched,
     nonPrimaryDomains,
-    ownedDomains,
     uniqueDomain,
   } = useAccountENSDomains();
   const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {
@@ -151,7 +151,6 @@ export default function ENSIntroSheet() {
       background="body"
       paddingTop={{ custom: topPadding }}
       style={{ height: contentHeight }}
-      {...(android && { paddingBottom: { custom: 20 } })}
       testID="ens-intro-sheet"
     >
       <Inset top={isSmallPhone ? '15px' : '36px'}>
@@ -169,7 +168,7 @@ export default function ENSIntroSheet() {
                 </Stack>
                 <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
                   <Bleed left="10px">
-                    <IntroMarquee />
+                    <IntroMarquee isSmallPhone={isSmallPhone} />
                   </Bleed>
                   <Inset horizontal="34px">
                     <Divider color="divider60" />
@@ -178,7 +177,7 @@ export default function ENSIntroSheet() {
                 <Stack alignHorizontal="center">
                   <Box width={{ custom: contentWidth }}>
                     <Inset top="6px">
-                      <Stack space={isSmallPhone ? '30px' : '36px'}>
+                      <Stack space={isSmallPhone ? '24px' : '36px'}>
                         <InfoRow
                           description={lang.t(
                             'profiles.intro.wallet_address_info.description'
@@ -214,10 +213,7 @@ export default function ENSIntroSheet() {
             </Row>
             <Row height="content">
               <Box paddingBottom="4px">
-                <Inset
-                  space="19px"
-                  {...(isSmallPhone ? { bottom: '8px' } : {})}
-                >
+                <Inset space="19px" {...(isSmallPhone && { bottom: '8px' })}>
                   {isLoading && (
                     <Box alignItems="center" paddingBottom="15px">
                       {/* @ts-expect-error JavaScript component */}
@@ -226,18 +222,22 @@ export default function ENSIntroSheet() {
                   )}
                   {isFetched && (
                     <>
-                      {ownedDomains?.length === 0 ? (
-                        <SheetActionButton
-                          color={colors.appleBlue}
-                          // @ts-expect-error JavaScript component
-                          label={'􀠎 ' + lang.t('profiles.intro.find_your_name')}
-                          lightShadows
-                          marginBottom={15}
-                          onPress={handleNavigateToSearch}
-                          // @ts-expect-error
-                          testID="ens-intro-sheet-find-your-name-button"
-                          weight="heavy"
-                        />
+                      {controlledDomains?.length === 0 ? (
+                        <Inset bottom={android ? '10px' : undefined}>
+                          <SheetActionButton
+                            color={colors.appleBlue}
+                            // @ts-expect-error JavaScript component
+                            label={
+                              '􀠎 ' + lang.t('profiles.intro.find_your_name')
+                            }
+                            lightShadows
+                            marginBottom={15}
+                            onPress={handleNavigateToSearch}
+                            // @ts-expect-error
+                            testID="ens-intro-sheet-find-your-name-button"
+                            weight="heavy"
+                          />
+                        </Inset>
                       ) : (
                         <Stack space="12px">
                           {uniqueDomain ? (

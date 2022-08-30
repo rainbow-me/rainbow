@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 const chartTypes = {
   hour: 'h',
   day: 'd',
@@ -10,5 +9,3 @@ const chartTypes = {
 
 export default chartTypes;
 export type ChartType = typeof chartTypes[keyof typeof chartTypes];
-
-/* eslint-enable sort-keys-fix/sort-keys-fix */

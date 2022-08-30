@@ -7,13 +7,10 @@ import { ButtonPressAnimation } from '../../../animations';
 import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/asset/ChartExpandedState';
 import { ExtendedState } from '../core/RawRecyclerList';
 import FastCoinIcon from './FastCoinIcon';
-import { Text } from '@rainbow-me/design-system';
-import {
-  useAccountAsset,
-  useCoinListFinishEditingOptions,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { borders, colors, padding, shadow } from '@rainbow-me/styles';
+import { Text } from '@/design-system';
+import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { borders, colors, padding, shadow } from '@/styles';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;

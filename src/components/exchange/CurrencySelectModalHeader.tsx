@@ -6,12 +6,12 @@ import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { SheetHandleFixedToTop } from '../sheet';
 import { TruncatedText } from '../text';
-import { Inset } from '@rainbow-me/design-system';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { borders, padding } from '@rainbow-me/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { Inset } from '@/design-system';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { borders, padding } from '@/styles';
+import { ThemeContextProps } from '@/theme';
 
 const BackButtonWrapper = styled(Centered)({
   bottom: 0,

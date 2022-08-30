@@ -20,7 +20,7 @@ import {
   UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 interface AnonymousKey {
   length: number;
@@ -126,7 +126,7 @@ export async function loadString(
 
 export async function saveObject(
   key: string,
-  value: Object,
+  value: Record<string, unknown>,
   accessControlOptions: Options
 ): Promise<void> {
   const jsonValue = JSON.stringify(value);
@@ -136,7 +136,7 @@ export async function saveObject(
 export async function loadObject(
   key: string,
   options?: Options
-): Promise<null | Object | -1 | -2> {
+): Promise<null | Record<string, any> | -1 | -2> {
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
   if (jsonValue === -1 || jsonValue === -2) {

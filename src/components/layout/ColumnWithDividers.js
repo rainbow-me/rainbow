@@ -1,5 +1,5 @@
 import LayoutWithDividers from './LayoutWithDividers';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const ColumnWithDividers = styled(LayoutWithDividers).attrs({
   direction: 'column',

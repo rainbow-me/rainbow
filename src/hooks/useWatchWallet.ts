@@ -1,4 +1,6 @@
+import { useNavigation } from '@react-navigation/core';
 import { useCallback, useMemo } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import {
   useAccountProfile,
@@ -6,12 +8,11 @@ import {
   useImportingWallet,
   useInitializeWallet,
   useWallets,
-} from '@rainbow-me/hooks';
-import {
-  addressSetSelected,
-  walletsSetSelected,
-} from '@rainbow-me/redux/wallets';
-import { doesWalletsContainAddress, logger } from '@rainbow-me/utils';
+} from '@/hooks';
+import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
+import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import { doesWalletsContainAddress, logger } from '@/utils';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -25,12 +26,12 @@ export default function useWatchWallet({
   showImportModal?: boolean;
 }) {
   const dispatch = useDispatch();
-
+  const { goBack, navigate } = useNavigation();
   const { wallets } = useWallets();
 
   const watchingWallet = useMemo(() => {
-    return Object.values(wallets || {}).find((wallet: any) =>
-      wallet.addresses.some(({ address }: any) => address === primaryAddress)
+    return Object.values<RainbowWallet>(wallets || {}).find(wallet =>
+      wallet.addresses.some(({ address }) => address === primaryAddress)
     );
   }, [primaryAddress, wallets]);
   const isWatching = useMemo(() => Boolean(watchingWallet), [watchingWallet]);
@@ -40,7 +41,7 @@ export default function useWatchWallet({
   const initializeWallet = useInitializeWallet();
   const changeAccount = useCallback(
     async (walletId, address) => {
-      const wallet = wallets[walletId];
+      const wallet = wallets![walletId];
       try {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
@@ -68,17 +69,37 @@ export default function useWatchWallet({
       handleSetSeedPhrase(ensName);
       handlePressImportButton(null, ensName, null, avatarUrl);
     } else {
-      deleteWallet();
-      // If we're deleting the selected wallet
-      // we need to switch to another one
-      if (primaryAddress && primaryAddress === accountAddress) {
-        const { wallet: foundWallet, key } =
-          doesWalletsContainAddress({
-            address: primaryAddress,
-            wallets,
-          }) || {};
-        if (foundWallet) {
-          await changeAccount(key, foundWallet.address);
+      // If there's more than 1 account
+      // it's deletable
+      const isLastAvailableWallet = Object.keys(wallets!).find(key => {
+        const someWallet = wallets![key];
+        const otherAccount = someWallet.addresses.find(
+          (account: any) =>
+            account.visible && account.address !== accountAddress
+        );
+        if (otherAccount) {
+          return true;
+        }
+        return false;
+      });
+      await deleteWallet();
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
+      if (!isLastAvailableWallet) {
+        await cleanUpWalletKeys();
+        goBack();
+        navigate(Routes.WELCOME_SCREEN);
+      } else {
+        // If we're deleting the selected wallet
+        // we need to switch to another one
+        if (primaryAddress && primaryAddress === accountAddress) {
+          const { wallet: foundWallet, key } =
+            doesWalletsContainAddress({
+              address: primaryAddress,
+              wallets: wallets!,
+            }) || {};
+          if (foundWallet) {
+            await changeAccount(key, foundWallet.address);
+          }
         }
       }
     }
@@ -89,9 +110,11 @@ export default function useWatchWallet({
     handlePressImportButton,
     avatarUrl,
     deleteWallet,
+    wallets,
+    goBack,
+    navigate,
     primaryAddress,
     accountAddress,
-    wallets,
     changeAccount,
   ]);
 

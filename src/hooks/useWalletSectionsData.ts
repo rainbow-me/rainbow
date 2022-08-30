@@ -9,12 +9,13 @@ import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
+import useWallets from './useWallets';
 import { AppState } from '@/redux/store';
 import {
   buildBriefWalletSectionsSelector,
   buildWalletSectionsSelector,
-} from '@rainbow-me/helpers/buildWalletSections';
-import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
+} from '@/helpers/buildWalletSections';
+import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData({
   type,
@@ -32,6 +33,7 @@ export default function useWalletSectionsData({
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
+  const { isReadOnlyWallet } = useWallets();
 
   const {
     hiddenCoinsObj: hiddenCoins,
@@ -59,6 +61,7 @@ export default function useWalletSectionsData({
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
+      isReadOnlyWallet,
       listType: type,
       showcaseTokens,
     };
@@ -80,6 +83,7 @@ export default function useWalletSectionsData({
     hiddenCoins,
     hiddenTokens,
     isCoinListEdited,
+    isReadOnlyWallet,
     isWalletEthZero,
     language,
     nativeCurrency,

@@ -1,10 +1,10 @@
 import { format } from 'date-fns';
 import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
-import { Divider, Inset, Stack } from '@rainbow-me/design-system';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useDimensions, useENSRegistrant } from '@rainbow-me/hooks';
-import { timeUnits } from '@rainbow-me/references';
+import { Divider, Inset, Stack } from '@/design-system';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
+import { useDimensions, useENSRegistrant } from '@/hooks';
+import { timeUnits } from '@/references';
 
 const RenewContent = ({
   yearsDuration,

@@ -4,9 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',

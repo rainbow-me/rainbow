@@ -1,10 +1,13 @@
 import { groupBy } from 'lodash';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { UniqueAsset } from '@/entities';
+import { AppState } from '@/redux/store';
 
-const uniqueTokensSelector = (state: any) => state.uniqueTokens.uniqueTokens;
+const uniqueTokensSelector = (state: AppState) =>
+  state.uniqueTokens.uniqueTokens;
 
-const sendableUniqueTokens = (uniqueTokens: any) => {
+const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
   const sendableUniqueTokens = uniqueTokens?.filter(
     (uniqueToken: any) => uniqueToken.isSendable
   );

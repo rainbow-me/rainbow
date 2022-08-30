@@ -4,15 +4,17 @@ import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
-import { pickShallow } from '@rainbow-me/helpers/utilities';
+import { UniswapPairData, UniswapPairHistoricalData } from '@/entities';
+import { getUniswapV2Pools } from '@/handlers/dispersion';
+import { pickShallow } from '@/helpers/utilities';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+import { AppState } from '@/redux/store';
 import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@rainbow-me/redux/explorer';
-import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
-import { WETH_ADDRESS } from '@rainbow-me/references';
-import logger from 'logger';
+  setPoolsDetails,
+  UniswapPoolAddressDetailsFull,
+} from '@/redux/uniswapLiquidity';
+import { WETH_ADDRESS } from '@/references';
+import logger from '@/utils/logger';
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
 export const SORT_DIRECTION = {
@@ -23,14 +25,15 @@ export const SORT_DIRECTION = {
 export const REFETCH_INTERVAL = 600000;
 
 function parseData(
-  data: any,
-  oneDayData: any,
-  oneMonthData: any,
-  ethPrice: any,
-  ethPriceOneMonthAgo: any,
-  oneDayBlock: any
-) {
-  const newData = { ...data };
+  data: UniswapPairData,
+  oneDayData: UniswapPairHistoricalData,
+  oneMonthData: UniswapPairHistoricalData,
+  ethPrice: number,
+  ethPriceOneMonthAgo: number,
+  oneDayBlock: string
+): UniswapPoolAddressDetailsFull {
+  const newData: any = { ...data };
+
   // get volume changes
   const oneDayVolumeUSD = getOneDayVolume(
     newData?.volumeUSD,
@@ -89,14 +92,16 @@ function parseData(
   };
 }
 
-export const getOneDayVolume = (valueNow: any, value24HoursAgo: any) =>
-  parseFloat(valueNow) - parseFloat(value24HoursAgo);
+export const getOneDayVolume = (
+  valueNow: string | number,
+  value24HoursAgo: string | number
+) => parseFloat(valueNow as string) - parseFloat(value24HoursAgo as string);
 
 export const calculateProfit30d = (
-  data: any,
-  valueOneMonthAgo: any,
-  ethPriceNow: any,
-  ethPriceOneMonthAgo: any
+  data: UniswapPairData,
+  valueOneMonthAgo: UniswapPairHistoricalData,
+  ethPriceNow: number,
+  ethPriceOneMonthAgo: number
 ) => {
   const now = calculateLPTokenPrice(data, ethPriceNow);
   if (now === 0) {
@@ -120,7 +125,10 @@ export const calculateProfit30d = (
   return Number(percentageChange.toFixed(2));
 };
 
-export const calculateLPTokenPrice = (data: any, ethPrice: any) => {
+export const calculateLPTokenPrice = (
+  data: UniswapPairHistoricalData,
+  ethPrice: number
+) => {
   const {
     reserve0,
     reserve1,
@@ -129,7 +137,7 @@ export const calculateLPTokenPrice = (data: any, ethPrice: any) => {
     token1: { derivedETH: token1DerivedEth },
   } = data;
 
-  const tokenPerShare = 100 / totalSupply;
+  const tokenPerShare = 100 / (totalSupply as any);
 
   const reserve0USD =
     Number(reserve0) * (Number(token0DerivedEth) * Number(ethPrice));
@@ -148,10 +156,13 @@ export const calculateLPTokenPrice = (data: any, ethPrice: any) => {
  * @param {*} valueNow
  * @param {*} value24HoursAgo
  */
-export const getPercentChange = (valueNow: any, value24HoursAgo: any) => {
+export const getPercentChange = (
+  valueNow: string | number,
+  value24HoursAgo: string | number
+) => {
   const adjustedPercentChange =
-    ((parseFloat(valueNow) - parseFloat(value24HoursAgo)) /
-      parseFloat(value24HoursAgo)) *
+    ((parseFloat(valueNow as string) - parseFloat(value24HoursAgo as string)) /
+      parseFloat(value24HoursAgo as string)) *
     100;
   if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
     return 0;
@@ -160,18 +171,19 @@ export const getPercentChange = (valueNow: any, value24HoursAgo: any) => {
 };
 
 export default function useUniswapPools(
-  sortField: any,
-  sortDirection: any,
-  token: any
+  sortField: string,
+  sortDirection: string,
+  token: string
 ) {
   const walletReady = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'appState' does not exist on type 'Defaul... Remove this comment to see the full error message
-    ({ appState: { walletReady } }) => walletReady
+    ({ appState: { walletReady } }: AppState) => walletReady
   );
 
   const dispatch = useDispatch();
 
-  const [pairs, setPairs] = useState();
+  const [pairs, setPairs] = useState<
+    UniswapPoolAddressDetailsFull[] | undefined
+  >();
   const priceOfEther = useEthUSDPrice();
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const ethereumPriceOneMonthAgo = useEthUSDMonthChart()?.[0]?.[1];
@@ -180,7 +192,6 @@ export default function useUniswapPools(
     pairs &&
       dispatch(
         setPoolsDetails(
-          // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
           pairs.reduce((acc: any, pair: any) => {
             acc[pair.address] = pair;
             return acc;
@@ -190,8 +201,7 @@ export default function useUniswapPools(
   }, [pairs, dispatch]);
 
   const genericAssets = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-    ({ data: { genericAssets } }) => genericAssets
+    ({ data: { genericAssets } }: AppState) => genericAssets
   );
 
   // @ts-expect-error ts-migrate(7022) FIXME: 'error' implicitly has type 'any' because it does ... Remove this comment to see the full error message
@@ -220,7 +230,6 @@ export default function useUniswapPools(
         );
       }
     );
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: any; annualized_fees:... Remove this comment to see the full error message
     setPairs(topPairs);
   }, [poolData, priceOfEther, ethereumPriceOneMonthAgo]);
 
@@ -249,35 +258,25 @@ export default function useUniswapPools(
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       const token0 = (pair.token0?.id?.toLowerCase() === WETH_ADDRESS
         ? genericAssets['eth']
-        : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-          genericAssets[pair.token0?.id?.toLowerCase()]) || {
-        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+        : genericAssets[pair.token0?.id?.toLowerCase()]) || {
         ...pair.token0,
-        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         address: pair.token0?.id,
       };
       const token1 =
-        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         pair.token1?.id?.toLowerCase() === WETH_ADDRESS
           ? genericAssets['eth']
-          : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-            genericAssets[pair.token1?.id?.toLowerCase()] || {
-              // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+          : genericAssets[pair.token1?.id?.toLowerCase()] || {
               ...pair.token1,
-              // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+
               address: pair.token1?.id,
             };
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+
       pair.tokens = [token0, token1];
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       tmpAllTokens.push(pair.tokens[0]?.id?.toLowerCase());
-      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       tmpAllTokens.push(pair.tokens[1]?.id?.toLowerCase());
       const pairAdjustedForCurrency = {
-        // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
         ...pair,
         liquidity: (pair as any).liquidity * currenciesRate,
         oneDayVolumeUSD: (pair as any).oneDayVolumeUSD * currenciesRate,
@@ -293,14 +292,11 @@ export default function useUniswapPools(
         'tokens',
         'tokenNames',
         'type',
-      ]);
+      ]) as UniswapPoolAddressDetailsFull;
     });
 
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-    const allLPTokens = sortedPairs.map(({ address }) => address);
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+    const allLPTokens = sortedPairs.map(({ address }) => address!);
     dispatch(emitAssetRequest(allLPTokens));
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     dispatch(emitChartsRequest(allLPTokens));
     return sortedPairs;
     // eslint-disable-next-line react-hooks/exhaustive-deps

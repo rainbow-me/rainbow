@@ -22,14 +22,14 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import {
   useAccountSettings,
   useCoinListEdited,
   useCoinListEditOptions,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { useTheme } from '@/theme';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -57,7 +57,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   type,
 }: {
   briefSectionsData: BaseCellType[];
-  disablePullDownToRefresh?: boolean;
+  disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   type?: AssetListType;
 }) {
@@ -166,7 +166,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       layoutProvider={layoutProvider}
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
-      refreshControl={disablePullDownToRefresh ? null : <RefreshControl />}
+      refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
     />

@@ -6,7 +6,7 @@ import {
 } from '../handlers/localstorage/topMovers';
 import { emitChartsRequest } from './explorer';
 import { AppDispatch, AppGetState, AppState } from './store';
-import { parseAsset, parseAssetsNative } from '@rainbow-me/parsers';
+import { parseAsset, parseAssetsNative } from '@/parsers';
 
 interface ZerionAsset {
   asset_code: string;

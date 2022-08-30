@@ -25,9 +25,9 @@ import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsSheet from '../screens/SettingsSheet';
-import SettingsSheetV2 from '../screens/SettingsSheetV2';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
+import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -58,6 +58,7 @@ import {
   settingsSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
+  swapsPromoSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -70,13 +71,10 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import useExperimentalFlag, {
-  NOTIFICATIONS,
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
-import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import { omitFlatten } from '@/helpers/utilities';
+import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -237,7 +235,6 @@ const MainStack = isNativeStackAvailable
 function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -256,13 +253,6 @@ function NativeStackNavigator() {
         name={Routes.SETTINGS_SHEET}
         {...settingsSheetConfig}
       />
-      {notificationsEnabled && (
-        <NativeStack.Screen
-          component={SettingsSheetV2}
-          name={Routes.SETTINGS_SHEET_V2}
-          {...settingsSheetConfig}
-        />
-      )}
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
@@ -321,6 +311,11 @@ function NativeStackNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         {...explainSheetConfig}
+      />
+      <NativeStack.Screen
+        component={SwapsPromoSheet}
+        name={Routes.SWAPS_PROMO_SHEET}
+        {...swapsPromoSheetConfig}
       />
       <NativeStack.Screen
         component={ExternalLinkWarningSheet}

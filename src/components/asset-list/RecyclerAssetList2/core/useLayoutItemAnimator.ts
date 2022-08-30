@@ -9,7 +9,7 @@ import {
 import { ListFooter } from '../../../list';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { RecyclerListViewRef } from './ViewTypes';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const easingAnimation = {
   duration: 250,

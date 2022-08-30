@@ -4,9 +4,9 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
-import { useChartData } from '@rainbow-me/animated-charts';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import { useChartData } from '@/react-native-animated-charts/src';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth } from '@/styles';
 
 Animated.addWhitelistedNativeProps({ color: true });
 

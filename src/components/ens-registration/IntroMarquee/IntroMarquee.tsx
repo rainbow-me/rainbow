@@ -2,13 +2,13 @@ import React, { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
-import { Box, Stack, Text } from '@rainbow-me/design-system';
-import { ensRecordsQueryKey, useENSRecords } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { ensIntroMarqueeNames } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
+import { Box, Stack, Text } from '@/design-system';
+import { ensRecordsQueryKey, useENSRecords } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import { queryClient } from '@/react-query/queryClient';
+import { ensIntroMarqueeNames } from '@/references';
+import Routes from '@/navigation/routesNames';
 
 export const ensAvatarUrl = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
@@ -18,7 +18,11 @@ const estimateDescriptionProfilePreviewHeight = (description?: string) => {
   return description ? Math.ceil(description.length / 50) * lineHeight : 0;
 };
 
-export default function IntroMarquee() {
+export default function IntroMarquee({
+  isSmallPhone,
+}: {
+  isSmallPhone: boolean;
+}) {
   const { navigate } = useNavigation();
 
   const handlePressENS = useCallback(
@@ -62,9 +66,9 @@ export default function IntroMarquee() {
   );
 
   return (
-    <Box height={{ custom: 100 }}>
+    <Box height={{ custom: isSmallPhone ? 90 : 100 }}>
       <MarqueeList
-        height={100}
+        height={isSmallPhone ? 90 : 100}
         items={items}
         renderItem={renderItem}
         speed={-15}

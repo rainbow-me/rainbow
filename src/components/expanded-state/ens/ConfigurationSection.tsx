@@ -3,11 +3,11 @@ import lang from 'i18n-js';
 import React from 'react';
 import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
-import { Stack } from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useENSRegistration } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+import { Stack } from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useENSRegistration } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 export default function ConfigurationSection({
   isLoading,
@@ -59,7 +59,9 @@ export default function ConfigurationSection({
                   startRegistration(name, REGISTRATION_MODES.SET_NAME);
                   navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
                     externalAvatarUrl,
-                    longFormHeight: ENSConfirmUpdateSheetHeight,
+                    longFormHeight:
+                      ENSConfirmUpdateSheetHeight +
+                      (externalAvatarUrl ? 70 : 0),
                     mode: REGISTRATION_MODES.SET_NAME,
                     name,
                   });

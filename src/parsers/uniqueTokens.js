@@ -1,19 +1,17 @@
 import { isEmpty, isNil, remove } from 'lodash';
 import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
-import { AssetTypes } from '@rainbow-me/entities';
-import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickBy, pickShallow } from '@rainbow-me/helpers/utilities';
-import {
-  ENS_NFT_CONTRACT_ADDRESS,
-  polygonAllowList,
-} from '@rainbow-me/references';
-import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
-import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+import { OpenseaPaymentTokens } from '@/references/opensea';
+import { AssetTypes } from '@/entities';
+import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
+import { maybeSignUri } from '@/handlers/imgix';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { Network } from '@/helpers/networkTypes';
+import { pickBy, pickShallow } from '@/helpers/utilities';
+import { ENS_NFT_CONTRACT_ADDRESS, polygonAllowList } from '@/references';
+import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
+import { getLowResUrl } from '@/utils/getLowResUrl';
+import isSVGImage from '@/utils/isSVG';
 
 const parseLastSalePrice = lastSale =>
   lastSale
@@ -21,6 +19,19 @@ const parseLastSalePrice = lastSale =>
         (lastSale?.total_price / 1000000000000000000 + Number.EPSILON) * 1000
       ) / 1000
     : null;
+
+const getCurrentPrice = ({ currentPrice, token }) => {
+  const paymentToken = OpenseaPaymentTokens.find(
+    osToken => osToken.address.toLowerCase() === token.toLowerCase()
+  );
+
+  if (!currentPrice || !paymentToken) return null;
+  // Use the decimals returned from the token list to calculate a human readable value. Add 1 to decimals as padEnd includes the first digit
+  const price =
+    Number(currentPrice) / Number('1'.padEnd(paymentToken.decimals + 1, '0'));
+
+  return `${price} ${paymentToken.symbol}`;
+};
 
 export const getOpenSeaCollectionUrl = slug =>
   `https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`;
@@ -79,14 +90,13 @@ export const parseAccountUniqueTokens = data => {
         return {
           ...pickShallow(asset, [
             'animation_url',
-            'current_price',
             'description',
             'external_link',
             'last_sale',
             'name',
             'permalink',
-            'sell_orders',
             'traits',
+            'seaport_sell_orders',
           ]),
           asset_contract: pickShallow(asset_contract, [
             'address',
@@ -110,10 +120,13 @@ export const parseAccountUniqueTokens = data => {
             'twitter_username',
             'wiki_link',
           ]),
-          currentPrice: asset.sell_orders
-            ? `${
-                Number(asset.sell_orders[0].current_price) / 1000000000000000000
-              } ${asset.sell_orders[0].payment_token_contract.symbol}`
+          currentPrice: asset.seaport_sell_orders
+            ? getCurrentPrice({
+                currentPrice: asset.seaport_sell_orders[0].current_price,
+                token:
+                  asset.seaport_sell_orders[0].protocol_data.parameters
+                    .consideration[0].token,
+              })
             : null,
           familyImage: collection.image_url,
           familyName:
@@ -199,10 +212,13 @@ export const parseAccountUniqueTokensPolygon = data => {
           'twitter_username',
           'wiki_link',
         ]),
-        currentPrice: asset.sell_orders
-          ? `${
-              Number(asset.sell_orders[0].current_price) / 1000000000000000000
-            } ${asset.sell_orders[0].payment_token_contract.symbol}`
+        currentPrice: asset.seaport_sell_orders
+          ? getCurrentPrice({
+              currentPrice: asset.seaport_sell_orders[0].current_price,
+              token:
+                asset.seaport_sell_orders[0].protocol_data.parameters
+                  .consideration[0].token,
+            })
           : null,
         familyImage: collection.image_url,
         familyName:
@@ -317,6 +333,9 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
       break;
     case 'Stratos':
       permalink = `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
+      break;
+    case 'Trove':
+      permalink = `https://trove.treasure.lol/collection/${collectionId}/${tokenId}`;
       break;
     default:
       permalink = null;

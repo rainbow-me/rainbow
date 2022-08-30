@@ -1,8 +1,6 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
-
 import colors from '../styles/colors';
-import { EthereumAddress } from '@rainbow-me/entities';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { EthereumAddress } from '@/entities';
+import { fetchReverseRecord } from '@/handlers/ens';
 
 // avatars groups emojis with their respective color backgrounds in the `avatarBackgrounds` object in colors.js
 export const avatars = [
