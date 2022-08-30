@@ -121,7 +121,7 @@ const NetworkSwitcher = ({
                 network:
                   networkInfo[
                     ethereumUtils.getNetworkFromChainId(currentChainId)
-                  ].name,
+                  ]?.name,
               })}
             </Text>
           </Column>

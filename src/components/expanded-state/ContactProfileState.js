@@ -56,7 +56,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     const nickname = profilesEnabled
       ? value
       : (emoji ? `${emoji} ${value}` : value).trim();
-    if (value.length > 0) {
+    if (value?.length > 0) {
       onAddOrUpdateContacts(address, nickname, color, network, ens);
       goBack();
     }
