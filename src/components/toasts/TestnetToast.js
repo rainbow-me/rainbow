@@ -10,7 +10,7 @@ import { useInternetStatus } from '@rainbow-me/hooks';
 const TestnetToast = ({ network, web3Provider }) => {
   const isConnected = useInternetStatus();
   const providerUrl = web3Provider?.connection?.url;
-  const { name, color } = networkInfo[network];
+  const { name, color } = networkInfo[network] || {};
   const [visible, setVisible] = useState(!network === networkTypes.mainnet);
   const [networkName, setNetworkName] = useState(name);
 
