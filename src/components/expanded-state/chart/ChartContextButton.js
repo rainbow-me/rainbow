@@ -1,13 +1,13 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
-import EditAction from '@rainbow-me/helpers/EditAction';
-import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
+import EditAction from '@/helpers/EditAction';
+import { toStartCaseStr } from '@/helpers/utilities';
 import {
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
-} from '@rainbow-me/hooks';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ethereumUtils } from '@/utils';
 
 const emojiSpacing = ios ? '' : '  ';
 

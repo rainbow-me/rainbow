@@ -1,14 +1,14 @@
 import isString from 'lodash/isString';
 import React from 'react';
 import Text from './Text';
-import { emojis } from '@rainbow-me/references';
+import { emojis } from '@/references';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
   name,
   emoji,
 ]);
 
-const emoji = new Map(emojiData);
+export const emoji = new Map(emojiData);
 
 function normalizeName(name) {
   if (/:.+:/.test(name)) {

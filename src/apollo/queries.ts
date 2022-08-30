@@ -226,24 +226,35 @@ export const ENS_REGISTRATIONS = gql`
   }
 `;
 
-export type EnsAccountRegistratonsData = {
-  account: {
+export type EnsDomain = {
+  name: string;
+  labelhash: string;
+  owner: {
+    id: string;
+  };
+};
+
+export type EnsAccountDomainsData = {
+  account?: {
+    // Account "controller" domains (controlled by the account)
+    domains?: EnsDomain[];
+    // Account "registrar" domains (owned by the account)
     registrations: {
-      domain: {
-        name: string;
-        labelhash: string;
-        owner: {
-          id: string;
-        };
-      };
+      domain: EnsDomain;
     }[];
   };
 };
 
-export const ENS_ALL_ACCOUNT_REGISTRATIONS = gql`
+export const ENS_ACCOUNT_DOMAINS = gql`
   query getAccountRegistrations($address: String!) {
     account(id: $address) {
-      registrations(orderBy: registrationDate) {
+      domains(orderBy: createdAt, orderDirection: desc) {
+        name
+        owner {
+          id
+        }
+      }
+      registrations(orderBy: registrationDate, orderDirection: desc) {
         domain {
           name
           owner {

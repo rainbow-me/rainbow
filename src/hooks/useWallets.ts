@@ -8,11 +8,11 @@ import {
   walletsSetSelected,
 } from '../redux/wallets';
 import useInitializeWallet from './useInitializeWallet';
-import { toChecksumAddress } from '@rainbow-me/handlers/web3';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
-import { AppState } from '@rainbow-me/redux/store';
-import logger from 'logger';
+import { toChecksumAddress } from '@/handlers/web3';
+import WalletTypes from '@/helpers/walletTypes';
+import { RainbowAccount, RainbowWallet } from '@/model/wallet';
+import { AppState } from '@/redux/store';
+import logger from '@/utils/logger';
 
 const walletSelector = createSelector(
   ({

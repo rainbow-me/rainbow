@@ -1,5 +1,5 @@
 import { getGlobal, saveGlobal } from './common';
-import { NonceManager } from '@rainbow-me/entities';
+import { NonceManager } from '@/entities';
 
 export const NONCE_MANAGER = 'nonceManager';
 const noncesVersion = '0.0.2';

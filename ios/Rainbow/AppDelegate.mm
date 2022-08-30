@@ -17,9 +17,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
 #import <CodePush/CodePush.h>
-
-@import segment_analytics_react_native;
-
+#import <segment_analytics_react_native-Swift.h>
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end

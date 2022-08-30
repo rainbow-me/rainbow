@@ -10,10 +10,10 @@ import {
   ENS_RECORDS,
   REGISTRATION_MODES,
   textRecordFields,
-} from '@rainbow-me/helpers/ens';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+} from '@/helpers/ens';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {
@@ -46,7 +46,7 @@ const links = {
   [ENS_RECORDS.github]: 'https://github.com/',
   [ENS_RECORDS.instagram]: 'https://instagram.com/',
   [ENS_RECORDS.reddit]: 'https://reddit.com/',
-  [ENS_RECORDS.telegram]: 'https://telegram.com/',
+  [ENS_RECORDS.telegram]: 'https://t.me/',
 } as { [key: string]: string };
 
 export default function useENSRecordDisplayProperties({

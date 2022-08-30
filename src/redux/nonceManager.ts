@@ -1,12 +1,12 @@
 import isNil from 'lodash/isNil';
 import { AppDispatch, AppGetState } from './store';
-import { EthereumAddress, NonceManager } from '@rainbow-me/entities';
+import { EthereumAddress, NonceManager } from '@/entities';
 import {
   getNonceManager,
   saveNonceManager,
-} from '@rainbow-me/handlers/localstorage/nonceManager';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import logger from 'logger';
+} from '@/handlers/localstorage/nonceManager';
+import { Network } from '@/helpers/networkTypes';
+import logger from '@/utils/logger';
 
 interface NonceManagerLoadSuccessAction {
   type: typeof NONCE_MANAGER_LOAD_SUCCESS;

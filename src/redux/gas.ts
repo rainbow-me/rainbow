@@ -7,7 +7,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   BlocksToConfirmation,
   CurrentBlockParams,
@@ -22,19 +22,19 @@ import {
   LegacySelectedGasFee,
   RainbowMeteorologyData,
   SelectedGasFee,
-} from '@rainbow-me/entities';
+} from '@/entities';
 
 import {
   polygonGasStationGetGasPrices,
   rainbowMeteorologyGetData,
-} from '@rainbow-me/handlers/gasFees';
+} from '@/handlers/gasFees';
 import {
   getProviderForNetwork,
   isHardHat,
   isL2Network,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import { Network } from '@/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
   gweiToWei,
@@ -45,11 +45,11 @@ import {
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
   weiToGwei,
-} from '@rainbow-me/parsers';
-import { ethUnits, supportedNativeCurrencies } from '@rainbow-me/references';
-import { multiply } from '@rainbow-me/utilities';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/parsers';
+import { ethUnits, supportedNativeCurrencies } from '@/references';
+import { multiply } from '@/helpers/utilities';
+import { ethereumUtils, gasUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 

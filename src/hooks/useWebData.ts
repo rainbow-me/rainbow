@@ -9,12 +9,12 @@ import {
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import { containsEmoji } from '@rainbow-me/helpers/strings';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import { AppState } from '@rainbow-me/redux/store';
-import logger from 'logger';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { containsEmoji } from '@/helpers/strings';
+import WalletTypes from '@/helpers/walletTypes';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { AppState } from '@/redux/store';
+import logger from '@/utils/logger';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -37,8 +37,12 @@ export default function useWebData() {
   const dispatch = useDispatch();
   const { wallets } = useWallets();
 
-  const { showcaseTokens, webDataEnabled } = useSelector(
-    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
+  const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
+    ({
+      hiddenTokens: { hiddenTokens },
+      showcaseTokens: { webDataEnabled, showcaseTokens },
+    }: AppState) => ({
+      hiddenTokens,
       showcaseTokens,
       webDataEnabled,
     })
@@ -59,6 +63,13 @@ export default function useWebData() {
 
       await setPreference(
         PreferenceActionType.init,
+        'hidden',
+        accountAddress,
+        hiddenTokens
+      );
+
+      await setPreference(
+        PreferenceActionType.init,
         'profile',
         accountAddress,
         {
@@ -75,13 +86,13 @@ export default function useWebData() {
       accountSymbol,
       colors.avatarBackgrounds,
       dispatch,
+      hiddenTokens,
     ]
   );
 
   const wipeWebData = useCallback(async () => {
     if (!webDataEnabled) return;
     await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
-    await setPreference(PreferenceActionType.wipe, 'hidden', accountAddress);
     await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
     dispatch(updateWebDataEnabled(false, accountAddress));
   }, [accountAddress, dispatch, webDataEnabled]);
@@ -118,7 +129,6 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const response = await getPreference('showcase', accountAddress);
       // If the showcase is populated, just updated it
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'ids' does not exist on type 'Object'.
       if (response?.ids?.length > 0) {
         setPreference(
           PreferenceActionType.update,
@@ -137,10 +147,8 @@ export default function useWebData() {
 
   const updateWebHidden = useCallback(
     async assetIds => {
-      if (!webDataEnabled) return;
       const response = await getPreference('hidden', accountAddress);
       // If the showcase is populated, just updated it
-      // @ts-expect-error
       if (response?.ids?.length > 0) {
         setPreference(
           PreferenceActionType.update,
@@ -159,7 +167,7 @@ export default function useWebData() {
         logger.log('hidden initialized!');
       }
     },
-    [accountAddress, webDataEnabled]
+    [accountAddress]
   );
 
   const initializeShowcaseIfNeeded = useCallback(async () => {
@@ -170,7 +178,6 @@ export default function useWebData() {
         if (webDataEnabled) {
           const response = await getPreference('showcase', accountAddress);
           // If the showcase is populated, nothing to do
-          // @ts-expect-error ts-migrate(2339) FIXME: Property 'ids' does not exist on type 'Object'.
           if (response?.ids?.length > 0) {
             logger.log('showcase already initialized. skipping');
           } else {

@@ -27,11 +27,11 @@ import {
   ZerionAsset,
   ZerionAssetFallback,
   ZerionAssetPrice,
-} from '@rainbow-me/entities';
-import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
-import { web3Provider } from '@rainbow-me/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/entities';
+import { getAssetsFromCovalent } from '@/handlers/covalent';
+import { web3Provider } from '@/handlers/web3';
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
   chainAssets,
@@ -39,10 +39,10 @@ import {
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   migratedTokens,
-} from '@rainbow-me/references';
-import { delay } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/references';
+import { delay } from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 let lastUpdatePayload: FallbackOnChainAssetsPayload | null = null;
 

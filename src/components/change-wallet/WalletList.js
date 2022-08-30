@@ -7,10 +7,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { StyleSheet } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
-  FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -23,9 +23,9 @@ import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { useAccountSettings } from '@/hooks';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -111,6 +111,7 @@ export default function WalletList({
   const scrollView = useRef(null);
   const { network } = useAccountSettings();
   const opacityAnimation = useSharedValue(0);
+  const emptyOpacityAnimation = useSharedValue(1);
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -179,6 +180,10 @@ export default function WalletList({
     if (rows && rows.length && !ready) {
       setTimeout(() => {
         setReady(true);
+        emptyOpacityAnimation.value = withTiming(0, {
+          duration: transitionDuration,
+          easing: Easing.out(Easing.ease),
+        });
       }, 50);
     }
   }, [rows, ready]);
@@ -196,6 +201,10 @@ export default function WalletList({
 
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: opacityAnimation.value,
+  }));
+
+  const emptyOpacityStyle = useAnimatedStyle(() => ({
+    opacity: emptyOpacityAnimation.value,
   }));
 
   const renderItem = useCallback(
@@ -223,43 +232,36 @@ export default function WalletList({
 
   return (
     <Container height={height}>
-      {ready ? (
-        <WalletsContainer style={opacityStyle}>
-          <WalletFlatList
-            data={rows}
-            initialNumToRender={rows.length}
-            ref={scrollView}
-            renderItem={renderItem}
-            scrollEnabled={scrollEnabled}
-            showDividers={showDividers}
-          />
-          {showDividers && <WalletListDivider />}
-          {!watchOnly && (
-            <WalletListFooter>
-              <WalletOption
-                editMode={editMode}
-                icon="arrowBack"
-                label={`􀁍 ${lang.t('wallet.action.create_new')}`}
-                onPress={onPressAddAccount}
-              />
-              <WalletOption
-                editMode={editMode}
-                icon="arrowBack"
-                label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
-                onPress={onPressImportSeedPhrase}
-              />
-            </WalletListFooter>
-          )}
-        </WalletsContainer>
-      ) : (
-        <Animated.View
-          exiting={FadeOut.easing(Easing.out(Easing.ease)).duration(
-            transitionDuration
-          )}
-        >
-          <EmptyWalletList />
-        </Animated.View>
-      )}
+      <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
+        <EmptyWalletList />
+      </Animated.View>
+      <WalletsContainer style={opacityStyle}>
+        <WalletFlatList
+          data={rows}
+          initialNumToRender={rows.length}
+          ref={scrollView}
+          renderItem={renderItem}
+          scrollEnabled={scrollEnabled}
+          showDividers={showDividers}
+        />
+        {showDividers && <WalletListDivider />}
+        {!watchOnly && (
+          <WalletListFooter>
+            <WalletOption
+              editMode={editMode}
+              icon="arrowBack"
+              label={`􀁍 ${lang.t('wallet.action.create_new')}`}
+              onPress={onPressAddAccount}
+            />
+            <WalletOption
+              editMode={editMode}
+              icon="arrowBack"
+              label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
+              onPress={onPressImportSeedPhrase}
+            />
+          </WalletListFooter>
+        )}
+      </WalletsContainer>
     </Container>
   );
 }

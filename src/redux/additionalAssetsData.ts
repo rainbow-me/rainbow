@@ -1,15 +1,15 @@
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { dataUpdateAsset } from './data';
-import { ParsedAddressAsset } from '@rainbow-me/entities';
-import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
-import { getCoingeckoIds } from '@rainbow-me/handlers/dispersion';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
-import { AppDispatch, AppGetState, AppState } from '@rainbow-me/redux/store';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+import { ParsedAddressAsset, SwappableAsset } from '@/entities';
+import { getOnchainAssetBalance } from '@/handlers/assets';
+import { getCoingeckoIds } from '@/handlers/dispersion';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { AppDispatch, AppGetState, AppState } from '@/redux/store';
+import { ETH_ADDRESS } from '@/references';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
 const ADDITIONAL_ASSET_DATA_COINGECKO_IDS =
@@ -38,18 +38,8 @@ type AdditionalAssetDataAction =
   | AdditionalAssetDataDeleteL2AssetToWatch;
 
 type L2AssetToWatch = {
-  inputCurrency: {
-    address: EthereumAddress;
-    decimals: number;
-    mainnetAddress: EthereumAddress;
-    symbol: string;
-  };
-  outputCurrency: {
-    address: EthereumAddress;
-    decimals: number;
-    mainnetAddress: EthereumAddress;
-    symbol: string;
-  };
+  inputCurrency: SwappableAsset;
+  outputCurrency: SwappableAsset;
   userAddress: string;
   network: Network;
   id: string;
@@ -82,18 +72,8 @@ export const additionalDataCoingeckoIds = async (
 };
 
 export const additionalDataUpdateL2AssetToWatch = (data: {
-  inputCurrency: {
-    address: EthereumAddress;
-    decimals: number;
-    mainnetAddress: EthereumAddress;
-    symbol: string;
-  };
-  outputCurrency: {
-    address: EthereumAddress;
-    decimals: number;
-    mainnetAddress: EthereumAddress;
-    symbol: string;
-  };
+  inputCurrency: SwappableAsset;
+  outputCurrency: SwappableAsset;
   userAddress: string;
   network: Network;
   hash: string;
@@ -113,19 +93,13 @@ export const additionalDataUpdateL2AssetToWatch = (data: {
 };
 
 const getUpdatedL2AssetBalance = async (
-  asset: {
-    address: string;
-    decimals: number;
-    mainnetAddress: EthereumAddress;
-    symbol: string;
-  },
+  asset: SwappableAsset,
   genericAssets: {
     [assetAddress: string]: ParsedAddressAsset;
   },
   network: Network,
   userAddress: EthereumAddress
 ) => {
-  const mainnet_address = asset.mainnetAddress?.toLowerCase();
   const provider = await getProviderForNetwork(network);
   const assetBalance = await getOnchainAssetBalance(
     asset,
@@ -135,8 +109,10 @@ const getUpdatedL2AssetBalance = async (
   );
   const uniqueId = `${asset.address?.toLowerCase()}_${network}`;
   const fallbackAsset =
-    ethereumUtils.getAccountAsset(mainnet_address) ||
-    genericAssets[mainnet_address];
+    ethereumUtils.getAccountAsset(uniqueId) ||
+    ethereumUtils.getAccountAsset(asset?.mainnet_address) ||
+    genericAssets[asset?.address] ||
+    (asset?.mainnet_address && genericAssets[asset?.mainnet_address]);
   return {
     ...fallbackAsset,
     ...asset,
@@ -145,7 +121,6 @@ const getUpdatedL2AssetBalance = async (
       ...(assetBalance || {}),
     },
     id: asset.address,
-    mainnet_address: asset.mainnetAddress?.toLowerCase(),
     type: network,
     uniqueId,
   };

@@ -13,15 +13,15 @@ import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   CLOUD_BACKUP_ERRORS,
   isCloudBackupAvailable,
-} from '@rainbow-me/handlers/cloudBackup';
-import { delay } from '@rainbow-me/helpers/utilities';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
-import logger from 'logger';
+} from '@/handlers/cloudBackup';
+import { delay } from '@/helpers/utilities';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import logger from '@/utils/logger';
 
 function getUserError(e: Error) {
   switch (e.message) {

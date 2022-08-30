@@ -8,16 +8,16 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
-import { useClipboard } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
+import { useClipboard } from '@/hooks';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth, padding } from '@/styles';
+import { toStartCaseStr } from '@/helpers/utilities';
 import {
   abbreviations,
   ethereumUtils,
   haptics,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const InfoButton = styled(Centered)({
   ...padding.object(8, 0),

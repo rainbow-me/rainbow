@@ -1,7 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
 import { createSelector } from 'reselect';
-import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
+import { parseAssetsNativeWithTotals } from '@/parsers';
 
 const EMPTY_ARRAY: any = [];
 

@@ -6,7 +6,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const verticalOffset = (deviceUtils.dimensions.height - 420) / 3;
 

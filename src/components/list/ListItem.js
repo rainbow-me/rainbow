@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import { padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@/styles';
 
 const ListItemHeight = 56;
 
