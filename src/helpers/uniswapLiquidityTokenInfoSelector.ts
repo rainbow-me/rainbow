@@ -4,10 +4,7 @@ import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@/entities';
 import { parseAssetNative } from '@/parsers';
 import { AppState } from '@/redux/store';
-import {
-  PositionsState,
-  UniswapPosition,
-} from '@/redux/usersPositions';
+import { PositionsState, UniswapPosition } from '@/redux/usersPositions';
 import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import {
   convertAmountToNativeDisplay,

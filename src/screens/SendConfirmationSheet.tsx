@@ -36,9 +36,7 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text } from '@/design-system';
 import { AssetTypes } from '@/entities';
 import {
@@ -53,14 +51,8 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@/helpers/emojiHandler';
-import {
-  add,
-  convertAmountToNativeDisplay,
-} from '@/helpers/utilities';
-import {
-  isENSAddressFormat,
-  isValidDomainFormat,
-} from '@/helpers/validators';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,

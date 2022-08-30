@@ -8,10 +8,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { Network } from '@/helpers/networkTypes';
 import { pickBy, pickShallow } from '@/helpers/utilities';
-import {
-  ENS_NFT_CONTRACT_ADDRESS,
-  polygonAllowList,
-} from '@/references';
+import { ENS_NFT_CONTRACT_ADDRESS, polygonAllowList } from '@/references';
 import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
 import { getLowResUrl } from '@/utils/getLowResUrl';
 import isSVGImage from '@/utils/isSVG';

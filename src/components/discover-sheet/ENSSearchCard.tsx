@@ -23,11 +23,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import {
-  useDimensions,
-  useENSPendingRegistrations,
-  useWallets,
-} from '@/hooks';
+import { useDimensions, useENSPendingRegistrations, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';

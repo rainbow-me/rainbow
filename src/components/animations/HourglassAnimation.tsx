@@ -8,11 +8,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
-import {
-  BackgroundProvider,
-  Box,
-  useForegroundColor,
-} from '@/design-system';
+import { BackgroundProvider, Box, useForegroundColor } from '@/design-system';
 
 type AnimationConfigOptions = {
   duration: number;

@@ -25,11 +25,7 @@ import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { isSymbolStablecoin } from '@/helpers/savings';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import {
-  useAccountSettings,
-  useDimensions,
-  useWallets,
-} from '@/hooks';
+import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
