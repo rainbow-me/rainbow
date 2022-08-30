@@ -13,9 +13,9 @@ import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
 import PolygonBadgeLarge from '../../assets/badges/polygonBadgeLarge.png';
 import PolygonBadgeLargeDark from '../../assets/badges/polygonBadgeLargeDark.png';
 import { Centered } from '../layout';
-import { AssetType } from '@rainbow-me/entities';
-import styled from '@rainbow-me/styled-components';
-import { position as positions } from '@rainbow-me/styles';
+import { AssetType } from '@/entities';
+import styled from '@/styled-thing';
+import { position as positions } from '@/styles';
 
 const sizeConfigs = {
   large: {
@@ -64,7 +64,6 @@ export default function ChainBadge({
   size = 'small',
 }) {
   const { isDarkMode } = useTheme();
-
   const { containerSize, iconSize } = sizeConfigs[size];
 
   const source = useMemo(() => {

@@ -1,9 +1,9 @@
-import { mapValues, reverse, toLower } from 'lodash';
+import { mapValues, reverse } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
-import ChartTypes, { ChartType } from '@rainbow-me/helpers/chartTypes';
-import currenyTypes from '@rainbow-me/helpers/currencyTypes';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import ChartTypes, { ChartType } from '@/helpers/chartTypes';
+import currenyTypes from '@/helpers/currencyTypes';
+import { ETH_ADDRESS } from '@/references';
 
 // -- Constants --------------------------------------- //
 
@@ -155,7 +155,8 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
   const { charts: existingCharts } = getState().charts;
   const assetCharts = message?.payload?.charts ?? {};
   const { nativeCurrency } = getState().settings;
-  if (toLower(nativeCurrency) === message?.meta?.currency) {
+
+  if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
     const newChartData = mapValues(assetCharts, (chartData, address) => {
       if (chartType) {
         return {

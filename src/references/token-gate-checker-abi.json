@@ -1,0 +1,1 @@
+[{"inputs":[{"internalType":"address[]","name":"targets","type":"address[]"},{"internalType":"address[]","name":"potentialOwners","type":"address[]"}],"name":"areOwners","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]

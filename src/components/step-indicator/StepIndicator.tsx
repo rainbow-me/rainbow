@@ -7,10 +7,12 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, Columns, useForegroundColor } from '@rainbow-me/design-system';
-import { magicMemo } from '@rainbow-me/utils';
+import { Box, Columns, useForegroundColor } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { magicMemo } from '@/utils';
 
 const PULSE_STEP_DURATION = 1000;
+const STEP_SPACING = 9;
 
 type StepIndicatorProps = {
   steps: number; // 1 indexed
@@ -18,6 +20,8 @@ type StepIndicatorProps = {
 };
 
 const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
+  const { width: screenWidth } = useDimensions();
+  const stepWidth = screenWidth / steps - STEP_SPACING;
   const accentColor = useForegroundColor('accent');
   const accentColorTint = accentColor + '25';
 
@@ -35,9 +39,9 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   const pulseStepTranslate = useDerivedValue(() =>
     withRepeat(
       withSequence(
-        withTiming(-100, { duration: PULSE_STEP_DURATION }),
-        withTiming(-100, { duration: PULSE_STEP_DURATION }),
-        withTiming(0, { duration: PULSE_STEP_DURATION })
+        withTiming(-stepWidth, { duration: PULSE_STEP_DURATION }),
+        withTiming(-stepWidth, { duration: PULSE_STEP_DURATION }),
+        withTiming(5, { duration: PULSE_STEP_DURATION })
       ),
       -1
     )
@@ -51,8 +55,8 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   );
 
   const animatedPulseStyle = useAnimatedStyle(() => ({
-    ...(ios ? { left: `${pulseStepTranslate?.value}%` } : {}),
     opacity: pulseStepOpacity?.value,
+    transform: [{ translateX: pulseStepTranslate.value }],
   }));
 
   const animatedFinishedStyle = useAnimatedStyle(() => ({
@@ -61,7 +65,7 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
 
   return (
     <Box padding="10px" width="full">
-      <Columns space={{ custom: 9 }}>
+      <Columns space={{ custom: STEP_SPACING }}>
         {Array.from({ length: steps }).map((_, index) => {
           const stepIndex = index + 1;
           const isCurrentStep = stepIndex === currentStep;

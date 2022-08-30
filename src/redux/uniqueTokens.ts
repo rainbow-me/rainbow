@@ -1,6 +1,5 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, uniqBy, without } from 'lodash';
+import { uniqBy, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -9,21 +8,23 @@ import {
 } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
+import { analytics } from '@/analytics';
+import { UniqueAsset } from '@/entities';
+import { fetchEnsTokens } from '@/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueToken,
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
-} from '@rainbow-me/handlers/opensea-api';
-import { fetchPoaps } from '@rainbow-me/handlers/poap';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
+} from '@/handlers/opensea-api';
+import { fetchPoaps } from '@/handlers/poap';
+import { getNftsByWalletAddress } from '@/handlers/simplehash';
+import { Network } from '@/helpers/networkTypes';
+import { dedupeAssetsWithFamilies, getFamilies } from '@/parsers';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -204,7 +205,7 @@ export const uniqueTokensResetState = () => (
 
 /**
  * Fetches unique tokens via API, updates state, and saves to local storage,
- * as long as the current network is either mainnet or rinkeby.
+ * as long as the current network is mainnet.
  */
 export const uniqueTokensRefreshState = () => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
@@ -213,7 +214,7 @@ export const uniqueTokensRefreshState = () => async (
   const { network } = getState().settings;
 
   // Currently not supported in testnets
-  if (network !== Network.mainnet && network !== Network.rinkeby) {
+  if (network !== Network.mainnet) {
     return;
   }
 
@@ -246,9 +247,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   }
   const { network: currentNetwork } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
-  let shouldUpdateInBatches = isEmpty(existingUniqueTokens);
   let uniqueTokens: UniqueAsset[] = [];
   let errorCheck = false;
 
@@ -282,35 +281,26 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       // metadata service.
       newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
 
-      uniqueTokens = concat(uniqueTokens, newPageResults);
+      uniqueTokens = uniqueTokens.concat(newPageResults);
       shouldStopFetching =
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
 
-      if (shouldUpdateInBatches) {
-        // check that the account address to fetch for has not changed while fetching
-
+      if (shouldStopFetching) {
         const isCurrentAccountAddress =
           accountAddress ===
           (showcaseAddress || getState().settings.accountAddress);
         if (isCurrentAccountAddress) {
-          dispatch({
-            payload: uniqueTokens,
-            showcase: !!showcaseAddress,
-            type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-          });
-        }
-      }
-      if (shouldStopFetching) {
-        const existingFamilies = getFamilies(existingUniqueTokens);
-        const newFamilies = getFamilies(uniqueTokens);
-        const incomingFamilies = without(newFamilies, ...existingFamilies);
-        if (incomingFamilies.length) {
-          const dedupedAssets = dedupeAssetsWithFamilies(
-            accountAssetsData,
-            incomingFamilies
-          );
-          dispatch(dataUpdateAssets(dedupedAssets));
+          const existingFamilies = getFamilies(existingUniqueTokens);
+          const newFamilies = getFamilies(uniqueTokens);
+          const incomingFamilies = without(newFamilies, ...existingFamilies);
+          if (incomingFamilies.length) {
+            const dedupedAssets = dedupeAssetsWithFamilies(
+              getState().data.accountAssetsData,
+              incomingFamilies
+            );
+            dispatch(dataUpdateAssets(dedupedAssets));
+          }
         }
       }
     } catch (error) {
@@ -327,27 +317,36 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   };
 
   await fetchNetwork(currentNetwork);
+
   // Only include poaps and L2 nft's on mainnet
   if (currentNetwork === Network.mainnet) {
     const poaps = (await fetchPoaps(accountAddress)) ?? [];
     if (poaps.length > 0) {
+      analytics.identify(undefined, { poaps: poaps.length });
       uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
-      uniqueTokens = concat(uniqueTokens, poaps);
+      uniqueTokens = uniqueTokens.concat(poaps);
     }
     await fetchNetwork(Network.polygon);
-    //we only care about analytics for mainnet + L2's
-    analytics.identify(null, { NFTs: uniqueTokens.length });
-  }
 
-  // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
-  // We will fetch tokens registered in the past 48 hours to be safe.
-  const ensTokens = await fetchEnsTokens({
-    address: accountAddress,
-    timeAgo: { hours: 48 },
-  });
-  if (ensTokens.length > 0) {
-    uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'id');
-    shouldUpdateInBatches = false;
+    // Fetch Optimism and Arbitrum NFTs
+    const optimismArbitrumNFTs = await getNftsByWalletAddress(accountAddress);
+
+    if (optimismArbitrumNFTs.length > 0) {
+      uniqueTokens = uniqueTokens.concat(optimismArbitrumNFTs);
+    }
+
+    //we only care about analytics for mainnet + L2's
+    analytics.identify(undefined, { NFTs: uniqueTokens.length });
+
+    // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
+    // We will fetch tokens registered in the past 48 hours to be safe.
+    const ensTokens = await fetchEnsTokens({
+      address: accountAddress,
+      timeAgo: { hours: 48 },
+    });
+    if (ensTokens.length > 0) {
+      uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
+    }
   }
 
   // NFT Fetching clean up
@@ -357,7 +356,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   if (!showcaseAddress && isCurrentAccountAddress && !errorCheck) {
     saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
   }
-  if (!shouldUpdateInBatches && isCurrentAccountAddress && !errorCheck) {
+  if (isCurrentAccountAddress && !errorCheck) {
     dispatch({
       payload: uniqueTokens,
       showcase: !!showcaseAddress,

@@ -1,9 +1,9 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty, isNil, omit, toLower } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
 import React, {
   Fragment,
   useCallback,
@@ -12,7 +12,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ActivityIndicator, Alert, InteractionManager } from 'react-native';
+import { ActivityIndicator, InteractionManager } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -42,20 +42,28 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
+import { FLASHBOTS_WC } from '../config/experimental';
+import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
-import { Text } from '@rainbow-me/design-system';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@/analytics';
+import { Text } from '@/design-system';
+import config from '@/model/config';
 import {
   estimateGas,
   estimateGasWithPadding,
+  getFlashbotsProvider,
+  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { isDappAuthenticated } from '@/helpers/dappNameHandler';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -65,7 +73,7 @@ import {
   useTransactionConfirmation,
   useWalletBalances,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import {
   loadWallet,
   sendTransaction,
@@ -73,13 +81,13 @@ import {
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
-} from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+} from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { walletConnectRemovePendingRedirect } from '@/redux/walletconnect';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -87,10 +95,11 @@ import {
   greaterThan,
   greaterThanOrEqualTo,
   multiply,
-} from '@rainbow-me/utilities';
-import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
-import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
+  omitFlatten,
+} from '@/helpers/utilities';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -102,8 +111,8 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
-} from '@rainbow-me/utils/signingMethods';
-import logger from 'logger';
+} from '@/utils/signingMethods';
+import logger from '@/utils/logger';
 
 const springConfig = {
   damping: 500,
@@ -226,19 +235,22 @@ export default function TransactionConfirmationScreen() {
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
       walletNames,
-      currentNetwork,
       address
     );
     return {
       ...profileInfo,
       address,
     };
-  }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
+  }, [walletConnector?._accounts, walletNames, wallets]);
 
   const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
+  const disableFlashbotsPostMerge =
+    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const flashbotsEnabled =
+    useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
   useEffect(() => {
     setCurrentNetwork(
@@ -248,11 +260,17 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     const initProvider = async () => {
-      const p = await getProviderForNetwork(currentNetwork);
+      let p;
+      if (currentNetwork === Network.mainnet && flashbotsEnabled) {
+        p = await getFlashbotsProvider(currentNetwork);
+      } else {
+        p = await getProviderForNetwork(currentNetwork);
+      }
+
       setProvider(p);
     };
     currentNetwork && initProvider();
-  }, [currentNetwork]);
+  }, [currentNetwork, flashbotsEnabled]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
@@ -609,7 +627,7 @@ export default function TransactionConfirmationScreen() {
       logger.log('⛽ error estimating gas', error);
     }
     // clean gas prices / fees sent from the dapp
-    const cleanTxPayload = omit(txPayload, [
+    const cleanTxPayload = omitFlatten(txPayload, [
       'gasPrice',
       'maxFeePerGas',
       'maxPriorityFeePerGas',
@@ -625,7 +643,12 @@ export default function TransactionConfirmationScreen() {
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
-    txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas', 'chainId']);
+    txPayloadUpdated = omitFlatten(txPayloadUpdated, [
+      'from',
+      'gas',
+      'chainId',
+    ]);
+
     let response = null;
 
     try {
@@ -676,12 +699,15 @@ export default function TransactionConfirmationScreen() {
           value: result.value.toString(),
           ...gasParams,
         };
-        if (toLower(accountAddress) === toLower(txDetails.from)) {
+        if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
           txSavedInCurrentWallet = true;
         }
       }
-      analytics.track('Approved WalletConnect transaction request');
+      analytics.track('Approved WalletConnect transaction request', {
+        dappName,
+        dappUrl,
+      });
       if (isFocused && requestId) {
         dispatch(removeRequest(requestId));
         await dispatch(
@@ -782,7 +808,10 @@ export default function TransactionConfirmationScreen() {
     }
     const { result, error } = response;
     if (result) {
-      analytics.track('Approved WalletConnect signature request');
+      analytics.track('Approved WalletConnect signature request', {
+        dappName,
+        dappUrl,
+      });
       if (requestId) {
         dispatch(removeRequest(requestId));
         await dispatch(walletConnectSendStatus(peerId, requestId, response));
@@ -795,18 +824,20 @@ export default function TransactionConfirmationScreen() {
       await onCancel(error);
     }
   }, [
+    method,
     accountInfo.address,
+    provider,
+    params,
+    dappName,
+    dappUrl,
+    requestId,
     callback,
     closeScreen,
     dispatch,
-    method,
-    onCancel,
-    params,
-    peerId,
     removeRequest,
-    requestId,
     walletConnectSendStatus,
-    provider,
+    peerId,
+    onCancel,
   ]);
 
   const onConfirm = useCallback(async () => {

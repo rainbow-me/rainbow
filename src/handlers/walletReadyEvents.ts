@@ -1,17 +1,23 @@
-import filter from 'lodash/filter';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { RainbowAccount } from '@rainbow-me/model/wallet';
-import { Navigation } from '@rainbow-me/navigation';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
+import { EthereumAddress } from '@/entities';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletTypes from '@/helpers/walletTypes';
+import { featureUnlockChecks } from '@/featuresToUnlock';
+import {
+  AllRainbowWallets,
+  RainbowAccount,
+  RainbowWallet,
+} from '@/model/wallet';
+import { Navigation } from '@/navigation';
 
-import store from '@rainbow-me/redux/store';
-import { checkKeychainIntegrity } from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
+import store from '@/redux/store';
+import { checkKeychainIntegrity } from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -23,10 +29,17 @@ export const runKeychainIntegrityChecks = async () => {
 };
 
 export const runWalletBackupStatusChecks = () => {
-  const { selected, wallets } = store.getState().wallets;
+  const {
+    selected,
+    wallets,
+  }: {
+    wallets: AllRainbowWallets | null;
+    selected: RainbowWallet | undefined;
+  } = store.getState().wallets;
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
-  const rainbowWalletsNotBackedUp = filter(wallets, wallet => {
+  if (!wallets) return;
+  const rainbowWalletsNotBackedUp = Object.values(wallets).filter(wallet => {
     const hasVisibleAccount = wallet.addresses?.find(
       (account: RainbowAccount) => account.visible
     );
@@ -73,4 +86,47 @@ export const runWalletBackupStatusChecks = () => {
       );
     }, BACKUP_SHEET_DELAY_MS);
   return;
+};
+
+export const runFeatureUnlockChecks = async (): Promise<boolean> => {
+  const {
+    wallets,
+  }: {
+    wallets: AllRainbowWallets | null;
+  } = store.getState().wallets;
+
+  // count how many visible, non-imported and non-readonly wallets are not backed up
+  if (!wallets) return false;
+  const walletsToCheck: EthereumAddress[] = [];
+
+  Object.values(wallets).forEach(wallet => {
+    if (wallet.type !== WalletTypes.readOnly) {
+      wallet.addresses?.forEach(
+        (account: RainbowAccount) =>
+          account.visible && walletsToCheck.push(account.address)
+      );
+    }
+  });
+
+  logger.log('WALLETS TO CHECK', walletsToCheck);
+
+  if (!walletsToCheck.length) return false;
+
+  logger.log('Feature Unlocks: Running Checks');
+
+  // short circuits once the first feature is unlocked
+  for (const featureUnlockCheck of featureUnlockChecks) {
+    const unlockNow = await featureUnlockCheck(walletsToCheck);
+    if (unlockNow) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const runFeatureAndCampaignChecks = async () => {
+  const showingFeatureUnlock: boolean = await runFeatureUnlockChecks();
+  if (!showingFeatureUnlock) {
+    await runCampaignChecks();
+  }
 };

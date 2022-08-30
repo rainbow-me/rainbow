@@ -1,7 +1,8 @@
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@rai... Remove this comment to see the full error message
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
-import { join, split, toLower, values } from 'lodash';
+import values from 'lodash/values';
+
 import {
   // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   RAINBOW_WYRE_MERCHANT_ID,
@@ -21,10 +22,10 @@ import {
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
 import { RAINBOW_FETCH_ERROR, RainbowFetchClient } from '../rainbow-fetch';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
-import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@rainbow-me/references';
-import { subtract } from '@rainbow-me/utilities';
-import logger from 'logger';
+import NetworkTypes from '@/helpers/networkTypes';
+import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@/references';
+import { subtract } from '@/helpers/utilities';
+import logger from '@/utils/logger';
 
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
@@ -58,14 +59,14 @@ class WyreException extends Error {
     message: any
   ) {
     const referenceInfoIds = values(referenceInfo);
-    const referenceId = join(referenceInfoIds, ':');
+    const referenceId = referenceInfoIds.join(':');
     super(`${referenceId}:${errorId}:${errorCode}:${message}`);
     this.name = name;
   }
 }
 
 export const getReferenceId = (accountAddress: any) => {
-  const lowered = toLower(accountAddress);
+  const lowered = accountAddress.toLowerCase();
   return lowered.substr(-12);
 };
 
@@ -226,15 +227,11 @@ export const trackWyreOrder = async (
   orderId: any,
   network: any
 ) => {
-  try {
-    const baseUrl = getBaseUrl(network);
-    const response = await wyreApi.get(`${baseUrl}/v3/orders/${orderId}`);
-    const orderStatus = response?.data?.status;
-    const transferId = response?.data?.transferId;
-    return { data: response.data, orderStatus, transferId };
-  } catch (error) {
-    throw error;
-  }
+  const baseUrl = getBaseUrl(network);
+  const response = await wyreApi.get(`${baseUrl}/v3/orders/${orderId}`);
+  const orderStatus = response?.data?.status;
+  const transferId = response?.data?.transferId;
+  return { data: response.data, orderStatus, transferId };
 };
 
 export const trackWyreTransfer = async (
@@ -242,18 +239,14 @@ export const trackWyreTransfer = async (
   transferId: any,
   network: any
 ) => {
-  try {
-    const baseUrl = getBaseUrl(network);
-    const response = await wyreApi.get(
-      `${baseUrl}/v2/transfer/${transferId}/track`
-    );
-    const transferHash = response?.data?.blockchainNetworkTx;
-    const destAmount = response?.data?.destAmount;
-    const destCurrency = response?.data?.destCurrency;
-    return { destAmount, destCurrency, transferHash };
-  } catch (error) {
-    throw error;
-  }
+  const baseUrl = getBaseUrl(network);
+  const response = await wyreApi.get(
+    `${baseUrl}/v2/transfer/${transferId}/track`
+  );
+  const transferHash = response?.data?.blockchainNetworkTx;
+  const destAmount = response?.data?.destAmount;
+  const destCurrency = response?.data?.destCurrency;
+  return { destAmount, destCurrency, transferHash };
 };
 
 export const getOrderId = async (
@@ -411,7 +404,7 @@ const createPayload = (
 
 const getAddressDetails = (addressInfo: any) => {
   const { name, postalAddress: address } = addressInfo;
-  const addressLines = split(address.street, '\n');
+  const addressLines = address?.street?.split('\n');
   return {
     addressLines,
     administrativeArea: address.state,

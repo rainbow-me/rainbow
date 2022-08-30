@@ -11,12 +11,12 @@ import { ListHeader, ListHeaderHeight } from '../list';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { H1, TruncatedText } from '../text';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
-import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { fonts, position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { useAccountProfile, useDimensions } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { fonts, position } from '@/styles';
+import { useTheme } from '@/theme';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 
@@ -55,19 +55,33 @@ const TotalAmountSkeleton = styled(Skeleton)({
 });
 
 const WalletSelectButton = ({
-  truncatedAccountName,
+  accountName,
   onChangeWallet,
   deviceWidth,
   textWidth,
   maxWidth,
 }) => {
   const { colors } = useTheme();
+
+  const truncated = textWidth > maxWidth - 6;
+
+  const truncatedAccountName = useMemo(() => {
+    if (textWidth > 0) {
+      if (truncated && accountName?.endsWith('.eth')) {
+        return accountName.slice(0, -4);
+      }
+      return accountName;
+    }
+    return '';
+  }, [accountName, textWidth, truncated]);
+
   return (
     <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.9}>
       <Row>
         <AccountName
           deviceWidth={deviceWidth}
           maxWidth={maxWidth}
+          testID={`wallet-screen-account-name-${accountName || ''}`}
           textWidth={textWidth}
         >
           {truncatedAccountName}
@@ -127,18 +141,6 @@ const AssetListHeader = ({
     measure();
   }, [accountName]);
 
-  const truncated = textWidth > maxWidth - 6;
-
-  const truncatedAccountName = useMemo(() => {
-    if (textWidth > 0) {
-      if (truncated && accountName?.endsWith('.eth')) {
-        return accountName.slice(0, -4);
-      }
-      return accountName;
-    }
-    return '';
-  }, [accountName, textWidth, truncated]);
-
   return (
     <StickyHeader name={title}>
       <ListHeader
@@ -151,11 +153,11 @@ const AssetListHeader = ({
         {!title && (
           <WalletSelectButtonWrapper>
             <WalletSelectButton
+              accountName={accountName}
               deviceWidth={deviceWidth}
               maxWidth={maxWidth}
               onChangeWallet={onChangeWallet}
               textWidth={textWidth}
-              truncatedAccountName={truncatedAccountName}
             />
           </WalletSelectButtonWrapper>
         )}

@@ -1,13 +1,13 @@
-import { concat, filter, isEmpty, uniqBy } from 'lodash';
+import { isEmpty, uniqBy } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
-import { ParsedAddressAsset } from '@rainbow-me/entities';
+import { ParsedAddressAsset } from '@/entities';
 import {
   getLiquidity,
   saveLiquidity,
-} from '@rainbow-me/handlers/localstorage/uniswap';
+} from '@/handlers/localstorage/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -31,7 +31,7 @@ interface UniswapPoolToken {
 /**
  * Fully loaded details for a Uniswap pool from the dispersion API.
  */
-interface UniswapPoolAddressDetailsFull {
+export interface UniswapPoolAddressDetailsFull {
   address: string | undefined;
   annualized_fees: number;
   liquidity: number;
@@ -40,6 +40,7 @@ interface UniswapPoolAddressDetailsFull {
   symbol: string;
   token0: UniswapPoolToken;
   token1: UniswapPoolToken;
+  tokens?: [UniswapPoolToken, UniswapPoolToken];
   tokenNames: string;
   type: string;
 }
@@ -168,13 +169,11 @@ export const uniswapUpdateLiquidityTokens = (
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
-    updatedLiquidityTokens = filter(
-      uniqBy(
-        concat(updatedLiquidityTokens, existingLiquidityTokens),
-        token => token.address
-      ),
-      token => !!Number(token?.balance?.amount ?? 0)
-    );
+
+    updatedLiquidityTokens = uniqBy(
+      updatedLiquidityTokens.concat(existingLiquidityTokens),
+      token => token.address
+    ).filter(token => !!Number(token?.balance?.amount ?? 0));
   } else {
     const assetCodes = liquidityTokens.map(token => token.address);
     dispatch(emitChartsRequest(assetCodes));

@@ -4,10 +4,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { isSignTypedData, PERSONAL_SIGN } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { isHexString } from '@rainbow-me/handlers/web3';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import { isHexString } from '@/handlers/web3';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { deviceUtils } from '@/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const horizontalPadding = 24;
@@ -18,7 +18,6 @@ const Container = styled(Row)({
 });
 
 const MessageWrapper = styled(ScrollView)({
-  ...padding.object(12, 15),
   borderColor: ({ theme: { colors } }) =>
     colors.alpha(colors.blueGreyDark, 0.08),
   borderRadius: 20,
@@ -52,7 +51,11 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
   return (
     <Container maxHeight={maximumHeight} minHeight={minimumHeight}>
       <MessageWrapper>
-        <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="lmedium">
+        <Text
+          color={colors.alpha(colors.blueGreyDark, 0.6)}
+          size="lmedium"
+          style={{ ...padding.object(12, 15) }}
+        >
           {msg}
         </Text>
       </MessageWrapper>

@@ -7,24 +7,23 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import {
   Block,
   Network as EthersNetwork,
+  JsonRpcProvider,
   StaticJsonRpcProvider,
   TransactionRequest,
   TransactionResponse,
 } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
-import UnstoppableResolution from '@unstoppabledomains/resolution';
+import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 // @ts-expect-error – No TS definitions
 import { IS_TESTING } from 'react-native-dotenv';
+import { MMKV } from 'react-native-mmkv';
 import { RainbowConfig } from '../model/config';
-import {
-  AssetType,
-  NewTransaction,
-  ParsedAddressAsset,
-} from '@rainbow-me/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { isUnstoppableAddressFormat } from '@rainbow-me/helpers/validators';
+import { STORAGE_IDS } from '@/model/mmkv';
+import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
+import { isNativeAsset } from '@/handlers/assets';
+import { Network } from '@/helpers/networkTypes';
+import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
@@ -32,7 +31,7 @@ import {
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -41,10 +40,10 @@ import {
   greaterThan,
   handleSignificantDecimals,
   multiply,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
-import { fetchContractABI } from '@rainbow-me/utils/ethereumUtils';
-import logger from 'logger';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
+import { fetchContractABI } from '@/utils/ethereumUtils';
+import logger from '@/utils/logger';
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
@@ -105,10 +104,7 @@ type NewTransactionNonNullable = {
  */
 export const setRpcEndpoints = (config: RainbowConfig): void => {
   rpcEndpoints[Network.mainnet] = config.ethereum_mainnet_rpc;
-  rpcEndpoints[Network.ropsten] = config.ethereum_ropsten_rpc;
-  rpcEndpoints[Network.kovan] = config.ethereum_kovan_rpc;
   rpcEndpoints[Network.goerli] = config.ethereum_goerli_rpc;
-  rpcEndpoints[Network.rinkeby] = config.ethereum_rinkeby_rpc;
   rpcEndpoints[Network.optimism] = config.optimism_mainnet_rpc;
   rpcEndpoints[Network.arbitrum] = config.arbitrum_mainnet_rpc;
   rpcEndpoints[Network.polygon] = config.polygon_mainnet_rpc;
@@ -174,13 +170,17 @@ export const isHardHat = (providerUrl: string): boolean => {
 export const isTestnetNetwork = (network: Network): boolean => {
   switch (network) {
     case Network.goerli:
-    case Network.kovan:
-    case Network.rinkeby:
-    case Network.ropsten:
       return true;
     default:
       return false;
   }
+};
+
+export const getFlashbotsProvider = async () => {
+  return new StaticJsonRpcProvider(
+    'https://rpc.flashbots.net',
+    Network.mainnet
+  );
 };
 
 /**
@@ -242,6 +242,14 @@ export const isHexString = (value: string): boolean => isEthersHexString(value);
  */
 export const toHex = (value: BigNumberish): string =>
   BigNumber.from(value).toHexString();
+
+/**
+ * Converts a number to a hex string without leading zeros.
+ * @param value The number.
+ * @return The hex string.
+ */
+export const toHexNoLeadingZeros = (value: BigNumberish): string =>
+  toHex(value).replace(/^0x0*/, '0x');
 
 /**
  * @desc Checks if a hex string, ignoring prefixes and suffixes.
@@ -395,7 +403,7 @@ export async function estimateGasWithPadding(
     logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
     return lastBlockGasLimit;
   } catch (error) {
-    logger.error('Error calculating gas limit with padding', error);
+    logger.debug('Error calculating gas limit with padding', error);
     return null;
   }
 }
@@ -492,15 +500,7 @@ export const resolveUnstoppableDomain = async (
   // This parameter doesn't line up with the `Resolution` type declaration,
   // but it can be casted to `any` as it does match the documentation here:
   // https://unstoppabledomains.github.io/resolution/v2.2.0/classes/resolution.html.
-  const resolution = new UnstoppableResolution({
-    blockchain: {
-      cns: {
-        network: 'mainnet',
-        url: rpcEndpoints[Network.mainnet],
-      },
-    },
-  } as any);
-
+  const resolution = new Resolution();
   const res = resolution
     .addr(domain, 'ETH')
     .then((address: string) => {
@@ -546,6 +546,7 @@ export const getTransferNftTransaction = async (
     | 'gasPrice'
     | 'gasLimit'
     | 'network'
+    | 'nonce'
     | 'maxFeePerGas'
     | 'maxPriorityFeePerGas'
   >
@@ -556,7 +557,7 @@ export const getTransferNftTransaction = async (
     throw new Error(`Invalid recipient "${transaction.to}"`);
   }
 
-  const { from } = transaction;
+  const { from, nonce } = transaction;
   const contractAddress = transaction.asset.asset_contract?.address;
   const data = await getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
@@ -565,6 +566,7 @@ export const getTransferNftTransaction = async (
     from,
     gasLimit: transaction.gasLimit?.toString(),
     network: transaction.network,
+    nonce,
     to: contractAddress,
     ...gasParams,
   };
@@ -822,5 +824,57 @@ export const estimateGasLimit = async (
     return estimateGasWithPadding(estimateGasData, null, null, provider);
   } else {
     return estimateGas(estimateGasData, provider);
+  }
+};
+
+const HAS_MERGED_DEFAULTS: { [key: string]: boolean } = {
+  [Network.mainnet]: false,
+  [Network.goerli]: false,
+};
+const hasMergedStorage = new MMKV();
+export const getHasMerged = (network: Network) => {
+  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
+  if (storage) {
+    const data = JSON.parse(storage);
+    const hasMerged = data[network];
+    if (hasMerged === undefined) {
+      data[network] = HAS_MERGED_DEFAULTS[network];
+      hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
+    }
+    return data[network];
+  } else {
+    hasMergedStorage.set(
+      STORAGE_IDS.HAS_MERGED,
+      JSON.stringify(HAS_MERGED_DEFAULTS)
+    );
+  }
+};
+const getSetMergeStorageKey = (setting: boolean) => (network: Network) => {
+  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
+  if (storage) {
+    const data = JSON.parse(storage);
+    data[network] = setting;
+    hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
+  }
+};
+export const setHasMerged = (network: Network) => {
+  getSetMergeStorageKey(true)(network);
+};
+export const setHasNotMerged = (network: Network) => {
+  getSetMergeStorageKey(false)(network);
+};
+export const checkForTheMerge = async (
+  provider: JsonRpcProvider,
+  network: Network
+) => {
+  const currentHasMerged = getHasMerged(network);
+  if (currentHasMerged !== true) {
+    const block = await provider.getBlock('latest');
+    const { _difficulty } = block;
+    if (_difficulty.toString() === '0') {
+      setHasMerged(network);
+    } else if (currentHasMerged) {
+      setHasNotMerged(network);
+    }
   }
 };

@@ -6,15 +6,15 @@ import { AnimatedNumber, Emoji, Text } from '../text';
 import {
   calculateEarningsInDays,
   isSymbolStablecoin,
-} from '@rainbow-me/helpers/savings';
+} from '@/helpers/savings';
 import {
   convertAmountToNativeDisplay,
   handleSignificantDecimals,
-} from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { useAccountSettings, useStepper } from '@/hooks';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { magicMemo } from '@/utils';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',
@@ -34,7 +34,6 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
   flexGrow: 1,
 });
 
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
   'Monthly': {
     label: lang.t('savings.earnings.monthly'),
@@ -65,7 +64,6 @@ const steps = {
     days: 365 * 100,
   },
 };
-/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 const rowStyle = padding.object(15, 19, 19);
 

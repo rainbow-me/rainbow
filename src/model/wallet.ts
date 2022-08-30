@@ -18,7 +18,6 @@ import {
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
@@ -36,30 +35,31 @@ import profileUtils, {
 } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
-import { EthereumAddress } from '@rainbow-me/entities';
-import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { EthereumAddress } from '@/entities';
+import AesEncryptor from '@/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   authenticateWithPINAndCreateIfNeeded,
   getExistingPIN,
-} from '@rainbow-me/handlers/authentication';
-import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/authentication';
+import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
   isHexStringIgnorePrefix,
   isValidMnemonic,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import { createSignature } from '@rainbow-me/helpers/signingWallet';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
-import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import store from '@rainbow-me/redux/store';
-import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/web3';
+import { createSignature } from '@/helpers/signingWallet';
+import showWalletErrorAlert from '@/helpers/support';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { EthereumWalletType } from '@/helpers/walletTypes';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import store from '@/redux/store';
+import { setIsWalletLoading } from '@/redux/wallets';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const encryptor = new AesEncryptor();
 
@@ -887,7 +887,11 @@ export const createWallet = async (
           ? (walletResult as Wallet)
           : new Wallet(pkey);
       setTimeout(() => {
-        dispatch(setIsWalletLoading(null));
+        // on android we need to call this logic in more specific places
+        if (ios || !isImported) {
+          // !imported = new wallet - then we use this logic for dismissing the loading state
+          dispatch(setIsWalletLoading(null));
+        }
       }, 2000);
 
       return ethersWallet;

@@ -4,11 +4,11 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { UniqueTokenCard } from '../../unique-token';
-import { Box, BoxProps } from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { useCollectible } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+import { Box, BoxProps } from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { useCollectible } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 export default React.memo(function WrappedNFT({
   onPress,

@@ -2,17 +2,21 @@ import { useCallback } from 'react';
 import { promiseUtils } from '../utils';
 import { prefetchAccountENSDomains } from './useAccountENSDomains';
 import useAccountSettings from './useAccountSettings';
-import logger from 'logger';
+import useWallets from './useWallets';
+import logger from '@/utils/logger';
 
 export default function useLoadAccountLateData() {
   const { accountAddress } = useAccountSettings();
+  const { isReadOnlyWallet } = useWallets();
 
   const load = useCallback(async () => {
     logger.sentry('Load wallet account late data');
     return promiseUtils.PromiseAllWithFails([
-      prefetchAccountENSDomains({ accountAddress }),
+      ...(!isReadOnlyWallet
+        ? [prefetchAccountENSDomains({ accountAddress })]
+        : []),
     ]);
-  }, [accountAddress]);
+  }, [accountAddress, isReadOnlyWallet]);
 
   return load;
 }

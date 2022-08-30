@@ -3,15 +3,17 @@ import React, { useMemo } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
-import { Text } from '../text';
-import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import { TruncatedText } from '../text';
+import CaretImageSource from '@/assets/family-dropdown-arrow.png';
+import { AssetType } from '@/entities';
+import { useColorForAsset } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const TokenSelectionButtonHeight = 46;
+const TokenSelectionButtonMaxWidth = 130;
 const TokenSelectionButtonElevation = ios ? 0 : 8;
 
 const Content = styled(RowWithMargins).attrs({
@@ -35,15 +37,21 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
 
 export default function TokenSelectionButton({
   address,
+  mainnetAddress,
   borderRadius = 30,
   onPress,
   symbol,
   testID,
+  type,
 }) {
   const { isDarkMode, colors } = useTheme();
 
   const colorForAsset = useColorForAsset(
-    { address },
+    {
+      address,
+      mainnet_address: mainnetAddress,
+      type: mainnetAddress ? AssetType.token : type,
+    },
     address ? undefined : colors.appleBlue
   );
 
@@ -62,6 +70,7 @@ export default function TokenSelectionButton({
         backgroundColor: colorForAsset,
         borderRadius,
       }}
+      {...(symbol && { maxWidth: TokenSelectionButtonMaxWidth })}
       onPress={onPress}
       radiusAndroid={borderRadius}
       testID={testID}
@@ -74,7 +83,7 @@ export default function TokenSelectionButton({
         shadows={shadowsForAsset}
       />
       <Content>
-        <Text
+        <TruncatedText
           align="center"
           color={colors.whiteLabel}
           {...(android && { lineHeight: 21 })}
@@ -82,8 +91,8 @@ export default function TokenSelectionButton({
           testID={testID + '-text'}
           weight="bold"
         >
-          {symbol || lang.t('swap.choose_token')}
-        </Text>
+          {symbol ?? lang.t('swap.choose_token')}
+        </TruncatedText>
         <CaretIcon />
       </Content>
       <InnerBorder radius={borderRadius} />

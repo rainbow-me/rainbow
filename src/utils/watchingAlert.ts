@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import { Alert } from 'react-native';
-import { Navigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 export default function watchingAlert() {
   Alert.alert(

@@ -1,22 +1,22 @@
-import { ChainId, WETH } from '@uniswap/sdk';
-import { compact, isEmpty, join, orderBy, sumBy, toLower } from 'lodash';
+import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { compact, isEmpty, orderBy, sumBy } from 'lodash';
 import { createSelector } from 'reselect';
-import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
-import { parseAssetNative } from '@rainbow-me/parsers';
-import { AppState } from '@rainbow-me/redux/store';
+import { Asset, ParsedAddressAsset } from '@/entities';
+import { parseAssetNative } from '@/parsers';
+import { AppState } from '@/redux/store';
 import {
   PositionsState,
   UniswapPosition,
-} from '@rainbow-me/redux/usersPositions';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
+} from '@/redux/usersPositions';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import {
   convertAmountToNativeDisplay,
   divide,
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
-} from '@rainbow-me/utilities';
-import { getTokenMetadata } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { getTokenMetadata } from '@/utils';
 
 const accountAddressSelector = (state: AppState) =>
   state.settings.accountAddress;
@@ -56,7 +56,7 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
-  if (toLower(token.address) === toLower(WETH[chainId].address)) {
+  if (token?.address?.toLowerCase() === WRAPPED_ASSET[chainId]?.toLowerCase()) {
     return {
       ...token,
       address: ETH_ADDRESS,
@@ -123,10 +123,7 @@ const transformPool = (
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
-  const tokenNames = join(
-    formattedTokens.map(token => token.symbol),
-    '-'
-  );
+  const tokenNames = formattedTokens.map(token => token.symbol).join('-');
 
   return {
     ...liquidityTokenWithNative,

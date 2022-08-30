@@ -1,7 +1,6 @@
 import WalletConnect from '@walletconnect/client';
-import { omit } from 'lodash';
 import { getGlobal, saveGlobal } from './common';
-import { pickBy } from '@rainbow-me/helpers/utilities';
+import { omitFlatten, pickBy } from '@/helpers/utilities';
 
 const WALLETCONNECT = 'walletconnect';
 
@@ -40,6 +39,6 @@ export const saveWalletConnectSession = async (peerId: any, session: any) => {
  */
 export const removeWalletConnectSessions = async (sessionIds: any) => {
   const allSessions = await getAllWalletConnectSessions();
-  const resultingSessions = omit(allSessions, sessionIds);
+  const resultingSessions = omitFlatten(allSessions, sessionIds);
   await saveGlobal(WALLETCONNECT, resultingSessions);
 };

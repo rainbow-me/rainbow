@@ -1,15 +1,19 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
-import { useTheme } from '../../theme/ThemeContext';
-import { useEth } from '../../utils/ethereumUtils';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { magicMemo, watchingAlert } from '@rainbow-me/utils';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import {
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+} from '@/helpers';
+import { useSwapCurrencyHandlers } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { magicMemo, watchingAlert } from '@/utils';
 
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],
@@ -27,24 +31,29 @@ const FabIcon = styled(Text).attrs(({ theme: { colors } }) => ({
 const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-  const eth = useEth();
+
+  const { updateInputCurrency } = useSwapCurrencyHandlers({
+    shouldUpdate: false,
+    type: ExchangeModalTypes.swap,
+  });
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       android && delayNext();
       navigate(Routes.EXCHANGE_MODAL, {
+        fromDiscover: true,
         params: {
-          params: {
-            inputAsset: eth,
-          },
-          screen: Routes.MAIN_EXCHANGE_SCREEN,
+          fromDiscover: true,
+          onSelectCurrency: updateInputCurrency,
+          title: lang.t('swap.modal_types.swap'),
+          type: CurrencySelectionTypes.input,
         },
-        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
+        screen: Routes.CURRENCY_SELECT_SCREEN,
       });
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate, eth]);
+  }, [isReadOnlyWallet, navigate, updateInputCurrency]);
 
   return (
     <FloatingActionButton

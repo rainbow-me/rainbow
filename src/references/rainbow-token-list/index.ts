@@ -7,9 +7,9 @@ import { MMKV } from 'react-native-mmkv';
 import { rainbowFetch } from '../../rainbow-fetch';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
-import { RainbowToken } from '@rainbow-me/entities';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
-import logger from 'logger';
+import { RainbowToken } from '@/entities';
+import { STORAGE_IDS } from '@/model/mmkv';
+import logger from '@/utils/logger';
 
 export const rainbowListStorage = new MMKV({
   id: STORAGE_IDS.RAINBOW_TOKEN_LIST,
@@ -28,6 +28,7 @@ const ethWithAddress: RainbowToken = {
   isVerified: true,
   name: 'Ethereum',
   symbol: 'ETH',
+  type: 'token',
   uniqueId: 'eth',
 };
 
@@ -43,6 +44,7 @@ function generateDerivedData(tokenListData: TokenListData) {
       decimals,
       name,
       symbol,
+      type: 'token',
       uniqueId: address,
       ...extensions,
     };

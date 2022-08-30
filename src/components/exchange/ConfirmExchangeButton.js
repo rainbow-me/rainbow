@@ -1,64 +1,49 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
-import { Centered } from '../layout';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
-import {
-  useColorForAsset,
-  useGas,
-  useSwapCurrencies,
-  useSwapIsSufficientBalance,
-  useSwapIsSufficientLiquidity,
-} from '@rainbow-me/hooks';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { lightModeThemeColors, padding } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { Box, Row, Rows } from '@/design-system';
+import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
+import { useColorForAsset, useGas, useSwapCurrencies } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { lightModeThemeColors } from '@/styles';
+import { useTheme } from '@/theme';
+import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
 
-const paddingHorizontal = 19;
-
-const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
-  hideInnerBorder: true,
-  parentHorizontalPadding: paddingHorizontal,
-  theme: 'dark',
-})({
-  flex: 1,
-});
-
-const Container = styled(Centered)({
-  ...padding.object(5, paddingHorizontal, 0),
-  width: '100%',
-});
+const NOOP = () => null;
 
 export default function ConfirmExchangeButton({
+  currentNetwork,
   disabled,
-  doneLoadingReserves,
-  inputAmount,
+  loading,
   isHighPriceImpact,
+  quoteError,
   onPressViewDetails,
   onSubmit,
   testID,
   tradeDetails,
   type = ExchangeModalTypes.swap,
+  isSufficientBalance,
   ...props
 }) {
-  const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
-  const isSufficientLiquidity = useSwapIsSufficientLiquidity(
-    doneLoadingReserves,
-    tradeDetails
-  );
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
-  const { isSufficientGas, isValidGas } = useGas();
+  const { isSufficientGas, isValidGas, isGasReady } = useGas();
   const { name: routeName } = useRoute();
+  const { navigate } = useNavigation();
+  const [isSwapSubmitting, setIsSwapSubmitting] = useState(false);
 
+  const isSavings =
+    type === ExchangeModalTypes.withdrawal ||
+    type === ExchangeModalTypes.deposit;
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
   const shouldOpenSwapDetails =
-    tradeDetails && isHighPriceImpact && !isSwapDetailsRoute;
+    tradeDetails && !isSwapDetailsRoute && !isSavings;
 
   const { colors, isDarkMode } = useTheme();
 
@@ -81,16 +66,23 @@ export default function ConfirmExchangeButton({
 
   const colorForAsset = useColorForAsset(asset, undefined, true, true);
 
+  const disabledButtonColor = isSwapDetailsRoute
+    ? isDarkMode
+      ? darkModeThemeColors.blueGreyDark04
+      : lightModeThemeColors.blueGreyDark50
+    : darkModeThemeColors.blueGreyDark04;
+
   const { buttonColor, shadowsForAsset } = useMemo(() => {
-    const color =
-      asset.address === ETH_ADDRESS
-        ? colors.appleBlue
-        : isSwapDetailsRoute
-        ? colorForAsset
-        : makeColorMoreChill(
-            colorForAsset,
-            (isSwapDetailsRoute ? colors : darkModeThemeColors).light
-          );
+    const color = quoteError
+      ? disabledButtonColor
+      : asset.address === ETH_ADDRESS
+      ? colors.appleBlue
+      : isSwapDetailsRoute
+      ? colorForAsset
+      : makeColorMoreChill(
+          colorForAsset,
+          (isSwapDetailsRoute ? colors : darkModeThemeColors).light
+        );
 
     return {
       buttonColor: color,
@@ -99,69 +91,120 @@ export default function ConfirmExchangeButton({
         [0, 5, 15, isDarkMode ? colors.trueBlack : color, 0.4],
       ],
     };
-  }, [asset.address, colorForAsset, colors, isDarkMode, isSwapDetailsRoute]);
+  }, [
+    asset.address,
+    colorForAsset,
+    colors,
+    disabledButtonColor,
+    quoteError,
+    isDarkMode,
+    isSwapDetailsRoute,
+  ]);
 
   let label = '';
+  let explainerType = null;
+
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
   } else if (type === ExchangeModalTypes.swap) {
-    label = lang.t('button.confirm_exchange.swap');
+    label = `􀕹 ${lang.t('button.confirm_exchange.review')}`;
   } else if (type === ExchangeModalTypes.withdrawal) {
     label = lang.t('button.confirm_exchange.withdraw');
   }
-
-  if (!doneLoadingReserves) {
-    label = lang.t('button.confirm_exchange.fetching_details');
+  if (loading) {
+    label = lang.t('button.confirm_exchange.fetching_quote');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
-  } else if (!isSufficientLiquidity) {
-    label = lang.t('button.confirm_exchange.insufficient_liquidity');
   } else if (isSufficientGas != null && !isSufficientGas) {
-    label = lang.t('button.confirm_exchange.insufficient_eth');
-  } else if (!isValidGas) {
+    label =
+      currentNetwork === NetworkTypes.polygon
+        ? lang.t('button.confirm_exchange.insufficient_matic')
+        : lang.t('button.confirm_exchange.insufficient_eth');
+  } else if (!isValidGas && isGasReady) {
     label = lang.t('button.confirm_exchange.invalid_fee');
-  } else if (isHighPriceImpact) {
-    label = isSwapDetailsRoute
-      ? lang.t('button.confirm_exchange.swap_anyway')
-      : `􀕹 ${lang.t('button.confirm_exchange.view_details')}`;
+  } else if (isSwapDetailsRoute) {
+    if (isSwapSubmitting) {
+      label = lang.t('button.confirm_exchange.submitting');
+    } else {
+      label = isHighPriceImpact
+        ? lang.t('button.confirm_exchange.swap_anyway')
+        : `${lang.t('button.confirm_exchange.swap')}`;
+    }
   } else if (disabled) {
     label = lang.t('button.confirm_exchange.enter_amount');
   }
 
+  if (quoteError) {
+    const error = handleSwapErrorCodes(quoteError);
+    label = error.buttonLabel;
+    explainerType = error.explainerType;
+  }
+
+  const handleExplainer = useCallback(() => {
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, {
+      inputCurrency,
+      outputCurrency,
+      type: explainerType,
+    });
+  }, [explainerType, inputCurrency, navigate, outputCurrency]);
+
   const isDisabled =
     disabled ||
-    !doneLoadingReserves ||
     !isSufficientBalance ||
     !isSufficientGas ||
     !isValidGas ||
-    !isSufficientLiquidity;
+    !isSufficientGas;
+
+  const onSwap = useCallback(async () => {
+    setIsSwapSubmitting(true);
+    const submitted = await onSubmit(setIsSwapSubmitting);
+    setIsSwapSubmitting(submitted);
+  }, [onSubmit]);
 
   return (
-    <Container>
-      <ConfirmButton
-        backgroundColor={buttonColor}
-        disableLongPress={shouldOpenSwapDetails}
-        disabled={isDisabled}
-        disabledBackgroundColor={
-          isSwapDetailsRoute
-            ? isDarkMode
-              ? darkModeThemeColors.blueGreyDark04
-              : lightModeThemeColors.blueGreyDark50
-            : darkModeThemeColors.blueGreyDark04
-        }
-        label={label}
-        onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
-        shadows={
-          isSwapDetailsRoute
-            ? isDisabled
-              ? shadows.disabled
-              : shadowsForAsset
-            : shadows.default
-        }
-        showBiometryIcon={!isDisabled && !isHighPriceImpact}
-        testID={testID}
-        {...props}
-      />
-    </Container>
+    <Box>
+      <Rows alignHorizontal="center" alignVertical="bottom" space="8px">
+        <Row height="content">
+          <HoldToAuthorizeButton
+            backgroundColor={buttonColor}
+            disableLongPress={
+              (shouldOpenSwapDetails && !quoteError) ||
+              loading ||
+              isSwapSubmitting
+            }
+            disableShimmerAnimation={quoteError}
+            disabled={isDisabled && !quoteError}
+            disabledBackgroundColor={
+              isSwapSubmitting ? buttonColor : disabledButtonColor
+            }
+            hideInnerBorder
+            isAuthorizing={isSwapSubmitting}
+            label={label}
+            loading={loading || isSwapSubmitting}
+            onLongPress={
+              loading || isSwapSubmitting
+                ? NOOP
+                : explainerType
+                ? handleExplainer
+                : shouldOpenSwapDetails
+                ? onPressViewDetails
+                : onSwap
+            }
+            shadows={
+              isSwapDetailsRoute
+                ? isDisabled || quoteError
+                  ? shadows.disabled
+                  : shadowsForAsset
+                : shadows.default
+            }
+            showBiometryIcon={isSwapDetailsRoute && !isSwapSubmitting}
+            testID={testID}
+            {...props}
+            parentHorizontalPadding={19}
+          />
+        </Row>
+      </Rows>
+    </Box>
   );
 }

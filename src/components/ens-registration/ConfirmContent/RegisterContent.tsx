@@ -11,10 +11,10 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+} from '@/design-system';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 const RegisterContent = ({
   accentColor,
@@ -71,7 +71,7 @@ const RegisterContent = ({
                   onPress={openPrimaryENSNameHelper}
                   scaleTo={0.9}
                 >
-                  <Text color="secondary80" size="16px" weight="bold">
+                  <Text color="secondary30" size="16px" weight="bold">
                     􀅵
                   </Text>
                 </ButtonPressAnimation>
@@ -85,7 +85,10 @@ const RegisterContent = ({
                 }
                 testID="ens-reverse-record-switch"
                 thumbColor={colors.white}
-                trackColor={{ false: colors.white, true: accentColor }}
+                trackColor={{
+                  false: android ? colors.lightGrey : colors.white,
+                  true: accentColor,
+                }}
                 value={sendReverseRecord}
               />
             </Inline>

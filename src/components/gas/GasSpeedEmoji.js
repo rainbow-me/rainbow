@@ -1,9 +1,8 @@
-import { has } from 'lodash';
 import React from 'react';
 import { Emoji } from '../text';
-import styled from '@rainbow-me/styled-components';
-import { margin } from '@rainbow-me/styles';
-import { gasUtils, magicMemo } from '@rainbow-me/utils';
+import styled from '@/styled-thing';
+import { margin } from '@/styles';
+import { gasUtils, magicMemo } from '@/utils';
 
 const EmojiForGasSpeedType = {
   [gasUtils.URGENT]: {
@@ -17,8 +16,8 @@ const EmojiForGasSpeedType = {
     top: android ? -1.25 : -1.25,
   },
   [gasUtils.NORMAL]: {
-    emoji: 'stopwatch',
-    // ⏱️
+    emoji: ios ? 'stopwatch' : 'nine_o_clock',
+    // ⏱️ 🕘
     top: -1.25,
   },
   [gasUtils.SLOW]: {
@@ -40,9 +39,8 @@ const GasEmoji = styled(Emoji).attrs({
 })(({ top }) => margin.object(top, 0, 0, 0));
 
 const GasSpeedEmoji = ({ label }) => {
-  const gasSpeed = has(EmojiForGasSpeedType, label)
-    ? EmojiForGasSpeedType[label]
-    : EmojiForGasSpeedType[gasUtils.NORMAL];
+  const gasSpeed =
+    EmojiForGasSpeedType[label] || EmojiForGasSpeedType[gasUtils.NORMAL];
 
   return <GasEmoji name={gasSpeed.emoji} top={gasSpeed.top} />;
 };

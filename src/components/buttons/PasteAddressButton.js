@@ -2,9 +2,9 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
-import { useClipboard, useInvalidPaste } from '@rainbow-me/hooks';
-import { deviceUtils } from '@rainbow-me/utils';
+import { checkIsValidAddressOrDomain } from '@/helpers/validators';
+import { useClipboard, useInvalidPaste } from '@/hooks';
+import { deviceUtils } from '@/utils';
 
 export default function PasteAddressButton({ onPress }) {
   const [isValid, setIsValid] = useState(false);

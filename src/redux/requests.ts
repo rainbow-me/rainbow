@@ -1,19 +1,19 @@
-import { filter, omit, values } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
-} from '@rainbow-me/handlers/localstorage/walletconnectRequests';
+} from '@/handlers/localstorage/walletconnectRequests';
 import {
   dappLogoOverride,
   dappNameOverride,
-} from '@rainbow-me/helpers/dappNameHandler';
-import { getRequestDisplayDetails } from '@rainbow-me/parsers';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/helpers/dappNameHandler';
+import { omitFlatten } from '@/helpers/utilities';
+import { getRequestDisplayDetails } from '@/parsers';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 
@@ -63,7 +63,7 @@ export interface RequestData {
   /**
    * The display details loaded for the request.
    */
-  displayDetails: RequestDisplayDetails | null | {};
+  displayDetails: RequestDisplayDetails | null | Record<string, never>;
 
   /**
    * The image URL for the dapp, or undefined.
@@ -229,7 +229,7 @@ export const requestsForTopic = (topic: string) => (
   getState: AppGetState
 ): RequestData[] => {
   const { requests } = getState().requests;
-  return filter(values(requests), { clientId: topic });
+  return Object.values(requests).filter(({ clientId }) => clientId === topic);
 };
 
 /**
@@ -250,7 +250,7 @@ export const removeRequest = (requestId: number) => (
 ) => {
   const { accountAddress, network } = getState().settings;
   const { requests } = getState().requests;
-  const updatedRequests = omit(requests, [requestId]);
+  const updatedRequests = omitFlatten(requests, [requestId]);
   removeLocalRequest(accountAddress, network, requestId);
   dispatch({
     payload: updatedRequests,

@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -24,21 +23,22 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
 } from '../components/sheet';
-import { Text } from '@rainbow-me/design-system';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import { analytics } from '@/analytics';
+import { Text } from '@/design-system';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { getDappHostname } from '@/helpers/dappNameHandler';
+import networkInfo from '@/helpers/networkInfo';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import {
   androidShowNetworksActionSheet,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
-} from '@rainbow-me/helpers/walletConnectNetworks';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/helpers/walletConnectNetworks';
+import { useAccountSettings, useWallets } from '@/hooks';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { ethereumUtils } from '@/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -151,7 +151,6 @@ export default function WalletConnectApprovalSheet() {
     const approvalAccountInfo = getAccountProfileInfo(
       approvalAccount.wallet,
       walletNames,
-      approvalNetwork,
       approvalAccount.address
     );
     return {
@@ -161,12 +160,7 @@ export default function WalletConnectApprovalSheet() {
         approvalAccountInfo.accountName ||
         approvalAccount.address,
     };
-  }, [
-    walletNames,
-    approvalNetwork,
-    approvalAccount.wallet,
-    approvalAccount.address,
-  ]);
+  }, [walletNames, approvalAccount.wallet, approvalAccount.address]);
 
   const approvalNetworkInfo = useMemo(() => {
     const value = networkInfo[approvalNetwork]?.value;
@@ -267,11 +261,14 @@ export default function WalletConnectApprovalSheet() {
   }, [approvalAccount.address, goBack, type]);
 
   useEffect(() => {
+    const waitingTime = (Date.now() - receivedTimestamp) / 1000;
     InteractionManager.runAfterInteractions(() => {
       analytics.track('Received wc connection', {
         dappName,
         dappUrl,
-        waitingTime: (Date.now() - receivedTimestamp) / 1000,
+        waitingTime: isNaN(waitingTime)
+          ? 'Error calculating waiting time.'
+          : waitingTime,
       });
     });
   }, [dappName, dappUrl, receivedTimestamp]);

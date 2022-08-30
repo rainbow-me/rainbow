@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -10,6 +11,7 @@ import React, {
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
+import AvailableNetworks from '../../AvailableNetworks';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
@@ -34,10 +36,9 @@ import {
 import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
-import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { ChartPathProvider } from '@/react-native-animated-charts/src';
+import { isL2Network, isTestnetNetwork } from '@/handlers/web3';
+import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useAdditionalAssetData,
@@ -45,13 +46,12 @@ import {
   useDelayedValueWithLayoutAnimation,
   useDimensions,
   useGenericAsset,
-  useUniswapAssetsInWallet,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -182,6 +182,9 @@ function Description({ text = '' }) {
 
 export default function ChartExpandedState({ asset }) {
   const genericAsset = useGenericAsset(asset?.address);
+  const {
+    params: { fromDiscover = false },
+  } = useRoute();
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency, network: currentNetwork } = useAccountSettings();
@@ -206,17 +209,8 @@ export default function ChartExpandedState({ asset }) {
   const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
     assetWithPrice.type,
   ]);
-  // This one includes the original l2 address if exists
-  const ogAsset = useMemo(() => {
-    return {
-      ...assetWithPrice,
-      address: isL2
-        ? assetWithPrice.l2Address || asset?.address
-        : assetWithPrice.address,
-    };
-  }, [assetWithPrice, isL2, asset]);
+  const isTestnet = isTestnetNetwork(currentNetwork);
 
-  const { height: screenHeight } = useDimensions();
   const {
     description,
     marketCap,
@@ -224,7 +218,31 @@ export default function ChartExpandedState({ asset }) {
     totalVolume,
     loading: additionalAssetDataLoading,
     links,
+    networks,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
+
+  // This one includes the original l2 address if exists
+  const ogAsset = useMemo(() => {
+    if (networks) {
+      let mappedNetworks = {};
+      Object.keys(networks).forEach(
+        chainId =>
+          (mappedNetworks[
+            ethereumUtils.getNetworkFromChainId(Number(chainId))
+          ] = networks[chainId])
+      );
+      assetWithPrice.implementations = mappedNetworks;
+    }
+
+    return {
+      ...assetWithPrice,
+      address: isL2
+        ? assetWithPrice.l2Address || asset?.address
+        : assetWithPrice.address,
+    };
+  }, [assetWithPrice, isL2, asset?.address, networks]);
+
+  const { height: screenHeight } = useDimensions();
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
     description?.replace(/\s+/g, '')
@@ -269,17 +287,6 @@ export default function ChartExpandedState({ asset }) {
       screenHeight
     ),
   });
-
-  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
-  const showSwapButton = useMemo(
-    () =>
-      !!networkInfo[currentNetwork]?.exchange_enabled &&
-      !isL2 &&
-      uniswapAssetsInWallet.find(
-        assetInWallet => assetInWallet.address === assetWithPrice.address
-      ),
-    [assetWithPrice.address, currentNetwork, isL2, uniswapAssetsInWallet]
-  );
 
   const needsEth =
     asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
@@ -379,14 +386,24 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          {showSwapButton && (
-            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+          {hasBalance && !isTestnet && (
+            <SwapActionButton
+              asset={ogAsset}
+              color={color}
+              inputType={AssetInputTypes.in}
+            />
           )}
           {hasBalance ? (
-            <SendActionButton asset={ogAsset} color={color} />
+            <SendActionButton
+              asset={ogAsset}
+              color={color}
+              fromDiscover={fromDiscover}
+            />
           ) : (
             <SwapActionButton
+              asset={ogAsset}
               color={color}
+              fromDiscover={fromDiscover}
               inputType={AssetInputTypes.out}
               label={`􀖅 ${lang.t('expanded_state.asset.get_asset', {
                 assetSymbol: asset?.symbol,
@@ -406,7 +423,13 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-
+      {networks && !hasBalance && (
+        <AvailableNetworks
+          asset={assetWithPrice}
+          colors={colors}
+          networks={networks}
+        />
+      )}
       {!isL2 && (
         <CarouselWrapper
           isAnyItemLoading={additionalAssetDataLoading}
@@ -458,6 +481,7 @@ export default function ChartExpandedState({ asset }) {
             forceShowAll={delayedMorePoolsVisible}
             hideIfEmpty
             initialPageAmount={3}
+            marginTop={24}
             token={asset?.address}
           />
         )}

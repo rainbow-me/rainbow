@@ -2,7 +2,7 @@
 import { url as cloudinaryURL } from 'cloudinary/lib/cloudinary';
 // @ts-ignore
 import { pickScale } from 'react-native/Libraries/Image/AssetUtils';
-import { memoFn } from '@rainbow-me/utils/memoFn';
+import { memoFn } from '@/utils/memoFn';
 
 type CloudinaryConfig = {
   width: number;
@@ -54,5 +54,5 @@ export const signUrl = memoFn(
 );
 
 export function isCloudinaryStorageLink(url: string): boolean {
-  return url.includes('rainbowme-res.cloudinary.com');
+  return url.startsWith('https://rainbowme-res.cloudinary.com/');
 }

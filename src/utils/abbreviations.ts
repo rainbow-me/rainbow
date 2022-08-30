@@ -1,5 +1,5 @@
 import { isValidDomainFormat } from '../helpers/validators';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 
 const defaultNumCharsPerSection = 6;
 
@@ -28,14 +28,20 @@ export function formatAddressForDisplay(
 
 export function abbreviateEnsForDisplay(
   text: string,
-  truncationLength = 20
+  truncationLength = 20,
+  truncationLengthBuffer = 2
 ): string | null {
   if (typeof text !== 'string' || !isValidDomainFormat(text)) {
-    return null;
+    return text;
   }
   const pieces = text.split('.');
-  if (pieces[0].length > truncationLength) {
-    return [pieces[0].slice(0, truncationLength), '(...).', pieces[1]].join('');
+  if (pieces[0].length > truncationLength + truncationLengthBuffer) {
+    return [
+      pieces[0].slice(0, truncationLength - 4),
+      '...',
+      pieces[0].slice(-4),
+      `.${pieces[1]}`,
+    ].join('');
   } else {
     return text;
   }

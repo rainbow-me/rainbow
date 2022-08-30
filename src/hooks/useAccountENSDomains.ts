@@ -1,22 +1,20 @@
+import { uniqBy } from 'lodash';
+import { useMemo } from 'react';
 import { useQuery } from 'react-query';
-import useAccountSettings from './useAccountSettings';
-import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';
-import {
-  fetchAccountRegistrations,
-  fetchImages,
-} from '@rainbow-me/handlers/ens';
+import useAccountProfile from './useAccountProfile';
+import { prefetchENSAvatar } from './useENSAvatar';
+import { EnsDomain } from '@/apollo/queries';
+import { fetchAccountDomains } from '@/handlers/ens';
 import {
   getENSDomains,
   setENSDomains,
-} from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
+} from '@/handlers/localstorage/ens';
+import { queryClient } from '@/react-query/queryClient';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [
   'domains',
   accountAddress,
 ];
-
-const imagesQueryKey = ({ name }: { name: string }) => ['domainImages', name];
 
 const STALE_TIME = 10000;
 
@@ -25,20 +23,19 @@ async function fetchAccountENSDomains({
 }: {
   accountAddress: string;
 }) {
-  if (!accountAddress) return [];
-  const result = await fetchAccountRegistrations(accountAddress);
-  const registrations = result.data?.account?.registrations || [];
-  const domains = await Promise.all(
-    registrations.map(async ({ domain }) => {
-      const images = await fetchAccountENSImages(domain.name);
-      return {
-        ...domain,
-        images,
-      };
-    })
-  );
+  const result = await fetchAccountDomains(accountAddress);
+  const { domains: controlledDomains, registrations } =
+    result.data?.account || {};
+  const registarDomains = registrations?.map(({ domain }) => domain);
 
-  return domains;
+  const domains = uniqBy(
+    [...(controlledDomains || []), ...(registarDomains || [])],
+    'name'
+  );
+  return domains.map(domain => {
+    prefetchENSAvatar(domain.name, { cacheFirst: true });
+    return domain;
+  });
 }
 
 async function fetchENSDomainsWithCache({
@@ -61,27 +58,56 @@ export async function prefetchAccountENSDomains({
 }) {
   queryClient.prefetchQuery(
     queryKey({ accountAddress }),
-    async () => fetchENSDomainsWithCache({ accountAddress }),
+    async () => await fetchENSDomainsWithCache({ accountAddress }),
     { staleTime: STALE_TIME }
   );
 }
 
-async function fetchAccountENSImages(name: string) {
-  return queryClient.fetchQuery(
-    imagesQueryKey({ name }),
-    async () => await fetchImages(name),
+export default function useAccountENSDomains() {
+  const { accountAddress, accountENS } = useAccountProfile();
+
+  const { data: domains, isLoading, isFetched, isSuccess } = useQuery<
+    EnsDomain[]
+  >(
+    queryKey({ accountAddress }),
+    async () => fetchENSDomainsWithCache({ accountAddress }),
     {
-      staleTime: 120000,
+      enabled: Boolean(accountAddress),
     }
   );
-}
 
-export default function useAccountENSDomains() {
-  const { accountAddress } = useAccountSettings();
+  const {
+    controlledDomains,
+    primaryDomain,
+    nonPrimaryDomains,
+  } = useMemo(() => {
+    const controlledDomains = domains?.filter(
+      ({ owner }) => owner?.id?.toLowerCase() === accountAddress?.toLowerCase()
+    );
+    return {
+      controlledDomains,
+      nonPrimaryDomains:
+        controlledDomains?.filter(({ name }) => accountENS !== name) || [],
+      primaryDomain: controlledDomains?.find(({ name }) => accountENS === name),
+    };
+  }, [accountAddress, accountENS, domains]);
 
-  return useQuery<
-    EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
-  >(queryKey({ accountAddress }), async () =>
-    fetchENSDomainsWithCache({ accountAddress })
-  );
+  const uniqueDomain = useMemo(() => {
+    return primaryDomain
+      ? primaryDomain
+      : nonPrimaryDomains?.length === 1
+      ? nonPrimaryDomains?.[0]
+      : null;
+  }, [nonPrimaryDomains, primaryDomain]);
+
+  return {
+    controlledDomains,
+    domains,
+    isFetched,
+    isLoading,
+    isSuccess,
+    nonPrimaryDomains,
+    primaryDomain,
+    uniqueDomain,
+  };
 }

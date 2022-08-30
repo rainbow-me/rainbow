@@ -38,7 +38,7 @@ import getFormattedAllEmojiList, {
   AllEmojiHeaderEntry,
 } from './helpers/getFormattedAllEmojiList';
 import { EmojiCategory, EmojiEntry } from './types';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const { width } = Dimensions.get('screen');
 

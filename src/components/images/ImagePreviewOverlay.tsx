@@ -40,11 +40,11 @@ import {
   BoxProps,
   Cover,
   useColorMode,
-} from '@rainbow-me/design-system';
-import { useDimensions, usePersistentAspectRatio } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
-import { safeAreaInsetValues } from '@rainbow-me/utils';
+} from '@/design-system';
+import { useDimensions, usePersistentAspectRatio } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { colors, position } from '@/styles';
+import { safeAreaInsetValues } from '@/utils';
 
 const idsAtom = atom<string[]>({
   default: [],
@@ -103,10 +103,15 @@ const yOffsetAtom = atomFamily({
   default: 0,
   key: 'imagePreviewOverlay.yOffset',
 });
+const zIndexAtom = atomFamily({
+  default: 0,
+  key: 'imagePreviewOverlay.zIndex',
+});
 
 const ImageOverlayConfigContext = createContext<{
   enableZoom: boolean;
   useBackgroundOverlay?: boolean;
+  yPosition?: SharedValue<number>;
 }>({
   enableZoom: false,
 });
@@ -145,7 +150,7 @@ export default function ImagePreviewOverlay({
   return (
     <RecoilRoot>
       <ImageOverlayConfigContext.Provider
-        value={{ enableZoom, useBackgroundOverlay }}
+        value={{ enableZoom, useBackgroundOverlay, yPosition }}
       >
         {children}
         {enableZoom && (
@@ -221,8 +226,10 @@ function ImagePreview({
   const width = useRecoilValue(widthAtom(id));
   const xOffset = useRecoilValue(xOffsetAtom(id));
   const yOffset = useRecoilValue(yOffsetAtom(id));
+  const zIndexOverride = useRecoilValue(zIndexAtom(id));
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const opacity = givenOpacity || useSharedValue(1);
+  const zIndex = zIndexOverride ?? index;
 
   const { colorMode } = useColorMode();
 
@@ -243,7 +250,7 @@ function ImagePreview({
   }, [progress]);
 
   const backgroundMaskStyle = useAnimatedStyle(() => ({
-    zIndex: progress.value > 0 ? index + 1 : index,
+    zIndex: progress.value > 0 ? zIndex + 1 : zIndex,
   }));
   const overlayStyle = useAnimatedStyle(() => ({
     opacity: 1 * progress.value,
@@ -253,10 +260,10 @@ function ImagePreview({
           yPosition.value - (hideStatusBar ? SheetHandleFixedToTopHeight : 0),
       },
     ],
-    zIndex: progress.value > 0 ? index + 2 : -2,
+    zIndex: progress.value > 0 ? zIndex + 2 : -2,
   }));
   const containerStyle = useAnimatedStyle(() => ({
-    zIndex: progress.value > 0 ? index + 10 : index,
+    zIndex: progress.value > 0 ? zIndex + 10 : zIndex,
   }));
 
   const ready =
@@ -410,6 +417,7 @@ export function ImagePreviewOverlayTarget({
   onPress,
   topOffset = 85,
   uri,
+  zIndex = 0,
 }: {
   backgroundMask?: 'avatar';
   borderRadius?: number;
@@ -423,6 +431,7 @@ export function ImagePreviewOverlayTarget({
   hideStatusBar?: boolean;
   imageUrl?: string;
   topOffset?: number;
+  zIndex?: number;
 } & (
   | {
       aspectRatioType?: never;
@@ -433,7 +442,9 @@ export function ImagePreviewOverlayTarget({
       uri?: never;
     }
 )) {
-  const { enableZoom: enableZoom_ } = useContext(ImageOverlayConfigContext);
+  const { enableZoom: enableZoom_, yPosition } = useContext(
+    ImageOverlayConfigContext
+  );
   const enableZoom = enableZoom_ && imageUrl;
 
   const id = useMemo(() => uniqueId(), []);
@@ -456,6 +467,7 @@ export function ImagePreviewOverlayTarget({
   const setImageUrl = useSetRecoilState(imageUrlAtom(id));
   const setXOffset = useSetRecoilState(xOffsetAtom(id));
   const setYOffset = useSetRecoilState(yOffsetAtom(id));
+  const setZIndex = useSetRecoilState(zIndexAtom(id));
 
   useEffect(() => {
     if (backgroundMask) {
@@ -468,11 +480,12 @@ export function ImagePreviewOverlayTarget({
     setHideStatusBar(hideStatusBar);
     setImageUrl(imageUrl);
     setIds(ids => [...ids, id]);
+    setZIndex(zIndex);
   }, [
     backgroundMask,
     borderRadius,
-    enableZoomOnPress,
     disableEnteringWithPinch,
+    enableZoomOnPress,
     hasShadow,
     hideStatusBar,
     id,
@@ -485,6 +498,8 @@ export function ImagePreviewOverlayTarget({
     setHideStatusBar,
     setIds,
     setImageUrl,
+    setZIndex,
+    zIndex,
   ]);
 
   // If we are not given an `aspectRatioType`, then we will need to
@@ -525,7 +540,8 @@ export function ImagePreviewOverlayTarget({
               const xOffset = args[4];
               const yOffset = args[5];
               typeof xOffset === 'number' && setXOffset(xOffset);
-              typeof yOffset === 'number' && setYOffset(yOffset - topOffset);
+              typeof yOffset === 'number' &&
+                setYOffset(yOffset - topOffset + (yPosition?.value ?? 0));
               hasMounted.current = true;
             });
           }
@@ -533,7 +549,7 @@ export function ImagePreviewOverlayTarget({
         android ? 500 : 0
       );
     },
-    [aspectRatio, setWidth, setXOffset, setYOffset, topOffset]
+    [aspectRatio, setWidth, setXOffset, setYOffset, topOffset, yPosition?.value]
   );
 
   const children = useMemo(() => {

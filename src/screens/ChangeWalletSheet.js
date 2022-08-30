@@ -1,8 +1,6 @@
 import { useRoute } from '@react-navigation/core';
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -27,25 +25,27 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import { analytics } from '@/analytics';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import {
   useAccountSettings,
   useInitializeWallet,
   useWallets,
   useWalletsWithBalancesAndNames,
   useWebData,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 import {
   abbreviations,
   deviceUtils,
   doesWalletsContainAddress,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;
@@ -87,7 +87,7 @@ const EditButtonLabel = styled(Text).attrs(
 
 const Whitespace = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,
-  bottom: -400,
+  bottom: -398,
   height: 400,
   position: 'absolute',
   width: '100%',
@@ -166,7 +166,14 @@ export default function ChangeWalletSheet() {
         await Promise.all([p1, p2]);
 
         initializeWallet(null, null, null, false, false, null, true);
-        !fromDeletion && goBack();
+        if (!fromDeletion) {
+          goBack();
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(async () => {
+              await runCampaignChecks();
+            }, 5000);
+          });
+        }
       } catch (e) {
         logger.log('error while switching account', e);
       }
@@ -190,7 +197,7 @@ export default function ChangeWalletSheet() {
         [walletId]: {
           ...wallets[walletId],
           addresses: wallets[walletId].addresses.map(account =>
-            toLower(account.address) === toLower(address)
+            account.address.toLowerCase() === address.toLowerCase()
               ? { ...account, visible: false }
               : account
           ),
@@ -298,92 +305,81 @@ export default function ChangeWalletSheet() {
     ]
   );
 
-  const onEditWallet = useCallback(
-    (walletId, address, label) => {
-      // If there's more than 1 account
-      // it's deletable
-      let isLastAvailableWallet = false;
-      for (let i = 0; i < Object.keys(wallets).length; i++) {
-        const key = Object.keys(wallets)[i];
-        const someWallet = wallets[key];
-        const otherAccount = someWallet.addresses.find(
-          account => account.visible && account.address !== address
-        );
-        if (otherAccount) {
-          isLastAvailableWallet = true;
-          break;
-        }
-      }
+  const getEditMenuItems = () => {
+    const buttons = [lang.t('wallet.action.edit')];
+    buttons.push(lang.t('wallet.action.delete'));
 
-      const buttons = [lang.t('wallet.action.edit')];
-      buttons.push(lang.t('wallet.action.delete'));
+    if (ios) {
       buttons.push(lang.t('button.cancel'));
+    }
 
+    return {
+      menuItems: buttons.map(button => ({
+        actionKey: button,
+        actionTitle: button,
+      })),
+    };
+  };
+
+  const getOnMenuItemPress = (walletId, address, label) => buttonIndex => {
+    // If there's more than 1 account
+    // it's deletable
+    let isLastAvailableWallet = false;
+    for (let i = 0; i < Object.keys(wallets).length; i++) {
+      const key = Object.keys(wallets)[i];
+      const someWallet = wallets[key];
+      const otherAccount = someWallet.addresses.find(
+        account => account.visible && account.address !== address
+      );
+      if (otherAccount) {
+        isLastAvailableWallet = true;
+        break;
+      }
+    }
+
+    if (buttonIndex === 0) {
+      // Edit wallet
+      analytics.track('Tapped "Edit Wallet"');
+      renameWallet(walletId, address);
+    } else if (buttonIndex === 1) {
+      analytics.track('Tapped "Delete Wallet"');
+      // Delete wallet with confirmation
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: 2,
-          destructiveButtonIndex: 1,
-          options: buttons,
+          cancelButtonIndex: 1,
+          destructiveButtonIndex: 0,
+          message: lang.t('wallet.action.delete_confirm'),
+          options: [lang.t('wallet.action.delete'), lang.t('button.cancel')],
           title: `${label || abbreviations.address(address, 4, 6)}`,
         },
-        buttonIndex => {
+        async buttonIndex => {
           if (buttonIndex === 0) {
-            // Edit wallet
-            analytics.track('Tapped "Edit Wallet"');
-            renameWallet(walletId, address);
-          } else if (buttonIndex === 1) {
-            analytics.track('Tapped "Delete Wallet"');
-            // Delete wallet with confirmation
-            showActionSheetWithOptions(
-              {
-                cancelButtonIndex: 1,
-                destructiveButtonIndex: 0,
-                message: lang.t('wallet.action.delete_confirm'),
-                options: [
-                  lang.t('wallet.action.delete'),
-                  lang.t('button.cancel'),
-                ],
-              },
-              async buttonIndex => {
-                if (buttonIndex === 0) {
-                  analytics.track('Tapped "Delete Wallet" (final confirm)');
-                  await deleteWallet(walletId, address);
-                  ReactNativeHapticFeedback.trigger('notificationSuccess');
-                  if (!isLastAvailableWallet) {
-                    await cleanUpWalletKeys();
-                    goBack();
-                    navigate(Routes.WELCOME_SCREEN);
-                  } else {
-                    // If we're deleting the selected wallet
-                    // we need to switch to another one
-                    if (address === currentAddress) {
-                      const { wallet: foundWallet, key } =
-                        doesWalletsContainAddress({
-                          address: address,
-                          wallets,
-                        }) || {};
-                      if (foundWallet) {
-                        await onChangeAccount(key, foundWallet.address, true);
-                      }
-                    }
-                  }
+            analytics.track('Tapped "Delete Wallet" (final confirm)');
+            await deleteWallet(walletId, address);
+            ReactNativeHapticFeedback.trigger('notificationSuccess');
+            if (!isLastAvailableWallet) {
+              await cleanUpWalletKeys();
+              goBack();
+              navigate(Routes.WELCOME_SCREEN);
+            } else {
+              // If we're deleting the selected wallet
+              // we need to switch to another one
+              if (address === currentAddress) {
+                const { wallet: foundWallet, key } =
+                  doesWalletsContainAddress({
+                    address: address,
+                    wallets,
+                  }) || {};
+                if (foundWallet) {
+                  await onChangeAccount(key, foundWallet.address, true);
                 }
               }
-            );
+            }
           }
         }
       );
-    },
-    [
-      currentAddress,
-      deleteWallet,
-      goBack,
-      onChangeAccount,
-      renameWallet,
-      navigate,
-      wallets,
-    ]
-  );
+    }
+  };
 
   const onPressAddAccount = useCallback(async () => {
     try {
@@ -524,7 +520,9 @@ export default function ChangeWalletSheet() {
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <Centered>
-          <SheetTitle>{lang.t('wallet.label')}</SheetTitle>
+          <SheetTitle testID="change-wallet-sheet-title">
+            {lang.t('wallet.label')}
+          </SheetTitle>
 
           {!watchOnly && (
             <Row style={{ position: 'absolute', right: 0 }}>
@@ -545,9 +543,10 @@ export default function ChangeWalletSheet() {
         allWallets={walletsWithBalancesAndNames}
         currentWallet={currentSelectedWallet}
         editMode={editMode}
+        getEditMenuItems={getEditMenuItems}
+        getOnMenuItemPress={getOnMenuItemPress}
         height={listHeight}
         onChangeAccount={onChangeAccount}
-        onEditWallet={onEditWallet}
         onPressAddAccount={onPressAddAccount}
         onPressImportSeedPhrase={onPressImportSeedPhrase}
         scrollEnabled={scrollEnabled}

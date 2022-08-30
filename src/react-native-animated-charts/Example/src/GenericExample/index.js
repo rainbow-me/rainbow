@@ -16,11 +16,11 @@ import {
   ChartYLabel,
   monotoneCubicInterpolation,
   simplifyData,
-} from '@rainbow-me/animated-charts';
+} from '@/react-native-animated-charts/src';
 
 export const {width: SIZE} = Dimensions.get('window');
 
-export const formatUSD = value => {
+export const formatUSD = (value) => {
   'worklet';
   if (value === '') {
     return '';
@@ -30,7 +30,7 @@ export const formatUSD = value => {
   })}`;
 };
 
-export const formatDatetime = value => {
+export const formatDatetime = (value) => {
   'worklet';
   if (value === '') {
     return '';
@@ -58,7 +58,7 @@ function GenericExample() {
   const [includeExtremes, setIncludeExtremes] = useState(true);
   const [interpolationStrategy, setInterpolationStrategy] = useState('b');
   const [numberOfPointsInterpolated, setNumberOfPointsInterpolated] = useState(
-    80
+    80,
   );
   const [bSplineDegree, setBSplineDegree] = useState(3);
   const [smoothingStrategy, setSmoothingStrategy] = useState('none');
@@ -79,12 +79,12 @@ function GenericExample() {
           return bSplineInterpolation({
             data: simplifiedData,
             degree: bSplineDegree,
-            range: numberOfPointsInterpolated
+            range: numberOfPointsInterpolated,
           });
         case 'mono':
           return monotoneCubicInterpolation({
             data: simplifiedData,
-            range: numberOfPointsInterpolated
+            range: numberOfPointsInterpolated,
           });
       }
     })();

@@ -1,6 +1,4 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
-import { shadowColors } from '../color/palettes';
-import type { ShadowColor } from '../color/palettes';
+import { shadowColors, ShadowColor } from '../color/palettes';
 import { CustomColor } from '../color/useForegroundColor';
 
 export { shadowColors };
@@ -44,17 +42,25 @@ export const shadowHierarchy = {
       opacity: 0.8,
     },
   } as ShadowValue,
+  '12px light': {
+    ios: [
+      {
+        offset: { x: 0, y: 4 },
+        blur: 12,
+        opacity: 0.1,
+      },
+    ],
+    android: {
+      elevation: 12,
+      opacity: 0.6,
+    },
+  } as ShadowValue,
   '12px medium': {
     ios: [
       {
-        offset: { x: 0, y: 2 },
-        blur: 4,
-        opacity: 0.12,
-      },
-      {
-        offset: { x: 0, y: 6 },
+        offset: { x: 0, y: 4 },
         blur: 12,
-        opacity: 0.04,
+        opacity: 0.15,
       },
     ],
     android: {
@@ -86,6 +92,19 @@ export const shadowHierarchy = {
         offset: { x: 0, y: 5 },
         blur: 15,
         opacity: 0.15,
+      },
+    ],
+    android: {
+      elevation: 15,
+      opacity: 0.5,
+    },
+  } as ShadowValue,
+  '15px medium': {
+    ios: [
+      {
+        offset: { x: 0, y: 5 },
+        blur: 15,
+        opacity: 0.2,
       },
     ],
     android: {

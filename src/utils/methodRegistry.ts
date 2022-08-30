@@ -2,19 +2,38 @@ import { Contract } from '@ethersproject/contracts';
 import { web3Provider } from '../handlers/web3';
 import namesOverrides from '../references/method-names-overrides.json';
 import methodRegistryABI from '../references/method-registry-abi.json';
+import { metadataClient } from '@/apollo/client';
+import { CONTRACT_FUNCTION } from '@/apollo/queries';
 
 const METHOD_REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 
 export const methodRegistryLookupAndParse = async (
   methodSignatureBytes: any
 ) => {
-  const registry = new Contract(
-    METHOD_REGISTRY_ADDRESS,
-    methodRegistryABI,
-    web3Provider
+  let signature = '';
+
+  const response = await metadataClient.queryWithTimeout(
+    {
+      query: CONTRACT_FUNCTION,
+      variables: {
+        chainID: 1,
+        hex: methodSignatureBytes,
+      },
+    },
+    800
   );
 
-  const signature = await registry.entries(methodSignatureBytes);
+  if (response?.data?.contractFunction?.text) {
+    signature = response.data.contractFunction.text;
+  } else {
+    const registry = new Contract(
+      METHOD_REGISTRY_ADDRESS,
+      methodRegistryABI,
+      web3Provider
+    );
+
+    signature = await registry.entries(methodSignatureBytes);
+  }
 
   const rawName = signature.match(new RegExp('^([^)(]*)\\((.*)\\)([^)(]*)$'));
   let parsedName;
@@ -36,15 +55,21 @@ export const methodRegistryLookupAndParse = async (
     parsedName = '';
   }
 
-  const match = signature.match(
-    new RegExp(rawName[1] + '\\(+([a-z1-9,()]+)\\)')
-  );
+  let args: { type: any }[] = [];
 
-  let args = [];
-  if (match) {
-    args = match[1].match(/[A-z1-9]+/g).map((arg: any) => {
-      return { type: arg };
-    });
+  if (rawName) {
+    const match = signature.match(
+      new RegExp(rawName[1] + '\\(+([a-z1-9,()]+)\\)')
+    );
+
+    if (match?.[1]) {
+      const argsMatch = match[1].match(/[A-z1-9]+/g);
+      if (argsMatch) {
+        args = argsMatch.map((arg: any) => {
+          return { type: arg };
+        });
+      }
+    }
   }
 
   return {

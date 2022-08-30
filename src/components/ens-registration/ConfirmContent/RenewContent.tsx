@@ -1,10 +1,10 @@
 import { format } from 'date-fns';
 import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
-import { Divider, Inset, Stack } from '@rainbow-me/design-system';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useDimensions, useENSProfile } from '@rainbow-me/hooks';
-import { timeUnits } from '@rainbow-me/references';
+import { Divider, Inset, Stack } from '@/design-system';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
+import { useDimensions, useENSRegistrant } from '@/hooks';
+import { timeUnits } from '@/references';
 
 const RenewContent = ({
   yearsDuration,
@@ -19,8 +19,8 @@ const RenewContent = ({
 }) => {
   const { isSmallPhone } = useDimensions();
 
-  const ensProfile = useENSProfile(name + ENS_DOMAIN, { enabled: true });
-  const expiryDate = ensProfile?.data?.registration?.expiryDate || 0;
+  const { data: { registration } = {} } = useENSRegistrant(name + ENS_DOMAIN);
+  const expiryDate = registration?.expiryDate || 0;
 
   const newExpiryDateFormatted = format(
     new Date(

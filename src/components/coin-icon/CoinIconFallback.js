@@ -2,18 +2,18 @@ import React, { useMemo } from 'react';
 import { Image } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
-import EthIcon from '@rainbow-me/assets/eth-icon.png';
-import { AssetTypes } from '@rainbow-me/entities';
-import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
-import { ImageWithCachedMetadata } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { borders, fonts, position, shadow } from '@rainbow-me/styles';
+import EthIcon from '@/assets/eth-icon.png';
+import { AssetTypes } from '@/entities';
+import { useBooleanState, useColorForAsset } from '@/hooks';
+import { ImageWithCachedMetadata } from '@/components/images';
+import styled from '@/styled-thing';
+import { borders, fonts, position, shadow } from '@/styles';
 import {
   FallbackIcon,
   getUrlForTrustIconFallback,
   isETH,
   magicMemo,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -26,6 +26,7 @@ const fallbackTextStyles = {
 const FallbackImage = styled(ImageWithCachedMetadata)(
   ({
     size,
+    layoutSize,
     theme: { colors },
     shadowColor: color,
     shadowOffset: { height: y, width: x },
@@ -33,8 +34,8 @@ const FallbackImage = styled(ImageWithCachedMetadata)(
     shadowRadius: radius,
     showImage,
   }) => ({
-    height: size,
-    width: size,
+    height: layoutSize ?? size,
+    width: layoutSize ?? size,
     ...position.coverAsObject,
     ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
     backgroundColor: showImage ? colors.white : colors.transparent,
@@ -135,6 +136,7 @@ const CoinIconFallback = fallbackProps => {
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
         showImage={showImage}
+        {...(ios && { layoutSize: width })}
         size={ios ? getIconSize(width) : width}
       />
     </Centered>

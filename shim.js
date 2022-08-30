@@ -1,12 +1,12 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
-import toLocaleStringPolyfill from '@rainbow-me/helpers/toLocaleStringPolyfill';
-import logger from 'logger';
+import toLocaleStringPolyfill from '@/helpers/toLocaleStringPolyfill';
+import logger from '@/utils/logger';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 

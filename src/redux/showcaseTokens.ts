@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, toLower, without } from 'lodash';
+import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
@@ -8,8 +8,9 @@ import {
   getWebDataEnabled,
   saveShowcaseTokens,
   saveWebDataEnabled,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/localstorage/accountLocal';
+import networkTypes from '@/helpers/networkTypes';
+import WalletTypes from '@/helpers/walletTypes';
 
 // -- Constants --------------------------------------- //
 
@@ -92,13 +93,16 @@ export const showcaseTokensLoadState = () => async (
   getState: AppGetState
 ) => {
   try {
+    const account = getState().wallets?.selected;
+    const isReadOnlyWallet = account?.type === WalletTypes.readOnly;
     const { accountAddress, network } = getState().settings;
 
     let showcaseTokens = await getShowcaseTokens(accountAddress, network);
 
     // if web data is enabled, fetch values from cloud
     const pref = await getWebDataEnabled(accountAddress, network);
-    if (pref) {
+
+    if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
       const showcaseTokensFromCloud = (await getPreference(
         'showcase',
         accountAddress
@@ -132,9 +136,13 @@ export const addShowcaseToken = (tokenId: string) => (
   dispatch: Dispatch<ShowcaseTokensUpdateAction>,
   getState: AppGetState
 ) => {
+  const account = getState().wallets.selected!;
+
+  if (account.type === WalletTypes.readOnly) return;
+
   const { accountAddress, network } = getState().settings;
-  const { showcaseTokens } = getState().showcaseTokens;
-  const updatedShowcaseTokens = concat(showcaseTokens, tokenId);
+  const { showcaseTokens = [] } = getState().showcaseTokens;
+  const updatedShowcaseTokens = showcaseTokens.concat(tokenId);
   dispatch({
     payload: updatedShowcaseTokens,
     type: SHOWCASE_TOKENS_UPDATE,
@@ -151,6 +159,10 @@ export const removeShowcaseToken = (tokenId: string) => (
   dispatch: Dispatch<ShowcaseTokensUpdateAction>,
   getState: AppGetState
 ) => {
+  const account = getState().wallets.selected!;
+
+  if (account.type === WalletTypes.readOnly) return;
+
   const { accountAddress, network } = getState().settings;
   const { showcaseTokens } = getState().showcaseTokens;
 
@@ -181,7 +193,7 @@ export const updateWebDataEnabled = (
     payload: enabled,
     type: UPDATE_WEB_DATA_ENABLED,
   });
-  await saveWebDataEnabled(enabled, toLower(address), network);
+  await saveWebDataEnabled(enabled, address.toLowerCase(), network);
 };
 
 // -- Reducer ----------------------------------------- //

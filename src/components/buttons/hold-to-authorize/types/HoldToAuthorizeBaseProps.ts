@@ -1,6 +1,6 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { DeviceDimensions } from '@rainbow-me/hooks';
-import { Colors } from '@rainbow-me/styles';
+import { DeviceDimensions } from '@/hooks';
+import { Colors } from '@/styles';
 
 export interface HoldToAuthorizeBaseProps {
   backgroundColor: string;
@@ -8,6 +8,7 @@ export interface HoldToAuthorizeBaseProps {
   deviceDimensions: DeviceDimensions;
   disabled: boolean;
   disabledBackgroundColor: string;
+  disableShimmerAnimation?: boolean;
   enableLongPress?: boolean;
   hideInnerBorder: boolean;
   isAuthorizing: boolean;
@@ -21,4 +22,5 @@ export interface HoldToAuthorizeBaseProps {
   testID: string;
   theme: 'light' | 'dark';
   tinyButton?: boolean;
+  loading?: boolean;
 }

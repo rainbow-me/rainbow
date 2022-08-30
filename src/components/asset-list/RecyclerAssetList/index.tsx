@@ -1,6 +1,5 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { findIndex } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -34,7 +33,7 @@ import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import {
   useCoinListEdited,
   useOpenFamilies,
@@ -43,9 +42,9 @@ import {
   useOpenSmallBalances,
   usePrevious,
   useRefreshAccountData,
-} from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import styled from '@/styled-thing';
+import { deviceUtils } from '@/utils';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -324,7 +323,7 @@ function RecyclerAssetList({
   const coinDividerIndex = useMemo<number>(() => {
     const hasCoinDivider = items.some(({ item }) => item?.coinDivider);
     if (hasCoinDivider) {
-      return findIndex(items, ({ item }) => item?.coinDivider);
+      return items.findIndex(({ item }) => item?.coinDivider);
     }
     return -1;
   }, [items]);
@@ -449,15 +448,13 @@ function RecyclerAssetList({
 
         // Index is type index not some single row index so should describe one kind of object
 
-        const balancesIndex = findIndex(
-          sections,
+        const balancesIndex = sections.findIndex(
           ({ name }) => name === 'balances'
         );
-        const collectiblesIndex = findIndex(
-          sections,
+        const collectiblesIndex = sections.findIndex(
           ({ name }) => name === 'collectibles'
         );
-        const poolsIndex = findIndex(sections, ({ name }) => name === 'pools');
+        const poolsIndex = sections.findIndex(({ name }) => name === 'pools');
 
         if (sectionsIndices.includes(index)) {
           if (index === sectionsIndices[poolsIndex]) {

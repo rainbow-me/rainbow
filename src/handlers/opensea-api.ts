@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/react-native';
+import PQueue from 'p-queue/dist';
 import {
   // @ts-ignore
   NFT_API_KEY,
@@ -6,16 +7,19 @@ import {
   NFT_API_URL,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import NetworkTypes, { Network } from '@rainbow-me/networkTypes';
+import NetworkTypes, { Network } from '@/helpers/networkTypes';
 import {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
-} from '@rainbow-me/parsers';
-import { handleSignificantDecimals } from '@rainbow-me/utilities';
-import logger from 'logger';
+} from '@/parsers';
+import { handleSignificantDecimals } from '@/helpers/utilities';
+import logger from '@/utils/logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE: number = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL: number = 2000;
+
+// limiting our opensea api requests to 10/sec so we don't max out
+const queue = new PQueue({ interval: 1000, intervalCap: 10 });
 
 export const apiGetAccountUniqueTokens = async (
   network: Network,
@@ -28,28 +32,32 @@ export const apiGetAccountUniqueTokens = async (
     const offset = page * UNIQUE_TOKENS_LIMIT_PER_PAGE;
     const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/assets`;
     const urlV2 = `https://${NFT_API_URL}/api/v2/beta/assets`;
-    const data = await rainbowFetch(isPolygon ? urlV2 : url, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': NFT_API_KEY,
-      },
-      method: 'get',
-      params: {
-        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
-        limit: UNIQUE_TOKENS_LIMIT_PER_PAGE,
-        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
-        offset: offset,
-        ...(isPolygon
-          ? {
-              chain_identifier: 'matic',
-              owner_address: address,
-            }
-          : {
-              owner: address,
-            }),
-      },
-      timeout: 10000, // 10 secs
-    });
+    const data = await queue.add(
+      async () =>
+        await rainbowFetch(isPolygon ? urlV2 : url, {
+          headers: {
+            'Accept': 'application/json',
+            'X-Api-Key': NFT_API_KEY,
+          },
+          method: 'get',
+          params: {
+            include_orders: 'true',
+            // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
+            limit: UNIQUE_TOKENS_LIMIT_PER_PAGE,
+            // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
+            offset: offset,
+            ...(isPolygon
+              ? {
+                  chain_identifier: 'matic',
+                  owner_address: address,
+                }
+              : {
+                  owner: address,
+                }),
+          },
+          timeout: 10000, // 10 secs
+        })
+    );
     return isPolygon
       ? parseAccountUniqueTokensPolygon(data)
       : parseAccountUniqueTokens(data);
@@ -83,14 +91,17 @@ export const apiGetAccountUniqueToken = async (
     const urlV2 = `https://${NFT_API_URL}/api/v2/beta/asset/${contractAddress}/${tokenId}${
       forceUpdate ? '?force_update=true' : ''
     }`;
-    const { data } = await rainbowFetch(isPolygon ? urlV2 : url, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': NFT_API_KEY,
-      },
-      method: 'get',
-      timeout: 10000, // 10 secs
-    });
+    const { data } = await queue.add(
+      async () =>
+        await rainbowFetch(isPolygon ? urlV2 : url, {
+          headers: {
+            'Accept': 'application/json',
+            'X-Api-Key': NFT_API_KEY,
+          },
+          method: 'get',
+          timeout: 10000, // 10 secs
+        })
+    );
     return isPolygon
       ? parseAccountUniqueTokensPolygon({
           data: { results: [data] },
@@ -103,39 +114,6 @@ export const apiGetAccountUniqueToken = async (
   }
 };
 
-export const apiGetUniqueTokenImage = async (
-  contractAddress: string,
-  tokenId: string
-) => {
-  try {
-    const url = `https://${NFT_API_URL}/api/v1/asset/${contractAddress}/${tokenId}`;
-    const data = await rainbowFetch(url, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': NFT_API_KEY,
-      },
-      method: 'get',
-      timeout: 10000, // 10 secs
-    });
-    const {
-      image_url,
-      image_thumbnail_url,
-      image_original_url,
-      image_preview_url,
-    } = data?.data;
-    return {
-      image_original_url,
-      image_preview_url,
-      image_thumbnail_url,
-      image_url,
-    };
-  } catch (error) {
-    logger.sentry('Error getting unique token image', error);
-    captureException(new Error('Opensea: Error getting unique token image'));
-    throw error;
-  }
-};
-
 export const apiGetUniqueTokenFloorPrice = async (
   network: any,
   urlSuffixForAsset: any
@@ -143,26 +121,32 @@ export const apiGetUniqueTokenFloorPrice = async (
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/asset/${urlSuffixForAsset}`;
-    const data = await rainbowFetch(url, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': NFT_API_KEY, // 5 secs
-      },
-      method: 'get',
-      timeout: 5000,
-    });
+    const data = await queue.add(
+      async () =>
+        await rainbowFetch(url, {
+          headers: {
+            'Accept': 'application/json',
+            'X-Api-Key': NFT_API_KEY, // 5 secs
+          },
+          method: 'get',
+          timeout: 5000,
+        })
+    );
 
     const slug = data?.data?.collection?.slug;
 
     const collectionURL = `https://${networkPrefix}${NFT_API_URL}/api/v1/collection/${slug}`;
-    const collectionData = await rainbowFetch(collectionURL, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': NFT_API_KEY,
-      },
-      method: 'get',
-      timeout: 5000, // 5 secs
-    });
+    const collectionData = await queue.add(
+      async () =>
+        await rainbowFetch(collectionURL, {
+          headers: {
+            'Accept': 'application/json',
+            'X-Api-Key': NFT_API_KEY,
+          },
+          method: 'get',
+          timeout: 5000, // 5 secs
+        })
+    );
 
     const tempPrice = collectionData?.data?.collection?.stats?.floor_price;
 

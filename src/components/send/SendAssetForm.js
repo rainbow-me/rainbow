@@ -9,15 +9,15 @@ import { Column } from '../layout';
 import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@/entities';
 import {
   useColorForAsset,
   useDimensions,
   useKeyboardHeight,
-} from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+} from '@/hooks';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],
@@ -38,18 +38,17 @@ const Container = styled(Column)({
   flex: 1,
 });
 
-const FormContainer = styled(Column).attrs({
-  align: 'end',
-  justify: 'space-between',
-})(({ isNft }) => ({
-  ...(isNft ? padding.object(0) : padding.object(0, 19)),
+const FormContainer = styled(Column).attrs(
+  ios
+    ? {
+        align: 'end',
+        justify: 'space-between',
+      }
+    : {}
+)(({ isNft }) => ({
   flex: 1,
-  width: '100%',
+  ...(isNft ? padding.object(0) : padding.object(0, 19)),
 }));
-
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ theme: { colors } }) => colors.lighterGrey,
-});
 
 export default function SendAssetForm({
   assetAmount,
@@ -165,9 +164,7 @@ export default function SendAssetForm({
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
-            {ios ? (
-              <KeyboardSizeView initialHeight={keyboardHeight} isOpen />
-            ) : null}
+            <KeyboardArea initialHeight={keyboardHeight} isOpen />
           </Fragment>
         )}
       </FormContainer>

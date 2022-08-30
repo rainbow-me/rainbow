@@ -7,7 +7,6 @@ import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
@@ -16,10 +15,10 @@ import {
   useAccountTransactions,
   useContacts,
   useRequests,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -33,7 +32,6 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const nativeTransactionListAvailable = useNativeTransactionListAvailable();
 
   const accountTransactions = useAccountTransactions(
     activityListInitialized,
@@ -62,7 +60,7 @@ export default function ProfileScreen({ navigation }) {
     navigate,
   ]);
 
-  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_MODAL), [
+  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_SHEET), [
     navigate,
   ]);
 
@@ -70,9 +68,7 @@ export default function ProfileScreen({ navigation }) {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const addCashSupportedNetworks =
-    (IS_DEV && network === NetworkTypes.kovan) ||
-    network === NetworkTypes.mainnet;
+  const addCashSupportedNetworks = network === NetworkTypes.mainnet;
   const addCashAvailable =
     IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 
@@ -100,7 +96,7 @@ export default function ProfileScreen({ navigation }) {
           onPress={onPressBackButton}
         />
       </Header>
-      {network === NetworkTypes.mainnet && nativeTransactionListAvailable ? (
+      {network === NetworkTypes.mainnet && ios ? (
         <TransactionList
           addCashAvailable={addCashAvailable}
           contacts={contacts}

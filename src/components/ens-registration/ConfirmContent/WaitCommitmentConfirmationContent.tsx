@@ -13,17 +13,20 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
 
 const WaitCommitmentConfirmationContent = ({
   accentColor,
   action,
+  secondsSinceCommitConfirmed,
 }: {
   accentColor: any;
   action: () => void;
+  secondsSinceCommitConfirmed: number;
 }) => {
   const { isSmallPhone } = useDimensions();
+  const speedUpEnabled = secondsSinceCommitConfirmed === -1;
 
   return (
     <>
@@ -50,7 +53,7 @@ const WaitCommitmentConfirmationContent = ({
         </Row>
       </Rows>
       <Inset bottom={isSmallPhone ? '30px' : undefined}>
-        <ButtonPressAnimation onPress={action}>
+        <ButtonPressAnimation onPress={speedUpEnabled ? action : () => null}>
           <Text
             align="center"
             color={{ custom: accentColor }}

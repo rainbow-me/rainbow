@@ -1,11 +1,11 @@
-import { times } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
-import { useTimeout } from '@rainbow-me/hooks';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { times } from '@/helpers/utilities';
+import { useTimeout } from '@/hooks';
+import { ThemeContextProps } from '@/theme';
 
 type Props = {
   childrenAmount: number;

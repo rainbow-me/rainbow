@@ -14,21 +14,9 @@ import {
   // @ts-ignore
   ETHEREUM_GOERLI_RPC_DEV,
   // @ts-ignore
-  ETHEREUM_KOVAN_RPC,
-  // @ts-ignore
-  ETHEREUM_KOVAN_RPC_DEV,
-  // @ts-ignore
   ETHEREUM_MAINNET_RPC,
   // @ts-ignore
   ETHEREUM_MAINNET_RPC_DEV,
-  // @ts-ignore
-  ETHEREUM_RINKEBY_RPC,
-  // @ts-ignore
-  ETHEREUM_RINKEBY_RPC_DEV,
-  // @ts-ignore
-  ETHEREUM_ROPSTEN_RPC,
-  // @ts-ignore
-  ETHEREUM_ROPSTEN_RPC_DEV,
   // @ts-ignore
   OPTIMISM_MAINNET_RPC,
   // @ts-ignore
@@ -37,26 +25,24 @@ import {
 import {
   getNetwork,
   saveNetwork,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
-import {
-  setRpcEndpoints,
-  web3SetHttpProvider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/localstorage/globalSettings';
+import { setRpcEndpoints, web3SetHttpProvider } from '@/handlers/web3';
 
-import Logger from 'logger';
+import Logger from '@/utils/logger';
 
 export interface RainbowConfig extends Record<string, any> {
   arbitrum_mainnet_rpc?: string;
   data_api_key?: string;
   data_endpoint?: string;
   data_origin?: string;
+  default_slippage_bips?: string;
+  flashbots_enabled?: boolean;
   ethereum_goerli_rpc?: string;
-  ethereum_kovan_rpc?: string;
   ethereum_mainnet_rpc?: string;
-  ethereum_rinkeby_rpc?: string;
-  ethereum_ropsten_rpc?: string;
+  op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
+  trace_call_block_number_offset?: number;
 }
 
 const DEFAULT_CONFIG = {
@@ -64,19 +50,21 @@ const DEFAULT_CONFIG = {
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
   data_origin: DATA_ORIGIN,
+  default_slippage_bips: JSON.stringify({
+    arbitrum: 200,
+    mainnet: 100,
+    optimism: 200,
+    polygon: 200,
+  }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
-  ethereum_kovan_rpc: __DEV__ ? ETHEREUM_KOVAN_RPC_DEV : ETHEREUM_KOVAN_RPC,
   ethereum_mainnet_rpc: __DEV__
     ? ETHEREUM_MAINNET_RPC_DEV
     : ETHEREUM_MAINNET_RPC,
-  ethereum_rinkeby_rpc: __DEV__
-    ? ETHEREUM_RINKEBY_RPC_DEV
-    : ETHEREUM_RINKEBY_RPC,
-  ethereum_ropsten_rpc: __DEV__
-    ? ETHEREUM_ROPSTEN_RPC_DEV
-    : ETHEREUM_ROPSTEN_RPC,
+  flashbots_enabled: true,
+  op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
+  trace_call_block_number_offset: 20,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -103,7 +91,13 @@ const init = async () => {
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
-      config[key] = entry.asString();
+      if (key === 'default_slippage_bips') {
+        config[key] = JSON.parse(entry.asString());
+      } else if (key === 'flashbots_enabled') {
+        config[key] = entry.asBoolean();
+      } else {
+        config[key] = entry.asString();
+      }
     });
   } catch (e) {
     Logger.sentry('error getting remote config', e);

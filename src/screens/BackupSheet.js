@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
@@ -15,16 +14,17 @@ import {
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import { analytics } from '@/analytics';
+import showWalletErrorAlert from '@/helpers/support';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import {
   useDimensions,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const onError = error => DelayedAlert({ title: error }, 500);
 
@@ -46,7 +46,7 @@ export default function BackupSheet() {
   } = useRoute();
 
   const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_MODAL
+    Routes.SETTINGS_SHEET
   );
 
   const handleNoLatestBackup = useCallback(() => {
@@ -133,7 +133,7 @@ export default function BackupSheet() {
   const onBackupNow = useCallback(async () => {
     goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.SETTINGS_MODAL, {
+      navigate(Routes.SETTINGS_SHEET, {
         initialRoute: 'BackupSection',
       });
     });

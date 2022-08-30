@@ -1,22 +1,23 @@
 import produce from 'immer';
-import { concat, isArray, uniq, without } from 'lodash';
+import { isArray, without } from 'lodash';
+import uniq from 'lodash/uniq';
 import { InteractionManager } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { UserList } from '@rainbow-me/entities';
+import { UserList } from '@/entities';
 import {
   getSelectedUserList,
   getUserLists,
   saveSelectedUserList,
   saveUserLists,
-} from '@rainbow-me/handlers/localstorage/userLists';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
-import { AppGetState, AppState } from '@rainbow-me/redux/store';
-import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';
+} from '@/handlers/localstorage/userLists';
+import { emitAssetRequest } from '@/redux/explorer';
+import { AppGetState, AppState } from '@/redux/store';
+import { uniswapUpdateFavorites } from '@/redux/uniswap';
 import {
   DefaultTokenLists,
   TokenListsExtendedRecord,
-} from '@rainbow-me/references';
+} from '@/references';
 
 // -- Constants ------------------------------------------------------------- //
 const USER_LISTS_READY = 'userLists/USER_LISTS_READY';
@@ -195,7 +196,7 @@ export const userListsUpdateList = (
     // add or remove
     if (listIndex !== null) {
       const updatedListTokens = add
-        ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
+        ? uniq(allNewLists[listIndex].tokens.concat(assetAddress))
         : isArray(assetAddress)
         ? without(allNewLists[listIndex].tokens, ...assetAddress)
         : without(allNewLists[listIndex].tokens, assetAddress);

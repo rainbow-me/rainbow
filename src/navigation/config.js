@@ -8,16 +8,16 @@ import { getENSAdditionalRecordsSheetHeight } from '../screens/ENSAdditionalReco
 import { ENSConfirmRegisterSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
-import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
+import { getSheetHeight as getSendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { useTheme } from '../theme/ThemeContext';
 import colors from '../theme/currentColors';
 import { onWillPop } from './Navigation';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import styled from '@rainbow-me/styled-components';
-import { fonts } from '@rainbow-me/styles';
-import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import networkInfo from '@/helpers/networkInfo';
+import networkTypes from '@/helpers/networkTypes';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import styled from '@/styled-thing';
+import { fonts } from '@/styles';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -97,6 +97,16 @@ export const backupSheetConfig = {
   },
 };
 
+export const swapDetailsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    }),
+  }),
+};
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -119,13 +129,7 @@ export const addTokenSheetConfig = {
 
 export const sendConfirmationSheetConfig = {
   options: ({ route: { params = {} } }) => {
-    let height = params.shouldShowChecks
-      ? SendConfirmationSheetHeight
-      : SendConfirmationSheetHeight - 104;
-
-    if (!params.isL2) {
-      height -= 59;
-    }
+    const height = getSendConfirmationSheetHeight(params);
     return {
       ...buildCoolModalConfig({
         ...params,
@@ -135,7 +139,30 @@ export const sendConfirmationSheetConfig = {
   },
 };
 
+export const settingsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: false,
+      springDamping: 1,
+    }),
+  }),
+};
+
 export const registerENSNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const swapsPromoSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -340,15 +367,6 @@ export const exchangeTabNavigatorConfig = {
   transparentCard: true,
 };
 
-const transitionConfig = {
-  damping: 35,
-  mass: 1,
-  overshootClamping: false,
-  restDisplacementThreshold: 0.01,
-  restSpeedThreshold: 0.01,
-  stiffness: 450,
-};
-
 const BackArrow = styled(Icon).attrs({
   color: colors.themedColors.appleBlue,
   direction: 'left',
@@ -368,6 +386,12 @@ const headerConfigOptions = {
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
+  headerLeftContainerStyle: {
+    paddingLeft: 4,
+  },
+  headerRightContainerStyle: {
+    paddingRight: 4,
+  },
   ...(android && {
     headerRightContainerStyle: {
       paddingTop: 6,
@@ -378,7 +402,7 @@ const headerConfigOptions = {
     color: colors.themedColors.dark,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.large),
-    fontWeight: fonts.weight.bold,
+    fontWeight: fonts.weight.heavy,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
 };
@@ -423,33 +447,23 @@ export const settingsOptions = colors => ({
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
-    backgroundColor: colors.white,
+    backgroundColor: 'transparent',
     overflow: 'visible',
   },
-  gestureEnabled: true,
+  gestureEnabled: ios,
   gestureResponseDistance: { horizontal: deviceUtils.dimensions.width },
   ...(ios && { headerBackImage: BackImage }),
-  headerBackTitle: 'Back',
+  headerBackTitle: ' ',
   headerStatusBarHeight: 0,
   headerStyle: {
     backgroundColor: 'transparent',
     elevation: 0,
-    height: 49,
+    height: 60,
     shadowColor: 'transparent',
   },
   headerTitleStyle: {
     ...headerConfigOptions.headerTitleStyle,
     color: colors.dark,
-  },
-  transitionSpec: {
-    close: {
-      animation: 'spring',
-      config: transitionConfig,
-    },
-    open: {
-      animation: 'spring',
-      config: transitionConfig,
-    },
   },
   ...(android && {
     headerLeft: props => <BackButton {...props} textChevron />,

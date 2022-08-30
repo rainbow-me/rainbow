@@ -1,3 +1,4 @@
+import { AddressZero } from '@ethersproject/constants';
 import gql from 'graphql-tag';
 
 export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (
@@ -44,35 +45,6 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
         symbol
         totalUnderlyingSupplied
       }
-    }
-  }
-`;
-
-export const UNISWAP_24HOUR_PRICE_QUERY = (
-  tokenAddress: string,
-  block: number
-) => {
-  const queryString = `
-    query tokens {
-      tokens(${
-        block ? `block : {number: ${block}}` : ``
-      } where: {id:"${tokenAddress}"}) {
-        id
-        derivedETH
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
-export const UNISWAP_PRICES_QUERY = gql`
-  query tokens($addresses: [String]!) {
-    tokens(where: { id_in: $addresses, derivedETH_gt: 0 }) {
-      id
-      derivedETH
-      symbol
-      name
-      decimals
     }
   }
 `;
@@ -199,7 +171,7 @@ export const ENS_SUGGESTIONS = gql`
   query lookup($name: String!, $amount: Int!) {
     domains(
       first: $amount
-      where: { name_starts_with: $name, resolvedAddress_not: null }
+      where: { name_starts_with: $name, resolvedAddress_not: \"${AddressZero}\" }
       orderBy: labelName
       orderDirection: asc
     ) {
@@ -254,24 +226,35 @@ export const ENS_REGISTRATIONS = gql`
   }
 `;
 
-export type EnsAccountRegistratonsData = {
-  account: {
+export type EnsDomain = {
+  name: string;
+  labelhash: string;
+  owner: {
+    id: string;
+  };
+};
+
+export type EnsAccountDomainsData = {
+  account?: {
+    // Account "controller" domains (controlled by the account)
+    domains?: EnsDomain[];
+    // Account "registrar" domains (owned by the account)
     registrations: {
-      domain: {
-        name: string;
-        labelhash: string;
-        owner: {
-          id: string;
-        };
-      };
+      domain: EnsDomain;
     }[];
   };
 };
 
-export const ENS_ALL_ACCOUNT_REGISTRATIONS = gql`
+export const ENS_ACCOUNT_DOMAINS = gql`
   query getAccountRegistrations($address: String!) {
     account(id: $address) {
-      registrations(orderBy: registrationDate) {
+      domains(orderBy: createdAt, orderDirection: desc) {
+        name
+        owner {
+          id
+        }
+      }
+      registrations(orderBy: registrationDate, orderDirection: desc) {
         domain {
           name
           owner {

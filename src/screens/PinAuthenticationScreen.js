@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert } from 'react-native';
+import { Keyboard } from 'react-native';
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
@@ -13,12 +13,13 @@ import {
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
-import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
-import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { haptics } from '@rainbow-me/utils';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { useDimensions, useShakeAnimation } from '@/hooks';
+import { useBlockBackButton } from '@/hooks/useBlockBackButton';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { haptics } from '@/utils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
@@ -31,8 +32,8 @@ const MAX_ATTEMPTS = 10;
 const TIMELOCK_INTERVAL_MINUTES = 5;
 
 const PinAuthenticationScreen = () => {
-  useBlockBackButton();
   const { params } = useRoute();
+  useBlockBackButton(!params.validPin);
   const { goBack, setParams } = useNavigation();
   const [errorAnimation, onShake] = useShakeAnimation();
 
@@ -40,12 +41,17 @@ const PinAuthenticationScreen = () => {
 
   const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS);
   const [value, setValue] = useState('');
+  const [isLoading, setLoading] = useState(false);
   const [initialPin, setInitialPin] = useState('');
   const [actionType, setActionType] = useState(
     params.validPin ? 'authentication' : 'creation'
   );
 
   const finished = useRef(false);
+
+  useEffect(() => {
+    Keyboard.dismiss();
+  }, []);
 
   useEffect(() => {
     // See if the user previously tried and aborted
@@ -165,6 +171,7 @@ const PinAuthenticationScreen = () => {
               }, 300);
             }
           } else if (actionType === 'creation') {
+            setLoading(true);
             // Ask for confirmation
             setActionType('confirmation');
             // Store the pin in state so we can compare with the conf.
@@ -173,9 +180,11 @@ const PinAuthenticationScreen = () => {
             // Clear the pin
             setTimeout(() => {
               setValue('');
+              setLoading(false);
               return;
             }, 300);
           } else {
+            if (isLoading) return '';
             // Confirmation
             const valid = initialPin === nextValue;
             if (!valid) {
@@ -193,7 +202,7 @@ const PinAuthenticationScreen = () => {
         return nextValue;
       });
     },
-    [actionType, attemptsLeft, goBack, initialPin, onShake, params]
+    [actionType, attemptsLeft, goBack, initialPin, onShake, params, isLoading]
   );
 
   const { colors } = useTheme();

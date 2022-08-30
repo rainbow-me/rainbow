@@ -1,7 +1,8 @@
 import path from 'path';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
+import { findKey, isNumber, keys } from 'lodash';
+import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
@@ -42,29 +43,29 @@ import {
   RainbowWallet,
   saveAddress,
 } from './wallet';
-import { isL2Asset } from '@rainbow-me/handlers/assets';
+import { isL2Asset } from '@/handlers/assets';
 import {
   getAssets,
   getHiddenCoins,
   getPinnedCoins,
   saveHiddenCoins,
   savePinnedCoins,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import {
   getContacts,
   saveContacts,
-} from '@rainbow-me/handlers/localstorage/contacts';
+} from '@/handlers/localstorage/contacts';
 import {
   getUserLists,
   saveUserLists,
-} from '@rainbow-me/handlers/localstorage/userLists';
-import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import { DefaultTokenLists } from '@rainbow-me/references';
-import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
-import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
-import logger from 'logger';
+} from '@/handlers/localstorage/userLists';
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { DefaultTokenLists } from '@/references';
+import { ethereumUtils, profileUtils } from '@/utils';
+import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
+import logger from '@/utils/logger';
 
 export default async function runMigrations() {
   // get current version
@@ -496,7 +497,7 @@ export default async function runMigrations() {
 
         const pinnedCoinsMigrated = pinnedCoins.map((address: string) => {
           const asset = assets?.find(
-            (asset: any) => asset.address === toLower(address)
+            (asset: any) => asset.address === address.toLowerCase()
           );
           if (asset?.type && isL2Asset(asset.type)) {
             return `${asset.address}_${asset.network}`;

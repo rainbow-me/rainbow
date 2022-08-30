@@ -1,5 +1,4 @@
 import ConditionalWrap from 'conditional-wrap';
-import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -8,9 +7,10 @@ import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
-import { useRefreshAccountData } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { times } from '@/helpers/utilities';
+import { useRefreshAccountData } from '@/hooks';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const Container = styled(Column)(position.sizeAsObject('100%'));
 
@@ -64,7 +64,7 @@ const EmptyAssetList = ({
               <Column cover>
                 {times(skeletonCount, index => (
                   <AssetListItemSkeleton
-                    animated={!isWalletEthZero}
+                    animated
                     descendingOpacity={descendingOpacity || isWalletEthZero}
                     index={index}
                     key={`skeleton${index}`}

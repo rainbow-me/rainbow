@@ -1,11 +1,10 @@
 /*global storage*/
-import { toLower } from 'lodash';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const defaultVersion = '0.1.0';
 
 export const getKey = (prefix: any, accountAddress: any, network: any) =>
-  `${prefix}-${toLower(accountAddress)}-${toLower(network)}`;
+  `${prefix}-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 
 /**
  * @desc save to storage

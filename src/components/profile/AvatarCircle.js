@@ -4,10 +4,11 @@ import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
-import { useAccountProfile } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { useAccountProfile, useLatestCallback } from '@/hooks';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const AvatarCircleSize = 65;
 
@@ -22,20 +23,23 @@ const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.whiteLabel,
   letterSpacing: 2,
-  lineHeight: android ? 68 : 66,
   size: ios ? 38 : 30,
   weight: 'semibold',
+  ...(ios && { lineHeight: 66 }),
 }))({
-  width: android ? 66 : 67,
+  ...(android && { left: -1 }),
+  ...(ios && { width: 67 }),
 });
 
 export default function AvatarCircle({
   isAvatarPickerAvailable,
-  onPress,
   overlayStyles,
   image,
+  onPress,
   showcaseAccountSymbol,
   showcaseAccountColor,
+  onSelectionCallback = () => {},
+  menuOptions = [],
   newProfile = false,
   ...props
 }) {
@@ -71,37 +75,62 @@ export default function AvatarCircle({
     [resolvedColor, colors, isDarkMode]
   );
 
+  const items = useMemo(
+    () => ({
+      menuItems: menuOptions?.map(label => ({
+        actionKey: label,
+        actionTitle: label,
+      })),
+    }),
+    [menuOptions]
+  );
+
+  const handlePressMenuItem = useLatestCallback(
+    e => {
+      const index = items.menuItems?.findIndex(
+        item => item.actionKey === e.nativeEvent.actionKey
+      );
+      onSelectionCallback(index);
+    },
+    [onSelectionCallback, items.menuItems]
+  );
+
+  const Wrapper =
+    ios || !isAvatarPickerAvailable ? React.Fragment : ContextMenuButton;
+
   return (
-    <ButtonPressAnimation
-      disabled={!isAvatarPickerAvailable}
-      enableHapticFeedback={isAvatarPickerAvailable}
-      marginTop={2}
-      onPress={onPress}
-      overflowMargin={30}
-      pressOutDuration={200}
-      scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
-      {...props}
-    >
-      <ShadowStack
-        {...position.sizeAsObject(AvatarCircleSize)}
-        backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
-        borderRadius={AvatarCircleSize}
-        marginBottom={12}
-        shadows={shadows[overlayStyles ? 'overlay' : 'default']}
-        {...(android && {
-          height: 64,
-          width: 64,
-        })}
+    <Wrapper menuConfig={items} onPressMenuItem={handlePressMenuItem}>
+      <ButtonPressAnimation
+        disabled={!isAvatarPickerAvailable}
+        enableHapticFeedback={isAvatarPickerAvailable}
+        marginTop={2}
+        {...(ios && { onPress })}
+        overflowMargin={30}
+        pressOutDuration={200}
+        scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
+        {...props}
       >
-        {image ? (
-          <ImageAvatar image={image} size="large" />
-        ) : (
-          <AvatarCircleView backgroundColor={resolvedColor}>
-            <FirstLetter>{accountSymbol}</FirstLetter>
-            {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
-          </AvatarCircleView>
-        )}
-      </ShadowStack>
-    </ButtonPressAnimation>
+        <ShadowStack
+          {...position.sizeAsObject(AvatarCircleSize)}
+          backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
+          borderRadius={AvatarCircleSize}
+          marginBottom={12}
+          shadows={shadows[overlayStyles ? 'overlay' : 'default']}
+          {...(android && {
+            height: 64,
+            width: 64,
+          })}
+        >
+          {image ? (
+            <ImageAvatar image={image} size="large" />
+          ) : (
+            <AvatarCircleView backgroundColor={resolvedColor}>
+              <FirstLetter>{accountSymbol}</FirstLetter>
+              {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
+            </AvatarCircleView>
+          )}
+        </ShadowStack>
+      </ButtonPressAnimation>
+    </Wrapper>
   );
 }

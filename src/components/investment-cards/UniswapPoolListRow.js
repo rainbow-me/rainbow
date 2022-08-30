@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { toUpper } from 'lodash';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
@@ -10,12 +9,13 @@ import CoinName from '../coin-row/CoinName';
 import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
 import { PoolValue } from './PoolValue';
-import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
-import { useAccountSettings, useGenericAsset } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { parseAssetNative } from '@rainbow-me/parsers';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+import { analytics } from '@/analytics';
+import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
+import { useAccountSettings, useGenericAsset } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { parseAssetNative } from '@/parsers';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 
 const BottomRowContainer = styled(Row)({
   marginBottom: 10,

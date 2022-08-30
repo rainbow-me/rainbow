@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
@@ -8,6 +7,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
+import { analytics } from '@/analytics';
 import {
   BlocksToConfirmation,
   CurrentBlockParams,
@@ -22,19 +22,19 @@ import {
   LegacySelectedGasFee,
   RainbowMeteorologyData,
   SelectedGasFee,
-} from '@rainbow-me/entities';
+} from '@/entities';
 
 import {
   polygonGasStationGetGasPrices,
   rainbowMeteorologyGetData,
-} from '@rainbow-me/handlers/gasFees';
+} from '@/handlers/gasFees';
 import {
   getProviderForNetwork,
   isHardHat,
   isL2Network,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import { Network } from '@/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
   gweiToWei,
@@ -45,13 +45,13 @@ import {
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
   weiToGwei,
-} from '@rainbow-me/parsers';
-import { ethUnits, supportedNativeCurrencies } from '@rainbow-me/references';
-import { multiply } from '@rainbow-me/utilities';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/parsers';
+import { ethUnits, supportedNativeCurrencies } from '@/references';
+import { multiply } from '@/helpers/utilities';
+import { ethereumUtils, gasUtils } from '@/utils';
+import logger from '@/utils/logger';
 
-const { CUSTOM, NORMAL, URGENT } = gasUtils;
+const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
 const mutex = new Mutex();
 
@@ -164,7 +164,6 @@ const getUpdatedGasFeeParams = (
         nativeTokenPriceUnit,
         nativeCurrency
       );
-
   const selectedGasParams = getSelectedGasFee(
     gasFeeParamsBySpeed,
     gasFeesBySpeed,
@@ -340,21 +339,21 @@ export const getEIP1559GasParams = async () => {
   };
 };
 
-export const gasPricesStartPolling = (network = Network.mainnet) => async (
-  dispatch: AppDispatch,
-  getState: AppGetState
-) => {
+export const gasPricesStartPolling = (
+  network = Network.mainnet,
+  flashbots = false
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
   dispatch(gasPricesStopPolling());
-  dispatch({
-    payload: network,
-    type: GAS_UPDATE_TRANSACTION_NETWORK,
-  });
 
   const getGasPrices = (network: Network) =>
     withRunExclusive(
       () =>
         new Promise(async (fetchResolve, fetchReject) => {
           try {
+            dispatch({
+              payload: network,
+              type: GAS_UPDATE_TRANSACTION_NETWORK,
+            });
             const {
               gasFeeParamsBySpeed: existingGasFees,
               customGasFeeModifiedByUser,
@@ -383,7 +382,6 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
               if (!adjustedGasFees) return;
 
               const gasFeeParamsBySpeed = parseL2GasPrices(adjustedGasFees);
-
               if (!gasFeeParamsBySpeed) return;
 
               const _selectedGasFeeOption = selectedGasFee.option || NORMAL;
@@ -423,6 +421,29 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
                   currentBaseFee,
                   blocksToConfirmation,
                 } = await getEIP1559GasParams();
+
+                if (flashbots) {
+                  [SLOW, NORMAL, FAST, URGENT].forEach(speed => {
+                    // Override min tip to 5 if needed, when flashbots is enabled
+                    // See https://docs.flashbots.net/flashbots-protect/rpc/quick-start#choosing-the-right-gas-price
+                    if (gasFeeParamsBySpeed[speed]) {
+                      if (
+                        Number(
+                          gasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei
+                        ) < FLASHBOTS_MIN_TIP
+                      ) {
+                        gasFeeParamsBySpeed[speed] = {
+                          ...gasFeeParamsBySpeed[speed],
+                          maxPriorityFeePerGas: {
+                            amount: `${FLASHBOTS_MIN_TIP}000000000`,
+                            display: `${FLASHBOTS_MIN_TIP} gwei`,
+                            gwei: `${FLASHBOTS_MIN_TIP}`,
+                          },
+                        };
+                      }
+                    }
+                  });
+                }
 
                 // Set a really gas estimate to guarantee that we're gonna be over
                 // the basefee at the time we fork mainnet during our hardhat tests
@@ -561,6 +582,7 @@ export const gasUpdateTxFee = (
       txNetwork,
       currentBlockParams,
     } = getState().gas;
+
     const { nativeCurrency } = getState().settings;
     if (
       isEmpty(gasFeeParamsBySpeed) ||
@@ -594,7 +616,6 @@ export const gasUpdateTxFee = (
         txNetwork,
         l1GasFeeOptimism
       );
-
       dispatch({
         payload: {
           gasFeesBySpeed,

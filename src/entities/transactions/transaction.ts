@@ -4,8 +4,8 @@ import { ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { AddCashCurrencyAsset } from '@rainbow-me/references';
+import { Network } from '@/helpers/networkTypes';
+import { AddCashCurrencyAsset } from '@/references';
 
 export interface RainbowTransaction {
   address: string;
@@ -32,6 +32,9 @@ export interface RainbowTransaction {
   nonce: number | null;
   pending: boolean;
   protocol?: ProtocolType | null;
+  flashbots?: boolean;
+  ensCommitRegistrationName?: string;
+  ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
   status: TransactionStatus;
   symbol: string | null;
@@ -58,6 +61,9 @@ export interface NewTransaction {
   network?: Network;
   nonce: number | null;
   protocol?: ProtocolType | null;
+  flashbots?: boolean;
+  ensCommitRegistrationName?: string;
+  ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
   status?: TransactionStatus;
   timestamp?: number; // for purchases

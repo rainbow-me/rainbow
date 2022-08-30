@@ -11,11 +11,11 @@ import BottomRowText from './BottomRowText';
 import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
-import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+import { useIsCoinListEditedSharedValue } from '@/helpers/SharedValuesContext';
+import { buildAssetUniqueIdentifier } from '@/helpers/assets';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 
 const editTranslateOffset = 37;
 
@@ -125,7 +125,6 @@ const BalanceCoinRow = ({
     } else {
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
-        fromDiscover: true,
         longFormHeight: initialChartExpandedStateSheetHeight,
         type: 'token',
       });
@@ -162,7 +161,7 @@ const BalanceCoinRow = ({
         <ButtonPressAnimation
           onPress={handlePress}
           scaleTo={0.96}
-          testID={`balance-coin-row-${item.name}`}
+          testID={`balance-coin-row-${item.symbol}-${item.type || 'token'}`}
         >
           <Animated.View>
             <CoinRow

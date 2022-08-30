@@ -3,15 +3,14 @@ import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
-import {
-  ContextMenuButton,
-  MenuActionConfig,
-} from 'react-native-ios-context-menu';
+import { MenuActionConfig } from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarquee';
 import { SheetActionButton } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import {
   Bleed,
   Box,
@@ -24,18 +23,17 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountENSDomains,
-  useAccountProfile,
-  useAccountSettings,
   useDimensions,
+  useENSAvatar,
+  useENSRecords,
   useENSRegistration,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -49,9 +47,20 @@ export default function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<any>();
-  const { accountAddress } = useAccountSettings();
-  const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
-  const { accountENS } = useAccountProfile();
+
+  const {
+    controlledDomains,
+    isLoading,
+    isFetched,
+    nonPrimaryDomains,
+    uniqueDomain,
+  } = useAccountENSDomains();
+  const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {
+    enabled: Boolean(uniqueDomain?.name),
+  });
+  const { data: ensAvatar } = useENSAvatar(uniqueDomain?.name || '', {
+    enabled: Boolean(uniqueDomain?.name),
+  });
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -60,25 +69,13 @@ export default function ENSIntroSheet() {
   const contentHeight = params?.contentHeight;
   const contentWidth = Math.min(deviceWidth - 72, 300);
 
-  const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
-    const ownedDomains = domains?.filter(
-      ({ owner }) => owner?.id?.toLowerCase() === accountAddress.toLowerCase()
-    );
-    return {
-      nonPrimaryDomains:
-        ownedDomains?.filter(({ name }) => accountENS !== name) || [],
-      ownedDomains,
-      primaryDomain: ownedDomains?.find(({ name }) => accountENS === name),
-    };
-  }, [accountAddress, accountENS, domains]);
-
-  const uniqueDomain = useMemo(() => {
-    return primaryDomain
-      ? primaryDomain
-      : nonPrimaryDomains?.length === 1
-      ? nonPrimaryDomains?.[0]
-      : null;
-  }, [nonPrimaryDomains, primaryDomain]);
+  const profileExists = useMemo(
+    () =>
+      Object.keys(ensRecords?.coinAddresses || {}).length > 1 ||
+      ensAvatar?.imageUrl ||
+      Object.keys(ensRecords?.records || {}).length > 0,
+    [ensAvatar?.imageUrl, ensRecords?.coinAddresses, ensRecords?.records]
+  );
 
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
@@ -138,28 +135,6 @@ export default function ENSIntroSheet() {
     };
   }, []);
 
-  const onPressAndroidActions = useCallback(() => {
-    const androidActions = [
-      lang.t('profiles.intro.my_ens_names'),
-      lang.t('profiles.intro.search_new_ens'),
-    ] as const;
-
-    showActionSheetWithOptions(
-      {
-        options: androidActions,
-        showSeparators: true,
-        title: '',
-      },
-      (idx: number) => {
-        if (idx === 0) {
-          handleSelectExistingName();
-        } else if (idx === 1) {
-          handleNavigateToSearch();
-        }
-      }
-    );
-  }, [handleNavigateToSearch, handleSelectExistingName]);
-
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AnotherENSEnum.my_ens) {
@@ -193,7 +168,7 @@ export default function ENSIntroSheet() {
                 </Stack>
                 <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
                   <Bleed left="10px">
-                    <IntroMarquee />
+                    <IntroMarquee isSmallPhone={isSmallPhone} />
                   </Bleed>
                   <Inset horizontal="34px">
                     <Divider color="divider60" />
@@ -202,7 +177,7 @@ export default function ENSIntroSheet() {
                 <Stack alignHorizontal="center">
                   <Box width={{ custom: contentWidth }}>
                     <Inset top="6px">
-                      <Stack space={isSmallPhone ? '30px' : '36px'}>
+                      <Stack space={isSmallPhone ? '24px' : '36px'}>
                         <InfoRow
                           description={lang.t(
                             'profiles.intro.wallet_address_info.description'
@@ -238,39 +213,48 @@ export default function ENSIntroSheet() {
             </Row>
             <Row height="content">
               <Box paddingBottom="4px">
-                <Inset
-                  space="19px"
-                  {...(isSmallPhone ? { bottom: '8px' } : {})}
-                >
+                <Inset space="19px" {...(isSmallPhone && { bottom: '8px' })}>
                   {isLoading && (
                     <Box alignItems="center" paddingBottom="15px">
                       {/* @ts-expect-error JavaScript component */}
                       <ActivityIndicator />
                     </Box>
                   )}
-                  {isSuccess && (
+                  {isFetched && (
                     <>
-                      {ownedDomains?.length === 0 ? (
-                        <SheetActionButton
-                          color={colors.appleBlue}
-                          // @ts-expect-error JavaScript component
-                          label={'􀠎 ' + lang.t('profiles.intro.find_your_name')}
-                          lightShadows
-                          marginBottom={15}
-                          onPress={handleNavigateToSearch}
-                          // @ts-expect-error
-                          testID="ens-intro-sheet-find-your-name-button"
-                          weight="heavy"
-                        />
+                      {controlledDomains?.length === 0 ? (
+                        <Inset bottom={android ? '10px' : undefined}>
+                          <SheetActionButton
+                            color={colors.appleBlue}
+                            // @ts-expect-error JavaScript component
+                            label={
+                              '􀠎 ' + lang.t('profiles.intro.find_your_name')
+                            }
+                            lightShadows
+                            marginBottom={15}
+                            onPress={handleNavigateToSearch}
+                            // @ts-expect-error
+                            testID="ens-intro-sheet-find-your-name-button"
+                            weight="heavy"
+                          />
+                        </Inset>
                       ) : (
                         <Stack space="12px">
                           {uniqueDomain ? (
                             <SheetActionButton
                               color={colors.appleBlue}
                               // @ts-expect-error JavaScript component
-                              label={lang.t('profiles.intro.use_name', {
-                                name: uniqueDomain?.name,
-                              })}
+                              label={lang.t(
+                                profileExists
+                                  ? 'profiles.intro.edit_name'
+                                  : 'profiles.intro.use_name',
+                                {
+                                  name: abbreviateEnsForDisplay(
+                                    uniqueDomain?.name,
+                                    15
+                                  ),
+                                }
+                              )}
                               lightShadows
                               onPress={handleSelectUniqueDomain}
                               weight="heavy"
@@ -288,9 +272,7 @@ export default function ENSIntroSheet() {
                           {nonPrimaryDomains?.length > 0 ? (
                             <ContextMenuButton
                               menuConfig={menuConfig}
-                              {...(android
-                                ? { onPress: onPressAndroidActions }
-                                : {})}
+                              {...(android ? { handlePressMenuItem } : {})}
                               isMenuPrimaryAction
                               onPressMenuItem={handlePressMenuItem}
                               useActionSheetFallback={false}

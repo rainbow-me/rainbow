@@ -1,17 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-// @ts-expect-error
-import { IS_TESTING } from 'react-native-dotenv';
+import React, { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { prefetchENSProfile } from '../../../hooks/useENSProfile';
-import { prefetchENSProfileImages } from '../../../hooks/useENSProfileImages';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
-import { Box, Stack, Text } from '@rainbow-me/design-system';
-import { fetchRecords } from '@rainbow-me/handlers/ens';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import { ensIntroMarqueeNames } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
+import { Box, Stack, Text } from '@/design-system';
+import { ensRecordsQueryKey, useENSRecords } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import { queryClient } from '@/react-query/queryClient';
+import { ensIntroMarqueeNames } from '@/references';
+import Routes from '@/navigation/routesNames';
 
 export const ensAvatarUrl = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
@@ -21,23 +18,28 @@ const estimateDescriptionProfilePreviewHeight = (description?: string) => {
   return description ? Math.ceil(description.length / 50) * lineHeight : 0;
 };
 
-export default function IntroMarquee() {
+export default function IntroMarquee({
+  isSmallPhone,
+}: {
+  isSmallPhone: boolean;
+}) {
   const { navigate } = useNavigation();
-  const [introMarqueeProfiles, setIntroMarqueeProfiles] = useState<{
-    [name: string]: string | undefined;
-  }>({});
 
   const handlePressENS = useCallback(
     (ensName: string) => {
+      const data = queryClient.getQueryData<
+        ReturnType<typeof useENSRecords>['data']
+      >(ensRecordsQueryKey({ name: ensName }));
+      const description = data?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,
         descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(
-          introMarqueeProfiles[ensName]
+          description
         ),
         fromDiscover: true,
       });
     },
-    [introMarqueeProfiles, navigate]
+    [navigate]
   );
 
   const renderItem = useCallback(
@@ -53,22 +55,6 @@ export default function IntroMarquee() {
     []
   );
 
-  useEffect(() => {
-    const getProfiles = async () => {
-      const profiles: { [name: string]: string | undefined } = {};
-      await Promise.all(
-        ensIntroMarqueeNames.map(async name => {
-          prefetchENSProfileImages({ name });
-          prefetchENSProfile({ name });
-          const records = await fetchRecords(name);
-          profiles[name] = records?.description;
-        })
-      );
-      setIntroMarqueeProfiles(profiles as any);
-    };
-    if (IS_TESTING !== 'true') getProfiles();
-  }, []);
-
   const items = useMemo(
     () =>
       ensIntroMarqueeNames.map((name, index) => ({
@@ -80,8 +66,9 @@ export default function IntroMarquee() {
   );
 
   return (
-    <Box height={{ custom: 100 }}>
+    <Box height={{ custom: isSmallPhone ? 90 : 100 }}>
       <MarqueeList
+        height={isSmallPhone ? 90 : 100}
         items={items}
         renderItem={renderItem}
         speed={-15}

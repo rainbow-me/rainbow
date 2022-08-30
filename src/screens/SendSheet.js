@@ -1,13 +1,18 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isEmpty, isEqual, isString, toLower } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { isEmpty, isEqual, isString } from 'lodash';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -17,11 +22,13 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { AssetTypes } from '@rainbow-me/entities';
-import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
-import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
+import { getDefaultCheckboxes } from './SendConfirmationSheet';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@/analytics';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import { AssetTypes } from '@/entities';
+import { isL2Asset, isNativeAsset } from '@/handlers/assets';
+import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
   buildTransaction,
   createSignableTransaction,
@@ -30,19 +37,24 @@ import {
   isL2Network,
   resolveNameOrAddress,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import Network from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import Network from '@/helpers/networkTypes';
 import {
   checkIsValidAddressOrDomain,
+  checkIsValidAddressOrDomainFormat,
   isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/validators';
 import {
+  prefetchENSAvatar,
+  prefetchENSCover,
   useAccountSettings,
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
   useCurrentNonce,
+  useENSProfile,
+  useENSRegistrationActionHandler,
   useGas,
   useMaxInputBalance,
   usePrevious,
@@ -53,22 +65,26 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
-} from '@rainbow-me/hooks';
-import { sendTransaction } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { borders } from '@rainbow-me/styles';
+} from '@/hooks';
+import { loadWallet, sendTransaction } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { chainAssets, rainbowTokenList } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { borders } from '@/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
   lessThan,
-} from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/helpers/utilities';
+import {
+  deviceUtils,
+  ethereumUtils,
+  getUniqueTokenType,
+} from '@/utils';
+import logger from '@/utils/logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -87,12 +103,6 @@ const SheetContainer = styled(Column).attrs({
   ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
   backgroundColor: ({ theme: { colors } }) => colors.white,
   height: isNativeStackAvailable || android ? sheetHeight : '100%',
-  width: '100%',
-});
-
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ showAssetForm, theme: { colors } }) =>
-    showAssetForm ? colors.lighterGrey : colors.white,
   width: '100%',
 });
 
@@ -122,6 +132,10 @@ export default function SendSheet(props) {
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
+  const { action: transferENS } = useENSRegistrationActionHandler({
+    step: 'TRANSFER',
+  });
+
   const savings = useSendSavingsAccount();
   const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
@@ -146,6 +160,9 @@ export default function SendSheet(props) {
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+
+  const [debouncedInput] = useDebounce(currentInput, 500);
+  const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState();
@@ -178,6 +195,17 @@ export default function SendSheet(props) {
   if (isNft) {
     colorForAsset = colors.appleBlue;
   }
+
+  const uniqueTokenType = isNft ? getUniqueTokenType(selected) : undefined;
+  const isENS = uniqueTokenType === 'ENS';
+
+  const ensName = selected.uniqueId
+    ? selected.uniqueId?.split(' ')?.[0]
+    : selected.uniqueId;
+  const ensProfile = useENSProfile(ensName, {
+    enabled: isENS,
+    supportedRecordsOnly: false,
+  });
 
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
@@ -407,15 +435,17 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
-      let realAddress = recipient;
-      const isValid = await checkIsValidAddressOrDomain(recipient);
+      let realAddress = debouncedRecipient;
+      const isValid = await checkIsValidAddressOrDomain(debouncedRecipient);
       if (isValid) {
-        realAddress = await resolveNameOrAddress(recipient);
+        realAddress = await resolveNameOrAddress(debouncedRecipient);
+        setToAddress(realAddress);
+      } else {
+        setIsValidAddress(false);
       }
-      setToAddress(realAddress);
     };
-    recipient && resolveAddressIfNeeded();
-  }, [recipient]);
+    debouncedRecipient && resolveAddressIfNeeded();
+  }, [debouncedRecipient]);
 
   const updateTxFeeForOptimism = useCallback(
     async updatedGasLimit => {
@@ -447,161 +477,203 @@ export default function SendSheet(props) {
     ]
   );
 
-  const onSubmit = useCallback(async () => {
-    const validTransaction =
-      isValidAddress &&
-      amountDetails.isSufficientBalance &&
-      isSufficientGas &&
-      isValidGas;
-    if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
-      logger.sentry('preventing tx submit for one of the following reasons:');
-      logger.sentry('selectedGasFee ? ', selectedGasFee);
-      logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
-      logger.sentry('validTransaction ? ', validTransaction);
-      logger.sentry('isValidGas ? ', isValidGas);
-      captureEvent('Preventing tx submit');
-      return false;
-    }
+  const onSubmit = useCallback(
+    async ({
+      ens: { setAddress, transferControl, clearRecords } = {},
+    } = {}) => {
+      const wallet = await loadWallet(undefined, true, currentProvider);
+      if (!wallet) return;
 
-    let submitSuccess = false;
-    let updatedGasLimit = null;
+      const validTransaction =
+        isValidAddress &&
+        amountDetails.isSufficientBalance &&
+        isSufficientGas &&
+        isValidGas;
+      if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
+        logger.sentry('preventing tx submit for one of the following reasons:');
+        logger.sentry('selectedGasFee ? ', selectedGasFee);
+        logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
+        logger.sentry('validTransaction ? ', validTransaction);
+        logger.sentry('isValidGas ? ', isValidGas);
+        captureEvent('Preventing tx submit');
+        return false;
+      }
 
-    // Attempt to update gas limit before sending ERC20 / ERC721
-    if (!isNativeAsset(selected.address, currentNetwork)) {
-      try {
-        // Estimate the tx with gas limit padding before sending
-        updatedGasLimit = await estimateGasLimit(
-          {
-            address: accountAddress,
-            amount: amountDetails.assetAmount,
-            asset: selected,
-            recipient: toAddress,
+      let submitSuccess = false;
+      let updatedGasLimit = null;
+
+      // Attempt to update gas limit before sending ERC20 / ERC721
+      if (!isNativeAsset(selected.address, currentNetwork)) {
+        try {
+          // Estimate the tx with gas limit padding before sending
+          updatedGasLimit = await estimateGasLimit(
+            {
+              address: accountAddress,
+              amount: amountDetails.assetAmount,
+              asset: selected,
+              recipient: toAddress,
+            },
+            true,
+            currentProvider,
+            currentNetwork
+          );
+
+          if (!lessThan(updatedGasLimit, gasLimit)) {
+            if (currentNetwork === Network.optimism) {
+              updateTxFeeForOptimism(updatedGasLimit);
+            } else {
+              updateTxFee(updatedGasLimit, null);
+            }
+          }
+          // eslint-disable-next-line no-empty
+        } catch (e) {}
+      }
+
+      let nextNonce;
+
+      if (
+        isENS &&
+        toAddress &&
+        (clearRecords || setAddress || transferControl)
+      ) {
+        const { nonce } = await transferENS(() => null, {
+          clearRecords,
+          name: ensName,
+          records: {
+            ...(ensProfile?.data?.records || {}),
+            ...(ensProfile?.data?.coinAddresses || {}),
           },
-          true,
-          currentProvider,
-          currentNetwork
-        );
+          setAddress,
+          toAddress,
+          transferControl,
+          wallet,
+        });
+        nextNonce = nonce + 1;
+      }
 
-        if (!lessThan(updatedGasLimit, gasLimit)) {
-          if (currentNetwork === Network.optimism) {
-            updateTxFeeForOptimism(updatedGasLimit);
-          } else {
-            updateTxFee(updatedGasLimit, null);
+      const gasLimitToUse =
+        updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)
+          ? updatedGasLimit
+          : gasLimit;
+
+      const gasParams = parseGasParamsForTransaction(selectedGasFee);
+      const txDetails = {
+        amount: amountDetails.assetAmount,
+        asset: selected,
+        from: accountAddress,
+        gasLimit: gasLimitToUse,
+        network: currentNetwork,
+        nonce: nextNonce ?? (await getNextNonce()),
+        to: toAddress,
+        ...gasParams,
+      };
+
+      try {
+        const signableTransaction = await createSignableTransaction(txDetails);
+        if (!signableTransaction.to) {
+          logger.sentry('txDetails', txDetails);
+          logger.sentry('signableTransaction', signableTransaction);
+          logger.sentry('"to" field is missing!');
+          const e = new Error('Transaction missing TO field');
+          captureException(e);
+          Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
+          submitSuccess = false;
+        } else {
+          const { result: txResult } = await sendTransaction({
+            existingWallet: wallet,
+            provider: currentProvider,
+            transaction: signableTransaction,
+          });
+          const { hash, nonce } = txResult;
+          const { data, value } = signableTransaction;
+          if (!isEmpty(hash)) {
+            submitSuccess = true;
+            txDetails.hash = hash;
+            txDetails.nonce = nonce;
+            txDetails.network = currentNetwork;
+            txDetails.data = data;
+            txDetails.value = value;
+            txDetails.txTo = signableTransaction.to;
+            await dispatch(
+              dataAddNewTransaction(txDetails, null, false, currentProvider)
+            );
           }
         }
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
-    }
-
-    const gasLimitToUse =
-      updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)
-        ? updatedGasLimit
-        : gasLimit;
-
-    const gasParams = parseGasParamsForTransaction(selectedGasFee);
-    const txDetails = {
-      amount: amountDetails.assetAmount,
-      asset: selected,
-      from: accountAddress,
-      gasLimit: gasLimitToUse,
-      network: currentNetwork,
-      nonce: await getNextNonce(),
-      to: toAddress,
-      ...gasParams,
-    };
-
-    try {
-      const signableTransaction = await createSignableTransaction(txDetails);
-      if (!signableTransaction.to) {
-        logger.sentry('txDetails', txDetails);
-        logger.sentry('signableTransaction', signableTransaction);
-        logger.sentry('"to" field is missing!');
-        const e = new Error('Transaction missing TO field');
-        captureException(e);
-        Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
+      } catch (error) {
+        logger.sentry('TX Details', txDetails);
+        logger.sentry('SendSheet onSubmit error');
+        logger.sentry(error);
+        captureException(error);
         submitSuccess = false;
-      } else {
-        const { result: txResult } = await sendTransaction({
-          provider: currentProvider,
-          transaction: signableTransaction,
-        });
-        const { hash, nonce } = txResult;
-        const { data, value } = signableTransaction;
-        if (!isEmpty(hash)) {
-          submitSuccess = true;
-          txDetails.hash = hash;
-          txDetails.nonce = nonce;
-          txDetails.network = currentNetwork;
-          txDetails.data = data;
-          txDetails.value = value;
-          txDetails.txTo = signableTransaction.to;
-          await dispatch(
-            dataAddNewTransaction(txDetails, null, false, currentProvider)
-          );
-        }
       }
-    } catch (error) {
-      logger.sentry('TX Details', txDetails);
-      logger.sentry('SendSheet onSubmit error');
-      logger.sentry(error);
-      captureException(error);
-      submitSuccess = false;
-    }
-    return submitSuccess;
-  }, [
-    accountAddress,
-    amountDetails.assetAmount,
-    amountDetails.isSufficientBalance,
-    currentNetwork,
-    currentProvider,
-    dataAddNewTransaction,
-    dispatch,
-    gasLimit,
-    getNextNonce,
-    isSufficientGas,
-    isValidAddress,
-    isValidGas,
-    selected,
-    selectedGasFee,
-    toAddress,
-    updateTxFee,
-    updateTxFeeForOptimism,
-  ]);
+      return submitSuccess;
+    },
+    [
+      accountAddress,
+      amountDetails.assetAmount,
+      amountDetails.isSufficientBalance,
+      currentNetwork,
+      currentProvider,
+      dataAddNewTransaction,
+      dispatch,
+      ensName,
+      ensProfile?.data?.coinAddresses,
+      ensProfile?.data?.records,
+      gasLimit,
+      getNextNonce,
+      isENS,
+      isSufficientGas,
+      isValidAddress,
+      isValidGas,
+      selected,
+      selectedGasFee,
+      toAddress,
+      transferENS,
+      updateTxFee,
+      updateTxFeeForOptimism,
+    ]
+  );
 
-  const submitTransaction = useCallback(async () => {
-    if (Number(amountDetails.assetAmount) <= 0) {
-      logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
-      captureEvent('Preventing tx submit due to amount <= 0');
-      return false;
-    }
-    const submitSuccessful = await onSubmit();
-    analytics.track('Sent transaction', {
-      assetName: selected?.name || '',
-      assetType: selected?.type || '',
-      isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
-    });
-
-    if (submitSuccessful) {
-      goBack();
-      navigate(Routes.WALLET_SCREEN);
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.PROFILE_SCREEN);
+  const submitTransaction = useCallback(
+    async (...args) => {
+      if (Number(amountDetails.assetAmount) <= 0) {
+        logger.sentry(
+          'amountDetails.assetAmount ? ',
+          amountDetails?.assetAmount
+        );
+        captureEvent('Preventing tx submit due to amount <= 0');
+        return false;
+      }
+      const submitSuccessful = await onSubmit(...args);
+      analytics.track('Sent transaction', {
+        assetName: selected?.name || '',
+        assetType: selected?.type || '',
+        isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
       });
-    }
-  }, [
-    amountDetails.assetAmount,
-    goBack,
-    navigate,
-    onSubmit,
-    recipient,
-    selected?.name,
-    selected?.type,
-  ]);
+
+      if (submitSuccessful) {
+        goBack();
+        navigate(Routes.WALLET_SCREEN);
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.PROFILE_SCREEN);
+        });
+      }
+    },
+    [
+      amountDetails.assetAmount,
+      goBack,
+      navigate,
+      onSubmit,
+      recipient,
+      selected?.name,
+      selected?.type,
+    ]
+  );
 
   const validateRecipient = useCallback(
     async toAddress => {
       // Don't allow send to known ERC20 contracts on mainnet
-      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
+      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
         return false;
       }
 
@@ -611,7 +683,8 @@ export default function SendSheet(props) {
         const found =
           currentChainAssets &&
           currentChainAssets.find(
-            item => toLower(item.asset?.asset_code) === toLower(toAddress)
+            item =>
+              item.asset?.asset_code?.toLowerCase() === toAddress.toLowerCase()
           );
         if (found) {
           return false;
@@ -632,10 +705,14 @@ export default function SendSheet(props) {
     if (currentNetwork === Network.polygon) {
       nativeToken = 'MATIC';
     }
-    if (
+    if (isENS && !ensProfile.isSuccess) {
+      label = lang.t('button.confirm_exchange.loading');
+      disabled = true;
+    } else if (
       isEmpty(gasFeeParamsBySpeed) ||
       !selectedGasFee ||
-      isEmpty(selectedGasFee?.gasFee)
+      isEmpty(selectedGasFee?.gasFee) ||
+      !toAddress
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -660,10 +737,13 @@ export default function SendSheet(props) {
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     currentNetwork,
+    isENS,
+    ensProfile.isSuccess,
     gasFeeParamsBySpeed,
     selectedGasFee,
     isSufficientGas,
     isValidGas,
+    toAddress,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -690,14 +770,25 @@ export default function SendSheet(props) {
       });
       return;
     }
-
+    const uniqueTokenType = getUniqueTokenType(selected);
+    const isENS = uniqueTokenType === 'ENS';
+    const checkboxes = getDefaultCheckboxes({
+      ensProfile,
+      isENS: true,
+      network,
+      toAddress: recipient,
+    });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
+      checkboxes,
+      ensProfile,
+      isENS,
       isL2,
       isNft,
       network: currentNetwork,
+      profilesEnabled,
       to: recipient,
       toAddress,
     });
@@ -706,10 +797,13 @@ export default function SendSheet(props) {
     assetInputRef,
     buttonDisabled,
     currentNetwork,
+    ensProfile,
     isL2,
     isNft,
     nativeCurrencyInputRef,
     navigate,
+    network,
+    profilesEnabled,
     recipient,
     selected,
     submitTransaction,
@@ -722,12 +816,18 @@ export default function SendSheet(props) {
   }, [sendUpdateSelected]);
 
   const onChangeInput = useCallback(
-    event => {
-      setCurrentInput(event);
-      setRecipient(event);
-      setNickname(event);
-      if (profilesEnabled && isENSAddressFormat(event)) {
-        prefetchENSProfileImages(event);
+    text => {
+      const isValid = checkIsValidAddressOrDomainFormat(text);
+      if (!isValid) {
+        setIsValidAddress();
+      }
+      setToAddress();
+      setCurrentInput(text);
+      setRecipient(text);
+      setNickname(text);
+      if (profilesEnabled && isENSAddressFormat(text)) {
+        prefetchENSAvatar(text);
+        prefetchENSCover(text);
       }
     },
     [profilesEnabled]
@@ -746,20 +846,26 @@ export default function SendSheet(props) {
     }
   }, [isValidAddress, selected, showAssetForm, showAssetList]);
 
-  const checkAddress = useCallback(async recipient => {
+  const checkAddress = useCallback(recipient => {
     if (recipient) {
-      const validAddress = await checkIsValidAddressOrDomain(recipient);
-      setIsValidAddress(validAddress);
+      const isValidFormat = checkIsValidAddressOrDomainFormat(recipient);
+      setIsValidAddress(isValidFormat);
     }
   }, []);
 
   const [ensSuggestions, setEnsSuggestions] = useState([]);
+  const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
   useEffect(() => {
-    if (network === Network.mainnet && !recipientOverride) {
+    if (
+      network === Network.mainnet &&
+      !recipientOverride &&
+      recipient?.length
+    ) {
+      setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(
         recipient,
         setEnsSuggestions,
-        undefined,
+        setLoadingEnsSuggestions,
         profilesEnabled
       );
     } else {
@@ -775,8 +881,8 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
-    checkAddress(recipient);
-  }, [checkAddress, recipient]);
+    checkAddress(debouncedInput);
+  }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
@@ -843,7 +949,10 @@ export default function SendSheet(props) {
           isValidAddress={isValidAddress}
           nickname={nickname}
           onChangeAddressInput={onChangeInput}
-          onPressPaste={setRecipient}
+          onPressPaste={recipient => {
+            checkAddress(recipient);
+            setRecipient(recipient);
+          }}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
@@ -857,7 +966,9 @@ export default function SendSheet(props) {
             currentInput={currentInput}
             ensSuggestions={ensSuggestions}
             key={sendContactListDataKey}
+            loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient, nickname) => {
+              setIsValidAddress(true);
               setRecipient(recipient);
               setNickname(nickname);
             }}
@@ -917,9 +1028,6 @@ export default function SendSheet(props) {
             }
           />
         )}
-        {android && showAssetForm ? (
-          <KeyboardSizeView showAssetForm={showAssetForm} />
-        ) : null}
       </SheetContainer>
     </Container>
   );

@@ -1,5 +1,4 @@
 import produce from 'immer';
-import concat from 'lodash/concat';
 import isArray from 'lodash/isArray';
 import toLower from 'lodash/toLower';
 import uniq from 'lodash/uniq';
@@ -10,24 +9,24 @@ import {
   EthereumAddress,
   RainbowToken,
   UniswapFavoriteTokenData,
-} from '@rainbow-me/entities';
-import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
+} from '@/entities';
+import { getUniswapV2Tokens } from '@/handlers/dispersion';
 import {
   getUniswapFavorites,
   getUniswapFavoritesMetadata as getUniswapFavoritesMetadataLS,
   saveUniswapFavorites,
   saveUniswapFavoritesMetadata,
-} from '@rainbow-me/handlers/localstorage/uniswap';
-import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/localstorage/uniswap';
+import { getTestnetUniswapPairs } from '@/handlers/uniswap';
+import { Network } from '@/helpers/networkTypes';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
   ETH_ADDRESS,
   rainbowTokenList,
   WETH_ADDRESS,
-} from '@rainbow-me/references';
-import logger from 'logger';
+} from '@/references';
+import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -197,8 +196,10 @@ const getUniswapFavoritesMetadata = async (
         return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
       })
     );
+    const ethIsFavorited = addresses.includes(ETH_ADDRESS);
+    const wethIsFavorited = addresses.includes(WETH_ADDRESS);
     if (newFavoritesMeta) {
-      if (newFavoritesMeta[WETH_ADDRESS]) {
+      if (newFavoritesMeta[WETH_ADDRESS] && ethIsFavorited) {
         const favorite = newFavoritesMeta[WETH_ADDRESS];
         newFavoritesMeta[ETH_ADDRESS] = {
           ...favorite,
@@ -209,7 +210,7 @@ const getUniswapFavoritesMetadata = async (
         };
       }
       Object.entries(newFavoritesMeta).forEach(([address, favorite]) => {
-        if (address !== WETH_ADDRESS) {
+        if (address !== WETH_ADDRESS || wethIsFavorited) {
           favoritesMetadata[address] = { ...favorite, favorite: true };
         }
       });
@@ -243,7 +244,7 @@ export const uniswapUpdateFavorites = (
   const normalizedFavorites = favorites.map(toLower);
 
   const updatedFavorites = add
-    ? uniq(concat(normalizedFavorites, assetAddress))
+    ? uniq(normalizedFavorites.concat(assetAddress))
     : isArray(assetAddress)
     ? without(normalizedFavorites, ...assetAddress)
     : without(normalizedFavorites, assetAddress);

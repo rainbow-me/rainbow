@@ -1,10 +1,9 @@
 import { MMKV } from 'react-native-mmkv';
 import { getAccountLocal, getKey, saveAccountLocal } from './common';
-import { ENSRegistrations } from '@rainbow-me/entities';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
+import { ENSRegistrations } from '@/entities';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 const accountAssetsDataVersion = '0.1.0';
-const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
 const pendingTransactionsVersion = '0.1.0';
 const purchaseTransactionsVersion = '0.2.0';
@@ -15,12 +14,12 @@ const uniqueTokensVersion = '0.2.1';
 const ACCOUNT_ASSETS_DATA = 'accountAssetsData';
 const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
-const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
 const PENDING_TRANSACTIONS = 'pendingTransactions';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
 const SAVINGS = 'savings';
 const SHOWCASE_TOKENS = 'showcaseTokens';
+const HIDDEN_TOKENS = 'hiddenTokens';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
@@ -35,7 +34,6 @@ const storage = new MMKV({
 export const accountLocalKeys = [
   ACCOUNT_ASSETS_DATA,
   ACCOUNT_INFO,
-  ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
   ENS_REGISTRATIONS,
   PURCHASE_TRANSACTIONS,
@@ -130,40 +128,6 @@ export const saveAccountAssetsData = (
     accountAddress,
     network,
     accountAssetsDataVersion
-  );
-
-/**
- * @desc get asset prices from Uniswap
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getAssetPricesFromUniswap = (accountAddress: any, network: any) =>
-  getAccountLocal(
-    ASSET_PRICES_FROM_UNISWAP,
-    accountAddress,
-    network,
-    [],
-    assetPricesFromUniswapVersion
-  );
-
-/**
- * @desc save asset prices from Uniswap
- * @param  {String}   [address]
- * @param  {Array}    [assets]
- * @param  {String}   [network]
- */
-export const saveAssetPricesFromUniswap = (
-  assetPrices: any,
-  accountAddress: any,
-  network: any
-) =>
-  saveAccountLocal(
-    ASSET_PRICES_FROM_UNISWAP,
-    assetPrices,
-    accountAddress,
-    network,
-    assetPricesFromUniswapVersion
   );
 
 /**
@@ -443,3 +407,18 @@ export const saveWebDataEnabled = (
   accountAddress: any,
   network: any
 ) => saveAccountLocal(WEB_DATA_ENABLED, preference, accountAddress, network);
+
+/**
+ * Get hidden tokens
+ */
+export const getHiddenTokens = (accountAddress: string, network: string) =>
+  getAccountLocal(HIDDEN_TOKENS, accountAddress, network, []);
+
+/**
+ * Save hidden tokens
+ */
+export const saveHiddenTokens = (
+  hiddenTokens: string[],
+  accountAddress: string,
+  network: string
+) => saveAccountLocal(HIDDEN_TOKENS, hiddenTokens, accountAddress, network);

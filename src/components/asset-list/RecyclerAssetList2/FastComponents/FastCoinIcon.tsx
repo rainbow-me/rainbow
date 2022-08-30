@@ -4,16 +4,17 @@ import * as CoinIconsImages from 'react-coin-icon/lib/pngs';
 import { Image, StyleSheet, View } from 'react-native';
 import { FastChainBadge } from './FastCoinBadge';
 import { FastFallbackCoinIconImage } from './FastFallbackCoinIconImage';
-import ContractInteraction from '@rainbow-me/assets/contractInteraction.png';
-import EthIcon from '@rainbow-me/assets/eth-icon.png';
-import { AssetType } from '@rainbow-me/entities';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import { borders, fonts } from '@rainbow-me/styles';
+import ContractInteraction from '@/assets/contractInteraction.png';
+import EthIcon from '@/assets/eth-icon.png';
+import { AssetType } from '@/entities';
+import { useColorForAsset } from '@/hooks';
+import { borders, fonts } from '@/styles';
+import { ThemeContextProps } from '@/theme';
 import {
   FallbackIcon as CoinIconTextFallback,
   getTokenMetadata,
   isETH,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -73,8 +74,10 @@ export default React.memo(function FastCoinIcon({
   mainnetAddress?: string;
   symbol: string;
   assetType?: AssetType;
-  theme: any;
+  theme: ThemeContextProps;
 }) {
+  const { colors } = theme;
+
   const { resolvedType, resolvedAddress } = resolveTypeAndAddress({
     address,
     assetType,
@@ -89,7 +92,7 @@ export default React.memo(function FastCoinIcon({
   });
 
   const shadowColor = theme.isDarkMode
-    ? theme.colors.shadow
+    ? colors.shadow
     : tokenMetadata?.shadowColor ?? fallbackIconColor;
 
   const eth = isETH(resolvedAddress);
@@ -98,13 +101,22 @@ export default React.memo(function FastCoinIcon({
 
   const shouldRenderFallback = !eth && !tokenMetadata;
   const shouldRenderLocalCoinIconImage =
-    !shouldRenderFallback && CoinIconsImages[formattedSymbol];
+    !shouldRenderFallback && !!CoinIconsImages[formattedSymbol];
   const shouldRenderContract = symbol === 'contract';
 
   return (
     <View style={sx.container}>
       {eth ? (
-        <Image source={EthIcon} style={sx.coinIconFallback} />
+        <View
+          style={[
+            sx.coinIconFallback,
+            sx.reactCoinIconContainer,
+            sx.withShadow,
+            { shadowColor },
+          ]}
+        >
+          <Image source={EthIcon} style={sx.coinIconFallback} />
+        </View>
       ) : shouldRenderLocalCoinIconImage ? (
         <View
           style={[
@@ -128,6 +140,7 @@ export default React.memo(function FastCoinIcon({
           assetType={resolvedType}
           shadowColor={shadowColor}
           symbol={symbol}
+          theme={theme}
         >
           {() => (
             <CoinIconTextFallback

@@ -9,15 +9,15 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import { useClipboard } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
+import { useClipboard } from '@/hooks';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth, padding } from '@/styles';
 import {
   abbreviations,
   ethereumUtils,
   haptics,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const InfoButton = styled(Centered)({
   ...padding.object(8, 0),
@@ -27,7 +27,7 @@ const InfoButton = styled(Centered)({
   height: CoinRowHeight,
   justifyContent: 'center',
   position: 'absolute',
-  right: 40,
+  right: ({ showFavoriteButton }) => (showFavoriteButton ? 40 : 0),
   top: 0,
   width: 68,
 });
@@ -88,7 +88,11 @@ const buildBlockExplorerAction = type => {
   };
 };
 
-const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
+const CoinRowInfoButton = ({
+  item,
+  onCopySwapDetailsText,
+  showFavoriteButton,
+}) => {
   const { setClipboard } = useClipboard();
   const handleCopyContractAddress = useCallback(
     address => {
@@ -153,9 +157,8 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
     },
     [item, handleCopyContractAddress]
   );
-
   return (
-    <InfoButton>
+    <InfoButton showFavoriteButton={showFavoriteButton}>
       <ContextMenuButton
         activeOpacity={0}
         menuConfig={menuConfig}

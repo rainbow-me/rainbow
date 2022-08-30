@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import { Keyboard } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import {
   Box,
   Column,
@@ -13,16 +13,10 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { RegistrationParameters } from '@rainbow-me/entities';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import {
-  useENSPendingRegistrations,
-  useENSRegistration,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+} from '@/design-system';
+import { RegistrationParameters } from '@/entities';
+import { useENSPendingRegistrations } from '@/hooks';
+import { colors } from '@/styles';
 
 const PendingRegistration = ({
   registration,
@@ -33,19 +27,7 @@ const PendingRegistration = ({
   registration: RegistrationParameters;
   removeRegistration: (name: string) => void;
 }) => {
-  const { navigate } = useNavigation();
-  const { startRegistration } = useENSRegistration();
-
-  const onFinish = useCallback(
-    async (name: string) => {
-      startRegistration(name, REGISTRATION_MODES.CREATE);
-      android && Keyboard.dismiss();
-      setTimeout(() => {
-        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
-      }, 100);
-    },
-    [navigate, startRegistration]
-  );
+  const { finishRegistration } = useENSPendingRegistrations();
 
   const onRemove = useCallback(
     async (name: string) => {
@@ -67,14 +49,14 @@ const PendingRegistration = ({
         <Column>
           <Box>
             <Text color="primary" numberOfLines={1} size="16px" weight="heavy">
-              {registration.name}
+              {abbreviateEnsForDisplay(registration.name, 15)}
             </Text>
           </Box>
         </Column>
         <Column width="content">
           <Box paddingRight="15px">
             <ButtonPressAnimation
-              onPress={() => onFinish(registration.name)}
+              onPress={() => finishRegistration(registration.name)}
               scaleTo={0.9}
             >
               <Box

@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
-import styled from '@rainbow-me/styled-components';
-import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
+import styled from '@/styled-thing';
+import { buildTextStyles, margin, padding } from '@/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
@@ -78,6 +79,7 @@ function GweiInputPill(
     onBlur,
     testID,
     color,
+    editable = true,
   },
   ref
 ) {
@@ -98,6 +100,7 @@ function GweiInputPill(
           <GweiNumberInput
             allowFontScaling={false}
             contextMenuHidden
+            editable={editable}
             mask="[9999]{.}[999]"
             onBlur={onBlur}
             onChangeText={onChangeText}
@@ -111,7 +114,7 @@ function GweiInputPill(
             testID={testID}
             value={value}
           />
-          <GweiLabel> Gwei</GweiLabel>
+          {IS_TESTING !== 'true' && <GweiLabel> Gwei</GweiLabel>}
         </Row>
       </GweiPill>
     </ButtonPressAnimation>

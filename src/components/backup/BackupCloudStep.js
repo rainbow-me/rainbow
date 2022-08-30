@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -13,23 +12,24 @@ import { PasswordField } from '../fields';
 import { Centered, ColumnWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
+import { analytics } from '@/analytics';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
-} from '@rainbow-me/handlers/cloudBackup';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
+} from '@/handlers/cloudBackup';
+import showWalletErrorAlert from '@/helpers/support';
 import {
   useDimensions,
   useMagicAutofocus,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import logger from 'logger';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import logger from '@/utils/logger';
 
 const DescriptionText = styled(Text).attrs(
   ({ isTinyPhone, theme: { colors } }) => ({
@@ -114,7 +114,7 @@ export default function BackupCloudStep() {
   }, [goBack, isDamaged]);
 
   const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_MODAL
+    Routes.SETTINGS_SHEET
   );
 
   const walletId = params?.walletId || selectedWallet.id;
@@ -176,6 +176,8 @@ export default function BackupCloudStep() {
         minimumLength: cloudBackupPasswordMinLength,
       });
     } else if (
+      // TODO FIXME This branch of the if/else will never execute
+      // eslint-disable-next-line no-dupe-else-if
       password !== '' &&
       password.length < cloudBackupPasswordMinLength &&
       !passwordRef.current?.isFocused()

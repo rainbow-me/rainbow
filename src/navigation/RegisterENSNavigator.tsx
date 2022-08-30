@@ -11,17 +11,18 @@ import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
-import { Box } from '@rainbow-me/design-system';
-import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
+import { Box } from '@/design-system';
+import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useDimensions,
   useENSRegistration,
   useENSRegistrationForm,
   usePrevious,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
+import { deviceUtils } from '@/utils';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -29,7 +30,6 @@ const renderTabBar = () => null;
 const renderPager = (props: any) => (
   <ScrollPagerWrapper
     {...props}
-    initialScrollPosition={1}
     {...(android && {
       style: { height: Dimensions.get('window').height },
     })}
@@ -59,6 +59,7 @@ export default function RegisterENSNavigator() {
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
   const setAccentColor = useSetRecoilState(accentColorAtom);
+  const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 
   const { colors } = useTheme();
 
@@ -87,6 +88,10 @@ export default function RegisterENSNavigator() {
       startRegistration(ensName, REGISTRATION_MODES.SET_NAME);
       return Routes.ENS_CONFIRM_REGISTER_SHEET;
     }
+    if (mode === REGISTRATION_MODES.SEARCH) {
+      startRegistration('', mode);
+      return Routes.ENS_SEARCH_SHEET;
+    }
     return Routes.ENS_INTRO_SHEET;
   }, [params, startRegistration]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
@@ -110,6 +115,7 @@ export default function RegisterENSNavigator() {
   useEffect(
     () => () => {
       removeRecordByKey('avatar');
+      setAvatarMetadata(undefined);
       setAccentColor(colors.purple);
       clearValues();
       clearCurrentRegistrationName();
@@ -120,6 +126,7 @@ export default function RegisterENSNavigator() {
       colors.purple,
       removeRecordByKey,
       setAccentColor,
+      setAvatarMetadata,
     ]
   );
 
@@ -157,6 +164,7 @@ export default function RegisterENSNavigator() {
         <Box
           style={{
             height: wrapperHeight,
+            overflow: 'hidden',
           }}
         >
           <Swipe.Navigator

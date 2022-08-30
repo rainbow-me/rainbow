@@ -2,19 +2,18 @@ import { partition } from 'lodash';
 import React, { useMemo } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
-import { Stack } from '@rainbow-me/design-system';
-import { Records } from '@rainbow-me/entities';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
+import { Stack } from '@/design-system';
+import { Records } from '@/entities';
+import { ENS_RECORDS } from '@/helpers/ens';
+import { useENSRecordDisplayProperties } from '@/hooks';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];
-const topRecordKeys = [ENS_RECORDS.cover, ENS_RECORDS.description];
+const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.description];
 
-const imageKeyMap = {
-  [ENS_RECORDS.avatar]: 'avatarUrl',
-  [ENS_RECORDS.cover]: 'coverUrl',
-} as {
-  [key: string]: 'avatarUrl' | 'coverUrl';
+type ImageSource = { imageUrl?: string | null };
+type ENSImages = {
+  avatar?: ImageSource;
+  header?: ImageSource;
 };
 
 export default function ProfileInfoSection({
@@ -28,23 +27,16 @@ export default function ProfileInfoSection({
   allowEdit?: boolean;
   coinAddresses?: { [key: string]: string };
   ensName?: string;
-  images?: {
-    avatarUrl?: string | null;
-    coverUrl?: string | null;
-  };
+  images?: ENSImages;
   isLoading?: boolean;
   records?: Partial<Records>;
 }) {
   const recordsArray = useMemo(
     () =>
-      Object.entries(records || {})
-        .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS))
-        .map(([key, value]) =>
-          images?.[imageKeyMap[key]]
-            ? [key, images[imageKeyMap[key]] as string]
-            : [key, value]
-        ),
-    [images, records]
+      Object.entries(records || {}).filter(
+        ([key]) => !omitRecordKeys.includes(key as ENS_RECORDS)
+      ),
+    [records]
   );
 
   const [topRecords, otherRecords] = useMemo(() => {
@@ -77,6 +69,7 @@ export default function ProfileInfoSection({
               <ProfileInfoRow
                 allowEdit={allowEdit}
                 ensName={ensName}
+                images={images}
                 key={recordKey}
                 recordKey={recordKey}
                 recordValue={recordValue}
@@ -117,12 +110,14 @@ export default function ProfileInfoSection({
 function ProfileInfoRow({
   allowEdit,
   ensName,
+  images,
   recordKey,
   recordValue,
   type,
 }: {
   allowEdit?: boolean;
   ensName?: string;
+  images?: ENSImages;
   recordKey: string;
   recordValue: string;
   type: 'address' | 'record';
@@ -137,6 +132,7 @@ function ProfileInfoRow({
   } = useENSRecordDisplayProperties({
     allowEdit,
     ensName,
+    images,
     key: recordKey,
     type,
     value: recordValue,
@@ -144,10 +140,12 @@ function ProfileInfoRow({
 
   return (
     <InfoRow
+      ensName={ensName}
       icon={icon}
       isImage={isImageValue}
       label={label}
-      value={isImageValue ? url : value}
+      url={url}
+      value={value}
       wrapValue={children =>
         !isImageValue ? (
           <ContextMenuButton>

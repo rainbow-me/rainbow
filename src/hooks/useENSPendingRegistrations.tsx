@@ -1,14 +1,18 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
-import { ENSRegistrationState } from '@rainbow-me/entities';
-import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';
-import { AppState } from '@rainbow-me/redux/store';
-import { getENSNFTAvatarUrl } from '@rainbow-me/utils';
+import { ENSRegistrationState } from '@/entities';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useNavigation } from '@/navigation';
+import { removeExpiredRegistrations } from '@/redux/ensRegistration';
+import { AppState } from '@/redux/store';
+import Routes from '@/navigation/routesNames';
+import { getENSNFTAvatarUrl } from '@/utils';
 
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();
-  const { removeRegistrationByName } = useENSRegistration();
+  const { removeRegistrationByName, startRegistration } = useENSRegistration();
+  const { navigate } = useNavigation();
   const dispatch = useDispatch();
 
   const { pendingRegistrations, accountRegistrations } = useSelector(
@@ -63,8 +67,19 @@ export default function useENSPendingRegistrations() {
     dispatch(removeExpiredRegistrations());
   }, [dispatch]);
 
+  const finishRegistration = useCallback(
+    name => {
+      startRegistration(name, REGISTRATION_MODES.CREATE);
+      setTimeout(() => {
+        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
+      }, 100);
+    },
+    [navigate, startRegistration]
+  );
+
   return {
     accountRegistrations,
+    finishRegistration,
     pendingRegistrations,
     registrationImages,
     removeExpiredRegistrations: refreshRegistrations,

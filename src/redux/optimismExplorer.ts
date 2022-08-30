@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, mapValues, toLower } from 'lodash';
+import { isEmpty, keyBy, mapValues } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -11,16 +11,16 @@ import {
 } from './data';
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
-import { ZerionAsset } from '@rainbow-me/entities';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickBy } from '@rainbow-me/helpers/utilities';
+import { ZerionAsset } from '@/entities';
+import { getProviderForNetwork } from '@/handlers/web3';
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
+import { pickBy } from '@/helpers/utilities';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,
-} from '@rainbow-me/references';
-import logger from 'logger';
+} from '@/references';
+import logger from '@/utils/logger';
 
 /**
  * The last `ChainAsset`s update payload. Used for skipping redundant payloads.
@@ -155,7 +155,7 @@ export const optimismExplorerInit = () => async (
 ) => {
   if (networkInfo[Network.optimism]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
-  const formattedNativeCurrency = toLower(nativeCurrency);
+  const formattedNativeCurrency = nativeCurrency.toLowerCase();
 
   const fetchAssetsBalancesAndPrices = async () => {
     const assets = keyBy(
@@ -165,14 +165,14 @@ export const optimismExplorerInit = () => async (
 
     const tokenAddresses = Object.values(
       assets
-    ).map(({ asset: { asset_code } }) => toLower(asset_code));
+    ).map(({ asset: { asset_code } }) => asset_code.toLowerCase());
 
     const balances = await fetchAssetBalances(tokenAddresses, accountAddress);
 
     let updatedAssets = assets;
     if (balances) {
       updatedAssets = mapValues(assets, assetAndQuantity => {
-        const assetCode = toLower(assetAndQuantity.asset.asset_code);
+        const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
         return {
           asset: {
             ...assetAndQuantity.asset,
@@ -198,7 +198,7 @@ export const optimismExplorerInit = () => async (
 
       if (prices) {
         assetsWithBalance = mapValues(assetsWithBalance, assetWithBalance => {
-          const assetCoingeckoId = toLower(assetWithBalance.asset.coingecko_id);
+          const assetCoingeckoId = assetWithBalance.asset.coingecko_id.toLowerCase();
           if (prices[assetCoingeckoId]) {
             return {
               ...assetWithBalance,

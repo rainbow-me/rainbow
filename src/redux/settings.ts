@@ -1,40 +1,49 @@
-import analytics from '@segment/analytics-react-native';
+import { changeIcon } from 'react-native-change-icon';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
-import { NativeCurrencyKeys } from '@rainbow-me/entities';
+import { analytics } from '@/analytics';
+import { NativeCurrencyKeys } from '@/entities';
 import {
+  getAppIcon,
+  getFlashbotsEnabled,
   getLanguage,
   getNativeCurrency,
   getNetwork,
   getTestnetsEnabled,
+  saveAppIcon,
+  saveFlashbotsEnabled,
   saveLanguage,
   saveNativeCurrency,
   saveNetwork,
   saveTestnetsEnabled,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
-import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { dataResetState } from '@rainbow-me/redux/data';
-import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
-import { AppState } from '@rainbow-me/redux/store';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/localstorage/globalSettings';
+import { web3SetHttpProvider } from '@/handlers/web3';
+import { Network } from '@/helpers/networkTypes';
+import { dataResetState } from '@/redux/data';
+import { explorerClearState, explorerInit } from '@/redux/explorer';
+import { AppState } from '@/redux/store';
+import { supportedNativeCurrencies } from '@/references';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
   'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
+const SETTINGS_UPDATE_APP_ICON_SUCCESS =
+  'settings/SETTINGS_UPDATE_APP_ICON_SUCCESS';
 const SETTINGS_UPDATE_LANGUAGE_SUCCESS =
   'settings/SETTINGS_UPDATE_LANGUAGE_SUCCESS';
 const SETTINGS_UPDATE_NETWORK_SUCCESS =
   'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
 const SETTINGS_UPDATE_TESTNET_PREF_SUCCESS =
   'settings/SETTINGS_UPDATE_TESTNET_PREF_SUCCESS';
-const SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS =
-  'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS';
+const SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS =
+  'settings/SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS';
+const SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS =
+  'settings/SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS';
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -42,8 +51,10 @@ const SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS =
  * The current `settings` state.
  */
 interface SettingsState {
+  appIcon: string;
   accountAddress: string;
   chainId: number;
+  flashbotsEnabled: boolean;
   language: string;
   nativeCurrency: keyof typeof supportedNativeCurrencies;
   network: Network;
@@ -56,8 +67,10 @@ interface SettingsState {
 type SettingsStateUpdateAction =
   | SettingsStateUpdateSettingsAddressAction
   | SettingsStateUpdateNativeCurrencySuccessAction
+  | SettingsStateUpdateAppIconSuccessAction
   | SettingsStateUpdateNetworkSuccessAction
   | SettingsStateUpdateTestnetPrefAction
+  | SettingsStateUpdateFlashbotsPrefAction
   | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
   | SettingsStateUpdateLanguageSuccessAction;
 
@@ -70,18 +83,28 @@ interface SettingsStateUpdateNativeCurrencySuccessAction {
   type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS;
   payload: SettingsState['nativeCurrency'];
 }
+interface SettingsStateUpdateAppIconSuccessAction {
+  type: typeof SETTINGS_UPDATE_APP_ICON_SUCCESS;
+  payload: SettingsState['appIcon'];
+}
 
 interface SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction {
-  type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS;
+  type: typeof SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS;
   payload: {
     nativeCurrency: SettingsState['nativeCurrency'];
     testnetsEnabled: SettingsState['testnetsEnabled'];
+    flashbotsEnabled: SettingsState['flashbotsEnabled'];
   };
 }
 
 interface SettingsStateUpdateTestnetPrefAction {
   type: typeof SETTINGS_UPDATE_TESTNET_PREF_SUCCESS;
   payload: SettingsState['testnetsEnabled'];
+}
+
+interface SettingsStateUpdateFlashbotsPrefAction {
+  type: typeof SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS;
+  payload: SettingsState['flashbotsEnabled'];
 }
 
 interface SettingsStateUpdateNetworkSuccessAction {
@@ -98,19 +121,33 @@ interface SettingsStateUpdateLanguageSuccessAction {
 }
 
 export const settingsLoadState = () => async (
-  dispatch: Dispatch<SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction>
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
+    | SettingsStateUpdateAppIconSuccessAction
+  >
 ) => {
   try {
     const nativeCurrency = await getNativeCurrency();
     const testnetsEnabled = await getTestnetsEnabled();
-    analytics.identify(null, {
+    const appIcon = (await getAppIcon()) as string;
+    dispatch({
+      payload: appIcon,
+      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+    });
+
+    const flashbotsEnabled = await getFlashbotsEnabled();
+
+    analytics.identify(undefined, {
       currency: nativeCurrency,
+      enabledFlashbots: flashbotsEnabled,
       enabledTestnets: testnetsEnabled,
     });
 
     dispatch({
-      payload: { nativeCurrency, testnetsEnabled },
-      type: SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS,
+      payload: { flashbotsEnabled, nativeCurrency, testnetsEnabled },
+      type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
     });
   } catch (error) {
     logger.log('Error loading native currency and testnets pref', error);
@@ -158,6 +195,33 @@ export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
   saveTestnetsEnabled(testnetsEnabled);
 };
 
+export const settingsChangeAppIcon = (appIcon: string) => async (
+  dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>
+) => {
+  logger.log('changing app icon to', appIcon);
+  try {
+    await changeIcon(appIcon);
+    logger.log('icon changed to ', appIcon);
+    saveAppIcon(appIcon);
+    dispatch({
+      payload: appIcon,
+      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error changing app icon', error);
+  }
+};
+
+export const settingsChangeFlashbotsEnabled = (
+  flashbotsEnabled: boolean
+) => async (dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>) => {
+  dispatch({
+    payload: flashbotsEnabled,
+    type: SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS,
+  });
+  saveFlashbotsEnabled(flashbotsEnabled);
+};
+
 export const settingsUpdateAccountAddress = (accountAddress: string) => async (
   dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>
 ) => {
@@ -193,7 +257,7 @@ export const settingsChangeLanguage = (language: string) => async (
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
     });
     saveLanguage(language);
-    analytics.identify(null, { language: language });
+    analytics.identify(undefined, { language: language });
   } catch (error) {
     logger.log('Error changing language', error);
   }
@@ -217,7 +281,7 @@ export const settingsChangeNativeCurrency = (
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
-    analytics.identify(null, { currency: nativeCurrency });
+    analytics.identify(undefined, { currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);
   }
@@ -226,7 +290,9 @@ export const settingsChangeNativeCurrency = (
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE: SettingsState = {
   accountAddress: '',
+  appIcon: 'og',
   chainId: 1,
+  flashbotsEnabled: false,
   language: 'en',
   nativeCurrency: NativeCurrencyKeys.USD,
   network: Network.mainnet,
@@ -239,6 +305,11 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         accountAddress: action.payload,
+      };
+    case SETTINGS_UPDATE_APP_ICON_SUCCESS:
+      return {
+        ...state,
+        appIcon: action.payload,
       };
     case SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS:
       return {
@@ -256,9 +327,10 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
         ...state,
         language: action.payload,
       };
-    case SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS:
+    case SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS:
       return {
         ...state,
+        flashbotsEnabled: action.payload.flashbotsEnabled,
         nativeCurrency: action.payload.nativeCurrency,
         testnetsEnabled: action.payload.testnetsEnabled,
       };
@@ -266,6 +338,11 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         testnetsEnabled: action.payload,
+      };
+    case SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS:
+      return {
+        ...state,
+        flashbotsEnabled: action.payload,
       };
     default:
       return state;

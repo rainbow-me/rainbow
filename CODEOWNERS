@@ -7,7 +7,7 @@ android/ @brunobar79 @osdnk @terrysahaidak @estebanmino
 ios/ @brunobar79 @osdnk
 
 # SECURITY / APP INFRA
-patches/ @brunobar79 @osdnk @estebanmino
+patches/ @brunobar79 @osdnk @estebanmino @nickbytes
 scripts/ @brunobar79 @osdnk @estebanmino
 
 # DESIGN SYSTEM
@@ -29,9 +29,12 @@ src/model/wallet.ts @brunobar79 @estebanmino
 src/redux/gas.ts @brunobar79 @estebanmino
 src/redux/nonceManager.ts @derHowie @brunobar79 @estebanmino
 
+# navigation
+src/navigation @osdnk @terrysahaidak
+
 # APP INFRA
-.eslintignore @brunobar79 @osdnk @estebanmino
-.eslintrc.js @brunobar79 @osdnk @estebanmino
+.eslintignore @brunobar79 @osdnk @estebanmino @estrattonbailey
+.eslintrc.js @brunobar79 @osdnk @estebanmino @estrattonbailey
 .gitattributes @brunobar79 @estebanmino
 .gitignore @brunobar79 @estebanmino
 .nvmrc @brunobar79 @osdnk @estebanmino

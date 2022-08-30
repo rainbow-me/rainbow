@@ -1,23 +1,30 @@
 import React from 'react';
-import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
 import { CoinIcon } from '../../coin-icon';
-import { Centered, ColumnWithMargins, Row } from '../../layout';
+import { Centered } from '../../layout';
 import { Text, TruncatedText } from '../../text';
-import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
-import { SwapModalField } from '@rainbow-me/redux/swap';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
-import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
+import { Box, Column, Columns, Row, Rows } from '@/design-system';
+import {
+  useAccountSettings,
+  useColorForAsset,
+  useDimensions,
+} from '@/hooks';
+import { SwapModalField } from '@/redux/swap';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+} from '@/helpers/utilities';
 
-export const CurrencyTileHeight = 143;
+export const CurrencyTileHeight = android ? 153 : 143;
 
 const AmountText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.8),
   letterSpacing: 'roundedTight',
   size: 'smedium',
   weight: 'semibold',
-}))({});
+}))();
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -26,15 +33,13 @@ const Container = styled(Centered).attrs({
   flex: 1,
   height: CurrencyTileHeight,
   overflow: 'hidden',
+  zIndex: 0,
+  ...(android ? { paddingTop: 4 } : {}),
 });
 
-const Gradient = styled(RadialGradient).attrs(
-  ({ theme: { colors }, color, type }) => ({
-    center:
-      type === 'input' ? [0, 0] : [CurrencyTileHeight, CurrencyTileHeight],
-    colors: [colors.alpha(color, 0.04), colors.alpha(color, 0)],
-  })
-)({
+const Gradient = styled(Box).attrs(({ theme: { colors }, color }) => ({
+  backgroundColor: colors.alpha(color, 0.08),
+}))({
   ...position.coverAsObject,
 });
 
@@ -43,14 +48,12 @@ const NativePriceText = styled(TruncatedText).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })({
-  ...fontWithWidth(fonts.weight.heavy),
+  maxWidth: ({ maxWidth }) => maxWidth,
 });
 
 const TruncatedAmountText = styled(AmountText)({
   flexGrow: 0,
   flexShrink: 1,
-
-  ...(android ? { height: 26.7 } : {}),
 });
 
 export default function CurrencyTile({
@@ -63,43 +66,83 @@ export default function CurrencyTile({
   type = 'input',
   ...props
 }) {
+  const { width } = useDimensions();
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
+  const {
+    displayValues: { nativeAmountDisplay },
+  } = useSelector(state => state.swap);
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
-  const { address, symbol } = asset;
+  const { address, mainnet_address, symbol, type: assetType } = asset;
   const isOther =
     (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
   const priceDisplay = priceValue
-    ? convertAmountAndPriceToNativeDisplay(
-        amount,
-        priceValue ?? 0,
-        nativeCurrency
-      ).display
+    ? type === 'input'
+      ? convertAmountToNativeDisplay(nativeAmountDisplay, nativeCurrency)
+      : convertAmountAndPriceToNativeDisplay(
+          amount,
+          priceValue ?? 0,
+          nativeCurrency
+        ).display
     : '-';
 
   return (
     <Container {...props}>
-      <Gradient color={colorForAsset} type={type} />
-      <ColumnWithMargins centered margin={15}>
-        <CoinIcon address={address} size={50} symbol={symbol} />
-        <ColumnWithMargins centered margin={4} paddingHorizontal={8}>
-          <NativePriceText>
-            {priceDisplay}
-            {isHighPriceImpact && (
-              <NativePriceText color={priceImpactColor}>{` 􀇿`}</NativePriceText>
-            )}
-          </NativePriceText>
-          <Row align="center">
-            <TruncatedAmountText as={TruncatedText}>
-              {`${isOther ? '~' : ''}${amountDisplay}`}
-            </TruncatedAmountText>
-            <AmountText>{` ${symbol}`}</AmountText>
+      <Gradient color={colorForAsset} />
+      <Box paddingHorizontal="15px">
+        <Rows alignHorizontal="center" alignVertical="center" space="10px">
+          <Row height="content">
+            <CoinIcon
+              address={address}
+              badgeXPosition={-5}
+              badgeYPosition={0}
+              mainnet_address={mainnet_address}
+              size={50}
+              symbol={symbol}
+              type={assetType}
+            />
           </Row>
-        </ColumnWithMargins>
-      </ColumnWithMargins>
+          <Row height="content">
+            <Box width="full">
+              <Rows space={ios && '4px'}>
+                <Row height="content">
+                  <Columns alignHorizontal="center" space="4px">
+                    <Column width="content">
+                      <NativePriceText maxWidth={width / 4}>
+                        {isOther && '~'}
+                        {amountDisplay}
+                      </NativePriceText>
+                    </Column>
+                    <Column alignHorizontal="center" width="content">
+                      <NativePriceText>{symbol}</NativePriceText>
+                    </Column>
+                  </Columns>
+                </Row>
+                <Row height="content">
+                  <Box
+                    alignItems="center"
+                    justifyContent="center"
+                    marginTop={android && '-6px'}
+                    width="full"
+                  >
+                    <TruncatedAmountText as={TruncatedText}>
+                      {priceDisplay}
+                      {isHighPriceImpact && (
+                        <NativePriceText
+                          color={priceImpactColor}
+                        >{` 􀇿`}</NativePriceText>
+                      )}
+                    </TruncatedAmountText>
+                  </Box>
+                </Row>
+              </Rows>
+            </Box>
+          </Row>
+        </Rows>
+      </Box>
     </Container>
   );
 }

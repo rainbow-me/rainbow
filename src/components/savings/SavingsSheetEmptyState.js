@@ -7,12 +7,12 @@ import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
-import { DAI_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { magicMemo, watchingAlert } from '@rainbow-me/utils';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { DAI_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { magicMemo, watchingAlert } from '@/utils';
 
 const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
@@ -56,7 +56,7 @@ const SavingsSheetEmptyState = ({
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         params: {
           params: {
-            defaultInputAsset: underlying,
+            inputAsset: underlying,
           },
           screen: Routes.MAIN_EXCHANGE_SCREEN,
         },

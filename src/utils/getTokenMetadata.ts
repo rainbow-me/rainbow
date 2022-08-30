@@ -1,9 +1,9 @@
-import { toLower } from 'lodash';
-import { RainbowToken } from '@rainbow-me/entities';
-import { rainbowTokenList } from '@rainbow-me/references';
+import { RainbowToken } from '@/entities';
+import { rainbowTokenList } from '@/references';
 
 export default function getTokenMetadata(
-  tokenAddress: string
+  tokenAddress: string | undefined
 ): RainbowToken | undefined {
-  return rainbowTokenList.RAINBOW_TOKEN_LIST[toLower(tokenAddress)];
+  if (!tokenAddress) return undefined;
+  return rainbowTokenList.RAINBOW_TOKEN_LIST[tokenAddress.toLowerCase()];
 }

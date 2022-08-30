@@ -1,36 +1,36 @@
 import Clipboard from '@react-native-community/clipboard';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { startCase, toLower } from 'lodash';
+import startCase from 'lodash/startCase';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import TransactionActions from '@rainbow-me/helpers/transactionActions';
+import { analytics } from '@/analytics';
+import { TransactionStatusTypes } from '@/entities';
+import showWalletErrorAlert from '@/helpers/support';
+import TransactionActions from '@/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
-} from '@rainbow-me/helpers/transactions';
-import { pickShallow } from '@rainbow-me/helpers/utilities';
-import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
+} from '@/helpers/transactions';
+import { pickShallow } from '@/helpers/utilities';
+import { isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,
   useSafeImageUri,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { removeRequest } from '@rainbow-me/redux/requests';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+} from '@/hooks';
+import { useNavigation } from '@/navigation/Navigation';
+import { removeRequest } from '@/redux/requests';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -162,7 +162,7 @@ export default function TransactionList({
         contactColor = getRandomColor();
       }
 
-      const isOutgoing = toLower(from) === toLower(accountAddress);
+      const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
       const canBeResubmitted = isOutgoing && !minedAt;
       const canBeCancelled =
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;

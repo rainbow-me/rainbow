@@ -1,14 +1,15 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
+import { getAddress } from '@ethersproject/address';
 import { Resolver } from '@ethersproject/providers';
 import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
-import { isZeroAddress } from 'ethereumjs-util';
+import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
+  ENS_ACCOUNT_DOMAINS,
   ENS_ACCOUNT_REGISTRATIONS,
-  ENS_ALL_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_NAME_FROM_LABELHASH,
@@ -16,20 +17,30 @@ import {
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
-  EnsAccountRegistratonsData,
+  EnsAccountDomainsData,
   EnsGetCoinTypesData,
   EnsGetNameFromLabelhash,
   EnsGetRecordsData,
   EnsGetRegistrationData,
 } from '../apollo/queries';
-import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
-import { ENSActionParameters } from '../raps/common';
+import { prefetchENSAddress } from '../hooks/useENSAddress';
+import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
+import { prefetchENSCover } from '../hooks/useENSCover';
+import { prefetchENSFirstTransactionTimestamp } from '../hooks/useENSFirstTransactionTimestamp';
+import { prefetchENSRecords } from '../hooks/useENSRecords';
+import { ENSActionParameters, RapActionTypes } from '../raps/common';
+import {
+  getENSData,
+  getNameFromLabelhash,
+  saveENSData,
+} from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
   ENSRegistrationRecords,
   Records,
   UniqueAsset,
-} from '@rainbow-me/entities';
+} from '@/entities';
+import { Network } from '@/helpers';
 import {
   ENS_DOMAIN,
   ENS_RECORDS,
@@ -37,23 +48,25 @@ import {
   generateSalt,
   getENSExecutionDetails,
   getNameOwner,
-} from '@rainbow-me/helpers/ens';
-import { add } from '@rainbow-me/helpers/utilities';
-import { ImgixImage } from '@rainbow-me/images';
-import { handleAndSignImages } from '@rainbow-me/parsers';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
+} from '@/helpers/ens';
+import { add } from '@/helpers/utilities';
+import { ImgixImage } from '@/components/images';
+import {
+  getOpenSeaCollectionUrl,
+  handleAndSignImages,
+} from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
-  ensPublicResolverAddress,
+  ensIntroMarqueeNames,
   ethUnits,
-} from '@rainbow-me/references';
-import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
-import { AvatarResolver } from 'ens-avatar';
+} from '@/references';
+import { labelhash, logger, profileUtils } from '@/utils';
+import { AvatarResolver } from '@/ens-avatar/src';
 
 const DUMMY_RECORDS = {
-  'cover':
-    'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
   'description': 'description',
+  'header':
+    'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
   'me.rainbow.displayName': 'name',
 };
 
@@ -70,6 +83,7 @@ const buildEnsToken = ({
 }) => {
   // @ts-expect-error JavaScript function
   const { imageUrl, lowResUrl } = handleAndSignImages(imageUrl_);
+  const slug = 'ens';
   return {
     animation_url: null,
     asset_contract: {
@@ -93,7 +107,7 @@ const buildEnsToken = ({
         'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
       name: 'ENS: Ethereum Name Service',
       short_description: null,
-      slug: 'ens',
+      slug,
       twitter_username: 'ensdomains',
     },
     currentPrice: null,
@@ -102,6 +116,7 @@ const buildEnsToken = ({
     familyImage:
       'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
     familyName: 'ENS',
+    fullUniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}`,
     id: tokenId,
     image_original_url: imageUrl,
     image_thumbnail_url: lowResUrl,
@@ -113,7 +128,10 @@ const buildEnsToken = ({
     lastSale: undefined,
     lastSalePaymentToken: null,
     lowResUrl,
+    marketplaceCollectionUrl: getOpenSeaCollectionUrl(slug),
+    marketplaceName: 'OpenSea',
     name,
+    network: Network.mainnet,
     permalink: '',
     sell_orders: [],
     traits: [],
@@ -123,9 +141,9 @@ const buildEnsToken = ({
   } as UniqueAsset;
 };
 
-export const isUnknownOpenSeaENS = (asset?: any) => {
+export const isUnknownOpenSeaENS = (asset?: UniqueAsset) => {
   const isENS =
-    asset?.asset_contract?.address.toLowerCase() ===
+    asset?.asset_contract?.address?.toLowerCase() ===
     ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
   return (
     isENS &&
@@ -145,15 +163,21 @@ export const fetchMetadata = async ({
   tokenId: string;
 }) => {
   try {
-    const { data } = await ensClient.query<EnsGetNameFromLabelhash>({
-      query: ENS_GET_NAME_FROM_LABELHASH,
-      variables: {
-        labelhash: BigNumber.from(tokenId).toHexString(),
-      },
-    });
-    const name = data.domains[0].labelName;
+    const labelhash = BigNumber.from(tokenId).toHexString();
+
+    let name = await getNameFromLabelhash(labelhash);
+    if (!name) {
+      const { data } = await ensClient.query<EnsGetNameFromLabelhash>({
+        query: ENS_GET_NAME_FROM_LABELHASH,
+        variables: {
+          labelhash,
+        },
+      });
+      name = `${data.domains[0].labelName}.eth`;
+    }
+
     const image_url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`;
-    return { image_url, name: `${name}.eth` };
+    return { image_url, name };
   } catch (error) {
     logger.sentry('ENS: Error getting ENS metadata', error);
     captureException(new Error('ENS: Error getting ENS metadata'));
@@ -171,7 +195,7 @@ export const fetchEnsTokens = async ({
   timeAgo: Duration;
 }) => {
   try {
-    const { data } = await ensClient.query<EnsAccountRegistratonsData>({
+    const { data } = await ensClient.query<EnsAccountDomainsData>({
       query: ENS_ACCOUNT_REGISTRATIONS,
       variables: {
         address: address.toLowerCase(),
@@ -180,16 +204,20 @@ export const fetchEnsTokens = async ({
         ).toString(),
       },
     });
-    return data.account.registrations.map(registration => {
-      const tokenId = BigNumber.from(registration.domain.labelhash).toString();
-      const token = buildEnsToken({
-        contractAddress,
-        imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
-        name: registration.domain.name,
-        tokenId,
-      });
-      return token;
-    });
+    return (
+      data?.account?.registrations?.map(registration => {
+        const tokenId = BigNumber.from(
+          registration.domain.labelhash
+        ).toString();
+        const token = buildEnsToken({
+          contractAddress,
+          imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
+          name: registration.domain.name,
+          tokenId,
+        });
+        return token;
+      }) || []
+    );
   } catch (error) {
     logger.sentry('ENS: Error getting ENS unique tokens', error);
     captureException(new Error('ENS: Error getting ENS unique tokens'));
@@ -203,6 +231,42 @@ export const fetchSuggestions = async (
   setIsFetching = (_unused: any) => {},
   profilesEnabled = false
 ) => {
+  if (isValidAddress(recipient)) {
+    const address = getAddress(recipient);
+    const ens = await fetchReverseRecord(address);
+    if (!ens) {
+      setSuggestions([]);
+      setIsFetching(false);
+      return [];
+    }
+    let avatar;
+    try {
+      avatar = await fetchENSAvatar(ens, {
+        cacheFirst: true,
+      });
+      prefetchENSAddress(ens, { cacheFirst: true });
+      prefetchENSCover(ens, { cacheFirst: true });
+      prefetchENSRecords(ens, { cacheFirst: true });
+      prefetchENSFirstTransactionTimestamp(ens, {
+        cacheFirst: true,
+      });
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+    const suggestion = [
+      {
+        address: address,
+        color: profileUtils.addressHashedColorIndex(recipient),
+        ens: true,
+        image: avatar?.imageUrl,
+        network: 'mainnet',
+        nickname: ens,
+        uniqueId: address,
+      },
+    ];
+    setSuggestions(suggestion);
+    setIsFetching(false);
+    return suggestion;
+  }
   if (recipient.length > 2) {
     let suggestions: {
       address: any;
@@ -230,24 +294,33 @@ export const fetchSuggestions = async (
               !isZeroAddress(domain.owner.id)
           )
           .map(
-            async (domain: {
-              name: string;
-              resolver: { texts: string[] };
-              owner: { id: string };
-            }) => {
+            async (
+              domain: {
+                name: string;
+                resolver: { texts: string[] };
+                owner: { id: string };
+              },
+              i: number
+            ) => {
               const hasAvatar = domain?.resolver?.texts?.find(
                 text => text === ENS_RECORDS.avatar
               );
               if (!!hasAvatar && profilesEnabled) {
                 try {
-                  const images = await fetchImages(domain.name);
-                  queryClient.setQueryData(
-                    ensProfileImagesQueryKey(domain.name),
-                    images
-                  );
+                  const avatar = await fetchENSAvatar(domain.name, {
+                    cacheFirst: true,
+                  });
+                  if (i === 0) {
+                    prefetchENSAddress(domain.name, { cacheFirst: true });
+                    prefetchENSCover(domain.name, { cacheFirst: true });
+                    prefetchENSRecords(domain.name, { cacheFirst: true });
+                    prefetchENSFirstTransactionTimestamp(domain.name, {
+                      cacheFirst: true,
+                    });
+                  }
                   return {
                     ...domain,
-                    avatar: images.avatarUrl,
+                    avatar: avatar?.imageUrl,
                   };
                   // eslint-disable-next-line no-empty
                 } catch (e) {}
@@ -307,9 +380,9 @@ export const fetchRegistrationDate = async (recipient: string) => {
   }
 };
 
-export const fetchAccountRegistrations = async (address: string) => {
-  const registrations = await ensClient.query<EnsAccountRegistratonsData>({
-    query: ENS_ALL_ACCOUNT_REGISTRATIONS,
+export const fetchAccountDomains = async (address: string) => {
+  const registrations = await ensClient.query<EnsAccountDomainsData>({
+    query: ENS_ACCOUNT_DOMAINS,
     variables: {
       address: address?.toLowerCase(),
     },
@@ -317,36 +390,33 @@ export const fetchAccountRegistrations = async (address: string) => {
   return registrations;
 };
 
-export const fetchImages = async (ensName: string) => {
-  let avatarUrl;
-  let coverUrl;
+export const fetchImage = async (
+  imageType: 'avatar' | 'header',
+  ensName: string
+) => {
+  let imageUrl;
   const provider = await getProviderForNetwork();
   try {
     const avatarResolver = new AvatarResolver(provider);
-    [avatarUrl, coverUrl] = await Promise.all([
-      avatarResolver.getImage(ensName, {
-        allowNonOwnerNFTs: true,
-        type: 'avatar',
-      }),
-      avatarResolver.getImage(ensName, {
-        allowNonOwnerNFTs: true,
-        type: 'cover',
-      }),
-    ]);
-    ImgixImage.preload([
-      ...(avatarUrl ? [{ uri: avatarUrl }] : []),
-      ...(coverUrl ? [{ uri: coverUrl }] : []),
-    ]);
-    // eslint-disable-next-line no-empty
-  } catch (err) {}
+    imageUrl = await avatarResolver.getImage(ensName, {
+      allowNonOwnerNFTs: true,
+      type: imageType,
+    });
+    ImgixImage.preload([...(imageUrl ? [{ uri: imageUrl }] : [])]);
+    saveENSData(imageType, ensName, { imageUrl });
+  } catch (err) {
+    // Fallback to storage images
+    const data = await getENSData(imageType, ensName);
+    imageUrl = data?.imageUrl as string;
+  }
 
-  return {
-    avatarUrl,
-    coverUrl,
-  };
+  return { imageUrl };
 };
 
-export const fetchRecords = async (ensName: string) => {
+export const fetchRecords = async (
+  ensName: string,
+  { supportedOnly = true }: { supportedOnly?: boolean } = {}
+) => {
   const response = await ensClient.query<EnsGetRecordsData>({
     query: ENS_GET_RECORDS,
     variables: {
@@ -360,7 +430,7 @@ export const fetchRecords = async (ensName: string) => {
   const supportedRecords = Object.values(ENS_RECORDS);
   const rawRecordKeys: string[] = data.resolver?.texts || [];
   const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key =>
-    supportedRecords.includes(key)
+    supportedOnly ? supportedRecords.includes(key) : true
   );
   const recordValues = await Promise.all(
     recordKeys.map((key: string) => resolver?.getText(key))
@@ -376,7 +446,8 @@ export const fetchRecords = async (ensName: string) => {
 };
 
 export const fetchCoinAddresses = async (
-  ensName: string
+  ensName: string,
+  { supportedOnly = true }: { supportedOnly?: boolean } = {}
 ): Promise<{ [key in ENS_RECORDS]: string }> => {
   const response = await ensClient.query<EnsGetCoinTypesData>({
     query: ENS_GET_COIN_TYPES,
@@ -394,7 +465,7 @@ export const fetchCoinAddresses = async (
   );
   const coinTypes: number[] =
     (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(name => supportedRecords.includes(name))
+      .filter(name => (supportedOnly ? supportedRecords.includes(name) : true))
       .map(name => formatsByName[name].coinType) || [];
 
   const coinAddressValues = await Promise.all(
@@ -480,55 +551,15 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
   };
 };
 
-export const fetchProfile = async (ensName: string) => {
-  const [
-    resolver,
-    records,
-    coinAddresses,
-    images,
-    owner,
-    { registrant, registration },
-    primary,
-  ] = await Promise.all([
-    fetchResolver(ensName),
-    fetchRecords(ensName),
-    fetchCoinAddresses(ensName),
-    fetchImages(ensName),
-    fetchOwner(ensName),
-    fetchRegistration(ensName),
-    fetchPrimary(ensName),
-  ]);
-
-  const resolverData = {
-    address: resolver?.address,
-    type: resolver?.address === ensPublicResolverAddress ? 'default' : 'custom',
-  };
-
-  return {
-    coinAddresses,
-    images,
-    owner,
-    primary,
-    records,
-    registrant,
-    registration,
-    resolver: resolverData,
-  };
-};
-
-export const fetchProfileRecords = async (ensName: string) => {
-  const [records, coinAddresses, images] = await Promise.all([
-    fetchRecords(ensName),
-    fetchCoinAddresses(ensName),
-    fetchImages(ensName),
-  ]);
-
-  return {
-    coinAddresses,
-    images,
-    records,
-  };
-};
+export function prefetchENSIntroData() {
+  for (const name of ensIntroMarqueeNames) {
+    prefetchENSAddress(name, { cacheFirst: true });
+    prefetchENSAvatar(name, { cacheFirst: true });
+    prefetchENSCover(name, { cacheFirst: true });
+    prefetchENSRecords(name, { cacheFirst: true });
+    prefetchENSFirstTransactionTimestamp(name, { cacheFirst: true });
+  }
+}
 
 export const estimateENSCommitGasLimit = async ({
   name,
@@ -613,6 +644,38 @@ export const estimateENSSetNameGasLimit = async ({
     type: ENSRegistrationTransactionType.SET_NAME,
   });
 
+export const estimateENSReclaimGasLimit = async ({
+  name,
+  ownerAddress,
+  toAddress,
+}: {
+  name: string;
+  ownerAddress: string;
+  toAddress: string;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    toAddress,
+    type: ENSRegistrationTransactionType.RECLAIM,
+  });
+
+export const estimateENSSetAddressGasLimit = async ({
+  name,
+  ownerAddress,
+  records,
+}: {
+  name: string;
+  ownerAddress?: string;
+  records: ENSRegistrationRecords;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    records,
+    type: ENSRegistrationTransactionType.SET_ADDR,
+  });
+
 export const estimateENSSetTextGasLimit = async ({
   name,
   records,
@@ -633,6 +696,7 @@ export const estimateENSTransactionGasLimit = async ({
   name,
   type,
   ownerAddress,
+  toAddress,
   rentPrice,
   duration,
   records,
@@ -641,6 +705,7 @@ export const estimateENSTransactionGasLimit = async ({
   name?: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
+  toAddress?: string;
   rentPrice?: string;
   duration?: number;
   salt?: string;
@@ -653,6 +718,7 @@ export const estimateENSTransactionGasLimit = async ({
     records,
     rentPrice,
     salt,
+    toAddress,
     type,
   });
 
@@ -755,6 +821,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     promises.push(
       estimateENSSetRecordsGasLimit({
         name,
+        ownerAddress,
         records,
       })
     );
@@ -770,22 +837,62 @@ export const estimateENSSetRecordsGasLimit = async ({
   name,
   records,
   ownerAddress,
+  setReverseRecord,
 }:
-  | { name: string; records: Records; ownerAddress?: string }
+  | {
+      name: string;
+      records: Records;
+      ownerAddress?: string;
+      setReverseRecord?: boolean;
+    }
   | ENSActionParameters) => {
-  let gasLimit: string | null = '0';
+  const promises = [];
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
-    const shouldUseMulticall = shouldUseMulticallTransaction(
-      ensRegistrationRecords
-    );
-    gasLimit = await (shouldUseMulticall
-      ? estimateENSMulticallGasLimit
-      : estimateENSSetTextGasLimit)({
-      ...{ name, ownerAddress, records: ensRegistrationRecords },
-    });
+    const txType = getTransactionTypeForRecords(ensRegistrationRecords);
+    switch (txType) {
+      case ENSRegistrationTransactionType.MULTICALL:
+        promises.push(
+          estimateENSMulticallGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
+        break;
+      case ENSRegistrationTransactionType.SET_ADDR:
+        promises.push(
+          estimateENSSetAddressGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
+        break;
+      case ENSRegistrationTransactionType.SET_TEXT:
+        promises.push(
+          estimateENSSetTextGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
+        break;
+      default:
+    }
   }
+  if (setReverseRecord && ownerAddress) {
+    promises.push(
+      estimateENSSetNameGasLimit({
+        name,
+        ownerAddress,
+      })
+    );
+  }
+  const gasLimits = await Promise.all(promises);
+  const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
+  if (!gasLimit) return '0';
   return gasLimit;
 };
 
@@ -799,7 +906,7 @@ export const formatRecordsForTransaction = (
   records &&
     Object.entries(records).forEach(([key, value]) => {
       switch (key) {
-        case ENS_RECORDS.cover:
+        case ENS_RECORDS.header:
         case ENS_RECORDS.twitter:
         case ENS_RECORDS.displayName:
         case ENS_RECORDS.email:
@@ -860,7 +967,7 @@ export const recordsForTransactionAreValid = (
   return true;
 };
 
-export const shouldUseMulticallTransaction = (
+export const getTransactionTypeForRecords = (
   registrationRecords: ENSRegistrationRecords
 ) => {
   const {
@@ -869,21 +976,42 @@ export const shouldUseMulticallTransaction = (
     ensAssociatedAddress,
     text,
   } = registrationRecords;
+
   if (
-    !coinAddress?.length &&
-    !contentHash &&
-    !ensAssociatedAddress &&
-    text?.length === 1
+    contentHash ||
+    ensAssociatedAddress ||
+    (text?.length || 0) + (coinAddress?.length || 0) > 1
   ) {
-    return false;
+    return ENSRegistrationTransactionType.MULTICALL;
+  } else if (text?.length) {
+    return ENSRegistrationTransactionType.SET_TEXT;
+  } else if (coinAddress?.length) {
+    return ENSRegistrationTransactionType.SET_ADDR;
+  } else {
+    return null;
   }
-  return true;
+};
+
+export const getRapActionTypeForTxType = (
+  txType: ENSRegistrationTransactionType
+) => {
+  switch (txType) {
+    case ENSRegistrationTransactionType.MULTICALL:
+      return RapActionTypes.multicallENS;
+    case ENSRegistrationTransactionType.SET_ADDR:
+      return RapActionTypes.setAddrENS;
+    case ENSRegistrationTransactionType.SET_TEXT:
+      return RapActionTypes.setTextENS;
+    default:
+      return null;
+  }
 };
 
 export const fetchReverseRecord = async (address: string) => {
   try {
+    const checksumAddress = getAddress(address);
     const provider = await getProviderForNetwork();
-    const reverseRecord = await provider.lookupAddress(address);
+    const reverseRecord = await provider.lookupAddress(checksumAddress);
     return reverseRecord ?? '';
   } catch (e) {
     return '';

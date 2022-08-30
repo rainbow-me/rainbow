@@ -71,6 +71,7 @@ platform :ios do
     pilot(
       app_identifier: "me.rainbow",
       skip_waiting_for_build_processing: true,
+      changelog:  "#{ENV['BITRISE_GIT_BRANCH']} - #{ENV['BITRISE_GIT_MESSAGE']}",
     )
 
   end

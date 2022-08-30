@@ -2,23 +2,25 @@ import React, { useMemo } from 'react';
 import { sortList } from '../../helpers/sortList';
 import { magicMemo } from '../../utils';
 import Tag from './Tag';
-import { Inline } from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import isHttpUrl from '@rainbow-me/helpers/isHttpUrl';
-import transformUniqueAssetTraitsForPresentation from '@rainbow-me/helpers/transformUniqueAssetTraitsForPresentation';
-import uniqueAssetTraitDisplayTypeCompareFunction from '@rainbow-me/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
+import { Inline } from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import isHttpUrl from '@/helpers/isHttpUrl';
+import transformUniqueAssetTraitsForPresentation from '@/helpers/transformUniqueAssetTraitsForPresentation';
+import uniqueAssetTraitDisplayTypeCompareFunction from '@/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
 
 interface UniqueTokenAttributesProps {
   color: string;
+  hideNftMarketplaceAction: boolean;
+  marketplaceName?: string | null;
   slug: string;
-  hideOpenSeaAction?: boolean;
   traits: UniqueAsset['traits'];
 }
 
 const UniqueTokenAttributes = ({
   color,
+  hideNftMarketplaceAction,
+  marketplaceName,
   slug,
-  hideOpenSeaAction,
   traits,
 }: UniqueTokenAttributesProps) => {
   const sortedTraits = useMemo(
@@ -57,9 +59,10 @@ const UniqueTokenAttributes = ({
           <Tag
             color={color}
             disableMenu={disableMenu}
-            hideOpenSeaAction={hideOpenSeaAction}
+            hideNftMarketplaceAction={hideNftMarketplaceAction}
             key={`${type}${originalValue}`}
             lowercase={lowercase}
+            marketplaceName={marketplaceName}
             maxValue={maxValue}
             originalValue={originalValue}
             slug={slug}
@@ -72,4 +75,9 @@ const UniqueTokenAttributes = ({
   );
 };
 
-export default magicMemo(UniqueTokenAttributes, ['color', 'slug', 'traits']);
+export default magicMemo(UniqueTokenAttributes, [
+  'color',
+  'slug',
+  'marketplaceName',
+  'traits',
+]);

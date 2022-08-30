@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { invert } from 'lodash';
 import React, { useMemo } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
@@ -12,13 +11,13 @@ import {
   ChartPercentChangeLabel,
   ChartPriceLabel,
 } from './chart-data-labels';
-import { useChartData } from '@rainbow-me/animated-charts';
-import { Network } from '@rainbow-me/helpers';
-import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { useChartData } from '@/react-native-animated-charts/src';
+import { Network } from '@/helpers';
+import ChartTypes from '@/helpers/chartTypes';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAccountSettings, useBooleanState } from '@/hooks';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -80,7 +79,14 @@ export default function ChartExpandedStateHeader({
 
   const showPriceChange = !isNoPriceData && showChart && !isNaN(latestChange);
 
-  const timespan = invert(ChartTypes)[chartType];
+  const invertedChartTypes = Object.entries(ChartTypes).reduce(
+    (acc, [key, value]) => {
+      acc[value] = key;
+      return acc;
+    },
+    {}
+  );
+  const timespan = invertedChartTypes[chartType];
 
   const formattedTimespan =
     timespan.charAt(0).toUpperCase() + timespan.slice(1);
@@ -133,7 +139,7 @@ export default function ChartExpandedStateHeader({
         )}
 
         <Row>
-          {currentNetwork === Network.mainnet && (
+          {currentNetwork === Network.mainnet && !isPool && (
             <ChartAddToListButton asset={asset} />
           )}
           <ChartContextButton asset={asset} color={color} />

@@ -4,9 +4,9 @@ import { ButtonPressAnimation } from '../../animations';
 import { Row } from '../../layout';
 import { Text } from '../../text';
 import GweiInputPill from './GweiInputPill';
-import { delay } from '@rainbow-me/helpers/utilities';
-import { usePrevious } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
+import { delay } from '@/helpers/utilities';
+import { usePrevious } from '@/hooks';
+import styled from '@/styled-thing';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
@@ -59,6 +59,7 @@ export default function FeesGweiInput({
   buttonColor,
   testID,
   inputRef,
+  editable = true,
 }) {
   const longPressHandle = useRef(null);
   const [trigger, setTrigger] = useState(false);
@@ -111,14 +112,10 @@ export default function FeesGweiInput({
     if (!prevTrigger && trigger) {
       if (actionType === PLUS_ACTION_TYPE) {
         plusAction();
-        if (!android) {
-          ReactNativeHapticFeedback.trigger('selection');
-        }
+        ReactNativeHapticFeedback.trigger('selection');
       } else if (actionType === MINUS_ACTION_TYPE) {
         minusAction();
-        if (!android) {
-          ReactNativeHapticFeedback.trigger('selection');
-        }
+        ReactNativeHapticFeedback.trigger('selection');
       }
     }
   }, [trigger, prevTrigger, actionType, plusAction, minusAction]);
@@ -135,6 +132,7 @@ export default function FeesGweiInput({
       />
       <GweiInputPill
         color={buttonColor}
+        editable={editable}
         onBlur={onBlur}
         onChange={onChange}
         onFocus={onInputPress}

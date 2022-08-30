@@ -2,11 +2,11 @@ import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
-import { EthereumAddress } from '@rainbow-me/entities';
-import { getAdditionalAssetData } from '@rainbow-me/handlers/dispersion';
-import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import { greaterThanOrEqualTo, multiply } from '@rainbow-me/helpers/utilities';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
+import { EthereumAddress } from '@/entities';
+import { getAdditionalAssetData } from '@/handlers/dispersion';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
 
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,
@@ -18,6 +18,7 @@ export default function useAdditionalAssetData(
   totalLiquidity: string | null;
   marketCap: string | null;
   links: Record<string, string[]>;
+  networks: Record<string, { address: EthereumAddress; decimals: number }>;
 } {
   const address = rawAddress === ETH_ADDRESS ? WETH_ADDRESS : rawAddress;
   const { data } = useQuery(['additionalAssetData', address], () =>
@@ -49,6 +50,7 @@ export default function useAdditionalAssetData(
     links: data?.links,
     loading,
     marketCap,
+    networks: data?.networks,
     totalLiquidity,
     totalVolume,
   };

@@ -59,22 +59,28 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfNotVisible('lists-section');
   });
 
-  it('Should open Discover Search on pressing search fab', async () => {
+  it('Should see the gas card', async () => {
+    await Helpers.checkIfVisible('gas-button');
+    await Helpers.tap('gas-button');
+  });
+
+  it('Should open Discover Search on pressing search input', async () => {
     await Helpers.swipe('discover-header', 'up');
-    await Helpers.waitAndTap('search-fab');
+    await Helpers.swipe('discover-home', 'down');
+    await Helpers.waitAndTap('discover-search-input');
     await Helpers.checkIfVisible('done-button');
   });
 
   it('Should search and open expanded state for SOCKS', async () => {
     await Helpers.typeText('discover-search-input', 'SOCKS\n', true);
     await Helpers.checkIfVisible(
-      'discover-currency-select-list-exchange-coin-row-SOCKS'
+      'discover-currency-select-list-exchange-coin-row-SOCKS-token'
     );
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
+      'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
     await Helpers.waitAndTap(
-      'discover-currency-select-list-exchange-coin-row-SOCKS'
+      'discover-currency-select-list-exchange-coin-row-SOCKS-token'
     );
     await Helpers.checkIfVisible('chart-header-Unisocks');
   });
@@ -93,11 +99,21 @@ describe('Discover Sheet Flow', () => {
   it('Should close expanded state and return to search', async () => {
     await Helpers.swipe('expanded-state-header', 'down');
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
+      'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
   });
 
-  it('Should search and open Showcase modal for rainbowwallet.eth', async () => {
+  it('Should display search results in the correct order', async () => {
+    await Helpers.waitAndTap('discover-search-clear-input');
+    await Helpers.typeText('discover-search-input', 'bitcoin', true);
+    await Helpers.delay(3000);
+    await Helpers.checkIfVisible('favorites-0');
+    await Helpers.checkIfVisible('verified-1');
+    await Helpers.checkIfVisible('profiles-2');
+    await Helpers.checkIfVisible('highLiquidity-3');
+  });
+
+  it('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.typeText(
       'discover-search-input',
@@ -108,40 +124,28 @@ describe('Discover Sheet Flow', () => {
       'discover-currency-select-list-contact-row-rainbowwallet.eth'
     );
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
+      'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
     await Helpers.waitAndTap(
       'discover-currency-select-list-contact-row-rainbowwallet.eth'
     );
-    await Helpers.checkIfVisible('showcase-sheet');
+    await Helpers.checkIfVisible('profile-sheet');
   });
 
-  it('Should close showcase and return to Search on swiping down', async () => {
-    await Helpers.swipe('showcase-header-wrapper', 'down');
+  it('Should watch wallet from Profile sheet', async () => {
+    await Helpers.waitAndTap('profile-sheet-watch-button');
+  });
+
+  it('Should close profile and return to Search on swiping down', async () => {
+    await Helpers.swipe('profile-sheet', 'down');
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.checkIfVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
+      'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
   });
 
   it('Should close search and return to Discover Home on pressing Done', async () => {
     await Helpers.waitAndTap('done-button');
-  });
-
-  it('Top Movers should be swipeable and open expanded states', async () => {
-    try {
-      await Helpers.checkIfVisible('top-movers-section');
-      await Helpers.waitAndTap('top-gainers-coin-row-0');
-      await Helpers.swipe('expanded-state-header', 'down');
-      await Helpers.swipe('top-gainers', 'left');
-      await Helpers.checkIfNotVisible('top-gainers-coin-row-0');
-      await Helpers.waitAndTap('top-losers-coin-row-0');
-      await Helpers.swipe('expanded-state-header', 'down');
-      await Helpers.swipe('top-losers', 'left');
-      await Helpers.checkIfNotVisible('top-losers-coin-row-0');
-    } catch (_) {
-      // zerion did not return any top movers :(
-    }
   });
 
   it('Should open DPI expanded state on DPI press', async () => {
@@ -162,6 +166,7 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should cycle through token lists', async () => {
+    await Helpers.swipe('discover-sheet', 'up', 'slow', 0.3);
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
     await Helpers.waitAndTap('list-watchlist');
@@ -178,7 +183,7 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should cycle through pools lists', async () => {
-    await Helpers.swipe('dpi-button', 'up');
+    await Helpers.swipe('discover-sheet', 'up', 'slow', 0.3);
     await Helpers.waitAndTap('pools-list-liquidity');
     await Helpers.checkIfVisible('pools-section-liquidity');
     await Helpers.waitAndTap('pools-list-annualized_fees');
@@ -187,61 +192,6 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('pools-section-profit30d');
     await Helpers.waitAndTap('pools-list-oneDayVolumeUSD');
     await Helpers.checkIfVisible('pools-section-oneDayVolumeUSD');
-  });
-
-  it('Should navigate to the Wallet screen after swiping right', async () => {
-    await Helpers.swipe('discover-home', 'down', 'slow');
-    await Helpers.swipe('discover-sheet', 'right', 'slow');
-    await Helpers.checkIfVisible('wallet-screen');
-  });
-
-  it('Should navigate to the Profile screen after swiping right again', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
-  });
-
-  it('Should navigate to Settings Modal after tapping Settings Button', async () => {
-    await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-modal');
-  });
-
-  it('Should navigate to Developer Settings after tapping Developer Section', async () => {
-    await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-modal');
-  });
-
-  it('Should make ENS Profiles available', async () => {
-    await Helpers.swipe('developer-settings-modal', 'up', 'slow');
-    await Helpers.tapByText('ENS Profiles');
-    await Helpers.tapByText('Done');
-  });
-
-  it('Should go to Discover screen', async () => {
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.swipe('wallet-screen', 'left', 'slow');
-    await Helpers.checkIfVisible('ens-register-name-banner');
-  });
-
-  it('Should search and open Profile for rainbowwallet.eth', async () => {
-    await Helpers.waitAndTap('search-fab');
-    await Helpers.typeText(
-      'discover-search-input',
-      'rainbowwallet.eth\n',
-      true
-    );
-    await Helpers.checkIfVisible(
-      'discover-currency-select-list-contact-row-rainbowwallet.eth'
-    );
-    await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
-    );
-    await Helpers.waitAndTap(
-      'discover-currency-select-list-contact-row-rainbowwallet.eth'
-    );
-  });
-
-  it('Should watch wallet from Profile sheet', async () => {
-    await Helpers.waitAndTap('profile-sheet-watch-button');
   });
 
   afterAll(async () => {

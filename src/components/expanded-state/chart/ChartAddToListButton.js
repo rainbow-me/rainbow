@@ -5,11 +5,12 @@ import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered } from '../../layout';
 import { Text } from '../../text';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { isL2Asset } from '@/handlers/assets';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { magicMemo } from '@/utils';
 
 const AddToListButtonPadding = 19;
 
@@ -48,7 +49,10 @@ const ChartAddToListButton = ({ asset }) => {
   const { navigate } = useNavigation();
 
   const handlePress = useCallback(() => {
-    navigate(Routes.ADD_TOKEN_SHEET, { item: asset });
+    navigate(Routes.ADD_TOKEN_SHEET, {
+      isL2: isL2Asset(asset?.network),
+      item: asset,
+    });
   }, [asset, navigate]);
 
   return (

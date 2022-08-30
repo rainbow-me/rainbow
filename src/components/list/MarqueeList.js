@@ -15,7 +15,7 @@ import Animated, {
   useSharedValue,
   withDecay,
 } from 'react-native-reanimated';
-import { withSpeed } from '@rainbow-me/utils';
+import { withSpeed } from '@/utils';
 
 const DECCELERATION = 0.998;
 
@@ -56,7 +56,7 @@ const SingleElement = ({
   );
 };
 
-const SwipeableList = ({ components, speed, testID }) => {
+const SwipeableList = ({ components, height, speed, testID }) => {
   const transX = useSharedValue(0);
   const swiping = useSharedValue(0);
   const offset = useSharedValue(100000);
@@ -175,10 +175,7 @@ const SwipeableList = ({ components, speed, testID }) => {
               ref={panRef}
               simultaneousHandlers={[lpRef, tapRef]}
             >
-              <Animated.View
-                style={{ height: 53, width: '100%' }}
-                testID={testID}
-              >
+              <Animated.View style={{ height, width: '100%' }} testID={testID}>
                 <Animated.View
                   style={{
                     flexDirection: 'row',
@@ -228,7 +225,7 @@ const SwipeableList = ({ components, speed, testID }) => {
   );
 };
 
-const MarqueeList = ({ items = [], renderItem, speed, testID }) => {
+const MarqueeList = ({ height, items = [], renderItem, speed, testID }) => {
   return (
     <>
       <SwipeableList
@@ -244,6 +241,7 @@ const MarqueeList = ({ items = [], renderItem, speed, testID }) => {
                   testID: item.testID,
                 }),
         }))}
+        height={height}
         speed={speed}
         testID={testID}
       />

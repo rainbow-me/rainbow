@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import {
@@ -26,8 +25,9 @@ import {
   createWallet,
   RainbowWallet,
 } from './wallet';
+import { analytics } from '@/analytics';
 
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 type BackupPassword = string;
 

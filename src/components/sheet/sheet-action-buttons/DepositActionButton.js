@@ -1,10 +1,10 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { Linking } from 'react-native';
 import SheetActionButton from './SheetActionButton';
-import { AssetTypes } from '@rainbow-me/entities';
-import { neverRerender } from '@rainbow-me/utils';
+import { analytics } from '@/analytics';
+import { AssetTypes } from '@/entities';
+import { neverRerender } from '@/utils';
 
 function DepositActionButton({
   color: givenColor,

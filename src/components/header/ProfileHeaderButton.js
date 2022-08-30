@@ -5,10 +5,11 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
-import { useAccountProfile, useRequests } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
+import { useAccountProfile, useRequests } from '@/hooks';
+import Routes from '@/navigation/routesNames';
 
 export default function ProfileHeaderButton() {
+  const { colors } = useTheme();
   const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
@@ -20,8 +21,6 @@ export default function ProfileHeaderButton() {
   const onLongPress = useCallback(() => navigate(Routes.CHANGE_WALLET_SHEET), [
     navigate,
   ]);
-
-  const { colors } = useTheme();
 
   return (
     <HeaderButton

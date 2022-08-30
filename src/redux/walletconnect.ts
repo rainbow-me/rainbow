@@ -1,10 +1,9 @@
-import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
-import { clone, isEmpty, mapValues, omitBy, values } from 'lodash';
-import { Alert, AppState, InteractionManager, Linking } from 'react-native';
+import { clone, isEmpty, mapValues, values } from 'lodash';
+import { AppState, InteractionManager, Linking } from 'react-native';
 import {
   // @ts-ignore
   IS_TESTING,
@@ -26,18 +25,16 @@ import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import {
-  convertHexToString,
-  delay,
-  pickBy,
-} from '@rainbow-me/helpers/utilities';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
-import logger from 'logger';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { analytics } from '@/analytics';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
+import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils, watchingAlert } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -525,8 +522,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       );
       const supportedChains = [
         networkTypes.mainnet,
-        networkTypes.ropsten,
-        networkTypes.kovan,
         networkTypes.goerli,
         networkTypes.polygon,
         networkTypes.optimism,
@@ -632,7 +627,11 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
           transactionDetails: request,
         });
         InteractionManager.runAfterInteractions(() => {
-          analytics.track('Showing Walletconnect signing request');
+          analytics.track('Showing Walletconnect signing request', {
+            dappName,
+            // @ts-ignore
+            dappUrl,
+          });
         });
       }
     }

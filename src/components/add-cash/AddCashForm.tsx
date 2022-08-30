@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/core';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useState } from 'react';
@@ -16,15 +15,16 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
-import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { analytics } from '@/analytics';
+import { toChecksumAddress } from '@/handlers/web3';
 import {
   useAccountSettings,
   useDimensions,
   useIsWalletEthZero,
-} from '@rainbow-me/hooks';
-import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
-import { padding } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+} from '@/hooks';
+import { DAI_ADDRESS, ETH_ADDRESS } from '@/references';
+import { padding } from '@/styles';
+import { abbreviations } from '@/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];
 const minimumPurchaseAmountUSD = 1;

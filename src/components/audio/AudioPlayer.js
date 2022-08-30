@@ -3,7 +3,7 @@ import { StatusBar, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Container = styled(FlexItem)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
@@ -14,7 +14,8 @@ const StyledWebView = styled(WebView)({
   marginTop: android ? 30 : 50,
 });
 
-const formatColor = color => color.replace('#', '');
+const formatColor = color =>
+  color && typeof color === 'string' ? color.replace('#', '') : null;
 
 const buildPlayerUrl = options => {
   let qsArray = [];

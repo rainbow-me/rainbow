@@ -2,9 +2,9 @@ import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled-components';
-import { buildTextStyles } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import styled from '@/styled-thing';
+import { buildTextStyles } from '@/styles';
+import { magicMemo } from '@/utils';
 
 const AndroidMaskWrapper = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,
@@ -61,7 +61,9 @@ const ExchangeInput = (
     event => {
       if (typeof value === 'string') {
         const parts = value.split('.');
-        if (parts[0].length > 1 && !Number(parts[0])) {
+        if (parseFloat(parts.join('')) === 0) {
+          ref?.current?.clear();
+        } else if (parts[0].length > 1 && !Number(parts[0])) {
           onChangeText(`0.${parts[1]}`);
         }
       }
@@ -69,7 +71,7 @@ const ExchangeInput = (
       setIsTouched(false);
       onBlur?.(event);
     },
-    [onBlur, onChangeText, value]
+    [onBlur, onChangeText, ref, value]
   );
 
   const handleChange = useCallback(
@@ -127,7 +129,7 @@ const ExchangeInput = (
         ref={ref}
         selectionColor={selectionColor}
         size={size}
-        testID={testID}
+        testID={value ? `${testID}-${value}` : testID}
         value={value}
         weight={weight}
       />

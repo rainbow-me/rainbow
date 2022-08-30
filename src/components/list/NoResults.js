@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React from 'react';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
-import { neverRerender } from '@rainbow-me/utils';
+import { neverRerender } from '@/utils';
 
 const NoResults = () => {
   const { colors } = useTheme();

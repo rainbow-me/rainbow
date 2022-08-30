@@ -1,12 +1,11 @@
-import { includes } from 'lodash';
 import React from 'react';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { position } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { TransactionStatusTypes } from '@/entities';
+import { position } from '@/styles';
+import { magicMemo } from '@/utils';
 
 const StatusProps = {
   [TransactionStatusTypes.approved]: {
@@ -34,6 +33,11 @@ const StatusProps = {
   },
   [TransactionStatusTypes.speeding_up]: {
     marginRight: 4,
+  },
+  [TransactionStatusTypes.dropped]: {
+    marginRight: 4,
+    name: 'closeCircled',
+    style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.failed]: {
     marginRight: 4,
@@ -107,7 +111,7 @@ const TransactionStatusBadge = ({ pending, status, style, title }) => {
           size={12}
         />
       )}
-      {status && includes(Object.keys(StatusProps), status) && (
+      {status && Object.keys(StatusProps).includes(status) && (
         <Icon
           color={statusColor}
           style={position.maxSizeAsObject(10)}

@@ -1,6 +1,6 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
-import { isEmpty, toLower } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
@@ -16,15 +16,14 @@ import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
 import useExperimentalFlag, {
   PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
-import { useClipboard, useDimensions } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+} from '@/config/experimentalHooks';
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { useClipboard, useDimensions } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { profileUtils, showActionSheetWithOptions } from '@/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
@@ -101,6 +100,7 @@ export default function SendHeader({
     } else {
       setHexAddress('');
     }
+
     async function resolveAndStoreAddress() {
       const hex = await resolveNameOrAddress(recipient);
       if (!hex) {
@@ -116,7 +116,9 @@ export default function SendHeader({
 
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
-      account => toLower(account.address) === toLower(hexAddress || recipient)
+      account =>
+        account.address.toLowerCase() ===
+        (hexAddress || recipient)?.toLowerCase()
     );
   }, [recipient, userAccounts, watchedAccounts, hexAddress]);
 
@@ -173,9 +175,7 @@ export default function SendHeader({
         destructiveButtonIndex: 0,
         options: [
           lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
-          profilesEnabled && isENSAddressFormat(recipient)
-            ? lang.t('contacts.options.view')
-            : lang.t('contacts.options.edit'),
+          lang.t('contacts.options.edit'),
           lang.t('wallet.settings.copy_address_capitalized'),
           lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
@@ -191,15 +191,8 @@ export default function SendHeader({
             removeContact: removeContact,
           });
         } else if (buttonIndex === 1) {
-          if (profilesEnabled && isENSAddressFormat(recipient)) {
-            navigate(Routes.PROFILE_SHEET, {
-              address: recipient,
-              fromRoute: 'SendHeader',
-            });
-          } else {
-            handleNavigateToContact();
-            onRefocusInput();
-          }
+          handleNavigateToContact();
+          onRefocusInput();
         } else if (buttonIndex === 2) {
           setClipboard(hexAddress);
           onRefocusInput();
@@ -210,15 +203,20 @@ export default function SendHeader({
     contact?.ens,
     handleNavigateToContact,
     hexAddress,
-    navigate,
     onRefocusInput,
-    profilesEnabled,
-    recipient,
     removeContact,
     setClipboard,
     name,
     onChangeAddressInput,
   ]);
+
+  const onChange = useCallback(
+    text => {
+      onChangeAddressInput(text);
+      setHexAddress('');
+    },
+    [onChangeAddressInput]
+  );
 
   return (
     <Fragment>
@@ -235,11 +233,9 @@ export default function SendHeader({
           address={recipient}
           autoFocus={!showAssetList}
           editable={!fromProfile}
+          isValid={isValidAddress}
           name={name}
-          onChange={e => {
-            onChangeAddressInput(e);
-            setHexAddress('');
-          }}
+          onChangeText={onChange}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"

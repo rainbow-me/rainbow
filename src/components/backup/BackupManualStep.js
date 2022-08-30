@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -8,15 +7,16 @@ import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Nbsp, Text } from '../text';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { analytics } from '@/analytics';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   useDimensions,
   useWalletManualBackup,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const Content = styled(Column).attrs({
   align: 'center',
@@ -129,7 +129,6 @@ export default function BackupManualStep() {
         paddingHorizontal={30}
       >
         <SecretDisplaySection
-          isSmallPhone={isSmallPhone}
           onSecretLoaded={setSecretLoaded}
           onWalletTypeIdentified={setType}
         />

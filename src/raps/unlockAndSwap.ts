@@ -1,4 +1,11 @@
-import { concat, reduce } from 'lodash';
+import {
+  ALLOWS_PERMIT,
+  ChainId,
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
+  PermitSupportedTokenList,
+  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  WRAPPED_ASSET,
+} from '@rainbow-me/swaps';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
   createNewAction,
@@ -7,88 +14,136 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
-import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
-import store from '@rainbow-me/redux/store';
-import { ethUnits, UNISWAP_V2_ROUTER_ADDRESS } from '@rainbow-me/references';
-import { add } from '@rainbow-me/utilities';
+import { isNativeAsset } from '@/handlers/assets';
+import { estimateSwapGasLimit } from '@/handlers/uniswap';
+import store from '@/redux/store';
+import { ETH_ADDRESS } from '@/references';
+import { add } from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
 ) => {
-  const { inputAmount, tradeDetails } = swapParameters;
-  const {
-    inputCurrency,
-    outputCurrency,
-    slippageInBips: slippage,
-  } = store.getState().swap;
+  const { inputAmount, tradeDetails, chainId } = swapParameters;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
 
-  if (!inputCurrency || !outputCurrency || !inputAmount)
-    return ethUnits.basic_swap;
+  if (!inputCurrency || !outputCurrency || !inputAmount) {
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
+  }
+  const { accountAddress } = store.getState().settings;
 
-  const { accountAddress, chainId } = store.getState().settings;
+  const isNativeAssetUnwrapping =
+    inputCurrency?.address?.toLowerCase() ===
+      WRAPPED_ASSET?.[Number(chainId)]?.toLowerCase() &&
+    (outputCurrency?.address?.toLowerCase() === ETH_ADDRESS.toLowerCase() ||
+      outputCurrency?.address?.toLowerCase() ===
+        ETH_ADDRESS_AGGREGATOR.toLowerCase());
 
   let gasLimits: (string | number)[] = [];
-  const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
-    accountAddress,
-    inputAmount,
-    inputCurrency,
-    UNISWAP_V2_ROUTER_ADDRESS
-  );
-  if (swapAssetNeedsUnlocking) {
-    const unlockGasLimit = await estimateApprove(
-      accountAddress,
+  let swapAssetNeedsUnlocking = false;
+  // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+  let nativeAsset =
+    ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
+      inputCurrency.address?.toLowerCase() ||
+    isNativeAsset(
       inputCurrency.address,
-      UNISWAP_V2_ROUTER_ADDRESS
+      ethereumUtils.getNetworkFromChainId(Number(chainId))
     );
-    gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
-  } else {
-    const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
+
+  if (!isNativeAssetUnwrapping && !nativeAsset) {
+    swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
-      chainId,
+      inputAmount,
       inputCurrency,
-      outputCurrency,
-      slippage,
-      tradeDetails,
-    });
-    gasLimits = concat(gasLimits, swapGasLimit);
+      RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      chainId
+    );
   }
 
-  return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
+  let unlockGasLimit;
+  let swapGasLimit;
+
+  if (swapAssetNeedsUnlocking) {
+    unlockGasLimit = await estimateApprove(
+      accountAddress,
+      inputCurrency.address,
+      RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      chainId
+    );
+    gasLimits = gasLimits.concat(unlockGasLimit);
+  }
+  swapGasLimit = await estimateSwapGasLimit({
+    chainId: Number(chainId),
+    requiresApprove: swapAssetNeedsUnlocking,
+    tradeDetails,
+  });
+
+  gasLimits = gasLimits.concat(swapGasLimit);
+
+  return gasLimits.reduce((acc, limit) => add(acc, limit), '0');
 };
 
 export const createUnlockAndSwapRap = async (
   swapParameters: SwapActionParameters
 ) => {
-  const { inputAmount, tradeDetails } = swapParameters;
-  const { inputCurrency } = store.getState().swap;
-
-  // create unlock rap
-  const { accountAddress } = store.getState().settings;
-
   let actions: RapAction[] = [];
 
-  const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
-    accountAddress,
-    inputAmount,
-    inputCurrency,
-    UNISWAP_V2_ROUTER_ADDRESS
-  );
+  const { inputAmount, tradeDetails, flashbots, chainId } = swapParameters;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
+  const { accountAddress } = store.getState().settings;
+  const isNativeAssetUnwrapping =
+    inputCurrency.address?.toLowerCase() ===
+      WRAPPED_ASSET[`${chainId}`]?.toLowerCase() &&
+    outputCurrency.address?.toLowerCase() === ETH_ADDRESS?.toLowerCase() &&
+    chainId === ChainId.mainnet;
 
-  if (swapAssetNeedsUnlocking) {
+  // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+  let nativeAsset =
+    ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
+      inputCurrency?.address?.toLowerCase() ||
+    isNativeAsset(
+      inputCurrency?.address,
+      ethereumUtils.getNetworkFromChainId(Number(chainId))
+    );
+
+  let swapAssetNeedsUnlocking = false;
+
+  if (!isNativeAssetUnwrapping && !nativeAsset) {
+    swapAssetNeedsUnlocking = await assetNeedsUnlocking(
+      accountAddress,
+      inputAmount,
+      inputCurrency,
+      RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      chainId
+    );
+  }
+  const allowsPermit =
+    !nativeAsset &&
+    chainId === ChainId.mainnet &&
+    ALLOWS_PERMIT[
+      inputCurrency.address?.toLowerCase() as keyof PermitSupportedTokenList
+    ];
+
+  if (swapAssetNeedsUnlocking && !allowsPermit) {
     const unlock = createNewAction(RapActionTypes.unlock, {
       amount: inputAmount,
       assetToUnlock: inputCurrency,
-      contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
+      chainId,
+      contractAddress: RAINBOW_ROUTER_CONTRACT_ADDRESS,
     });
-    actions = concat(actions, unlock);
+    actions = actions.concat(unlock);
   }
 
   // create a swap rap
   const swap = createNewAction(RapActionTypes.swap, {
+    chainId,
+    flashbots,
     inputAmount,
+    permit: swapAssetNeedsUnlocking && allowsPermit,
+    requiresApprove: swapAssetNeedsUnlocking && !allowsPermit,
     tradeDetails,
   });
-  actions = concat(actions, swap);
+  actions = actions.concat(swap);
 
   // create the overall rap
   const newRap = createNewRap(actions);

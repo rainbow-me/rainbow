@@ -1,31 +1,44 @@
 import lang from 'i18n-js';
-import React, { useEffect, useMemo, useState } from 'react';
-import { SectionList } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { SectionList, StyleSheet, View } from 'react-native';
+import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 import networkTypes from '../../helpers/networkTypes';
-import { useTheme } from '../../theme/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
-import { CoinRowHeight } from '../coin-row';
+import { CoinRowHeight } from '../coin-row/CoinRow';
+import { TRANSACTION_COIN_ROW_VERTICAL_PADDING } from '../coin-row/TransactionCoinRow';
+import { ListHeaderHeight } from '../list/ListHeader';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
-const getItemLayout = (data, index) => ({
-  index,
-  length: CoinRowHeight,
-  offset: CoinRowHeight * index,
+const sx = StyleSheet.create({
+  sectionHeader: {
+    paddingVertical: 18,
+  },
+});
+
+const getItemLayout = sectionListGetItemLayout({
+  getItemHeight: () =>
+    CoinRowHeight + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
+  getSectionHeaderHeight: () => ListHeaderHeight,
 });
 
 const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
   hash ||
   (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
 
-const renderSectionHeader = ({ section }) => (
-  <ActivityListHeader {...section} />
-);
+const renderSectionHeader = ({ section, colors }) => {
+  return (
+    <View style={[sx.sectionHeader, { backgroundColor: colors.white }]}>
+      <ActivityListHeader {...section} />
+    </View>
+  );
+};
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
@@ -94,6 +107,13 @@ const ActivityList = ({
     }
     return currentPendingTransactionsCount;
   }, [sections, requests]);
+
+  const { colors } = useTheme();
+  const renderSectionHeaderWithTheme = useCallback(
+    ({ section }) => renderSectionHeader({ colors, section }),
+    [colors]
+  );
+
   return network === networkTypes.mainnet || sections.length ? (
     recyclerListView ? (
       <RecyclerActivityList
@@ -128,7 +148,7 @@ const ActivityList = ({
         initialNumToRender={12}
         keyExtractor={keyExtractor}
         removeClippedSubviews
-        renderSectionHeader={renderSectionHeader}
+        renderSectionHeader={renderSectionHeaderWithTheme}
         sections={sections}
       />
     )

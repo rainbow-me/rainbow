@@ -36,19 +36,19 @@ import {
 import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
 import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
-import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
-import { ZerionAsset } from '@rainbow-me/entities';
-import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
-import ChartTypes, { ChartType } from '@rainbow-me/helpers/chartTypes';
-import currencyTypes from '@rainbow-me/helpers/currencyTypes';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+import { disableCharts, forceFallbackProvider } from '@/config/debug';
+import { ZerionAsset } from '@/entities';
 import {
-  DPI_ADDRESS,
-  ETH_ADDRESS,
-  MATIC_MAINNET_ADDRESS,
-} from '@rainbow-me/references';
-import { ethereumUtils, TokensListenedCache } from '@rainbow-me/utils';
-import logger from 'logger';
+  checkForTheMerge,
+  getProviderForNetwork,
+  isHardHat,
+} from '@/handlers/web3';
+import ChartTypes, { ChartType } from '@/helpers/chartTypes';
+import currencyTypes from '@/helpers/currencyTypes';
+import { Network } from '@/helpers/networkTypes';
+import { DPI_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import { ethereumUtils, TokensListenedCache } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -289,7 +289,7 @@ const portfolioSubscription = (
  * @param action The API action.
  * @returns Arguments for an `emit` function call.
  */
-const mainnetAssetDisovery = (
+const mainnetAssetDiscovery = (
   address: string,
   currency: string,
   action = 'get'
@@ -578,6 +578,7 @@ export const explorerInit = () => async (
   // if we're not on mainnnet
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
+  checkForTheMerge(provider, network);
   if (
     isHardHat(providerUrl) ||
     network !== Network.mainnet ||
@@ -653,7 +654,7 @@ export const emitMainnetAssetDiscoveryRequest = (
 ) => {
   const { addressSocket } = getState().explorer;
   const { accountAddress, nativeCurrency } = getState().settings;
-  addressSocket!.emit(...mainnetAssetDisovery(accountAddress, nativeCurrency));
+  addressSocket!.emit(...mainnetAssetDiscovery(accountAddress, nativeCurrency));
 };
 
 /**
@@ -871,10 +872,13 @@ const l2AddressAssetsReceived = (
     | { asset: ZerionAsseWithL2Fields }[]
     | undefined = message?.payload?.assets?.map(asset => {
     const mainnetAddress = toLower(asset?.asset?.mainnet_address);
+    const uniqueId = `${asset?.asset?.asset_code}_${asset?.asset?.network}`;
     const fallbackAsset =
-      mainnetAddress &&
-      (ethereumUtils.getAccountAsset(mainnetAddress) ||
-        genericAssets[mainnetAddress]);
+      (mainnetAddress &&
+        (ethereumUtils.getAccountAsset(mainnetAddress) ||
+          genericAssets[mainnetAddress])) ||
+      ethereumUtils.getAccountAsset(uniqueId) ||
+      genericAssets[asset?.asset?.asset_code];
 
     if (fallbackAsset) {
       return {

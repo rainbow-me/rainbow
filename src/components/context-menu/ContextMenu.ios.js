@@ -1,11 +1,10 @@
-import omit from 'lodash/omit';
 import React, { Fragment, useCallback, useRef, useState } from 'react';
 import ActionSheet from 'react-native-actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { pickShallow } from '@rainbow-me/helpers/utilities';
-import { padding } from '@rainbow-me/styles';
+import { omitFlatten, pickShallow } from '@/helpers/utilities';
+import { padding } from '@/styles';
 const style = padding.object(12, 8);
 
 const ActionSheetProps = [
@@ -62,7 +61,9 @@ export default function ContextMenu({
           activeOpacity={activeOpacity}
           onPress={handleShowActionSheet}
         >
-          {children || <ContextButton {...omit(props, ActionSheetProps)} />}
+          {children || (
+            <ContextButton {...omitFlatten(props, ActionSheetProps)} />
+          )}
         </ButtonPressAnimation>
       )}
       <ActionSheet

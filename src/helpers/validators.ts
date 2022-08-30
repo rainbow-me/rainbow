@@ -7,13 +7,14 @@ import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
   resolveUnstoppableDomain,
-} from '@rainbow-me/handlers/web3';
-import { sanitizeSeedPhrase } from '@rainbow-me/utils';
+} from '@/handlers/web3';
+import { sanitizeSeedPhrase } from '@/utils';
 
 // Currently supported Top Level Domains from Unstoppable Domains
 const supportedUnstoppableDomains = [
   '888',
   'bitcoin',
+  'blockchain',
   'coin',
   'crypto',
   'dao',
@@ -39,6 +40,7 @@ export const isENSAddressFormat = memoFn(address => {
   if (
     !parts ||
     parts.length === 1 ||
+    !parts[parts.length - 1] ||
     (parseDomain(parts[parts.length - 1].toLowerCase()).type ===
       ParseResultType.NotListed &&
       parts[parts.length - 1].toLowerCase() !== 'eth') ||
@@ -55,12 +57,28 @@ export const isUnstoppableAddressFormat = memoFn(address => {
   if (
     !parts ||
     parts.length === 1 ||
+    !parts[parts.length - 1] ||
     !supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
   ) {
     return false;
   }
   return true;
 });
+
+/**
+ * @desc validate ethereum address, ENS, or Unstoppable name formatting
+ * @param  {String} address, ENS, or Unstoppable
+ * @return {Boolean}
+ */
+export const checkIsValidAddressOrDomainFormat = (address: any) => {
+  if (isENSAddressFormat(address)) {
+    return true;
+  }
+  if (isUnstoppableAddressFormat(address)) {
+    return true;
+  }
+  return isValidAddress(address);
+};
 
 /**
  * @desc validate ethereum address, ENS, or Unstoppable name

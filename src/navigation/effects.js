@@ -3,13 +3,15 @@ import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
-import Routes from '@rainbow-me/routes';
-import { lightModeThemeColors } from '@rainbow-me/styles';
-import { currentColors as colors } from '@rainbow-me/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+import Routes from '@/navigation/routesNames';
+import { lightModeThemeColors } from '@/styles';
+import { currentColors as colors } from '@/theme';
+import { deviceUtils } from '@/utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
+
+export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 0;
 
 const backgroundInterpolator = ({
   current: { progress: current },
@@ -306,7 +308,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: HeaderHeightWithStatusBar,
+            top: HeaderHeightWithStatusBar + AVATAR_CIRCLE_TOP_MARGIN,
           }}
         >
           <AvatarCircle overlayStyles />
@@ -374,6 +376,17 @@ export const expandedPreset = {
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
+export const swapSettingsPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
+  cardStyleInterpolator: expandStyleInterpolator(1),
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: openSpec },
+};
+
 export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: false,
@@ -427,6 +440,18 @@ export const sheetPreset = ({ route }) => {
       route.params?.type === 'unique_token'
         ? gestureResponseDistanceFactory(150)
         : gestureResponseDistance,
+    transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  };
+};
+export const selectUniquePreset = () => {
+  return {
+    cardOverlayEnabled: true,
+    cardShadowEnabled: true,
+    cardStyle: { backgroundColor: 'transparent' },
+    cardStyleInterpolator: sheetStyleInterpolator(0.7),
+    cardTransparent: true,
+    gestureDirection: 'vertical',
+    gestureResponseDistance: gestureResponseDistanceFactory(300),
     transitionSpec: { close: closeSpec, open: sheetOpenSpec },
   };
 };

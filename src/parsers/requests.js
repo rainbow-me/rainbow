@@ -1,32 +1,29 @@
 import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
-import { isHexString } from '@rainbow-me/handlers/web3';
-import { ethUnits, smartContractMethods } from '@rainbow-me/references';
+import { isHexString } from '@/handlers/web3';
+import { ethUnits, smartContractMethods } from '@/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,
   convertRawAmountToDecimalFormat,
   fromWei,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 import {
   isSignTypedData,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
   SIGN,
   SIGN_TRANSACTION,
-} from '@rainbow-me/utils/signingMethods';
+} from '@/utils/signingMethods';
 
 export const getRequestDisplayDetails = (
   payload,
   nativeCurrency,
   dappNetwork
 ) => {
-  let timestampInMs = Date.now();
-  if (payload.id) {
-    timestampInMs = getTimestampFromPayload(payload);
-  }
+  const timestampInMs = Date.now();
   if (
     payload.method === SEND_TRANSACTION ||
     payload.method === SIGN_TRANSACTION
@@ -190,6 +187,3 @@ const getTransactionDisplayDetails = (
 
   return null;
 };
-
-const getTimestampFromPayload = payload =>
-  parseInt(payload?.id.toString().slice(0, -3), 10);

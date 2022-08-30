@@ -1,6 +1,4 @@
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { times, toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -20,13 +18,15 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
-import { getTrendingAddresses } from '@rainbow-me/handlers/dispersion';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { analytics } from '@/analytics';
+import { getTrendingAddresses } from '@/handlers/dispersion';
+import networkTypes from '@/helpers/networkTypes';
+import { times } from '@/helpers/utilities';
+import { useAccountSettings, useUserLists } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { ethereumUtils } from '@/utils';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -172,7 +172,7 @@ export default function ListSection() {
           address =>
             ethereumUtils.getAccountAsset(address) ||
             ethereumUtils.formatGenericAsset(
-              genericAssets[toLower(address)],
+              genericAssets[address.toLowerCase()],
               nativeCurrency
             )
         )
@@ -188,7 +188,7 @@ export default function ListSection() {
         address =>
           ethereumUtils.getAccountAsset(address) ||
           ethereumUtils.formatGenericAsset(
-            genericAssets[toLower(address)],
+            genericAssets[address.toLowerCase()],
             nativeCurrency
           )
       );
@@ -243,7 +243,14 @@ export default function ListSection() {
   );
 
   return (
-    <Column testID="lists-section">
+    <Column
+      style={
+        android && {
+          marginTop: -19,
+        }
+      }
+      testID="lists-section"
+    >
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
           {lang.t('discover.lists.lists_title')}

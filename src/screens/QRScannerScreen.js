@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import { useSharedValue } from 'react-native-reanimated';
 import { DiscoverSheet } from '../components/discover-sheet';
-import { FabWrapper, SearchFab } from '../components/fab';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
 import {
@@ -12,10 +11,10 @@ import {
   EmulatorPasteUriButton,
   QRCodeScanner,
 } from '../components/qrcode-scanner';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const Background = styled.View({
   backgroundColor: 'black',
@@ -65,34 +64,12 @@ export default function QRScannerScreen() {
   const androidSheetPosition = useSharedValue(0);
 
   return (
-    <>
-      <View pointerEvents="box-none">
-        {ios ? <DiscoverSheet ref={dsRef} /> : null}
-        <ScannerContainer>
-          <Background />
-          <CameraDimmer cameraVisible={cameraVisible}>
-            {android && (
-              <ScannerHeader>
-                <BackButton
-                  color={colors.whiteLabel}
-                  direction="left"
-                  onPress={handlePressBackButton}
-                  testID="goToBalancesFromScanner"
-                />
-                <EmulatorPasteUriButton />
-              </ScannerHeader>
-            )}
-            {initializeCamera && !isEmulator && (
-              <QRCodeScanner
-                contentPositionTop={HeaderHeight}
-                dsRef={dsRef}
-                enableCamera={isFocused}
-              />
-            )}
-          </CameraDimmer>
-          {android ? (
-            <DiscoverSheet ref={dsRef} sheetPosition={androidSheetPosition} />
-          ) : (
+    <View pointerEvents="box-none">
+      {ios ? <DiscoverSheet ref={dsRef} /> : null}
+      <ScannerContainer>
+        <Background />
+        <CameraDimmer cameraVisible={cameraVisible}>
+          {android && (
             <ScannerHeader>
               <BackButton
                 color={colors.whiteLabel}
@@ -103,12 +80,28 @@ export default function QRScannerScreen() {
               <EmulatorPasteUriButton />
             </ScannerHeader>
           )}
-        </ScannerContainer>
-      </View>
-      <FabWrapper
-        fabs={[SearchFab]}
-        onPress={() => dsRef.current?.onFabSearch?.current()}
-      />
-    </>
+          {initializeCamera && !isEmulator && (
+            <QRCodeScanner
+              contentPositionTop={HeaderHeight}
+              dsRef={dsRef}
+              enableCamera={isFocused}
+            />
+          )}
+        </CameraDimmer>
+        {android ? (
+          <DiscoverSheet ref={dsRef} sheetPosition={androidSheetPosition} />
+        ) : (
+          <ScannerHeader>
+            <BackButton
+              color={colors.whiteLabel}
+              direction="left"
+              onPress={handlePressBackButton}
+              testID="goToBalancesFromScanner"
+            />
+            <EmulatorPasteUriButton />
+          </ScannerHeader>
+        )}
+      </ScannerContainer>
+    </View>
   );
 }

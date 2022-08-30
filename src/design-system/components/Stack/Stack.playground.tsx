@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import { Playground } from '../../docs/types';
 import * as examples from './Stack.examples';
 import meta from './Stack.meta';

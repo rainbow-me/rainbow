@@ -7,10 +7,11 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import Divider from '../components/Divider';
@@ -25,24 +26,31 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
+  removeRegistrationByName,
+  saveCommitRegistrationParameters,
+} from '@/redux/ensRegistration';
+import { GasFeeTypes, TransactionStatusTypes } from '@/entities';
+import {
+  getFlashbotsProvider,
   getProviderForNetwork,
   isL2Network,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import { greaterThan } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
-import { sendTransaction } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import { getTitle } from '@rainbow-me/parsers';
-import { dataUpdateTransaction } from '@rainbow-me/redux/data';
-import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
-import { ethUnits } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { greaterThan } from '@/helpers/utilities';
+import { useAccountSettings, useDimensions, useGas } from '@/hooks';
+import { sendTransaction } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import { getTitle } from '@/parsers';
+import { dataUpdateTransaction } from '@/redux/data';
+import { updateGasFeeForSpeed } from '@/redux/gas';
+import { ethUnits } from '@/references';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { gasUtils, safeAreaInsetValues } from '@/utils';
+import logger from '@/utils/logger';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -128,7 +136,7 @@ export default function SpeedUpAndCancelSheet() {
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
-    params: { type, tx, accentColor, onSendTransactionCallback },
+    params: { type, tx, accentColor },
   } = useRoute();
 
   const [ready, setReady] = useState(false);
@@ -150,6 +158,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
+  const isL2 = isL2Network(tx.network);
 
   const getNewTransactionGasParams = useCallback(() => {
     if (txType === GasFeeTypes.eip1559) {
@@ -185,6 +194,10 @@ export default function SpeedUpAndCancelSheet() {
     minGasPrice,
   ]);
 
+  const cancelCommitTransactionHash = useCallback(() => {
+    dispatch(removeRegistrationByName(tx?.ensCommitRegistrationName));
+  }, [dispatch, tx?.ensCommitRegistrationName]);
+
   const handleCancellation = useCallback(async () => {
     try {
       const newGasParams = getNewTransactionGasParams();
@@ -201,6 +214,9 @@ export default function SpeedUpAndCancelSheet() {
         transaction: cancelTxPayload,
       });
 
+      if (tx?.ensCommitRegistrationName) {
+        cancelCommitTransactionHash();
+      }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -219,6 +235,7 @@ export default function SpeedUpAndCancelSheet() {
     }
   }, [
     accountAddress,
+    cancelCommitTransactionHash,
     currentProvider,
     dispatch,
     getNewTransactionGasParams,
@@ -226,6 +243,18 @@ export default function SpeedUpAndCancelSheet() {
     nonce,
     tx,
   ]);
+
+  const saveCommitTransactionHash = useCallback(
+    hash => {
+      dispatch(
+        saveCommitRegistrationParameters({
+          commitTransactionHash: hash,
+          name: tx?.ensCommitRegistrationName,
+        })
+      );
+    },
+    [dispatch, tx?.ensCommitRegistrationName]
+  );
 
   const handleSpeedUp = useCallback(async () => {
     try {
@@ -245,7 +274,9 @@ export default function SpeedUpAndCancelSheet() {
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
-      onSendTransactionCallback?.(hash);
+      if (tx?.ensCommitRegistrationName) {
+        saveCommitTransactionHash(hash);
+      }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -270,7 +301,7 @@ export default function SpeedUpAndCancelSheet() {
     getNewTransactionGasParams,
     goBack,
     nonce,
-    onSendTransactionCallback,
+    saveCommitTransactionHash,
     to,
     tx,
     value,
@@ -284,9 +315,16 @@ export default function SpeedUpAndCancelSheet() {
   // Set the provider
   useEffect(() => {
     if (currentNetwork) {
-      startPollingGasFees(currentNetwork);
+      startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
-        const provider = await getProviderForNetwork(currentNetwork);
+        let provider;
+        if (tx.network === Network.mainnet && tx.flashbots) {
+          logger.debug('using flashbots provider');
+          provider = await getFlashbotsProvider();
+        } else {
+          logger.debug('using normal provider');
+          provider = await getProviderForNetwork(currentNetwork);
+        }
         setCurrentProvider(provider);
       };
 
@@ -296,7 +334,13 @@ export default function SpeedUpAndCancelSheet() {
         stopPollingGasFees();
       };
     }
-  }, [currentNetwork, startPollingGasFees, stopPollingGasFees]);
+  }, [
+    currentNetwork,
+    startPollingGasFees,
+    stopPollingGasFees,
+    tx.flashbots,
+    tx.network,
+  ]);
 
   // Update gas limit
   useEffect(() => {
@@ -333,7 +377,7 @@ export default function SpeedUpAndCancelSheet() {
           setData(hexData);
           setTo(tx.txTo);
           setGasLimit(hexGasLimit);
-          if (!isL2Network(tx.network)) {
+          if (!isL2) {
             setTxType(GasFeeTypes.eip1559);
             const hexMaxPriorityFeePerGas = toHex(
               tx.maxPriorityFeePerGas.toString()
@@ -383,6 +427,7 @@ export default function SpeedUpAndCancelSheet() {
     currentNetwork,
     currentProvider,
     goBack,
+    isL2,
     network,
     tx,
     tx.gasLimit,
@@ -432,6 +477,13 @@ export default function SpeedUpAndCancelSheet() {
     : null;
 
   const { colors, isDarkMode } = useTheme();
+  const speeds = useMemo(() => {
+    const defaultSpeeds = [URGENT];
+    if (!isL2) {
+      defaultSpeeds.push(CUSTOM);
+    }
+    return defaultSpeeds;
+  }, [isL2]);
 
   return (
     <SheetKeyboardAnimation
@@ -561,7 +613,8 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
-                      speeds={[URGENT, CUSTOM]}
+                      flashbotTransaction={tx.flashbots}
+                      speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}
                     />
                   </GasSpeedButtonContainer>
