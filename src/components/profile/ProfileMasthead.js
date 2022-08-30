@@ -166,7 +166,7 @@ export default function ProfileMasthead({
   return (
     <Column
       align="center"
-      height={addCashAvailable ? 260 : 185}
+      height={addCashAvailable ? 216 : 141}
       marginBottom={24}
       marginTop={0}
     >
