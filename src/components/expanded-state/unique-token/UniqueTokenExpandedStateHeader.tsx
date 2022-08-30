@@ -17,27 +17,23 @@ import {
   Space,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers';
+} from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { Network } from '@/helpers';
 import {
   useClipboard,
   useDimensions,
   useHiddenTokens,
   useShowcaseTokens,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import {
-  ethereumUtils,
-  magicMemo,
-  showActionSheetWithOptions,
-} from '@rainbow-me/utils';
-import { getFullResUrl } from '@rainbow-me/utils/getFullResUrl';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation/Navigation';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
+import { getFullResUrl } from '@/utils/getFullResUrl';
+import isSVGImage from '@/utils/isSVG';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -160,6 +156,7 @@ interface UniqueTokenExpandedStateHeaderProps {
   hideNftMarketplaceAction: boolean;
   isSupportedOnRainbowWeb: boolean;
   rainbowWebUrl: string;
+  isModificationActionsEnabled?: boolean;
 }
 
 const UniqueTokenExpandedStateHeader = ({
@@ -167,6 +164,7 @@ const UniqueTokenExpandedStateHeader = ({
   hideNftMarketplaceAction,
   isSupportedOnRainbowWeb,
   rainbowWebUrl,
+  isModificationActionsEnabled = true,
 }: UniqueTokenExpandedStateHeaderProps) => {
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
@@ -251,16 +249,20 @@ const UniqueTokenExpandedStateHeader = ({
 
     return {
       menuItems: [
-        {
-          ...AssetActions[AssetActionsEnum.hide],
-          actionTitle: isHiddenAsset
-            ? lang.t('expanded_state.unique_expanded.unhide')
-            : lang.t('expanded_state.unique_expanded.hide'),
-          icon: {
-            ...AssetActions[AssetActionsEnum.hide].icon,
-            iconValue: isHiddenAsset ? 'eye.slash' : 'eye',
-          },
-        },
+        ...(isModificationActionsEnabled
+          ? [
+              {
+                ...AssetActions[AssetActionsEnum.hide],
+                actionTitle: isHiddenAsset
+                  ? lang.t('expanded_state.unique_expanded.unhide')
+                  : lang.t('expanded_state.unique_expanded.hide'),
+                icon: {
+                  ...AssetActions[AssetActionsEnum.hide].icon,
+                  iconValue: isHiddenAsset ? 'eye.slash' : 'eye',
+                },
+              },
+            ]
+          : []),
         ...(isSupportedOnRainbowWeb
           ? [
               {
@@ -292,6 +294,7 @@ const UniqueTokenExpandedStateHeader = ({
     asset?.network,
     isPhotoDownloadAvailable,
     isHiddenAsset,
+    isModificationActionsEnabled,
     isSupportedOnRainbowWeb,
   ]);
 
@@ -433,9 +436,13 @@ const UniqueTokenExpandedStateHeader = ({
         ? ([lang.t('expanded_state.unique_expanded.save_to_photos')] as const)
         : []),
       lang.t('expanded_state.unique_expanded.copy_token_id'),
-      isHiddenAsset
-        ? lang.t('expanded_state.unique_expanded.unhide')
-        : lang.t('expanded_state.unique_expanded.hide'),
+      ...(isModificationActionsEnabled
+        ? [
+            isHiddenAsset
+              ? lang.t('expanded_state.unique_expanded.unhide')
+              : lang.t('expanded_state.unique_expanded.hide'),
+          ]
+        : []),
     ] as const;
 
     const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
@@ -488,6 +495,7 @@ const UniqueTokenExpandedStateHeader = ({
     rainbowWebUrl,
     setClipboard,
     isHiddenAsset,
+    isModificationActionsEnabled,
     isShowcaseAsset,
     addHiddenToken,
     removeHiddenToken,

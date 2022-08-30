@@ -1,4 +1,4 @@
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const compareInputs = (oldInputs: any, newInputs: any, prefix: any) => {
   // Edge-case: different array lengths

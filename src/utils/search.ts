@@ -1,6 +1,6 @@
 import { KeyOption, matchSorter, MatchSorterOptions } from 'match-sorter';
 
-export const filterList = <T extends unknown>(
+export const filterList = <T>(
   list: T[],
   searchQuery: string,
   keys?: KeyOption<T>[],

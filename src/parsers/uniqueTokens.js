@@ -2,19 +2,16 @@ import { isEmpty, isNil, remove } from 'lodash';
 import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
-import { AssetTypes } from '@rainbow-me/entities';
-import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickBy, pickShallow } from '@rainbow-me/helpers/utilities';
-import {
-  ENS_NFT_CONTRACT_ADDRESS,
-  polygonAllowList,
-} from '@rainbow-me/references';
-import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
-import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+import { AssetTypes } from '@/entities';
+import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
+import { maybeSignUri } from '@/handlers/imgix';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { Network } from '@/helpers/networkTypes';
+import { pickBy, pickShallow } from '@/helpers/utilities';
+import { ENS_NFT_CONTRACT_ADDRESS, polygonAllowList } from '@/references';
+import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
+import { getLowResUrl } from '@/utils/getLowResUrl';
+import isSVGImage from '@/utils/isSVG';
 
 const parseLastSalePrice = lastSale =>
   lastSale
@@ -336,6 +333,9 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
       break;
     case 'Stratos':
       permalink = `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
+      break;
+    case 'Trove':
+      permalink = `https://trove.treasure.lol/collection/${collectionId}/${tokenId}`;
       break;
     default:
       permalink = null;

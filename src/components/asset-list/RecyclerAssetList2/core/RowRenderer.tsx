@@ -21,7 +21,7 @@ import {
   SavingsHeaderExtraData,
   UniswapPoolExtraData,
 } from './ViewTypes';
-import assertNever from '@rainbow-me/helpers/assertNever';
+import assertNever from '@/helpers/assertNever';
 
 function rowRenderer(
   type: CellType,

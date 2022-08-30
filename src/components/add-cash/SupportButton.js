@@ -4,7 +4,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const centerStyles = padding.object(5, 10, 6);
 

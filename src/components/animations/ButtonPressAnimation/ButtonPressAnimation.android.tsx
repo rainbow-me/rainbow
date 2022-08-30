@@ -35,7 +35,7 @@ import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { BaseButtonAnimationProps } from './types';
 import { HapticFeedbackType } from '@/utils/haptics';
-import { useLongPressEvents } from '@rainbow-me/hooks';
+import { useLongPressEvents } from '@/hooks';
 
 interface BaseProps extends BaseButtonAnimationProps {
   backgroundColor: string;

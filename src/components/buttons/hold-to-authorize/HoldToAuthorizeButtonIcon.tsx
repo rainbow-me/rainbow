@@ -8,8 +8,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const Container = styled(Centered)({
   ...position.sizeAsObject(31),

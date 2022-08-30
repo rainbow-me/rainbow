@@ -7,7 +7,7 @@ import {
 import React from 'react';
 import { Value } from 'react-native-reanimated';
 import { useCallbackOne } from 'use-memo-one';
-import { NATIVE_ROUTES } from '@rainbow-me/routes';
+import { NATIVE_ROUTES } from '@/navigation/routesNames';
 
 let TopLevelNavigationRef = null;
 const transitionPosition = new Value(0);

@@ -10,10 +10,10 @@ import {
   ENS_RECORDS,
   REGISTRATION_MODES,
   textRecordFields,
-} from '@rainbow-me/helpers/ens';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+} from '@/helpers/ens';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {
@@ -44,9 +44,9 @@ const icons = {
 const links = {
   [ENS_RECORDS.twitter]: 'https://twitter.com/',
   [ENS_RECORDS.github]: 'https://github.com/',
-  [ENS_RECORDS.instagram]: 'https://intagram.com/',
+  [ENS_RECORDS.instagram]: 'https://instagram.com/',
   [ENS_RECORDS.reddit]: 'https://reddit.com/',
-  [ENS_RECORDS.telegram]: 'https://telegram.com/',
+  [ENS_RECORDS.telegram]: 'https://t.me/',
 } as { [key: string]: string };
 
 export default function useENSRecordDisplayProperties({
@@ -99,10 +99,9 @@ export default function useENSRecordDisplayProperties({
   }, [url]);
 
   const label = useMemo(() => {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    if (textRecordFields[recordKey]?.label) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      return textRecordFields[recordKey].label;
+    if (textRecordFields[recordKey as keyof typeof textRecordFields]?.label) {
+      return textRecordFields[recordKey as keyof typeof textRecordFields]!
+        .label;
     }
     if (recordKey.includes('.')) {
       return recordKey;

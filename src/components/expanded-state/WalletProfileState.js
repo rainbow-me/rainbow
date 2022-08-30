@@ -3,15 +3,15 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
-import { analytics } from '@rainbow-me/analytics';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import { analytics } from '@/analytics';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
+import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
+import { profileUtils } from '@/utils';
 import { delay } from '@rainbow-me/helpers/utilities';
-import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
-import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
-import { profileUtils } from '@rainbow-me/utils';
 
 export default function WalletProfileState({
   actionType,
@@ -69,7 +69,7 @@ export default function WalletProfileState({
       }
     };
     IS_TESTING && (await delay(2000));
-    if (ios || actionType !== 'Create') {
+    if (actionType !== 'Create') {
       callback();
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
