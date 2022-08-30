@@ -12,7 +12,8 @@ itc_team_id "119997837"
 app_identifier([
   "me.rainbow",
   "me.rainbow.PriceWidget",
-  "me.rainbow.SelectTokenIntent"
+  "me.rainbow.SelectTokenIntent",
+  "me.rainbow.ImageNotification"
 ])
 
 # For more information about the Appfile, see:
