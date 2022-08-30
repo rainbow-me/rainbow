@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   overflow: 'hidden',

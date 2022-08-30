@@ -2,17 +2,17 @@ import lang from 'i18n-js';
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import store from '@rainbow-me/redux/store';
+import store from '@/redux/store';
 import {
   ETH_ADDRESS,
   ETH_ICON_URL,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   ethereumUtils,
   getUniqueTokenFormat,
   getUniqueTokenType,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -391,7 +391,7 @@ export const buildBriefUniqueTokenList = (
         // @ts-expect-error "index" does not exist in type.
         index,
         type: 'NFT',
-        uid: uniqueId,
+        uid: `selling-${uniqueId}`,
         uniqueId,
       });
     }

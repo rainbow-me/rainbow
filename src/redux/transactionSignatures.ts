@@ -2,7 +2,7 @@ import { AppDispatch, AppGetState } from './store';
 import {
   getTransactionSignatures,
   saveTransactionSignatures,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
+} from '@/handlers/localstorage/globalSettings';
 
 export const TRANSACTION_SIGNATURES_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS =
   'transactionSignatures/DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS';

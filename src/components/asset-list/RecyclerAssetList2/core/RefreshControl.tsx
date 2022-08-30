@@ -1,9 +1,9 @@
 import React from 'react';
 import { RefreshControl, RefreshControlProps } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useRefreshAccountData } from '@rainbow-me/hooks';
-import { AppState } from '@rainbow-me/redux/store';
-import { useTheme } from '@rainbow-me/theme';
+import { useRefreshAccountData } from '@/hooks';
+import { AppState } from '@/redux/store';
+import { useTheme } from '@/theme';
 
 export default function RefreshControlWrapped(
   props: Partial<RefreshControlProps>

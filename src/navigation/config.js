@@ -12,12 +12,12 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '../screens/Sen
 import { useTheme } from '../theme/ThemeContext';
 import colors from '../theme/currentColors';
 import { onWillPop } from './Navigation';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import styled from '@rainbow-me/styled-components';
-import { fonts } from '@rainbow-me/styles';
-import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import networkInfo from '@/helpers/networkInfo';
+import networkTypes from '@/helpers/networkTypes';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import styled from '@/styled-thing';
+import { fonts } from '@/styles';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -151,6 +151,18 @@ export const settingsSheetConfig = {
 };
 
 export const registerENSNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const swapsPromoSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

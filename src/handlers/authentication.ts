@@ -5,8 +5,8 @@ import AesEncryptor from '../handlers/aesEncryption';
 import * as keychain from '../model/keychain';
 import { Navigation } from '../navigation';
 import { pinKey } from '../utils/keychainConstants';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
 
 const encryptor = new AesEncryptor();
 

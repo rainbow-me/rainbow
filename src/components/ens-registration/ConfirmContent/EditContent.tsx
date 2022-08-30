@@ -2,17 +2,10 @@ import lang from 'i18n-js';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  Divider,
-  Inline,
-  Inset,
-  Row,
-  Rows,
-  Text,
-} from '@rainbow-me/design-system';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { Divider, Inline, Inset, Row, Rows, Text } from '@/design-system';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 const EditContent = ({
   accentColor,

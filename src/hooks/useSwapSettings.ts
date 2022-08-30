@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 import {
   updateSwapSlippage as updateSwapSlippageRedux,
   updateSwapSource as updateSwapSourceRedux,
-} from '@rainbow-me/redux/swap';
+} from '@/redux/swap';
 
 export default function useSwapSettings() {
   const dispatch = useDispatch();

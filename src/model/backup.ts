@@ -26,11 +26,10 @@ import {
   createWallet,
   RainbowWallet,
 } from './wallet';
-
 import AesEncryptor from '@/handlers/aesEncryption';
 import { saveNewAuthenticationPIN } from '@/handlers/authentication';
-import { analytics } from '@rainbow-me/analytics';
-import logger from 'logger';
+import { analytics } from '@/analytics';
+import logger from '@/utils/logger';
 
 type BackupPassword = string;
 
@@ -176,7 +175,7 @@ export async function restoreCloudBackup({
     if (!data) {
       throw new Error('Invalid password');
     }
-    let dataToRestore = {
+    const dataToRestore = {
       ...data.secrets,
     };
 
@@ -263,7 +262,7 @@ async function restoreCurrentBackupIntoKeychain(
             seedphrase?.includes('salt') && seedphrase?.includes('cipher');
 
           if (!wasBackupSavedWithPIN) {
-            //interrupt loader
+            // interrupt loader
             onBeforePINCreated();
             const userPIN = await saveNewAuthenticationPIN();
             onAfterPINCreated();

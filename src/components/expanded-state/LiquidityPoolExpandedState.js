@@ -20,10 +20,10 @@ import { Text } from '../text';
 import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
-import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { toChecksumAddress } from '@rainbow-me/handlers/web3';
-import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import chartTypes from '@rainbow-me/helpers/chartTypes';
+import { ChartPathProvider } from '@/react-native-animated-charts/src';
+import { toChecksumAddress } from '@/handlers/web3';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import chartTypes from '@/helpers/chartTypes';
 import {
   useAccountSettings,
   useAsset,
@@ -32,13 +32,13 @@ import {
   useDimensions,
   usePoolDetails,
   useTotalFeeEarnedPerAsset,
-} from '@rainbow-me/hooks';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+} from '@/hooks';
+import { emitAssetRequest } from '@/redux/explorer';
 
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
-import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
+import { ETH_ADDRESS } from '@/references';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
+import { magicMemo, safeAreaInsetValues } from '@/utils';
 
 const Spacer = styled.View({
   height: safeAreaInsetValues.bottom + 20,

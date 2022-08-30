@@ -17,27 +17,27 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
-} from '@rainbow-me/handlers/cloudBackup';
-import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
-import walletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
+} from '@/handlers/cloudBackup';
+import { removeWalletData } from '@/handlers/localstorage/removeWallet';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import {
   useDimensions,
   useInitializeWallet,
   useUserAccounts,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
 import {
   addressSetSelected,
   setWalletBackedUp,
   walletsLoadState,
   walletsSetSelected,
-} from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { margin, padding } from '@rainbow-me/styles';
-import logger from 'logger';
+} from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { margin, padding } from '@/styles';
+import logger from '@/utils/logger';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

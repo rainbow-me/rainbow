@@ -16,7 +16,7 @@ import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
-import { safeAreaInsetValues } from '@rainbow-me/utils';
+import { safeAreaInsetValues } from '@/utils';
 
 const BottomSheet = requireNativeComponent('DiscoverSheet');
 

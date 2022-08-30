@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import Toast from './Toast';
-import { useInvalidPaste } from '@rainbow-me/hooks';
+import { useInvalidPaste } from '@/hooks';
 
 export default function InvalidPasteToast(props) {
   const { isInvalidPaste } = useInvalidPaste();

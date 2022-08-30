@@ -27,6 +27,7 @@ import SendSheet from '../screens/SendSheet';
 import SettingsSheet from '../screens/SettingsSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
+import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -62,10 +63,7 @@ import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import useExperimentalFlag, {
-  NOTIFICATIONS,
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -251,7 +249,6 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
-  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
@@ -318,6 +315,11 @@ function BSNavigator() {
         </>
       )}
       <BSStack.Screen
+        component={SwapsPromoSheet}
+        name={Routes.SWAPS_PROMO_SHEET}
+        options={bottomSheetPreset}
+      />
+      <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         options={bottomSheetPreset}
@@ -354,13 +356,6 @@ function BSNavigator() {
         name={Routes.SETTINGS_SHEET}
         options={{ ...bottomSheetPreset, height: '97%' }}
       />
-      {notificationsEnabled && (
-        <BSStack.Screen
-          component={SettingsSheet}
-          name={Routes.SETTINGS_SHEET_V2}
-          options={{ ...bottomSheetPreset, height: '97%' }}
-        />
-      )}
     </BSStack.Navigator>
   );
 }

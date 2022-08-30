@@ -2,8 +2,8 @@ import { captureException } from '@sentry/react-native';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { setWalletBackedUp } from '../redux/wallets';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import logger from 'logger';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import logger from '@/utils/logger';
 
 export default function useWalletManualBackup() {
   const dispatch = useDispatch();

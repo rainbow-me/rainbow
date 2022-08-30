@@ -3,11 +3,11 @@ import { Contract } from '@ethersproject/contracts';
 import { BaseProvider } from '@ethersproject/providers';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { apiGetAccountUniqueToken } from '@rainbow-me/handlers/opensea-api';
-import { getNFTByTokenId } from '@rainbow-me/handlers/simplehash';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { NetworkTypes } from '@rainbow-me/helpers';
+import { UniqueAsset } from '@/entities';
+import { apiGetAccountUniqueToken } from '@/handlers/opensea-api';
+import { getNFTByTokenId } from '@/handlers/simplehash';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { NetworkTypes } from '@/helpers';
 
 const abi = [
   'function uri(uint256 _id) public view returns (string memory)',

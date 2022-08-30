@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import uts46 from 'idna-uts46-hx';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 
 const supportedTLDs = ['eth'];
 

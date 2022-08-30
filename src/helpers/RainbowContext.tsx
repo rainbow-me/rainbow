@@ -12,7 +12,7 @@ import Emoji from '../components/text/Emoji';
 import { showReloadButton, showSwitchModeButton } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
 import { useTheme } from '../theme/ThemeContext';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 export const RainbowContext = createContext({});
 const storageKey = 'config';
