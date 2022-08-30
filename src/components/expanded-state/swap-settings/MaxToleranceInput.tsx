@@ -20,17 +20,13 @@ import {
   Inline,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { Network } from '@rainbow-me/helpers';
-import {
-  add,
-  convertNumberToString,
-  greaterThan,
-} from '@rainbow-me/helpers/utilities';
-import { useMagicAutofocus, useSwapSettings } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+} from '@/design-system';
+import { Network } from '@/helpers';
+import { add, convertNumberToString, greaterThan } from '@/helpers/utilities';
+import { useMagicAutofocus, useSwapSettings } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();
 const convertPercentToBips = (percent: number) => (percent * 100).toString();
@@ -101,7 +97,7 @@ export const MaxToleranceInput = forwardRef(
       [updateSwapSlippage, setSlippageValue]
     );
 
-    const openExplainer = () => {
+    const openSlippageExplainer = () => {
       Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'slippage',
@@ -116,8 +112,9 @@ export const MaxToleranceInput = forwardRef(
               as={ButtonPressAnimation}
               marginVertical="-12px"
               // @ts-expect-error
-              onPress={openExplainer}
+              onPress={openSlippageExplainer}
               paddingVertical="12px"
+              testID="swap-slippage-label"
             >
               <Inline alignVertical="center">
                 <Text size="16px" weight="bold">

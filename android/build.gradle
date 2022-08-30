@@ -83,4 +83,13 @@ allprojects {
             }
         }
     }
+    afterEvaluate { project ->
+        if (!project.name.equalsIgnoreCase("app") && project.hasProperty("android")) {
+            android {
+                defaultConfig {
+                    minSdkVersion 21
+                }
+            }
+        }
+    }
 }

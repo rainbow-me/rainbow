@@ -5,12 +5,13 @@ import {
   userListsSetSelectedList,
   userListsUpdateList,
 } from '../redux/userLists';
+import { AppState } from '@/redux/store';
 
-const userListsSelector = (state: any) => state.userLists.lists;
-const userListsReadySelector = (state: any) => state.userLists.ready;
-const userListsSelectedListSelector = (state: any) =>
+const userListsSelector = (state: AppState) => state.userLists.lists;
+const userListsReadySelector = (state: AppState) => state.userLists.ready;
+const userListsSelectedListSelector = (state: AppState) =>
   state.userLists.selectedList;
-const uniswapFavoritesSelector = (state: any) => state.uniswap.favorites;
+const uniswapFavoritesSelector = (state: AppState) => state.uniswap.favorites;
 
 export default function useUserLists() {
   const dispatch = useDispatch();

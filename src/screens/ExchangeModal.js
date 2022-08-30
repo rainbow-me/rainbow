@@ -31,17 +31,13 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import { Box, Row, Rows } from '@rainbow-me/design-system';
-import { AssetType } from '@rainbow-me/entities';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import {
-  ExchangeModalTypes,
-  isKeyboardOpen,
-  Network,
-} from '@rainbow-me/helpers';
-import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
-import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
+import { analytics } from '@/analytics';
+import { Box, Row, Rows } from '@/design-system';
+import { AssetType } from '@/entities';
+import { getHasMerged, getProviderForNetwork } from '@/handlers/web3';
+import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
+import KeyboardTypes from '@/helpers/keyboardTypes';
+import { divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -56,26 +52,26 @@ import {
   useSwapInputRefs,
   useSwapIsSufficientBalance,
   useSwapSettings,
-} from '@rainbow-me/hooks';
-import { loadWallet } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
+} from '@/hooks';
+import { loadWallet } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
 import {
   executeRap,
   getSwapRapEstimationByType,
   getSwapRapTypeByExchangeType,
-} from '@rainbow-me/raps';
+} from '@/raps';
 import {
   swapClearState,
   updateSwapSlippage,
   updateSwapTypeDetails,
-} from '@rainbow-me/redux/swap';
-import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
-import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
-import logger from 'logger';
+} from '@/redux/swap';
+import { ETH_ADDRESS, ethUnits } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { ethereumUtils, gasUtils } from '@/utils';
+import { useEthUSDPrice } from '@/utils/ethereumUtils';
+import logger from '@/utils/logger';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -212,6 +208,7 @@ export default function ExchangeModal({
     startPollingGasFees,
     stopPollingGasFees,
     updateDefaultGasLimit,
+    updateGasFeeOption,
     updateTxFee,
     txNetwork,
     isGasReady,
@@ -282,6 +279,31 @@ export default function ExchangeModal({
     title,
     type,
   });
+  const speedUrgentSelected = useRef(false);
+
+  useEffect(() => {
+    if (
+      !speedUrgentSelected.current &&
+      !isEmpty(gasFeeParamsBySpeed) &&
+      (currentNetwork === Network.mainnet || currentNetwork === Network.polygon)
+    ) {
+      // Default to fast for networks with speed options
+      updateGasFeeOption(gasUtils.FAST);
+      speedUrgentSelected.current = true;
+    }
+  }, [
+    currentNetwork,
+    gasFeeParamsBySpeed,
+    selectedGasFee,
+    updateGasFeeOption,
+    updateTxFee,
+  ]);
+
+  useEffect(() => {
+    if (currentNetwork !== prevTxNetwork) {
+      speedUrgentSelected.current = false;
+    }
+  }, [currentNetwork, prevTxNetwork]);
 
   const defaultGasLimit = useMemo(() => {
     const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
@@ -314,7 +336,7 @@ export default function ExchangeModal({
     },
     loading,
     resetSwapInputs,
-    insufficientLiquidity,
+    quoteError,
   } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
@@ -335,7 +357,12 @@ export default function ExchangeModal({
     loading
   );
   const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
-  const swapSupportsFlashbots = currentNetwork === Network.mainnet;
+  // For a limited period after the merge we need to block the use of flashbots.
+  // This line should be removed after reenabling flashbots in remote config.
+  const hideFlashbotsPostMerge =
+    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const swapSupportsFlashbots =
+    currentNetwork === Network.mainnet && !hideFlashbotsPostMerge;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -558,12 +585,16 @@ export default function ExchangeModal({
         analytics.track(`Completed ${type}`, {
           aggregator: tradeDetails?.source || '',
           amountInUSD,
+          gasSetting: selectedGasFee?.option,
           inputTokenAddress: inputCurrency?.address || '',
           inputTokenName: inputCurrency?.name || '',
           inputTokenSymbol: inputCurrency?.symbol || '',
           isHighPriceImpact: debouncedIsHighPriceImpact,
+          legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
           liquiditySources: tradeDetails?.protocols || [],
+          maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
           network: currentNetwork,
+          networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
           outputTokenAddress: outputCurrency?.address || '',
           outputTokenName: outputCurrency?.name || '',
           outputTokenSymbol: outputCurrency?.symbol || '',
@@ -634,12 +665,16 @@ export default function ExchangeModal({
       analytics.track(`Submitted ${type}`, {
         aggregator: tradeDetails?.source || '',
         amountInUSD,
+        gasSetting: selectedGasFee?.option,
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
         isHighPriceImpact: debouncedIsHighPriceImpact,
+        legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
         liquiditySources: tradeDetails?.protocols || [],
+        maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
         network: currentNetwork,
+        networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
         outputTokenAddress: outputCurrency?.address || '',
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
@@ -664,7 +699,7 @@ export default function ExchangeModal({
   }, [
     outputPriceValue,
     outputAmount,
-    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
+    selectedGasFee,
     submit,
     nativeCurrency,
     nativeAmount,
@@ -674,6 +709,7 @@ export default function ExchangeModal({
     inputCurrency?.symbol,
     inputAmount,
     priceOfEther,
+    slippageInBips,
     type,
     tradeDetails?.source,
     tradeDetails?.protocols,
@@ -683,7 +719,6 @@ export default function ExchangeModal({
     outputCurrency?.name,
     outputCurrency?.symbol,
     priceImpactPercentDisplay,
-    slippageInBips,
   ]);
 
   const confirmButtonProps = useMemoOne(
@@ -692,12 +727,12 @@ export default function ExchangeModal({
       disabled:
         !Number(inputAmount) || (!loading && !tradeDetails && !isSavings),
       inputAmount,
-      insufficientLiquidity,
       isAuthorizing,
       isHighPriceImpact: debouncedIsHighPriceImpact,
       isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
+      quoteError,
       tradeDetails,
       type,
     }),
@@ -711,7 +746,7 @@ export default function ExchangeModal({
       testID,
       tradeDetails,
       type,
-      insufficientLiquidity,
+      quoteError,
       isSufficientBalance,
     ]
   );

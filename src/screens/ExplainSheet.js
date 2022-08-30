@@ -1,27 +1,34 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { ChainBadge, CoinIcon } from '../components/coin-icon';
-import { Centered, Column, ColumnWithMargins, Row } from '../components/layout';
+import {
+  Centered,
+  Column,
+  ColumnWithMargins,
+  Row,
+  RowWithMargins,
+} from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
-import AppIconOptimism from '@rainbow-me/assets/appIconOptimism.png';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
-import { useDimensions } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
+import AppIconOptimism from '@/assets/appIconOptimism.png';
+import AppIconSmol from '@/assets/appIconSmol.png';
+import networkInfo from '@/helpers/networkInfo';
+import networkTypes from '@/helpers/networkTypes';
+import { toFixedDecimals } from '@/helpers/utilities';
+import { useDimensions } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth, padding, position } from '@/styles';
+import { ethereumUtils, gasUtils } from '@/utils';
+import { cloudPlatformAccountName } from '@/utils/platform';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -85,6 +92,29 @@ const OptimismAppIcon = () => {
     >
       <ImgixImage
         source={AppIconOptimism}
+        style={{
+          width: 64,
+          height: 64,
+        }}
+      />
+    </Box>
+  );
+};
+
+const SmolAppIcon = () => {
+  const { colors, isDarkMode } = useTheme();
+  return (
+    <Box
+      style={{
+        shadowColor: isDarkMode ? colors.shadowBlack : colors.smolPurple,
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={AppIconSmol}
         style={{
           width: 64,
           height: 64,
@@ -177,18 +207,43 @@ const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
 const ENS_CONFIGURATION_EXPLAINER =
   'When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient’s address and make the recipient address the manager of the name.';
 
-const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.optimism_app_icon.text');
+const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.optimism_text');
+
+const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
 export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
     extraHeight: -25,
     text: OPTIMISM_APP_ICON_EXPLAINER,
-    title: lang.t('explain.optimism_app_icon.title'),
+    title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
     button: {
-      label: lang.t('explain.optimism_app_icon.button'),
+      label: lang.t('explain.icon_unlock.button'),
       textColor: 'optimismRed',
       bgColor: 'optimismRed06',
+      onPress: (navigate, goBack, handleClose) => () => {
+        if (handleClose) handleClose();
+        if (goBack) goBack();
+        setTimeout(() => {
+          navigate(Routes.SETTINGS_SHEET);
+          setTimeout(() => {
+            navigate(Routes.SETTINGS_SHEET, {
+              screen: 'AppIconSection',
+            });
+          }, 300);
+        }, 300);
+      },
+    },
+  },
+  smol_app_icon: {
+    logo: <SmolAppIcon />,
+    extraHeight: -44,
+    text: SMOL_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
+    button: {
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: 'smolPurple',
+      bgColor: 'smolPurple06',
       onPress: (navigate, goBack, handleClose) => () => {
         if (handleClose) handleClose();
         if (goBack) goBack();
@@ -474,6 +529,19 @@ export const explainers = (params, colors) => ({
         </Text>
         {lang.t('explain.insufficient_liquidity.fragment3')}
       </Text>
+    ),
+  },
+  noQuote: {
+    extraHeight: -90,
+    emoji: '🏦',
+    title: lang.t('explain.no_quote.title'),
+    text: lang.t('explain.no_quote.text'),
+    logo: (
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <CoinIcon size={40} {...params?.inputCurrency} />
+        <DoubleChevron />
+        <CoinIcon size={40} {...params?.outputCurrency} />
+      </RowWithMargins>
     ),
   },
   availableNetworks: {
@@ -773,7 +841,7 @@ const ExplainSheet = () => {
         <Centered
           direction="column"
           height={sheetHeight}
-          testID="add-token-sheet"
+          testID={`explain-sheet-${type}`}
           width="100%"
         >
           <ColumnWithMargins

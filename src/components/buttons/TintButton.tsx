@@ -8,7 +8,7 @@ import {
   Cover,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 const TintButton = ({
   children,

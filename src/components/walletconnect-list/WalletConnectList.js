@@ -5,7 +5,7 @@ import { FlexItem } from '../layout';
 import WalletConnectListItem, {
   WalletConnectListItemHeight,
 } from './WalletConnectListItem';
-import { useWalletConnectConnections } from '@rainbow-me/hooks';
+import { useWalletConnectConnections } from '@/hooks';
 
 const scrollIndicatorInset = 22;
 const scrollIndicatorInsets = {

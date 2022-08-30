@@ -10,23 +10,23 @@ import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
-} from '@rainbow-me/handlers/cloudBackup';
+} from '@/handlers/cloudBackup';
 import {
   useBooleanState,
   useDimensions,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { margin, padding } from '@rainbow-me/styles';
-import logger from 'logger';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { margin, padding } from '@/styles';
+import logger from '@/utils/logger';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

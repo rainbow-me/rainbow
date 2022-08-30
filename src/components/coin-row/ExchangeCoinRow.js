@@ -10,9 +10,9 @@ import CoinRow from './CoinRow';
 import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import CoinRowInfoButton from './CoinRowInfoButton';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { haptics, neverRerender } from '@rainbow-me/utils';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { haptics, neverRerender } from '@/utils';
 
 const CoinRowPaddingTop = 9.5;
 const CoinRowPaddingBottom = 9.5;

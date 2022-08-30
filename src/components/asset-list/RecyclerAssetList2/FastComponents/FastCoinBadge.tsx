@@ -1,12 +1,12 @@
 import React from 'react';
 import { Image, View, ViewStyle } from 'react-native';
-import ArbitrumBadge from '@rainbow-me/assets/badges/arbitrumBadge.png';
-import ArbitrumBadgeDark from '@rainbow-me/assets/badges/arbitrumBadgeDark.png';
-import OptimismBadge from '@rainbow-me/assets/badges/optimismBadge.png';
-import OptimismBadgeDark from '@rainbow-me/assets/badges/optimismBadgeDark.png';
-import PolygonBadge from '@rainbow-me/assets/badges/polygonBadge.png';
-import PolygonBadgeDark from '@rainbow-me/assets/badges/polygonBadgeDark.png';
-import { AssetType } from '@rainbow-me/entities';
+import ArbitrumBadge from '@/assets/badges/arbitrumBadge.png';
+import ArbitrumBadgeDark from '@/assets/badges/arbitrumBadgeDark.png';
+import OptimismBadge from '@/assets/badges/optimismBadge.png';
+import OptimismBadgeDark from '@/assets/badges/optimismBadgeDark.png';
+import PolygonBadge from '@/assets/badges/polygonBadge.png';
+import PolygonBadgeDark from '@/assets/badges/polygonBadgeDark.png';
+import { AssetType } from '@/entities';
 
 interface FastChainBadgeProps {
   assetType: AssetType;

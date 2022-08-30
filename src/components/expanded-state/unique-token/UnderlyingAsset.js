@@ -6,12 +6,12 @@ import { ButtonPressAnimation } from '../../animations';
 import UnderlyingAssetCoinRow from '../../coin-row/UnderlyingAssetCoinRow';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
-import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { position } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
-import ShadowStack from 'react-native-shadow-stack';
+import { useAccountSettings, useColorForAsset } from '@/hooks';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { position } from '@/styles';
+import { ethereumUtils } from '@/utils';
+import ShadowStack from '@/react-native-shadow-stack';
 
 export default function UnderlyingAsset({
   pricePerUnitFormatted,

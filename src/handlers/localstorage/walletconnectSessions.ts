@@ -1,6 +1,6 @@
 import WalletConnect from '@walletconnect/client';
 import { getGlobal, saveGlobal } from './common';
-import { omitFlatten, pickBy } from '@rainbow-me/helpers/utilities';
+import { omitFlatten, pickBy } from '@/helpers/utilities';
 
 const WALLETCONNECT = 'walletconnect';
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Centered, RowWithMargins } from '../layout';
 import { DollarFigure, Text } from '../text';
-import { padding } from '@rainbow-me/styles';
+import { padding } from '@/styles';
 
 const containerStyle = padding.object(17, 0, 8);
 

@@ -12,8 +12,8 @@ import {
   Inset,
   Text,
   useTextStyle,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
 
 const textSize = 16;
 
@@ -124,7 +124,10 @@ export default function InlineField({
             </Text>
             {errorMessage && (
               <Bleed space="10px">
-                <ButtonPressAnimation onPress={() => Alert.alert(errorMessage)}>
+                <ButtonPressAnimation
+                  onPress={() => Alert.alert(errorMessage)}
+                  testID={`${testID}-error`}
+                >
                   <Inset space="10px">
                     <Text
                       color={{ custom: colors.red }}

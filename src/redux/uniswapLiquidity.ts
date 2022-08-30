@@ -3,11 +3,8 @@ import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
-import { ParsedAddressAsset } from '@rainbow-me/entities';
-import {
-  getLiquidity,
-  saveLiquidity,
-} from '@rainbow-me/handlers/localstorage/uniswap';
+import { ParsedAddressAsset } from '@/entities';
+import { getLiquidity, saveLiquidity } from '@/handlers/localstorage/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -40,6 +37,7 @@ export interface UniswapPoolAddressDetailsFull {
   symbol: string;
   token0: UniswapPoolToken;
   token1: UniswapPoolToken;
+  tokens?: [UniswapPoolToken, UniswapPoolToken];
   tokenNames: string;
   type: string;
 }

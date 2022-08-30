@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
+import { ImageOrVideo } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
@@ -13,16 +14,16 @@ import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   enableActionsOnReadOnlyWallet,
   PROFILES,
   useExperimentalFlag,
-} from '@rainbow-me/config';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
+} from '@/config';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import { buildRainbowUrl, showActionSheetWithOptions } from '@/utils';
 
 export default () => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
@@ -60,11 +61,11 @@ export default () => {
   }, [accountENS]);
 
   const onAvatarRemovePhoto = useCallback(async () => {
-    const newWallets = {
+    const newWallets: typeof wallets = {
       ...wallets,
       [selectedWallet.id]: {
-        ...wallets[selectedWallet.id],
-        addresses: wallets[
+        ...wallets![selectedWallet.id],
+        addresses: wallets![
           selectedWallet.id
         ].addresses.map((account: RainbowAccount) =>
           account.address.toLowerCase() === accountAddress?.toLowerCase()
@@ -79,16 +80,16 @@ export default () => {
   }, [dispatch, selectedWallet, accountAddress, wallets]);
 
   const processPhoto = useCallback(
-    (image: any) => {
+    (image: ImageOrVideo | null) => {
       const stringIndex = image?.path.indexOf('/tmp');
       const imagePath = ios
         ? `~${image?.path.slice(stringIndex)}`
         : image?.path;
-      const newWallets = {
+      const newWallets: typeof wallets = {
         ...wallets,
         [selectedWallet.id]: {
-          ...wallets[selectedWallet.id],
-          addresses: wallets[
+          ...wallets![selectedWallet.id],
+          addresses: wallets![
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             account.address.toLowerCase() === accountAddress?.toLowerCase()
@@ -156,7 +157,7 @@ export default () => {
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
   const callback = useCallback(
-    async (buttonIndex: Number) => {
+    async (buttonIndex: number) => {
       if (buttonIndex === 0) {
         if (isENSProfile) {
           if (!isReadOnly) {
@@ -288,7 +289,7 @@ export default () => {
             : undefined,
         options: avatarActionSheetOptions,
       },
-      (buttonIndex: Number) => callback(buttonIndex)
+      (buttonIndex: number) => callback(buttonIndex)
     );
   }, [avatarActionSheetOptions, hasENSAvatar, accountImage, callback]);
 

@@ -5,7 +5,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
 import ImgixImage from '../images/ImgixImage';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
   Box,
@@ -18,16 +18,16 @@ import {
   Text,
   useColorMode,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   prefetchENSAvatar,
   prefetchENSRecords,
   useAccountENSDomains,
   useWallets,
-} from '@rainbow-me/hooks';
-import { ensIntroMarqueeNames } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { watchingAlert } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ensIntroMarqueeNames } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { watchingAlert } from '@/utils';
 
 const CARD_BORDER_WIDTH = 0.25;
 
@@ -64,7 +64,7 @@ export default function ENSCreateProfileCard() {
     () => ({
       borderColor: `rgba(0, 0, 0, ${colorMode === 'dark' ? '0' : '0.1'})`,
       borderWidth: CARD_BORDER_WIDTH,
-      overflow: 'hidden' as 'hidden',
+      overflow: 'hidden' as const,
     }),
     [colorMode]
   );

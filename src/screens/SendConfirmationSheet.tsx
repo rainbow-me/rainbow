@@ -29,38 +29,30 @@ import ENSCircleIcon from '../components/icons/svg/ENSCircleIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
-import { Text as OldText, TruncatedText } from '../components/text';
+import { Text as OldText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
 import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
-import { AssetTypes } from '@rainbow-me/entities';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { Box, Heading, Inset, Stack, Text } from '@/design-system';
+import { AssetTypes } from '@/entities';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
-} from '@rainbow-me/handlers/ens';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { estimateGasLimit } from '@rainbow-me/handlers/web3';
+} from '@/handlers/ens';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
-import {
-  add,
-  convertAmountToNativeDisplay,
-} from '@rainbow-me/helpers/utilities';
-import {
-  isENSAddressFormat,
-  isValidDomainFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/emojiHandler';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -71,14 +63,14 @@ import {
   useGas,
   useUserAccounts,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
-import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -288,7 +280,6 @@ export default function SendConfirmationSheet() {
     if (!isSendingToUserAccount) {
       let sends = 0;
       let sendsCurrentNetwork = 0;
-      // @ts-expect-error From JavaScript hook
       transactions.forEach(tx => {
         if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
           sends++;
@@ -551,28 +542,24 @@ export default function SendConfirmationSheet() {
         <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
-              <Column width={deviceWidth - 117}>
-                <TruncatedText
-                  letterSpacing="roundedTightest"
-                  size="bigger"
-                  weight="heavy"
-                >
+              <Column justify="center" width={deviceWidth - 117}>
+                <Heading numberOfLines={1} size="26px" weight="heavy">
                   {isNft ? asset?.name : nativeDisplayAmount}
-                </TruncatedText>
-
-                <Row marginTop={android ? -16 : 0} paddingTop={3}>
-                  <OldText
-                    color={
-                      isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color
-                    }
-                    letterSpacing="roundedMedium"
-                    size="lmedium"
+                </Heading>
+                <Row marginTop={12}>
+                  <Text
+                    color={{
+                      custom: isNft
+                        ? colors.alpha(colors.blueGreyDark, 0.6)
+                        : color,
+                    }}
+                    size="16px"
                     weight={isNft ? 'bold' : 'heavy'}
                   >
                     {isNft
                       ? asset.familyName
                       : `${amountDetails.assetAmount} ${asset.symbol}`}
-                  </OldText>
+                  </Text>
                 </Row>
               </Column>
               <Column align="end" flex={1} justify="center">
@@ -622,16 +609,12 @@ export default function SendConfirmationSheet() {
               </Column>
             </Row>
             <Row marginBottom={android ? 15 : 30}>
-              <Column flex={1}>
+              <Column flex={1} justify="center">
                 <Row width={android ? '80%' : '90%'}>
-                  <TruncatedText
-                    letterSpacing="roundedTight"
-                    size="bigger"
-                    weight="heavy"
-                  >
+                  <Heading numberOfLines={1} size="26px" weight="heavy">
                     {avatarName}
-                  </TruncatedText>
-                  <Centered marginTop={android ? 8 : 0}>
+                  </Heading>
+                  <Centered marginLeft={4}>
                     <ContactRowInfoButton
                       item={{
                         address: toAddress,
@@ -640,24 +623,25 @@ export default function SendConfirmationSheet() {
                       network={network}
                       scaleTo={0.75}
                     >
-                      <OldText
-                        color={colors.alpha(
-                          colors.blueGreyDark,
-                          isDarkMode ? 0.5 : 0.6
-                        )}
-                        lineHeight={31}
-                        size="larger"
+                      <Text
+                        color={{
+                          custom: colors.alpha(
+                            colors.blueGreyDark,
+                            isDarkMode ? 0.5 : 0.6
+                          ),
+                        }}
+                        size="20px"
                         weight="heavy"
                       >
-                        {' 􀍡'}
-                      </OldText>
+                        􀍡
+                      </Text>
                     </ContactRowInfoButton>
                   </Centered>
                 </Row>
-                <Row marginTop={android ? -18 : 0} paddingTop={3}>
-                  <OldText
-                    color={colors.alpha(colors.blueGreyDark, 0.6)}
-                    size="lmedium"
+                <Row marginTop={12}>
+                  <Text
+                    color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
+                    size="16px"
                     weight="bold"
                   >
                     {isSendingToUserAccount
@@ -665,7 +649,7 @@ export default function SendConfirmationSheet() {
                       : alreadySentTransactionsTotal === 0
                       ? `First time send`
                       : `${alreadySentTransactionsTotal} previous sends`}
-                  </OldText>
+                  </Text>
                 </Row>
               </Column>
               <Column align="end" justify="center">

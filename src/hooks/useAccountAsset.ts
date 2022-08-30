@@ -3,9 +3,10 @@ import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import useAccountSettings from './useAccountSettings';
 import useGenericAsset from './useGenericAsset';
-import { AssetType } from '@rainbow-me/entities';
-import { parseAssetNative } from '@rainbow-me/parsers';
-import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
+import { AssetType } from '@/entities';
+import { parseAssetNative } from '@/parsers';
+import { AppState } from '@/redux/store';
+import { ETH_ADDRESS, ETH_ICON_URL } from '@/references';
 
 const getZeroEth = () => {
   return {
@@ -27,9 +28,9 @@ const getZeroEth = () => {
   };
 };
 
-export const accountAssetsDataSelector = (state: any) =>
+export const accountAssetsDataSelector = (state: AppState) =>
   state.data.accountAssetsData;
-const uniqueIdSelector = (_: any, uniqueId: any) => uniqueId;
+const uniqueIdSelector = (_: AppState, uniqueId: string) => uniqueId;
 
 const accountAssetDataSelector = createSelector(
   accountAssetsDataSelector,
@@ -47,9 +48,12 @@ const makeAccountAssetSelector = () =>
 // with a fallback for generic assets
 // and an ETH placeholder
 // NFTs are not included in this hook
-export default function useAccountAsset(uniqueId: any, nativeCurrency?: any) {
+export default function useAccountAsset(
+  uniqueId: string,
+  nativeCurrency: string | undefined = undefined
+) {
   const selectAccountAsset = useMemo(makeAccountAssetSelector, []);
-  const accountAsset = useSelector(state =>
+  const accountAsset = useSelector((state: AppState) =>
     selectAccountAsset(state, uniqueId)
   );
   const genericAssetBackup = useGenericAsset(uniqueId);

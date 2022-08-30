@@ -3,7 +3,7 @@ import {
   FabWrapperBottomPosition,
   FloatingActionButtonSize,
 } from '../../components/fab';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const SpacerHeight = FabWrapperBottomPosition + FloatingActionButtonSize;
 

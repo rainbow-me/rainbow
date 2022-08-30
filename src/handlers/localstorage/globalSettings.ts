@@ -1,6 +1,6 @@
 import { getGlobal, saveGlobal } from './common';
-import { NativeCurrencyKeys } from '@rainbow-me/entities';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { NativeCurrencyKeys } from '@/entities';
+import networkTypes from '@/helpers/networkTypes';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';

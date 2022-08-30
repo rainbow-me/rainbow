@@ -1,7 +1,7 @@
 import React from 'react';
 
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import supportedUriExtensions from '@rainbow-me/helpers/supportedUriExtensions';
+import isSupportedUriExtension from '@/helpers/isSupportedUriExtension';
+import supportedUriExtensions from '@/helpers/supportedUriExtensions';
 
 export type useUniqueTokenResult = {
   readonly supports3d: boolean;
