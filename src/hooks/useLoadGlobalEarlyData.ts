@@ -3,10 +3,7 @@ import { useDispatch } from 'react-redux';
 import { contactsLoadState } from '@/redux/contacts';
 import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
-import {
-  settingsLoadLanguage,
-  settingsLoadState,
-} from '@/redux/settings';
+import { settingsLoadLanguage, settingsLoadState } from '@/redux/settings';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { promiseUtils } from '@/utils';
 import logger from '@/utils/logger';

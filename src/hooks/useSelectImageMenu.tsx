@@ -6,10 +6,7 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
 import { useImagePicker } from '.';
 import { UniqueAsset } from '@/entities';
-import {
-  uploadImage,
-  UploadImageReturnData,
-} from '@/handlers/pinata';
+import { uploadImage, UploadImageReturnData } from '@/handlers/pinata';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@/utils';

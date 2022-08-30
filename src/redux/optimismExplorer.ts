@@ -16,10 +16,7 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
 import { pickBy } from '@/helpers/utilities';
-import {
-  balanceCheckerContractAbiOVM,
-  chainAssets,
-} from '@/references';
+import { balanceCheckerContractAbiOVM, chainAssets } from '@/references';
 import logger from '@/utils/logger';
 
 /**

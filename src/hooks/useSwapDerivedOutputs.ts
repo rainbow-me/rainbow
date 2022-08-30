@@ -18,11 +18,7 @@ import { isNativeAsset } from '@/handlers/assets';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import isTestFlight from '@/helpers/isTestFlight';
 import { AppState } from '@/redux/store';
-import {
-  Source,
-  SwapModalField,
-  updateSwapQuote,
-} from '@/redux/swap';
+import { Source, SwapModalField, updateSwapQuote } from '@/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
