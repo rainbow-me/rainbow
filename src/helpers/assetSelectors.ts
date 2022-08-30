@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
-import { isEmpty, isNil } from './utilities';
-import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
+import { parseAssetsNativeWithTotals } from '@/parsers';
+import { isEmpty, isNil } from '@/helpers/utilities';
 
 const EMPTY_ARRAY: any = [];
 

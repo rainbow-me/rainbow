@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings, useENSLocalTransactions } from '.';
-import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
+import { fetchRegistrationDate } from '@/handlers/ens';
 import {
   ENS_DOMAIN,
   formatRentPrice,
@@ -10,10 +10,10 @@ import {
   getENSRegistrarControllerContract,
   getNameExpires,
   getRentPrice,
-} from '@rainbow-me/helpers/ens';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { timeUnits } from '@rainbow-me/references';
-import { ethereumUtils, validateENS } from '@rainbow-me/utils';
+} from '@/helpers/ens';
+import { Network } from '@/helpers/networkTypes';
+import { timeUnits } from '@/references';
+import { ethereumUtils, validateENS } from '@/utils';
 
 const formatTime = (timestamp: string, abbreviated: boolean = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';

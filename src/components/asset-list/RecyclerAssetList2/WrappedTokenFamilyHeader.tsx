@@ -1,7 +1,7 @@
 import React from 'react';
 import { TokenFamilyHeader } from '../../token-family';
-import { useLatestCallback, useOpenFamilies } from '@rainbow-me/hooks';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { useLatestCallback, useOpenFamilies } from '@/hooks';
+import { ThemeContextProps } from '@/theme';
 
 type Props = {
   name: string;

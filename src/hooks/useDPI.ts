@@ -3,9 +3,9 @@ import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { emitAssetRequest } from '../redux/explorer';
 import { AppState } from '../redux/store';
-import { IndexToken } from '@rainbow-me/entities';
-import { getDPIBalance } from '@rainbow-me/handlers/dispersion';
-import { isEmpty } from '@rainbow-me/helpers/utilities';
+import { IndexToken } from '@/entities';
+import { getDPIBalance } from '@/handlers/dispersion';
+import { isEmpty } from '@/helpers/utilities';
 
 export default function useDPI() {
   const dispatch = useDispatch();

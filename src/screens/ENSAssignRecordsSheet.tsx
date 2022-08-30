@@ -46,19 +46,19 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   getSeenOnchainDataDisclaimer,
   saveSeenOnchainDataDisclaimer,
-} from '@rainbow-me/handlers/localstorage/ens';
+} from '@/handlers/localstorage/ens';
 import {
   accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
   TextRecordField,
   textRecordFields,
-} from '@rainbow-me/helpers/ens';
-import { isEmpty } from '@rainbow-me/helpers/utilities';
+} from '@/helpers/ens';
+import { isEmpty } from '@/helpers/utilities';
 import {
   useAccountProfile,
   useDimensions,
@@ -72,8 +72,8 @@ import {
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
@@ -471,7 +471,11 @@ function HideKeyboardButton({ color }: { color: string }) {
 
   return (
     <Box as={Animated.View} style={style}>
-      <ButtonPressAnimation onPress={() => Keyboard.dismiss()} scaleTo={0.8}>
+      <ButtonPressAnimation
+        onPress={() => Keyboard.dismiss()}
+        scaleTo={0.8}
+        testID="hide-keyboard-button"
+      >
         <AccentColorProvider color={color}>
           <Box
             background="accent"

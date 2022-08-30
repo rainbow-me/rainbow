@@ -5,16 +5,16 @@ import { useTheme } from '../../theme/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { AssetTypes } from '@rainbow-me/entities';
-import { isNil } from '@rainbow-me/helpers/utilities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
+import { isNil } from '@/helpers/utilities';
 import {
   getTokenMetadata,
   isETH,
   magicMemo,
   CoinIcon as ReactCoinIcon,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 export const CoinIconSize = 40;
 

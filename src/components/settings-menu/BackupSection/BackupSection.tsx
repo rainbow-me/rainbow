@@ -5,13 +5,13 @@ import { ContactAvatar } from '../../contacts';
 import Menu from '../components/Menu';
 import MenuContainer from '../components/MenuContainer';
 import MenuItem from '../components/MenuItem';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { abbreviations } from '@rainbow-me/utils';
-import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletTypes from '@/helpers/walletTypes';
+import { useManageCloudBackups, useWallets } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { abbreviations } from '@/utils';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 
 const BackupSection = () => {
   const { navigate } = useNavigation();

@@ -8,8 +8,8 @@ import { disableCharts } from '../../config/debug';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
-import { isEmpty } from '@rainbow-me/helpers/utilities';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
+import { isEmpty } from '@/helpers/utilities';
 
 const formatChartData = (chart: any) => {
   if (!chart || isEmpty(chart)) return null;

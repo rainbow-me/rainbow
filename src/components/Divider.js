@@ -1,8 +1,8 @@
 import React from 'react';
 import { magicMemo } from '../utils';
-import { isNil, isNumber } from '@rainbow-me/helpers/utilities';
-import styled from '@rainbow-me/styled-components';
-import { borders, position } from '@rainbow-me/styles';
+import { isNil, isNumber } from '@/helpers/utilities';
+import styled from '@/styled-thing';
+import { borders, position } from '@/styles';
 
 export const DividerSize = 2;
 

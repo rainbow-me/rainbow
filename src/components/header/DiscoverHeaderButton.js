@@ -5,10 +5,10 @@ import { useNavigation } from '../../navigation/Navigation';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import HeaderButton from './HeaderButton';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const DiscoverButtonShadowsFactory = colors => [
   [0, 7, 21, colors.shadow, 0.06],

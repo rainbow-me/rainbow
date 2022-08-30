@@ -30,26 +30,26 @@ import {
   removeRegistrationByName,
   saveCommitRegistrationParameters,
 } from '@/redux/ensRegistration';
-import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
+import { GasFeeTypes, TransactionStatusTypes } from '@/entities';
 import {
   getFlashbotsProvider,
   getProviderForNetwork,
   isL2Network,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
-import { greaterThan, isEmpty } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
-import { sendTransaction } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import { getTitle } from '@rainbow-me/parsers';
-import { dataUpdateTransaction } from '@rainbow-me/redux/data';
-import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
-import { ethUnits } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { useAccountSettings, useDimensions, useGas } from '@/hooks';
+import { sendTransaction } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import { getTitle } from '@/parsers';
+import { dataUpdateTransaction } from '@/redux/data';
+import { updateGasFeeForSpeed } from '@/redux/gas';
+import { ethUnits } from '@/references';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { gasUtils, safeAreaInsetValues } from '@/utils';
+import logger from '@/utils/logger';
+import { isEmpty, greaterThan } from '@/helpers/utilities';
 
 const { CUSTOM, URGENT } = gasUtils;
 

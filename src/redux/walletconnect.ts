@@ -26,21 +26,21 @@ import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { analytics } from '@/analytics';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils, watchingAlert } from '@/utils';
+import logger from '@/utils/logger';
 import {
   convertHexToString,
   delay,
   isEmpty,
   omitBy,
   pickBy,
-} from '@rainbow-me/helpers/utilities';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/helpers/utilities';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -528,8 +528,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       );
       const supportedChains = [
         networkTypes.mainnet,
-        networkTypes.ropsten,
-        networkTypes.kovan,
         networkTypes.goerli,
         networkTypes.polygon,
         networkTypes.optimism,

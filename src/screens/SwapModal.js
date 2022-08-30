@@ -1,8 +1,8 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import ExchangeModal from './ExchangeModal';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
-import { useNavigation } from '@rainbow-me/navigation';
+import { ExchangeModalTypes } from '@/helpers';
+import { useNavigation } from '@/navigation';
 
 const SwapModal = (props, ref) => {
   const { params = {} } = useRoute();

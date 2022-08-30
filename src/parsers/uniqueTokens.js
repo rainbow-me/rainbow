@@ -2,24 +2,16 @@ import remove from 'lodash/remove';
 import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
-import { AssetTypes } from '@rainbow-me/entities';
-import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import {
-  isEmpty,
-  isNil,
-  pickBy,
-  pickShallow,
-} from '@rainbow-me/helpers/utilities';
-import {
-  ENS_NFT_CONTRACT_ADDRESS,
-  polygonAllowList,
-} from '@rainbow-me/references';
-import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
-import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+import { AssetTypes } from '@/entities';
+import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
+import { maybeSignUri } from '@/handlers/imgix';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { Network } from '@/helpers/networkTypes';
+import { ENS_NFT_CONTRACT_ADDRESS, polygonAllowList } from '@/references';
+import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
+import { getLowResUrl } from '@/utils/getLowResUrl';
+import isSVGImage from '@/utils/isSVG';
+import { isEmpty, isNil, pickBy, pickShallow } from '@/helpers/utilities';
 
 const parseLastSalePrice = lastSale =>
   lastSale

@@ -4,8 +4,8 @@ import * as Keychain from 'react-native-keychain';
 import useAppState from './useAppState';
 import useIsMounted from './useIsMounted';
 import usePrevious from './usePrevious';
-import { BiometryTypes } from '@rainbow-me/helpers';
-import { isNil } from '@rainbow-me/helpers/utilities';
+import { BiometryTypes } from '@/helpers';
+import { isNil } from '@/helpers/utilities';
 
 export default function useBiometryType() {
   const { justBecameActive } = useAppState();

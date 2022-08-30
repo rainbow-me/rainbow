@@ -9,23 +9,19 @@ import {
   RapExchangeActionParameters,
   UnlockActionParameters,
 } from '../common';
-import {
-  Asset,
-  TransactionStatus,
-  TransactionType,
-} from '@rainbow-me/entities';
-import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
-import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
+import { Asset, TransactionStatus, TransactionType } from '@/entities';
+import { getProviderForNetwork, toHex } from '@/handlers/web3';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
+import { erc20ABI, ETH_ADDRESS, ethUnits } from '@/references';
+import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
+import logger from '@/utils/logger';
 import {
   convertAmountToRawAmount,
   greaterThan,
   isNull,
-} from '@rainbow-me/utilities';
-import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/helpers/utilities';
 
 export const estimateApprove = async (
   owner: string,

@@ -4,20 +4,17 @@ import without from 'lodash/without';
 import { InteractionManager } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { UserList } from '@rainbow-me/entities';
+import { UserList } from '@/entities';
 import {
   getSelectedUserList,
   getUserLists,
   saveSelectedUserList,
   saveUserLists,
-} from '@rainbow-me/handlers/localstorage/userLists';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
-import { AppGetState, AppState } from '@rainbow-me/redux/store';
-import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';
-import {
-  DefaultTokenLists,
-  TokenListsExtendedRecord,
-} from '@rainbow-me/references';
+} from '@/handlers/localstorage/userLists';
+import { emitAssetRequest } from '@/redux/explorer';
+import { AppGetState, AppState } from '@/redux/store';
+import { uniswapUpdateFavorites } from '@/redux/uniswap';
+import { DefaultTokenLists, TokenListsExtendedRecord } from '@/references';
 
 // -- Constants ------------------------------------------------------------- //
 const USER_LISTS_READY = 'userLists/USER_LISTS_READY';

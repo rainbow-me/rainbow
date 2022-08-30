@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text } from '@rainbow-me/design-system';
-import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { Text } from '@/design-system';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { supportedNativeCurrencies } from '@/references';
 
 const MemoFastPoolValue = React.memo(function FastPoolValue({
   type,

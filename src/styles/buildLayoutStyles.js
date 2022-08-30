@@ -1,5 +1,5 @@
-import { isNil } from '@rainbow-me/helpers/utilities';
-import { css } from '@rainbow-me/styled-components';
+import { isNil } from '@/helpers/utilities';
+import { css } from '@/styled-thing';
 
 export default function buildLayoutStyles(values, type, shouldReturnCss) {
   // Replicating the CSS API, if no second value parameter is given

@@ -12,8 +12,8 @@ import {
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
   fetchReverseRecord,
-} from '@rainbow-me/handlers/ens';
-import { NetworkTypes } from '@rainbow-me/helpers';
+} from '@/handlers/ens';
+import { NetworkTypes } from '@/helpers';
 import {
   ENS_DOMAIN,
   formatEstimatedNetworkFee,
@@ -23,8 +23,8 @@ import {
   getRentPrice,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/helpers/ens';
+import { Network } from '@/helpers/networkTypes';
 import {
   add,
   addBuffer,
@@ -33,9 +33,9 @@ import {
   greaterThanOrEqualTo,
   isEmpty,
   multiply,
-} from '@rainbow-me/helpers/utilities';
-import { ethUnits, timeUnits } from '@rainbow-me/references';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethUnits, timeUnits } from '@/references';
+import { ethereumUtils, gasUtils } from '@/utils';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',

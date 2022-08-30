@@ -13,22 +13,22 @@ import {
   useENSRegistration,
   useWalletENSAvatar,
 } from '.';
-import { Records, RegistrationParameters } from '@rainbow-me/entities';
-import { fetchResolver } from '@rainbow-me/handlers/ens';
-import { saveNameFromLabelhash } from '@rainbow-me/handlers/localstorage/ens';
-import { uploadImage } from '@rainbow-me/handlers/pinata';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import { Records, RegistrationParameters } from '@/entities';
+import { fetchResolver } from '@/handlers/ens';
+import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
+import { uploadImage } from '@/handlers/pinata';
+import { getProviderForNetwork } from '@/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
   getRentPrice,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
-import { loadWallet } from '@rainbow-me/model/wallet';
-import { executeRap } from '@rainbow-me/raps';
-import { timeUnits } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { labelhash, logger } from '@rainbow-me/utils';
+} from '@/helpers/ens';
+import { loadWallet } from '@/model/wallet';
+import { executeRap } from '@/raps';
+import { timeUnits } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { labelhash, logger } from '@/utils';
 
 const NOOP = () => null;
 

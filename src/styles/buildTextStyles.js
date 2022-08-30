@@ -1,7 +1,7 @@
 import colors from './colors';
 import fonts from './fonts';
-import { isNil } from '@rainbow-me/helpers/utilities';
-import { css } from '@rainbow-me/styled-components';
+import { css } from '@/styled-thing';
+import { isNil } from '@/helpers/utilities';
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);

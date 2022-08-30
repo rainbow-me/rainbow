@@ -21,19 +21,19 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useENSPendingRegistrations,
   useENSRegistration,
   useENSRegistrationCosts,
   useENSRegistrationStepHandler,
   useENSSearch,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
-import { normalizeENS } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
+import { normalizeENS } from '@/utils';
 
 export default function ENSSearchSheet() {
   const { navigate } = useNavigation();

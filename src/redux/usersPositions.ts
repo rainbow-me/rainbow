@@ -8,9 +8,9 @@ import {
 import {
   getUniswapPositions,
   saveUniswapPositions,
-} from '@rainbow-me/handlers/localstorage/uniswap';
-import { isEmpty } from '@rainbow-me/helpers/utilities';
-import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+} from '@/handlers/localstorage/uniswap';
+import { AppDispatch, AppGetState } from '@/redux/store';
+import { isEmpty } from '@/helpers/utilities';
 import {
   BUSD_ADDRESS,
   DAI_ADDRESS,
@@ -20,8 +20,8 @@ import {
   USDC_ADDRESS,
   USDT_ADDRESS,
   WETH_ADDRESS,
-} from '@rainbow-me/references';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+} from '@/references';
+import { ethereumUtils, logger } from '@/utils';
 
 const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086;
 

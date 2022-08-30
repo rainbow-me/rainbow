@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { supportedNativeCurrencies } from '@/references';
 
 type BigNumberish = number | string | BigNumber;
 interface Dictionary<T> {

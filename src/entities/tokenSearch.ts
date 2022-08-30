@@ -1,4 +1,4 @@
-import { RainbowToken } from '@rainbow-me/entities';
+import { RainbowToken } from '@/entities';
 export type TokenSearchThreshold = 'CONTAINS' | 'CASE_SENSITIVE_EQUAL';
 export type TokenSearchTokenListId =
   | 'highLiquidityAssets'

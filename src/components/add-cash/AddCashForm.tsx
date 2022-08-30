@@ -14,17 +14,13 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
-import { analytics } from '@rainbow-me/analytics';
-import { toChecksumAddress } from '@rainbow-me/handlers/web3';
-import { isEmpty } from '@rainbow-me/helpers/utilities';
-import {
-  useAccountSettings,
-  useDimensions,
-  useIsWalletEthZero,
-} from '@rainbow-me/hooks';
-import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
-import { padding } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+import { analytics } from '@/analytics';
+import { toChecksumAddress } from '@/handlers/web3';
+import { isEmpty } from '@/helpers/utilities';
+import { useAccountSettings, useDimensions, useIsWalletEthZero } from '@/hooks';
+import { DAI_ADDRESS, ETH_ADDRESS } from '@/references';
+import { padding } from '@/styles';
+import { abbreviations } from '@/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];
 const minimumPurchaseAmountUSD = 1;

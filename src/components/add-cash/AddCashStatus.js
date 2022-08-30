@@ -11,18 +11,18 @@ import { Centered, Row } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { isEmpty } from '@rainbow-me/helpers/utilities';
+import { TransactionStatusTypes } from '@/entities';
+import { isEmpty } from '@/helpers/utilities';
 import {
   ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
-} from '@rainbow-me/helpers/wyreStatusTypes';
-import { useDimensions, useTimeout } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+} from '@/helpers/wyreStatusTypes';
+import { useDimensions, useTimeout } from '@/hooks';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { ETH_ADDRESS, getWyreErrorOverride } from '@/references';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const OrderIdText = styled(Text).attrs({
   align: 'center',
