@@ -1,3 +1,4 @@
+import Clipboard from '@react-native-community/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
 import { Text as NativeText, PressableProps } from 'react-native';
@@ -17,10 +18,10 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
   Box,
-  Columns,
   Cover,
   Heading,
   Inline,
+  Stack,
   Text,
   useColorMode,
   useForegroundColor,
@@ -39,10 +40,17 @@ import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
 import { AppState } from '@/redux/store';
 import { useTheme } from '@/theme';
-import { getFirstGrapheme, watchingAlert } from '@/utils';
+import {
+  getFirstGrapheme,
+  showActionSheetWithOptions,
+  watchingAlert,
+} from '@/utils';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
+import { FloatingEmojis } from '../floating-emojis';
+import showWalletErrorAlert from '@/helpers/support';
+import { analytics } from '@/analytics';
 
 export const AssetListProfileHeaderHeight = 240;
 export const AssetListProfileHeaderCompactHeight = 52;
@@ -323,43 +331,82 @@ export function AssetListProfileBalance({
 // ///////////////////////////////////////////////////////////////
 // Buttons
 
-export const AssetListProfileActionButtonsHeight = 46;
+export const AssetListProfileActionButtonsHeight = 80;
 
 export function AssetListProfileActionButtons() {
   return (
-    <Columns space="10px">
+    <Inline space="24px" wrap={false}>
+      <CopyButton />
       <SwapButton />
       <SendButton />
-    </Columns>
+      <MoreButton />
+    </Inline>
   );
 }
 
 function ActionButton({
   children,
-  color,
+  icon,
   onPress,
 }: {
   children: string;
-  color: 'swap' | 'accent';
+  icon: string;
   onPress: PressableProps['onPress'];
 }) {
   const { colorMode } = useColorMode();
   return (
     <ButtonPressAnimation onPress={onPress} scale={0.8}>
-      <Box
-        alignItems="center"
-        background={color}
-        borderRadius={46}
-        height="46px"
-        justifyContent="center"
-        shadow={colorMode !== 'dark' ? `30px heavy ${color}` : '30px heavy'}
-        width="full"
-      >
-        <Text size="18px" weight="heavy">
+      <Stack alignHorizontal="center" space="10px">
+        <Box
+          alignItems="center"
+          background="body"
+          borderRadius={60}
+          height={{ custom: 60 }}
+          justifyContent="center"
+          shadow={colorMode !== 'dark' ? `21px light` : '21px light'}
+          width={{ custom: 60 }}
+        >
+          <Text size="icon 23px" weight="bold">
+            {icon}
+          </Text>
+        </Box>
+        <Text color="secondary80" size="14px" weight="medium">
           {children}
         </Text>
-      </Box>
+      </Stack>
     </ButtonPressAnimation>
+  );
+}
+
+function CopyButton() {
+  const { accountAddress } = useAccountProfile();
+  const { isDamaged } = useWallets();
+
+  const onNewEmoji = React.useRef<() => void>();
+
+  const handlePress = React.useCallback(() => {
+    if (isDamaged) showWalletErrorAlert();
+    onNewEmoji?.current && onNewEmoji.current();
+    Clipboard.setString(accountAddress);
+  }, [accountAddress, isDamaged]);
+
+  return (
+    <Box>
+      {/* @ts-expect-error – JS component */}
+      <FloatingEmojis
+        distance={150}
+        duration={500}
+        fadeOut={false}
+        scaleTo={0}
+        size={50}
+        wiggleFactor={0}
+        // @ts-expect-error – JS component
+        setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
+      />
+      <ActionButton icon="􀐅" onPress={handlePress}>
+        Copy
+      </ActionButton>
+    </Box>
   );
 }
 
@@ -391,8 +438,8 @@ function SwapButton() {
   }, [isReadOnlyWallet, navigate, updateInputCurrency]);
 
   return (
-    <ActionButton color="swap" onPress={handlePress}>
-      􀖅 Swap
+    <ActionButton icon="􀖅" onPress={handlePress}>
+      Swap
     </ActionButton>
   );
 }
@@ -410,8 +457,67 @@ function SendButton() {
   }, [navigate, isReadOnlyWallet]);
 
   return (
-    <ActionButton color="accent" onPress={handlePress}>
-      􀈟 Send
+    <ActionButton icon="􀈟" onPress={handlePress}>
+      Send
+    </ActionButton>
+  );
+}
+
+function MoreButton() {
+  const { accountAddress } = useAccountProfile();
+  const { navigate } = useNavigation();
+  const { isDamaged } = useWallets();
+
+  const handlePressAddCash = () => {
+    if (isDamaged) {
+      showWalletErrorAlert();
+      return;
+    }
+
+    analytics.track('Tapped Add Cash', {
+      category: 'add cash',
+    });
+
+    if (ios) {
+      navigate(Routes.ADD_CASH_FLOW);
+    } else {
+      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
+        params: {
+          address: accountAddress,
+        },
+        screen: Routes.WYRE_WEBVIEW,
+      });
+    }
+  };
+
+  const items = {
+    addCash: 'Add Cash',
+    myQRCode: 'My QR Code',
+    cancel: 'Cancel',
+  };
+  const options = [
+    items.addCash,
+    items.myQRCode,
+    ios ? items.cancel : null,
+  ].filter(x => x);
+
+  const handlePress = () => {
+    showActionSheetWithOptions(
+      { options, cancelButtonIndex: options.length - 1 },
+      (index: number) => {
+        if (options[index] === items.addCash) {
+          handlePressAddCash();
+        }
+        if (options[index] === items.myQRCode) {
+          navigate(Routes.RECEIVE_MODAL);
+        }
+      }
+    );
+  };
+
+  return (
+    <ActionButton icon="􀍡" onPress={handlePress}>
+      More
     </ActionButton>
   );
 }

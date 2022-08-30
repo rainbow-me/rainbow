@@ -192,5 +192,14 @@ export const typeHierarchy = {
         ios: 0,
       },
     },
+    'icon 23px': {
+      fontSize: 23,
+      letterSpacing: 0,
+      lineHeight: 27,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
   },
 } as const;
