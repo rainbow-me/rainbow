@@ -10,22 +10,17 @@ import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
-import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
-import {
-  isENSAddressFormat,
-  isValidDomainFormat,
-} from '@rainbow-me/helpers/validators';
-import { useContacts, useDimensions, useENSAvatar } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { margin } from '@rainbow-me/styles';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { fetchReverseRecord } from '@/handlers/ens';
+import { ENS_DOMAIN } from '@/helpers/ens';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
+import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
+import styled from '@/styled-thing';
+import { margin } from '@/styles';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
+} from '@/utils/profileUtils';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({

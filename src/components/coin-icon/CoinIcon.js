@@ -5,16 +5,16 @@ import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../theme/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
-import { AssetTypes } from '@rainbow-me/entities';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
+import { AssetTypes } from '@/entities';
+import { useColorForAsset } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
 import {
   getTokenMetadata,
   isETH,
   magicMemo,
   CoinIcon as ReactCoinIcon,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 export const CoinIconSize = 40;
 

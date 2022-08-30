@@ -10,7 +10,7 @@ import {
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes } from '@/entities';
 
 const mainnetAddressesSelector = (state: any) => state.mainnetAddresses;
 const accountAddressSelector = (state: any) => state.accountAddress;

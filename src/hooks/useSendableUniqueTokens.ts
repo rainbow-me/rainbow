@@ -1,8 +1,8 @@
 import groupBy from 'lodash/groupBy';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { AppState } from '@rainbow-me/redux/store';
+import { UniqueAsset } from '@/entities';
+import { AppState } from '@/redux/store';
 
 const uniqueTokensSelector = (state: AppState) =>
   state.uniqueTokens.uniqueTokens;

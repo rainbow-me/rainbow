@@ -2,9 +2,9 @@ import lang from 'i18n-js';
 import React from 'react';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
-import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
-import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
+import styled from '@/styled-thing';
+import { ethereumUtils } from '@/utils';
+import { toStartCaseStr } from '@/helpers/utilities';
 
 const TWITTER_URL = 'https://twitter.com/';
 const TELEGRAM_URL = 'https://t.me/';

@@ -10,7 +10,7 @@ import {
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 
 const formatDappData = (connections: any) =>
   values(

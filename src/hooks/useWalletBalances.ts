@@ -7,14 +7,14 @@ import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
-} from '@rainbow-me/handlers/localstorage/walletBalances';
-import { web3Provider } from '@rainbow-me/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { AllRainbowWallets } from '@rainbow-me/model/wallet';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { balanceCheckerContractAbi } from '@rainbow-me/references';
-import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
-import logger from 'logger';
+} from '@/handlers/localstorage/walletBalances';
+import { web3Provider } from '@/handlers/web3';
+import networkInfo from '@/helpers/networkInfo';
+import { AllRainbowWallets } from '@/model/wallet';
+import { queryClient } from '@/react-query/queryClient';
+import { balanceCheckerContractAbi } from '@/references';
+import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
+import logger from '@/utils/logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 

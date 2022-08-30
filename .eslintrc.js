@@ -22,28 +22,26 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
   );
 
 module.exports = {
-  extends: 'rainbow',
-  settings: {
-    'import/resolver': {
-      'node': {
-        extensions: [
-          '.js',
-          '.ios.js',
-          '.android.js',
-          '.native.js',
-          '.ts',
-          '.tsx',
-        ],
-      },
-      'babel-module': {
-        alias: {},
-      },
-    },
+  extends: ['rainbow'],
+  parserOptions: {
+    project: ['./tsconfig.json'],
   },
-  plugins: [],
   globals: globalVars,
+  plugins: ['custom-rules'],
   rules: {
     'no-restricted-imports': [
+      'warn',
+      {
+        patterns: [
+          {
+            group: ['@react-navigation/core'],
+            message:
+              'You probably want to use @/navigation instead, to ensure that all of our customizations are applied.',
+          },
+        ],
+      },
+    ],
+    'custom-rules/no-restricted-imports-clone': [
       'error',
       {
         paths: [

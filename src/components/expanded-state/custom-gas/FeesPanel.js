@@ -17,25 +17,25 @@ import FeesGweiInput from './FeesGweiInput';
 import {
   calculateMinerTipAddDifference,
   calculateMinerTipSubstDifference,
-} from '@rainbow-me/helpers/gas';
+} from '@/helpers/gas';
 import {
   add,
   greaterThan,
   isZero,
   multiply,
   toFixedDecimals,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import {
   useFeesPanelInputRefs,
   useGas,
   usePrevious,
   useTimeout,
-} from '@rainbow-me/hooks';
-import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { gweiToWei, parseGasFeeParam } from '@/parsers';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth, margin, padding } from '@/styles';
+import { gasUtils } from '@/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)({});
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;

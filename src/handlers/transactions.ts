@@ -1,15 +1,12 @@
 import { Contract } from '@ethersproject/contracts';
 import isEmpty from 'lodash/isEmpty';
 import { web3Provider } from './web3';
-import { metadataClient } from '@rainbow-me/apollo/client';
-import { CONTRACT_FUNCTION } from '@rainbow-me/apollo/queries';
-import { ZerionTransaction } from '@rainbow-me/entities';
-import store from '@rainbow-me/redux/store';
-import { transactionSignaturesDataAddNewSignature } from '@rainbow-me/redux/transactionSignatures';
-import {
-  SIGNATURE_REGISTRY_ADDRESS,
-  signatureRegistryABI,
-} from '@rainbow-me/references';
+import { metadataClient } from '@/apollo/client';
+import { CONTRACT_FUNCTION } from '@/apollo/queries';
+import { ZerionTransaction } from '@/entities';
+import store from '@/redux/store';
+import { transactionSignaturesDataAddNewSignature } from '@/redux/transactionSignatures';
+import { SIGNATURE_REGISTRY_ADDRESS, signatureRegistryABI } from '@/references';
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);

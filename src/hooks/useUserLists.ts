@@ -5,7 +5,7 @@ import {
   userListsSetSelectedList,
   userListsUpdateList,
 } from '../redux/userLists';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 
 const userListsSelector = (state: AppState) => state.userLists.lists;
 const userListsReadySelector = (state: AppState) => state.userLists.ready;

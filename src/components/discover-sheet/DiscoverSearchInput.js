@@ -14,11 +14,11 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { analytics } from '@rainbow-me/analytics';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { margin, padding } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import { analytics } from '@/analytics';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
+import { margin, padding } from '@/styles';
+import { deviceUtils } from '@/utils';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;

@@ -1,7 +1,7 @@
 import isNil from 'lodash/isNil';
 import colors from './colors';
 import fonts from './fonts';
-import { css } from '@rainbow-me/styled-components';
+import { css } from '@/styled-thing';
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);

@@ -36,16 +36,16 @@ import {
   RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
-} from '@rainbow-me/entities';
-import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
+} from '@/entities';
+import { getOnchainAssetBalance } from '@/handlers/assets';
 import {
   getProviderForNetwork,
   isTestnetNetwork,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
@@ -55,20 +55,18 @@ import {
   greaterThan,
   isZero,
   subtract,
-} from '@rainbow-me/helpers/utilities';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+} from '@/helpers/utilities';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
   identifyWalletType,
   WalletLibraryType,
-} from '@rainbow-me/model/wallet';
-import type {
   EthereumPrivateKey,
   EthereumWalletSeed,
-} from '@rainbow-me/model/wallet';
-import { Navigation } from '@rainbow-me/navigation';
-import { parseAssetNative } from '@rainbow-me/parsers';
-import store from '@rainbow-me/redux/store';
+} from '@/model/wallet';
+import { Navigation } from '@/navigation';
+import { parseAssetNative } from '@/parsers';
+import store from '@/redux/store';
 import {
   ARBITRUM_BLOCK_EXPLORER_URL,
   ARBITRUM_ETH_ADDRESS,
@@ -83,9 +81,9 @@ import {
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
+} from '@/references';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
 
 const { RNBip39 } = NativeModules;
 

@@ -14,12 +14,16 @@ import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
-import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
-import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import {
+  ChartDot,
+  ChartPath,
+  useChartData,
+} from '@/react-native-animated-charts/src';
+import ChartTypes from '@/helpers/chartTypes';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 export const { width: WIDTH } = Dimensions.get('window');
 

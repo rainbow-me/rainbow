@@ -7,14 +7,14 @@ import {
   RapActionTypes,
   RapENSAction,
 } from './common';
-import { Records } from '@rainbow-me/entities';
+import { Records } from '@/entities';
 import {
   formatRecordsForTransaction,
   getRapActionTypeForTxType,
   getTransactionTypeForRecords,
   recordsForTransactionAreValid,
-} from '@rainbow-me/handlers/ens';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+} from '@/handlers/ens';
+import { ENS_RECORDS } from '@/helpers/ens';
 
 export const createSetRecordsENSRap = async (
   ensActionParameters: ENSActionParameters

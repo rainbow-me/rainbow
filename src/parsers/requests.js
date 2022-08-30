@@ -1,22 +1,22 @@
 import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import isNil from 'lodash/isNil';
-import { isHexString } from '@rainbow-me/handlers/web3';
-import { ethUnits, smartContractMethods } from '@rainbow-me/references';
+import { isHexString } from '@/handlers/web3';
+import { ethUnits, smartContractMethods } from '@/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,
   convertRawAmountToDecimalFormat,
   fromWei,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 import {
   isSignTypedData,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
   SIGN,
   SIGN_TRANSACTION,
-} from '@rainbow-me/utils/signingMethods';
+} from '@/utils/signingMethods';
 
 export const getRequestDisplayDetails = (
   payload,

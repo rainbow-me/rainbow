@@ -13,16 +13,13 @@ import {
 } from './data';
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
-import { ZerionAsset } from '@rainbow-me/entities';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickBy } from '@rainbow-me/helpers/utilities';
-import {
-  balanceCheckerContractAbiOVM,
-  chainAssets,
-} from '@rainbow-me/references';
-import logger from 'logger';
+import { ZerionAsset } from '@/entities';
+import { getProviderForNetwork } from '@/handlers/web3';
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
+import { pickBy } from '@/helpers/utilities';
+import { balanceCheckerContractAbiOVM, chainAssets } from '@/references';
+import logger from '@/utils/logger';
 
 /**
  * The last `ChainAsset`s update payload. Used for skipping redundant payloads.

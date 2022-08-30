@@ -35,8 +35,8 @@ import {
   ZerionAsset,
   ZerionAssetFallback,
   ZerionTransaction,
-} from '@rainbow-me/entities';
-import appEvents from '@rainbow-me/handlers/appEvents';
+} from '@/entities';
+import appEvents from '@/handlers/appEvents';
 import {
   getAccountAssetsData,
   getLocalPendingTransactions,
@@ -45,16 +45,16 @@ import {
   saveAccountEmptyState,
   saveLocalPendingTransactions,
   saveLocalTransactions,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import {
   getProviderForNetwork,
   isL2Network,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { Navigation } from '@rainbow-me/navigation';
-import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
-import { Network } from '@rainbow-me/networkTypes';
+} from '@/handlers/web3';
+import WalletTypes from '@/helpers/walletTypes';
+import { Navigation } from '@/navigation';
+import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
+import { Network } from '@/helpers/networkTypes';
 import {
   getTitle,
   getTransactionLabel,
@@ -62,23 +62,19 @@ import {
   parseAsset,
   parseNewTransaction,
   parseTransactions,
-} from '@rainbow-me/parsers';
-import { setHiddenCoins } from '@rainbow-me/redux/editOptions';
+} from '@/parsers';
+import { setHiddenCoins } from '@/redux/editOptions';
 import {
   coingeckoIdsFallback,
   DPI_ADDRESS,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   shitcoins,
-} from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { delay, isZero, pickBy } from '@rainbow-me/utilities';
-import {
-  ethereumUtils,
-  isLowerCaseMatch,
-  TokensListenedCache,
-} from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/references';
+import Routes from '@/navigation/routesNames';
+import { delay, isZero, pickBy } from '@/helpers/utilities';
+import { ethereumUtils, isLowerCaseMatch, TokensListenedCache } from '@/utils';
+import logger from '@/utils/logger';
 
 const storage = new MMKV();
 

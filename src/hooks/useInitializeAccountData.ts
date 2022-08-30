@@ -4,8 +4,8 @@ import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
-import { updatePositions } from '@rainbow-me/redux/usersPositions';
-import logger from 'logger';
+import { updatePositions } from '@/redux/usersPositions';
+import logger from '@/utils/logger';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();

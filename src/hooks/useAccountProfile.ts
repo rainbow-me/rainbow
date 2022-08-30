@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { EthereumAddress } from '@/entities';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
 
 const walletSelector = createSelector(
   ({ wallets: { selected = {}, walletNames } }) => ({
