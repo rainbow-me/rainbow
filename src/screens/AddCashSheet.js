@@ -18,10 +18,10 @@ import {
   useShakeAnimation,
   useTimeout,
   useWyreApplePay,
-} from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { borders } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import styled from '@/styled-thing';
+import { borders } from '@/styles';
+import { useTheme } from '@/theme';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);

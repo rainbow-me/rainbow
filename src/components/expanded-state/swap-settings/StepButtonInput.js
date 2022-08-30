@@ -4,9 +4,9 @@ import { ButtonPressAnimation } from '../../animations';
 import { Row } from '../../layout';
 import { Text } from '../../text';
 import InputPill from './InputPill';
-import { delay } from '@rainbow-me/helpers/utilities';
-import { usePrevious } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
+import { delay } from '@/helpers/utilities';
+import { usePrevious } from '@/hooks';
+import styled from '@/styled-thing';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';

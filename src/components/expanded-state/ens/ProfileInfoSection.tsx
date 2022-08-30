@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
-import { Stack } from '@rainbow-me/design-system';
-import { Records } from '@rainbow-me/entities';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-import { partition } from '@rainbow-me/helpers/utilities';
-import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
+import { Stack } from '@/design-system';
+import { Records } from '@/entities';
+import { ENS_RECORDS } from '@/helpers/ens';
+import { useENSRecordDisplayProperties } from '@/hooks';
+import { partition } from '@/helpers/utilities';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];
 const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.description];

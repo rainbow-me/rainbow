@@ -9,18 +9,18 @@ import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
 import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
-import { getTrendKey } from '@rainbow-me/helpers/gas';
+import { getTrendKey } from '@/helpers/gas';
 import {
   useAccountSettings,
   useColorForAsset,
   useDimensions,
   useGas,
   useKeyboardHeight,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { margin } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { margin } from '@/styles';
+import { deviceUtils } from '@/utils';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;

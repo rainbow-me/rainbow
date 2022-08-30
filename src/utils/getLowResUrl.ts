@@ -1,6 +1,6 @@
 import { PixelRatio } from 'react-native';
 import { CardSize } from '../components/unique-token/CardSize';
-import { imageToPng } from '@rainbow-me/handlers/imgix';
+import { imageToPng } from '@/handlers/imgix';
 
 export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 

@@ -1,17 +1,11 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import {
-  CurrencySelectionTypes,
-  ExchangeModalTypes,
-} from '@rainbow-me/helpers';
-import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
-import {
-  useExpandedStateNavigation,
-  useSwapCurrencyHandlers,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
+import AssetInputTypes from '@/helpers/assetInputTypes';
+import { useExpandedStateNavigation, useSwapCurrencyHandlers } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
 
 function SwapActionButton({
   asset,

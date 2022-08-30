@@ -14,9 +14,9 @@ import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;

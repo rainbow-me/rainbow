@@ -25,9 +25,9 @@ import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecret
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
-import { Box } from '@rainbow-me/design-system';
-import { useWallets } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import { Box } from '@/design-system';
+import { useWallets } from '@/hooks';
+import { useNavigation } from '@/navigation';
 
 function cardStyleInterpolator({
   current,

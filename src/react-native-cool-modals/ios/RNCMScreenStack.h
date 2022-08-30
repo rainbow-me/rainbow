@@ -1,4 +1,3 @@
-#ifndef __cplusplus
 #import <React/RCTViewManager.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
@@ -14,4 +13,3 @@
 @interface RNCMScreenStackManager : RCTViewManager <RCTInvalidating>
 
 @end
-#endif

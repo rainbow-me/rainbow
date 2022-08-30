@@ -7,10 +7,10 @@ import {
   getWebDataEnabled,
   saveShowcaseTokens,
   saveWebDataEnabled,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { excludeSpecifiedStrings } from '@rainbow-me/helpers/utilities';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+} from '@/handlers/localstorage/accountLocal';
+import networkTypes from '@/helpers/networkTypes';
+import WalletTypes from '@/helpers/walletTypes';
+import { excludeSpecifiedStrings } from '@/helpers/utilities';
 
 // -- Constants --------------------------------------- //
 

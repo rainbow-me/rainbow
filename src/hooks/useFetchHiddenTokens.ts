@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
-import { getHiddenTokens } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getPreference } from '@rainbow-me/model/preferences';
+import { getHiddenTokens } from '@/handlers/localstorage/accountLocal';
+import { getPreference } from '@/model/preferences';
 
 export const hiddenTokensQueryKey = ({ address }: { address?: string }) => [
   'hidden-tokens',

@@ -2,9 +2,9 @@ import { useEffect, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
-import { ParsedAddressAsset, UniqueAsset } from '@rainbow-me/entities';
-import { AppState } from '@rainbow-me/redux/store';
-import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
+import { ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { AppState } from '@/redux/store';
+import { revalidateUniqueToken } from '@/redux/uniqueTokens';
 
 export default function useCollectible(
   initialAsset: Partial<ParsedAddressAsset>,

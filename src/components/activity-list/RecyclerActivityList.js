@@ -16,10 +16,10 @@ import { ProfileMasthead } from '../profile';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { buildTransactionUniqueIdentifier } from '@rainbow-me/helpers/transactions';
-import styled from '@rainbow-me/styled-components';
-import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { TransactionStatusTypes } from '@/entities';
+import { buildTransactionUniqueIdentifier } from '@/helpers/transactions';
+import styled from '@/styled-thing';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,

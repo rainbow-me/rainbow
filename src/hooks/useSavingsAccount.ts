@@ -6,19 +6,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountSettings from './useAccountSettings';
 import { useGenericAssets } from './useGenericAsset';
-import { compoundClient } from '@rainbow-me/apollo/client';
-import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
-import { AssetTypes } from '@rainbow-me/entities';
-import { multiply } from '@rainbow-me/helpers/utilities';
-import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
-import { AppState } from '@rainbow-me/redux/store';
-import {
-  CDAI_CONTRACT,
-  DAI_ADDRESS,
-  ETH_ADDRESS,
-} from '@rainbow-me/references';
-import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
+import { compoundClient } from '@/apollo/client';
+import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@/apollo/queries';
+import { AssetTypes } from '@/entities';
+import { multiply } from '@/helpers/utilities';
+import { parseAssetName, parseAssetSymbol } from '@/parsers';
+import { emitAssetRequest } from '@/redux/explorer';
+import { AppState } from '@/redux/store';
+import { CDAI_CONTRACT, DAI_ADDRESS, ETH_ADDRESS } from '@/references';
+import { ethereumUtils, getTokenMetadata } from '@/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
 
