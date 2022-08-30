@@ -10,7 +10,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 
-const AvatarCircleSize = 65;
+const AvatarCircleSize = 60;
 
 const AvatarCircleView = styled(Flex)({
   ...position.sizeAsObject(AvatarCircleSize),
@@ -25,10 +25,10 @@ const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 2,
   size: ios ? 38 : 30,
   weight: 'semibold',
-  ...(ios && { lineHeight: 66 }),
+  ...(ios && { lineHeight: 60 }),
 }))({
   ...(android && { left: -1 }),
-  ...(ios && { width: 67 }),
+  ...(ios && { width: 62 }),
 });
 
 export default function AvatarCircle({
@@ -126,7 +126,7 @@ export default function AvatarCircle({
           ) : (
             <AvatarCircleView backgroundColor={resolvedColor}>
               <FirstLetter>{accountSymbol}</FirstLetter>
-              {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
+              {!overlayStyles && <InnerBorder opacity={0.02} radius={60} />}
             </AvatarCircleView>
           )}
         </ShadowStack>
