@@ -21,10 +21,7 @@ import {
 } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
 import { scheduleActionOnAssetReceived } from '@/redux/data';
-import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@/redux/explorer';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';

@@ -1,6 +1,6 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import useIsMounted from './useIsMounted';
 import { applyENSMetadataFallbackToTokens } from '@/parsers/uniqueTokens';
@@ -52,11 +52,11 @@ export default function useFetchUniqueTokens({
     })();
   }, [address, network]);
 
-  // Make the first query to retrive the unique tokens.
+  // Make the first query to retrieve the unique tokens.
   const uniqueTokensQuery = useQuery<UniqueAsset[]>(
     uniqueTokensQueryKey({ address }),
     async () => {
-      if (!address) return;
+      if (!address) return [];
 
       const { storedTokens, hasStoredTokens } = await getStoredUniqueTokens({
         address,

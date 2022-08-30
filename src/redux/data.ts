@@ -75,11 +75,7 @@ import {
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { delay, isZero, pickBy } from '@/helpers/utilities';
-import {
-  ethereumUtils,
-  isLowerCaseMatch,
-  TokensListenedCache,
-} from '@/utils';
+import { ethereumUtils, isLowerCaseMatch, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 
 const storage = new MMKV();

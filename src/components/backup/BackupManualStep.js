@@ -9,11 +9,7 @@ import { SheetActionButton } from '../sheet';
 import { Nbsp, Text } from '../text';
 import { analytics } from '@/analytics';
 import WalletTypes from '@/helpers/walletTypes';
-import {
-  useDimensions,
-  useWalletManualBackup,
-  useWallets,
-} from '@/hooks';
+import { useDimensions, useWalletManualBackup, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';

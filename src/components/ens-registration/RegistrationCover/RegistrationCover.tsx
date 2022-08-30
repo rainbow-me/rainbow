@@ -7,12 +7,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
-import {
-  Box,
-  Cover,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { UploadImageReturnData } from '@/handlers/pinata';
 import {
