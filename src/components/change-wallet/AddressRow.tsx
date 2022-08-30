@@ -12,6 +12,7 @@ import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import ContextMenuAndroid from '@/components/native-context-menu/contextMenu.android';
 import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
 import {
   removeFirstEmojiFromString,
@@ -19,12 +20,7 @@ import {
 } from '@/helpers/emojiHandler';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, getFontSize } from '@/styles';
-import {
-  abbreviations,
-  deviceUtils,
-  profileUtils,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { abbreviations, deviceUtils, profileUtils } from '@/utils';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { toChecksumAddress } from '@/handlers/web3';
 
@@ -180,71 +176,59 @@ export default function AddressRow({
   );
 
   const menuConfig = useMemo(() => {
+    const menuItems = notificationsEnabled
+      ? [
+          {
+            actionKey: ContextMenuKeys.Remove,
+            actionTitle: lang.t('wallet.action.remove'),
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'trash.fill',
+            },
+            menuAttributes: ['destructive'],
+          },
+          {
+            actionKey: ContextMenuKeys.Notifications,
+            actionTitle: lang.t('wallet.action.notifications'),
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'bell.fill',
+            },
+          },
+          {
+            actionKey: ContextMenuKeys.Edit,
+            actionTitle: lang.t('wallet.action.edit'),
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'pencil',
+            },
+          },
+        ]
+      : [
+          {
+            actionKey: ContextMenuKeys.Remove,
+            actionTitle: lang.t('wallet.action.remove'),
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'trash.fill',
+            },
+            menuAttributes: ['destructive'],
+          },
+          {
+            actionKey: ContextMenuKeys.Edit,
+            actionTitle: lang.t('wallet.action.edit'),
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'pencil',
+            },
+          },
+        ];
+
     return {
-      menuItems: [
-        {
-          actionKey: ContextMenuKeys.Remove,
-          actionTitle: lang.t('wallet.action.remove'),
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'trash.fill',
-          },
-          menuAttributes: ['destructive'],
-        },
-        notificationsEnabled && {
-          actionKey: ContextMenuKeys.Notifications,
-          actionTitle: lang.t('wallet.action.notifications'),
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'bell.fill',
-          },
-        },
-        {
-          actionKey: ContextMenuKeys.Edit,
-          actionTitle: lang.t('wallet.action.edit'),
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'pencil',
-          },
-        },
-      ],
+      menuItems: ios ? menuItems : menuItems.reverse(),
       menuTitle: walletName,
     };
   }, [walletName, notificationsEnabled]);
-
-  const onPressAndroidActions = useCallback(() => {
-    const androidActions = notificationsEnabled
-      ? [
-          lang.t('wallet.action.edit'),
-          lang.t('wallet.action.notifications'),
-          lang.t('wallet.action.remove'),
-        ]
-      : [lang.t('wallet.action.edit'), lang.t('wallet.action.remove')];
-
-    showActionSheetWithOptions(
-      {
-        destructiveButtonIndex: notificationsEnabled ? 2 : 1,
-        options: androidActions,
-        showSeparators: true,
-        title: walletName,
-      },
-      (idx: number) => {
-        if (idx === 0) {
-          contextMenuActions?.edit(walletId, address);
-        } else if (idx === 1) {
-          if (notificationsEnabled) {
-            contextMenuActions?.notifications(walletName);
-          } else {
-            contextMenuActions?.remove(walletId, address);
-          }
-        } else if (idx === 2) {
-          if (notificationsEnabled) {
-            contextMenuActions?.remove(walletId, address);
-          }
-        }
-      }
-    );
-  }, [notificationsEnabled, contextMenuActions, walletId, address, walletName]);
 
   const handleSelectMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -313,18 +297,17 @@ export default function AddressRow({
                 isMenuPrimaryAction
                 menuConfig={menuConfig}
                 onPressMenuItem={handleSelectMenuItem}
-                useActionSheetFallback={false}
               >
                 <OptionsIcon onPress={NOOP} />
               </ContextMenuButton>
             ) : (
-              <ButtonPressAnimation
-                enableHapticFeedback
-                onPress={onPressAndroidActions}
-                scaleTo={0.9}
+              <ContextMenuAndroid
+                menuConfig={menuConfig}
+                isAnchoredToRight
+                onPressMenuItem={handleSelectMenuItem}
               >
                 <OptionsIcon onPress={NOOP} />
-              </ButtonPressAnimation>
+              </ContextMenuAndroid>
             ))}
         </Column>
       </Row>
