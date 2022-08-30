@@ -112,13 +112,13 @@ export interface IndexToken extends Asset {
 }
 
 export interface ExchangeAsset {
-  address: string;
+  address: EthereumAddress;
   balance: { amount: string; display: string };
   decimals: number;
   icon_url: string;
   id: string;
   implementations: {
-    [network: string]: { address: string; decimals: number };
+    [network: string]: { address: EthereumAddress; decimals: number };
   };
   isNativeAsset: boolean;
   isRainbowCurated: boolean;
@@ -135,5 +135,5 @@ export interface ExchangeAsset {
   symbol: string;
   type: string;
   uniqueId: string;
-  mainnet_address?: string;
+  mainnet_address?: EthereumAddress;
 }
