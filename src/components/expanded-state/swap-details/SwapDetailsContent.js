@@ -7,22 +7,17 @@ import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
-import {
-  AccentColorProvider,
-  Box,
-  Divider,
-  Rows,
-} from '@rainbow-me/design-system';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { AccentColorProvider, Box, Divider, Rows } from '@/design-system';
+import { isNativeAsset } from '@/handlers/assets';
 import {
   useColorForAsset,
   useSwapAdjustedAmounts,
   useSwapCurrencies,
-} from '@rainbow-me/hooks';
-import { SwapModalField } from '@rainbow-me/redux/swap';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { SwapModalField } from '@/redux/swap';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { ethereumUtils } from '@/utils';
 
 const Container = styled(Box).attrs({
   flex: 1,
@@ -58,43 +53,65 @@ export default function SwapDetailsContent({
         {...props}
       >
         <Rows space="24px">
-          <SwapDetailsRow label={receivedSoldLabel}>
+          <SwapDetailsRow
+            label={receivedSoldLabel}
+            testID="swaps-details-value-row"
+          >
             <SwapDetailsValue letterSpacing="roundedTight">
               {amountReceivedSold}{' '}
               {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
             </SwapDetailsValue>
           </SwapDetailsRow>
           {tradeDetails?.protocols && (
-            <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
+            <SwapDetailsExchangeRow
+              protocols={tradeDetails?.protocols}
+              testID="swaps-details-protocols-row"
+            />
           )}
           {tradeDetails.feePercentageBasisPoints !== 0 && (
             <SwapDetailsFeeRow
               network={inputCurrencyNetwork}
+              testID="swaps-details-fee-row"
               tradeDetails={tradeDetails}
             />
           )}
           {!detailsExpanded && (
-            <ButtonPressAnimation
-              onPress={() => setDetailsExpanded(!detailsExpanded)}
-              scaleTo={1.06}
+            <Box
+              style={{
+                // cancel out the extra padding below
+                marginVertical: -18,
+              }}
             >
-              <SwapDetailsRow
-                label={
-                  detailsExpanded
-                    ? lang.t('expanded_state.swap_details.hide_details')
-                    : lang.t('expanded_state.swap_details.show_details')
-                }
+              <ButtonPressAnimation
+                onPress={() => setDetailsExpanded(!detailsExpanded)}
+                scaleTo={1.06}
+                style={{
+                  // enlarge tap target for details button
+                  paddingVertical: 18,
+                }}
+                testID="swaps-details-show-details-button"
               >
-                <SwapDetailsValue>
-                  {detailsExpanded ? '􀁮' : '􀁰'}
-                </SwapDetailsValue>
-              </SwapDetailsRow>
-            </ButtonPressAnimation>
+                <SwapDetailsRow
+                  label={
+                    detailsExpanded
+                      ? lang.t('expanded_state.swap_details.hide_details')
+                      : lang.t('expanded_state.swap_details.show_details')
+                  }
+                >
+                  <SwapDetailsValue>
+                    {detailsExpanded ? '􀁮' : '􀁰'}
+                  </SwapDetailsValue>
+                </SwapDetailsRow>
+              </ButtonPressAnimation>
+            </Box>
           )}
           {detailsExpanded && (
             <Rows space="24px">
               <Divider />
-              <SwapDetailsPriceRow tradeDetails={tradeDetails} />
+              <SwapDetailsPriceRow
+                testID="swaps-details-price-row"
+                tradeDetails={tradeDetails}
+              />
               {!isNativeAsset(inputCurrency?.address, inputCurrencyNetwork) && (
                 <SwapDetailsContractRow
                   asset={inputCurrency}

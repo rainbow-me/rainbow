@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Animated } from 'react-native';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 export default function FloatingEmojisTapHandler({
   children,

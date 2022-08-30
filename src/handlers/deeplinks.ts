@@ -10,20 +10,21 @@ import {
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { defaultConfig } from '@rainbow-me/config/experimental';
-import { PROFILES } from '@rainbow-me/config/experimentalHooks';
-import { setDeploymentKey } from '@rainbow-me/handlers/fedora';
-import { delay } from '@rainbow-me/helpers/utilities';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
-import { Navigation } from '@rainbow-me/navigation';
-import { scheduleActionOnAssetReceived } from '@rainbow-me/redux/data';
+import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { defaultConfig } from '@/config/experimental';
+import { PROFILES } from '@/config/experimentalHooks';
+import { setDeploymentKey } from '@/handlers/fedora';
+import { delay } from '@/helpers/utilities';
 import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@rainbow-me/redux/explorer';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@/helpers/validators';
+import { Navigation } from '@/navigation';
+import { scheduleActionOnAssetReceived } from '@/redux/data';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
 
 export default async function handleDeeplink(
   url: any,
@@ -118,10 +119,13 @@ export default async function handleDeeplink(
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
           if (isValid) {
             const profilesEnabled = defaultConfig?.[PROFILES]?.value;
+            const ensName = isENSAddressFormat(addressOrENS)
+              ? addressOrENS
+              : await fetchReverseRecordWithRetry(addressOrENS);
             return Navigation.handleAction(
               profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
               {
-                address: addressOrENS,
+                address: ensName || addressOrENS,
                 fromRoute: 'Deeplink',
               }
             );

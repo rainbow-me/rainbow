@@ -5,9 +5,9 @@ import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
-import { mmkvStorageBackend } from '@rainbow-me/handlers/localstorage/mmkvStorageBackend';
-import toLocaleStringPolyfill from '@rainbow-me/helpers/toLocaleStringPolyfill';
-import logger from 'logger';
+import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
+import toLocaleStringPolyfill from '@/helpers/toLocaleStringPolyfill';
+import logger from '@/utils/logger';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 

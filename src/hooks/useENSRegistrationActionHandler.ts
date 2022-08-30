@@ -13,22 +13,24 @@ import {
   useENSRegistration,
   useWalletENSAvatar,
 } from '.';
-import { Records, RegistrationParameters } from '@rainbow-me/entities';
-import { fetchResolver } from '@rainbow-me/handlers/ens';
-import { saveNameFromLabelhash } from '@rainbow-me/handlers/localstorage/ens';
-import { uploadImage } from '@rainbow-me/handlers/pinata';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import { Records, RegistrationParameters } from '@/entities';
+import { fetchResolver } from '@/handlers/ens';
+import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
+import { uploadImage } from '@/handlers/pinata';
+import { getProviderForNetwork } from '@/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
   getRentPrice,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
-import { loadWallet } from '@rainbow-me/model/wallet';
-import { executeRap } from '@rainbow-me/raps';
-import { timeUnits } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { labelhash, logger } from '@rainbow-me/utils';
+} from '@/helpers/ens';
+import { loadWallet } from '@/model/wallet';
+import { executeRap } from '@/raps';
+import { timeUnits } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { labelhash, logger } from '@/utils';
+
+const NOOP = () => null;
 
 const formatENSActionParams = (
   registrationParameters: RegistrationParameters
@@ -90,7 +92,7 @@ export default function useENSRegistrationActionHandler(
 
   // actions
   const commitAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       updateAvatarsOnNextBlock.current = true;
       const wallet = await loadWallet();
       if (!wallet) {
@@ -140,11 +142,16 @@ export default function useENSRegistrationActionHandler(
       const tx = getPendingTransactionByHash(commitTransactionHash || '');
       commitTransactionHash &&
         tx &&
-        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-          accentColor,
-          tx,
-          type: 'speed_up',
-        });
+        navigate(
+          ios
+            ? Routes.SPEED_UP_AND_CANCEL_SHEET
+            : Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET,
+          {
+            accentColor,
+            tx,
+            type: 'speed_up',
+          }
+        );
     },
     [
       getPendingTransactionByHash,
@@ -154,7 +161,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const registerAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       const {
         name,
         duration,
@@ -204,7 +211,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const renewAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
       const wallet = await loadWallet();
@@ -236,7 +243,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const setNameAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
       const wallet = await loadWallet();
@@ -264,7 +271,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const setRecordsAction = useCallback(
-    async (callback: () => void) => {
+    async (callback: () => void = NOOP) => {
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -309,7 +316,7 @@ export default function useENSRegistrationActionHandler(
 
   const transferAction = useCallback(
     async (
-      callback: () => void,
+      callback: () => void = NOOP,
       {
         clearRecords,
         records,

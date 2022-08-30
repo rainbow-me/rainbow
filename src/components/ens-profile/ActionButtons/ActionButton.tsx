@@ -9,7 +9,7 @@ import {
   Space,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 type ActionButtonProps = {
   children?: string;
@@ -42,7 +42,7 @@ export default function ActionButton({
 
   const isIconOnly = Boolean(icon && !children);
   return (
-    <ButtonPressAnimation onPress={onPress} testID={testID}>
+    <ButtonPressAnimation onPress={onPress} overflowMargin={20} testID={testID}>
       <AccentColorProvider color={shadowColor}>
         <Box
           alignItems="center"

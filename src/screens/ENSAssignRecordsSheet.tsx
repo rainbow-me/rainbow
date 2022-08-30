@@ -1,7 +1,15 @@
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -39,18 +47,18 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   getSeenOnchainDataDisclaimer,
   saveSeenOnchainDataDisclaimer,
-} from '@rainbow-me/handlers/localstorage/ens';
+} from '@/handlers/localstorage/ens';
 import {
   accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
   TextRecordField,
   textRecordFields,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,
@@ -64,8 +72,8 @@ import {
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
@@ -77,6 +85,8 @@ export default function ENSAssignRecordsSheet() {
   const { isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
+  const isInsideBottomSheet = !!useContext(BottomSheetContext);
+
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
@@ -179,7 +189,11 @@ export default function ENSAssignRecordsSheet() {
   return (
     <AccentColorProvider color={accentColor}>
       <Box
-        as={ScrollView}
+        as={
+          (isInsideBottomSheet
+            ? BottomSheetScrollView
+            : ScrollView) as typeof ScrollView
+        }
         background="body"
         contentContainerStyle={{
           paddingBottom: bottomActionHeight + ExtraBottomPadding,
@@ -457,7 +471,11 @@ function HideKeyboardButton({ color }: { color: string }) {
 
   return (
     <Box as={Animated.View} style={style}>
-      <ButtonPressAnimation onPress={() => Keyboard.dismiss()} scaleTo={0.8}>
+      <ButtonPressAnimation
+        onPress={() => Keyboard.dismiss()}
+        scaleTo={0.8}
+        testID="hide-keyboard-button"
+      >
         <AccentColorProvider color={color}>
           <Box
             background="accent"

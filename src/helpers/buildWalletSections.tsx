@@ -23,8 +23,8 @@ import {
   multiply,
 } from './utilities';
 import { Network } from '.';
-import { ImgixImage } from '@rainbow-me/images';
-import Routes from '@rainbow-me/routes';
+import { ImgixImage } from '@/components/images';
+import Routes from '@/navigation/routesNames';
 
 const LOADING_ASSETS_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -42,6 +42,7 @@ const isBalancesSectionEmptySelector = (state: any) =>
   state.isBalancesSectionEmpty;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingAssetsSelector = (state: any) => state.isLoadingAssets;
+const isReadOnlyWalletSelector = (state: any) => state.isReadOnlyWallet;
 const languageSelector = (state: any) => state.language;
 const networkSelector = (state: any) => state.network;
 const nativeCurrencySelector = (state: any) => state.nativeCurrency;
@@ -492,6 +493,7 @@ const briefUniqueTokenDataSelector = createSelector(
     sellingTokensSelector,
     hiddenTokensSelector,
     listTypeSelector,
+    isReadOnlyWalletSelector,
   ],
   buildBriefUniqueTokenList
 );

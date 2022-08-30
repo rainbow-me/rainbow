@@ -5,7 +5,7 @@ import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import { useTheme } from '../../theme/ThemeContext';
 import AndroidText from './AndroidAnimatedNumbers';
-import { fonts } from '@rainbow-me/styles';
+import { fonts } from '@/styles';
 
 const sx = StyleSheet.create({
   animatedNumber: {

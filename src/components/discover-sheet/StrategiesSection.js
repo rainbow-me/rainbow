@@ -3,7 +3,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Column } from '../layout';
 import { Text } from '../text';
-import ShadowStack from 'react-native-shadow-stack';
+import ShadowStack from '@/react-native-shadow-stack';
 
 export const StrategyShadow = colors => [
   [0, 2, 5, colors.red, 0.2],

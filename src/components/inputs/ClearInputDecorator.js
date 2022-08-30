@@ -11,8 +11,8 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const START_SCALE = 0.5;
 const FINISH_SCALE = 1;

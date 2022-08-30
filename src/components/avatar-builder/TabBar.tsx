@@ -5,8 +5,8 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Categories } from './Categories';
 import { EmojiCategory } from './types';
-import { position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
 
 interface Props {
   categoryKeys: string[];

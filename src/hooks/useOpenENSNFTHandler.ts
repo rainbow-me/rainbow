@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import useENSUniqueToken from './useENSUniqueToken';
 import { UniqueAsset } from '@/entities';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 /** @description Returns a press handler to open an ENS NFT in an expanded state sheet. */
 export default function useOpenENSNFTHandler({

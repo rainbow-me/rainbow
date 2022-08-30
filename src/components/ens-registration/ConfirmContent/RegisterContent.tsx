@@ -3,18 +3,10 @@ import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  Box,
-  Divider,
-  Inline,
-  Row,
-  Rows,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { Box, Divider, Inline, Row, Rows, Stack, Text } from '@/design-system';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 const RegisterContent = ({
   accentColor,
@@ -85,7 +77,10 @@ const RegisterContent = ({
                 }
                 testID="ens-reverse-record-switch"
                 thumbColor={colors.white}
-                trackColor={{ false: colors.white, true: accentColor }}
+                trackColor={{
+                  false: android ? colors.lightGrey : colors.white,
+                  true: accentColor,
+                }}
                 value={sendReverseRecord}
               />
             </Inline>

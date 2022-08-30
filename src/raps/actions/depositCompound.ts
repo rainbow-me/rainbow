@@ -11,20 +11,20 @@ import {
   ProtocolType,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
+} from '@/entities';
+import { toHex } from '@/handlers/web3';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
   ETH_ADDRESS,
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '@rainbow-me/references';
-import { convertAmountToRawAmount } from '@rainbow-me/utilities';
-import { gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/references';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
+import { gasUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 export const getDepositGasLimit = (tokenToDeposit: Asset) =>
   tokenToDeposit.address === ETH_ADDRESS

@@ -9,17 +9,19 @@ import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
-import { Columns, Inset, Stack } from '@rainbow-me/design-system';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { isTestnetNetwork } from '@/handlers/web3';
+import { Columns, Inset, Stack } from '@/design-system';
+import { useAccountSettings } from '@/hooks';
 
 export default function DiscoverHome() {
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress, network } = useAccountSettings();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const testNetwork = isTestnetNetwork(network);
   return (
     <React.Fragment>
       <Inset top={{ custom: 16 }}>
         <Stack space="30px">
-          {profilesEnabled ? (
+          {profilesEnabled && !testNetwork ? (
             <Inset horizontal={ios && '19px'}>
               <Stack space={ios && '19px'}>
                 <Columns space={ios && '19px'}>

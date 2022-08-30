@@ -14,17 +14,17 @@ import {
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
-import { analytics } from '@rainbow-me/analytics';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import { analytics } from '@/analytics';
+import showWalletErrorAlert from '@/helpers/support';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import {
   useDimensions,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const onError = error => DelayedAlert({ title: error }, 500);
 

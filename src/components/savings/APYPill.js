@@ -8,7 +8,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import { Centered } from '../layout';
 
 import { GradientText, Text } from '../text';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 const sx = StyleSheet.create({
   container: {

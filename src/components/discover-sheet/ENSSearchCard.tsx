@@ -10,7 +10,7 @@ import Animated, {
 import { CustomShadow } from '../../design-system/layout/shadow';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
   Box,
@@ -21,16 +21,12 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import {
-  useDimensions,
-  useENSPendingRegistrations,
-  useWallets,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
-import { watchingAlert } from '@rainbow-me/utils';
+} from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useDimensions, useENSPendingRegistrations, useWallets } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
+import { watchingAlert } from '@/utils';
 
 const CardShadow: CustomShadow = {
   custom: {
