@@ -8,28 +8,13 @@ import React, {
 } from 'react';
 import { TextInput, TouchableWithoutFeedback } from 'react-native';
 import { Row } from '../layout';
-import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
-
-interface CurrencySymbolProps {
-  height: number;
-  color: string;
-}
-
-const CurrencySymbol = styled(Text).attrs(
-  ({ height, color }: CurrencySymbolProps) => ({
-    color: color,
-    letterSpacing: 'roundedTight',
-    lineHeight: height,
-    size: 'larger',
-    weight: 'regular',
-  })
-)(android ? { marginBottom: 1.5 } : {});
+import { Box, Text } from '@/design-system';
 
 const NativeInput = styled(ExchangeInput).attrs({
   letterSpacing: fonts.letterSpacing.roundedTight,
@@ -132,9 +117,11 @@ const ExchangeNativeField: ForwardRefRenderFunction<
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
       <Row align="center" flex={1} height={height}>
-        <CurrencySymbol color={nativeAmountColor} height={height}>
-          {symbol}
-        </CurrencySymbol>
+        <Box paddingBottom={android ? '2px' : undefined}>
+          <Text color={{ custom: nativeAmountColor }} size="20px">
+            {symbol}
+          </Text>
+        </Box>
         <NativeInput
           color={nativeAmountColor}
           editable={editable}
