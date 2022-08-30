@@ -395,9 +395,9 @@ export default function ExchangeModal({
     const unsubscribe = (
       dangerouslyGetParent()?.dangerouslyGetParent()?.addListener || addListener
     )(
-      // @ts-ignore - Not sure if this is even triggered as React Navigation apparently doesnt emit this event.
+      // @ts-expect-error - Not sure if this is even triggered as React Navigation apparently doesnt emit this event.
       'transitionEnd',
-      // @ts-ignore - Can't find any docs around this closing prop being sent is this a private API?
+      // @ts-expect-error - Can't find any docs around this closing prop being sent is this a private API?
       ({ data: { closing } }) => {
         if (!closing && isDismissing.current) {
           isDismissing.current = false;
@@ -517,7 +517,7 @@ export default function ExchangeModal({
     updateGasLimit,
   ]);
 
-  // Liten to gas prices, Uniswap reserves updates
+  // Listen to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
     InteractionManager.runAfterInteractions(() => {
