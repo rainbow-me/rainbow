@@ -20,18 +20,18 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 import {
   useAccountSettings,
   useColorForAsset,
   useKeyboardHeight,
   useSwapSettings,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { Source } from '@rainbow-me/redux/swap';
-import Routes from '@rainbow-me/routes';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { Source } from '@/redux/swap';
+import Routes from '@/navigation/routesNames';
+import { deviceUtils } from '@/utils';
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();

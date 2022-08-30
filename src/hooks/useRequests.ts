@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 
 const sorterByTimestampInMs = (a: any, b: any) => {
   if (a?.displayDetails?.timestampInMs < b?.displayDetails?.timestampInMs) {

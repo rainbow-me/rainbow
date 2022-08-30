@@ -8,7 +8,7 @@ import { uniqueTokensResetState } from '../redux/uniqueTokens';
 import { uniswapResetState } from '../redux/uniswap';
 import { uniswapLiquidityResetState } from '../redux/uniswapLiquidity';
 import { promiseUtils } from '../utils';
-import { optimismExplorerClearState } from '@rainbow-me/redux/optimismExplorer';
+import { optimismExplorerClearState } from '@/redux/optimismExplorer';
 
 export default function useResetAccountState() {
   const dispatch = useDispatch();

@@ -8,8 +8,8 @@ import {
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
-import { groupBy } from '@rainbow-me/helpers/utilities';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
+import { groupBy } from '@/helpers/utilities';
 
 const formatDappData = (connections: any) =>
   values(

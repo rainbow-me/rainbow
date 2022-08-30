@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import { Row } from '../../layout';
-import { Text } from '@rainbow-me/design-system';
+import { Text } from '@/design-system';
 
 export const SwapDetailsLabel = ({ children, color = 'secondary60' }) => {
   return (

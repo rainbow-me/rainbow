@@ -4,7 +4,7 @@ import { Switch } from 'react-native';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const WalletNotificationsSettings = () => {
   const { colors } = useTheme();

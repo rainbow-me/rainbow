@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Icon } from '../icons';
-import { borders, shadow } from '@rainbow-me/styles';
+import { borders, shadow } from '@/styles';
 
 function CoinIconIndicator({ theme, style, isPinned }) {
   // this is used inside of FastBalanceCoinRow where we have theme from props

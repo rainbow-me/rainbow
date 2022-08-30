@@ -9,8 +9,8 @@ import {
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
+import { TransactionStatusTypes } from '@/entities';
 import { groupBy } from './utilities';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
 
 const mainnetAddressesSelector = (state: any) => state.mainnetAddresses;
 const accountAddressSelector = (state: any) => state.accountAddress;

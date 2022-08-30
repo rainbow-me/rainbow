@@ -11,18 +11,18 @@ import {
   groupBy,
 } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { UniqueAsset } from '@rainbow-me/entities';
-import store from '@rainbow-me/redux/store';
+import store from '@/redux/store';
+import { UniqueAsset } from '@/entities';
 import {
   ETH_ADDRESS,
   ETH_ICON_URL,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   ethereumUtils,
   getUniqueTokenFormat,
   getUniqueTokenType,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -104,7 +104,7 @@ export const buildCoinsList = (
   includePlaceholder = false,
   emptyCollectibles: any
 ) => {
-  let standardAssets: any = [],
+  const standardAssets: any = [],
     pinnedAssets: any = [],
     smallAssets: any = [],
     hiddenAssets: any = [];
@@ -216,7 +216,7 @@ export const buildBriefCoinsList = (
   );
   const briefAssets = [];
   if (assets) {
-    for (let asset of assets) {
+    for (const asset of assets) {
       if (asset.coinDivider) {
         briefAssets.push({
           defaultToEditButton: asset.defaultToEditButton,
@@ -225,7 +225,7 @@ export const buildBriefCoinsList = (
           value: smallBalancesValue,
         });
       } else if (asset.smallBalancesContainer) {
-        for (let smallAsset of asset.assets) {
+        for (const smallAsset of asset.assets) {
           briefAssets.push({
             type: 'COIN',
             uid: 'coin-' + smallAsset.uniqueId,
@@ -258,7 +258,7 @@ export const buildUniqueTokenList = (
 
   const families = Object.keys(grouped);
 
-  for (let family of families) {
+  for (const family of families) {
     const tokensRow: any = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
       if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
@@ -292,8 +292,8 @@ export const buildUniqueTokenList = (
     });
   }
 
-  //JS sort doing twice as much replace in each loop here
-  //so basically we have better stay with lodash one in this case
+  // JS sort doing twice as much replace in each loop here
+  // so basically we have better stay with lodash one in this case
   rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
@@ -411,7 +411,7 @@ export const buildBriefUniqueTokenList = (
     }
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
-  for (let family of families2) {
+  for (const family of families2) {
     result.push({
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       image: grouped2[family][0].familyImage,

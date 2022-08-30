@@ -4,10 +4,10 @@ import { useWindowDimensions } from 'react-native';
 import { useRecoilState } from 'recoil';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SlackSheet } from '../components/sheet';
-import { AccentColorProvider, Box, Inline } from '@rainbow-me/design-system';
-import { accentColorAtom, textRecordFields } from '@rainbow-me/helpers/ens';
-import { useENSRegistrationForm } from '@rainbow-me/hooks';
-import { deviceUtils } from '@rainbow-me/utils';
+import { AccentColorProvider, Box, Inline } from '@/design-system';
+import { accentColorAtom, textRecordFields } from '@/helpers/ens';
+import { useENSRegistrationForm } from '@/hooks';
+import { deviceUtils } from '@/utils';
 
 export const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;
@@ -53,7 +53,7 @@ export default function ENSAdditionalRecordsSheet() {
           paddingHorizontal="19px"
           paddingVertical="24px"
           style={boxStyle}
-          testID="ens-confirm-register-sheet"
+          testID="ens-additional-records-sheet"
         >
           <Inline space="10px">
             {Object.values(textRecordFields).map((textRecordField, i) => {

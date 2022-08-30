@@ -7,16 +7,12 @@ import {
   useENSRegistration,
   usePrevious,
 } from '.';
-import { Records, UniqueAsset } from '@rainbow-me/entities';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import * as ensRedux from '@rainbow-me/redux/ensRegistration';
-import { AppState } from '@rainbow-me/redux/store';
-import {
-  getENSNFTAvatarUrl,
-  isENSNFTRecord,
-  parseENSNFTRecord,
-} from '@rainbow-me/utils';
+import { Records, UniqueAsset } from '@/entities';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import * as ensRedux from '@/redux/ensRegistration';
+import { AppState } from '@/redux/store';
+import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
 
 const getImageUrl = (
   key: 'avatar' | 'header',

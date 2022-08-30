@@ -17,27 +17,23 @@ import {
   Space,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers';
+} from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { Network } from '@/helpers';
 import {
   useClipboard,
   useDimensions,
   useHiddenTokens,
   useShowcaseTokens,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import {
-  ethereumUtils,
-  magicMemo,
-  showActionSheetWithOptions,
-} from '@rainbow-me/utils';
-import { getFullResUrl } from '@rainbow-me/utils/getFullResUrl';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation/Navigation';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
+import { getFullResUrl } from '@/utils/getFullResUrl';
+import isSVGImage from '@/utils/isSVG';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',

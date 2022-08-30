@@ -12,14 +12,14 @@ import Animated, {
 import { ButtonPressAnimation } from '../../animations';
 import { Text, TruncatedAddress } from '../../text';
 import SwapDetailsRow from './SwapDetailsRow';
-import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import { useClipboard, useColorForAsset } from '@/hooks';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth } from '@/styles';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const SwapDetailsText = styled(Text).attrs({
   lineHeight: android ? 18 : 17,

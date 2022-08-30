@@ -20,17 +20,13 @@ import {
   Inline,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { Network } from '@rainbow-me/helpers';
-import {
-  add,
-  convertNumberToString,
-  greaterThan,
-} from '@rainbow-me/helpers/utilities';
-import { useMagicAutofocus, useSwapSettings } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+} from '@/design-system';
+import { Network } from '@/helpers';
+import { add, convertNumberToString, greaterThan } from '@/helpers/utilities';
+import { useMagicAutofocus, useSwapSettings } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();
 const convertPercentToBips = (percent: number) => (percent * 100).toString();

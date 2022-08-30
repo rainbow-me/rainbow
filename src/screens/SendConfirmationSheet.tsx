@@ -36,31 +36,23 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { Box, Heading, Inset, Stack, Text } from '@rainbow-me/design-system';
-import { AssetTypes } from '@rainbow-me/entities';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { Box, Heading, Inset, Stack, Text } from '@/design-system';
+import { AssetTypes } from '@/entities';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
-} from '@rainbow-me/handlers/ens';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { estimateGasLimit } from '@rainbow-me/handlers/web3';
+} from '@/handlers/ens';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
-import {
-  add,
-  convertAmountToNativeDisplay,
-} from '@rainbow-me/helpers/utilities';
-import {
-  isENSAddressFormat,
-  isValidDomainFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/emojiHandler';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -71,14 +63,14 @@ import {
   useGas,
   useUserAccounts,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
-import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

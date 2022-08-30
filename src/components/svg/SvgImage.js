@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import logger from 'logger';
+import { ImgixImage } from '@/components/images';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import logger from '@/utils/logger';
 
 const ImageTile = styled(ImgixImage)({
   alignItems: 'center',

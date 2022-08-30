@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, useForegroundColor } from '@rainbow-me/design-system';
+import { Box, useForegroundColor } from '@/design-system';
 
 type SeparatorDotsProps = {
   minuteEndsWithOne: boolean;

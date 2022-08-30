@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { groupBy } from '@rainbow-me/helpers/utilities';
-import { AppState } from '@rainbow-me/redux/store';
+import { UniqueAsset } from '@/entities';
+import { AppState } from '@/redux/store';
+import { groupBy } from '@/helpers/utilities';
 
 const uniqueTokensSelector = (state: AppState) =>
   state.uniqueTokens.uniqueTokens;
@@ -15,7 +15,7 @@ const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
 
   const families = Object.keys(grouped).sort();
-  let sendableTokens = [];
+  const sendableTokens = [];
   for (let i = 0; i < families.length; i++) {
     let newObject = {};
     newObject = {

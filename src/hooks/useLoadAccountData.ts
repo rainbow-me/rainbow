@@ -12,8 +12,8 @@ import { uniswapLiquidityLoadState } from '../redux/uniswapLiquidity';
 import { uniswapPositionsLoadState } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
-import { ensRegistrationsLoadState } from '@rainbow-me/redux/ensRegistration';
-import logger from 'logger';
+import { ensRegistrationsLoadState } from '@/redux/ensRegistration';
+import logger from '@/utils/logger';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
