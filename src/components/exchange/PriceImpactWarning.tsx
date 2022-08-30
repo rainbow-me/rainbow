@@ -3,28 +3,8 @@ import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
-import { Text } from '../text';
-import { Box, Inline } from '@/design-system';
-import styled from '@/styled-thing';
+import { Box, ColorModeProvider, Inline, Text } from '@/design-system';
 import { position } from '@/styles';
-import { ThemeContextProps } from '@/theme';
-
-const Label = styled(Text).attrs(
-  ({
-    theme: { colors },
-    color = colors.alpha(colors.blueGreyDark, 0.8),
-    letterSpacing,
-  }: {
-    theme: ThemeContextProps;
-    color: string;
-    letterSpacing: string;
-  }) => ({
-    color,
-    letterSpacing,
-    size: 'large',
-    weight: 'bold',
-  })
-)({});
 
 interface PriceImpactWarningProps extends ViewProps {
   onPress: () => void;
@@ -38,7 +18,7 @@ interface PriceImpactWarningProps extends ViewProps {
 export default function PriceImpactWarning({
   onPress,
   isHighPriceImpact,
-  priceImpactColor,
+  priceImpactColor = 'primary',
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
   style,
@@ -46,28 +26,37 @@ export default function PriceImpactWarning({
 }: PriceImpactWarningProps) {
   const headingValue = priceImpactNativeAmount ?? priceImpactPercentDisplay;
   return (
-    <Animated.View {...props} style={[style, position.coverAsObject]}>
-      {isHighPriceImpact && headingValue && (
-        <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
-          <Box
-            paddingHorizontal="19px (Deprecated)"
-            paddingTop="19px (Deprecated)"
-          >
-            <Inline alignHorizontal="center">
-              <Label color={priceImpactColor}>{`􀇿 `}</Label>
-              <Label color="whiteLabel">
-                {lang.t('exchange.price_impact.small_market')}
-              </Label>
-              <Label color={priceImpactColor}>{` • ${lang.t(
-                'exchange.price_impact.losing_prefix'
-              )} `}</Label>
-              <Label color={priceImpactColor} letterSpacing="roundedTight">
-                {headingValue}
-              </Label>
-            </Inline>
-          </Box>
-        </ButtonPressAnimation>
-      )}
-    </Animated.View>
+    <ColorModeProvider value="dark">
+      <Animated.View {...props} style={[style, position.coverAsObject]}>
+        {isHighPriceImpact && headingValue && (
+          <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
+            <Box paddingHorizontal="19px" paddingTop="19px">
+              <Inline alignHorizontal="center">
+                <Text
+                  weight="bold"
+                  size="18px"
+                  color={{ custom: priceImpactColor }}
+                >{`􀇿 `}</Text>
+                <Text weight="bold" size="18px" color="primary">
+                  {lang.t('exchange.price_impact.small_market')}
+                </Text>
+                <Text
+                  weight="bold"
+                  size="18px"
+                  color={{ custom: priceImpactColor }}
+                >{` • ${lang.t('exchange.price_impact.losing_prefix')} `}</Text>
+                <Text
+                  weight="bold"
+                  size="18px"
+                  color={{ custom: priceImpactColor }}
+                >
+                  {headingValue}
+                </Text>
+              </Inline>
+            </Box>
+          </ButtonPressAnimation>
+        )}
+      </Animated.View>
+    </ColorModeProvider>
   );
 }
