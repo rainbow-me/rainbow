@@ -275,11 +275,13 @@ class App extends Component {
     } else if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
       mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
       // track device dimensions
-      const screenWidth = Dimensions.get('window').width;
-      const screenHeight = Dimensions.get('window').height;
+      const screenWidth = Dimensions.get('screen').width;
+      const screenHeight = Dimensions.get('screen').height;
+      const screenScale = Dimensions.get('screen').scale;
       analytics.identify(storedIdentifier, {
-        deviceHeight: screenHeight,
-        deviceWidth: screenWidth,
+        screenHeight,
+        screenWidth,
+        screenScale,
       });
     }
   };
