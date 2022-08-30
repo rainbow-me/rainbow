@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 const fs = require('fs');
 const path = require('path');
 const { parse: babelParse } = require('@babel/parser');
