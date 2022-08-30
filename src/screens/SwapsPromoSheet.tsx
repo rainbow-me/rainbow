@@ -7,7 +7,7 @@ import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
 import SwapsPromoBackground from '@rainbow-me/assets/swapsPromoBackground.png';
 import SwapsPromoHeader from '@rainbow-me/assets/swapsPromoHeader.png';
-import { delay } from '@rainbow-me/helpers/utilities';
+import { delay } from '@/helpers/utilities';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 

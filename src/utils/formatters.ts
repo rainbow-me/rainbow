@@ -1,5 +1,5 @@
 import GraphemeSplitter from 'grapheme-splitter';
-import { isString } from '@rainbow-me/helpers/utilities';
+import { isString } from '@/helpers/utilities';
 
 const grapheme = new GraphemeSplitter();
 

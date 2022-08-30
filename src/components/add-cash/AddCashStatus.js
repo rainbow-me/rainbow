@@ -19,8 +19,8 @@ import {
 } from '@/helpers/wyreStatusTypes';
 import { useDimensions, useTimeout } from '@/hooks';
 import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@/references';
+import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 

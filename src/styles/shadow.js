@@ -1,5 +1,5 @@
 import colors from './colors';
-import { isNumber } from '@rainbow-me/helpers/utilities';
+import { isNumber } from '@/helpers/utilities';
 
 const addUnitToNumberValues = value => (isNumber(value) ? `${value}px` : value);
 

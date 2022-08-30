@@ -1,4 +1,4 @@
-import { isString } from '@rainbow-me/helpers/utilities';
+import { isString } from '@/helpers/utilities';
 
 export default (directionValue = 'right') => {
   const direction = isString(directionValue)
