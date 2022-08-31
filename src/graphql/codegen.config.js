@@ -1,32 +1,19 @@
-const config = {
-  ens: {
-    document: './queries/ens.graphql',
-    schema: {
-      method: 'POST',
-      url: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens',
-    },
-  },
-  metadata: {
-    document: './queries/metadata.graphql',
-    schema: { method: 'GET', url: 'https://metadata.p.rainbow.me/v1/graph' },
-  },
-};
-
-exports.config = config;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { config } = require('./config');
 
 module.exports = {
   generates: Object.entries(config).reduce(
-    (config, [key, { document, schema }]) => {
+    (config, [key, value]) => {
       return {
         ...config,
         [`./__generated__/${key}.ts`]: {
-          documents: [document],
+          documents: [value.document],
           plugins: [
             'typescript',
             'typescript-operations',
             'typescript-generic-sdk',
           ],
-          schema: [{ [schema.url]: { method: schema.method } }],
+          schema: [{ [value.schema.url]: { method: value.schema.method } }],
         },
       };
     },
