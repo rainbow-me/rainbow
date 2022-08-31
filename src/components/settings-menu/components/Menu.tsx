@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, Stack, Text } from '@rainbow-me/design-system';
+import { Box, Divider, Stack, Text } from '@/design-system';
 
 interface MenuProps {
   children: React.ReactNode;

@@ -4,17 +4,17 @@ import React, { useCallback, useEffect } from 'react';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { SheetActionButton } from '../../sheet';
-import { analytics } from '@rainbow-me/analytics';
-import BackupIcon from '@rainbow-me/assets/backupIcon.png';
-import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
-import { Box, Stack, Text } from '@rainbow-me/design-system';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import { useWallets } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
+import { analytics } from '@/analytics';
+import BackupIcon from '@/assets/backupIcon.png';
+import BackupIconDark from '@/assets/backupIconDark.png';
+import { Box, Stack, Text } from '@/design-system';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { useWallets } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',

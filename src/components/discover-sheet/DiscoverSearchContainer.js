@@ -16,9 +16,9 @@ import { Text } from '../text';
 import DiscoverSearchInput from './DiscoverSearchInput';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { deviceUtils } from '@/utils';
-import { analytics } from '@rainbow-me/analytics';
-import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
+import { analytics } from '@/analytics';
+import { useDelayedValueWithLayoutAnimation } from '@/hooks';
+import styled from '@/styled-thing';
 
 const CancelButton = styled(ButtonPressAnimation)({
   marginTop: 27,

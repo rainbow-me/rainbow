@@ -2,16 +2,9 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
-import {
-  Box,
-  Column,
-  Columns,
-  Inset,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useInterval } from '@rainbow-me/hooks';
+import { Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useInterval } from '@/hooks';
 
 const MIN_LONG_PRESS_DURATION = 200;
 const LONG_PRESS_INTERVAL = 69;

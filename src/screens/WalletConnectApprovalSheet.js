@@ -23,22 +23,22 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
 } from '../components/sheet';
-import { analytics } from '@rainbow-me/analytics';
-import { Text } from '@rainbow-me/design-system';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import { analytics } from '@/analytics';
+import { Text } from '@/design-system';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { getDappHostname } from '@/helpers/dappNameHandler';
+import networkInfo from '@/helpers/networkInfo';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import {
   androidShowNetworksActionSheet,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
-} from '@rainbow-me/helpers/walletConnectNetworks';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/helpers/walletConnectNetworks';
+import { useAccountSettings, useWallets } from '@/hooks';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { ethereumUtils } from '@/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({

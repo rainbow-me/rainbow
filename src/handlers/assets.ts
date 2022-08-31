@@ -1,27 +1,24 @@
 import { Contract } from '@ethersproject/contracts';
-import { AssetTypes } from '@rainbow-me/entities';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { AssetTypes } from '@/entities';
+import networkTypes from '@/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
   erc20ABI,
   ETH_ADDRESS,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 const nativeAssetsPerNetwork = {
   [networkTypes.arbitrum]: ARBITRUM_ETH_ADDRESS,
   [networkTypes.goerli]: ETH_ADDRESS,
-  [networkTypes.kovan]: ETH_ADDRESS,
   [networkTypes.mainnet]: ETH_ADDRESS,
   [networkTypes.optimism]: OPTIMISM_ETH_ADDRESS,
   [networkTypes.polygon]: MATIC_POLYGON_ADDRESS,
-  [networkTypes.ropsten]: ETH_ADDRESS,
-  [networkTypes.rinkeby]: ETH_ADDRESS,
 };
 
 export function isL2Asset(type: any) {

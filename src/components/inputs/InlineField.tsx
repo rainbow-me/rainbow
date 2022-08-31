@@ -13,8 +13,8 @@ import {
   Text,
   TextProps,
   useTextStyle,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
 
 const textSize: TextProps['size'] = '16px / 22px (Deprecated)';
 const textSizeNumeric = 16;

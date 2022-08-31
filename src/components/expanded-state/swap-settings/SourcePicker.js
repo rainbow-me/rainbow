@@ -6,13 +6,13 @@ import OneInchExchange from '../../../assets/exchanges/oneinch.png';
 import ZeroXExchange from '../../../assets/exchanges/zerox.png';
 import { ButtonPressAnimation } from '../../animations';
 import { ContextMenuButton } from '../../context-menu';
-import { Box, Column, Columns, Inline, Text } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import { Source } from '@rainbow-me/redux/swap';
-import Routes from '@rainbow-me/routes';
+import { Box, Column, Columns, Inline, Text } from '@/design-system';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import { Source } from '@/redux/swap';
+import Routes from '@/navigation/routesNames';
 
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { showActionSheetWithOptions } from '@/utils';
 
 const sourceMenuItems = () => {
   return Object.values(Source).map(source => ({

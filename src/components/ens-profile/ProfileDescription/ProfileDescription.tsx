@@ -1,6 +1,6 @@
 import React from 'react';
 import RecordHyperlink from '../RecordHyperlink/RecordHyperlink';
-import { Inline, Text } from '@rainbow-me/design-system';
+import { Inline, Text } from '@/design-system';
 
 const LINK_REGEX = /[^\s]+\.(eth|com|net|xyz|org|co|us|me)/g;
 const DIVIDER = 'ㅤㅤㅤㅤ';

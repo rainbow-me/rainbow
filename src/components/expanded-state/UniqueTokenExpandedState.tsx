@@ -33,7 +33,7 @@ import {
 } from './unique-token';
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import {
   AccentColorProvider,
   Bleed,
@@ -51,11 +51,11 @@ import {
   Stack,
   Text,
   TextProps,
-} from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers';
-import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { Network } from '@/helpers';
+import { buildUniqueTokenName } from '@/helpers/assets';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
@@ -65,18 +65,18 @@ import {
   useHiddenTokens,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
-} from '@rainbow-me/hooks';
-import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { lightModeThemeColors, position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { lightModeThemeColors, position } from '@/styles';
+import { useTheme } from '@/theme';
 import {
   buildRainbowUrl,
   getUniqueTokenType,
   magicMemo,
   safeAreaInsetValues,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,

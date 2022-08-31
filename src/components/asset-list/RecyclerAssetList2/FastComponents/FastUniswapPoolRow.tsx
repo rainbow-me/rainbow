@@ -3,9 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../../../animations';
 import FastCoinIcon from './FastCoinIcon';
 import FastPoolValue from './FastPoolValue';
-import { Text } from '@rainbow-me/design-system';
-import { UniswapPoolAddressDetailsFull } from '@rainbow-me/redux/uniswapLiquidity';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { Text } from '@/design-system';
+import { UniswapPoolAddressDetailsFull } from '@/redux/uniswapLiquidity';
+import { supportedNativeCurrencies } from '@/references';
 
 interface UniswapCoinRowItem {
   onPress: () => void;

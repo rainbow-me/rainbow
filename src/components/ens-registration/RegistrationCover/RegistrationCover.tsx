@@ -7,22 +7,17 @@ import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
-import {
-  Box,
-  Cover,
-  Text,
-  useForegroundColor,
-} from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
+import { Box, Cover, Text, useForegroundColor } from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { UploadImageReturnData } from '@/handlers/pinata';
 import {
   useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,

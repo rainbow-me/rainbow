@@ -10,7 +10,7 @@ import type {
   BottomSheetNavigationHelpers,
 } from '../types';
 import BottomSheetRoute from './BottomSheetRoute';
-import { useForceUpdate } from '@rainbow-me/hooks';
+import { useForceUpdate } from '@/hooks';
 
 type Props = BottomSheetNavigationConfig & {
   state: StackNavigationState;

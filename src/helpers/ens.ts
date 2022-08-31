@@ -14,9 +14,9 @@ import {
   handleSignificantDecimals,
   multiply,
 } from './utilities';
-import { ENSRegistrationRecords, EthereumAddress } from '@rainbow-me/entities';
-import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
-import { gweiToWei } from '@rainbow-me/parsers';
+import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
+import { getProviderForNetwork, toHex } from '@/handlers/web3';
+import { gweiToWei } from '@/parsers';
 import {
   ENSBaseRegistrarImplementationABI,
   ensBaseRegistrarImplementationAddress,
@@ -28,13 +28,10 @@ import {
   ENSRegistryWithFallbackABI,
   ENSReverseRegistrarABI,
   ensReverseRegistrarAddress,
-} from '@rainbow-me/references';
-import { colors } from '@rainbow-me/styles';
-import { labelhash } from '@rainbow-me/utils';
-import {
-  encodeContenthash,
-  isValidContenthash,
-} from '@rainbow-me/utils/contenthash';
+} from '@/references';
+import { colors } from '@/styles';
+import { labelhash } from '@/utils';
+import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
 
 export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;

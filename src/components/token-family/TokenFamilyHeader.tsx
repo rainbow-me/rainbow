@@ -6,9 +6,9 @@ import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useLatestCallback } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
-import { Text } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { Text } from '@/design-system';
+import { ImgixImage } from '@/components/images';
+import { ThemeContextProps } from '@/theme';
 
 export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;

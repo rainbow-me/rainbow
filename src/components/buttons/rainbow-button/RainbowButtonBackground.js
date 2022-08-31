@@ -5,9 +5,9 @@ import RadialGradient from 'react-native-radial-gradient';
 import { darkModeThemeColors } from '../../../styles/colors';
 import { useTheme } from '../../../theme/ThemeContext';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import styled from '@rainbow-me/styled-components';
-import { margin } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import styled from '@/styled-thing';
+import { margin } from '@/styles';
+import { magicMemo } from '@/utils';
 
 const RainbowGradientColorsFactory = darkMode => ({
   inner: {

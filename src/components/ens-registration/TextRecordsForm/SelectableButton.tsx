@@ -5,7 +5,7 @@ import {
   Box,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 type SelectableButtonProps = {
   children: ReactNode;

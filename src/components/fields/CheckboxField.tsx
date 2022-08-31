@@ -7,7 +7,7 @@ import {
   Inset,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 export default function CheckboxField({
   color: customColor,

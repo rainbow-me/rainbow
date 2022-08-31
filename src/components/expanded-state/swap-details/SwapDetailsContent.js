@@ -7,22 +7,17 @@ import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
-import {
-  AccentColorProvider,
-  Box,
-  Divider,
-  Rows,
-} from '@rainbow-me/design-system';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { AccentColorProvider, Box, Divider, Rows } from '@/design-system';
+import { isNativeAsset } from '@/handlers/assets';
 import {
   useColorForAsset,
   useSwapAdjustedAmounts,
   useSwapCurrencies,
-} from '@rainbow-me/hooks';
-import { SwapModalField } from '@rainbow-me/redux/swap';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { SwapModalField } from '@/redux/swap';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { ethereumUtils } from '@/utils';
 
 const Container = styled(Box).attrs({
   flex: 1,

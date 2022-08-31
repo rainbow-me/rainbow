@@ -5,7 +5,7 @@ import currentColors from '../theme/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 
 let memRouteName;
 let memState;
@@ -126,11 +126,13 @@ export function onNavigationStateChange(currentState) {
       routeName === Routes.QR_SCANNER_SCREEN ||
       routeName === Routes.CUSTOM_GAS_SHEET ||
       routeName === Routes.ENS_INTRO_SHEET ||
+      routeName === Routes.SWAPS_PROMO_SHEET ||
       routeName === Routes.WALLET_SCREEN ||
       routeName === Routes.ENS_SEARCH_SHEET ||
       routeName === Routes.ENS_ASSIGN_RECORDS_SHEET ||
       (routeName === Routes.MODAL_SCREEN &&
-        Navigation.getActiveRoute().params?.type === 'contact_profile')
+        (Navigation.getActiveRoute().params?.type === 'contact_profile' ||
+          Navigation.getActiveRoute().params?.type === 'wallet_profile'))
     ) {
       AndroidKeyboardAdjust.setAdjustPan();
     } else {

@@ -9,7 +9,7 @@ import {
   Space,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 type ActionButtonProps = {
   children?: string;
