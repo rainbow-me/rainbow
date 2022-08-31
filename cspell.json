@@ -1,20 +1,20 @@
 {
-    "version": "0.1",
-    "words": [
-        "gltf",
-        "gradlew",
-        "Imgix",
-        "Imgix's",
-        "immer",
-        "keychain",
-        "mnemonist",
-        "Monospace",
-        "nomodule",
-        "nyquist",
-        "recyclerlistview",
-        "Swipeable",
-        "untrusted",
-        "usdz",
-        "walletconnect"
-    ]
+  "version": "0.1",
+  "words": [
+    "gltf",
+    "gradlew",
+    "Imgix",
+    "Imgix's",
+    "immer",
+    "keychain",
+    "mnemonist",
+    "Monospace",
+    "nomodule",
+    "nyquist",
+    "recyclerlistview",
+    "Swipeable",
+    "untrusted",
+    "usdz",
+    "walletconnect"
+  ]
 }
