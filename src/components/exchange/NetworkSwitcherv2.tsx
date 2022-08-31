@@ -74,6 +74,7 @@ const NetworkSwitcherv2 = ({
               return (
                 <Box
                   as={ButtonPressAnimation}
+                  height="36px"
                   key={`${testID}-${title}`}
                   // @ts-expect-error overloaded props from ButtonPressAnimation
                   onPress={() => setCurrentChainId(chainId)}
