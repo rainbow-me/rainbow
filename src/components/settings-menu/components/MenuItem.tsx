@@ -92,13 +92,15 @@ const StatusIcon = ({ status }: StatusIconProps) => {
       backgroundColor={statusColors[status]}
       color={statusColors[status]}
       colors={colors}
+      borderRadius={status !== 'warning' ? 6 : undefined}
       fillColor={colors.white}
       shadowColor={isDarkMode ? colors.shadow : statusColors[status]}
       shadowOffset={{
         height: 4,
         width: 0,
       }}
-      shadowOpacity={0.4}
+      elevation={12}
+      shadowOpacity={ios ? 0.4 : 1}
       shadowRadius={6}
     />
   );
