@@ -1,6 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
 import sortBy from 'lodash/sortBy';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';

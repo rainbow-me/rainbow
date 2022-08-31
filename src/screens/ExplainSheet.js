@@ -133,7 +133,7 @@ const gasExplainer = network =>
 
 const availableNetworksExplainer = (tokenSymbol, networks) => {
   const readableNetworks = networks
-    ?.map(network => networkInfo[network].name)
+    ?.map(network => networkInfo[network]?.name)
     ?.join(', ');
 
   return lang.t('explain.available_networks.text', {
