@@ -34,7 +34,6 @@ import {
   useInitializeWallet,
   useWallets,
   useWalletsWithBalancesAndNames,
-  useWebData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -115,7 +114,6 @@ export default function ChangeWalletSheet() {
   } = useWallets();
 
   const { colors } = useTheme();
-  const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
@@ -273,8 +271,6 @@ export default function ChangeWalletSheet() {
                     await dispatch(walletsSetSelected(updatedWallet));
                   }
 
-                  updateWebProfile(address, args.color, args.emoji);
-
                   await dispatch(walletsUpdate(updatedWallets));
                 } else {
                   analytics.track('Tapped "Cancel" after editing wallet');
@@ -290,14 +286,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [
-      wallets,
-      goBack,
-      navigate,
-      dispatch,
-      currentSelectedWallet.id,
-      updateWebProfile,
-    ]
+    [wallets, goBack, navigate, dispatch, currentSelectedWallet.id]
   );
 
   const getEditMenuItems = () => {

@@ -1,6 +1,7 @@
 import { isValidAddress } from 'ethereumjs-util';
 import { useMemo } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
+import { queryClient } from '@/react-query/queryClient';
 import { EthereumAddress } from '@rainbow-me/entities';
 import {
   getRainbowProfile,
@@ -34,7 +35,6 @@ export default function useRainbowProfile(
     [address]
   );
 
-  const queryClient = useQueryClient();
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchRainbowProfile>
   >(

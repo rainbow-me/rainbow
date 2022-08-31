@@ -333,6 +333,7 @@ export const fetchSuggestions = async (
             }
           )
       );
+
       const ensSuggestions = await Promise.all(
         domains
           .filter((domain: any) => !domain?.name?.includes?.('['))
@@ -350,6 +351,7 @@ export const fetchSuggestions = async (
                 rainbowProfileQueryKey(ensDomain?.resolver?.addr?.id),
                 rainbowProfile
               );
+
               if (rainbowProfile) {
                 color = rainbowProfile?.color;
                 emoji = rainbowProfile?.emoji;
