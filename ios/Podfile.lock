@@ -378,8 +378,8 @@ PODS:
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-change-icon (3.2.0):
-    - React
+  - react-native-change-icon (4.0.0):
+    - React-Core
   - react-native-cloud-fs (2.4.0):
     - React
   - react-native-get-random-values (1.5.0):
@@ -1019,7 +1019,7 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: a5d9188d8f57f602636f111eca6460ebe32b9b71
   FLAnimatedImage: 8f3e854ebf9680b71f0b6e700939687fc4d82b4b
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 476ee3e89abb49e07f822b48323c51c57124b572
+  glog: 5337263514dd6f09803962437687240c5dc39aa4
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   hermes-engine: 84e3af1ea01dd7351ac5d8689cbbea1f9903ffc3
@@ -1039,7 +1039,7 @@ SPEC CHECKSUMS:
   Permission-Notifications: 16ccd862111103378a7bab9fb1c5c71addffc348
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Rainbow-Internals: 6e69837f173f2017e4fff07e64d77d429e5a958c
-  RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
+  RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
   RCTRequired: 00581111c53531e39e3c6346ef0d2c0cf52a5a37
   RCTTypeSafety: 07e03ee7800e7dd65cba8e52ad0c2edb06c96604
   React: e61f4bf3c573d0c61c56b53dc3eb1d9daf0768a0
@@ -1058,7 +1058,7 @@ SPEC CHECKSUMS:
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-change-icon: 64ebec0bef1b63d5d1a1bccba83e12c2d45eaad7
+  react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: 1e883ec82ff418d320c128f61971dd971b128ca0
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb
@@ -1139,4 +1139,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 3d81d103721ac587f9cc40f9440d9afc96ce8bcf
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3
