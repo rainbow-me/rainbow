@@ -89,7 +89,7 @@ function GweiInputPill(
         start={isDarkMode ? { x: 0.5, y: 1 } : { x: 0, y: 0 }}
       >
         <Inset vertical="10px" horizontal="12px">
-          <Inline alignVertical="center">
+          <Inline alignVertical="center" space="4px">
             <GweiNumberInput
               allowFontScaling={false}
               contextMenuHidden
@@ -109,7 +109,6 @@ function GweiInputPill(
             />
             {IS_TESTING !== 'true' && (
               <Text align="center" size="16px" weight="heavy">
-                {' '}
                 Gwei
               </Text>
             )}
