@@ -8,8 +8,8 @@ import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
+  ENS_ACCOUNT_DOMAINS,
   ENS_ACCOUNT_REGISTRATIONS,
-  ENS_ALL_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_NAME_FROM_LABELHASH,
@@ -17,7 +17,7 @@ import {
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
-  EnsAccountRegistratonsData,
+  EnsAccountDomainsData,
   EnsGetCoinTypesData,
   EnsGetNameFromLabelhash,
   EnsGetRecordsData,
@@ -37,12 +37,8 @@ import {
 } from './localstorage/ens';
 import { fetchRainbowProfile } from './rainbowProfiles';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
-import {
-  ENSRegistrationRecords,
-  Records,
-  UniqueAsset,
-} from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers';
+import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
+import { Network } from '@/helpers';
 import {
   ENS_DOMAIN,
   ENS_RECORDS,
@@ -50,26 +46,23 @@ import {
   generateSalt,
   getENSExecutionDetails,
   getNameOwner,
-} from '@rainbow-me/helpers/ens';
-import { add } from '@rainbow-me/helpers/utilities';
-import { ImgixImage } from '@rainbow-me/images';
-import {
-  getOpenSeaCollectionUrl,
-  handleAndSignImages,
-} from '@rainbow-me/parsers';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
+} from '@/helpers/ens';
+import { queryClient } from '@/react-query/queryClient';
+import { add } from '@/helpers/utilities';
+import { ImgixImage } from '@/components/images';
+import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
   ethUnits,
-} from '@rainbow-me/references';
-import { colors } from '@rainbow-me/styles';
-import { labelhash, logger } from '@rainbow-me/utils';
+} from '@/references';
+import { colors } from '@/styles';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
-import { AvatarResolver } from 'ens-avatar';
+} from '@/utils/profileUtils';
+import { labelhash, logger } from '@/utils';
+import { AvatarResolver } from '@/ens-avatar/src';
 
 const DUMMY_RECORDS = {
   'description': 'description',
@@ -203,7 +196,7 @@ export const fetchEnsTokens = async ({
   timeAgo: Duration;
 }) => {
   try {
-    const { data } = await ensClient.query<EnsAccountRegistratonsData>({
+    const { data } = await ensClient.query<EnsAccountDomainsData>({
       query: ENS_ACCOUNT_REGISTRATIONS,
       variables: {
         address: address.toLowerCase(),
@@ -212,16 +205,20 @@ export const fetchEnsTokens = async ({
         ).toString(),
       },
     });
-    return data?.account?.registrations?.map(registration => {
-      const tokenId = BigNumber.from(registration.domain.labelhash).toString();
-      const token = buildEnsToken({
-        contractAddress,
-        imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
-        name: registration.domain.name,
-        tokenId,
-      });
-      return token;
-    });
+    return (
+      data?.account?.registrations?.map(registration => {
+        const tokenId = BigNumber.from(
+          registration.domain.labelhash
+        ).toString();
+        const token = buildEnsToken({
+          contractAddress,
+          imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
+          name: registration.domain.name,
+          tokenId,
+        });
+        return token;
+      }) || []
+    );
   } catch (error) {
     logger.sentry('ENS: Error getting ENS unique tokens', error);
     captureException(new Error('ENS: Error getting ENS unique tokens'));
@@ -409,9 +406,9 @@ export const fetchRegistrationDate = async (recipient: string) => {
   }
 };
 
-export const fetchAccountRegistrations = async (address: string) => {
-  const registrations = await ensClient.query<EnsAccountRegistratonsData>({
-    query: ENS_ALL_ACCOUNT_REGISTRATIONS,
+export const fetchAccountDomains = async (address: string) => {
+  const registrations = await ensClient.query<EnsAccountDomainsData>({
+    query: ENS_ACCOUNT_DOMAINS,
     variables: {
       address: address?.toLowerCase(),
     },

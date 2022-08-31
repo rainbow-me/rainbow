@@ -3,8 +3,9 @@ import { useDispatch } from 'react-redux';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import { useWallets, useWebData } from './index';
-import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
-import { getNextEmojiWithColor } from '@rainbow-me/utils/profileUtils';
+import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
+import { useTheme } from '@/theme';
+import { getNextEmojiWithColor } from '@/utils/profileUtils';
 
 export default function useUpdateAvatar() {
   const { accountSymbol } = useAccountProfile();

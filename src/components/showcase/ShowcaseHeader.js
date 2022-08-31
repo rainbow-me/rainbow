@@ -8,19 +8,15 @@ import {
   SheetActionButtonRow,
 } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
-import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
-import { isHexString } from '@rainbow-me/handlers/web3';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import {
-  useImportingWallet,
-  useRainbowProfile,
-  useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+import { getContacts } from '@/handlers/localstorage/contacts';
+import { isHexString } from '@/handlers/web3';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import { useImportingWallet, useRainbowProfile, useWallets } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { abbreviations } from '@/utils';
 
 export const ShowcaseContext = createContext();
 

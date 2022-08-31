@@ -22,16 +22,16 @@ import { loadAllKeys } from '../model/keychain';
 import { useNavigation } from '../navigation/Navigation';
 import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
-import { authenticateWithPINAndCreateIfNeeded } from '@rainbow-me/handlers/authentication';
+import AesEncryptor from '@/handlers/aesEncryption';
+import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import {
   useDimensions,
   useImportingWallet,
   useWalletsWithBalancesAndNames,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils, haptics } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils, haptics } from '@/utils';
+import logger from '@/utils/logger';
 
 export const WalletDiagnosticsSheetHeight = '100%';
 const LoadingSpinner = android ? Spinner : ActivityIndicator;

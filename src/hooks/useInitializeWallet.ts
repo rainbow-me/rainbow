@@ -22,11 +22,11 @@ import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import useResetAccountState from './useResetAccountState';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
-import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
-import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
-import logger from 'logger';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
+import { additionalDataCoingeckoIds } from '@/redux/additionalAssetsData';
+import { checkPendingTransactionsOnInitialize } from '@/redux/data';
+import logger from '@/utils/logger';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -38,6 +38,19 @@ export default function useInitializeWallet() {
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+
+  const getWalletStatusForPerformanceMetrics = (
+    isNew: boolean,
+    isImporting: boolean
+  ): string => {
+    if (isNew) {
+      return 'new';
+    } else if (isImporting) {
+      return 'imported';
+    } else {
+      return 'old';
+    }
+  };
 
   const initializeWallet = useCallback(
     async (
@@ -140,7 +153,13 @@ export default function useInitializeWallet() {
 
         logger.sentry('💰 Wallet initialized');
         PerformanceTracking.finishMeasuring(
-          PerformanceMetrics.useInitializeWallet
+          PerformanceMetrics.useInitializeWallet,
+          {
+            walletStatus: getWalletStatusForPerformanceMetrics(
+              isNew,
+              isImporting
+            ),
+          }
         );
 
         dispatch(checkPendingTransactionsOnInitialize(walletAddress));

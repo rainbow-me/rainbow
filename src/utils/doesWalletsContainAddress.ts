@@ -1,4 +1,4 @@
-import { AllRainbowWallets } from '@rainbow-me/model/wallet';
+import { AllRainbowWallets } from '@/model/wallet';
 
 export default function doesWalletsContainAddress({
   address,

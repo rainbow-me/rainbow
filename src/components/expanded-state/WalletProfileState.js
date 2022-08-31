@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import ProfileModal from './profile/ProfileModal';
-import { analytics } from '@rainbow-me/analytics';
-import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+import { analytics } from '@/analytics';
+import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 export default function WalletProfileState({
   actionType,
@@ -38,7 +38,7 @@ export default function WalletProfileState({
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
     };
-    if (ios || actionType !== 'Create') {
+    if (actionType !== 'Create') {
       callback();
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);

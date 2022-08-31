@@ -4,7 +4,7 @@ import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
   Box,
@@ -13,8 +13,8 @@ import {
   Inline,
   Inset,
   Stack,
-} from '@rainbow-me/design-system';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+} from '@/design-system';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
@@ -24,10 +24,10 @@ import {
   useExternalWalletSectionsData,
   usePersistentDominantColorFromImage,
   useRainbowProfile,
-} from '@rainbow-me/hooks';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;

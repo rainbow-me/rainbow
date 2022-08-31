@@ -5,15 +5,12 @@ import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
-import {
-  CurrencySelectionTypes,
-  ExchangeModalTypes,
-} from '@rainbow-me/helpers';
-import { useSwapCurrencyHandlers } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { magicMemo, watchingAlert } from '@rainbow-me/utils';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
+import { useSwapCurrencyHandlers } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { magicMemo, watchingAlert } from '@/utils';
 
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],

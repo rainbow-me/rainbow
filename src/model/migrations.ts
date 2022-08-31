@@ -44,38 +44,29 @@ import {
   RainbowWallet,
   saveAddress,
 } from './wallet';
-import { isL2Asset } from '@rainbow-me/handlers/assets';
+import { isL2Asset } from '@/handlers/assets';
 import {
   getAssets,
   getHiddenCoins,
   getPinnedCoins,
   saveHiddenCoins,
   savePinnedCoins,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
-import {
-  getContacts,
-  saveContacts,
-} from '@rainbow-me/handlers/localstorage/contacts';
-import {
-  getUserLists,
-  saveUserLists,
-} from '@rainbow-me/handlers/localstorage/userLists';
-import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
-import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import {
-  getAvatarColorHex,
-  getAvatarColorIndex,
-} from '@rainbow-me/helpers/colorHandler';
+} from '@/handlers/localstorage/accountLocal';
+import { queryClient } from '@/react-query/queryClient';
+import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
+import { getUserLists, saveUserLists } from '@/handlers/localstorage/userLists';
+import { resolveNameOrAddress } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import { DefaultTokenLists } from '@rainbow-me/references';
-import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
-import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
-import logger from 'logger';
+} from '@/helpers/emojiHandler';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { DefaultTokenLists } from '@/references';
+import { ethereumUtils, profileUtils } from '@/utils';
+import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
+import logger from '@/utils/logger';
+import { getAvatarColorHex, getAvatarColorIndex } from '@/helpers/colorHandler';
+import { fetchRainbowProfile } from '@/handlers/rainbowProfiles';
 
 export default async function runMigrations() {
   // get current version

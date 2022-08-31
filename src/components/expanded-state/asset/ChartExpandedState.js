@@ -36,9 +36,9 @@ import {
 import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
-import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { isL2Network, isTestnetNetwork } from '@rainbow-me/handlers/web3';
-import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import { ChartPathProvider } from '@/react-native-animated-charts/src';
+import { isL2Network, isTestnetNetwork } from '@/handlers/web3';
+import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useAdditionalAssetData,
@@ -46,12 +46,12 @@ import {
   useDelayedValueWithLayoutAnimation,
   useDimensions,
   useGenericAsset,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -210,17 +210,7 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.type,
   ]);
   const isTestnet = isTestnetNetwork(currentNetwork);
-  // This one includes the original l2 address if exists
-  const ogAsset = useMemo(() => {
-    return {
-      ...assetWithPrice,
-      address: isL2
-        ? assetWithPrice.l2Address || asset?.address
-        : assetWithPrice.address,
-    };
-  }, [assetWithPrice, isL2, asset]);
 
-  const { height: screenHeight } = useDimensions();
   const {
     description,
     marketCap,
@@ -230,6 +220,29 @@ export default function ChartExpandedState({ asset }) {
     links,
     networks,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
+
+  // This one includes the original l2 address if exists
+  const ogAsset = useMemo(() => {
+    if (networks) {
+      let mappedNetworks = {};
+      Object.keys(networks).forEach(
+        chainId =>
+          (mappedNetworks[
+            ethereumUtils.getNetworkFromChainId(Number(chainId))
+          ] = networks[chainId])
+      );
+      assetWithPrice.implementations = mappedNetworks;
+    }
+
+    return {
+      ...assetWithPrice,
+      address: isL2
+        ? assetWithPrice.l2Address || asset?.address
+        : assetWithPrice.address,
+    };
+  }, [assetWithPrice, isL2, asset?.address, networks]);
+
+  const { height: screenHeight } = useDimensions();
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
     description?.replace(/\s+/g, '')

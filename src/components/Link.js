@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Container = styled(RowWithMargins).attrs({
   align: 'center',

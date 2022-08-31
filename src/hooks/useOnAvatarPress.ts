@@ -14,16 +14,16 @@ import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useUpdateAvatar from './useUpdateAvatar';
 import useWallets from './useWallets';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   enableActionsOnReadOnlyWallet,
   PROFILES,
   useExperimentalFlag,
-} from '@rainbow-me/config';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
+} from '@/config';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import { buildRainbowUrl, showActionSheetWithOptions } from '@/utils';
 
 export default () => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
@@ -159,7 +159,7 @@ export default () => {
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
   const callback = useCallback(
-    async (buttonIndex: Number) => {
+    async (buttonIndex: number) => {
       if (buttonIndex === 0) {
         if (isENSProfile) {
           if (!isReadOnly) {
@@ -291,7 +291,7 @@ export default () => {
             : undefined,
         options: avatarActionSheetOptions,
       },
-      (buttonIndex: Number) => callback(buttonIndex)
+      (buttonIndex: number) => callback(buttonIndex)
     );
   }, [avatarActionSheetOptions, hasENSAvatar, accountImage, callback]);
 

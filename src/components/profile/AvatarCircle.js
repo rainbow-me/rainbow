@@ -9,10 +9,10 @@ import {
   useAccountProfile,
   useLatestCallback,
   useRainbowProfile,
-} from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+} from '@/hooks';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const AvatarCircleSize = 65;
 

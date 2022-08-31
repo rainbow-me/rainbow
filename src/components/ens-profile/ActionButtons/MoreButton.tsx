@@ -6,17 +6,12 @@ import { MenuActionConfig } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import {
-  useClipboard,
-  useContacts,
-  useWallets,
-  useWatchWallet,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+import { useClipboard, useContacts, useWallets, useWatchWallet } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',

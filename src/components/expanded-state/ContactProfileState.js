@@ -4,17 +4,16 @@ import { Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useContacts,
   useENSAvatar,
   usePersistentDominantColorFromImage,
   useRainbowProfile,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
+
 const ContactProfileState = ({ address, ens, contactNickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const [nickname, setNickname] = useState(contactNickname || ens || '');

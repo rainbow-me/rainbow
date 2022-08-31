@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 export const HandleHeight = 5;
 

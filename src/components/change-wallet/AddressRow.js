@@ -12,9 +12,9 @@ import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
-import { deviceUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth, getFontSize } from '@/styles';
+import { deviceUtils, showActionSheetWithOptions } from '@/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;

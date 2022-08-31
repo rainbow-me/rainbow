@@ -40,10 +40,10 @@ import {
 import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
-import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
-import { WalletLoadingState } from '@rainbow-me/helpers/walletLoadingStates';
-import { lightModeThemeColors } from '@rainbow-me/styles';
+import { fetchRainbowProfile } from '@/handlers/rainbowProfiles';
+import { fetchReverseRecord } from '@/handlers/ens';
+import { WalletLoadingState } from '@/helpers/walletLoadingStates';
+import { lightModeThemeColors } from '@/styles';
 
 // -- Types ---------------------------------------- //
 

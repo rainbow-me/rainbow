@@ -14,8 +14,8 @@ import {
 } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import logger from 'logger';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import logger from '@/utils/logger';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -26,12 +26,6 @@ export default function useRefreshAccountData() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const fetchAccountData = useCallback(async () => {
-    // Refresh unique tokens for Rinkeby
-    if (network === NetworkTypes.rinkeby) {
-      const getUniqueTokens = dispatch(uniqueTokensRefreshState());
-      return Promise.all([delay(1250), getUniqueTokens]);
-    }
-
     // Nothing to refresh for other testnets
     if (network !== NetworkTypes.mainnet) {
       return Promise.all([delay(1250)]);

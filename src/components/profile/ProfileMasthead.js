@@ -10,18 +10,23 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
-import { analytics } from '@rainbow-me/analytics';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import { analytics } from '@/analytics';
+import showWalletErrorAlert from '@/helpers/support';
 import {
   useAccountProfile,
   useDimensions,
   useOnAvatarPress,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { abbreviations } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { abbreviations } from '@/utils';
+
+// NOTE:
+// If you’re trying to edit this file for iOS and you’re not seeing any changes,
+// that’s because iOS is using the Swift version — TransactionListViewHeader.
+// Only Android is using this file at the moment.
 
 const dropdownArrowWidth = 21;
 

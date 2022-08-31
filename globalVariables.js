@@ -9,7 +9,7 @@ import {
 import { Platform } from 'react-native';
 import { ENABLE_DEV_MODE } from 'react-native-dotenv';
 import { useTheme } from './src/theme/ThemeContext';
-import magicMemo from '@rainbow-me/utils/magicMemo';
+import magicMemo from '@/utils/magicMemo';
 
 export default {
   android: Platform.OS === 'android',

@@ -3,9 +3,9 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { useRainbowProfile } from '@rainbow-me/hooks';
-import { borders } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import { useRainbowProfile } from '@/hooks';
+import { borders } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
