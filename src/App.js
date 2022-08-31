@@ -208,10 +208,7 @@ class App extends Component {
       runWalletBackupStatusChecks();
 
       InteractionManager.runAfterInteractions(() => {
-        setTimeout(
-          () => (ios ? runFeatureAndCampaignChecks() : runCampaignChecks()),
-          2000
-        );
+        setTimeout(runFeatureAndCampaignChecks, 2000);
       });
     }
   }
