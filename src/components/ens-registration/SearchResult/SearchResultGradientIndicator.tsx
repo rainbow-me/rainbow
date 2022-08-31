@@ -1,12 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  AccentColorProvider,
-  Box,
-  Inset,
-  Text,
-} from '@/design-system';
+import { AccentColorProvider, Box, Inset, Text } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 

@@ -40,11 +40,7 @@ import {
   subtract,
 } from '@/helpers/utilities';
 import { Network } from '@/helpers/networkTypes';
-import {
-  erc20ABI,
-  ethUnits,
-  UNISWAP_TESTNET_TOKEN_LIST,
-} from '@/references';
+import { erc20ABI, ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
 
 export enum Field {

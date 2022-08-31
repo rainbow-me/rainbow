@@ -23,10 +23,7 @@ import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
-import {
-  getProviderForNetwork,
-  web3SetHttpProvider,
-} from '@/handlers/web3';
+import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import isTestFlight from '@/helpers/isTestFlight';
 import networkTypes, { Network } from '@/helpers/networkTypes';

@@ -16,11 +16,7 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { DefaultTokenLists } from '../references/';
-import {
-  useAccountSettings,
-  useDimensions,
-  useUserLists,
-} from '@/hooks';
+import { useAccountSettings, useDimensions, useUserLists } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

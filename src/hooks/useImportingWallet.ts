@@ -19,10 +19,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import {
-  resolveUnstoppableDomain,
-  web3Provider,
-} from '@/handlers/web3';
+import { resolveUnstoppableDomain, web3Provider } from '@/handlers/web3';
 import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
