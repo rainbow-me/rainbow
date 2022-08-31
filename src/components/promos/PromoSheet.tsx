@@ -106,7 +106,7 @@ const PromoSheet = ({
         <Box
           background="accent"
           style={{ height: contentHeight }}
-          testID="ens-intro-sheet"
+          testID={campaignKey}
         >
           {/* @ts-ignore */}
           <Box as={ImgixImage} height="full" source={backgroundImage}>
