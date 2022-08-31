@@ -5,9 +5,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { maybeSignUri } from '@/handlers/imgix';
 import {
   removeFirstEmojiFromString,

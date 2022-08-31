@@ -6,10 +6,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import {
-  CurrencySelectionTypes,
-  ExchangeModalTypes,
-} from '@/helpers';
+import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';

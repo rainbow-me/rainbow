@@ -10,11 +10,7 @@ import {
   RapExchangeActionParameters,
   UnlockActionParameters,
 } from '../common';
-import {
-  Asset,
-  TransactionStatus,
-  TransactionType,
-} from '@/entities';
+import { Asset, TransactionStatus, TransactionType } from '@/entities';
 import { getProviderForNetwork, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { dataAddNewTransaction } from '@/redux/data';

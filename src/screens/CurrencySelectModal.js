@@ -41,14 +41,8 @@ import {
   useSwapCurrencyList,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
-import {
-  getActiveRoute,
-  useNavigation,
-} from '@/navigation/Navigation';
-import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@/redux/explorer';
+import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

@@ -38,12 +38,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { useTheme } from '@/theme';
-import {
-  abbreviations,
-  deviceUtils,
-  haptics,
-  magicMemo,
-} from '@/utils';
+import { abbreviations, deviceUtils, haptics, magicMemo } from '@/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
