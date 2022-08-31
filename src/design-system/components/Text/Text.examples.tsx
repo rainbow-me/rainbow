@@ -84,7 +84,7 @@ export const withEmoji: Example = {
     source(
       <View>
         <Guide />
-        <Text containsEmoji size="16px / 22px (Deprecated)">
+        <Text containsEmoji size="17pt">
           Text with emoji 🌈
         </Text>
         <Guide />
@@ -98,7 +98,7 @@ export const withTruncation: Example = {
     source(
       <View>
         <Guide />
-        <Text size="16px / 22px (Deprecated)" weight="bold">
+        <Text size="17pt" weight="bold">
           Truncated text truncated text truncated text truncated text truncated
           text truncated text Truncated text truncated text truncated text
           truncated text truncated text truncated text
@@ -116,7 +116,7 @@ export const withWeight: Example = {
         {Object.entries(fontWeights).map(([name, value]) => (
           <Text
             key={value}
-            size="16px / 22px (Deprecated)"
+            size="17pt"
             weight={name as keyof typeof fontWeights}
           >
             {name} ({value})
@@ -131,21 +131,21 @@ export const withColor: Example = {
   Example: () =>
     source(
       <Stack space="12px">
-        <Text color="secondary50" size="16px / 22px (Deprecated)">
+        <Text color="secondary50" size="17pt">
           Default mode
         </Text>
-        <Text color="action" size="16px / 22px (Deprecated)">
+        <Text color="action" size="17pt">
           Action color
         </Text>
-        <Text color="accent" size="16px / 22px (Deprecated)">
+        <Text color="accent" size="17pt">
           Default accent color
         </Text>
         <AccentColorProvider color="orange">
-          <Text color="accent" size="16px / 22px (Deprecated)">
+          <Text color="accent" size="17pt">
             Custom accent color
           </Text>
         </AccentColorProvider>
-        <Text color={customTextColor} size="16px / 22px (Deprecated)">
+        <Text color={customTextColor} size="17pt">
           Custom color
         </Text>
         <View>
@@ -158,10 +158,10 @@ export const withColor: Example = {
             <Stack space="24px">
               <ColorModeProvider value="dark">
                 <Stack space="12px">
-                  <Text color="secondary50" size="16px / 22px (Deprecated)">
+                  <Text color="secondary50" size="17pt">
                     Dark mode
                   </Text>
-                  <Text color={customTextColor} size="16px / 22px (Deprecated)">
+                  <Text color={customTextColor} size="17pt">
                     Custom color
                   </Text>
                 </Stack>
@@ -169,10 +169,10 @@ export const withColor: Example = {
 
               <ColorModeProvider value="darkTinted">
                 <Stack space="12px">
-                  <Text color="secondary50" size="16px / 22px (Deprecated)">
+                  <Text color="secondary50" size="17pt">
                     Dark tinted mode
                   </Text>
-                  <Text color={customTextColor} size="16px / 22px (Deprecated)">
+                  <Text color={customTextColor} size="17pt">
                     Custom color
                   </Text>
                 </Stack>

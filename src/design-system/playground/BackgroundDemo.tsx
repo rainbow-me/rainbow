@@ -16,18 +16,10 @@ export function BackgroundDemo() {
           <Box background={color} key={color}>
             <Inset space="19px">
               <Stack space="10px">
-                <Text
-                  color="primary"
-                  size="16px / 22px (Deprecated)"
-                  weight="bold"
-                >
+                <Text color="primary" size="17pt" weight="bold">
                   {color}
                 </Text>
-                <Text
-                  color="secondary50"
-                  size="16px / 22px (Deprecated)"
-                  weight="bold"
-                >
+                <Text color="secondary50" size="17pt" weight="bold">
                   {color}
                 </Text>
               </Stack>
