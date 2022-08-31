@@ -1,7 +1,10 @@
-import { useIsFocused, useNavigation } from '@react-navigation/core';
-import { useRoute } from '@react-navigation/native';
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { upperFirst } from 'lodash';
-import React, { Ref, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   InteractionManager,
   Keyboard,
@@ -12,7 +15,6 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { Alert } from '../../alerts';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
-import { Text } from '../../text';
 import FeesGweiInput from './FeesGweiInput';
 import {
   calculateMinerTipAddDifference,
@@ -33,8 +35,6 @@ import {
 } from '@/hooks';
 import { gweiToWei, parseGasFeeParam } from '@/parsers';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { gasUtils } from '@/utils';
 import {
   Box,
@@ -45,60 +45,7 @@ import {
   Text as NewText,
 } from '@/design-system';
 
-const Wrapper = styled(KeyboardAvoidingView)({});
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
-
-// const PanelRow = styled(Row).attrs({
-//   alignItems: 'center',
-//   justify: 'space-between',
-// })({});
-
-// GweiInputPill has a vertical padding of 10
-// const MiddlePanelRow = styled(PanelRow)(padding.object(8, 0));
-
-// const PanelRowThin = styled(Row).attrs({
-//   justify: 'space-between',
-//   paddingBottom: 5,
-// })({});
-
-const PanelLabel = styled(Text).attrs({
-  lineHeight: 'normal',
-  size: 'lmedium',
-  weight: 'heavy',
-})({});
-// (  margin.object(0, 12, 0, 0));
-
-// @ts-expect-error
-const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.yellowFavorite,
-  size: 'smedium',
-  weight: 'heavy',
-}))({});
-
-// @ts-expect-error
-const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.red,
-  size: 'smedium',
-  weight: 'heavy',
-}))({});
-
-// @ts-expect-error
-const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
-  color: color || colors.appleBlue,
-  size: 'smedium',
-  weight: 'heavy',
-}))(padding.object(0, 12, 0, 0));
-
-// const Column = styled(Column).attrs(() => ({
-//   justify: 'center',
-// }))({});
-
-// @ts-expect-error
-const Label = styled(Text).attrs(({ size }) => ({
-  lineHeight: 'normal',
-  size: size || 'lmedium',
-  // @ts-expect-error
-}))(({ weight }) => fontWithWidth(weight || fonts.weight.semibold));
 
 const GAS_FEE_INCREMENT = 3;
 const MAX_BASE_FEE_RANGE = [1, 3];
@@ -468,32 +415,36 @@ export default function FeesPanel({
 
       return (
         (error && (
-          <NewText color={{ custom: colors.red }} size="14px" weight="heavy">
-            {errorPrefix}
-            <NewText
-              color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
-              size="14px"
-              weight="bold"
-            >
-              {errorSuffix}
+          <Box paddingTop="8px">
+            <NewText color={{ custom: colors.red }} size="14px" weight="heavy">
+              {errorPrefix}
+              <NewText
+                color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
+                size="14px"
+                weight="bold"
+              >
+                {errorSuffix}
+              </NewText>
             </NewText>
-          </NewText>
+          </Box>
         )) ||
         (warning && (
-          <NewText
-            color={{ custom: colors.yellowFavorite }}
-            size="14px"
-            weight="heavy"
-          >
-            {warningPrefix}
+          <Box paddingTop="8px">
             <NewText
-              color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
+              color={{ custom: colors.yellowFavorite }}
               size="14px"
               weight="heavy"
             >
-              {warningSuffix}
+              {warningPrefix}
+              <NewText
+                color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
+                size="14px"
+                weight="heavy"
+              >
+                {warningSuffix}
+              </NewText>
             </NewText>
-          </NewText>
+          </Box>
         ))
       );
     },
@@ -742,7 +693,7 @@ export default function FeesPanel({
 
   return (
     <Box as={KeyboardAvoidingView}>
-      <Inset bottom="5px">
+      <Inset bottom="12px">
         <Inline alignHorizontal="right">
           <ButtonPressAnimation
             onPress={() => openGasHelper(trendType)}
@@ -760,9 +711,9 @@ export default function FeesPanel({
           </ButtonPressAnimation>
         </Inline>
       </Inset>
-      <Rows space="19px">
+      <Rows space="15px">
         <Row>
-          <Box height="40px" background="accent">
+          <Box paddingBottom="10px">
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
                 {renderRowLabel('Current base fee', trendType, null, null)}
@@ -782,7 +733,7 @@ export default function FeesPanel({
         </Row>
 
         <Row>
-          <Box height="40px" background="accent">
+          <Box>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
                 {renderRowLabel(
@@ -810,7 +761,7 @@ export default function FeesPanel({
         </Row>
 
         <Row>
-          <Box background="accent">
+          <Box>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
                 {renderRowLabel(
@@ -837,8 +788,8 @@ export default function FeesPanel({
           </Box>
         </Row>
 
-        <Row height="40px">
-          <Box height="40px" background="accent">
+        <Row>
+          <Box paddingTop="10px">
             <Inline alignVertical="center" alignHorizontal="justify">
               <NewText size="14px" weight="heavy">
                 Max transaction fee

@@ -1,41 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ButtonPressAnimation } from '../../animations';
-import { Text } from '../../text';
 import GweiInputPill from './GweiInputPill';
 import { delay } from '@/helpers/utilities';
 import { usePrevious } from '@/hooks';
-import styled from '@/styled-thing';
 import { TextInput } from 'react-native';
-import {
-  Box,
-  Inline,
-  Inset,
-  Row,
-  Rows,
-  Text as NewText,
-} from '@/design-system';
+import { Box, Inline, Text as NewText } from '@/design-system';
 import { colors } from '@/styles';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
 const LONG_PRESS_DELAY_THRESHOLD = 69;
 const MIN_LONG_PRESS_DELAY_THRESHOLD = 200;
-
-// const Wrapper = styled(Row)({});
-
-// const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
-//   paddingHorizontal: 7,
-//   scaleTo: 0.75,
-// }))({});
-
-// @ts-expect-error
-const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
-  color: color || colors.appleBlue,
-  lineHeight: 40,
-  size: 'lmedium',
-  weight: 'heavy',
-}))({});
 
 const GweiStepButton = ({
   buttonColor,

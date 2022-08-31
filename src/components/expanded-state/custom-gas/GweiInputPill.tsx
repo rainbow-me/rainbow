@@ -68,8 +68,8 @@ function GweiInputPill(
 
   const onChangeText = useCallback(
     (text: string) => {
-      text = text === '.' || text === ',' ? `0${text}` : text;
-      onChangeCallback(text);
+      const changeText = text === '.' || text === ',' ? `0${text}` : text;
+      onChangeCallback(changeText);
     },
     [onChangeCallback]
   );
