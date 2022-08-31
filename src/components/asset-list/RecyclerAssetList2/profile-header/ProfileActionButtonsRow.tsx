@@ -229,7 +229,7 @@ function CopyButton() {
         setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
       />
       <ActionButton icon="􀐅" onPress={handlePress}>
-        Copy
+        {lang.t('wallet.copy')}
       </ActionButton>
     </Box>
   );
@@ -269,7 +269,7 @@ function SwapButton() {
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress}>
-      Swap
+      {lang.t('button.swap')}
     </ActionButton>
   );
 }
@@ -293,7 +293,7 @@ function SendButton() {
 
   return (
     <ActionButton icon="􀈟" onPress={handlePress}>
-      Send
+      {lang.t('button.send')}
     </ActionButton>
   );
 }
@@ -346,9 +346,9 @@ function MoreButton() {
 
   const items = React.useMemo(
     () => ({
-      addCash: 'Add Cash',
-      myQRCode: 'My QR Code',
-      cancel: 'Cancel',
+      addCash: lang.t('button.add_cash'),
+      myQRCode: lang.t('button.my_qr_code'),
+      cancel: lang.t('button.cancel'),
     }),
     []
   );
@@ -406,7 +406,7 @@ function MoreButton() {
       onPressMenuItem={handlePressContextMenuItem}
     >
       <ActionButton icon="􀍡" onPress={ios ? showActionSheet : undefined}>
-        More
+        {lang.t('button.more')}
       </ActionButton>
     </ContextMenuButton>
   );

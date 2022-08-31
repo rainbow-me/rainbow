@@ -240,6 +240,8 @@
       "learn_more": "Learn more",
       "less": "Less",
       "loading": "Loading",
+      "more": "More",
+      "my_qr_code": "My QR Code",
       "notify_me": "Get notified",
       "offline": "Offline",
       "ok": "OK",
@@ -1386,6 +1388,7 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching"
       },
+      "copy": "Copy",
       "copy_address": "Copy Address",
       "diagnostics": {
         "authenticate_with_pin": "Authenticate with PIN",
