@@ -63,7 +63,6 @@ export default function CurrencySelectModalHeader({
     navigate(Routes.MAIN_EXCHANGE_SCREEN);
   }, [dangerouslyGetState, handleBackButton, navigate]);
 
-  console.log(defaultOutputAsset);
   return (
     <HeaderContainer>
       {/** @ts-expect-error JavaScript component */}
