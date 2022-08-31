@@ -2,10 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import ExchangeModal from './ExchangeModal';
 import { ExchangeModalTypes } from '@/helpers';
-import {
-  ExchangeNavigatorFactory,
-  useStatusBarManaging,
-} from '@/navigation';
+import { ExchangeNavigatorFactory, useStatusBarManaging } from '@/navigation';
 
 const WithdrawModal = props => {
   // eslint-disable-next-line react-hooks/rules-of-hooks

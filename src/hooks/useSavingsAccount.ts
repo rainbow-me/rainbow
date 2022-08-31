@@ -13,11 +13,7 @@ import { multiply } from '@/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@/parsers';
 import { emitAssetRequest } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
-import {
-  CDAI_CONTRACT,
-  DAI_ADDRESS,
-  ETH_ADDRESS,
-} from '@/references';
+import { CDAI_CONTRACT, DAI_ADDRESS, ETH_ADDRESS } from '@/references';
 import { ethereumUtils, getTokenMetadata } from '@/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
