@@ -4,11 +4,7 @@ import { CoinIcon } from '../../coin-icon';
 import { Centered } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import { Box, Column, Columns, Row, Rows } from '@/design-system';
-import {
-  useAccountSettings,
-  useColorForAsset,
-  useDimensions,
-} from '@/hooks';
+import { useAccountSettings, useColorForAsset, useDimensions } from '@/hooks';
 import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

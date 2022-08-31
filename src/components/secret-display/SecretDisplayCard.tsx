@@ -1,51 +1,16 @@
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { times } from '@/helpers/utilities';
+import { Box, Inset } from '@/design-system';
+import { times } from '@rainbow-me/helpers/utilities';
 import WalletTypes, {
   EthereumWalletType,
-} from '@/helpers/walletTypes';
-import styled from '@/styled-thing';
-import { fonts, padding, position } from '@/styles';
-import { useTheme } from '@/theme';
-import ShadowStack from '@/react-native-shadow-stack';
-
-const CardBorderRadius = 25;
-
-const BackgroundGradient = styled(LinearGradient).attrs(
-  ({ theme: { colors } }: any) => ({
-    colors: colors.gradients.offWhite,
-    end: { x: 0.5, y: 1 },
-    start: { x: 0.5, y: 0 },
-  })
-)({
-  ...position.coverAsObject,
-  borderRadius: CardBorderRadius,
-});
-
-const CardShadow = styled(ShadowStack).attrs(
-  ({ theme: { colors, isDarkMode } }: any) => ({
-    ...position.coverAsObject,
-    backgroundColor: isDarkMode ? colors.offWhite80 : colors.white,
-    borderRadius: CardBorderRadius,
-    shadows: [
-      [0, 10, 30, colors.shadow, 0.1],
-      [0, 5, 15, colors.shadow, 0.04],
-    ],
-  })
-)({
-  elevation: 15,
-});
-
-const Content = styled(Centered)({
-  ...padding.object(19, 30, 24),
-  borderRadius: 25,
-  overflow: 'hidden',
-  zIndex: 1,
-});
+} from '@rainbow-me/helpers/walletTypes';
+import styled from '@rainbow-me/styled-components';
+import { fonts } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const GridItem = styled(Row).attrs({
   align: 'center',
@@ -114,25 +79,30 @@ export default function SecretDisplayCard({
 }: SecretDisplayCardProps) {
   return (
     <Centered>
-      {ios && (
-        <>
-          <CardShadow />
-          <BackgroundGradient />
-        </>
-      )}
-      <Content>
-        <CopyTooltip
-          textToCopy={seed}
-          tooltipText={lang.t('back_up.secret.copy_to_clipboard')}
+      <Inset vertical="10px">
+        <Box
+          background="card"
+          borderRadius={25}
+          height={{ custom: 240 }}
+          paddingHorizontal="30px"
+          paddingVertical="19px"
+          shadow="21px light"
         >
-          {seed && type === WalletTypes.mnemonic && (
-            <SeedWordGrid seed={seed} />
-          )}
-          {seed && type === WalletTypes.privateKey && (
-            <GridText align="center">{seed}</GridText>
-          )}
-        </CopyTooltip>
-      </Content>
+          <CopyTooltip
+            textToCopy={seed}
+            tooltipText={lang.t('back_up.secret.copy_to_clipboard')}
+          >
+            <Box alignItems="center" height="full" justifyContent="center">
+              {seed && type === WalletTypes.mnemonic && (
+                <SeedWordGrid seed={seed} />
+              )}
+              {seed && type === WalletTypes.privateKey && (
+                <GridText align="center">{seed}</GridText>
+              )}
+            </Box>
+          </CopyTooltip>
+        </Box>
+      </Inset>
     </Centered>
   );
 }

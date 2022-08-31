@@ -15,9 +15,7 @@ import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import SecretDisplayCard from './SecretDisplayCard';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import WalletTypes, {
-  EthereumWalletType,
-} from '@/helpers/walletTypes';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { useWallets } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin, position, shadow } from '@/styles';
@@ -125,9 +123,15 @@ export default function SecretDisplaySection({
       );
     } else {
       return (
-        <Text align="center" color="secondary60" size="16px">
-          {lang.t('back_up.secret.biometrically_secured')}
-        </Text>
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          paddingHorizontal="60px"
+        >
+          <Text align="center" color="secondary60" size="16px">
+            {lang.t('back_up.secret.biometrically_secured')}
+          </Text>
+        </Box>
       );
     }
   }, [isRecoveryPhraseVisible, typeLabel, loadSeed, colors.white, seed]);

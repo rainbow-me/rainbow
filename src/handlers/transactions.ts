@@ -6,10 +6,7 @@ import { CONTRACT_FUNCTION } from '@/apollo/queries';
 import { ZerionTransaction } from '@/entities';
 import store from '@/redux/store';
 import { transactionSignaturesDataAddNewSignature } from '@/redux/transactionSignatures';
-import {
-  SIGNATURE_REGISTRY_ADDRESS,
-  signatureRegistryABI,
-} from '@/references';
+import { SIGNATURE_REGISTRY_ADDRESS, signatureRegistryABI } from '@/references';
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);

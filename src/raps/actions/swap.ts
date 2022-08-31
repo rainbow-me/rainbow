@@ -7,15 +7,8 @@ import {
   RapExchangeActionParameters,
   SwapActionParameters,
 } from '../common';
-import {
-  ProtocolType,
-  TransactionStatus,
-  TransactionType,
-} from '@/entities';
-import {
-  estimateSwapGasLimit,
-  executeSwap,
-} from '@/handlers/uniswap';
+import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
+import { estimateSwapGasLimit, executeSwap } from '@/handlers/uniswap';
 import { isL2Network, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';

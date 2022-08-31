@@ -3,11 +3,7 @@ import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
 import { AssetType } from '@/entities';
-import {
-  CurrencySelectionTypes,
-  ExchangeModalTypes,
-  Network,
-} from '@/helpers';
+import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
 import { updatePrecisionToDisplay } from '@/helpers/utilities';
 import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
 import { useNavigation } from '@/navigation';

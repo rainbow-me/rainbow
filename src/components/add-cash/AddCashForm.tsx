@@ -17,11 +17,7 @@ import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
 import { analytics } from '@/analytics';
 import { toChecksumAddress } from '@/handlers/web3';
-import {
-  useAccountSettings,
-  useDimensions,
-  useIsWalletEthZero,
-} from '@/hooks';
+import { useAccountSettings, useDimensions, useIsWalletEthZero } from '@/hooks';
 import { DAI_ADDRESS, ETH_ADDRESS } from '@/references';
 import { padding } from '@/styles';
 import { abbreviations } from '@/utils';

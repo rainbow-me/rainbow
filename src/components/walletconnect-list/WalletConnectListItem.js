@@ -10,10 +10,7 @@ import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import {
-  dappLogoOverride,
-  dappNameOverride,
-} from '@/helpers/dappNameHandler';
+import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import networkInfo from '@/helpers/networkInfo';
 import {
