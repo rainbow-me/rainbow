@@ -2,10 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import OfflineMetadata from '../references/meta/tokens-metadata.json';
 import useDimensions from './useDimensions';
-import {
-  ImageMetadata,
-  updateImageMetadataCache,
-} from '@/redux/imageMetadata';
+import { ImageMetadata, updateImageMetadataCache } from '@/redux/imageMetadata';
 import { AppState } from '@/redux/store';
 import { position } from '@/styles';
 import { getDominantColorFromImage } from '@/utils';

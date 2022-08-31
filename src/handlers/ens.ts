@@ -35,11 +35,7 @@ import {
   saveENSData,
 } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
-import {
-  ENSRegistrationRecords,
-  Records,
-  UniqueAsset,
-} from '@/entities';
+import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
 import {
   ENS_DOMAIN,
@@ -51,10 +47,7 @@ import {
 } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
-import {
-  getOpenSeaCollectionUrl,
-  handleAndSignImages,
-} from '@/parsers';
+import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,

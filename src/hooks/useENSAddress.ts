@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchPrimary } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
 import { queryClient } from '@/react-query/queryClient';

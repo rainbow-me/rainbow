@@ -122,7 +122,7 @@ const AvailableNetworksv1 = ({
                     availableNetworks: availableNetworks?.length,
                   })
                 : lang.t('expanded_state.asset.available_network', {
-                    availableNetwork: networkInfo[availableNetworks?.[0]].name,
+                    availableNetwork: networkInfo[availableNetworks?.[0]]?.name,
                   })}
             </Text>
           </Column>

@@ -84,8 +84,8 @@ const Home: NextPage = () => {
             </Text>
             <Text>
               It&apos;s recommended that all code importing from{' '}
-              <Code>@/design-system</Code> is written in TypeScript so
-              that API changes are picked up.
+              <Code>@/design-system</Code> is written in TypeScript so that API
+              changes are picked up.
             </Text>
           </Stack>
         </Blockquote>

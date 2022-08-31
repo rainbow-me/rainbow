@@ -31,11 +31,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import {
-  ethereumUtils,
-  magicMemo,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
 
