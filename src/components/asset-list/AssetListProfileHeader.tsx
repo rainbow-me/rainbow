@@ -63,6 +63,8 @@ import { FloatingEmojis } from '../floating-emojis';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
 import ContextMenu from '../native-context-menu/contextMenu';
+import { useRecoilState } from 'recoil';
+import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 
 export const AssetListProfileHeaderHeight = 240;
 export const AssetListProfileHeaderCompactHeight = 52;
@@ -527,6 +529,9 @@ function ActionButton({
 function CopyButton() {
   const { accountAddress } = useAccountProfile();
   const { isDamaged } = useWallets();
+  const [isToastActive, setToastActive] = useRecoilState(
+    addressCopiedToastAtom
+  );
 
   const onNewEmoji = React.useRef<() => void>();
 
@@ -537,9 +542,19 @@ function CopyButton() {
       category: 'home screen',
     });
 
+    let timeout: NodeJS.Timeout;
+    if (!isToastActive) {
+      setToastActive(true);
+      timeout = setTimeout(() => {
+        setToastActive(false);
+      }, 2000);
+    }
+
     onNewEmoji?.current && onNewEmoji.current();
     Clipboard.setString(accountAddress);
-  }, [accountAddress, isDamaged]);
+
+    return () => clearTimeout(timeout);
+  }, [accountAddress, isDamaged, isToastActive, setToastActive]);
 
   return (
     <Box>

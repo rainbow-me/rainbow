@@ -36,6 +36,13 @@ import { emitChartsRequest, emitPortfolioRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
+import { atom, useRecoilValue } from 'recoil';
+
+export const addressCopiedToastAtom = atom({
+  default: false,
+  key: 'addressCopiedToast',
+});
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -239,6 +246,8 @@ export default function WalletScreen() {
     navigate(Routes.QR_SCANNER_SCREEN);
   }, [navigate]);
 
+  const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
+
   const isLoadingAssets =
     useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
 
@@ -271,6 +280,9 @@ export default function WalletScreen() {
         network={currentNetwork}
         walletBriefSectionsData={walletBriefSectionsData}
       />
+      <ToastPositionContainer>
+        <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" />
+      </ToastPositionContainer>
     </WalletPage>
   );
 }
