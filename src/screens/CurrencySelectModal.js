@@ -48,6 +48,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
+import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 
 const storage = new MMKV();
 const getHasShownWarning = () =>
@@ -472,8 +473,8 @@ export default function CurrencySelectModal() {
     ],
   }));
 
-  const crosschainEnabled = false;
-  const NetworkSwitcher = crosschainEnabled
+  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+  const NetworkSwitcher = !crosschainEnabled
     ? NetworkSwitcherv1
     : NetworkSwitcherv2;
 
