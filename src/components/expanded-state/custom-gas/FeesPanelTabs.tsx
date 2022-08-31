@@ -48,7 +48,6 @@ const TabPill = ({
           background="accent"
           height="30px"
           paddingHorizontal="10px"
-          paddingVertical="5px"
           borderRadius={15}
           alignItems="center"
           style={{
@@ -59,21 +58,18 @@ const TabPill = ({
             elevation: 5,
           }}
         >
-          <Inset vertical="4px">
-            <Inline alignVertical="bottom">
-              <Text
-                color={{
-                  custom: isSelected
-                    ? colors.whiteLabel
-                    : colors.alpha(color || colors.appleBlue, 0.9),
-                }}
-                align="center"
-                size="16px"
-                weight="heavy"
-              >
-                {upperFirst(label)}
-              </Text>
-            </Inline>
+          <Inset vertical={{ custom: 8 }}>
+            <Text
+              color={{
+                custom: isSelected
+                  ? colors.whiteLabel
+                  : colors.alpha(color || colors.appleBlue, 0.9),
+              }}
+              align="center"
+              weight="heavy"
+            >
+              {upperFirst(label)}
+            </Text>
           </Inset>
         </Box>
       </AccentColorProvider>
