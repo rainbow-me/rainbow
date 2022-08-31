@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import {
   useIsFocused,
   useNavigation,
@@ -45,28 +46,10 @@ const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
 
 const WARNING_SEPARATOR = '·';
-const LOWER_THAN_SUGGESTED = 'Low ' + WARNING_SEPARATOR + ' may get stuck';
-const HIGHER_THAN_NECESSARY = 'High ' + WARNING_SEPARATOR + ' overpaying';
-
-const MAX_BASE_FEE_TOO_LOW_ERROR =
-  'Low ' + WARNING_SEPARATOR + ' likely to fail';
-const TIP_TOO_LOW_ERROR = 'Low ' + WARNING_SEPARATOR + ' likely to fail';
-
-const ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED =
-  'Setting a higher miner tip is recommended to avoid issues.';
-const ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED =
-  'Setting a higher max base fee is recommended to avoid issues.';
-const ALERT_MESSAGE_LOWER =
-  'Double check that you entered the correct amount—you’re likely paying more than you need to!';
-const ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED =
-  'Low max base fee–transaction may get stuck!';
-const ALERT_TITLE_HIGHER_MINER_TIP_NEEDED =
-  'Low miner tip–transaction may get stuck!';
-const ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED = 'High max base fee!';
-const ALERT_TITLE_LOWER_MINER_TIP_NEEDED = 'High miner tip!';
-
 const FOCUS_TO_MAX_BASE_FEE = 'focusToMaxBaseFee';
 const FOCUS_TO_MINER_TIP = 'focusToMinerTip';
+const MINER_TIP_TYPE = 'minerTip';
+const MAX_BASE_FEE_TYPE = 'maxBaseFee';
 
 export default function FeesPanel({
   currentGasTrend,
@@ -302,7 +285,6 @@ export default function FeesPanel({
       const newGweiMaxBaseFee = toFixedDecimals(add(maxBaseFee, feePerGas), 0);
 
       const newMaxBaseFee = parseGasFeeParam(gweiToWei(newGweiMaxBaseFee));
-
       if (greaterThan(0, newMaxBaseFee.amount)) return;
 
       setCustomFees({
@@ -313,7 +295,7 @@ export default function FeesPanel({
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
-        maxFeePerGas: newMaxBaseFee,
+        maxBaseFee: newMaxBaseFee,
       };
       updateToCustomGasFee(newGasParams);
     },
@@ -488,7 +470,7 @@ export default function FeesPanel({
         isZero(maxBaseFee) ||
         greaterThan(multiply(0.1, maxBaseFeeToValidate), maxBaseFee)
       ) {
-        setMaxBaseFeeError(MAX_BASE_FEE_TOO_LOW_ERROR);
+        setMaxBaseFeeError(lang.t('gas.max_base_fee_too_low_error'));
       } else {
         setMaxBaseFeeError(null);
       }
@@ -498,7 +480,7 @@ export default function FeesPanel({
           maxBaseFee
         )
       ) {
-        setMaxBaseFeeWarning(LOWER_THAN_SUGGESTED);
+        setMaxBaseFeeWarning(lang.t('gas.lower_than_suggested'));
       } else {
         setMaxBaseFeeWarning(null);
       }
@@ -513,7 +495,7 @@ export default function FeesPanel({
         isZero(maxPriorityFee) ||
         greaterThan(1, maxPriorityFee)
       ) {
-        setMaxPriorityFeeError(TIP_TOO_LOW_ERROR);
+        setMaxPriorityFeeError(lang.t('gas.tip_too_low_error'));
       } else {
         setMaxPriorityFeeError(null);
       }
@@ -529,7 +511,7 @@ export default function FeesPanel({
           maxPriorityFee
         )
       ) {
-        setMaxPriorityFeeWarning(LOWER_THAN_SUGGESTED);
+        setMaxPriorityFeeWarning(lang.t('gas.lower_than_suggested'));
       } else if (
         // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
         greaterThan(
@@ -542,7 +524,7 @@ export default function FeesPanel({
           )
         )
       ) {
-        setMaxPriorityFeeWarning(HIGHER_THAN_NECESSARY);
+        setMaxPriorityFeeWarning(lang.t('gas.higher_than_suggested'));
       } else {
         setMaxPriorityFeeWarning(null);
       }
@@ -556,7 +538,8 @@ export default function FeesPanel({
 
   const alertMaxBaseFee = useCallback(
     callback => {
-      const highAlert = maxBaseFeeWarning === HIGHER_THAN_NECESSARY;
+      const highAlert =
+        maxBaseFeeWarning === lang.t('gas.higher_than_suggested');
       Alert({
         buttons: [
           {
@@ -570,11 +553,11 @@ export default function FeesPanel({
           },
         ],
         message: highAlert
-          ? ALERT_MESSAGE_LOWER
-          : ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED,
+          ? lang.t('gas.alert_message_lower')
+          : lang.t('gas.alert_message_higher_max_base_fee_needed'),
         title: highAlert
-          ? ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED
-          : ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED,
+          ? lang.t('gas.alert_title_lower_max_base_fee_needed')
+          : lang.t('gas.alert_title_higher_max_base_fee_needed'),
       });
     },
     [maxBaseFeeWarning, onAlertProceeded, openCustomOptions]
@@ -582,7 +565,8 @@ export default function FeesPanel({
 
   const alertMaxPriority = useCallback(
     callback => {
-      const highAlert = maxPriorityFeeWarning === HIGHER_THAN_NECESSARY;
+      const highAlert =
+        maxPriorityFeeWarning === lang.t('gas.higher_than_suggested');
       Alert({
         buttons: [
           {
@@ -596,11 +580,11 @@ export default function FeesPanel({
           },
         ],
         message: highAlert
-          ? ALERT_MESSAGE_LOWER
-          : ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED,
+          ? lang.t('gas.alert_message_lower')
+          : lang.t('gas.alert_message_higher_miner_tip_needed'),
         title: highAlert
-          ? ALERT_TITLE_LOWER_MINER_TIP_NEEDED
-          : ALERT_TITLE_HIGHER_MINER_TIP_NEEDED,
+          ? lang.t('gas.alert_title_lower_miner_tip_needed')
+          : lang.t('gas.alert_title_higher_miner_tip_needed'),
       });
     },
     [maxPriorityFeeWarning, onAlertProceeded, openCustomOptions]
@@ -712,7 +696,12 @@ export default function FeesPanel({
           <Box paddingBottom={{ custom: 9 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
-                {renderRowLabel('Current base fee', trendType, null, null)}
+                {renderRowLabel(
+                  lang.t('gas.current_base_fee'),
+                  trendType,
+                  null,
+                  null
+                )}
               </Box>
               <Box
                 as={ButtonPressAnimation}
@@ -733,8 +722,8 @@ export default function FeesPanel({
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
                 {renderRowLabel(
-                  'Max base fee',
-                  'maxBaseFee',
+                  lang.t('gas.max_base_fee'),
+                  MAX_BASE_FEE_TYPE,
                   maxBaseFeeError,
                   maxBaseFeeWarning
                 )}
@@ -761,8 +750,8 @@ export default function FeesPanel({
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
                 {renderRowLabel(
-                  'Miner tip',
-                  `minerTip`,
+                  lang.t('gas.miner_tip'),
+                  MINER_TIP_TYPE,
                   maxPriorityFeeError,
                   maxPriorityFeeWarning
                 )}
@@ -788,7 +777,7 @@ export default function FeesPanel({
           <Box paddingTop={{ custom: 9 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Text size="14px" weight="heavy">
-                Max transaction fee
+                {lang.t('gas.max_transaction_fee')}
               </Text>
               <Text size="14px" weight="heavy">
                 {maxFee}

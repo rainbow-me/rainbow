@@ -75,7 +75,9 @@ const checkGasReady = (
   return Boolean(gasValue?.amount) && Boolean(txFeeValue?.value?.amount);
 };
 
-export default function useGas({ nativeAsset }: { nativeAsset?: any } = {}) {
+export default function useGas({
+  nativeAsset,
+}: { nativeAsset?: ParsedAddressAsset } = {}) {
   const dispatch = useDispatch();
 
   const gasData: {
