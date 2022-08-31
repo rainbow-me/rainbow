@@ -7,7 +7,7 @@ const WALLET_ADDRESS_COORDS = { x: 210, y: 185 };
 const PROFILE_AVATAR_COORDS = { x: 210, y: 125 };
 const PROFILE_ADDRESS_COORDS = { x: 210, y: 195 };
 const DISMISS_AVATAR_BUILDER_COORDS = { x: 20, y: 90 };
-const RAINBOW_TEST_WALLET = 'team2bestteam.eth';
+const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 const RAINBOW_WALLET = 'rainbowwallet.eth';
 const EMPTY_WALLET = '0x6791da9CCd95405e73d6a1117d02Dc81c4E58775';
 
