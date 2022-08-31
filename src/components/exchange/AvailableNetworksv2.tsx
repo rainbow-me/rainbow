@@ -11,13 +11,15 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils } from '@/utils';
-import { ContextMenuButton } from '../context-menu';
 import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
 import { AssetType, RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { ButtonPressAnimation } from '../animations';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+
+const NOOP = () => null;
 
 type implementation = { address: EthereumAddress; decimals: number };
 
@@ -58,10 +60,8 @@ const AvailableNetworksv2 = ({
     shouldUpdate: true,
     type: ExchangeModalTypes.swap,
   });
-
-  const handleAvailableNetworksPress = useCallback(
-    ({ nativeEvent: { actionKey: network } }) => {
-      const chosenNetwork = network ?? availableNetworks[0];
+  const convertAssetAndNavigate = useCallback(
+    (chosenNetwork: Network) => {
       const newAsset = asset;
 
       // we need to convert the mainnet asset to the selected network's
@@ -75,10 +75,6 @@ const AvailableNetworksv2 = ({
 
       goBack();
       navigate(Routes.EXCHANGE_MODAL, {
-        chainId: ethereumUtils.getChainIdFromNetwork(chosenNetwork),
-        defaultOutputAsset: newAsset,
-        fromDiscover: true,
-        onSelectCurrency: updateInputCurrency,
         params: {
           fromDiscover: true,
           ignoreInitialTypeCheck: true,
@@ -90,14 +86,26 @@ const AvailableNetworksv2 = ({
           }),
           onSelectCurrency: updateInputCurrency,
         },
-        type: CurrencySelectionTypes.input,
         screen: Routes.CURRENCY_SELECT_SCREEN,
       });
     },
-    [availableNetworks, asset, networks, goBack, navigate, updateInputCurrency]
+    [asset, goBack, navigate, networks, updateInputCurrency]
   );
 
-  const networkMenuConfig = () => {
+  const handlePressContextMenu = useCallback(
+    ({ nativeEvent: { actionKey: network } }) => {
+      const chosenNetwork = network;
+      convertAssetAndNavigate(chosenNetwork);
+    },
+    [convertAssetAndNavigate]
+  );
+
+  const handlePressButton = useCallback(() => {
+    const chosenNetwork = availableNetworks[0];
+    convertAssetAndNavigate(chosenNetwork);
+  }, [availableNetworks, convertAssetAndNavigate]);
+
+  const networkMenuItems = useMemo(() => {
     return Object.values(networkInfo)
       .filter(
         ({ exchange_enabled, value }) =>
@@ -107,7 +115,7 @@ const AvailableNetworksv2 = ({
       )
       .map(netInfo => ({
         actionKey: netInfo.value,
-        actionTitle: netInfo.longName || netInfo.name,
+        actionTitle: netInfo.name,
         icon: {
           iconType: 'ASSET',
           iconValue: `${
@@ -115,100 +123,103 @@ const AvailableNetworksv2 = ({
           }`,
         },
       }));
-  };
+  }, [networks]);
 
-  console.log(availableNetworks);
-  const Button =
-    availableNetworks.length > 1 ? ContextMenuButton : ButtonPressAnimation;
+  const MenuWrapper =
+    availableNetworks.length > 1 ? ContextMenuButton : React.Fragment;
 
   return (
     <>
-      <Button
-        menuItems={networkMenuConfig()}
-        menuTitle=""
+      <MenuWrapper
+        // @ts-expect-error overloaded props ContextMenuButton
+        menuConfig={{ menuItems: networkMenuItems, menuTitle: '' }}
         isMenuPrimaryAction
-        onPressMenuItem={handleAvailableNetworksPress}
-        onPress={handleAvailableNetworksPress}
+        onPressMenuItem={handlePressContextMenu}
         useActionSheetFallback={false}
       >
-        <Box
-          borderRadius={99}
-          padding="8px"
-          paddingHorizontal={{ custom: 16 }}
-          marginHorizontal={{ custom: marginHorizontal }}
-          justifyContent="center"
+        <ButtonPressAnimation
+          scaleTo={0.96}
+          onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
         >
-          <RadialGradient
-            {...radialGradientProps}
-            // @ts-expect-error overloaded props RadialGradient
+          <Box
             borderRadius={99}
-            radius={600}
-          />
-          <Inline alignVertical="center" alignHorizontal="justify">
-            <Inline alignVertical="center">
-              <Box style={{ flexDirection: 'row' }}>
-                {availableNetworks?.map((network, index) => {
-                  return (
-                    <Box
-                      background="body"
-                      key={`availbleNetwork-${network}`}
-                      marginLeft={{ custom: -6 }}
-                      style={{
-                        backgroundColor: colors.transparent,
-                        zIndex: availableNetworks?.length - index,
-                        borderRadius: 30,
-                      }}
-                      width={{ custom: 22 }}
-                    >
-                      {network !== 'mainnet' ? (
-                        <ChainBadge
-                          assetType={network}
-                          position="relative"
-                          size="small"
-                        />
-                      ) : (
-                        <CoinIcon
-                          address={ETH_ADDRESS}
-                          size={20}
-                          symbol={ETH_SYMBOL}
-                          forcedShadowColor={undefined}
-                          type={AssetType.token}
-                        />
-                      )}
-                    </Box>
-                  );
-                })}
-              </Box>
+            padding="8px"
+            paddingHorizontal={{ custom: 16 }}
+            marginHorizontal={{ custom: marginHorizontal }}
+            justifyContent="center"
+          >
+            <RadialGradient
+              {...radialGradientProps}
+              // @ts-expect-error overloaded props RadialGradient
+              borderRadius={99}
+              radius={600}
+            />
+            <Inline alignVertical="center" alignHorizontal="justify">
+              <Inline alignVertical="center">
+                <Box style={{ flexDirection: 'row' }}>
+                  {availableNetworks?.map((network, index) => {
+                    return (
+                      <Box
+                        background="body"
+                        key={`availbleNetwork-${network}`}
+                        marginLeft={{ custom: -6 }}
+                        style={{
+                          backgroundColor: colors.transparent,
+                          zIndex: availableNetworks?.length - index,
+                          borderRadius: 30,
+                        }}
+                        width={{ custom: 22 }}
+                      >
+                        {network !== 'mainnet' ? (
+                          <ChainBadge
+                            assetType={network}
+                            position="relative"
+                            size="small"
+                          />
+                        ) : (
+                          <CoinIcon
+                            address={ETH_ADDRESS}
+                            size={20}
+                            symbol={ETH_SYMBOL}
+                            forcedShadowColor={undefined}
+                            type={AssetType.token}
+                          />
+                        )}
+                      </Box>
+                    );
+                  })}
+                </Box>
 
-              <Box marginLeft={{ custom: 6 }}>
-                <Text
-                  color="secondary60"
-                  size="14px"
-                  weight="semibold"
-                  numberOfLines={2}
-                >
-                  {availableNetworks?.length > 1
-                    ? lang.t('expanded_state.asset.available_networks', {
-                        availableNetworks: availableNetworks?.length,
-                      })
-                    : lang.t('expanded_state.asset.available_networkv2', {
-                        availableNetwork:
-                          networkInfo[availableNetworks?.[0]].name,
-                      })}
-                </Text>
-              </Box>
+                <Box marginLeft={{ custom: 6 }}>
+                  <Text
+                    color="secondary60"
+                    size="14px"
+                    weight="semibold"
+                    numberOfLines={2}
+                  >
+                    {availableNetworks?.length > 1
+                      ? lang.t('expanded_state.asset.available_networks', {
+                          availableNetworks: availableNetworks?.length,
+                        })
+                      : lang.t('expanded_state.asset.available_networkv2', {
+                          availableNetwork:
+                            networkInfo[availableNetworks?.[0]].name,
+                        })}
+                  </Text>
+                </Box>
+              </Inline>
+              <Text
+                align="center"
+                color="secondary60"
+                size="14px"
+                weight="semibold"
+              >
+                {availableNetworks?.length > 1 ? '􀁱' : '􀯻'}
+              </Text>
             </Inline>
-            <Text
-              align="center"
-              color="secondary60"
-              size="14px"
-              weight="semibold"
-            >
-              {availableNetworks?.length > 1 ? '􀁱' : '􀯻'}
-            </Text>
-          </Inline>
-        </Box>
-      </Button>
+          </Box>
+        </ButtonPressAnimation>
+      </MenuWrapper>
       {hideDivider ? null : (
         <Divider
           color={colors.rowDividerExtraLight}
