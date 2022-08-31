@@ -395,38 +395,47 @@ const withBriefBalanceSection = (
 
   return [
     {
-      type: 'PROFILE_HEADER_COMPACT',
+      type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
       value: totalValue,
     },
     {
-      type: 'PROFILE_HEADER_AVATAR',
+      type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
+      uid: 'profile-avatar-space-before',
+    },
+    {
+      type: 'PROFILE_AVATAR_ROW',
       uid: 'profile-avatar',
     },
     {
-      type: 'PROFILE_HEADER_AVATAR_SPACE_AFTER',
+      type: 'PROFILE_AVATAR_ROW_SPACE_AFTER',
       uid: 'profile-avatar-space-after',
     },
     {
-      type: 'PROFILE_HEADER_NAME',
+      type: 'PROFILE_NAME_ROW',
       uid: 'profile-name',
     },
     {
-      type: 'PROFILE_HEADER_NAME_SPACE_AFTER',
+      type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
     {
-      type: 'PROFILE_HEADER_BALANCE',
+      type: 'PROFILE_BALANCE_ROW',
       uid: 'profile-balance',
       value: totalValue,
     },
     {
-      type: 'PROFILE_HEADER_BALANCE_SPACE_AFTER',
+      type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
       uid: 'profile-balance-space-after',
     },
     {
-      type: 'PROFILE_HEADER_ACTION_BUTTONS',
+      type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
+      value: totalValue,
+    },
+    {
+      type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
+      uid: 'profile-action-buttons-space-after',
       value: totalValue,
     },
     ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),

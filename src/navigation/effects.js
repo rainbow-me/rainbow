@@ -8,9 +8,9 @@ import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
 import { deviceUtils } from '@/utils';
 import {
-  AssetListProfileAvatarSize,
   EmojiAvatar,
-} from '@/components/asset-list/AssetListProfileHeader';
+  ProfileAvatarSize,
+} from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
@@ -359,7 +359,7 @@ export const emojiPresetWallet = {
             top: HeaderHeightWithStatusBar + 14,
           }}
         >
-          <EmojiAvatar size={AssetListProfileAvatarSize} />
+          <EmojiAvatar size={ProfileAvatarSize} />
         </View>
       </Animated.View>
     );

@@ -33,11 +33,11 @@ export { Context as StickyHeaderContext };
 function StickyHeaderInternal({
   name,
   children,
-  offset = 0,
+  visibleAtYPosition = 0,
 }: {
   name: string;
   children: React.ReactNode;
-  offset?: number;
+  visibleAtYPosition?: number;
 }) {
   const context = useContext(Context);
   if (!context) {
@@ -50,9 +50,9 @@ function StickyHeaderInternal({
   const animatedStyle = useMemo(
     () => ({
       backgroundColor: 'white',
-      opacity: offset
+      opacity: visibleAtYPosition
         ? position!.interpolate({
-            inputRange: [0, offset, offset],
+            inputRange: [0, visibleAtYPosition, visibleAtYPosition],
             outputRange: [0, 0, 1],
           })
         : 1,

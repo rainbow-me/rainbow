@@ -5,22 +5,20 @@ import { TokenFamilyHeaderHeight } from '../../../token-family';
 import { UniqueTokenRow } from '../../../unique-token';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { AssetListItemSkeletonHeight } from '../../AssetListItemSkeleton';
-import {
-  AssetListProfileActionButtonsHeight,
-  AssetListProfileAvatarHeight,
-  AssetListProfileBalanceHeight,
-  AssetListProfileHeaderHeight,
-  AssetListProfileNameHeight,
-} from '../../AssetListProfileHeader';
 import { CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
+import { ProfileActionButtonsRowHeight } from '../profile-header/ProfileActionButtonsRow';
+import { ProfileAvatarRowHeight } from '../profile-header/ProfileAvatarRow';
+import { ProfileNameRowHeight } from '../profile-header/ProfileNameRow';
+import { ProfileBalanceRowHeight } from '../profile-header/ProfileBalanceRow';
+import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader';
 
 type Dim = {
   width?: number;
   height: number;
 };
 const ViewDimensions: Record<CellType, Dim> = {
-  [CellType.PROFILE_HEADER_COMPACT]: { height: 52 },
+  [CellType.PROFILE_STICKY_HEADER]: { height: 52 },
   [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 16 },
   [CellType.COIN]: { height: CoinRowHeight },
   [CellType.COIN_DIVIDER]: { height: CoinDividerContainerHeight },
@@ -28,16 +26,17 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.SAVINGS_HEADER]: { height: SavingsListHeader.height },
   [CellType.SAVINGS]: { height: SavingsCoinRowHeight },
   [CellType.POOLS_HEADER]: { height: SavingsListHeader.height },
-  [CellType.PROFILE_HEADER_ACTION_BUTTONS]: {
-    height: AssetListProfileActionButtonsHeight - 19,
+  [CellType.PROFILE_ACTION_BUTTONS_ROW]: {
+    height: ProfileActionButtonsRowHeight - ProfileStickyHeaderHeight,
   },
-  [CellType.PROFILE_HEADER_ACTION_BUTTONS_SPACE_AFTER]: { height: 15 },
-  [CellType.PROFILE_HEADER_AVATAR]: { height: AssetListProfileAvatarHeight },
-  [CellType.PROFILE_HEADER_AVATAR_SPACE_AFTER]: { height: 15 },
-  [CellType.PROFILE_HEADER_NAME]: { height: AssetListProfileNameHeight },
-  [CellType.PROFILE_HEADER_NAME_SPACE_AFTER]: { height: 19 },
-  [CellType.PROFILE_HEADER_BALANCE]: { height: AssetListProfileBalanceHeight },
-  [CellType.PROFILE_HEADER_BALANCE_SPACE_AFTER]: { height: 24 },
+  [CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER]: { height: 24 },
+  [CellType.PROFILE_AVATAR_ROW]: { height: ProfileAvatarRowHeight },
+  [CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE]: { height: 8 },
+  [CellType.PROFILE_AVATAR_ROW_SPACE_AFTER]: { height: 15 },
+  [CellType.PROFILE_NAME_ROW]: { height: ProfileNameRowHeight },
+  [CellType.PROFILE_NAME_ROW_SPACE_AFTER]: { height: 19 },
+  [CellType.PROFILE_BALANCE_ROW]: { height: ProfileBalanceRowHeight },
+  [CellType.PROFILE_BALANCE_ROW_SPACE_AFTER]: { height: 24 },
   [CellType.UNISWAP_POOL]: { height: CoinRowHeight },
   [CellType.NFTS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.NFTS_HEADER_SPACE_BEFORE]: { height: 24 },

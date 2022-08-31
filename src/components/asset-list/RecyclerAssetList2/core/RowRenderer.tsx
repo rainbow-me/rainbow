@@ -1,13 +1,5 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
-import {
-  AssetListProfileActionButtons,
-  AssetListProfileAvatar,
-  AssetListProfileBalance,
-  AssetListProfileHeaderCompact,
-  AssetListProfileName,
-  AssetListProfileWrapper,
-} from '../../AssetListProfileHeader';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
@@ -30,6 +22,12 @@ import {
   UniswapPoolExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
+import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
+import { ProfileStickyHeader } from '../profile-header/ProfileStickyHeader';
+import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsRow';
+import { ProfileAvatarRow } from '../profile-header/ProfileAvatarRow';
+import { ProfileBalanceRow } from '../profile-header/ProfileBalanceRow';
+import { ProfileNameRow } from '../profile-header/ProfileNameRow';
 
 function rowRenderer(
   type: CellType,
@@ -44,10 +42,11 @@ function rowRenderer(
     case CellType.NFT_SPACE_AFTER:
     case CellType.NFTS_HEADER_SPACE_AFTER:
     case CellType.NFTS_HEADER_SPACE_BEFORE:
-    case CellType.PROFILE_HEADER_ACTION_BUTTONS_SPACE_AFTER:
-    case CellType.PROFILE_HEADER_AVATAR_SPACE_AFTER:
-    case CellType.PROFILE_HEADER_BALANCE_SPACE_AFTER:
-    case CellType.PROFILE_HEADER_NAME_SPACE_AFTER:
+    case CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER:
+    case CellType.PROFILE_AVATAR_ROW_SPACE_AFTER:
+    case CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE:
+    case CellType.PROFILE_BALANCE_ROW_SPACE_AFTER:
+    case CellType.PROFILE_NAME_ROW_SPACE_AFTER:
     case CellType.SAVINGS_HEADER_SPACE_BEFORE:
       return null;
     case CellType.COIN_DIVIDER:
@@ -60,8 +59,8 @@ function rowRenderer(
           extendedState={extendedState}
         />
       );
-    case CellType.PROFILE_HEADER_COMPACT:
-      return <AssetListProfileHeaderCompact />;
+    case CellType.PROFILE_STICKY_HEADER:
+      return <ProfileStickyHeader />;
     case CellType.COIN:
       return (
         <FastBalanceCoinRow
@@ -82,31 +81,31 @@ function rowRenderer(
       return (
         <WrappedPoolsListHeader value={(data as PoolsHeaderExtraData).value} />
       );
-    case CellType.PROFILE_HEADER_ACTION_BUTTONS:
+    case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
-        <AssetListProfileWrapper>
-          <AssetListProfileActionButtons />
-        </AssetListProfileWrapper>
+        <ProfileRowWrapper>
+          <ProfileActionButtonsRow />
+        </ProfileRowWrapper>
       );
-    case CellType.PROFILE_HEADER_AVATAR:
+    case CellType.PROFILE_AVATAR_ROW:
       return (
-        <AssetListProfileWrapper>
-          <AssetListProfileAvatar />
-        </AssetListProfileWrapper>
+        <ProfileRowWrapper>
+          <ProfileAvatarRow />
+        </ProfileRowWrapper>
       );
-    case CellType.PROFILE_HEADER_BALANCE:
+    case CellType.PROFILE_BALANCE_ROW:
       return (
-        <AssetListProfileWrapper>
-          <AssetListProfileBalance
+        <ProfileRowWrapper>
+          <ProfileBalanceRow
             totalValue={(data as AssetsHeaderExtraData).value}
           />
-        </AssetListProfileWrapper>
+        </ProfileRowWrapper>
       );
-    case CellType.PROFILE_HEADER_NAME:
+    case CellType.PROFILE_NAME_ROW:
       return (
-        <AssetListProfileWrapper>
-          <AssetListProfileName />
-        </AssetListProfileWrapper>
+        <ProfileRowWrapper>
+          <ProfileNameRow />
+        </ProfileRowWrapper>
       );
     case CellType.UNISWAP_POOL:
       return (
