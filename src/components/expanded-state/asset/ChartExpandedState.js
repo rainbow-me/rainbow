@@ -17,6 +17,9 @@ import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
+import useExperimentalFlag, {
+  CROSSCHAIN_SWAPS,
+} from '@/config/experimentalHooks';
 import {
   BuyActionButton,
   SendActionButton,
@@ -323,8 +326,8 @@ export default function ChartExpandedState({ asset }) {
 
   const { colors } = useTheme();
 
-  const crosschainEnabled = false;
-  const AvailableNetworks = crosschainEnabled
+  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+  const AvailableNetworks = !crosschainEnabled
     ? AvailableNetworksv1
     : AvailableNetworksv2;
 
