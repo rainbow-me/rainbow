@@ -3,11 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import usePrevious from './usePrevious';
 import {
+  CurrentBlockParams,
   GasFee,
   GasFeeParams,
+  GasFeeParamsBySpeed,
+  GasFeesBySpeed,
   LegacyGasFee,
   LegacyGasFeeParams,
   ParsedAddressAsset,
+  SelectedGasFee,
 } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
 import networkTypes, { Network } from '@/helpers/networkTypes';
@@ -50,7 +54,7 @@ const checkValidGas = (
   const isL2 = isL2Network(network);
   const gasValue = isL2
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
-    : (selectedGasParams as GasFeeParams)?.maxFeePerGas;
+    : (selectedGasParams as GasFeeParams)?.maxBaseFee;
   const isValidGas =
     Boolean(gasValue?.amount) && greaterThan(gasValue?.amount, 0);
   return isValidGas;
@@ -64,7 +68,7 @@ const checkGasReady = (
   const isL2 = isL2Network(network);
   const gasValue = isL2
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
-    : (selectedGasParams as GasFeeParams)?.maxFeePerGas;
+    : (selectedGasParams as GasFeeParams)?.maxBaseFee;
   const txFeeValue = isL2
     ? (txFee as LegacyGasFee)?.estimatedFee
     : (txFee as GasFee)?.maxFee;
@@ -74,7 +78,16 @@ const checkGasReady = (
 export default function useGas({ nativeAsset }: { nativeAsset?: any } = {}) {
   const dispatch = useDispatch();
 
-  const gasData = useSelector(
+  const gasData: {
+    currentBlockParams: CurrentBlockParams;
+    customGasFeeModifiedByUser: boolean;
+    gasFeeParamsBySpeed: GasFeeParamsBySpeed;
+    gasFeesBySpeed: GasFeesBySpeed;
+    gasLimit: string;
+    selectedGasFee: SelectedGasFee;
+    selectedGasFeeOption: string;
+    txNetwork: Network;
+  } = useSelector(
     ({
       gas: {
         currentBlockParams,

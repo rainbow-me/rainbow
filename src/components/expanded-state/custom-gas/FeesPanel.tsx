@@ -121,7 +121,7 @@ export default function FeesPanel({
   }
 
   const [customFees, setCustomFees] = useState({
-    customMaxBaseFee: gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei,
+    customMaxBaseFee: gasFeeParamsBySpeed?.[CUSTOM]?.maxBaseFee?.gwei,
     customMaxPriorityFee:
       gasFeeParamsBySpeed?.[CUSTOM]?.maxPriorityFeePerGas?.gwei,
   });
@@ -146,7 +146,7 @@ export default function FeesPanel({
   const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
 
   const updatedCustomMaxBaseFee =
-    gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei;
+    gasFeeParamsBySpeed?.[CUSTOM]?.maxBaseFee?.gwei;
   const updatedCustomMaxPriorityFee =
     gasFeeParamsBySpeed?.[CUSTOM]?.maxPriorityFeePerGas?.gwei;
 
@@ -177,10 +177,7 @@ export default function FeesPanel({
     const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei;
     const maxBaseFee = selectedOptionIsCustom
       ? customMaxBaseFee
-      : toFixedDecimals(
-          selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0,
-          0
-        );
+      : toFixedDecimals(selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei || 0, 0);
 
     const maxPriorityFee = selectedOptionIsCustom
       ? customMaxPriorityFee
@@ -189,7 +186,7 @@ export default function FeesPanel({
     return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
   }, [
     selectedGasFee?.gasFee?.maxFee?.native?.value?.display,
-    selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+    selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei,
     selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei,
     currentBlockParams?.baseFeePerGas?.gwei,
     selectedOptionIsCustom,
@@ -285,7 +282,7 @@ export default function FeesPanel({
       if (greaterThan(0, newMaxPriorityFeePerGas.amount)) return;
 
       setCustomFees({
-        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei,
         customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei,
       });
 
@@ -307,27 +304,23 @@ export default function FeesPanel({
   const updateFeePerGas = useCallback(
     feePerGas => {
       setLastFocusedInputHandle(maxBaseFieldRef);
-      const maxFeePerGas =
-        selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei ?? 0;
+      const maxBaseFee = selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei ?? 0;
 
-      const newGweiMaxFeePerGas = toFixedDecimals(
-        add(maxFeePerGas, feePerGas),
-        0
-      );
+      const newGweiMaxBaseFee = toFixedDecimals(add(maxBaseFee, feePerGas), 0);
 
-      const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
+      const newMaxBaseFee = parseGasFeeParam(gweiToWei(newGweiMaxBaseFee));
 
-      if (greaterThan(0, newMaxFeePerGas.amount)) return;
+      if (greaterThan(0, newMaxBaseFee.amount)) return;
 
       setCustomFees({
-        customMaxBaseFee: newMaxFeePerGas?.gwei,
+        customMaxBaseFee: newMaxBaseFee?.gwei,
         customMaxPriorityFee:
           selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei,
       });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
-        maxFeePerGas: newMaxFeePerGas,
+        maxFeePerGas: newMaxBaseFee,
       };
       updateToCustomGasFee(newGasParams);
     },
@@ -383,7 +376,7 @@ export default function FeesPanel({
       if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
 
       setCustomFees({
-        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei,
         customMaxPriorityFee: text,
       });
 

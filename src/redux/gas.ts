@@ -235,7 +235,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   newGasFeesBySpeed[CUSTOM] = customGasFees;
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
-    gasParams.maxFeePerGas.amount,
+    gasParams.maxBaseFee.amount,
     gasParams.maxPriorityFeePerGas.amount,
     blocksToConfirmation
   );

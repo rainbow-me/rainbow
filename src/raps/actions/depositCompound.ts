@@ -89,8 +89,8 @@ const depositCompound = async (
 
   const transactionParams = {
     gasLimit: getDepositGasLimit(tokenToDeposit),
-    maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
 
