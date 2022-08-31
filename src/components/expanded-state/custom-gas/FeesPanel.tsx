@@ -227,14 +227,20 @@ export default function FeesPanel({
       const openHelper = () => openGasHelper(type);
 
       return (
-        <ButtonPressAnimation onPress={openHelper}>
+        <Box
+          as={ButtonPressAnimation}
+          paddingVertical="8px"
+          marginVertical="-8px"
+          // @ts-expect-error
+          onPress={openHelper}
+        >
           <NewText size="14px" weight="heavy">
             {`${label} `}
             <NewText color={{ custom: color }} weight="bold">
               {text}
             </NewText>
           </NewText>
-        </ButtonPressAnimation>
+        </Box>
       );
     },
     [colors, openGasHelper, selectedOptionIsCustom]
@@ -695,7 +701,11 @@ export default function FeesPanel({
     <Box as={KeyboardAvoidingView}>
       <Inset bottom="12px">
         <Inline alignHorizontal="right">
-          <ButtonPressAnimation
+          <Box
+            as={ButtonPressAnimation}
+            paddingVertical="8px"
+            marginVertical="-8px"
+            // @ts-expect-error
             onPress={() => openGasHelper(trendType)}
             scaleTo={1}
           >
@@ -708,12 +718,12 @@ export default function FeesPanel({
             >
               {GAS_TRENDS[currentGasTrend]?.label}
             </NewText>
-          </ButtonPressAnimation>
+          </Box>
         </Inline>
       </Inset>
-      <Rows space="15px">
+      <Rows space={{ custom: 16 }}>
         <Row>
-          <Box paddingBottom="10px">
+          <Box paddingBottom={{ custom: 9 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
                 {renderRowLabel('Current base fee', trendType, null, null)}
@@ -789,7 +799,7 @@ export default function FeesPanel({
         </Row>
 
         <Row>
-          <Box paddingTop="10px">
+          <Box paddingTop={{ custom: 9 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <NewText size="14px" weight="heavy">
                 Max transaction fee

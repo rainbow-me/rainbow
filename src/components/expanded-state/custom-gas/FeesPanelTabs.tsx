@@ -57,6 +57,7 @@ const TabPill = ({
             shadowOffset: { height: 4, width: 0 },
             shadowOpacity: 0.3,
             shadowRadius: 6,
+            elevation: 5,
           }}
         >
           <Inset vertical="4px">
@@ -120,7 +121,6 @@ export default function FeesPanelTabs({
           />
         </Box>
       ))}
-      <EdgeFade />
     </Inline>
   );
 }
