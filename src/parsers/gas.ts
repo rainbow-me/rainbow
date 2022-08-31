@@ -19,11 +19,7 @@ import {
 } from '@/entities';
 import { toHex } from '@/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
-import {
-  ethUnits,
-  supportedNativeCurrencies,
-  timeUnits,
-} from '@/references';
+import { ethUnits, supportedNativeCurrencies, timeUnits } from '@/references';
 import {
   add,
   convertRawAmountToBalance,

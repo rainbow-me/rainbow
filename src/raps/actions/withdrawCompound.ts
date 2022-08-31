@@ -6,11 +6,7 @@ import {
   RapExchangeActionParameters,
   SwapActionParameters,
 } from '../common';
-import {
-  ProtocolType,
-  TransactionStatus,
-  TransactionType,
-} from '@/entities';
+import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 import { toHex } from '@/handlers/web3';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';

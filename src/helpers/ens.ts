@@ -31,10 +31,7 @@ import {
 } from '@/references';
 import { colors } from '@/styles';
 import { labelhash } from '@/utils';
-import {
-  encodeContenthash,
-  isValidContenthash,
-} from '@/utils/contenthash';
+import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
 
 export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;

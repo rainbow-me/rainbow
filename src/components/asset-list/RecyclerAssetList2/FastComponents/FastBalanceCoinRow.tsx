@@ -8,10 +8,7 @@ import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/as
 import { ExtendedState } from '../core/RawRecyclerList';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@/design-system';
-import {
-  useAccountAsset,
-  useCoinListFinishEditingOptions,
-} from '@/hooks';
+import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 
