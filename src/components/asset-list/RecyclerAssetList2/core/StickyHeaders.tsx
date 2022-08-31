@@ -69,7 +69,7 @@ function StickyHeaderInternal({
           ]
         : [],
     }),
-    [last, offset, position, range]
+    [last, visibleAtYPosition, position, range]
   );
   const ref = useRef<Animated.View>() as MutableRefObject<Animated.View>;
   const onLayout = useCallback(() => {
