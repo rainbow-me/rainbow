@@ -11,7 +11,6 @@ import React, {
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
-import AvailableNetworks from '../../AvailableNetworks';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
@@ -52,6 +51,8 @@ import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import AvailableNetworksv2 from '@/components/exchange/AvailableNetworksv2';
+import AvailableNetworksv1 from '@/components/AvailableNetworks';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -322,6 +323,11 @@ export default function ChartExpandedState({ asset }) {
 
   const { colors } = useTheme();
 
+  const crosschainEnabled = false;
+  const AvailableNetworks = crosschainEnabled
+    ? AvailableNetworksv1
+    : AvailableNetworksv2;
+
   const MoreButton = useCallback(() => {
     return (
       <View marginTop={-10}>
@@ -424,11 +430,7 @@ export default function ChartExpandedState({ asset }) {
         />
       )}
       {networks && !hasBalance && (
-        <AvailableNetworks
-          asset={assetWithPrice}
-          colors={colors}
-          networks={networks}
-        />
+        <AvailableNetworks asset={assetWithPrice} networks={networks} />
       )}
       {!isL2 && (
         <CarouselWrapper

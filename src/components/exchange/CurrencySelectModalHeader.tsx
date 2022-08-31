@@ -63,6 +63,7 @@ export default function CurrencySelectModalHeader({
     navigate(Routes.MAIN_EXCHANGE_SCREEN);
   }, [dangerouslyGetState, handleBackButton, navigate]);
 
+  console.log(defaultOutputAsset);
   return (
     <HeaderContainer>
       {/** @ts-expect-error JavaScript component */}
@@ -82,7 +83,12 @@ export default function CurrencySelectModalHeader({
       )}
       {showCoinIcon && (
         <Inset right="4px" top={android ? '2px' : '3px'}>
-          <CoinIcon size={20} {...defaultOutputAsset} ignoreBadge />
+          <CoinIcon
+            size={28}
+            {...defaultOutputAsset}
+            badgeSize="tiny"
+            badgeXPosition={-3}
+          />
         </Inset>
       )}
       <Title>{title}</Title>

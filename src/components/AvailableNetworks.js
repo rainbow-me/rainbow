@@ -15,16 +15,17 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { ethereumUtils } from '@/utils';
+import { useTheme } from '@/theme';
 
-const AvailableNetworks = ({
+const AvailableNetworksv1 = ({
   asset,
   networks,
-  colors,
   hideDivider,
   marginBottom = 24,
   marginHorizontal = 19,
   prominent,
 }) => {
+  const { colors } = useTheme();
   const { navigate } = useNavigation();
 
   const radialGradientProps = {
@@ -142,4 +143,4 @@ const AvailableNetworks = ({
   );
 };
 
-export default AvailableNetworks;
+export default AvailableNetworksv1;
