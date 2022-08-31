@@ -12,7 +12,6 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { Alert } from '../../alerts';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
-import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text } from '../../text';
 import FeesGweiInput from './FeesGweiInput';
 import {
@@ -37,28 +36,37 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { gasUtils } from '@/utils';
+import {
+  Box,
+  Inline,
+  Inset,
+  Row,
+  Rows,
+  Text as NewText,
+} from '@/design-system';
 
 const Wrapper = styled(KeyboardAvoidingView)({});
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
-const PanelRow = styled(Row).attrs({
-  alignItems: 'center',
-  justify: 'space-between',
-})({});
+// const PanelRow = styled(Row).attrs({
+//   alignItems: 'center',
+//   justify: 'space-between',
+// })({});
 
 // GweiInputPill has a vertical padding of 10
-const MiddlePanelRow = styled(PanelRow)(padding.object(8, 0));
+// const MiddlePanelRow = styled(PanelRow)(padding.object(8, 0));
 
-const PanelRowThin = styled(Row).attrs({
-  justify: 'space-between',
-  paddingBottom: 5,
-})({});
+// const PanelRowThin = styled(Row).attrs({
+//   justify: 'space-between',
+//   paddingBottom: 5,
+// })({});
 
 const PanelLabel = styled(Text).attrs({
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})(margin.object(0, 12, 0, 0));
+})({});
+// (  margin.object(0, 12, 0, 0));
 
 // @ts-expect-error
 const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -81,9 +89,9 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   weight: 'heavy',
 }))(padding.object(0, 12, 0, 0));
 
-const PanelColumn = styled(Column).attrs(() => ({
-  justify: 'center',
-}))({});
+// const Column = styled(Column).attrs(() => ({
+//   justify: 'center',
+// }))({});
 
 // @ts-expect-error
 const Label = styled(Text).attrs(({ size }) => ({
@@ -272,18 +280,14 @@ export default function FeesPanel({
       const openHelper = () => openGasHelper(type);
 
       return (
-        <PanelColumn>
-          <ButtonPressAnimation onPress={openHelper}>
-            <Row>
-              <PanelLabel error={error} warning={warning}>
-                {`${label} `}
-                <Label color={color} weight="bold">
-                  {text}
-                </Label>
-              </PanelLabel>
-            </Row>
-          </ButtonPressAnimation>
-        </PanelColumn>
+        <ButtonPressAnimation onPress={openHelper}>
+          <NewText size="14px" weight="heavy">
+            {`${label} `}
+            <NewText color={{ custom: color }} weight="bold">
+              {text}
+            </NewText>
+          </NewText>
+        </ButtonPressAnimation>
       );
     },
     [colors, openGasHelper, selectedOptionIsCustom]
@@ -464,28 +468,32 @@ export default function FeesPanel({
 
       return (
         (error && (
-          <PanelError>
+          <NewText color={{ custom: colors.red }} size="14px" weight="heavy">
             {errorPrefix}
-            <Text
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              size="smedium"
+            <NewText
+              color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
+              size="14px"
               weight="bold"
             >
               {errorSuffix}
-            </Text>
-          </PanelError>
+            </NewText>
+          </NewText>
         )) ||
         (warning && (
-          <PanelWarning>
+          <NewText
+            color={{ custom: colors.yellowFavorite }}
+            size="14px"
+            weight="heavy"
+          >
             {warningPrefix}
-            <Text
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              size="smedium"
-              weight="bold"
+            <NewText
+              color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
+              size="14px"
+              weight="heavy"
             >
               {warningSuffix}
-            </Text>
-          </PanelWarning>
+            </NewText>
+          </NewText>
         ))
       );
     },
@@ -733,101 +741,103 @@ export default function FeesPanel({
   ]);
 
   return (
-    <Wrapper>
-      <PanelRowThin>
-        <PanelColumn />
-        <ButtonPressAnimation
-          onPress={() => openGasHelper(trendType)}
-          scaleTo={1}
-        >
-          <PanelColumn>
-            <GasTrendHeader color={GAS_TRENDS[currentGasTrend]?.color}>
+    <Box as={KeyboardAvoidingView}>
+      <Inset bottom="5px">
+        <Inline alignHorizontal="right">
+          <ButtonPressAnimation
+            onPress={() => openGasHelper(trendType)}
+            scaleTo={1}
+          >
+            <NewText
+              size="14px"
+              weight="heavy"
+              color={{
+                custom: GAS_TRENDS[currentGasTrend]?.color || colors.appleBlue,
+              }}
+            >
               {GAS_TRENDS[currentGasTrend]?.label}
-            </GasTrendHeader>
-          </PanelColumn>
-        </ButtonPressAnimation>
-      </PanelRowThin>
+            </NewText>
+          </ButtonPressAnimation>
+        </Inline>
+      </Inset>
+      <Rows space="19px">
+        <Row>
+          <Inline alignHorizontal="justify">
+            {renderRowLabel('Current base fee', trendType, null, null)}
+            <ButtonPressAnimation
+              onPress={() => openGasHelper(trendType)}
+              scaleTo={1}
+            >
+              <NewText size="14px" weight="heavy">
+                {formattedBaseFee}
+              </NewText>
+            </ButtonPressAnimation>
+          </Inline>
+        </Row>
 
-      <PanelRow justify="space-between" marginBottom={18}>
-        {renderRowLabel('Current base fee', trendType, null, null)}
-        <ButtonPressAnimation
-          onPress={() => openGasHelper(trendType)}
-          scaleTo={1}
-        >
-          <PanelColumn>
-            <PanelLabel>{formattedBaseFee}</PanelLabel>
-          </PanelColumn>
-        </ButtonPressAnimation>
-      </PanelRow>
+        <Row>
+          <Inline alignHorizontal="justify">
+            <Box>
+              {renderRowLabel(
+                'Max base fee',
+                'maxBaseFee',
+                maxBaseFeeError,
+                maxBaseFeeWarning
+              )}
+              {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
+            </Box>
+            <FeesGweiInput
+              buttonColor={colorForAsset}
+              inputRef={maxBaseFieldRef}
+              minusAction={substMaxFee}
+              onChange={onMaxBaseFeeChange}
+              onPress={handleMaxBaseInputGweiPress}
+              onBlur={() => null}
+              plusAction={addMaxFee}
+              testID="max-base-fee-input"
+              value={maxBaseFee}
+              editable
+            />
+          </Inline>
+        </Row>
 
-      <MiddlePanelRow>
-        <ColumnWithMargins
-          height={40}
-          justify="center"
-          margin={android ? -4 : 3}
-        >
-          {renderRowLabel(
-            'Max base fee',
-            'maxBaseFee',
-            maxBaseFeeError,
-            maxBaseFeeWarning
-          )}
-          {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
-        </ColumnWithMargins>
-        <PanelColumn>
-          <FeesGweiInput
-            buttonColor={colorForAsset}
-            inputRef={maxBaseFieldRef}
-            minusAction={substMaxFee}
-            onChange={onMaxBaseFeeChange}
-            onPress={handleMaxBaseInputGweiPress}
-            onBlur={() => null}
-            plusAction={addMaxFee}
-            testID="max-base-fee-input"
-            value={maxBaseFee}
-            editable
-          />
-        </PanelColumn>
-      </MiddlePanelRow>
+        <Row>
+          <Inline alignHorizontal="justify">
+            <Box>
+              {renderRowLabel(
+                'Miner tip',
+                `minerTip`,
+                maxPriorityFeeError,
+                maxPriorityFeeWarning
+              )}
+              {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
+            </Box>
+            <FeesGweiInput
+              buttonColor={colorForAsset}
+              editable={!flashbotTransaction}
+              inputRef={minerTipFieldRef}
+              minusAction={substMinerTip}
+              onChange={onMinerTipChange}
+              onPress={handleMinerTipInputGweiPress}
+              plusAction={addMinerTip}
+              testID="max-priority-fee-input"
+              value={maxPriorityFee}
+              onBlur={() => null}
+            />
+          </Inline>
+        </Row>
 
-      <MiddlePanelRow>
-        <ColumnWithMargins
-          height={40}
-          justify="center"
-          margin={android ? -4 : 3}
-        >
-          {renderRowLabel(
-            'Miner tip',
-            `minerTip`,
-            maxPriorityFeeError,
-            maxPriorityFeeWarning
-          )}
-          {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
-        </ColumnWithMargins>
-        <PanelColumn>
-          <FeesGweiInput
-            buttonColor={colorForAsset}
-            editable={!flashbotTransaction}
-            inputRef={minerTipFieldRef}
-            minusAction={substMinerTip}
-            onChange={onMinerTipChange}
-            onPress={handleMinerTipInputGweiPress}
-            plusAction={addMinerTip}
-            testID="max-priority-fee-input"
-            value={maxPriorityFee}
-            onBlur={() => null}
-          />
-        </PanelColumn>
-      </MiddlePanelRow>
-
-      <PanelRow marginTop={18}>
-        <PanelColumn>
-          <PanelLabel>Max transaction fee</PanelLabel>
-        </PanelColumn>
-        <PanelColumn>
-          <PanelLabel>{maxFee}</PanelLabel>
-        </PanelColumn>
-      </PanelRow>
-    </Wrapper>
+        <Row>
+          <Inline alignHorizontal="justify">
+            <NewText size="14px" weight="heavy">
+              Max transaction fee
+            </NewText>
+            <NewText size="14px" weight="heavy">
+              {maxFee}
+            </NewText>
+          </Inline>
+        </Row>
+      </Rows>
+    </Box>
   );
 }

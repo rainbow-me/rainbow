@@ -33,7 +33,7 @@ function useAndroidDisableGesturesOnFocus() {
   }, [isFocused, params]);
 }
 
-const FeesPanelWrapper = styled(Column)(margin.object(13, 12, 30, 24));
+const FeesPanelWrapper = styled(Column)(margin.object(14, 24, 24, 24));
 
 const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
