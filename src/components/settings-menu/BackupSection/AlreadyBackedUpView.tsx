@@ -5,21 +5,21 @@ import { View } from 'react-native';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
-import { analytics } from '@rainbow-me/analytics';
-import { AccentColorProvider, Box, Text } from '@rainbow-me/design-system';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { analytics } from '@/analytics';
+import { AccentColorProvider, Box, Text } from '@/design-system';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   useManageCloudBackups,
   useWalletCloudBackup,
   useWallets,
-} from '@rainbow-me/hooks';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { colors, position, shadow } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { colors, position, shadow } from '@/styles';
+import { useTheme } from '@/theme';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,
@@ -191,9 +191,17 @@ export default function AlreadyBackedUpView() {
         </Box>
         <Box paddingTop="42px">
           <AccentColorProvider color={colors.whiteLabel}>
-            <ButtonPressAnimation onPress={handleViewRecoveryPhrase}>
+            <ButtonPressAnimation
+              onPress={handleViewRecoveryPhrase}
+              style={
+                android && {
+                  // fix shadow clipping
+                  paddingBottom: 8,
+                }
+              }
+            >
               <Box
-                background="accent"
+                background="card"
                 borderRadius={56}
                 height={{ custom: 48 }}
                 justifyContent="center"

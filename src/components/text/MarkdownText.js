@@ -1,7 +1,7 @@
 import React from 'react';
 import Markdown from 'react-native-markdown-display';
 import Text from './Text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Paragraph = styled(Text)({
   marginBottom: 19,

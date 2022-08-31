@@ -5,7 +5,7 @@ import { PerformanceContextMap } from '../performance/PerformanceContextMap';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 

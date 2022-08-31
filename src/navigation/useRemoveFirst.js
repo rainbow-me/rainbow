@@ -1,4 +1,4 @@
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation } from '@/navigation';
 
 export function useRemoveFirst() {
   const { dispatch } = useNavigation();

@@ -1,11 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { emitAssetRequest } from '../redux/explorer';
 import { AppState } from '../redux/store';
-import { IndexToken } from '@rainbow-me/entities';
-import { getDPIBalance } from '@rainbow-me/handlers/dispersion';
+import { IndexToken } from '@/entities';
+import { getDPIBalance } from '@/handlers/dispersion';
 
 export default function useDPI() {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ export default function useDPI() {
     if (underlyingAddresses) {
       dispatch(emitAssetRequest(underlyingAddresses));
     }
-    return defiPulseData;
+    return defiPulseData ?? null;
   }, [dispatch]);
 
   const { data } = useQuery(['defiPulse'], fetchDPIData, {

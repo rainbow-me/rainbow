@@ -5,13 +5,12 @@ import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { position, shadow } from '@rainbow-me/styles';
+import { position, shadow } from '@/styles';
 
 const ButtonBorderRadius = 15;
 
 const sxFactory = (darkMode, colors) =>
   StyleSheet.create({
-    // eslint-disable-next-line react-native/no-unused-styles
     button: {
       ...position.centeredAsObject,
       ...shadow.buildAsObject(

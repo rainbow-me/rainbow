@@ -8,33 +8,6 @@
     "network_id": 1
   },
   {
-    "name": "Ethereum Ropsten",
-    "short_name": "rop",
-    "chain": "ETH",
-    "network": "ropsten",
-    "chain_id": 3,
-    "network_id": 3,
-    "testnet": true
-  },
-  {
-    "name": "Ethereum Rinkeby",
-    "short_name": "rin",
-    "chain": "ETH",
-    "network": "rinkeby",
-    "chain_id": 4,
-    "network_id": 4,
-    "testnet": true
-  },
-  {
-    "name": "Ethereum Kovan",
-    "short_name": "kov",
-    "chain": "ETH",
-    "network": "kovan",
-    "chain_id": 42,
-    "network_id": 42,
-    "testnet": true
-  },
-  {
     "name": "Ethereum Görli",
     "short_name": "goe",
     "chain": "ETH",

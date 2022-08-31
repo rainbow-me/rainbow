@@ -5,27 +5,27 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
-import { analytics } from '@rainbow-me/analytics';
-import { ENSRegistrationRecords } from '@rainbow-me/entities';
+import { analytics } from '@/analytics';
+import { ENSRegistrationRecords } from '@/entities';
 import {
   estimateENSTransactionGasLimit,
   formatRecordsForTransaction,
-} from '@rainbow-me/handlers/ens';
-import { toHex } from '@rainbow-me/handlers/web3';
-import { NetworkTypes } from '@rainbow-me/helpers';
+} from '@/handlers/ens';
+import { toHex } from '@/handlers/web3';
+import { NetworkTypes } from '@/helpers';
 import {
   ENSRegistrationTransactionType,
   getENSExecutionDetails,
   REGISTRATION_MODES,
-} from '@rainbow-me/helpers/ens';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+} from '@/helpers/ens';
+import { dataAddNewTransaction } from '@/redux/data';
 import {
   saveCommitRegistrationParameters,
   updateTransactionRegistrationParameters,
-} from '@rainbow-me/redux/ensRegistration';
-import store from '@rainbow-me/redux/store';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/redux/ensRegistration';
+import store from '@/redux/store';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 const executeCommit = async (
   name?: string,
   duration?: number,

@@ -14,8 +14,8 @@ import { AppState } from '@/redux/store';
 import {
   buildBriefWalletSectionsSelector,
   buildWalletSectionsSelector,
-} from '@rainbow-me/helpers/buildWalletSections';
-import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
+} from '@/helpers/buildWalletSections';
+import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData({
   type,

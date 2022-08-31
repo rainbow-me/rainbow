@@ -2,10 +2,10 @@ import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { Column } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
-import { useDimensions } from '@rainbow-me/hooks';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { removeLeadingZeros } from '@rainbow-me/utils';
+import { useDimensions } from '@/hooks';
+import { supportedNativeCurrencies } from '@/references';
+import styled from '@/styled-thing';
+import { removeLeadingZeros } from '@/utils';
 
 const footerMargin = getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(Column).attrs({

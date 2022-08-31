@@ -22,9 +22,9 @@ import {
   Space,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
-import Routes from '@rainbow-me/routes';
+} from '@/design-system';
+import { ImgixImage } from '@/components/images';
+import Routes from '@/navigation/routesNames';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();

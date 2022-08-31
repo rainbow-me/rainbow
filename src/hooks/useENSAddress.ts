@@ -1,8 +1,8 @@
-import { useQuery } from 'react-query';
-import { fetchPrimary } from '@rainbow-me/handlers/ens';
-import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { useQuery } from '@tanstack/react-query';
+import { fetchPrimary } from '@/handlers/ens';
+import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
+import { queryClient } from '@/react-query/queryClient';
+import { QueryConfig, UseQueryData } from '@/react-query/types';
 
 export const ensAddressQueryKey = (name: string) => ['ens-address', name];
 

@@ -1,5 +1,5 @@
 import XHRInterceptor from 'react-native/Libraries/Network/XHRInterceptor';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 let internalCounter = 0;
 

@@ -5,10 +5,10 @@ import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { AssetType } from '@rainbow-me/entities';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { borders } from '@rainbow-me/styles';
+import { AssetType } from '@/entities';
+import { useColorForAsset } from '@/hooks';
+import styled from '@/styled-thing';
+import { borders } from '@/styles';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;

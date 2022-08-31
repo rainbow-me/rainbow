@@ -13,19 +13,19 @@ import { Centered, Row } from '../layout';
 import APYPill from './APYPill';
 import SavingsListRowAnimatedNumber from './SavingsListRowAnimatedNumber';
 import SavingsListRowEmptyState from './SavingsListRowEmptyState';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   calculateAPY,
   calculateCompoundInterestInDays,
   formatSavingsAmount,
-} from '@rainbow-me/helpers/savings';
-import { useDimensions } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
-import ShadowStack from 'react-native-shadow-stack';
+} from '@/helpers/savings';
+import { useDimensions } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import { magicMemo } from '@/utils';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 60;

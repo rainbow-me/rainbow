@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { Docs } from '../../docs/types';
 import source from '../../docs/utils/source.macro';

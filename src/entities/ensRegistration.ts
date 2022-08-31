@@ -1,5 +1,5 @@
 import { EthereumAddress } from '.';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 
 export type Records = { [key in ENS_RECORDS]?: string };
 

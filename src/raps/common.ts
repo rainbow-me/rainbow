@@ -27,18 +27,18 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
-import { analytics } from '@rainbow-me/analytics';
-import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
+import { analytics } from '@/analytics';
+import { Asset, EthereumAddress, Records } from '@/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
   estimateENSRenewGasLimit,
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
-} from '@rainbow-me/handlers/ens';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import logger from 'logger';
+} from '@/handlers/ens';
+import { ExchangeModalTypes } from '@/helpers';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import logger from '@/utils/logger';
 
 const {
   commitENS,

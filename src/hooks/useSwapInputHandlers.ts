@@ -2,22 +2,22 @@ import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { isNativeAsset } from '@/handlers/assets';
+import { ExchangeModalTypes } from '@/helpers';
 import {
   greaterThan,
   multiply,
   subtract,
   toFixedDecimals,
-} from '@rainbow-me/helpers/utilities';
-import { useGas } from '@rainbow-me/hooks';
-import { AppState } from '@rainbow-me/redux/store';
+} from '@/helpers/utilities';
+import { useGas } from '@/hooks';
+import { AppState } from '@/redux/store';
 import {
   updateSwapInputAmount,
   updateSwapNativeAmount,
   updateSwapOutputAmount,
-} from '@rainbow-me/redux/swap';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/redux/swap';
+import { ethereumUtils } from '@/utils';
 
 export default function useSwapInputHandlers() {
   const dispatch = useDispatch();

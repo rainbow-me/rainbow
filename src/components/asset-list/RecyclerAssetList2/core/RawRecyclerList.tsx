@@ -22,14 +22,14 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 import {
   useAccountSettings,
   useCoinListEdited,
   useCoinListEditOptions,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { useTheme } from '@/theme';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;

@@ -2,12 +2,12 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
-import EditAction from '@rainbow-me/helpers/EditAction';
+import EditAction from '@/helpers/EditAction';
 import {
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
-} from '@rainbow-me/hooks';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ethereumUtils } from '@/utils';
 
 const emojiSpacing = ios ? '' : '  ';
 

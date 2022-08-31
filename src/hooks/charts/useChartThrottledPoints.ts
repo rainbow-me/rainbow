@@ -1,18 +1,17 @@
 import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
+import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
 import {
   useAccountSettings,
   useChartData,
   useChartDataLabels,
   useColorForAsset,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 
-import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { useNavigation } from '@/navigation';
+import { ETH_ADDRESS } from '@/references';
 
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-cool-modals/Nativ... Remove this comment to see the full error message
-import { ModalContext } from 'react-native-cool-modals/NativeStackView';
+import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 
 export const UniBalanceHeightDifference = 100;
 
