@@ -762,80 +762,92 @@ export default function FeesPanel({
       </Inset>
       <Rows space="19px">
         <Row>
-          <Inline alignHorizontal="justify">
-            {renderRowLabel('Current base fee', trendType, null, null)}
-            <ButtonPressAnimation
-              onPress={() => openGasHelper(trendType)}
-              scaleTo={1}
-            >
+          <Box height="40px" background="accent">
+            <Inline alignVertical="center" alignHorizontal="justify">
+              <Box>
+                {renderRowLabel('Current base fee', trendType, null, null)}
+              </Box>
+              <Box
+                as={ButtonPressAnimation}
+                // @ts-expect-error
+                onPress={() => openGasHelper(trendType)}
+                scaleTo={1}
+              >
+                <NewText size="14px" weight="heavy">
+                  {formattedBaseFee}
+                </NewText>
+              </Box>
+            </Inline>
+          </Box>
+        </Row>
+
+        <Row>
+          <Box height="40px" background="accent">
+            <Inline alignVertical="center" alignHorizontal="justify">
+              <Box>
+                {renderRowLabel(
+                  'Max base fee',
+                  'maxBaseFee',
+                  maxBaseFeeError,
+                  maxBaseFeeWarning
+                )}
+                {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
+              </Box>
+              <FeesGweiInput
+                buttonColor={colorForAsset}
+                inputRef={maxBaseFieldRef}
+                minusAction={substMaxFee}
+                onChange={onMaxBaseFeeChange}
+                onPress={handleMaxBaseInputGweiPress}
+                onBlur={() => null}
+                plusAction={addMaxFee}
+                testID="max-base-fee-input"
+                value={maxBaseFee}
+                editable
+              />
+            </Inline>
+          </Box>
+        </Row>
+
+        <Row>
+          <Box background="accent">
+            <Inline alignVertical="center" alignHorizontal="justify">
+              <Box>
+                {renderRowLabel(
+                  'Miner tip',
+                  `minerTip`,
+                  maxPriorityFeeError,
+                  maxPriorityFeeWarning
+                )}
+                {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
+              </Box>
+              <FeesGweiInput
+                buttonColor={colorForAsset}
+                editable={!flashbotTransaction}
+                inputRef={minerTipFieldRef}
+                minusAction={substMinerTip}
+                onChange={onMinerTipChange}
+                onPress={handleMinerTipInputGweiPress}
+                plusAction={addMinerTip}
+                testID="max-priority-fee-input"
+                value={maxPriorityFee}
+                onBlur={() => null}
+              />
+            </Inline>
+          </Box>
+        </Row>
+
+        <Row height="40px">
+          <Box height="40px" background="accent">
+            <Inline alignVertical="center" alignHorizontal="justify">
               <NewText size="14px" weight="heavy">
-                {formattedBaseFee}
+                Max transaction fee
               </NewText>
-            </ButtonPressAnimation>
-          </Inline>
-        </Row>
-
-        <Row>
-          <Inline alignHorizontal="justify">
-            <Box>
-              {renderRowLabel(
-                'Max base fee',
-                'maxBaseFee',
-                maxBaseFeeError,
-                maxBaseFeeWarning
-              )}
-              {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
-            </Box>
-            <FeesGweiInput
-              buttonColor={colorForAsset}
-              inputRef={maxBaseFieldRef}
-              minusAction={substMaxFee}
-              onChange={onMaxBaseFeeChange}
-              onPress={handleMaxBaseInputGweiPress}
-              onBlur={() => null}
-              plusAction={addMaxFee}
-              testID="max-base-fee-input"
-              value={maxBaseFee}
-              editable
-            />
-          </Inline>
-        </Row>
-
-        <Row>
-          <Inline alignHorizontal="justify">
-            <Box>
-              {renderRowLabel(
-                'Miner tip',
-                `minerTip`,
-                maxPriorityFeeError,
-                maxPriorityFeeWarning
-              )}
-              {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
-            </Box>
-            <FeesGweiInput
-              buttonColor={colorForAsset}
-              editable={!flashbotTransaction}
-              inputRef={minerTipFieldRef}
-              minusAction={substMinerTip}
-              onChange={onMinerTipChange}
-              onPress={handleMinerTipInputGweiPress}
-              plusAction={addMinerTip}
-              testID="max-priority-fee-input"
-              value={maxPriorityFee}
-              onBlur={() => null}
-            />
-          </Inline>
-        </Row>
-
-        <Row>
-          <Inline alignHorizontal="justify">
-            <NewText size="14px" weight="heavy">
-              Max transaction fee
-            </NewText>
-            <NewText size="14px" weight="heavy">
-              {maxFee}
-            </NewText>
-          </Inline>
+              <NewText size="14px" weight="heavy">
+                {maxFee}
+              </NewText>
+            </Inline>
+          </Box>
         </Row>
       </Rows>
     </Box>
