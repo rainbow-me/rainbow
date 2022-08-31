@@ -3,15 +3,7 @@ import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  Box,
-  Divider,
-  Inline,
-  Row,
-  Rows,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Box, Divider, Inline, Row, Rows, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';

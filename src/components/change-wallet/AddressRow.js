@@ -18,11 +18,7 @@ import {
 } from '@/helpers/emojiHandler';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, getFontSize } from '@/styles';
-import {
-  deviceUtils,
-  profileUtils,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { deviceUtils, profileUtils, showActionSheetWithOptions } from '@/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;

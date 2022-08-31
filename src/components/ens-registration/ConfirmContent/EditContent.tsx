@@ -2,14 +2,7 @@ import lang from 'i18n-js';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  Divider,
-  Inline,
-  Inset,
-  Row,
-  Rows,
-  Text,
-} from '@/design-system';
+import { Divider, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';

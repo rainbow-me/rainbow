@@ -14,10 +14,7 @@ import {
 import { Asset } from '@/entities';
 import { estimateSwapGasLimit } from '@/handlers/uniswap';
 import store from '@/redux/store';
-import {
-  ethUnits,
-  savingsAssetsListByUnderlying,
-} from '@/references';
+import { ethUnits, savingsAssetsListByUnderlying } from '@/references';
 import { add } from '@/helpers/utilities';
 import logger from '@/utils/logger';
 
