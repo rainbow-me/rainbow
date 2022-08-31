@@ -1,5 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import lang from 'i18n-js';
+// @ts-expect-error - JS module
+import { IS_TESTING } from 'react-native-dotenv';
 import * as React from 'react';
 import { Text as NativeText, PressableProps } from 'react-native';
 import Animated, {
@@ -30,9 +32,14 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { maybeSignUri } from '@/handlers/imgix';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
+import {
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+  NetworkTypes,
+} from '@/helpers';
 import {
   useAccountProfile,
+  useAccountSettings,
   useDimensions,
   useLatestCallback,
   useOnAvatarPress,
@@ -525,6 +532,11 @@ function CopyButton() {
 
   const handlePress = React.useCallback(() => {
     if (isDamaged) showWalletErrorAlert();
+
+    analytics.track('Tapped "Copy"', {
+      category: 'home screen',
+    });
+
     onNewEmoji?.current && onNewEmoji.current();
     Clipboard.setString(accountAddress);
   }, [accountAddress, isDamaged]);
@@ -560,6 +572,10 @@ function SwapButton() {
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      analytics.track('Tapped "Swap"', {
+        category: 'home screen',
+      });
+
       android && delayNext();
       navigate(Routes.EXCHANGE_MODAL, {
         fromDiscover: true,
@@ -589,6 +605,10 @@ function SendButton() {
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      analytics.track('Tapped "Send"', {
+        category: 'home screen',
+      });
+
       navigate(Routes.SEND_FLOW);
     } else {
       watchingAlert();
@@ -606,15 +626,19 @@ function MoreButton() {
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
+  const { network } = useAccountSettings();
 
-  const handlePressAddCash = () => {
+  const isAddCashAvailable =
+    IS_TESTING !== 'true' && network === NetworkTypes.mainnet;
+
+  const handlePressAddCash = React.useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
       return;
     }
 
-    analytics.track('Tapped Add Cash', {
-      category: 'add cash',
+    analytics.track('Tapped "Add Cash"', {
+      category: 'home screen',
     });
 
     if (ios) {
@@ -627,7 +651,15 @@ function MoreButton() {
         screen: Routes.WYRE_WEBVIEW,
       });
     }
-  };
+  }, [accountAddress, isDamaged, navigate]);
+
+  const handlePressQRCode = React.useCallback(() => {
+    analytics.track('Tapped "My QR Code"', {
+      category: 'home screen',
+    });
+
+    navigate(Routes.RECEIVE_MODAL);
+  }, [navigate]);
 
   const items = React.useMemo(
     () => ({
@@ -638,7 +670,7 @@ function MoreButton() {
     []
   );
   const options = [
-    items.addCash,
+    isAddCashAvailable ? items.addCash : null,
     items.myQRCode,
     ios ? items.cancel : null,
   ].filter(x => x);
@@ -661,7 +693,7 @@ function MoreButton() {
       handlePressAddCash();
     }
     if (options[e.nativeEvent.actionKey] === items.myQRCode) {
-      navigate(Routes.RECEIVE_MODAL);
+      handlePressQRCode();
     }
   });
 
