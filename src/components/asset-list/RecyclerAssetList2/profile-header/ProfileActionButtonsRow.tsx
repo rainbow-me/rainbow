@@ -131,14 +131,16 @@ function ActionButton({
   children,
   icon,
   onPress,
+  testID,
 }: {
   children: string;
   icon: string;
   onPress?: PressableProps['onPress'];
+  testID?: string;
 }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation onPress={onPress} scale={0.8}>
+    <ButtonPressAnimation onPress={onPress} scale={0.8} testID={testID}>
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"
@@ -228,7 +230,7 @@ function CopyButton() {
         // @ts-expect-error – JS component
         setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
       />
-      <ActionButton icon="􀐅" onPress={handlePress}>
+      <ActionButton icon="􀐅" onPress={handlePress} testID="copy-button">
         {lang.t('wallet.copy')}
       </ActionButton>
     </Box>
@@ -268,7 +270,7 @@ function SwapButton() {
   }, [isReadOnlyWallet, navigate, updateInputCurrency]);
 
   return (
-    <ActionButton icon="􀖅" onPress={handlePress}>
+    <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">
       {lang.t('button.swap')}
     </ActionButton>
   );
@@ -292,7 +294,7 @@ function SendButton() {
   }, [navigate, isReadOnlyWallet]);
 
   return (
-    <ActionButton icon="􀈟" onPress={handlePress}>
+    <ActionButton icon="􀈟" onPress={handlePress} testID="send-button">
       {lang.t('button.send')}
     </ActionButton>
   );
@@ -405,7 +407,11 @@ function MoreButton() {
       menuConfig={menuConfig}
       onPressMenuItem={handlePressContextMenuItem}
     >
-      <ActionButton icon="􀍡" onPress={ios ? showActionSheet : undefined}>
+      <ActionButton
+        icon="􀍡"
+        onPress={ios ? showActionSheet : undefined}
+        testID="more-button"
+      >
         {lang.t('button.more')}
       </ActionButton>
     </ContextMenuButton>

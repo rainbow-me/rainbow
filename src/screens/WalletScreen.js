@@ -261,7 +261,10 @@ export default function WalletScreen() {
           }
           rightComponent={
             <Inline space={{ custom: 17 }}>
-              <Navbar.Item onPress={handlePressDiscover}>
+              <Navbar.Item
+                onPress={handlePressDiscover}
+                testID="discover-button"
+              >
                 <Navbar.TextIcon icon="􀎬" />
               </Navbar.Item>
               <Navbar.Item onPress={handlePressQRScanner}>

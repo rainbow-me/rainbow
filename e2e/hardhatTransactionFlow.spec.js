@@ -190,7 +190,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
-    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.waitAndTap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-ETH-token'
@@ -217,7 +217,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should be able to wrap ETH -> WETH', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.tap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
@@ -234,7 +234,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
   it('Should be able to unwrap WETH -> ETH', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.tap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-token');
@@ -251,7 +251,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
   it('Should swap WETH -> DAI including approval (via tokenToToken)', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.tap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-token');
@@ -269,7 +269,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should swap DAI -> USDC (via tokenToTokenWithPermit)', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.tap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
@@ -287,7 +287,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should swap DAI -> ETH (via tokenToETH)', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.tap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
@@ -304,7 +304,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should swap ETH -> USDC (via ethToToken)', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.tap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
@@ -320,7 +320,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
   it('Should swap USDC -> WETH (via tokenToTokenWithPermit)', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.tap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
@@ -338,7 +338,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should swap USDC -> ETH (via tokenToETH)', async () => {
-    await Helpers.tap('exchange-fab');
+    await Helpers.tap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
@@ -354,8 +354,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open send sheet after tapping send fab', async () => {
-    await Helpers.waitAndTap('send-fab');
+  it('Should open send sheet after tapping send button', async () => {
+    await Helpers.waitAndTap('send-button');
     await Helpers.checkIfVisible('send-asset-form-field');
   });
 
@@ -395,7 +395,7 @@ describe('Hardhat Transaction Flow', () => {
       RAINBOW_WALLET_DOT_ETH,
       BAT_TOKEN_ADDRESS
     );
-    await Helpers.waitAndTap('send-fab');
+    await Helpers.waitAndTap('send-button');
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH
@@ -424,7 +424,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should send ETH', async () => {
-    await Helpers.waitAndTap('send-fab');
+    await Helpers.waitAndTap('send-button');
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH
