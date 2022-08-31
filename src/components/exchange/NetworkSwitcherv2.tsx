@@ -14,6 +14,15 @@ import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { useTheme } from '@/theme';
 
+const networkMenuItems = Object.values(networkInfo)
+  .filter(({ disabled, testnet }) => !disabled && !testnet)
+  .map(netInfo => ({
+    chainId: ethereumUtils.getChainIdFromNetwork(netInfo.value),
+    network: netInfo.value,
+    title: netInfo.name,
+    type: netInfo.value !== Network.mainnet ? netInfo.value : AssetType.token,
+  }));
+
 const NetworkSwitcherv2 = ({
   hideDivider,
   currentChainId,
@@ -41,14 +50,6 @@ const NetworkSwitcherv2 = ({
       },
     };
   };
-  const networkMenuItems = Object.values(networkInfo)
-    .filter(({ disabled, testnet }) => !disabled && !testnet)
-    .map(netInfo => ({
-      chainId: ethereumUtils.getChainIdFromNetwork(netInfo.value),
-      network: netInfo.value,
-      title: netInfo.name,
-      type: netInfo.value !== Network.mainnet ? netInfo.value : AssetType.token,
-    }));
 
   // if polygon is selcted intially we should scroll into view
   useEffect(() => {
@@ -61,7 +62,7 @@ const NetworkSwitcherv2 = ({
 
   return (
     <>
-      <Box height="46px" key={`${testID}-${currentChainId}`} width="full">
+      <Box height="46px" width="full">
         <ScrollView
           contentContainerStyle={{ paddingHorizontal: 18 }}
           horizontal
@@ -79,7 +80,7 @@ const NetworkSwitcherv2 = ({
                   // @ts-expect-error overloaded props from ButtonPressAnimation
                   onPress={() => setCurrentChainId(chainId)}
                   style={{ padding: 8 }}
-                  testID={`network-switcher-${title}`}
+                  testID={`${testID}-${title}`}
                 >
                   {isSelected && (
                     <RadialGradient
