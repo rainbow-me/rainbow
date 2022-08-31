@@ -325,9 +325,9 @@ export default function FeesPanel({
 
   const onMaxBaseFeeChange = useCallback(
     text => {
-      const maxFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
+      const maxBaseFee = parseGasFeeParam(gweiToWei(text || 0));
 
-      if (greaterThan(0, maxFeePerGas.amount)) return;
+      if (greaterThan(0, maxBaseFee.amount)) return;
 
       setCustomFees({
         customMaxBaseFee: text,
@@ -337,7 +337,7 @@ export default function FeesPanel({
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
-        maxFeePerGas,
+        maxBaseFee,
       };
       updateToCustomGasFee(newGasParams);
     },
