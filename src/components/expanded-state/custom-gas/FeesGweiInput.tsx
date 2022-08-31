@@ -5,7 +5,7 @@ import GweiInputPill from './GweiInputPill';
 import { delay } from '@/helpers/utilities';
 import { usePrevious } from '@/hooks';
 import { TextInput } from 'react-native';
-import { Box, Inline, Text as NewText } from '@/design-system';
+import { Box, Inline, Text } from '@/design-system';
 import { colors } from '@/styles';
 
 const PLUS_ACTION_TYPE = 'plus';
@@ -42,12 +42,9 @@ const GweiStepButton = ({
       padding="4px"
       margin="-4px"
     >
-      <NewText
-        color={{ custom: buttonColor || colors.appleBlue }}
-        weight="heavy"
-      >
+      <Text color={{ custom: buttonColor || colors.appleBlue }} weight="heavy">
         {type === 'plus' ? '􀁍' : '􀁏'}
-      </NewText>
+      </Text>
     </Box>
   );
 };

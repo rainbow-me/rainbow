@@ -1,7 +1,6 @@
 import { isEmpty, upperFirst } from 'lodash';
 import React from 'react';
 import { ButtonPressAnimation } from '../../animations';
-import EdgeFade from '../../discover-sheet/EdgeFade';
 import { useGas } from '@/hooks';
 import { colors } from '@/styles';
 import { gasUtils } from '@/utils';

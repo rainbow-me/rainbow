@@ -36,14 +36,7 @@ import {
 import { gweiToWei, parseGasFeeParam } from '@/parsers';
 import Routes from '@/navigation/routesNames';
 import { gasUtils } from '@/utils';
-import {
-  Box,
-  Inline,
-  Inset,
-  Row,
-  Rows,
-  Text as NewText,
-} from '@/design-system';
+import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -231,12 +224,12 @@ export default function FeesPanel({
           // @ts-expect-error
           onPress={openHelper}
         >
-          <NewText size="14px" weight="heavy">
+          <Text size="14px" weight="heavy">
             {`${label} `}
-            <NewText color={{ custom: color }} weight="bold">
+            <Text color={{ custom: color }} weight="bold">
               {text}
-            </NewText>
-          </NewText>
+            </Text>
+          </Text>
         </Box>
       );
     },
@@ -415,34 +408,34 @@ export default function FeesPanel({
       return (
         (error && (
           <Box paddingTop="8px">
-            <NewText color={{ custom: colors.red }} size="14px" weight="heavy">
+            <Text color={{ custom: colors.red }} size="14px" weight="heavy">
               {errorPrefix}
-              <NewText
+              <Text
                 color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
                 size="14px"
                 weight="bold"
               >
                 {errorSuffix}
-              </NewText>
-            </NewText>
+              </Text>
+            </Text>
           </Box>
         )) ||
         (warning && (
           <Box paddingTop="8px">
-            <NewText
+            <Text
               color={{ custom: colors.yellowFavorite }}
               size="14px"
               weight="heavy"
             >
               {warningPrefix}
-              <NewText
+              <Text
                 color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
                 size="14px"
                 weight="heavy"
               >
                 {warningSuffix}
-              </NewText>
-            </NewText>
+              </Text>
+            </Text>
           </Box>
         ))
       );
@@ -702,7 +695,7 @@ export default function FeesPanel({
             onPress={() => openGasHelper(trendType)}
             scaleTo={1}
           >
-            <NewText
+            <Text
               size="14px"
               weight="heavy"
               color={{
@@ -710,7 +703,7 @@ export default function FeesPanel({
               }}
             >
               {GAS_TRENDS[currentGasTrend]?.label}
-            </NewText>
+            </Text>
           </Box>
         </Inline>
       </Inset>
@@ -727,9 +720,9 @@ export default function FeesPanel({
                 onPress={() => openGasHelper(trendType)}
                 scaleTo={1}
               >
-                <NewText size="14px" weight="heavy">
+                <Text size="14px" weight="heavy">
                   {formattedBaseFee}
-                </NewText>
+                </Text>
               </Box>
             </Inline>
           </Box>
@@ -794,12 +787,12 @@ export default function FeesPanel({
         <Row>
           <Box paddingTop={{ custom: 9 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
-              <NewText size="14px" weight="heavy">
+              <Text size="14px" weight="heavy">
                 Max transaction fee
-              </NewText>
-              <NewText size="14px" weight="heavy">
+              </Text>
+              <Text size="14px" weight="heavy">
                 {maxFee}
-              </NewText>
+              </Text>
             </Inline>
           </Box>
         </Row>
