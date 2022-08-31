@@ -82,7 +82,7 @@ const ExchangeIcon = magicMemo(
                   <Text
                     align="center"
                     color="secondary80"
-                    size="14px"
+                    size="14px / 19px (Deprecated)"
                     weight="semibold"
                   >
                     {protocol?.substring(0, 1)}

@@ -12,7 +12,11 @@ const Menu = ({ children, description, header }: MenuProps) => {
     <>
       {!!header && (
         <Box paddingBottom="12px" paddingHorizontal={{ custom: 16 }}>
-          <Text color="secondary60" size="16px" weight="regular">
+          <Text
+            color="secondary60"
+            size="16px / 22px (Deprecated)"
+            weight="regular"
+          >
             {header}
           </Text>
         </Box>
@@ -22,7 +26,11 @@ const Menu = ({ children, description, header }: MenuProps) => {
       </Box>
       {!!description && (
         <Box paddingHorizontal={{ custom: 16 }} paddingTop={{ custom: 17 }}>
-          <Text color="secondary60" size="14px" weight="regular">
+          <Text
+            color="secondary60"
+            size="14px / 19px (Deprecated)"
+            weight="regular"
+          >
             {description}
           </Text>
         </Box>

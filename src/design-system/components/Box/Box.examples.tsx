@@ -16,22 +16,22 @@ export const background: Example = {
     source(
       <>
         <Box background="body" padding="19px">
-          <Text size="18px" weight="bold">
+          <Text size="17pt" weight="bold">
             Body
           </Text>
         </Box>
         <Box background="accent" padding="19px">
-          <Text size="18px" weight="bold">
+          <Text size="17pt" weight="bold">
             Accent
           </Text>
         </Box>
         <Box background="action" padding="19px">
-          <Text size="18px" weight="bold">
+          <Text size="17pt" weight="bold">
             Action
           </Text>
         </Box>
         <Box background="swap" padding="19px">
-          <Text size="18px" weight="bold">
+          <Text size="17pt" weight="bold">
             Swap
           </Text>
         </Box>

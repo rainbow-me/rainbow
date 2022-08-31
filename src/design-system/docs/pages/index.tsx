@@ -59,7 +59,7 @@ const Home: NextPage = () => {
       })}
     >
       <Stack space="40px">
-        <Heading size="32px">
+        <Heading size="32px" weight="heavy">
           🌈🎨 Rainbow Design System Cheat Sheet 🎨🌈
         </Heading>
         <Text>
@@ -91,7 +91,7 @@ const Home: NextPage = () => {
         </Blockquote>
         {orderedDocsByCategory.map(([categoryName, subCategories], i) => (
           <Stack key={i} space="16px">
-            <Heading>{categoryName}</Heading>
+            <Heading weight="heavy">{categoryName}</Heading>
             <div>
               {subCategories.map((docs, i) => {
                 return <DocsAccordion key={i} {...docs} />;

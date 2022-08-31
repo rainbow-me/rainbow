@@ -68,7 +68,11 @@ const SearchResultGradientIndicator = ({
           <Text
             color={type === 'availability' ? 'accent' : 'secondary80'}
             containsEmoji
-            size={isSmallPhone ? '18px' : '20px'}
+            size={
+              isSmallPhone
+                ? '18px / 27px (Deprecated)'
+                : '20px / 24px (Deprecated)'
+            }
             testID={testID}
             weight="heavy"
           >

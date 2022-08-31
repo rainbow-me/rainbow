@@ -63,7 +63,12 @@ const MemoFastPoolValue = React.memo(function FastPoolValue({
     <View
       style={[{ backgroundColor: colors.alpha(color, 0.06) }, sx.container]}
     >
-      <Text align="center" color={{ custom: color }} size="16px" weight="bold">
+      <Text
+        align="center"
+        color={{ custom: color }}
+        size="16px / 22px (Deprecated)"
+        weight="bold"
+      >
         {formattedValue}
       </Text>
     </View>

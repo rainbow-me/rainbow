@@ -5,7 +5,7 @@ import { Text } from '@rainbow-me/design-system';
 
 export const SwapDetailsLabel = ({ children, color = 'secondary60' }) => {
   return (
-    <Text color={color} size="14px" weight="semibold">
+    <Text color={color} size="14px / 19px (Deprecated)" weight="semibold">
       {children}
     </Text>
   );
@@ -13,7 +13,7 @@ export const SwapDetailsLabel = ({ children, color = 'secondary60' }) => {
 
 export const SwapDetailsValue = ({ children, color = 'secondary80' }) => {
   return (
-    <Text color={color} size="14px" weight="bold">
+    <Text color={color} size="14px / 19px (Deprecated)" weight="bold">
       {children}
     </Text>
   );

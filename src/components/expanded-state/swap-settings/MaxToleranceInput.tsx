@@ -121,10 +121,14 @@ export const MaxToleranceInput = forwardRef(
               testID="swap-slippage-label"
             >
               <Inline alignVertical="center">
-                <Text size="16px" weight="bold">
+                <Text size="16px / 22px (Deprecated)" weight="bold">
                   {`${lang.t('exchange.slippage_tolerance')} `}
                   {!hasPriceImpact && (
-                    <Text color="secondary30" size="16px" weight="bold">
+                    <Text
+                      color="secondary30"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       {' 􀅵'}
                     </Text>
                   )}
@@ -138,11 +142,21 @@ export const MaxToleranceInput = forwardRef(
             </Box>
             {hasPriceImpact && (
               <Box>
-                <Text size={android ? '12px' : '14px'}>
+                <Text
+                  size={
+                    android
+                      ? '12px / 14px (Deprecated)'
+                      : '14px / 19px (Deprecated)'
+                  }
+                >
                   <AccentColorProvider color={priceImpactColor!}>
                     <Text
                       color="accent"
-                      size={android ? '12px' : '14px'}
+                      size={
+                        android
+                          ? '12px / 14px (Deprecated)'
+                          : '14px / 19px (Deprecated)'
+                      }
                       weight="bold"
                     >
                       {lang.t('exchange.high')}
@@ -150,7 +164,11 @@ export const MaxToleranceInput = forwardRef(
                   </AccentColorProvider>
                   <Text
                     color="secondary50"
-                    size={android ? '12px' : '14px'}
+                    size={
+                      android
+                        ? '12px / 14px (Deprecated)'
+                        : '14px / 19px (Deprecated)'
+                    }
                     weight="bold"
                   >{` · ${lang.t('exchange.price_impact.label')}`}</Text>
                 </Text>

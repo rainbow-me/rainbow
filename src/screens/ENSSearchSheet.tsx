@@ -110,10 +110,20 @@ export default function ENSSearchSheet() {
       <Stack space="15px">
         <Box flexGrow={1} paddingTop={{ custom: 28 }}>
           <Stack alignHorizontal="center" space={{ custom: 16 }}>
-            <Heading align="center" color="primary" size="23px" weight="heavy">
+            <Heading
+              align="center"
+              color="primary"
+              size="23px / 27px (Deprecated)"
+              weight="heavy"
+            >
               {`􀠎 ${lang.t('profiles.search.header')}`}
             </Heading>
-            <Text align="center" color="secondary60" size="18px" weight="bold">
+            <Text
+              align="center"
+              color="secondary60"
+              size="18px / 27px (Deprecated)"
+              weight="bold"
+            >
               {lang.t('profiles.search.description')}
             </Text>
           </Stack>
@@ -159,7 +169,7 @@ export default function ENSSearchSheet() {
                 <Text
                   align="center"
                   color="secondary50"
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
                   {lang.t('profiles.search.3_char_min')}
@@ -173,7 +183,7 @@ export default function ENSSearchSheet() {
               <Text
                 align="center"
                 color="secondary50"
-                size="16px"
+                size="16px / 22px (Deprecated)"
                 weight="bold"
               >
                 {registrationData?.hint}
@@ -186,7 +196,7 @@ export default function ENSSearchSheet() {
                 <Text
                   align="center"
                   color="secondary50"
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
                   {lang.t('profiles.search.already_registering_name')}
@@ -227,7 +237,11 @@ export default function ENSSearchSheet() {
                 {isRegistered ? (
                   registrationData?.registrationDate ? (
                     <Inset horizontal="15px">
-                      <Text color="secondary60" size="16px" weight="bold">
+                      <Text
+                        color="secondary60"
+                        size="16px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {lang.t('profiles.search.registered_on', {
                           content: registrationData?.registrationDate,
                         })}
@@ -240,18 +254,26 @@ export default function ENSSearchSheet() {
                       {registrationCostsDataIsAvailable ? (
                         <Text
                           color="secondary60"
-                          size="16px"
+                          size="16px / 22px (Deprecated)"
                           testID="ens-registration-fees"
                           weight="bold"
                         >
                           {lang.t('profiles.search.estimated_total_cost_1')}
-                          <Text color="secondary80" size="16px" weight="heavy">
+                          <Text
+                            color="secondary80"
+                            size="16px / 22px (Deprecated)"
+                            weight="heavy"
+                          >
                             {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
                           </Text>
                           {lang.t('profiles.search.estimated_total_cost_2')}
                         </Text>
                       ) : (
-                        <Text color="secondary60" size="16px" weight="bold">
+                        <Text
+                          color="secondary60"
+                          size="16px / 22px (Deprecated)"
+                          weight="bold"
+                        >
                           {`${lang.t('profiles.search.loading_fees')}\n`}
                         </Text>
                       )}

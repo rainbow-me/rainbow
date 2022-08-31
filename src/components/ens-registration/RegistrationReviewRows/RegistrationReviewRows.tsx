@@ -40,7 +40,11 @@ function StepButton({
       scaleTo={disabled ? 1 : 0.75}
       shouldLongPressHoldPress
     >
-      <Text color={disabled ? 'secondary20' : 'accent'} weight="heavy">
+      <Text
+        color={disabled ? 'secondary20' : 'accent'}
+        size="16px / 22px (Deprecated)"
+        weight="heavy"
+      >
         {type === 'increment' ? '􀁍' : '􀁏'}
       </Text>
     </Box>
@@ -107,7 +111,7 @@ export default function RegistrationReviewRows({
       <Stack space="30px">
         <Columns>
           <Column width="3/5">
-            <Text size="16px" weight="heavy">
+            <Text size="16px / 22px (Deprecated)" weight="heavy">
               {lang.t(
                 `profiles.confirm.${
                   mode === REGISTRATION_MODES.CREATE
@@ -130,7 +134,11 @@ export default function RegistrationReviewRows({
                   />
                 </Column>
                 <Box height={{ custom: 16 }}>
-                  <Text align="center" size="16px" weight="heavy">
+                  <Text
+                    align="center"
+                    size="16px / 22px (Deprecated)"
+                    weight="heavy"
+                  >
                     {duration > 1
                       ? lang.t('profiles.confirm.duration_plural', {
                           content: duration,
@@ -155,12 +163,21 @@ export default function RegistrationReviewRows({
         {mode === REGISTRATION_MODES.RENEW && (
           <Columns>
             <Column width="2/3">
-              <Text color="secondary80" size="16px" weight="bold">
+              <Text
+                color="secondary80"
+                size="16px / 22px (Deprecated)"
+                weight="bold"
+              >
                 {lang.t('profiles.confirm.new_expiration_date')}
               </Text>
             </Column>
             <Column width="1/3">
-              <Text align="right" color="secondary80" size="16px" weight="bold">
+              <Text
+                align="right"
+                color="secondary80"
+                size="16px / 22px (Deprecated)"
+                weight="bold"
+              >
                 {newExpiryDate}
               </Text>
             </Column>
@@ -169,7 +186,11 @@ export default function RegistrationReviewRows({
 
         <Columns>
           <Column width="2/3">
-            <Text color="secondary80" size="16px" weight="bold">
+            <Text
+              color="secondary80"
+              size="16px / 22px (Deprecated)"
+              weight="bold"
+            >
               {lang.t('profiles.confirm.registration_cost')}
             </Text>
           </Column>
@@ -179,7 +200,7 @@ export default function RegistrationReviewRows({
                 <Text
                   align="right"
                   color="secondary80"
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
                   {registrationFee}
@@ -193,7 +214,11 @@ export default function RegistrationReviewRows({
 
         <Columns>
           <Column width="2/3">
-            <Text color="secondary80" size="16px" weight="bold">
+            <Text
+              color="secondary80"
+              size="16px / 22px (Deprecated)"
+              weight="bold"
+            >
               {lang.t('profiles.confirm.estimated_fees')}
             </Text>
           </Column>
@@ -203,7 +228,7 @@ export default function RegistrationReviewRows({
                 <Text
                   align="right"
                   color="secondary80"
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
                   {networkFee}
@@ -218,7 +243,11 @@ export default function RegistrationReviewRows({
         {mode === REGISTRATION_MODES.CREATE && (
           <Columns>
             <Column width="2/3">
-              <Text color="secondary80" size="16px" weight="bold">
+              <Text
+                color="secondary80"
+                size="16px / 22px (Deprecated)"
+                weight="bold"
+              >
                 {lang.t('profiles.confirm.estimated_total_eth')}
               </Text>
             </Column>
@@ -228,7 +257,7 @@ export default function RegistrationReviewRows({
                   <Text
                     align="right"
                     color="secondary80"
-                    size="16px"
+                    size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
                     {estimatedCostETH} ETH
@@ -243,14 +272,18 @@ export default function RegistrationReviewRows({
 
         <Columns>
           <Column width="2/3">
-            <Text size="16px" weight="heavy">
+            <Text size="16px / 22px (Deprecated)" weight="heavy">
               {lang.t('profiles.confirm.estimated_total')}
             </Text>
           </Column>
           <Column width="1/3">
             <Box height={{ custom: 16 }}>
               {totalCost ? (
-                <Text align="right" size="16px" weight="heavy">
+                <Text
+                  align="right"
+                  size="16px / 22px (Deprecated)"
+                  weight="heavy"
+                >
                   {totalCost}
                 </Text>
               ) : (

@@ -48,7 +48,12 @@ export default function SelectableButton({
             paddingBottom: android ? 2 : 0,
           }}
         >
-          <Text align="center" color="accent" size="16px" weight="heavy">
+          <Text
+            align="center"
+            color="accent"
+            size="16px / 22px (Deprecated)"
+            weight="heavy"
+          >
             {children}
           </Text>
         </Box>

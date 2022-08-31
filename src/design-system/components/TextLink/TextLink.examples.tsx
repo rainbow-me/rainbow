@@ -9,7 +9,7 @@ export const basicUsage: Example = {
   name: 'Basic usage',
   Example: () =>
     source(
-      <Text>
+      <Text size="17pt">
         This text contains a <TextLink url="https://rainbow.me">link</TextLink>
       </Text>
     ),

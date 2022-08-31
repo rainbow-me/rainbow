@@ -11,6 +11,7 @@ import {
   Box,
   Inline,
   Inset,
+  selectTextSizes,
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
@@ -81,17 +82,24 @@ export default function RecordTags({
   );
 }
 
+const tagSizes = selectTextSizes(
+  '14px / 19px (Deprecated)',
+  '16px / 22px (Deprecated)'
+);
+
+type TagSize = typeof tagSizes[number];
+
 function Tag({
   children,
   color,
   icon,
-  size = '14px',
+  size = '14px / 19px (Deprecated)',
   symbol,
 }: {
   children: React.ReactNode;
   color: 'appleBlue' | 'grey';
   icon?: string;
-  size?: '14px' | '16px';
+  size?: TagSize;
   symbol?: string;
 }) {
   const { colors } = useTheme();

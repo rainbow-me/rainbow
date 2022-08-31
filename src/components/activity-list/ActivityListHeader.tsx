@@ -10,7 +10,7 @@ const sx = StyleSheet.create({
 
 const ActivityListHeader = ({ title }: { title: string }) => (
   <View style={sx.activityListHeader}>
-    <Text numberOfLines={1} size="20px" weight="bold">
+    <Text numberOfLines={1} size="20px / 24px (Deprecated)" weight="bold">
       {title}
     </Text>
   </View>

@@ -185,7 +185,12 @@ const RegistrationCover = ({
               })}
         >
           {(!coverUrl || isUploading || isLoadingImage) && (
-            <Text align="center" color="accent" size="18px" weight="heavy">
+            <Text
+              align="center"
+              color="accent"
+              size="18px / 27px (Deprecated)"
+              weight="heavy"
+            >
               􀣵{' '}
               {isUploading || isLoadingImage
                 ? lang.t('profiles.create.uploading')

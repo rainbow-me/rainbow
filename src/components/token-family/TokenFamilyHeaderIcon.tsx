@@ -42,7 +42,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
   if (familyName === 'Showcase') {
     return (
       <View style={sx.trophy}>
-        <Text align="center" containsEmoji size="16px">
+        <Text align="center" containsEmoji size="16px / 22px (Deprecated)">
           🏆
         </Text>
       </View>
@@ -52,7 +52,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
   if (familyName === 'Selling') {
     return (
       <View style={sx.trophy}>
-        <Text align="center" containsEmoji size="16px">
+        <Text align="center" containsEmoji size="16px / 22px (Deprecated)">
           💸
         </Text>
       </View>

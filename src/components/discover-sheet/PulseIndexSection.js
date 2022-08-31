@@ -119,7 +119,7 @@ const PulseIndex = () => {
               >
                 <Text
                   color={{ custom: colors.whiteLabel }}
-                  size="18px"
+                  size="18px / 27px (Deprecated)"
                   weight="heavy"
                 >
                   {item.name}
@@ -127,7 +127,7 @@ const PulseIndex = () => {
                 <Text
                   color={{ custom: colors.alpha(colors.whiteLabel, 0.6) }}
                   numberOfLines={1}
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="semibold"
                 >
                   {lang.t('discover.pulse.pulse_description')}
@@ -142,7 +142,7 @@ const PulseIndex = () => {
                   align="right"
                   color={{ custom: colors.whiteLabel }}
                   letterSpacing="0px"
-                  size="18px"
+                  size="18px / 27px (Deprecated)"
                   weight="heavy"
                 >
                   􀯼
@@ -166,7 +166,7 @@ const PulseIndex = () => {
           <Text
             color={{ custom: colors.dpiLight }}
             numberOfLines={1}
-            size="14px"
+            size="14px / 19px (Deprecated)"
             weight="bold"
           >
             Trading at{' '}
@@ -174,7 +174,7 @@ const PulseIndex = () => {
               color={{ custom: colors.dpiLight }}
               letterSpacing="roundedMedium"
               numberOfLines={1}
-              size="14px"
+              size="14px / 19px (Deprecated)"
               weight="bold"
             >
               {item.price}
@@ -186,14 +186,14 @@ const PulseIndex = () => {
             letterSpacing="roundedMedium"
             numberOfLines={1}
             {...fontWithWidth(font.weight.bold)}
-            size="14px"
+            size="14px / 19px (Deprecated)"
             weight="bold"
           >
             {item.isPositive ? `↑` : `↓`} {item.change}
             <Text
               align="right"
               color={{ custom: item.isPositive ? colors.green : colors.red }}
-              size="14px"
+              size="14px / 19px (Deprecated)"
               weight="bold"
             >
               {' '}

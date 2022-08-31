@@ -10,7 +10,7 @@ import { TextProps } from './Text';
 export function useTextStyle({
   align: textAlign,
   color = 'primary',
-  size = '16px',
+  size,
   weight = 'regular',
   tabularNumbers = false,
   uppercase = false,
@@ -22,6 +22,16 @@ export function useTextStyle({
     if (color && typeof color === 'string' && !textColors.includes(color)) {
       throw new Error(
         `Text: Invalid color "${color}". Valid colors are: ${textColors
+          .map(x => `"${x}"`)
+          .join(', ')}`
+      );
+    }
+
+    if (!textSizes[size]) {
+      throw new Error(
+        `Text: ${
+          size ? `Invalid size "${size}"` : 'Missing size prop'
+        }. Valid sizes are: ${Object.keys(textSizes)
           .map(x => `"${x}"`)
           .join(', ')}`
       );

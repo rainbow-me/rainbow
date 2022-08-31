@@ -10,7 +10,7 @@ export const basicUsage: Example = {
   Example: () =>
     source(
       <DebugLayout>
-        <Text>Debug</Text>
+        <Text size="17pt">Debug</Text>
       </DebugLayout>
     ),
 };

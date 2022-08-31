@@ -118,7 +118,7 @@ const UniqueTokenImage = ({
               align="center"
               color="secondary60"
               lineHeight="looser"
-              size="14px"
+              size="14px / 19px (Deprecated)"
               weight="semibold"
             >
               {`${item.familyName} #${item.id}`}

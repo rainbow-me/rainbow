@@ -42,6 +42,7 @@ import {
   Columns,
   Divider,
   Heading,
+  HeadingProps,
   Inline,
   Inset,
   MarkdownText,
@@ -114,7 +115,7 @@ const TextButton = ({
   onPress,
   children,
   align,
-  size = '16px',
+  size = '16px / 22px (Deprecated)',
   weight = 'heavy',
 }: {
   onPress: () => void;
@@ -138,7 +139,8 @@ const TextButton = ({
   );
 };
 
-const textSize: TextProps['size'] = '18px';
+const headingSize: HeadingProps['size'] = '18px / 21px (Deprecated)';
+const textSize: TextProps['size'] = '18px / 27px (Deprecated)';
 const textColor: TextProps['color'] = 'secondary50';
 const sectionSpace: Space = '30px';
 const paragraphSpace: Space = { custom: 22 };
@@ -176,13 +178,21 @@ const Section = ({
           )}
           {titleEmoji && (
             <Bleed right="1px">
-              <Heading containsEmoji size={ios ? '23px' : '20px'}>
+              <Heading
+                containsEmoji
+                size={
+                  ios ? '23px / 27px (Deprecated)' : '20px / 22px (Deprecated)'
+                }
+                weight="heavy"
+              >
                 {titleEmoji}
               </Heading>
             </Bleed>
           )}
         </Box>
-        <Heading size={textSize}>{title}</Heading>
+        <Heading size={headingSize} weight="heavy">
+          {title}
+        </Heading>
       </Inline>
       {addonComponent}
     </Inline>
@@ -658,7 +668,7 @@ const UniqueTokenExpandedState = ({
                                   <TextButton
                                     align="right"
                                     onPress={handlePressEdit}
-                                    size="18px"
+                                    size="18px / 27px (Deprecated)"
                                     weight="bold"
                                   >
                                     {lang.t(

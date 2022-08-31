@@ -159,10 +159,19 @@ export default function ENSIntroSheet() {
             <Row>
               <Stack space={{ custom: isSmallPhone ? 30 : 38 }}>
                 <Stack alignHorizontal="center" space={{ custom: 17 }}>
-                  <Heading align="center" size="34px">
+                  <Heading
+                    align="center"
+                    size="34px / 41px (Deprecated)"
+                    weight="heavy"
+                  >
                     {lang.t('profiles.intro.create_your')}
                   </Heading>
-                  <Heading align="center" color="action" size="34px">
+                  <Heading
+                    align="center"
+                    color="action"
+                    size="34px / 41px (Deprecated)"
+                    weight="heavy"
+                  >
                     {lang.t('profiles.intro.ens_profile')}
                   </Heading>
                 </Stack>
@@ -338,7 +347,12 @@ function InfoRow({
                 paddingTop: '6px',
               })}
             >
-              <Heading align="center" color="action" size="28px" weight="bold">
+              <Heading
+                align="center"
+                color="action"
+                size="28px / 33px (Deprecated)"
+                weight="bold"
+              >
                 {icon}
               </Heading>
             </Box>
@@ -358,8 +372,14 @@ function InfoRow({
       </Column>
       <Bleed top="3px">
         <Stack space="12px">
-          <Text weight="bold">{title}</Text>
-          <Text color="secondary60" size="14px" weight="medium">
+          <Text size="16px / 22px (Deprecated)" weight="bold">
+            {title}
+          </Text>
+          <Text
+            color="secondary60"
+            size="14px / 19px (Deprecated)"
+            weight="medium"
+          >
             {description}
           </Text>
         </Stack>
