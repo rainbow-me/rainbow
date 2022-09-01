@@ -243,15 +243,18 @@ class App extends Component {
 
   onForegroundRemoteNotification = async remoteMessage => {
     const type = remoteMessage?.data?.type;
-    if (type && remoteMessage?.notification !== undefined) {
-      handleShowingForegroundNotification(remoteMessage);
-    } else {
+    if (type === 'wc') {
       this.handleWalletConnectNotification(remoteMessage);
+    } else if (remoteMessage?.notification !== undefined) {
+      handleShowingForegroundNotification(remoteMessage);
     }
   };
 
   onBackgroundRemoteNotification = async remoteMessage => {
-    this.handleWalletConnectNotification(remoteMessage);
+    const type = remoteMessage?.data?.type;
+    if (type === 'wc') {
+      this.handleWalletConnectNotification(remoteMessage);
+    }
   };
 
   handleWalletConnectNotification = remoteMessage => {
