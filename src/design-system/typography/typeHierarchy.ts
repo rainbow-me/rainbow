@@ -1,5 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
-
 /**
  * ⚠️ IMPORTANT NOTE ⚠️
  *
