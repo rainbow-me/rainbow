@@ -326,6 +326,7 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   const collectionId = marketplace.marketplace_collection_id;
   const collectionUrl = marketplace.collection_url;
   const tokenId = simplehashNft.token_id;
+  const network = simplehashNft.chain;
   let permalink = null;
   switch (marketplaceName) {
     case 'Quixotic':
@@ -336,6 +337,11 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
       break;
     case 'Trove':
       permalink = `https://trove.treasure.lol/collection/${collectionId}/${tokenId}`;
+      break;
+    case 'Opensea':
+      permalink = `https://opensea.io/assets/${
+        network === Network.polygon ? 'matic' : network
+      }/${collectionId}/${tokenId}`;
       break;
     default:
       permalink = null;
@@ -360,6 +366,7 @@ export const parseSimplehashNfts = nftData => {
 
     const marketplaceInfo = getSimplehashMarketplaceInfo(simplehashNft);
 
+    console.log(simplehashNft.chain);
     const parsedNft = {
       animation_url: simplehashNft.extra_metadata?.animation_original_url,
       asset_contract: {
@@ -405,5 +412,12 @@ export const parseSimplehashNfts = nftData => {
     };
     return parsedNft;
   });
+  // filter out polygon NFTs that are not on our allow list
+  remove(
+    results,
+    nft =>
+      nft.network === Network.polygon &&
+      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
+  );
   return results;
 };

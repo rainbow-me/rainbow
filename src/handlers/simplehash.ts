@@ -102,7 +102,7 @@ export async function getNFTByTokenId({
 export async function getNftsByWalletAddress(walletAddress: string) {
   let rawResponseNfts: SimplehashNft[] = [];
   try {
-    const chainsParam: string = `${Network.arbitrum},${Network.optimism}`;
+    const chainsParam = `${Network.arbitrum},${Network.optimism},${Network.polygon}`;
 
     let cursor = START_CURSOR;
     while (cursor) {
