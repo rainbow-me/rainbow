@@ -1,3 +1,4 @@
+import { EthereumAddress } from '@/entities';
 import { getGlobal, saveGlobal } from './common';
 
 export type ENSDataType =
@@ -16,6 +17,7 @@ const ensLabelhashesKey = (key: string) => `ensLabelhashes.${key}`;
 const ensDataKey = (dataType: ENSDataType, key: string) =>
   `ens.${dataType}.${key}`;
 const ensProfileKey = (key: string) => `ens.profile.${key}`;
+const ensNameKey = (key: EthereumAddress) => `ensName.${key}`;
 const ensDomains = (key: string) => `ensDomains.${key}`;
 const ensSeenOnchainDataDisclaimerKey = 'ensProfile.seenOnchainDisclaimer';
 
@@ -32,6 +34,12 @@ export const saveNameFromLabelhash = (
   key: string,
   value: string | Record<string, unknown>
 ) => saveGlobal(ensLabelhashesKey(key), value, ensProfileVersion);
+
+export const getENSName = async (key: EthereumAddress) =>
+  await getGlobal(ensNameKey(key), '', ensProfileVersion);
+
+export const saveENSName = (key: EthereumAddress, value: string) =>
+  saveGlobal(ensNameKey(key), value, ensProfileVersion);
 
 export const getENSData = async (dataType: ENSDataType, key: string) => {
   const profile = await getGlobal(

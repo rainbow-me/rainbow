@@ -44,6 +44,7 @@ export { default as useENSAddress, prefetchENSAddress } from './useENSAddress';
 export { default as useENSAvatar, prefetchENSAvatar } from './useENSAvatar';
 export { default as useENSCover, prefetchENSCover } from './useENSCover';
 export { default as useENSProfile, prefetchENSProfile } from './useENSProfile';
+export { default as useENSName, prefetchENSName } from './useENSName';
 export { default as useENSOwner, prefetchENSOwner } from './useENSOwner';
 export {
   default as useENSResolver,
