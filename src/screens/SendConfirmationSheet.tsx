@@ -63,13 +63,13 @@ import {
   useGas,
   useUserAccounts,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
-import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from 'logger';
 
 const Container = styled(Centered).attrs({
@@ -280,7 +280,6 @@ export default function SendConfirmationSheet() {
     if (!isSendingToUserAccount) {
       let sends = 0;
       let sendsCurrentNetwork = 0;
-      // @ts-expect-error From JavaScript hook
       transactions.forEach(tx => {
         if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
           sends++;
