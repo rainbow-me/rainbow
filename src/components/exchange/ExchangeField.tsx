@@ -10,7 +10,6 @@ import {
   StyleProp,
   TextInput,
   TouchableWithoutFeedback,
-  View,
   ViewStyle,
 } from 'react-native';
 import { TokenSelectionButton } from '../buttons';
@@ -23,7 +22,7 @@ import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
-import { AccentColorProvider, Box, Inline, Space } from '@/design-system';
+import { AccentColorProvider, Box, Space } from '@/design-system';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding: Space = android ? '15px' : '19px';
@@ -155,7 +154,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
           paddingLeft={ExchangeFieldPadding}
           paddingRight={disableCurrencySelection ? ExchangeFieldPadding : '6px'}
         >
-          <Inline space="10px">
+          <Box paddingRight="10px">
             {symbol ? (
               /* @ts-expect-error — JavaScript component */
               <CoinIcon
@@ -165,7 +164,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
                 type={type}
               />
             ) : (
-              <View>
+              <Box>
                 <AccentColorProvider
                   color={colors.alpha(colors.blueGreyDark, 0.1)}
                 >
@@ -175,28 +174,28 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
                   />
                 </AccentColorProvider>
                 <ChainBadge assetType={network} />
-              </View>
+              </Box>
             )}
+          </Box>
 
-            <Input
-              {...(android &&
-                colorForAsset && {
-                  selectionColor: colors.alpha(colorForAsset, 0.4),
-                })}
-              color={colorForAsset}
-              editable={editable}
-              onBlur={handleBlur}
-              onChangeText={onChangeText}
-              onFocus={handleFocus}
-              placeholder={placeholderText}
-              placeholderTextColor={placeholderTextColor}
-              {...(onTapWhileDisabled && { pointerEvents: 'none' })}
-              ref={ref}
-              testID={testID}
-              useCustomAndroidMask={useCustomAndroidMask}
-              value={editing ? value : amount}
-            />
-          </Inline>
+          <Input
+            {...(android &&
+              colorForAsset && {
+                selectionColor: colors.alpha(colorForAsset, 0.4),
+              })}
+            color={colorForAsset}
+            editable={editable}
+            onBlur={handleBlur}
+            onChangeText={onChangeText}
+            onFocus={handleFocus}
+            placeholder={placeholderText}
+            placeholderTextColor={placeholderTextColor}
+            {...(onTapWhileDisabled && { pointerEvents: 'none' })}
+            ref={ref}
+            testID={testID}
+            useCustomAndroidMask={useCustomAndroidMask}
+            value={editing ? value : amount}
+          />
         </Box>
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (
