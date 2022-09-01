@@ -14,7 +14,7 @@ import {
   useRainbowProfile,
 } from '@/hooks';
 
-const ContactProfileState = ({ address, ens, contactNickname }) => {
+const ContactProfileState = ({ address, ens, contactNickname, onUpdate }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const [nickname, setNickname] = useState(contactNickname || ens || '');
   const { goBack } = useNavigation();
@@ -25,14 +25,16 @@ const ContactProfileState = ({ address, ens, contactNickname }) => {
   const { rainbowProfile } = useRainbowProfile(address);
 
   const handleAddContact = useCallback(() => {
-    onAddOrUpdateContacts({
+    const newContact = {
       address,
       nickname,
       network,
-    });
+    };
+    onAddOrUpdateContacts(newContact);
+    onUpdate?.(newContact);
     goBack();
     android && Keyboard.dismiss();
-  }, [address, goBack, network, nickname, onAddOrUpdateContacts]);
+  }, [address, goBack, network, nickname, onAddOrUpdateContacts, onUpdate]);
 
   const handleCancel = useCallback(() => {
     goBack();

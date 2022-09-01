@@ -130,6 +130,7 @@ export default function SendHeader({
       contactNickname: userWallet?.label ?? contact?.nickname,
       ens: ensName,
       onRefocusInput,
+      onUpdate: contact => setContact(contact),
       type: 'contact_profile',
     });
   }, [
@@ -138,6 +139,7 @@ export default function SendHeader({
     hexAddress,
     navigate,
     onRefocusInput,
+    setContact,
     userWallet?.label,
   ]);
 
@@ -159,6 +161,7 @@ export default function SendHeader({
             address: hexAddress,
             nickname: name,
             onDelete: () => {
+              setContact(null);
               onChangeAddressInput(userWallet?.label || ensName || recipient);
             },
             removeContact: onRemoveContact,
@@ -176,6 +179,7 @@ export default function SendHeader({
     hexAddress,
     name,
     onRemoveContact,
+    setContact,
     onChangeAddressInput,
     userWallet?.label,
     ensName,
@@ -189,11 +193,9 @@ export default function SendHeader({
     text => {
       onChangeAddressInput(text);
       setHexAddress('');
-      if (text !== contact?.nickname) {
-        setContact(null);
-      }
+      setContact(null);
     },
-    [contact?.nickname, onChangeAddressInput, setContact]
+    [onChangeAddressInput, setContact]
   );
 
   return (
