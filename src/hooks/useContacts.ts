@@ -23,7 +23,7 @@ export default function useContacts() {
 
   const onAddOrUpdateContacts = useCallback(
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 5 arguments, but got 0 or more.
-    (...data) => dispatch(contactsAddOrUpdate(...data)),
+    (contact: Contact) => dispatch(contactsAddOrUpdate(contact)),
     [dispatch]
   );
 

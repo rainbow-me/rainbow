@@ -21,17 +21,6 @@ export interface Contact {
   address: string;
 
   /**
-   * A color index, based on the values in `avatars` in
-   * `src/utils/profileUtils.ts`.
-   */
-  color: number;
-
-  /**
-   * The address's primary ens name
-   */
-  ens: string;
-
-  /**
    * The network.
    */
   network: Network;
@@ -87,21 +76,20 @@ export const contactsLoadState = () => async (
   } catch (error) {}
 };
 
-export const contactsAddOrUpdate = (
-  address: string,
-  nickname: string,
-  color: number,
-  network: Network,
-  ens: string
-) => (dispatch: Dispatch<ContactsUpdateAction>, getState: AppGetState) => {
+export const contactsAddOrUpdate = ({
+  address,
+  nickname,
+  network,
+}: Contact) => (
+  dispatch: Dispatch<ContactsUpdateAction>,
+  getState: AppGetState
+) => {
   const loweredAddress = address.toLowerCase();
   const { contacts } = getState().contacts;
   const updatedContacts = {
     ...contacts,
     [loweredAddress]: {
       address: loweredAddress,
-      color,
-      ens,
       network,
       nickname,
     },

@@ -124,7 +124,6 @@ export default function SendHeader({
     contact?.nickname ||
     nickname ||
     userWallet?.ens ||
-    contact?.ens ||
     recipient;
 
   const handleNavigateToContact = useCallback(() => {
