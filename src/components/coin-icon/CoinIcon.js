@@ -29,14 +29,14 @@ const StyledCoinIcon = styled(ReactCoinIcon)({
 
 const CoinIcon = ({
   address = 'eth',
-  badgeXPosition = -7,
-  badgeYPosition = 0,
-  badgeSize = 'small',
+  badgeXPosition,
+  badgeYPosition,
+  badgeSize,
   ignoreBadge = false,
-  forcedShadowColor = undefined,
+  forcedShadowColor,
   size = CoinIconSize,
   symbol = '',
-  type = AssetTypes.token,
+  type,
   ...props
 }) => {
   const tokenMetadata = getTokenMetadata(props.mainnet_address || address);
