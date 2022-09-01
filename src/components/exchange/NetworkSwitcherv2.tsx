@@ -24,12 +24,10 @@ const networkMenuItems = Object.values(networkInfo)
   }));
 
 const NetworkSwitcherv2 = ({
-  hideDivider,
   currentChainId,
   setCurrentChainId,
   testID,
 }: {
-  hideDivider: boolean;
   currentChainId: number;
   setCurrentChainId(chainId: number): void;
   testID: string;
@@ -53,8 +51,10 @@ const NetworkSwitcherv2 = ({
 
   // if polygon is selcted intially we should scroll into view
   useEffect(() => {
-    if (currentChainId === 137 && scrollViewRef?.current) {
-      console.log('triggering');
+    if (
+      currentChainId === ethereumUtils.getChainIdFromNetwork(Network.polygon) &&
+      scrollViewRef?.current
+    ) {
       scrollViewRef?.current.scrollToEnd();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,12 +64,12 @@ const NetworkSwitcherv2 = ({
     <>
       <Box height="46px" width="full">
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 18 }}
+          contentContainerStyle={{ paddingHorizontal: 20 }}
           horizontal
           ref={scrollViewRef}
           showsHorizontalScrollIndicator={false}
         >
-          <Columns space="12px">
+          <Columns space="8px">
             {networkMenuItems.map(({ chainId, title, type, network }) => {
               const isSelected = currentChainId === chainId;
               return (
@@ -79,7 +79,7 @@ const NetworkSwitcherv2 = ({
                   key={`${testID}-${title}`}
                   // @ts-expect-error overloaded props from ButtonPressAnimation
                   onPress={() => setCurrentChainId(chainId)}
-                  style={{ padding: 8 }}
+                  padding="8px"
                   testID={`${testID}-${title}`}
                 >
                   {isSelected && (
@@ -125,8 +125,6 @@ const NetworkSwitcherv2 = ({
           </Columns>
         </ScrollView>
       </Box>
-      {/* @ts-expect-error JavaScript component*/}
-      {hideDivider ? null : <Divider color={colors.rowDividerExtraLight} />}
     </>
   );
 };
