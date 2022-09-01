@@ -48,7 +48,11 @@ export function ProfileNameRow() {
   return (
     <>
       {name && (
-        <ButtonPressAnimation onPress={onPressName} scale={0.8}>
+        <ButtonPressAnimation
+          onPress={onPressName}
+          scale={0.8}
+          testID={`profile-name-${name}`}
+        >
           <Inline alignVertical="center" space="4px" wrap={false}>
             <Box style={{ maxWidth }}>
               <Text numberOfLines={1} size="23px" weight="bold">

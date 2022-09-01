@@ -30,6 +30,7 @@ export function ProfileBalanceRow({ totalValue }: { totalValue: string }) {
           numberOfLines={1}
           size={totalValue?.length > 14 ? '26px' : '34px'}
           weight="heavy"
+          testID="balance-text"
         >
           {totalValue}
         </Heading>

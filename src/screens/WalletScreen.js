@@ -283,7 +283,11 @@ export default function WalletScreen() {
         walletBriefSectionsData={walletBriefSectionsData}
       />
       <ToastPositionContainer>
-        <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" />
+        <Toast
+          isVisible={isAddressCopiedToastActive}
+          text="􀁣 Address Copied"
+          testID="address-copied-toast"
+        />
       </ToastPositionContainer>
     </WalletPage>
   );

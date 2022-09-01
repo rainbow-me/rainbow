@@ -344,7 +344,7 @@ function MoreButton() {
   const { network } = useAccountSettings();
 
   const isAddCashAvailable =
-    IS_TESTING !== 'true' && network === NetworkTypes.mainnet;
+    IS_TESTING === 'true' || network === NetworkTypes.mainnet;
 
   const items = React.useMemo(
     () => ({

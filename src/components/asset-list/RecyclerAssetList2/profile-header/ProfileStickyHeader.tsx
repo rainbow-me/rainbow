@@ -14,6 +14,7 @@ export function ProfileStickyHeader() {
         height={{ custom: ProfileStickyHeaderHeight }}
         paddingHorizontal="19px"
         width="full"
+        testID="profile-sticky-header"
       >
         <ProfileNameRow />
       </Box>

@@ -129,6 +129,7 @@ export function ProfileAvatarRow({
           <ButtonPressAnimation
             onPress={ios ? onAvatarPressActionSheet : onAvatarPressProfile}
             scale={0.8}
+            testID="avatar-button"
           >
             <Box
               alignItems="center"
