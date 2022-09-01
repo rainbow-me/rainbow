@@ -15963,9 +15963,9 @@ react-native-circular-progress@1.3.6:
   dependencies:
     prop-types "^15.7.2"
 
-react-native-cloud-fs@perunt/react-native-cloud-fs#714821dbb38f2b6f9afd2f72a70db0fab9e9decc:
+react-native-cloud-fs@brunobar79/react-native-cloud-fs#62424059ab730dc760ab56c0477c8080824a31ec:
   version "2.4.0"
-  resolved "https://codeload.github.com/perunt/react-native-cloud-fs/tar.gz/714821dbb38f2b6f9afd2f72a70db0fab9e9decc"
+  resolved "https://codeload.github.com/brunobar79/react-native-cloud-fs/tar.gz/62424059ab730dc760ab56c0477c8080824a31ec"
 
 react-native-code-push@7.0.4:
   version "7.0.4"
