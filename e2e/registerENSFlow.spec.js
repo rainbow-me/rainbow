@@ -720,10 +720,8 @@ describe('Register ENS Flow', () => {
     const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${TRUNCATED_ADDRESS}`
-    );
-    await Helpers.waitAndTap(`wallet-screen-account-name-${TRUNCATED_ADDRESS}`);
+    await Helpers.checkIfExists(`profile-name-${TRUNCATED_ADDRESS}`);
+    await Helpers.waitAndTap(`profile-name-${TRUNCATED_ADDRESS}`);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-address-${RAINBOW_TEST_WALLET_ADDRESS}`
     );
