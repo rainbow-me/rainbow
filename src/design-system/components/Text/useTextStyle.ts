@@ -26,7 +26,9 @@ export function useTextStyle({
           .join(', ')}`
       );
     }
+  }
 
+  if (__DEV__) {
     if (!textSizes[size]) {
       throw new Error(
         `Text: ${
