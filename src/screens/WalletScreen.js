@@ -232,7 +232,7 @@ export default function WalletScreen() {
 
   const { navigate } = useNavigation();
 
-  const handlePressTransactionHistory = useCallback(() => {
+  const handlePressActivity = useCallback(() => {
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);
 
@@ -255,7 +255,7 @@ export default function WalletScreen() {
       <HeaderOpacityToggler isVisible={isCoinListEdited}>
         <Navbar
           leftComponent={
-            <Navbar.Item onPress={handlePressTransactionHistory}>
+            <Navbar.Item onPress={handlePressActivity} testID="activity-button">
               <Navbar.TextIcon icon="􀐫" />
             </Navbar.Item>
           }

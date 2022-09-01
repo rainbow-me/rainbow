@@ -389,9 +389,7 @@ describe('Register ENS Flow', () => {
   it('Should check wallet name is the new ENS set as primary on profile screen and change wallet screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${RAINBOW_TEST_WALLET_NAME}`
-    );
+    await Helpers.checkIfExists(`profile-name-${RAINBOW_TEST_WALLET_NAME}`);
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.tapByText(RAINBOW_TEST_WALLET_NAME);
     await Helpers.checkIfVisible(
