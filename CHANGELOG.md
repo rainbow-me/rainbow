@@ -13,6 +13,32 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.7.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.3)
+
+### Added
+
+- Smolverse custom app icon
+- Swaps Promo
+
+### Changed
+
+- Default to "Fast Gas" on swaps for Mainnet/Polygon
+- Settings redesign
+- Profiles bug fixes
+- Android bug fixes
+- e2e test improvements
+
+### Removed
+
+- Removed deprecated testnets
+
+## [1.7.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.2)
+
+### Changed
+
+- Hide NFTs
+- Bug fixes
+
 ## [1.7.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.2)
 
 ### Changed
