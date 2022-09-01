@@ -29,9 +29,9 @@ import {
   useImportingWallet,
   useWalletsWithBalancesAndNames,
 } from '@/hooks';
-import Routes from '@/navigation/routesNames';
+import Routes from '@/routes';
 import { ethereumUtils, haptics } from '@/utils';
-import logger from '@/utils/logger';
+import logger from 'logger';
 
 export const WalletDiagnosticsSheetHeight = '100%';
 const LoadingSpinner = android ? Spinner : ActivityIndicator;

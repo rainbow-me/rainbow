@@ -65,22 +65,26 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
-} from '@/hooks';
-import { loadWallet, sendTransaction } from '@/model/wallet';
-import { useNavigation } from '@/navigation/Navigation';
-import { parseGasParamsForTransaction } from '@/parsers';
-import { chainAssets, rainbowTokenList } from '@/references';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { borders } from '@/styles';
+} from '@rainbow-me/hooks';
+import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
+import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
+import { borders } from '@rainbow-me/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
   lessThan,
-} from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
-import logger from '@/utils/logger';
+} from '@rainbow-me/utilities';
+import {
+  deviceUtils,
+  ethereumUtils,
+  getUniqueTokenType,
+} from '@rainbow-me/utils';
+import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);

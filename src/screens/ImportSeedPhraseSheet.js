@@ -78,10 +78,8 @@ const placeholder = lang.t('wallet.new.enter_seeds_placeholder');
 const SecretTextArea = styled(Input).attrs({
   align: 'center',
   autoCapitalize: 'none',
-  autoComplete: 'off',
   autoCorrect: false,
   autoFocus: true,
-  dataDetectorTypes: 'none',
   enablesReturnKeyAutomatically: true,
   keyboardType: android ? 'visible-password' : 'default',
   lineHeight: 'looser',
@@ -91,7 +89,6 @@ const SecretTextArea = styled(Input).attrs({
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
-  textContentType: 'none',
   weight: 'semibold',
 })({
   marginBottom: android ? 55 : 0,

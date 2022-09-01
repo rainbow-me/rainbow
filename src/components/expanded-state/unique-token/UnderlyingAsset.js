@@ -11,7 +11,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils } from '@/utils';
-import ShadowStack from '@/react-native-shadow-stack';
+import ShadowStack from 'react-native-shadow-stack';
 
 export default function UnderlyingAsset({
   pricePerUnitFormatted,

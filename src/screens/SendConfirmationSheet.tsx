@@ -29,15 +29,17 @@ import ENSCircleIcon from '../components/icons/svg/ENSCircleIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
-import { Text as OldText } from '../components/text';
+import { Text as OldText, TruncatedText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
 import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { Box, Heading, Inset, Stack, Text } from '@/design-system';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@/config/experimentalHooks';
+import { Box, Inset, Stack, Text } from '@/design-system';
 import { AssetTypes } from '@/entities';
 import {
   estimateENSReclaimGasLimit,
@@ -51,8 +53,14 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@/helpers/emojiHandler';
-import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
+import {
+  add,
+  convertAmountToNativeDisplay,
+} from '@/helpers/utilities';
+import {
+  isENSAddressFormat,
+  isValidDomainFormat,
+} from '@/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -63,14 +71,14 @@ import {
   useGas,
   useUserAccounts,
   useWallets,
-} from '@/hooks';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
-import logger from '@/utils/logger';
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
+import { position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
+import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -280,6 +288,7 @@ export default function SendConfirmationSheet() {
     if (!isSendingToUserAccount) {
       let sends = 0;
       let sendsCurrentNetwork = 0;
+      // @ts-expect-error From JavaScript hook
       transactions.forEach(tx => {
         if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
           sends++;
@@ -542,24 +551,28 @@ export default function SendConfirmationSheet() {
         <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
-              <Column justify="center" width={deviceWidth - 117}>
-                <Heading numberOfLines={1} size="26px" weight="heavy">
+              <Column width={deviceWidth - 117}>
+                <TruncatedText
+                  letterSpacing="roundedTightest"
+                  size="bigger"
+                  weight="heavy"
+                >
                   {isNft ? asset?.name : nativeDisplayAmount}
-                </Heading>
-                <Row marginTop={12}>
-                  <Text
-                    color={{
-                      custom: isNft
-                        ? colors.alpha(colors.blueGreyDark, 0.6)
-                        : color,
-                    }}
-                    size="16px"
+                </TruncatedText>
+
+                <Row marginTop={android ? -16 : 0} paddingTop={3}>
+                  <OldText
+                    color={
+                      isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color
+                    }
+                    letterSpacing="roundedMedium"
+                    size="lmedium"
                     weight={isNft ? 'bold' : 'heavy'}
                   >
                     {isNft
                       ? asset.familyName
                       : `${amountDetails.assetAmount} ${asset.symbol}`}
-                  </Text>
+                  </OldText>
                 </Row>
               </Column>
               <Column align="end" flex={1} justify="center">
@@ -609,12 +622,16 @@ export default function SendConfirmationSheet() {
               </Column>
             </Row>
             <Row marginBottom={android ? 15 : 30}>
-              <Column flex={1} justify="center">
+              <Column flex={1}>
                 <Row width={android ? '80%' : '90%'}>
-                  <Heading numberOfLines={1} size="26px" weight="heavy">
+                  <TruncatedText
+                    letterSpacing="roundedTight"
+                    size="bigger"
+                    weight="heavy"
+                  >
                     {avatarName}
-                  </Heading>
-                  <Centered marginLeft={4}>
+                  </TruncatedText>
+                  <Centered marginTop={android ? 8 : 0}>
                     <ContactRowInfoButton
                       item={{
                         address: toAddress,
@@ -623,25 +640,24 @@ export default function SendConfirmationSheet() {
                       network={network}
                       scaleTo={0.75}
                     >
-                      <Text
-                        color={{
-                          custom: colors.alpha(
-                            colors.blueGreyDark,
-                            isDarkMode ? 0.5 : 0.6
-                          ),
-                        }}
-                        size="20px"
+                      <OldText
+                        color={colors.alpha(
+                          colors.blueGreyDark,
+                          isDarkMode ? 0.5 : 0.6
+                        )}
+                        lineHeight={31}
+                        size="larger"
                         weight="heavy"
                       >
-                        􀍡
-                      </Text>
+                        {' 􀍡'}
+                      </OldText>
                     </ContactRowInfoButton>
                   </Centered>
                 </Row>
-                <Row marginTop={12}>
-                  <Text
-                    color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
-                    size="16px"
+                <Row marginTop={android ? -18 : 0} paddingTop={3}>
+                  <OldText
+                    color={colors.alpha(colors.blueGreyDark, 0.6)}
+                    size="lmedium"
                     weight="bold"
                   >
                     {isSendingToUserAccount
@@ -649,7 +665,7 @@ export default function SendConfirmationSheet() {
                       : alreadySentTransactionsTotal === 0
                       ? `First time send`
                       : `${alreadySentTransactionsTotal} previous sends`}
-                  </Text>
+                  </OldText>
                 </Row>
               </Column>
               <Column align="end" justify="center">
