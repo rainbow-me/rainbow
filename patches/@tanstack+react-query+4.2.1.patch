@@ -1,0 +1,14 @@
+diff --git a/node_modules/@tanstack/react-query/build/esm/index.js b/node_modules/@tanstack/react-query/build/esm/index.js
+index 80f4739..6fdadf8 100644
+--- a/node_modules/@tanstack/react-query/build/esm/index.js
++++ b/node_modules/@tanstack/react-query/build/esm/index.js
+@@ -2496,7 +2496,8 @@ class QueryObserver extends Subscribable {
+     const result = {
+       status,
+       fetchStatus,
+-      isLoading: status === 'loading',
++      isLoading: status === 'loading' && fetchStatus === 'fetching',
++      isIdle: status === 'loading' && fetchStatus === 'idle',
+       isSuccess: status === 'success',
+       isError: status === 'error',
+       data,

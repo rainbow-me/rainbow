@@ -11,7 +11,7 @@ import { promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 
 const loadWalletBalanceNamesToCache = () =>
-  queryClient.prefetchQuery(WALLET_BALANCES_FROM_STORAGE, getWalletBalances);
+  queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
 
 export default function useLoadGlobalLateData() {
   const dispatch = useDispatch();
