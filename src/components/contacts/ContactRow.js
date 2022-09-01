@@ -143,7 +143,7 @@ const ContactRow = (
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 
-  const imageAvatar = profilesEnabled ? ensAvatar?.imageUrl : image;
+  const imageAvatar = ensAvatar?.imageUrl || image;
 
   return (
     <ButtonPressAnimation

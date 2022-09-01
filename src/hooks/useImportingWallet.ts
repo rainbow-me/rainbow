@@ -94,7 +94,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       const rainbowProfile = await fetchRainbowProfile(address);
       setColor(rainbowProfile?.color);
       setEmoji(rainbowProfile?.emoji);
-      const importWallet = (name: any, image: any) =>
+      const importWallet = (name: string, image: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (name) setName(name);
           if (image) setImage(image);

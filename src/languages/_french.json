@@ -279,6 +279,7 @@
         "add": "Ajouter le contact",
         "cancel": "Annuler",
         "delete": "Effacer le contact",
+        "delete_confirm": "Are you sure you want to delete %{name} from your contacts? :)",
         "edit": "Modifier le contact",
         "view": "Voir le profil"
       },

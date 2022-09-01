@@ -12,9 +12,9 @@ const showDeleteContactActionSheet = ({
     {
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
-      message: `Are you sure you want to delete "${
-        nickname || address
-      }" from your contacts?`,
+      message: lang.t('contacts.options.delete_confirm', {
+        name: nickname || address,
+      }),
       options: [
         lang.t('contacts.options.delete'),
         lang.t('contacts.options.cancel'),

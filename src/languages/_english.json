@@ -278,6 +278,7 @@
         "add": "Add Contact",
         "cancel": "Cancel",
         "delete": "Delete Contact",
+        "delete_confirm": "Are you sure you want to delete %{name} from your contacts?",
         "edit": "Edit Contact",
         "view": "View Profile"
       },
