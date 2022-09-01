@@ -121,8 +121,7 @@ const AvailableNetworksv2 = ({
       }));
   }, [networks]);
 
-  const MenuWrapper =
-    availableNetworks.length > 1 ? ContextMenuButton : React.Fragment;
+  const MenuWrapper = availableNetworks.length > 1 ? ContextMenuButton : Box;
 
   if (availableNetworks.length === 0) return null;
   return (
@@ -134,7 +133,9 @@ const AvailableNetworksv2 = ({
         onPressMenuItem={handlePressContextMenu}
         useActionSheetFallback={false}
       >
-        <ButtonPressAnimation
+        <Box
+          as={ButtonPressAnimation}
+          // @ts-expect-error overloaded props ButtonPressAnimation
           scaleTo={0.96}
           onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
         >
@@ -158,7 +159,7 @@ const AvailableNetworksv2 = ({
                     return (
                       <Box
                         background="body"
-                        key={`availbleNetwork-${network}`}
+                        key={`availableNetwork-${network}`}
                         marginLeft={{ custom: -6 }}
                         style={{
                           backgroundColor: colors.transparent,
@@ -215,7 +216,7 @@ const AvailableNetworksv2 = ({
               </Text>
             </Inline>
           </Box>
-        </ButtonPressAnimation>
+        </Box>
       </MenuWrapper>
       {hideDivider ? null : (
         <Divider
