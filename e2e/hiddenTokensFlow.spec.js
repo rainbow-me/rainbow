@@ -1,6 +1,9 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
+import { exec } from 'child_process';
 import * as Helpers from './helpers';
+
+const android = device.getPlatform() === 'android';
 
 describe('Hidden tokens flow', () => {
   it('boots and load wallet screen', async () => {
@@ -9,9 +12,9 @@ describe('Hidden tokens flow', () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.waitAndTap('import-sheet-button');
-
+    await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -19,6 +22,7 @@ describe('Hidden tokens flow', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.checkIfVisible('wallet-screen', 80000);
+    await Helpers.enableSynchronization();
   });
 
   it('NFT is hideable', async () => {
@@ -56,5 +60,6 @@ describe('Hidden tokens flow', () => {
 
   afterAll(async () => {
     await device.clearKeychain();
+    await exec('kill $(lsof -t -i:8545)');
   });
 });
