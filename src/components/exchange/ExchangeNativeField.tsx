@@ -115,7 +115,12 @@ const ExchangeNativeField: ForwardRefRenderFunction<
 
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
-      <Row align="center" flex={1} height={height}>
+      <Row
+        align="center"
+        flex={1}
+        height={height}
+        paddingTop={android ? 6 : undefined}
+      >
         <Box paddingBottom={android ? '2px' : undefined}>
           <Text color={{ custom: nativeAmountColor }} size="20px">
             {symbol}
