@@ -49,11 +49,9 @@ const AvailableNetworksv2 = ({
 
   const availableNetworks = useMemo(() => {
     // we dont want to show mainnet
-    let newNetworks = networks;
-    delete newNetworks['1'];
-    return Object.keys(newNetworks).map(network =>
-      ethereumUtils.getNetworkFromChainId(Number(network))
-    );
+    return Object.keys(networks)
+      .map(network => ethereumUtils.getNetworkFromChainId(Number(network)))
+      .filter(network => network !== Network.mainnet);
   }, [networks]);
 
   const { updateInputCurrency } = useSwapCurrencyHandlers({
@@ -94,15 +92,13 @@ const AvailableNetworksv2 = ({
 
   const handlePressContextMenu = useCallback(
     ({ nativeEvent: { actionKey: network } }) => {
-      const chosenNetwork = network;
-      convertAssetAndNavigate(chosenNetwork);
+      convertAssetAndNavigate(network);
     },
     [convertAssetAndNavigate]
   );
 
   const handlePressButton = useCallback(() => {
-    const chosenNetwork = availableNetworks[0];
-    convertAssetAndNavigate(chosenNetwork);
+    convertAssetAndNavigate(availableNetworks[0]);
   }, [availableNetworks, convertAssetAndNavigate]);
 
   const networkMenuItems = useMemo(() => {
@@ -128,6 +124,7 @@ const AvailableNetworksv2 = ({
   const MenuWrapper =
     availableNetworks.length > 1 ? ContextMenuButton : React.Fragment;
 
+  if (availableNetworks.length === 0) return null;
   return (
     <>
       <MenuWrapper
@@ -203,7 +200,7 @@ const AvailableNetworksv2 = ({
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
                           availableNetwork:
-                            networkInfo[availableNetworks?.[0]].name,
+                            networkInfo[availableNetworks?.[0]]?.name,
                         })}
                   </Text>
                 </Box>
