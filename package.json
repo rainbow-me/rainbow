@@ -321,7 +321,7 @@
     "detox": "19.7.1",
     "dotenv": "8.2.0",
     "eslint": "8.22.0",
-    "eslint-config-rainbow": "4.0.0",
+    "eslint-config-rainbow": "4.2.0",
     "ethereum-waffle": "3.4.0",
     "ethers": "5.6.8",
     "graphql": "15.3.0",
