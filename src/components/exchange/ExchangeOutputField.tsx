@@ -42,8 +42,8 @@ export default function ExchangeOutputField({
   return (
     <Box
       alignItems="center"
-      paddingBottom={android ? '8px' : '24px'}
-      paddingTop={android ? '24px' : '34px'}
+      paddingBottom={android ? '10px' : '24px'}
+      paddingTop={android ? '30px' : '34px'}
       style={{ overflow: 'hidden' }}
       width="full"
     >
