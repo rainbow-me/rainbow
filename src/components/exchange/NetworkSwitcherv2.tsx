@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
@@ -13,6 +12,7 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { useTheme } from '@/theme';
+import { useIsFocused } from '@react-navigation/native';
 
 const networkMenuItems = Object.values(networkInfo)
   .filter(({ disabled, testnet }) => !disabled && !testnet)
@@ -34,6 +34,8 @@ const NetworkSwitcherv2 = ({
 }) => {
   const { colors } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
+  const isFocused = useIsFocused();
+
   const radialGradientProps = (network: Network) => {
     return {
       center: [0, 1],
@@ -52,13 +54,17 @@ const NetworkSwitcherv2 = ({
   // if polygon is selcted intially we should scroll into view
   useEffect(() => {
     if (
-      currentChainId === ethereumUtils.getChainIdFromNetwork(Network.polygon) &&
-      scrollViewRef?.current
+      isFocused &&
+      scrollViewRef?.current &&
+      (currentChainId ===
+        ethereumUtils.getChainIdFromNetwork(Network.polygon) ||
+        currentChainId ===
+          ethereumUtils.getChainIdFromNetwork(Network.optimism))
     ) {
       scrollViewRef?.current.scrollToEnd();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isFocused]);
 
   return (
     <>
