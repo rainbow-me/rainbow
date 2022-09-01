@@ -138,12 +138,12 @@ const AvailableNetworksv2 = ({
           // @ts-expect-error overloaded props ButtonPressAnimation
           scaleTo={0.96}
           onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
+          marginHorizontal={{ custom: marginHorizontal }}
         >
           <Box
             borderRadius={99}
             padding="8px"
-            paddingHorizontal={{ custom: 16 }}
-            marginHorizontal={{ custom: marginHorizontal }}
+            paddingHorizontal={{ custom: 12 }}
             justifyContent="center"
           >
             <RadialGradient
@@ -160,13 +160,12 @@ const AvailableNetworksv2 = ({
                       <Box
                         background="body"
                         key={`availableNetwork-${network}`}
-                        marginLeft={{ custom: -6 }}
+                        marginLeft={{ custom: -4 }}
                         style={{
                           backgroundColor: colors.transparent,
                           zIndex: availableNetworks?.length - index,
                           borderRadius: 30,
                         }}
-                        width={{ custom: 22 }}
                       >
                         {network !== 'mainnet' ? (
                           <ChainBadge
@@ -188,7 +187,7 @@ const AvailableNetworksv2 = ({
                   })}
                 </Box>
 
-                <Box marginLeft={{ custom: 6 }}>
+                <Box paddingLeft="6px">
                   <Text
                     color="secondary60"
                     size="14px"
