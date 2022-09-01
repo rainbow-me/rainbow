@@ -11,7 +11,14 @@ describe('Hidden tokens flow', () => {
     await Helpers.waitAndTap('import-sheet-button');
 
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
+    await Helpers.checkIfVisible('wallet-screen', 80000);
   });
 
   it('NFT is hideable', async () => {
