@@ -366,7 +366,6 @@ export const parseSimplehashNfts = nftData => {
 
     const marketplaceInfo = getSimplehashMarketplaceInfo(simplehashNft);
 
-    console.log(simplehashNft.chain);
     const parsedNft = {
       animation_url: simplehashNft.extra_metadata?.animation_original_url,
       asset_contract: {
