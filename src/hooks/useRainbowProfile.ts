@@ -20,36 +20,38 @@ export const rainbowProfileQueryKey = (address: EthereumAddress) => [
 ];
 
 export default function useRainbowProfile(
-  address: EthereumAddress,
+  address: EthereumAddress | null | undefined,
   config?: QueryConfig<typeof fetchRainbowProfile>
 ) {
+  const addressString = address ?? '';
+
   const addressHashedColor = useMemo(
     () =>
       colors.avatarBackgrounds[
-        profileUtils.addressHashedColorIndex(address) || 0
+        profileUtils.addressHashedColorIndex(addressString) || 0
       ],
-    [address]
+    [addressString]
   );
   const addressHashedEmoji = useMemo(
-    () => profileUtils.addressHashedEmoji(address),
-    [address]
+    () => profileUtils.addressHashedEmoji(addressString),
+    [addressString]
   );
 
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchRainbowProfile>
   >(
-    rainbowProfileQueryKey(address),
+    rainbowProfileQueryKey(addressString),
     async () => {
-      const cachedProfile = await getRainbowProfile(address);
+      const cachedProfile = await getRainbowProfile(addressString);
       if (cachedProfile) {
         queryClient.setQueryData(
-          rainbowProfileQueryKey(address),
+          rainbowProfileQueryKey(addressString),
           cachedProfile
         );
       }
-      const rainbowProfile = await fetchRainbowProfile(address);
+      const rainbowProfile = await fetchRainbowProfile(addressString);
 
-      rainbowProfile && saveRainbowProfile(address, rainbowProfile);
+      rainbowProfile && saveRainbowProfile(addressString, rainbowProfile);
       return (
         rainbowProfile || {
           color: addressHashedColor,
@@ -60,7 +62,7 @@ export default function useRainbowProfile(
     {
       ...config,
       // Data will be stale for 10s to avoid dupe queries
-      enabled: isValidAddress(address),
+      enabled: isValidAddress(addressString),
       staleTime: STALE_TIME,
     }
   );

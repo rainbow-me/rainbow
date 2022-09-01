@@ -53,7 +53,7 @@ export default function ProfileSheetHeader({
   const { data: profileAddress } = useENSAddress(ensName, {
     enabled: profilesEnabled,
   });
-  const { rainbowProfile } = useRainbowProfile(profileAddress || '');
+  const { rainbowProfile } = useRainbowProfile(profileAddress);
   const { data: { coinAddresses, records } = {} } = useENSRecords(ensName, {
     enabled: profilesEnabled,
   });

@@ -18,6 +18,7 @@ import {
 } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
+import { isValidAddress } from 'ethereumjs-util';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({
@@ -79,7 +80,7 @@ const ContactRow = (
     testID,
   } = props;
   const { rainbowProfile } = useRainbowProfile(address, {
-    enabled: !((color && emoji) || image),
+    enabled: !((color && emoji) || image) && isValidAddress(address),
   });
 
   let cleanedUpBalance = balance;

@@ -6,6 +6,7 @@ import { Text } from '../text';
 import { useRainbowProfile } from '@/hooks';
 import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { isValidAddress } from 'ethereumjs-util';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
@@ -69,7 +70,9 @@ const ContactAvatar = ({
   ...props
 }) => {
   const { colors } = useTheme();
-  const { rainbowProfile } = useRainbowProfile(color && emoji ? '' : address);
+  const { rainbowProfile } = useRainbowProfile(address, {
+    enabled: !(color && emoji) && isValidAddress(address),
+  });
   const profileColor = color || rainbowProfile?.color;
   const profileEmoji = emoji || rainbowProfile?.emoji;
   const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [

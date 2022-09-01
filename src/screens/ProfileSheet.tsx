@@ -51,7 +51,7 @@ export default function ProfileSheet() {
 
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
 
-  const { rainbowProfile } = useRainbowProfile(profileAddress || '');
+  const { rainbowProfile } = useRainbowProfile(profileAddress);
 
   // Prefetch first transaction timestamp unless already fetched for intro marquee
   const {
