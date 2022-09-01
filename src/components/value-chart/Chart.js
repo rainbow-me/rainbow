@@ -14,7 +14,11 @@ import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
-import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
+import {
+  ChartDot,
+  ChartPath,
+  useChartData,
+} from '@/react-native-animated-charts/src';
 import ChartTypes from '@/helpers/chartTypes';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';

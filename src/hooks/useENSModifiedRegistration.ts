@@ -13,11 +13,7 @@ import svgToPngIfNeeded from '@/handlers/svgs';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
-import {
-  getENSNFTAvatarUrl,
-  isENSNFTRecord,
-  parseENSNFTRecord,
-} from '@/utils';
+import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
 
 const getImageUrl = (
   key: 'avatar' | 'header',

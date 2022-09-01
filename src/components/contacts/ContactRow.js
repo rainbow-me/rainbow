@@ -10,15 +10,10 @@ import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ENS_DOMAIN } from '@/helpers/ens';
-import {
-  isENSAddressFormat,
-  isValidDomainFormat,
-} from '@/helpers/validators';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';

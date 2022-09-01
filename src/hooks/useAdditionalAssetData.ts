@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
 import { EthereumAddress } from '@/entities';
