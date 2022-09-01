@@ -94,7 +94,12 @@ export default function ExchangeDetailsRow({
   ]);
 
   return (
-    <Box alignItems="center" height="64px" justifyContent="center" width="full">
+    <Box
+      alignItems="center"
+      height={{ custom: 60 }}
+      justifyContent="center"
+      width="full"
+    >
       <PriceImpactWarning
         isHighPriceImpact={isHighPriceImpact}
         onPress={onPressImpactWarning}
