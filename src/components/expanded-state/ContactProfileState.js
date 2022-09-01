@@ -25,24 +25,14 @@ const ContactProfileState = ({ address, ens, contactNickname }) => {
   const { rainbowProfile } = useRainbowProfile(address);
 
   const handleAddContact = useCallback(() => {
-    onAddOrUpdateContacts(
+    onAddOrUpdateContacts({
       address,
       nickname,
-      rainbowProfile?.color,
       network,
-      ens
-    );
+    });
     goBack();
     android && Keyboard.dismiss();
-  }, [
-    address,
-    ens,
-    goBack,
-    network,
-    nickname,
-    onAddOrUpdateContacts,
-    rainbowProfile?.color,
-  ]);
+  }, [address, goBack, network, nickname, onAddOrUpdateContacts]);
 
   const handleCancel = useCallback(() => {
     goBack();

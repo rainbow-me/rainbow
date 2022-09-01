@@ -64,7 +64,7 @@ const ContactRow = (
 ) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { width: deviceWidth } = useDimensions();
-  const { onAddOrUpdateContacts } = useContacts();
+  const { contacts, onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
   const {
     accountType,
@@ -102,6 +102,10 @@ const ContactRow = (
     enabled: profilesEnabled && Boolean(ensName),
   });
 
+  const contact = useMemo(() => {
+    return contacts?.[address?.toLowerCase()];
+  }, [contacts, address]);
+
   useEffect(() => {
     if (profilesEnabled && accountType === 'contacts') {
       const fetchENSName = async () => {
@@ -111,9 +115,7 @@ const ContactRow = (
           onAddOrUpdateContacts(
             address,
             name && isENSAddressFormat(nickname) ? name : nickname,
-            rainbowProfile?.color,
-            network,
-            name
+            network
           );
         }
       };
@@ -133,15 +135,15 @@ const ContactRow = (
 
   const handlePress = useCallback(() => {
     if (showcaseItem) {
-      onPress(showcaseItem, nickname);
+      onPress(showcaseItem, nickname, contact);
     } else {
       const recipient =
         accountType === 'suggestions' && isENSAddressFormat(nickname)
           ? nickname
           : ensName || address;
-      onPress(recipient, nickname ?? recipient);
+      onPress(recipient, nickname ?? recipient, contact);
     }
-  }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
+  }, [accountType, address, contact, ensName, nickname, onPress, showcaseItem]);
 
   const imageAvatar = ensAvatar?.imageUrl || image;
 

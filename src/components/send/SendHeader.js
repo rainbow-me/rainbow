@@ -14,7 +14,14 @@ import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { useClipboard, useDimensions, useRainbowProfile } from '@/hooks';
+import {
+  useClipboard,
+  useContacts,
+  useDimensions,
+  useENSName,
+  useRainbowProfile,
+  useUserAccounts,
+} from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
@@ -59,34 +66,28 @@ const SendSheetTitle = styled(SheetTitle).attrs({
   marginTop: android ? 10 : 17,
 });
 
-const defaultContactItem = {
-  address: '',
-  color: null,
-  nickname: '',
-};
-
 export default function SendHeader({
-  contacts,
+  contact,
   hideDivider,
   isValidAddress,
   fromProfile,
-  nickname,
   onChangeAddressInput,
   onFocus,
   onPressPaste,
   onRefocusInput,
   recipient,
   recipientFieldRef,
-  removeContact,
+  setContact,
   showAssetList,
-  userAccounts,
-  watchedAccounts,
 }) {
   const { setClipboard } = useClipboard();
+  const { contacts, onRemoveContact } = useContacts();
+  const { userAccounts, watchedAccounts } = useUserAccounts();
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
   const [hexAddress, setHexAddress] = useState('');
+  const { data: ensName } = useENSName(hexAddress);
   useRainbowProfile(hexAddress);
 
   useEffect(() => {
@@ -105,10 +106,6 @@ export default function SendHeader({
     }
   }, [isValidAddress, recipient, setHexAddress]);
 
-  const contact = useMemo(() => {
-    return contacts?.[hexAddress.toLowerCase()] ?? defaultContactItem;
-  }, [contacts, hexAddress]);
-
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
       account =>
@@ -119,12 +116,11 @@ export default function SendHeader({
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
 
-  const name =
-    userWallet?.label ||
-    contact?.nickname ||
-    nickname ||
-    userWallet?.ens ||
-    recipient;
+  const name = userWallet?.label || contact?.nickname || ensName || recipient;
+
+  // useEffect(() => {
+  //   onChangeAddressInput(name);
+  // }, [name, onChangeAddressInput]);
 
   const handleNavigateToContact = useCallback(() => {
     android && Keyboard.dismiss();
@@ -132,16 +128,16 @@ export default function SendHeader({
       additionalPadding: true,
       address: hexAddress,
       contactNickname: userWallet?.label ?? contact?.nickname,
-      ens: recipient,
+      ens: ensName,
       onRefocusInput,
       type: 'contact_profile',
     });
   }, [
     contact?.nickname,
+    ensName,
     hexAddress,
     navigate,
     onRefocusInput,
-    recipient,
     userWallet?.label,
   ]);
 
@@ -163,9 +159,9 @@ export default function SendHeader({
             address: hexAddress,
             nickname: name,
             onDelete: () => {
-              onChangeAddressInput(contact?.ens);
+              onChangeAddressInput(userWallet?.label || ensName || recipient);
             },
-            removeContact: removeContact,
+            removeContact: onRemoveContact,
           });
         } else if (buttonIndex === 1) {
           handleNavigateToContact();
@@ -177,22 +173,27 @@ export default function SendHeader({
       }
     );
   }, [
-    contact?.ens,
-    handleNavigateToContact,
     hexAddress,
-    onRefocusInput,
-    removeContact,
-    setClipboard,
     name,
+    onRemoveContact,
     onChangeAddressInput,
+    userWallet?.label,
+    ensName,
+    recipient,
+    handleNavigateToContact,
+    onRefocusInput,
+    setClipboard,
   ]);
 
   const onChange = useCallback(
     text => {
       onChangeAddressInput(text);
       setHexAddress('');
+      if (text !== contact?.nickname) {
+        setContact(null);
+      }
     },
-    [onChangeAddressInput]
+    [contact?.nickname, onChangeAddressInput, setContact]
   );
 
   return (

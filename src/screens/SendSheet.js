@@ -155,8 +155,8 @@ export default function SendSheet(props) {
   const [recipient, setRecipient] = useState('');
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState({});
+  const [contact, setContact] = useState();
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
-
   const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
 
@@ -939,11 +939,10 @@ export default function SendSheet(props) {
       {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
-          contacts={contacts}
+          contact={contact}
           fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
-          nickname={nickname}
           onChangeAddressInput={onChangeInput}
           onPressPaste={recipient => {
             checkAddress(recipient);
@@ -951,10 +950,8 @@ export default function SendSheet(props) {
           }}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
-          removeContact={onRemoveContact}
+          setContact={setContact}
           showAssetList={showAssetList}
-          userAccounts={userAccounts}
-          watchedAccounts={watchedAccounts}
         />
         {showEmptyState && (
           <SendContactList
@@ -963,7 +960,8 @@ export default function SendSheet(props) {
             ensSuggestions={ensSuggestions}
             key={sendContactListDataKey}
             loadingEnsSuggestions={loadingEnsSuggestions}
-            onPressContact={(recipient, nickname) => {
+            onPressContact={(recipient, nickname, contact) => {
+              setContact(contact);
               setIsValidAddress(true);
               setRecipient(recipient);
               setNickname(nickname);
