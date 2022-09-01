@@ -2,12 +2,6 @@ import lang from 'i18n-js';
 import React from 'react';
 import { Linking } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from './Divider';
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
-import { CoinIcon } from './coin-icon';
-import ChainBadge from './coin-icon/ChainBadge';
-import { Column, Row } from './layout';
-import { Text } from './text';
 import { Box } from '@/design-system';
 import networkInfo from '@/helpers/networkInfo';
 import { useNavigation } from '@/navigation';
@@ -16,6 +10,11 @@ import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { ethereumUtils } from '@/utils';
 import { useTheme } from '@/theme';
+import { ButtonPressAnimation } from '../animations';
+import { Column, Row } from '../layout';
+import { ChainBadge, CoinIcon } from '../coin-icon';
+import Divider from '../Divider';
+import { Text } from '../text';
 
 const AvailableNetworksv1 = ({
   asset,
