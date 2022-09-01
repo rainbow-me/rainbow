@@ -48,7 +48,9 @@ export const ThemeContext = createContext<ThemeContextProps>({
 
 const { RNThemeModule } = NativeModules;
 
-export const MainThemeProvider = (props: PropsWithChildren<{}>) => {
+export const MainThemeProvider = (
+  props: PropsWithChildren<Record<string, unknown>>
+) => {
   const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
 
   // looks like one works on Android and another one on iOS. good.
@@ -91,7 +93,7 @@ export const MainThemeProvider = (props: PropsWithChildren<{}>) => {
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
     if (colorScheme) {
-      //setIsDarkMode(colorScheme === Themes.DARK);
+      // setIsDarkMode(colorScheme === Themes.DARK);
       saveTheme(colorScheme);
     }
   }, [colorScheme]);

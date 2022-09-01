@@ -29,7 +29,7 @@ import {
   useImportingWallet,
   useWalletsWithBalancesAndNames,
 } from '@/hooks';
-import Routes from '@/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils, haptics } from '@/utils';
 import logger from 'logger';
 

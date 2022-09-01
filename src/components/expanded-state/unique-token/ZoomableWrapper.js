@@ -102,7 +102,7 @@ export const ZoomableWrapper = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
-  let { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
   let deviceHeightWithMaybeHiddenStatusBar = deviceHeight;
   if (!hideStatusBar) {

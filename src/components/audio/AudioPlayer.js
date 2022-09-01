@@ -18,8 +18,8 @@ const formatColor = color =>
   color && typeof color === 'string' ? color.replace('#', '') : null;
 
 const buildPlayerUrl = options => {
-  let qsArray = [];
-  for (let p in options)
+  const qsArray = [];
+  for (const p in options)
     if (options.hasOwnProperty(p)) {
       qsArray.push(
         `${encodeURIComponent(p)}=${encodeURIComponent(options[p])}`

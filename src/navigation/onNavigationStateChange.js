@@ -43,7 +43,7 @@ export function onHandleStatusBar(currentState, prevState) {
   switch (routeName) {
     case Routes.EXPANDED_ASSET_SHEET:
     case Routes.EXPANDED_ASSET_SHEET_POOLS:
-      //handles the status bar when opening nested modals
+      // handles the status bar when opening nested modals
       if (
         isRoutesLengthDecrease &&
         isFromWalletScreen &&
