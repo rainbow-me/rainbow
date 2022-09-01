@@ -549,8 +549,13 @@ export const createWallet = async (
   overwrite: boolean = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent: boolean = false
+  silent: boolean = false,
+  clearCallbackOnStartCreation: boolean = false
 ): Promise<null | EthereumWallet> => {
+  if (clearCallbackOnStartCreation) {
+    callbackAfterSeeds?.();
+    callbackAfterSeeds = null;
+  }
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
   if (!seed) {
