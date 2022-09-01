@@ -217,7 +217,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
+    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
