@@ -218,7 +218,6 @@ interface UniqueTokenExpandedStateProps {
 const getIsSupportedOnRainbowWeb = (network: Network) => {
   switch (network) {
     case Network.mainnet:
-    case Network.polygon:
       return true;
     default:
       return false;
