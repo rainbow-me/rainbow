@@ -22,17 +22,11 @@ import { Network } from '@/helpers';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
-import { ThemeContextProps, useTheme } from '@/theme';
-import { Box, Inline, Space } from '@/design-system';
+import { useTheme } from '@/theme';
+import { AccentColorProvider, Box, Inline, Space } from '@/design-system';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding: Space = android ? '15px' : '19px';
-
-const CoinIconSkeleton = styled(View)({
-  ...borders.buildCircleAsObject(CoinIconSize),
-  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) =>
-    colors.alpha(colors.blueGreyDark, 0.1),
-});
 
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',
@@ -172,7 +166,14 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
               />
             ) : (
               <View>
-                <CoinIconSkeleton />
+                <AccentColorProvider
+                  color={colors.alpha(colors.blueGreyDark, 0.1)}
+                >
+                  <Box
+                    background="accent"
+                    style={{ ...borders.buildCircleAsObject(CoinIconSize) }}
+                  />
+                </AccentColorProvider>
                 <ChainBadge assetType={network} />
               </View>
             )}
