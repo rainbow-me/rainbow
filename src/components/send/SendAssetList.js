@@ -21,7 +21,7 @@ import {
 import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
-import styled from '@/styled-components';
+import styled from '@/styled-thing';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;
