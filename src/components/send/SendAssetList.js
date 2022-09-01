@@ -21,7 +21,7 @@ import {
 import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-components';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;

@@ -17,7 +17,7 @@ import {
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/routes';
 
 const LOADING_ASSETS_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
