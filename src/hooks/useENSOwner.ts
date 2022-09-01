@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
 import { fetchOwner } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';

@@ -1,3 +1,4 @@
+import { IS_TESTING } from 'react-native-dotenv';
 import { useRoute } from '@react-navigation/core';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
@@ -168,11 +169,14 @@ export default function ChangeWalletSheet() {
         initializeWallet(null, null, null, false, false, null, true);
         if (!fromDeletion) {
           goBack();
-          InteractionManager.runAfterInteractions(() => {
-            setTimeout(async () => {
-              await runCampaignChecks();
-            }, 5000);
-          });
+
+          if (IS_TESTING !== 'true') {
+            InteractionManager.runAfterInteractions(() => {
+              setTimeout(async () => {
+                await runCampaignChecks();
+              }, 5000);
+            });
+          }
         }
       } catch (e) {
         logger.log('error while switching account', e);
