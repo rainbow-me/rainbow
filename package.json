@@ -107,6 +107,7 @@
     "@segment/analytics-react-native": "2.7.0",
     "@segment/sovran-react-native": "0.4.3",
     "@sentry/react-native": "3.4.1",
+    "@tanstack/react-query": "4.2.1",
     "@tradle/react-native-http": "2.0.1",
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
@@ -252,7 +253,6 @@
     "react-native-widgetkit": "1.0.9",
     "react-navigation-backhandler": "2.0.1",
     "react-primitives": "0.8.1",
-    "react-query": "3.34.15",
     "react-redux": "7.2.1",
     "react-style-proptype": "3.2.2",
     "readable-stream": "1.1.14",
@@ -449,6 +449,7 @@
     "test-runner": "jest"
   },
   "react-native": {
+    "@tanstack/react-query": "@tanstack/react-query/build/esm/index",
     "zlib": "browserify-zlib",
     "console": "console-browserify",
     "constants": "constants-browserify",
@@ -475,6 +476,7 @@
     "tls": false
   },
   "browser": {
+    "@tanstack/react-query": "@tanstack/react-query/build/esm/index",
     "zlib": "browserify-zlib",
     "console": "console-browserify",
     "constants": "constants-browserify",

@@ -3,14 +3,7 @@ import React from 'react';
 import { Source } from 'react-native-fast-image';
 import brain from '../../../assets/brain.png';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
-import {
-  Box,
-  Divider,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Box, Divider, Inline, Inset, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';

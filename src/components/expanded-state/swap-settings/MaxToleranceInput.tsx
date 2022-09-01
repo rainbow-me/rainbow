@@ -22,11 +22,7 @@ import {
   Text,
 } from '@/design-system';
 import { Network } from '@/helpers';
-import {
-  add,
-  convertNumberToString,
-  greaterThan,
-} from '@/helpers/utilities';
+import { add, convertNumberToString, greaterThan } from '@/helpers/utilities';
 import { useMagicAutofocus, useSwapSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

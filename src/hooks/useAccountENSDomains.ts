@@ -1,14 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
 import { uniqBy } from 'lodash';
 import { useMemo } from 'react';
-import { useQuery } from 'react-query';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
 import { EnsDomain } from '@/apollo/queries';
 import { fetchAccountDomains } from '@/handlers/ens';
-import {
-  getENSDomains,
-  setENSDomains,
-} from '@/handlers/localstorage/ens';
+import { getENSDomains, setENSDomains } from '@/handlers/localstorage/ens';
 import { queryClient } from '@/react-query/queryClient';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [

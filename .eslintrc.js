@@ -27,4 +27,18 @@ module.exports = {
     project: ['./tsconfig.json'],
   },
   globals: globalVars,
+  rules: {
+    'no-restricted-imports': [
+      'warn',
+      {
+        patterns: [
+          {
+            group: ['@react-navigation/core'],
+            message:
+              'You probably want to use @/navigation instead, to ensure that all of our customizations are applied.',
+          },
+        ],
+      },
+    ],
+  },
 };
