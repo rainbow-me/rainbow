@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
-import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
@@ -18,7 +17,6 @@ import { useAsset, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,
@@ -48,7 +46,6 @@ export default function ExpandedAssetSheet(props) {
   const insets = useSafeArea();
   const { goBack } = useNavigation();
   const { params } = useRoute();
-  const { isDarkMode } = useTheme();
 
   // We want to revalidate (ie. refresh OpenSea metadata) collectibles
   // to ensure the user can get the latest metadata of their collectible.
@@ -62,9 +59,6 @@ export default function ExpandedAssetSheet(props) {
       height={params.longFormHeight}
       insets={insets}
     >
-      {ios && !isDarkMode && !params.fromDiscover && (
-        <StatusBar barStyle="light-content" />
-      )}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {createElement(ScreenTypes[params.type], {

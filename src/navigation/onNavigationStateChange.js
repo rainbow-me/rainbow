@@ -1,14 +1,16 @@
-import { NativeModules, StatusBar } from 'react-native';
+import { NativeModules } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
-import currentColors from '../theme/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
+import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
+import { currentColors } from '@/theme';
 
-let memRouteName;
 let memState;
+let memRouteName;
+let memPrevRouteName;
 
 let action = null;
 
@@ -27,10 +29,59 @@ export function triggerOnSwipeLayout(newAction) {
   }
 }
 
+export function onHandleStatusBar(currentState, prevState) {
+  const routeName = Navigation.getActiveRouteName();
+  if (currentColors.theme === 'dark') {
+    StatusBarHelper.setLightContent();
+    return;
+  }
+  const isFromWalletScreen = Navigation.getActiveRoute().params
+    ?.isFromWalletScreen;
+
+  const isRoutesLengthDecrease =
+    prevState?.routes.length > currentState?.routes.length;
+  switch (routeName) {
+    case Routes.EXPANDED_ASSET_SHEET:
+    case Routes.EXPANDED_ASSET_SHEET_POOLS:
+      // handles the status bar when opening nested modals
+      if (
+        isRoutesLengthDecrease &&
+        isFromWalletScreen &&
+        (routeName === Routes.EXPANDED_ASSET_SHEET_POOLS ||
+          routeName === Routes.EXPANDED_ASSET_SHEET)
+      ) {
+        StatusBarHelper.setDarkContent();
+        break;
+      } else if (
+        !android &&
+        isFromWalletScreen &&
+        routeName !== Routes.EXPANDED_ASSET_SHEET_POOLS &&
+        memRouteName !== Routes.WALLET_SCREEN
+      ) {
+        StatusBarHelper.setLightContent();
+        break;
+      }
+      break;
+    case Routes.PROFILE_SCREEN:
+    case Routes.WALLET_SCREEN:
+    case Routes.WYRE_WEBVIEW:
+    case Routes.SAVINGS_SHEET:
+    case Routes.WELCOME_SCREEN:
+    case Routes.CHANGE_WALLET_SHEET:
+      StatusBarHelper.setDarkContent();
+      break;
+
+    default:
+      StatusBarHelper.setLightContent();
+  }
+}
+
 export function onNavigationStateChange(currentState) {
+  const routeName = Navigation.getActiveRouteName();
+
   const prevState = memState;
   memState = currentState;
-  const { name: routeName } = Navigation.getActiveRoute();
+
   if (android) {
     NativeModules.MenuViewModule.dismiss();
     setTimeout(NativeModules.MenuViewModule.dismiss, 400);
@@ -40,80 +91,11 @@ export function onNavigationStateChange(currentState) {
     action?.();
     action = undefined;
   }
-  const prevRouteName = memRouteName;
+
+  onHandleStatusBar(currentState, prevState);
+
+  memPrevRouteName = memRouteName;
   memRouteName = routeName;
-
-  if (routeName === Routes.QR_SCANNER_SCREEN) {
-    StatusBar.setBarStyle('light-content', true);
-  }
-
-  if (
-    prevRouteName === Routes.QR_SCANNER_SCREEN &&
-    routeName === Routes.WALLET_SCREEN
-  ) {
-    StatusBar.setBarStyle('dark-content', true);
-  }
-
-  if (currentColors.theme === 'dark') {
-    StatusBar.setBarStyle('light-content');
-  } else {
-    if (ios) {
-      const oldBottomSheetStackRoute = prevState?.routes[prevState.index].name;
-      const newBottomSheetStackRoute =
-        currentState?.routes[currentState.index].name;
-
-      const wasCustomSlackOpen =
-        oldBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
-        oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-        oldBottomSheetStackRoute === Routes.SETTINGS_SHEET;
-      const isCustomSlackOpen =
-        newBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
-        newBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-        newBottomSheetStackRoute === Routes.SETTINGS_SHEET;
-
-      if (wasCustomSlackOpen !== isCustomSlackOpen) {
-        StatusBar.setBarStyle(
-          wasCustomSlackOpen ? 'dark-content' : 'light-content'
-        );
-      }
-    } else {
-      if (routeName !== prevRouteName) {
-        if ([prevRouteName, routeName].includes(Routes.RECEIVE_MODAL)) {
-          StatusBar.setBarStyle(
-            routeName === Routes.RECEIVE_MODAL
-              ? 'light-content'
-              : 'dark-content',
-            true
-          );
-        }
-
-        if ([prevRouteName, routeName].includes(Routes.BACKUP_SHEET)) {
-          StatusBar.setBarStyle(
-            !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
-            true
-          );
-        }
-
-        if ([prevRouteName, routeName].includes(Routes.SAVINGS_SHEET)) {
-          StatusBar.setBarStyle(
-            !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
-            true
-          );
-        }
-
-        if (
-          routeName === Routes.EXPANDED_ASSET_SHEET &&
-          Navigation.getActiveRoute().params.type === 'uniswap'
-        ) {
-          StatusBar.setBarStyle('light-content', true);
-        }
-
-        if (prevRouteName === Routes.EXPANDED_ASSET_SHEET) {
-          StatusBar.setBarStyle('dark-content', true);
-        }
-      }
-    }
-  }
 
   if (android) {
     if (
@@ -140,7 +122,7 @@ export function onNavigationStateChange(currentState) {
     }
   }
 
-  if (routeName !== prevRouteName) {
+  if (routeName !== memPrevRouteName) {
     let paramsToTrack = null;
 
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
@@ -153,7 +135,7 @@ export function onNavigationStateChange(currentState) {
       };
     }
 
-    sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
+    sentryUtils.addNavBreadcrumb(memPrevRouteName, routeName, paramsToTrack);
     return android
       ? paramsToTrack && analytics.screen(routeName, paramsToTrack)
       : analytics.screen(routeName, paramsToTrack);

@@ -12,7 +12,6 @@ project(':react-native-code-push').projectDir = new File(rootProject.projectDir,
 include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')
 includeBuild('../node_modules/react-native-gradle-plugin')
-if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true") {
-    include(":ReactAndroid")
-    project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
-}
+
+include(":ReactAndroid")
+project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
