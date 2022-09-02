@@ -88,7 +88,11 @@ const ExamplePreview = ({
   return (
     <Stack space="24px">
       {subTitle ? (
-        <Heading color="secondary60" size="20px" weight="semibold">
+        <Heading
+          color="secondary60"
+          size="20px / 22px (Deprecated)"
+          weight="semibold"
+        >
           {subTitle}
         </Heading>
       ) : (
