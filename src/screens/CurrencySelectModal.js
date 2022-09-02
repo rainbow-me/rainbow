@@ -474,7 +474,7 @@ export default function CurrencySelectModal() {
   }));
 
   const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = crosschainEnabled
+  const NetworkSwitcher = !crosschainEnabled
     ? NetworkSwitcherv1
     : NetworkSwitcherv2;
 
