@@ -23,11 +23,21 @@ const docs: DocsType = {
       Example: () =>
         source(
           <Stack space="12px">
-            <Text weight="regular">Regular</Text>
-            <Text weight="medium">Medium</Text>
-            <Text weight="semibold">Semibold</Text>
-            <Text weight="bold">Bold</Text>
-            <Text weight="heavy">Heavy</Text>
+            <Text size="17pt" weight="regular">
+              Regular
+            </Text>
+            <Text size="17pt" weight="medium">
+              Medium
+            </Text>
+            <Text size="17pt" weight="semibold">
+              Semibold
+            </Text>
+            <Text size="17pt" weight="bold">
+              Bold
+            </Text>
+            <Text size="17pt" weight="heavy">
+              Heavy
+            </Text>
           </Stack>
         ),
     },

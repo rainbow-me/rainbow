@@ -35,7 +35,7 @@ const RegisterContent = ({
                 align="center"
                 color="primary"
                 containsEmoji
-                size="23px"
+                size="23px / 27px (Deprecated)"
                 weight="heavy"
               >
                 {lang.t('profiles.confirm.last_step')} 💈
@@ -43,7 +43,7 @@ const RegisterContent = ({
               <Text
                 align="center"
                 color="secondary60"
-                size="16px"
+                size="16px / 22px (Deprecated)"
                 weight="semibold"
               >
                 {lang.t('profiles.confirm.last_step_description')}
@@ -56,14 +56,22 @@ const RegisterContent = ({
             <Divider />
             <Inline alignHorizontal="justify" alignVertical="center">
               <Inline>
-                <Text color="secondary80" size="16px" weight="bold">
+                <Text
+                  color="secondary80"
+                  size="16px / 22px (Deprecated)"
+                  weight="bold"
+                >
                   {`${lang.t('profiles.confirm.set_ens_name')} `}
                 </Text>
                 <ButtonPressAnimation
                   onPress={openPrimaryENSNameHelper}
                   scaleTo={0.9}
                 >
-                  <Text color="secondary30" size="16px" weight="bold">
+                  <Text
+                    color="secondary30"
+                    size="16px / 22px (Deprecated)"
+                    weight="bold"
+                  >
                     􀅵
                   </Text>
                 </ButtonPressAnimation>

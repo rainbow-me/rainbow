@@ -25,7 +25,6 @@ const NOOP = () => undefined;
 
 const sx = StyleSheet.create({
   accountLabel: {
-    fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
@@ -42,6 +41,9 @@ const sx = StyleSheet.create({
   },
   coinCheckIcon: {
     width: 60,
+  },
+  contextMenuAndroid: {
+    flex: 1,
   },
   editIcon: {
     color: '#0E76FD',
@@ -61,7 +63,6 @@ const sx = StyleSheet.create({
   rightContent: {
     flex: 0,
     flexDirection: 'row',
-    marginLeft: 48,
   },
 });
 
@@ -110,7 +111,6 @@ export default function AddressRow({
   getEditMenuItems,
   getOnMenuItemPress,
   onPress,
-  watchOnly,
 }) {
   const {
     address,
@@ -191,50 +191,64 @@ export default function AddressRow({
     );
   }, [menuConfig, onMenuItemPress]);
 
-  const content = (
-    <Row align="center">
-      <Row align="center" flex={1} height={59}>
-        {accountImage ? (
-          <ImageAvatar image={accountImage} marginRight={10} size="medium" />
+  const leftSide = (
+    <Row align="center" flex={1} height={59} paddingRight={48}>
+      {accountImage ? (
+        <ImageAvatar image={accountImage} marginRight={10} size="medium" />
+      ) : (
+        <ContactAvatar
+          color={accountColor}
+          marginRight={10}
+          size="medium"
+          value={
+            returnStringFirstEmoji(label) ||
+            profileUtils.addressHashedEmoji(address) ||
+            label ||
+            ens
+          }
+        />
+      )}
+      <ColumnWithMargins margin={android ? -6 : 3}>
+        {cleanedUpLabel || ens ? (
+          <StyledTruncatedText
+            color={colors.dark}
+            testID={`change-wallet-address-row-label-${cleanedUpLabel || ens}`}
+          >
+            {cleanedUpLabel || ens}
+          </StyledTruncatedText>
         ) : (
-          <ContactAvatar
-            color={accountColor}
-            marginRight={10}
-            size="medium"
-            value={
-              returnStringFirstEmoji(label) ||
-              profileUtils.addressHashedEmoji(address) ||
-              label ||
-              ens
-            }
+          <TruncatedAddress
+            address={address}
+            color={colors.dark}
+            firstSectionLength={6}
+            size="smaller"
+            style={sx.accountLabel}
+            testID={`change-wallet-address-row-address-${address}`}
+            truncationLength={4}
+            weight="medium"
           />
         )}
-        <ColumnWithMargins margin={android ? -6 : 3}>
-          {cleanedUpLabel || ens ? (
-            <StyledTruncatedText
-              color={colors.dark}
-              testID={`change-wallet-address-row-label-${
-                cleanedUpLabel || ens
-              }`}
-            >
-              {cleanedUpLabel || ens}
-            </StyledTruncatedText>
-          ) : (
-            <TruncatedAddress
-              address={address}
-              color={colors.dark}
-              firstSectionLength={6}
-              size="smaller"
-              style={sx.accountLabel}
-              testID={`change-wallet-address-row-address-${address}`}
-              truncationLength={4}
-              weight="medium"
-            />
-          )}
-          <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-            {cleanedUpBalance || 0} ETH
-          </StyledBottomRowText>
-        </ColumnWithMargins>
+        <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+          {cleanedUpBalance || 0} ETH
+        </StyledBottomRowText>
+      </ColumnWithMargins>
+    </Row>
+  );
+
+  const content = (
+    <Row align="center">
+      <Row flex={1} height={59}>
+        {editMode && android ? (
+          <ContextMenuButton
+            menuConfig={editMode ? menuConfig : emptyMenu}
+            onPressMenuItem={handlePressMenuItem}
+            style={sx.contextMenuAndroid}
+          >
+            {leftSide}
+          </ContextMenuButton>
+        ) : (
+          leftSide
+        )}
       </Row>
       <Column style={sx.rightContent}>
         {isReadOnly && (
@@ -268,20 +282,11 @@ export default function AddressRow({
 
   return (
     <View style={sx.accountRow}>
-      {ios ? (
+      {ios || !editMode ? (
         <ButtonPressAnimation
           enableHapticFeedback={!editMode}
-          onLongPress={!watchOnly ? showIOSMenu : onPress}
           onPress={editMode ? showIOSMenu : onPress}
           scaleTo={editMode ? 1 : 0.98}
-        >
-          {content}
-        </ButtonPressAnimation>
-      ) : !editMode ? (
-        <ButtonPressAnimation
-          enableHapticFeedback={!editMode}
-          onPress={onPress}
-          scaleTo={0.98}
         >
           {content}
         </ButtonPressAnimation>
