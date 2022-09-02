@@ -121,7 +121,7 @@ function ENSAvatarPlaceholder({
           <Text
             align="center"
             color="secondary50"
-            size="12px"
+            size="12px / 14px (Deprecated)"
             weight="semibold"
           >
             {name}

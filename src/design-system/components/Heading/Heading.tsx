@@ -18,8 +18,8 @@ import { useHeadingStyle } from './useHeadingStyle';
 export type HeadingProps = {
   align?: 'center' | 'left' | 'right';
   color?: TextColor | CustomColor;
-  size?: keyof typeof headingSizes;
-  weight?: keyof typeof headingWeights;
+  size: keyof typeof headingSizes;
+  weight: keyof typeof headingWeights;
   numberOfLines?: number;
   testID?: string;
 } & (
@@ -30,9 +30,7 @@ export type HeadingProps = {
   | { containsEmoji?: false; children: ReactNode }
 );
 
-/**
- * @description Default size is `"20px"`
- */
+/** @deprecated Use `Text` instead */
 export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
   function Heading(
     {
