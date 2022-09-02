@@ -9,19 +9,26 @@ import { useTheme } from '@/theme';
 
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 
+type TabPillProps = {
+  label: string;
+  isSelected: boolean;
+  handleOnPressTabPill: (label: string) => void;
+  color: string;
+  testID?: string;
+};
+
+type FeesPanelTabsProps = {
+  colorForAsset: string;
+  speeds: typeof GasSpeedOrder;
+};
+
 const TabPill = ({
   label,
   isSelected,
   handleOnPressTabPill,
   color,
   testID,
-}: {
-  label: string;
-  isSelected: boolean;
-  handleOnPressTabPill: (label: string) => void;
-  color: string;
-  testID?: string;
-}) => {
+}: TabPillProps) => {
   const { isDarkMode } = useTheme();
   const handleOnPress = () => handleOnPressTabPill(label);
   const shadowColor = isDarkMode
@@ -81,10 +88,7 @@ const TabPill = ({
 export default function FeesPanelTabs({
   colorForAsset,
   speeds = GasSpeedOrder,
-}: {
-  colorForAsset: string;
-  speeds: typeof GasSpeedOrder;
-}) {
+}: FeesPanelTabsProps) {
   const {
     updateGasFeeOption,
     selectedGasFeeOption,

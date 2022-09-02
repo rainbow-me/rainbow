@@ -13,6 +13,17 @@ import { Box, Inline, Inset, Text } from '@/design-system';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
+type GweiInputPillProps = {
+  color: string;
+  editable: boolean;
+  value: string;
+  onPress: () => void;
+  onChange: (test: string) => void;
+  onFocus: () => void;
+  onBlur: () => void;
+  testID: string;
+};
+
 const GweiNumberInput = styled(TextInputMask).attrs(
   // @ts-expect-error
   ({ theme: { colors }, value }) => ({
@@ -52,16 +63,7 @@ function GweiInputPill(
     onFocus,
     onBlur,
     testID,
-  }: {
-    color: string;
-    editable: boolean;
-    value: string;
-    onPress: () => void;
-    onChange: (test: string) => void;
-    onFocus: () => void;
-    onBlur: () => void;
-    testID: string;
-  },
+  }: GweiInputPillProps,
   ref: React.Ref<TextInput | undefined>
 ) {
   const { colors, isDarkMode } = useTheme();

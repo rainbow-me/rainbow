@@ -51,13 +51,7 @@ const FOCUS_TO_MINER_TIP = 'focusToMinerTip';
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
 
-export default function FeesPanel({
-  currentGasTrend,
-  colorForAsset,
-  setCanGoBack,
-  validateGasParams,
-  openCustomOptions,
-}: {
+type FeesPanelProps = {
   currentGasTrend: keyof typeof GAS_TRENDS;
   colorForAsset: string;
   setCanGoBack: React.Dispatch<React.SetStateAction<boolean>>;
@@ -65,7 +59,15 @@ export default function FeesPanel({
     (callback?: () => void) => void | undefined
   >;
   openCustomOptions: (focusTo: string) => void;
-}) {
+};
+
+export default function FeesPanel({
+  currentGasTrend,
+  colorForAsset,
+  setCanGoBack,
+  validateGasParams,
+  openCustomOptions,
+}: FeesPanelProps) {
   const {
     selectedGasFee,
     currentBlockParams,

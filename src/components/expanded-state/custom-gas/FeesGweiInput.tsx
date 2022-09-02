@@ -22,6 +22,19 @@ type GweiStepButtonProps = {
   shouldLongPressHoldPress: boolean;
 };
 
+type FeesGweiInputProps = {
+  buttonColor: string;
+  editable: boolean;
+  inputRef: React.MutableRefObject<TextInput | undefined>;
+  value: string;
+  minusAction: () => void;
+  onChange: (text: string) => void;
+  onPress: () => void;
+  onBlur: () => void;
+  plusAction: () => void;
+  testID: string;
+};
+
 const GweiStepButton = ({
   buttonColor,
   onLongPress,
@@ -66,18 +79,7 @@ export default function FeesGweiInput({
   onBlur,
   plusAction,
   testID,
-}: {
-  buttonColor: string;
-  editable: boolean;
-  inputRef: React.MutableRefObject<TextInput | undefined>;
-  value: string;
-  minusAction: () => void;
-  onChange: (text: string) => void;
-  onPress: () => void;
-  onBlur: () => void;
-  plusAction: () => void;
-  testID: string;
-}) {
+}: FeesGweiInputProps) {
   const longPressHandle = useRef<boolean | null>(null);
   const [trigger, setTrigger] = useState<boolean>(false);
   const [actionType, setActionType] = useState<string | null>(null);
