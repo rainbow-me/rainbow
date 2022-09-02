@@ -33,7 +33,7 @@ function useAndroidDisableGesturesOnFocus() {
   }, [isFocused, params]);
 }
 
-const FeesPanelWrapper = styled(Column)(margin.object(14, 24, 24, 24));
+const FeesPanelWrapper = styled(Column)(margin.object(19, 24, 29, 24));
 
 const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
@@ -86,7 +86,7 @@ export default function CustomGasState({ asset }) {
       radius={0}
       scrollEnabled={false}
     >
-      <FloatingPanel radius={android ? 30 : 39}>
+      <FloatingPanel radius={android ? 38 : 38}>
         <ExchangeHeader testID="custom-gas" />
         <FeesPanelWrapper>
           <FeesPanel
@@ -113,6 +113,7 @@ export default function CustomGasState({ asset }) {
           testID="swap-details-gas"
           theme="dark"
           validateGasParams={validateGasParams}
+          marginTop={19}
         />
       </Column>
     </SlackSheet>
