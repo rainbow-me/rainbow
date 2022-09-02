@@ -97,7 +97,10 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should close expanded state and return to search', async () => {
-    await Helpers.swipe('expanded-state-header', 'down');
+    if (device.getPlatform() === 'ios') {
+      /// RNBW-4035
+      await Helpers.swipe('expanded-state-header', 'down');
+    }
     await Helpers.checkIfNotVisible(
       'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
