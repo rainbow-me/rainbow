@@ -18,10 +18,10 @@ export async function fetchENSName(
   { cacheFirst }: { cacheFirst?: boolean } = {}
 ): Promise<string> {
   if (!address || !isValidAddress(address)) return '';
-  const cachedData = await getENSName(address);
-  if (cachedData) {
-    queryClient.setQueryData(ensNameQueryKey(address), cachedData?.address);
-    if (cacheFirst) return cachedData?.address ?? '';
+  const cachedName = await getENSName(address);
+  if (cachedName) {
+    queryClient.setQueryData(ensNameQueryKey(address), cachedName);
+    if (cacheFirst) return cachedName ?? '';
   }
 
   const name = await fetchReverseRecord(address);
