@@ -721,7 +721,7 @@ export default function FeesPanel({
       </Inset>
       <Rows space={{ custom: 16 }}>
         <Row>
-          <Box paddingBottom={{ custom: 9 }}>
+          <Box paddingBottom={{ custom: 14 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
                 {renderRowLabel(lang.t('gas.current_base_fee'), trendType)}
@@ -801,7 +801,7 @@ export default function FeesPanel({
         </Row>
 
         <Row>
-          <Box paddingTop={{ custom: 9 }}>
+          <Box paddingTop={{ custom: 14 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Text size="14px / 19px (Deprecated)" weight="heavy">
                 {lang.t('gas.max_transaction_fee')}

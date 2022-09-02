@@ -23,7 +23,7 @@ import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
 
 const FOOTER_HEIGHT = 76;
-const CONTENT_HEIGHT = 296;
+const CONTENT_HEIGHT = 310;
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
