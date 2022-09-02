@@ -15952,10 +15952,10 @@ react-native-camera@4.2.1:
   dependencies:
     prop-types "^15.6.2"
 
-react-native-change-icon@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-change-icon/-/react-native-change-icon-3.2.0.tgz#900ce0c4e2dbc518bf909f291aa99216d080eacb"
-  integrity sha512-EEHqSKiZDkQ3Pf3vSHjZXNMx0pvNgIhOp9e2l6Z1kQ68WhXlMvemiZVWZTzbZI6M7QgP5MbYqZ+QlIgsrMc2hA==
+react-native-change-icon@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-change-icon/-/react-native-change-icon-4.0.0.tgz#7d398dcf17f67f7301cc408d06cb075473605416"
+  integrity sha512-bH18dfNrZh+0f2SRXbU94foxDgNhnddTI4iMKolBF+bQdWv3HgNT1UQI+dSCVHR10pUVD3lvDL+XEydKbV1LTw==
 
 react-native-circular-progress@1.3.6:
   version "1.3.6"
