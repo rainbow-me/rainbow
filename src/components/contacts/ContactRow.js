@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { abbreviations, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -7,13 +7,13 @@ import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { fetchReverseRecord } from '@/handlers/ens';
 import { ENS_DOMAIN } from '@/helpers/ens';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useContacts,
   useDimensions,
   useENSAvatar,
+  useENSName,
   useRainbowProfile,
 } from '@/hooks';
 import styled from '@/styled-thing';
@@ -69,9 +69,6 @@ const ContactRow = (
   const {
     accountType,
     balance,
-    color,
-    emoji,
-    ens,
     image,
     label,
     network,
@@ -79,55 +76,29 @@ const ContactRow = (
     showcaseItem,
     testID,
   } = props;
-  const { rainbowProfile } = useRainbowProfile(address, {
-    enabled: !((color && emoji) || image) && isValidAddress(address),
-  });
+  const { rainbowProfile } = useRainbowProfile(address);
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';
   }
 
-  // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const initialENSName =
-    typeof ens === 'string'
-      ? ens
-      : nickname?.includes(ENS_DOMAIN)
-      ? nickname
-      : '';
-
-  const [ensName, setENSName] = useState(initialENSName);
+  const { data: ensName } = useENSName(address);
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: profilesEnabled && Boolean(ensName),
   });
 
   useEffect(() => {
-    if (profilesEnabled && accountType === 'contacts') {
-      const fetchENSName = async () => {
-        const name = await fetchReverseRecord(address);
-        if (name !== ensName) {
-          setENSName(name);
-          onAddOrUpdateContacts(
-            address,
-            name && isENSAddressFormat(nickname) ? name : nickname,
-            network
-          );
-        }
-      };
-      fetchENSName();
+    if (
+      accountType === 'contacts' &&
+      ensName &&
+      ensName !== nickname &&
+      isENSAddressFormat(nickname)
+    ) {
+      onAddOrUpdateContacts(address, nickname, network);
     }
-  }, [
-    accountType,
-    onAddOrUpdateContacts,
-    address,
-    rainbowProfile?.color,
-    ensName,
-    network,
-    nickname,
-    profilesEnabled,
-    setENSName,
-  ]);
+  }, [accountType, address, ensName, network, nickname, onAddOrUpdateContacts]);
 
   const handlePress = useCallback(() => {
     if (showcaseItem) {
@@ -163,8 +134,8 @@ const ContactRow = (
         ) : (
           <ContactAvatar
             address={address}
-            color={color}
-            emoji={emoji}
+            color={rainbowProfile?.color}
+            emoji={rainbowProfile?.emoji}
             marginRight={10}
             size="medium"
           />
@@ -172,9 +143,9 @@ const ContactRow = (
         <Column justify={ios ? 'space-between' : 'center'}>
           {accountType === 'accounts' || accountType === 'watching' ? (
             <Fragment>
-              {label || ens ? (
+              {label || ensName ? (
                 <ContactName deviceWidth={deviceWidth}>
-                  {label || ens}
+                  {label || ensName}
                 </ContactName>
               ) : (
                 <ContactName deviceWidth={deviceWidth}>

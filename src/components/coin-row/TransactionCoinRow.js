@@ -12,14 +12,13 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { TransactionStatusTypes, TransactionTypes } from '@/entities';
-import { fetchReverseRecord } from '@/handlers/ens';
 import TransactionActions from '@/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@/helpers/transactions';
 import { isValidDomainFormat } from '@/helpers/validators';
-import { useAccountSettings } from '@/hooks';
+import { prefetchENSName, useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import {
@@ -95,7 +94,6 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const [ens, setEns] = useState(null);
 
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type, network } = item;
@@ -169,7 +167,6 @@ export default function TransactionCoinRow({ item, ...props }) {
               navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 contactNickname: contact?.nickname,
-                ens: ens,
                 type: 'contact_profile',
               });
               break;
@@ -197,7 +194,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, ens, item, navigate]);
+  }, [accountAddress, contact, item, navigate]);
 
   const mainnetAddress = useSelector(
     state =>
@@ -206,11 +203,7 @@ export default function TransactionCoinRow({ item, ...props }) {
   );
 
   useEffect(() => {
-    const fetchEns = async () => {
-      const ensName = await fetchReverseRecord(contact?.address);
-      setEns(ensName);
-    };
-    if (contact?.address) fetchEns();
+    prefetchENSName(contact?.address);
   }, [contact?.address]);
 
   return (

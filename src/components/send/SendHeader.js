@@ -128,18 +128,14 @@ export default function SendHeader({
       additionalPadding: true,
       address: hexAddress,
       contactNickname: userWallet?.label ?? contact?.nickname,
-      ens: ensName,
       onRefocusInput,
-      onUpdate: contact => setContact(contact),
       type: 'contact_profile',
     });
   }, [
     contact?.nickname,
-    ensName,
     hexAddress,
     navigate,
     onRefocusInput,
-    setContact,
     userWallet?.label,
   ]);
 

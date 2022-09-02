@@ -10,16 +10,17 @@ import {
   useAccountSettings,
   useContacts,
   useENSAvatar,
+  useENSName,
   usePersistentDominantColorFromImage,
   useRainbowProfile,
 } from '@/hooks';
 
-const ContactProfileState = ({ address, ens, contactNickname, onUpdate }) => {
+const ContactProfileState = ({ address, contactNickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const [nickname, setNickname] = useState(contactNickname || ens || '');
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts } = useContacts();
-
+  const { data: ensName } = useENSName(address);
+  const [nickname, setNickname] = useState(contactNickname || ensName || '');
   const { network } = useAccountSettings();
 
   const { rainbowProfile } = useRainbowProfile(address);
@@ -31,17 +32,16 @@ const ContactProfileState = ({ address, ens, contactNickname, onUpdate }) => {
       network,
     };
     onAddOrUpdateContacts(newContact);
-    onUpdate?.(newContact);
     goBack();
     android && Keyboard.dismiss();
-  }, [address, goBack, network, nickname, onAddOrUpdateContacts, onUpdate]);
+  }, [address, goBack, network, nickname, onAddOrUpdateContacts]);
 
   const handleCancel = useCallback(() => {
     goBack();
     android && Keyboard.dismiss();
   }, [goBack]);
 
-  const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
+  const { data: avatar } = useENSAvatar(ensName, { enabled: Boolean(ensName) });
   const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
@@ -61,7 +61,7 @@ const ContactProfileState = ({ address, ens, contactNickname, onUpdate }) => {
       inputValue={nickname}
       onChange={setNickname}
       placeholder={lang.t('contacts.input_placeholder')}
-      profileName={ens}
+      profileName={ensName}
       submitButtonText={lang.t('contacts.options.add')}
       toggleAvatar
       toggleSubmitButtonIcon={false}

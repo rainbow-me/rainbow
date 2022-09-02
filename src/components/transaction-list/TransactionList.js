@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import { FloatingEmojis } from '../floating-emojis';
 import { analytics } from '@/analytics';
 import { TransactionStatusTypes } from '@/entities';
-import { fetchReverseRecord } from '@/handlers/ens';
 import showWalletErrorAlert from '@/helpers/support';
 import TransactionActions from '@/helpers/transactionActions';
 import {
@@ -17,6 +16,7 @@ import {
 import { pickShallow } from '@/helpers/utilities';
 import { isValidDomainFormat } from '@/helpers/validators';
 import {
+  prefetchENSName,
   useAccountProfile,
   useOnAvatarPress,
   useSafeImageUri,
@@ -79,15 +79,10 @@ export default function TransactionList({
     accountSymbol,
   } = useAccountProfile();
   const [address, setAddress] = useState(null);
-  const [ens, setEns] = useState(null);
 
   useEffect(() => {
-    const fetchENS = async () => {
-      const ensName = await fetchReverseRecord(address);
-      setEns(ensName);
-    };
-    if (address) fetchENS();
-  }, [address, setEns]);
+    prefetchENSName(address);
+  }, [address]);
 
   const onAddCashPress = useCallback(() => {
     if (isDamaged) {
@@ -216,7 +211,6 @@ export default function TransactionList({
                 navigate(Routes.MODAL_SCREEN, {
                   address: contactAddress,
                   contactNickname: contact?.nickname,
-                  ens,
                   type: 'contact_profile',
                 });
                 break;
@@ -243,7 +237,7 @@ export default function TransactionList({
         );
       }
     },
-    [accountAddress, contacts, ens, navigate, transactions]
+    [accountAddress, contacts, navigate, transactions]
   );
 
   const onCopyAddressPress = useCallback(

@@ -86,10 +86,9 @@ export function Header() {
     navigate(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
       contactNickname: currentContact?.nickname,
-      ens: contextValue?.data?.reverseEns,
       type: 'contact_profile',
     });
-  }, [contextValue?.address, contextValue?.data?.reverseEns, navigate]);
+  }, [contextValue?.address, navigate]);
 
   const onSend = useCallback(async () => {
     goBack();

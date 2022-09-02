@@ -96,13 +96,11 @@ export default function SendContactList({
   }, []);
 
   const handleEditContact = useCallback(
-    ({ address, ens, nickname, profile }) => {
+    ({ address, nickname }) => {
       navigate(Routes.MODAL_SCREEN, {
         additionalPadding: true,
         address,
         contactNickname: nickname,
-        ens,
-        profile,
         type: 'contact_profile',
       });
     },

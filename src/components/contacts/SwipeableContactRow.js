@@ -11,7 +11,6 @@ import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 import { ImgixImage } from '@/components/images';
 import { margin, position } from '@/styles';
-
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 
 const styles = [
@@ -54,7 +53,6 @@ const SwipeableContactRow = (
   {
     accountType,
     address,
-    ens,
     image,
     network,
     nickname,
@@ -82,8 +80,8 @@ const SwipeableContactRow = (
 
   const handleEditContact = useCallback(() => {
     swipeableRef.current?.close?.();
-    onSelectEdit({ address, ens, nickname });
-  }, [address, ens, nickname, onSelectEdit]);
+    onSelectEdit({ address, nickname });
+  }, [address, nickname, onSelectEdit]);
 
   const handleLongPress = useCallback(
     () => swipeableRef.current?.openRight?.(),
@@ -125,7 +123,6 @@ const SwipeableContactRow = (
       <ContactRow
         accountType={accountType}
         address={address}
-        ens={ens}
         image={image}
         network={network}
         nickname={nickname}
