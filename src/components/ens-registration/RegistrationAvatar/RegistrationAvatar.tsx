@@ -16,17 +16,17 @@ import {
   Cover,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
+} from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { UploadImageReturnData } from '@/handlers/pinata';
 import {
   useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -214,7 +214,11 @@ const RegistrationAvatar = ({
                   />
                 ) : (
                   <AccentColorProvider color={accentColor}>
-                    <Text color="accent" size="18px" weight="heavy">
+                    <Text
+                      color="accent"
+                      size="18px / 27px (Deprecated)"
+                      weight="heavy"
+                    >
                       {` 􀣵 `}
                     </Text>
                   </AccentColorProvider>

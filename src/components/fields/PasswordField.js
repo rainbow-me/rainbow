@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
+import { View } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
-import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const FieldAccessoryBadgeSize = 22;
 const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
@@ -25,7 +26,7 @@ const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
   top: 12,
 });
 
-const StyledTouchable = styled(TouchableWithoutFeedback)(
+const Container = styled(ios ? TouchableWithoutFeedback : View)(
   android
     ? {
         marginTop: -30,
@@ -85,11 +86,11 @@ const PasswordField = (
   ref
 ) => {
   const { width: deviceWidth } = useDimensions();
-  const handleFocus = useCallback(() => ref?.current?.focus?.(), [ref]);
   const { isDarkMode, colors } = useTheme();
+  const handleFocus = useCallback(() => ref?.current?.focus(), [ref]);
 
   return (
-    <StyledTouchable onPress={handleFocus}>
+    <Container onPress={ios ? handleFocus : undefined}>
       <ShadowContainer
         deviceWidth={deviceWidth}
         isDarkMode={isDarkMode}
@@ -112,8 +113,8 @@ const PasswordField = (
           />
         )}
       </ShadowContainer>
-    </StyledTouchable>
+    </Container>
   );
 };
 
-export default React.forwardRef(PasswordField);
+export default React.memo(React.forwardRef(PasswordField));

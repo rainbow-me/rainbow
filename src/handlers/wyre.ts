@@ -22,10 +22,10 @@ import {
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
 import { RAINBOW_FETCH_ERROR, RainbowFetchClient } from '../rainbow-fetch';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
-import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@rainbow-me/references';
-import { subtract } from '@rainbow-me/utilities';
-import logger from 'logger';
+import NetworkTypes from '@/helpers/networkTypes';
+import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@/references';
+import { subtract } from '@/helpers/utilities';
+import logger from '@/utils/logger';
 
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
@@ -227,15 +227,11 @@ export const trackWyreOrder = async (
   orderId: any,
   network: any
 ) => {
-  try {
-    const baseUrl = getBaseUrl(network);
-    const response = await wyreApi.get(`${baseUrl}/v3/orders/${orderId}`);
-    const orderStatus = response?.data?.status;
-    const transferId = response?.data?.transferId;
-    return { data: response.data, orderStatus, transferId };
-  } catch (error) {
-    throw error;
-  }
+  const baseUrl = getBaseUrl(network);
+  const response = await wyreApi.get(`${baseUrl}/v3/orders/${orderId}`);
+  const orderStatus = response?.data?.status;
+  const transferId = response?.data?.transferId;
+  return { data: response.data, orderStatus, transferId };
 };
 
 export const trackWyreTransfer = async (
@@ -243,18 +239,14 @@ export const trackWyreTransfer = async (
   transferId: any,
   network: any
 ) => {
-  try {
-    const baseUrl = getBaseUrl(network);
-    const response = await wyreApi.get(
-      `${baseUrl}/v2/transfer/${transferId}/track`
-    );
-    const transferHash = response?.data?.blockchainNetworkTx;
-    const destAmount = response?.data?.destAmount;
-    const destCurrency = response?.data?.destCurrency;
-    return { destAmount, destCurrency, transferHash };
-  } catch (error) {
-    throw error;
-  }
+  const baseUrl = getBaseUrl(network);
+  const response = await wyreApi.get(
+    `${baseUrl}/v2/transfer/${transferId}/track`
+  );
+  const transferHash = response?.data?.blockchainNetworkTx;
+  const destAmount = response?.data?.destAmount;
+  const destCurrency = response?.data?.destCurrency;
+  return { destAmount, destCurrency, transferHash };
 };
 
 export const getOrderId = async (

@@ -3,7 +3,7 @@ import { WebView } from 'react-native-webview';
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
 import { StatusBarHelper } from '@/helpers';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Container = styled(FlexItem)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
@@ -18,8 +18,8 @@ const formatColor = color =>
   color && typeof color === 'string' ? color.replace('#', '') : null;
 
 const buildPlayerUrl = options => {
-  let qsArray = [];
-  for (let p in options)
+  const qsArray = [];
+  for (const p in options)
     if (options.hasOwnProperty(p)) {
       qsArray.push(
         `${encodeURIComponent(p)}=${encodeURIComponent(options[p])}`

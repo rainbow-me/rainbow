@@ -1,26 +1,27 @@
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
 import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
-import { analytics } from '@rainbow-me/analytics';
-import { EthereumAddress } from '@rainbow-me/entities';
-import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-import walletTypes from '@rainbow-me/helpers/walletTypes';
+import { analytics } from '@/analytics';
+import { EthereumAddress } from '@/entities';
+import { fetchAccountDomains } from '@/handlers/ens';
+import { ENS_RECORDS } from '@/helpers/ens';
+import walletTypes from '@/helpers/walletTypes';
+import { RainbowWallet } from '@/model/wallet';
 
 export default function useTrackENSProfile() {
   const { walletNames, wallets } = useWallets();
 
   const addresses = useMemo(
     () =>
-      Object.values(wallets || {})
-        .filter((wallet: any) => wallet?.type !== walletTypes.readOnly)
+      Object.values<RainbowWallet | undefined>(wallets || {})
+        .filter(wallet => wallet?.type !== walletTypes.readOnly)
         .reduce(
-          (addresses: EthereumAddress[], wallet: any) =>
+          (addresses: EthereumAddress[], wallet: RainbowWallet | undefined) =>
             addresses.concat(
               wallet?.addresses.map(
                 ({ address }: { address: EthereumAddress }) => address
-              )
+              )!
             ),
           []
         ),
@@ -38,7 +39,7 @@ export default function useTrackENSProfile() {
       const ens = walletNames[addresses[i]];
       if (ens) {
         const { records } = await fetchENSRecords(ens);
-        const registrations = await fetchAccountRegistrations(addresses[i]);
+        const registrations = await fetchAccountDomains(addresses[i]);
         data.numberOfENSOwned +=
           registrations?.data?.account?.registrations?.length || 0;
         data.numberOfENSWithAvatarOrCoverSet +=

@@ -1,4 +1,4 @@
-import { colors } from '@rainbow-me/styles';
+import { colors } from '@/styles';
 
 const CUSTOM = 'custom';
 const URGENT = 'urgent';

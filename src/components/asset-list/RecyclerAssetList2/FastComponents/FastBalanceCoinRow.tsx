@@ -7,13 +7,10 @@ import { ButtonPressAnimation } from '../../../animations';
 import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/asset/ChartExpandedState';
 import { ExtendedState } from '../core/RawRecyclerList';
 import FastCoinIcon from './FastCoinIcon';
-import { Text } from '@rainbow-me/design-system';
-import {
-  useAccountAsset,
-  useCoinListFinishEditingOptions,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { borders, colors, padding, shadow } from '@rainbow-me/styles';
+import { Text } from '@/design-system';
+import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { borders, colors, padding, shadow } from '@/styles';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -154,12 +151,16 @@ const MemoizedBalanceCoinRow = React.memo(
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
               <View style={sx.row}>
                 <View style={sx.textWrapper}>
-                  <Text numberOfLines={1} size="16px">
+                  <Text numberOfLines={1} size="16px / 22px (Deprecated)">
                     {item.name}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: valueColor }} size="16px">
+                <Text
+                  align="right"
+                  color={{ custom: valueColor }}
+                  size="16px / 22px (Deprecated)"
+                >
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
                 </Text>
@@ -170,13 +171,17 @@ const MemoizedBalanceCoinRow = React.memo(
                   <Text
                     color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
-                    size="14px"
+                    size="14px / 19px (Deprecated)"
                   >
                     {nativeDisplay ?? ''}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: changeColor }} size="14px">
+                <Text
+                  align="right"
+                  color={{ custom: changeColor }}
+                  size="14px / 19px (Deprecated)"
+                >
                   {percentageChangeDisplay}
                 </Text>
               </View>

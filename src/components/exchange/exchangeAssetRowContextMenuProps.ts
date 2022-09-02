@@ -2,13 +2,13 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
-import { Network } from '@rainbow-me/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import {
   abbreviations,
   ethereumUtils,
   haptics,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const buildBlockExplorerAction = (type: Network) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {

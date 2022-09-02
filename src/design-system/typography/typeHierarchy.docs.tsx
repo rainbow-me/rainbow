@@ -1,7 +1,5 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 
-import { Heading } from '../components/Heading/Heading';
 import { Stack } from '../components/Stack/Stack';
 import { Text } from '../components/Text/Text';
 import * as Docs from '../docs/components';
@@ -21,53 +19,104 @@ const docs: DocsType = {
   ),
   examples: [
     {
-      name: 'Heading sizes',
-      Example: () =>
-        source(
-          <Stack space="12px">
-            <Heading size="34px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
-            </Heading>
-            <Heading size="28px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
-            </Heading>
-            <Heading size="23px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
-            </Heading>
-            <Heading size="20px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
-            </Heading>
-            <Heading size="18px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
-            </Heading>
-          </Stack>
-        ),
-    },
-    {
       name: 'Text sizes',
       Example: () =>
         source(
-          <Stack space="12px">
-            <Text size="23px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+          <Stack space="34px">
+            <Text size="44pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
             </Text>
-            <Text size="18px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            <Text size="34pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
             </Text>
-            <Text size="16px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            <Text size="30pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
             </Text>
-            <Text size="15px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            <Text size="26pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
             </Text>
-            <Text size="14px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            <Text size="22pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
             </Text>
-            <Text size="12px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            <Text size="20pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
             </Text>
-            <Text size="11px">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            <Text size="20pt / 135%">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="20pt / 150%">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="17pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="17pt / 135%">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="17pt / 150%">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="15pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="15pt / 135%">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="15pt / 150%">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="13pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="13pt / 135%">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="13pt / 150%">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="12pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
+            </Text>
+            <Text size="11pt">
+              Lorem ipsum dolor sit amet,
+              <br />
+              consectetur adipiscing elit
             </Text>
           </Stack>
         ),

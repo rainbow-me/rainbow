@@ -1,9 +1,9 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
-import { fetchOwner } from '@rainbow-me/handlers/ens';
-import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { fetchOwner } from '@/handlers/ens';
+import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
+import { queryClient } from '@/react-query/queryClient';
+import { QueryConfig, UseQueryData } from '@/react-query/types';
 
 export const ensOwnerQueryKey = (name: string) => ['ens-owner', name];
 

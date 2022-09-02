@@ -19,10 +19,10 @@ import vstyled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
 import { StatusBarHelper } from '@/helpers';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { safeAreaInsetValues } from '@rainbow-me/utils';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { safeAreaInsetValues } from '@/utils';
 
 const adjustConfig = {
   duration: 300,
@@ -102,7 +102,7 @@ export const ZoomableWrapper = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
-  let { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
   let deviceHeightWithMaybeHiddenStatusBar = deviceHeight;
   if (!hideStatusBar) {

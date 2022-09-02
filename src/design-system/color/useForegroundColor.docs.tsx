@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 
 import { Box } from '../components/Box/Box';
@@ -29,7 +28,9 @@ const docs: DocsType = {
 
               return (
                 <Box padding="6px" style={{ borderColor, borderWidth: 2 }}>
-                  <Text color="accent">Hello world</Text>
+                  <Text color="accent" size="17pt">
+                    Hello world
+                  </Text>
                 </Box>
               );
             })()
@@ -52,7 +53,9 @@ const docs: DocsType = {
 
               return (
                 <Box padding="6px" style={{ borderColor, borderWidth: 2 }}>
-                  <Text color="accent">Hello world</Text>
+                  <Text color="accent" size="17pt">
+                    Hello world
+                  </Text>
                 </Box>
               );
             })()

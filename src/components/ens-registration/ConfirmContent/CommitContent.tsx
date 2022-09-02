@@ -3,17 +3,10 @@ import React from 'react';
 import { Source } from 'react-native-fast-image';
 import brain from '../../../assets/brain.png';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
-import {
-  Box,
-  Divider,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useDimensions } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { Box, Divider, Inline, Inset, Stack, Text } from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useDimensions } from '@/hooks';
+import { ImgixImage } from '@/components/images';
 
 const CommitContent = ({
   duration,
@@ -42,7 +35,12 @@ const CommitContent = ({
               style={{ height: 20, width: 20 }}
             />
           </Box>
-          <Text align="center" color="secondary50" size="14px" weight="bold">
+          <Text
+            align="center"
+            color="secondary50"
+            size="14px / 19px (Deprecated)"
+            weight="bold"
+          >
             {lang.t('profiles.confirm.suggestion')}
           </Text>
         </Inline>

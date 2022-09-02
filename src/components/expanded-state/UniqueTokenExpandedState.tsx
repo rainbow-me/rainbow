@@ -33,7 +33,7 @@ import {
 } from './unique-token';
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import {
   AccentColorProvider,
   Bleed,
@@ -42,6 +42,7 @@ import {
   Columns,
   Divider,
   Heading,
+  HeadingProps,
   Inline,
   Inset,
   MarkdownText,
@@ -50,11 +51,11 @@ import {
   Stack,
   Text,
   TextProps,
-} from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers';
-import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { Network } from '@/helpers';
+import { buildUniqueTokenName } from '@/helpers/assets';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
@@ -64,18 +65,18 @@ import {
   useHiddenTokens,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
-} from '@rainbow-me/hooks';
-import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { lightModeThemeColors, position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { lightModeThemeColors, position } from '@/styles';
+import { useTheme } from '@/theme';
 import {
   buildRainbowUrl,
   getUniqueTokenType,
   magicMemo,
   safeAreaInsetValues,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -114,7 +115,7 @@ const TextButton = ({
   onPress,
   children,
   align,
-  size = '16px',
+  size = '16px / 22px (Deprecated)',
   weight = 'heavy',
 }: {
   onPress: () => void;
@@ -138,7 +139,8 @@ const TextButton = ({
   );
 };
 
-const textSize: TextProps['size'] = '18px';
+const headingSize: HeadingProps['size'] = '18px / 21px (Deprecated)';
+const textSize: TextProps['size'] = '18px / 27px (Deprecated)';
 const textColor: TextProps['color'] = 'secondary50';
 const sectionSpace: Space = '30px';
 const paragraphSpace: Space = { custom: 22 };
@@ -176,13 +178,21 @@ const Section = ({
           )}
           {titleEmoji && (
             <Bleed right="1px">
-              <Heading containsEmoji size={ios ? '23px' : '20px'}>
+              <Heading
+                containsEmoji
+                size={
+                  ios ? '23px / 27px (Deprecated)' : '20px / 22px (Deprecated)'
+                }
+                weight="heavy"
+              >
                 {titleEmoji}
               </Heading>
             </Bleed>
           )}
         </Box>
-        <Heading size={textSize}>{title}</Heading>
+        <Heading size={headingSize} weight="heavy">
+          {title}
+        </Heading>
       </Inline>
       {addonComponent}
     </Inline>
@@ -658,7 +668,7 @@ const UniqueTokenExpandedState = ({
                                   <TextButton
                                     align="right"
                                     onPress={handlePressEdit}
-                                    size="18px"
+                                    size="18px / 27px (Deprecated)"
                                     weight="bold"
                                   >
                                     {lang.t(

@@ -7,13 +7,13 @@ import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
-import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
-import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { buildUniqueTokenList } from '@/helpers/assets';
+import { tokenFamilyItem } from '@/helpers/buildWalletSections';
+import { useAccountSettings, useWallets } from '@/hooks';
+import { fetchUniqueTokens } from '@/redux/uniqueTokens';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
 async function fetchShowcaseForAddress(address) {
   const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {

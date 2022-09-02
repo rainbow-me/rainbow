@@ -9,9 +9,9 @@ import Animated, {
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { useTimeout } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { borders, position } from '@rainbow-me/styles';
+import { useTimeout } from '@/hooks';
+import styled from '@/styled-thing';
+import { borders, position } from '@/styles';
 
 const Container = styled(Animated.View)({
   ...position.centeredAsObject,

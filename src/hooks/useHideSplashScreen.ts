@@ -6,8 +6,8 @@ import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
 import { StatusBarHelper } from '@/helpers';
-import { analytics } from '@rainbow-me/analytics';
-import { onHandleStatusBar } from '@rainbow-me/navigation/onNavigationStateChange';
+import { analytics } from '@/analytics';
+import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 

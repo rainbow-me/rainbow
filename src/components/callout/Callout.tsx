@@ -1,7 +1,7 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { Box, Inline, Inset, Text } from '@rainbow-me/design-system';
-import { useTheme } from '@rainbow-me/theme';
+import { Box, Inline, Inset, Text } from '@/design-system';
+import { useTheme } from '@/theme';
 
 export default function Callout({
   after,
@@ -27,7 +27,11 @@ export default function Callout({
         <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
           <Inline alignVertical="center" space="8px" wrap={false}>
             {before}
-            <Text color="secondary80" size="14px" weight="heavy">
+            <Text
+              color="secondary80"
+              size="14px / 19px (Deprecated)"
+              weight="heavy"
+            >
               {children}
             </Text>
           </Inline>

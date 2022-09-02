@@ -6,25 +6,21 @@ import {
   RapExchangeActionParameters,
   SwapActionParameters,
 } from '../common';
-import {
-  ProtocolType,
-  TransactionStatus,
-  TransactionType,
-} from '@rainbow-me/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
-import { TypeSpecificParameters } from '@rainbow-me/redux/swap';
+import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
+import { toHex } from '@/handlers/web3';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
+import { TypeSpecificParameters } from '@/redux/swap';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
   ETH_ADDRESS,
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '@rainbow-me/references';
-import { convertAmountToRawAmount, isEqual } from '@rainbow-me/utilities';
-import { gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/references';
+import { convertAmountToRawAmount, isEqual } from '@/helpers/utilities';
+import { gasUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const CTOKEN_DECIMALS = 8;
 

@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { View } from 'react-native';
 import { AccentColorProvider } from '../../color/AccentColorContext';
@@ -21,13 +20,17 @@ export const standardBackgrounds: Example = {
     source(
       <Columns space="19px">
         <Stack space="10px">
-          <Text weight="bold">Light mode</Text>
+          <Text size="17pt" weight="bold">
+            Light mode
+          </Text>
           <ColorModeProvider value="light">
             <BackgroundDemo />
           </ColorModeProvider>
         </Stack>
         <Stack space="10px">
-          <Text weight="bold">Dark mode</Text>
+          <Text size="17pt" weight="bold">
+            Dark mode
+          </Text>
           <ColorModeProvider value="dark">
             <BackgroundDemo />
           </ColorModeProvider>
@@ -46,10 +49,10 @@ export const customAccentColorDark: Example = {
             <View style={backgroundStyle}>
               <Inset space="19px">
                 <Stack space="10px">
-                  <Text color="primary" weight="bold">
+                  <Text color="primary" size="17pt" weight="bold">
                     {darkAccentColor}
                   </Text>
-                  <Text color="secondary50" weight="bold">
+                  <Text color="secondary50" size="17pt" weight="bold">
                     {darkAccentColor}
                   </Text>
                 </Stack>
@@ -71,10 +74,10 @@ export const customAccentColorLight: Example = {
             <View style={backgroundStyle}>
               <Inset space="19px">
                 <Stack space="10px">
-                  <Text color="primary" weight="bold">
+                  <Text color="primary" size="17pt" weight="bold">
                     {lightAccentColor}
                   </Text>
-                  <Text color="secondary50" weight="bold">
+                  <Text color="secondary50" size="17pt" weight="bold">
                     {lightAccentColor}
                   </Text>
                 </Stack>

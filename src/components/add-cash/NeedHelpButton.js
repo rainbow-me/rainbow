@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import SupportButton from './SupportButton';
-import { useEmailRainbow } from '@rainbow-me/hooks';
+import { useEmailRainbow } from '@/hooks';
 
 const NeedHelpButton = ({ label, subject, ...props }) => {
   const onEmailRainbow = useEmailRainbow({ subject });

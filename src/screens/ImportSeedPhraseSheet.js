@@ -13,8 +13,8 @@ import {
   ToastPositionContainer,
 } from '../components/toasts';
 import { useTheme } from '../theme/ThemeContext';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { isValidWallet } from '@rainbow-me/helpers/validators';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import { isValidWallet } from '@/helpers/validators';
 import {
   useAccountSettings,
   useClipboard,
@@ -22,11 +22,11 @@ import {
   useImportingWallet,
   useInvalidPaste,
   useKeyboardHeight,
-} from '@rainbow-me/hooks';
-import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
-import styled from '@rainbow-me/styled-components';
-import { borders, padding } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { sheetVerticalOffset } from '@/navigation/effects';
+import styled from '@/styled-thing';
+import { borders, padding } from '@/styles';
+import { deviceUtils } from '@/utils';
 
 const sheetBottomPadding = 19;
 
@@ -78,8 +78,10 @@ const placeholder = lang.t('wallet.new.enter_seeds_placeholder');
 const SecretTextArea = styled(Input).attrs({
   align: 'center',
   autoCapitalize: 'none',
+  autoComplete: 'off',
   autoCorrect: false,
   autoFocus: true,
+  dataDetectorTypes: 'none',
   enablesReturnKeyAutomatically: true,
   keyboardType: android ? 'visible-password' : 'default',
   lineHeight: 'looser',
@@ -89,6 +91,7 @@ const SecretTextArea = styled(Input).attrs({
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
+  textContentType: 'none',
   weight: 'semibold',
 })({
   marginBottom: android ? 55 : 0,
