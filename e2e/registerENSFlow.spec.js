@@ -343,10 +343,8 @@ describe('Register ENS Flow', () => {
   it('Should check new wallet name is the new ENS on profile screen and change wallet screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${RANDOM_NAME_ETH}`
-    );
-    await Helpers.waitAndTap(`wallet-screen-account-name-${RANDOM_NAME_ETH}`);
+    await Helpers.checkIfExists(`profile-name-${RANDOM_NAME_ETH}`);
+    await Helpers.waitAndTap(`profile-name-${RANDOM_NAME_ETH}`);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
