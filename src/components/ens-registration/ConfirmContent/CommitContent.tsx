@@ -35,7 +35,12 @@ const CommitContent = ({
               style={{ height: 20, width: 20 }}
             />
           </Box>
-          <Text align="center" color="secondary50" size="14px" weight="bold">
+          <Text
+            align="center"
+            color="secondary50"
+            size="14px / 19px (Deprecated)"
+            weight="bold"
+          >
             {lang.t('profiles.confirm.suggestion')}
           </Text>
         </Inline>

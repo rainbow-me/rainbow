@@ -150,12 +150,16 @@ const MemoizedBalanceCoinRow = React.memo(
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
               <View style={sx.row}>
                 <View style={sx.textWrapper}>
-                  <Text numberOfLines={1} size="16px">
+                  <Text numberOfLines={1} size="16px / 22px (Deprecated)">
                     {item.name}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: valueColor }} size="16px">
+                <Text
+                  align="right"
+                  color={{ custom: valueColor }}
+                  size="16px / 22px (Deprecated)"
+                >
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
                 </Text>
@@ -166,13 +170,17 @@ const MemoizedBalanceCoinRow = React.memo(
                   <Text
                     color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
-                    size="14px"
+                    size="14px / 19px (Deprecated)"
                   >
                     {nativeDisplay ?? ''}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: changeColor }} size="14px">
+                <Text
+                  align="right"
+                  color={{ custom: changeColor }}
+                  size="14px / 19px (Deprecated)"
+                >
                   {percentageChangeDisplay}
                 </Text>
               </View>

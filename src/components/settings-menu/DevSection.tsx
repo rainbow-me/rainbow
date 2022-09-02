@@ -240,7 +240,7 @@ const DevSection = () => {
           <Menu header="Rainbow Developer Settings">
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
-              onPress={AsyncStorage.clear}
+              onPress={async () => await AsyncStorage.clear()}
               size={52}
               titleComponent={
                 <MenuItem.Title

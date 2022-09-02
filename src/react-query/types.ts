@@ -1,4 +1,4 @@
-import { UseQueryOptions } from 'react-query';
+import { UseQueryOptions } from '@tanstack/react-query';
 
 type PromiseValue<PromiseType> = PromiseType extends PromiseLike<infer Value>
   ? PromiseValue<Value>
