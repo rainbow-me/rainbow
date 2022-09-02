@@ -122,7 +122,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
         paddingTop={android ? 6 : undefined}
       >
         <Box paddingBottom={android ? '2px' : undefined}>
-          <Text color={{ custom: nativeAmountColor }} size="20px">
+          <Text color={{ custom: nativeAmountColor }} size="20pt">
             {symbol}
           </Text>
         </Box>

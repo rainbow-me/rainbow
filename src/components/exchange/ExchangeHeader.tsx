@@ -1,6 +1,6 @@
 import React from 'react';
 import { SheetHandle } from '../sheet';
-import { Box, Heading, Inset, Stack } from '@/design-system';
+import { Box, Text, Inset, Stack } from '@/design-system';
 
 interface ExchangeHeaderProps {
   testID: string;
@@ -15,9 +15,9 @@ export default function ExchangeHeader({ testID, title }: ExchangeHeaderProps) {
           {/* @ts-expect-error - Javascript Component */}
           <SheetHandle />
           {title && (
-            <Heading align="center" size="18px" weight="heavy">
+            <Text align="center" size="20pt" weight="heavy">
               {title}
-            </Heading>
+            </Text>
           )}
         </Stack>
       </Inset>

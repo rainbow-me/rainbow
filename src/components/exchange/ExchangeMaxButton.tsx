@@ -42,7 +42,7 @@ export default function ExchangeMaxButton({
         <Text
           weight="bold"
           align="center"
-          size="16px"
+          size="17pt"
           color={{ custom: colorForAsset || colors.appleBlue }}
         >
           􀜍 {lang.t('exchange.max')}

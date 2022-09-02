@@ -34,20 +34,20 @@ export default function PriceImpactWarning({
               <Inline alignHorizontal="center">
                 <Text
                   weight="bold"
-                  size="18px"
+                  size="17pt"
                   color={{ custom: priceImpactColor }}
                 >{`􀇿 `}</Text>
-                <Text weight="bold" size="18px" color="primary">
+                <Text weight="bold" size="17pt" color="primary">
                   {lang.t('exchange.price_impact.small_market')}
                 </Text>
                 <Text
                   weight="bold"
-                  size="18px"
+                  size="17pt"
                   color={{ custom: priceImpactColor }}
                 >{` • ${lang.t('exchange.price_impact.losing_prefix')} `}</Text>
                 <Text
                   weight="bold"
-                  size="18px"
+                  size="17pt"
                   color={{ custom: priceImpactColor }}
                 >
                   {headingValue}
