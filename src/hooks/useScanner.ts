@@ -166,7 +166,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       // Walletconnect via universal link
       const urlObj = new URL(data);
       if (urlObj?.protocol === 'https:' && urlObj?.searchParams !== null) {
-        // eslint-disable-next-line no-unsafe-optional-chaining
+        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { uri } = urlObj?.searchParams?.get('uri');
         if (uri?.startsWith('wc:')) {
           onSuccess();
