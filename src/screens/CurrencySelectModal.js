@@ -23,7 +23,7 @@ import {
   CurrencySelectModalHeader,
   ExchangeSearch,
 } from '../components/exchange';
-import { NetworkSwitcher as NetworkSwitcherv1 } from '../components/exchange/NetworkSwitcher';
+import NetworkSwitcherv1 from '../components/exchange/NetworkSwitcher';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
@@ -474,7 +474,7 @@ export default function CurrencySelectModal() {
   }));
 
   const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = !crosschainEnabled
+  const NetworkSwitcher = crosschainEnabled
     ? NetworkSwitcherv1
     : NetworkSwitcherv2;
 

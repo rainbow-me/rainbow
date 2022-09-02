@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
