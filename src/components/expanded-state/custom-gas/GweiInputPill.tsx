@@ -18,7 +18,7 @@ type GweiInputPillProps = {
   editable: boolean;
   value: string;
   onPress: () => void;
-  onChange: (test: string) => void;
+  onChange: (text: string) => void;
   onFocus: () => void;
   onBlur: () => void;
   testID: string;

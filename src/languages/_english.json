@@ -729,7 +729,10 @@
       "alert_title_higher_max_base_fee_needed": "Low max base fee–transaction may get stuck!",
       "alert_title_higher_miner_tip_needed": "Low miner tip–transaction may get stuck!",
       "alert_title_lower_max_base_fee_needed": "High max base fee!",
-      "alert_title_lower_miner_tip_needed": "High miner tip!"
+      "alert_title_lower_miner_tip_needed": "High miner tip!",
+      "proceed_anyway": "Proceed Anyway",
+      "edit_max_bass_fee": "Edit Max Base Fee",
+      "edit_miner_tip": "Edit Miner Tip"
     },
     "homepage": {
       "back": "Back to rainbow.me",

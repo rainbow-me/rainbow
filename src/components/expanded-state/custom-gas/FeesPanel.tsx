@@ -50,6 +50,8 @@ const FOCUS_TO_MAX_BASE_FEE = 'focusToMaxBaseFee';
 const FOCUS_TO_MINER_TIP = 'focusToMinerTip';
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
+const HIGH_ALERT = 'HIGH_ALERT';
+const LOW_ALERT = 'LOW_ALERT';
 
 type FeesPanelProps = {
   currentGasTrend: keyof typeof GAS_TRENDS;
@@ -60,6 +62,11 @@ type FeesPanelProps = {
   >;
   openCustomOptions: (focusTo: string) => void;
 };
+
+type AlertInfo = {
+  type: typeof LOW_ALERT | typeof HIGH_ALERT;
+  message: string;
+} | null;
 
 export default function FeesPanel({
   currentGasTrend,
@@ -106,17 +113,15 @@ export default function FeesPanel({
   const [startPriorityFeeTimeout, stopPriorityFeeTimeout] = useTimeout();
   const [startBaseFeeTimeout, stopBaseFeeTimeout] = useTimeout();
 
-  const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState<
-    string | null
-  >(null);
-  const [maxPriorityFeeError, setMaxPriorityFeeError] = useState<string | null>(
+  const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState<AlertInfo>(
+    null
+  );
+  const [maxPriorityFeeError, setMaxPriorityFeeError] = useState<AlertInfo>(
     null
   );
 
-  const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState<string | null>(
-    null
-  );
-  const [maxBaseFeeError, setMaxBaseFeeError] = useState<string | null>(null);
+  const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState<AlertInfo>(null);
+  const [maxBaseFeeError, setMaxBaseFeeError] = useState<AlertInfo>(null);
 
   const [userProceededOnWarnings, setUserProcededOnWarnings] = useState(false);
 
@@ -185,7 +190,7 @@ export default function FeesPanel({
   );
 
   const renderRowLabel = useCallback(
-    (label, type, error, warning) => {
+    (label: string, type: string, error?: AlertInfo, warning?: AlertInfo) => {
       let color;
       let text;
       if ((!error && !warning) || !selectedOptionIsCustom) {
@@ -371,22 +376,27 @@ export default function FeesPanel({
   );
 
   const renderWarning = useCallback(
-    (error, warning) => {
+    (error: AlertInfo, warning: AlertInfo) => {
       if (!selectedOptionIsCustom) return;
+      const errorMessage = error?.message;
+      const warningMessage = warning?.message;
 
-      const errorPrefix = error?.substr(0, error?.indexOf(WARNING_SEPARATOR));
-      let errorSuffix = error?.substr(
-        error?.indexOf(WARNING_SEPARATOR),
-        error?.length
-      );
-
-      const warningPrefix = warning?.substr(
+      const errorPrefix = errorMessage?.substring(
         0,
-        warning?.indexOf(WARNING_SEPARATOR)
+        errorMessage?.indexOf(WARNING_SEPARATOR)
       );
-      const warningSuffix = warning?.substr(
-        warning?.indexOf(WARNING_SEPARATOR),
-        warning?.length
+      let errorSuffix = errorMessage?.substring(
+        errorMessage?.indexOf(WARNING_SEPARATOR),
+        errorMessage?.length
+      );
+
+      const warningPrefix = warningMessage?.substring(
+        0,
+        warningMessage?.indexOf(WARNING_SEPARATOR)
+      );
+      const warningSuffix = warningMessage?.substring(
+        warningMessage?.indexOf(WARNING_SEPARATOR),
+        warningMessage?.length
       );
 
       if (errorSuffix === WARNING_SEPARATOR + ' Enter an amount') {
@@ -480,7 +490,10 @@ export default function FeesPanel({
         isZero(maxBaseFee) ||
         greaterThan(multiply(0.1, maxBaseFeeToValidate), maxBaseFee)
       ) {
-        setMaxBaseFeeError(lang.t('gas.max_base_fee_too_low_error'));
+        setMaxBaseFeeError({
+          message: lang.t('gas.max_base_fee_too_low_error'),
+          type: LOW_ALERT,
+        });
       } else {
         setMaxBaseFeeError(null);
       }
@@ -490,7 +503,10 @@ export default function FeesPanel({
           maxBaseFee
         )
       ) {
-        setMaxBaseFeeWarning(lang.t('gas.lower_than_suggested'));
+        setMaxBaseFeeWarning({
+          message: lang.t('gas.lower_than_suggested'),
+          type: LOW_ALERT,
+        });
       } else {
         setMaxBaseFeeWarning(null);
       }
@@ -505,7 +521,10 @@ export default function FeesPanel({
         isZero(maxPriorityFee) ||
         greaterThan(1, maxPriorityFee)
       ) {
-        setMaxPriorityFeeError(lang.t('gas.tip_too_low_error'));
+        setMaxPriorityFeeError({
+          message: lang.t('gas.tip_too_low_error'),
+          type: LOW_ALERT,
+        });
       } else {
         setMaxPriorityFeeError(null);
       }
@@ -521,7 +540,10 @@ export default function FeesPanel({
           maxPriorityFee
         )
       ) {
-        setMaxPriorityFeeWarning(lang.t('gas.lower_than_suggested'));
+        setMaxPriorityFeeWarning({
+          message: lang.t('gas.lower_than_suggested'),
+          type: LOW_ALERT,
+        });
       } else if (
         // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
         greaterThan(
@@ -534,7 +556,10 @@ export default function FeesPanel({
           )
         )
       ) {
-        setMaxPriorityFeeWarning(lang.t('gas.higher_than_suggested'));
+        setMaxPriorityFeeWarning({
+          message: lang.t('gas.higher_than_suggested'),
+          type: HIGH_ALERT,
+        });
       } else {
         setMaxPriorityFeeWarning(null);
       }
@@ -548,45 +573,38 @@ export default function FeesPanel({
 
   const alertMaxBaseFee = useCallback(
     callback => {
-      const highAlert =
-        maxBaseFeeWarning === lang.t('gas.higher_than_suggested');
       Alert({
         buttons: [
           {
             onPress: () => onAlertProceeded(callback),
-            text: 'Proceed Anyway',
+            text: lang.t('gas.proceed_anyway'),
           },
           {
             onPress: () => openCustomOptions(FOCUS_TO_MAX_BASE_FEE),
             style: 'cancel',
-            text: 'Edit Max Base Fee',
+            text: lang.t('gas.edit_max_bass_fee'),
           },
         ],
-        message: highAlert
-          ? lang.t('gas.alert_message_lower')
-          : lang.t('gas.alert_message_higher_max_base_fee_needed'),
-        title: highAlert
-          ? lang.t('gas.alert_title_lower_max_base_fee_needed')
-          : lang.t('gas.alert_title_higher_max_base_fee_needed'),
+        message: lang.t('gas.alert_message_higher_max_base_fee_needed'),
+        title: lang.t('gas.alert_title_higher_max_base_fee_needed'),
       });
     },
-    [maxBaseFeeWarning, onAlertProceeded, openCustomOptions]
+    [onAlertProceeded, openCustomOptions]
   );
 
   const alertMaxPriority = useCallback(
     callback => {
-      const highAlert =
-        maxPriorityFeeWarning === lang.t('gas.higher_than_suggested');
+      const highAlert = maxPriorityFeeWarning?.type === HIGH_ALERT;
       Alert({
         buttons: [
           {
             onPress: () => onAlertProceeded(callback),
-            text: 'Proceed Anyway',
+            text: lang.t('gas.proceed_anyway'),
           },
           {
             onPress: () => openCustomOptions(FOCUS_TO_MINER_TIP),
             style: 'cancel',
-            text: 'Edit Miner Tip',
+            text: lang.t('gas.edit_miner_tip'),
           },
         ],
         message: highAlert
@@ -706,12 +724,7 @@ export default function FeesPanel({
           <Box paddingBottom={{ custom: 9 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
-                {renderRowLabel(
-                  lang.t('gas.current_base_fee'),
-                  trendType,
-                  null,
-                  null
-                )}
+                {renderRowLabel(lang.t('gas.current_base_fee'), trendType)}
               </Box>
               <Box
                 as={ButtonPressAnimation}
