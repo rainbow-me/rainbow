@@ -98,7 +98,7 @@ describe('Discover Sheet Flow', () => {
 
   it('Should close expanded state and return to search', async () => {
     if (device.getPlatform() === 'ios') {
-      /// RNBW-4035
+      // RNBW-4035
       await Helpers.swipe('expanded-state-header', 'down');
     }
     await Helpers.checkIfNotVisible(
@@ -169,7 +169,12 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should cycle through token lists', async () => {
-    await Helpers.swipe('discover-sheet', 'up', 'slow', 0.3);
+    await Helpers.swipe(
+      'discover-sheet',
+      'up',
+      'slow',
+      device.getPlatform() === 'ios' ? 0.3 : 0.4
+    );
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
     await Helpers.waitAndTap('list-watchlist');
@@ -186,7 +191,12 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should cycle through pools lists', async () => {
-    await Helpers.swipe('discover-sheet', 'up', 'slow', 0.3);
+    await Helpers.swipe(
+      'discover-sheet',
+      'up',
+      'slow',
+      device.getPlatform() === 'ios' ? 0.3 : 0.6
+    );
     await Helpers.waitAndTap('pools-list-liquidity');
     await Helpers.checkIfVisible('pools-section-liquidity');
     await Helpers.waitAndTap('pools-list-annualized_fees');
