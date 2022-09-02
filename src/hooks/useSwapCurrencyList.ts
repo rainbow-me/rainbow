@@ -95,6 +95,8 @@ const useSwapCurrencyList = (
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
 
+  logger.debug('favorites meta: ', favoriteMap);
+
   const isFavorite = useCallback(
     (address: EthereumAddress) =>
       favoriteAddresses

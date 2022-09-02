@@ -75,11 +75,7 @@ import {
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { delay, isZero, pickBy } from '@/helpers/utilities';
-import {
-  ethereumUtils,
-  isLowerCaseMatch,
-  TokensListenedCache,
-} from '@/utils';
+import { ethereumUtils, isLowerCaseMatch, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 
 const storage = new MMKV();
@@ -1146,6 +1142,8 @@ export const assetPricesReceived = (
   const newAssetPrices = message?.payload?.prices ?? {};
   const { nativeCurrency } = getState().settings;
 
+  logger.debug('message.meta.address: ', message?.meta?.address);
+
   if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
     if (isEmpty(newAssetPrices)) return;
     const parsedAssets = mapValues(newAssetPrices, asset =>
@@ -1159,6 +1157,11 @@ export const assetPricesReceived = (
       ...genericAssets,
       ...parsedAssets,
     };
+
+    logger.debug(
+      'BUTTPOOP: ',
+      updatedAssets['0x626076d3677b6909d3d399dca0df4f7c343f121d']
+    );
 
     const assetAddresses = Object.keys(parsedAssets);
 

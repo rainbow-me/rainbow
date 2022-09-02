@@ -10,10 +10,7 @@ import {
 import { Source } from 'react-native-fast-image';
 import { MMKV } from 'react-native-mmkv';
 import parse from 'url-parse';
-import {
-  isCloudinaryStorageLink,
-  signUrl,
-} from '@/handlers/cloudinary';
+import { isCloudinaryStorageLink, signUrl } from '@/handlers/cloudinary';
 import { STORAGE_IDS } from '@/model/mmkv';
 import logger from '@/utils/logger';
 

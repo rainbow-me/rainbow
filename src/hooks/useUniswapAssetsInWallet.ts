@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ParsedAddressAsset } from '@/entities';
-import { getUniswapV2Tokens } from '@/handlers/dispersion';
+import { getTokensFromDispersion } from '@/handlers/dispersion';
 import { sortAssetsByNativeAmountSelector } from '@/helpers/assetSelectors';
 import NetworkTypes from '@/helpers/networkTypes';
 import { AppState } from '@/redux/store';
@@ -17,7 +17,7 @@ const useUniswapAssetsInWallet = () => {
   const getUniswapAssets = useCallback(async () => {
     let uniswapAssets;
     if (isMainnet) {
-      const uniswapData = await getUniswapV2Tokens(
+      const uniswapData = await getTokensFromDispersion(
         sortedAssets.map(({ address }: ParsedAddressAsset) => address)
       );
       uniswapAssets = uniswapData ? Object.values(uniswapData) : [];

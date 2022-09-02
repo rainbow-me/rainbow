@@ -14,11 +14,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
-import {
-  add,
-  greaterThan,
-  toFixedDecimals,
-} from '@/helpers/utilities';
+import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,

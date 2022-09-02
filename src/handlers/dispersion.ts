@@ -10,7 +10,7 @@ import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
 import logger from '@/utils/logger';
 
 const dispersionApi = new RainbowFetchClient({
-  baseURL: 'https://metadata.p.rainbow.me',
+  baseURL: 'http://localhost:8080',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export const getUniswapV2Pools = async (
   return null;
 };
 
-export const getUniswapV2Tokens = async (
+export const getTokensFromDispersion = async (
   addresses: EthereumAddress[]
 ): Promise<Record<EthereumAddress, RainbowToken> | null> => {
   try {
@@ -42,14 +42,14 @@ export const getUniswapV2Tokens = async (
     if (UniswapAssetsCache.cache[key]) {
       return UniswapAssetsCache.cache[key];
     } else {
-      const res = await dispersionApi.post('/dispersion/v1/tokens/uniswap/v2', {
-        addresses,
-      });
+      const res = await dispersionApi.get(
+        `/dispersion/v1/tokens/aggregate/v1?addresses=${key}`
+      );
       UniswapAssetsCache.cache[key] = res?.data?.tokens;
       return res?.data?.tokens ?? null;
     }
   } catch (error) {
-    logger.sentry(`Error fetching uniswap v2 tokens: ${error}`);
+    logger.sentry(`Error fetching tokens from dispersion: ${error}`);
     captureException(error);
   }
   return null;

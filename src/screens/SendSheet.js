@@ -79,11 +79,7 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
-import {
-  deviceUtils,
-  ethereumUtils,
-  getUniqueTokenType,
-} from '@/utils';
+import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);

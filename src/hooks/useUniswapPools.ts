@@ -4,16 +4,10 @@ import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import {
-  UniswapPairData,
-  UniswapPairHistoricalData,
-} from '@/entities';
+import { UniswapPairData, UniswapPairHistoricalData } from '@/entities';
 import { getUniswapV2Pools } from '@/handlers/dispersion';
 import { pickShallow } from '@/helpers/utilities';
-import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@/redux/explorer';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
 import {
   setPoolsDetails,

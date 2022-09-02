@@ -10,7 +10,7 @@ import {
   RainbowToken,
   UniswapFavoriteTokenData,
 } from '@/entities';
-import { getUniswapV2Tokens } from '@/handlers/dispersion';
+import { getTokensFromDispersion } from '@/handlers/dispersion';
 import {
   getUniswapFavorites,
   getUniswapFavoritesMetadata as getUniswapFavoritesMetadataLS,
@@ -183,18 +183,25 @@ export const uniswapResetState = () => (
   dispatch: Dispatch<UniswapClearStateAction>
 ) => dispatch({ type: UNISWAP_CLEAR_STATE });
 
-const parseFavoriteAddress = (favorite: string) => {
+/**
+ * Parses favorite uniqueId and provides relevant network/address info
+ */
+export const parseFavoriteAddress = (favorite: string) => {
   if (favorite.includes('_')) {
     const [address, network] = favorite.split('_');
     return {
       address,
       chainId: ethereumUtils.getChainIdFromNetwork(network as Network),
+      network: network as Network,
+      uniqueId: favorite,
     };
   }
 
   return {
     address: favorite,
     chainId: 1,
+    network: Network.mainnet,
+    uniqueId: favorite,
   };
 };
 
@@ -205,10 +212,25 @@ const parseFavoriteAddress = (favorite: string) => {
 const getUniswapFavoritesMetadata = async (
   addresses: EthereumAddress[]
 ): Promise<UniswapFavoriteTokenData> => {
-  let favoritesMetadata: UniswapFavoriteTokenData = {};
+  const favoritesMetadata: UniswapFavoriteTokenData = {};
   try {
-    const newFavoritesMeta = await getUniswapV2Tokens(
-      addresses.map(address => {
+    const favoritesAddressDictionary: Record<
+      string,
+      {
+        address: EthereumAddress;
+        chainId: number;
+        network: Network;
+        uniqueId: string;
+      }
+    > = {};
+    for (const favoriteId of addresses) {
+      const dataFromFavoriteId = parseFavoriteAddress(favoriteId);
+      favoritesAddressDictionary[
+        dataFromFavoriteId.address
+      ] = dataFromFavoriteId;
+    }
+    const newFavoritesMeta = await getTokensFromDispersion(
+      Object.keys(favoritesAddressDictionary).map(address => {
         return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
       })
     );
@@ -227,7 +249,18 @@ const getUniswapFavoritesMetadata = async (
       }
       Object.entries(newFavoritesMeta).forEach(([address, favorite]) => {
         if (address !== WETH_ADDRESS || wethIsFavorited) {
-          favoritesMetadata[address] = { ...favorite, favorite: true };
+          const { network, uniqueId } = favoritesAddressDictionary[address];
+          favoritesMetadata[uniqueId] = {
+            ...favorite,
+            favorite: true,
+            uniqueId,
+          };
+          if (network !== Network.mainnet) {
+            favoritesMetadata[uniqueId] = {
+              ...favoritesMetadata[uniqueId],
+              mainnet_address: address,
+            };
+          }
         }
       });
     }
@@ -259,11 +292,14 @@ export const uniswapUpdateFavorites = (
   const { favorites, favoritesMeta } = getState().uniswap;
   const normalizedFavorites = favorites.map(toLower);
 
-  const updatedFavorites = add
-    ? uniq(normalizedFavorites.concat(assetAddress))
-    : isArray(assetAddress)
-    ? without(normalizedFavorites, ...assetAddress)
-    : without(normalizedFavorites, assetAddress);
+  let updatedFavorites;
+  if (add) {
+    updatedFavorites = uniq(normalizedFavorites.concat(assetAddress));
+  } else {
+    updatedFavorites = isArray(assetAddress)
+      ? without(normalizedFavorites, ...assetAddress)
+      : without(normalizedFavorites, assetAddress);
+  }
   const updatedFavoritesMeta =
     (await getUniswapFavoritesMetadata(updatedFavorites)) || favoritesMeta;
   dispatch({

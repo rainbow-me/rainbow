@@ -16,15 +16,12 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { DefaultTokenLists } from '../references/';
-import {
-  useAccountSettings,
-  useDimensions,
-  useUserLists,
-} from '@/hooks';
+import { useAccountSettings, useDimensions, useUserLists } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { haptics } from '@/utils';
+import { logger } from 'ethers';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -80,7 +77,7 @@ export default function AddTokenSheet() {
     listId => {
       if (listId === 'favorites') {
         return !!favorites?.find(
-          address => address.toLowerCase() === item?.address?.toLowerCase()
+          uniqueId => uniqueId.toLowerCase() === item?.uniqueId?.toLowerCase()
         );
       } else {
         const list = lists?.find(list => list?.id === listId);
@@ -89,7 +86,7 @@ export default function AddTokenSheet() {
         );
       }
     },
-    [favorites, item.address, lists]
+    [favorites, item.address, item.uniqueId, lists]
   );
 
   const { colors } = useTheme();
@@ -146,12 +143,14 @@ export default function AddTokenSheet() {
               .map(list => {
                 const alreadyAdded = isTokenInList(list?.id);
                 const handleAdd = () => {
+                  logger.debug('HANDLE ADD: ', alreadyAdded, item);
                   if (alreadyAdded) return;
-                  updateList(item.address, list?.id, !alreadyAdded);
+                  updateList(item.uniqueId, list?.id, !alreadyAdded);
                   haptics.notificationSuccess();
                 };
                 const handleRemove = () => {
-                  updateList(item.address, list?.id, false);
+                  logger.debug('HANDLE REMOVE: ', alreadyAdded, item);
+                  updateList(item.uniqueId, list?.id, false);
                   haptics.notificationSuccess();
                 };
                 return (

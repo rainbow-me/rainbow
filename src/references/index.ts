@@ -144,7 +144,13 @@ export type TokenListsExtendedRecord = Record<
 >;
 
 export const DefaultUniswapFavorites = {
-  mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],
+  mainnet: [
+    ETH_ADDRESS,
+    DAI_ADDRESS,
+    WBTC_ADDRESS,
+    SOCKS_ADDRESS,
+    `${DAI_ADDRESS}_polygon`,
+  ],
 };
 
 export const DefaultUniswapFavoritesMeta: Record<
@@ -152,6 +158,19 @@ export const DefaultUniswapFavoritesMeta: Record<
   UniswapFavoriteTokenData
 > = {
   mainnet: {
+    [`${DAI_ADDRESS}_polygon`]: {
+      address: DAI_ADDRESS,
+      color: '#F0B340',
+      decimals: 18,
+      favorite: true,
+      highLiquidity: true,
+      isRainbowCurated: true,
+      isVerified: true,
+      name: 'Dai',
+      symbol: 'DAI',
+      type: 'token',
+      uniqueId: `${DAI_ADDRESS}_polygon`,
+    },
     [DAI_ADDRESS]: {
       address: DAI_ADDRESS,
       color: '#F0B340',

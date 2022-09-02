@@ -3,11 +3,7 @@ import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
 import { AssetType } from '@/entities';
-import {
-  CurrencySelectionTypes,
-  ExchangeModalTypes,
-  Network,
-} from '@/helpers';
+import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
 import { updatePrecisionToDisplay } from '@/helpers/utilities';
 import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -191,7 +187,11 @@ export default function useSwapCurrencyHandlers({
           }
         : null;
 
-      dispatch(emitAssetRequest(newInputCurrency.mainnet_address));
+      dispatch(
+        emitAssetRequest(
+          newInputCurrency.mainnet_address || newInputCurrency.address
+        )
+      ); // random note we should be checking that mainnet_address exists
       dispatch(updateSwapInputCurrency(newInputCurrency));
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newInputCurrency);
@@ -208,7 +208,11 @@ export default function useSwapCurrencyHandlers({
           }
         : null;
 
-      dispatch(emitAssetRequest(newOutputCurrency.mainnet_address));
+      dispatch(
+        emitAssetRequest(
+          newOutputCurrency.mainnet_address || newOutputCurrency.address
+        )
+      ); // random note we should be checking that mainnet_address exists
       dispatch(updateSwapOutputCurrency(newOutputCurrency));
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newOutputCurrency);

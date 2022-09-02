@@ -6,10 +6,7 @@ import {
   removeLocalRequest,
   saveLocalRequests,
 } from '@/handlers/localstorage/walletconnectRequests';
-import {
-  dappLogoOverride,
-  dappNameOverride,
-} from '@/helpers/dappNameHandler';
+import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
 import { ethereumUtils } from '@/utils';

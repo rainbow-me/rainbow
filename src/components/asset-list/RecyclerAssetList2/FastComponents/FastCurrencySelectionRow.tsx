@@ -18,6 +18,7 @@ import { Network } from '@/helpers';
 import { useAccountAsset } from '@/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import { deviceUtils, ethereumUtils } from '@/utils';
+import logger from 'logger';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? View
@@ -99,6 +100,8 @@ export default React.memo(function FastCurrencySelectionRow({
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
   }-${type || 'token'}`;
+
+  logger.debug('TYPE: ', type);
 
   const isInfoButtonVisible =
     !item?.isNativeAsset ||

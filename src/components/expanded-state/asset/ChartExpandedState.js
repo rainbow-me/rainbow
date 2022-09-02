@@ -52,6 +52,7 @@ import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import logger from 'logger';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -194,7 +195,7 @@ export default function ChartExpandedState({ asset }) {
   // It's a generic asset
   const hasBalance = asset?.balance;
   const assetWithPrice = useMemo(() => {
-    return hasBalance
+    return hasBalance || asset.favorite
       ? { ...asset }
       : genericAsset
       ? ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
@@ -209,6 +210,7 @@ export default function ChartExpandedState({ asset }) {
   const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
     assetWithPrice.type,
   ]);
+  logger.debug('IS L2: ', isL2, assetWithPrice.type);
   const isTestnet = isTestnetNetwork(currentNetwork);
 
   const {

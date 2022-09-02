@@ -27,6 +27,9 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
+import logger from 'logger';
+import { parseFavoriteAddress } from '@/redux/uniswap';
+import FastCurrencySelectionRow from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -64,7 +67,11 @@ const getItemLayout = (_, index) => ({
 
 export default function ListSection() {
   const dispatch = useDispatch();
-  const { network, nativeCurrency } = useAccountSettings();
+  const {
+    network,
+    nativeCurrency,
+    nativeCurrencySymbol,
+  } = useAccountSettings();
   const { navigate } = useNavigation();
   const {
     favorites,
@@ -80,16 +87,20 @@ export default function ListSection() {
   const genericAssets = useSelector(
     ({ data: { genericAssets } }) => genericAssets
   );
+  const favoritesMetadata = useSelector(state => state.uniswap.favoritesMeta);
 
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const { colors } = theme;
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
   const assetsSocket = useSelector(
     ({ explorer: { assetsSocket } }) => assetsSocket
   );
+
   useEffect(() => {
     if (assetsSocket !== null) {
       Object.values(listData).forEach(({ tokens }) => {
+        logger.debug('EMIT ASSET REQUEST TOKENS: ', tokens);
         dispatch(emitAssetRequest(tokens));
         dispatch(emitChartsRequest(tokens));
       });
@@ -168,14 +179,24 @@ export default function ListSection() {
     let items = [];
     if (selectedList === 'favorites') {
       items = favorites
-        .map(
-          address =>
+        .map(favoriteId => {
+          const { address, network } = parseFavoriteAddress(favoriteId);
+          let rainbowToken = favoritesMetadata[favoriteId];
+          const existingAssetInfo =
             ethereumUtils.getAccountAsset(address) ||
             ethereumUtils.formatGenericAsset(
               genericAssets[address.toLowerCase()],
               nativeCurrency
-            )
-        )
+            );
+          if (existingAssetInfo?.price) {
+            rainbowToken = {
+              ...rainbowToken,
+              price: existingAssetInfo.price,
+              network,
+            };
+          }
+          return rainbowToken;
+        })
         .sort((a, b) => (a.name > b.name ? 1 : -1));
     } else {
       if (!lists?.length) return [];
@@ -195,7 +216,15 @@ export default function ListSection() {
     }
 
     return items.filter(item => item.symbol && Number(item.price?.value) > 0);
-  }, [favorites, genericAssets, lists, nativeCurrency, network, selectedList]);
+  }, [
+    favorites,
+    genericAssets,
+    lists,
+    nativeCurrency,
+    network,
+    selectedList,
+    favoritesMetadata,
+  ]);
 
   const handlePress = useCallback(
     item => {
@@ -288,12 +317,30 @@ export default function ListSection() {
             ))
           ) : listItems?.length ? (
             listItems.map(item => (
-              <ListCoinRow
-                item={item}
-                key={`${selectedList}-list-item-${item.address}`}
-                onPress={() => handlePress(item)}
-                showBalance={false}
+              <FastCurrencySelectionRow
+                item={{
+                  ...item,
+                  type: item.network,
+                  theme,
+                  contextMenuProps: {},
+                  nativeCurrency,
+                  nativeCurrencySymbol,
+                  onPress: () => {
+                    logger.debug('ON PRESS: ', item, item.network);
+                    handlePress({ ...item, type: item.network });
+                  },
+                  showAddButton: false,
+                  showBalance: false,
+                  showFavoriteButton: false,
+                }}
+                key={`${selectedList}-list-item-${item.uniqueId}`}
               />
+              // <ListCoinRow
+              //   item={item}
+              //   key={`${selectedList}-list-item-${item.uniqueId}`}
+              //   onPress={() => handlePress(item)}
+              //   showBalance={false}
+              // />
             ))
           ) : (
             <Centered marginVertical={42}>
