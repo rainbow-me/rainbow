@@ -33,8 +33,10 @@ describe('Hidden tokens flow', () => {
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
 
-    await waitFor(element(by.label('Hide')).atIndex(1)).toBeVisible();
-    await element(by.label('Hide')).atIndex(1).tap();
+    await waitFor(element(by.text('Hide')))
+      .toBeVisible()
+      .withTimeout(2000);
+    await element(by.text('Hide')).tap();
   });
 
   it('NFT shows in Hidden collection', async () => {
@@ -50,8 +52,10 @@ describe('Hidden tokens flow', () => {
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
 
-    await waitFor(element(by.label('Unhide')).atIndex(0)).toBeVisible();
-    await element(by.label('Unhide')).atIndex(0).tap();
+    await waitFor(element(by.text('Unhide')))
+      .toBeVisible()
+      .withTimeout(2000);
+    await element(by.text('Unhide')).tap();
 
     await waitFor(element(by.id('token-family-header-Hidden'))).toNotExist();
 
