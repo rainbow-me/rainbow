@@ -120,7 +120,7 @@ const NetworkSwitcherv2 = ({
                           ? { custom: colors.networkColors[network] }
                           : 'secondary50'
                       }
-                      size="16px"
+                      size="16px / 22px (Deprecated)"
                       weight="bold"
                     >
                       {title}
