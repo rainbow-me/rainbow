@@ -153,9 +153,7 @@ export default function SendSheet(props) {
   const recipientOverride = params?.address;
   const nativeAmountOverride = params?.nativeAmount;
   const [recipient, setRecipient] = useState('');
-  const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState({});
-  const [contact, setContact] = useState();
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
   const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
@@ -820,7 +818,6 @@ export default function SendSheet(props) {
       setToAddress();
       setCurrentInput(text);
       setRecipient(text);
-      setNickname(text);
       if (profilesEnabled && isENSAddressFormat(text)) {
         prefetchENSAvatar(text);
         prefetchENSCover(text);
@@ -939,7 +936,6 @@ export default function SendSheet(props) {
       {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
-          contact={contact}
           fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
@@ -950,7 +946,6 @@ export default function SendSheet(props) {
           }}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
-          setContact={setContact}
           showAssetList={showAssetList}
         />
         {showEmptyState && (
@@ -960,11 +955,9 @@ export default function SendSheet(props) {
             ensSuggestions={ensSuggestions}
             key={sendContactListDataKey}
             loadingEnsSuggestions={loadingEnsSuggestions}
-            onPressContact={(recipient, nickname, contact) => {
-              setContact(contact);
+            onPressContact={recipient => {
               setIsValidAddress(true);
               setRecipient(recipient);
-              setNickname(nickname);
             }}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}

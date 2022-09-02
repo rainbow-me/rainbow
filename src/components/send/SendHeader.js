@@ -67,7 +67,7 @@ const SendSheetTitle = styled(SheetTitle).attrs({
 });
 
 export default function SendHeader({
-  contact,
+  // contact,
   hideDivider,
   isValidAddress,
   fromProfile,
@@ -114,13 +114,13 @@ export default function SendHeader({
     );
   }, [recipient, userAccounts, watchedAccounts, hexAddress]);
 
+  const contact = useMemo(() => {
+    return contacts?.[hexAddress?.toLowerCase()];
+  }, [contacts, hexAddress]);
+
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
 
   const name = userWallet?.label || contact?.nickname || ensName || recipient;
-
-  // useEffect(() => {
-  //   onChangeAddressInput(name);
-  // }, [name, onChangeAddressInput]);
 
   const handleNavigateToContact = useCallback(() => {
     android && Keyboard.dismiss();
@@ -193,7 +193,7 @@ export default function SendHeader({
     text => {
       onChangeAddressInput(text);
       setHexAddress('');
-      setContact(null);
+      // setContact(null);
     },
     [onChangeAddressInput, setContact]
   );
