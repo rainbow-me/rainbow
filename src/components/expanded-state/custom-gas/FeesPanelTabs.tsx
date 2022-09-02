@@ -60,6 +60,7 @@ const TabPill = ({
         >
           <Inset vertical={{ custom: 8 }}>
             <Text
+              size="16px / 22px (Deprecated)"
               color={{
                 custom: isSelected
                   ? colors.whiteLabel

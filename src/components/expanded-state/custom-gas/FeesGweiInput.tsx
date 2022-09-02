@@ -13,6 +13,15 @@ const MINUS_ACTION_TYPE = 'minus';
 const LONG_PRESS_DELAY_THRESHOLD = 69;
 const MIN_LONG_PRESS_DELAY_THRESHOLD = 200;
 
+type GweiStepButtonProps = {
+  buttonColor: string;
+  onLongPress: () => void;
+  onLongPressEnded: () => void;
+  onPress: () => void;
+  type: string;
+  shouldLongPressHoldPress: boolean;
+};
+
 const GweiStepButton = ({
   buttonColor,
   onLongPress,
@@ -20,14 +29,7 @@ const GweiStepButton = ({
   onPress,
   type,
   shouldLongPressHoldPress,
-}: {
-  buttonColor: string;
-  onLongPress: () => void;
-  onLongPressEnded: () => void;
-  onPress: () => void;
-  type: string;
-  shouldLongPressHoldPress: boolean;
-}) => {
+}: GweiStepButtonProps) => {
   return (
     <Box
       as={ButtonPressAnimation}
@@ -42,7 +44,11 @@ const GweiStepButton = ({
       padding="4px"
       margin="-4px"
     >
-      <Text color={{ custom: buttonColor || colors.appleBlue }} weight="heavy">
+      <Text
+        size="icon 16px"
+        color={{ custom: buttonColor || colors.appleBlue }}
+        weight="heavy"
+      >
         {type === 'plus' ? '􀁍' : '􀁏'}
       </Text>
     </Box>
@@ -132,7 +138,7 @@ export default function FeesGweiInput({
   }, [trigger, prevTrigger, actionType, plusAction, minusAction]);
 
   return (
-    <Box marginRight="-5px">
+    <Box>
       <Inline alignVertical="center" space="6px">
         <GweiStepButton
           buttonColor={buttonColor}

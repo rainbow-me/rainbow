@@ -108,7 +108,11 @@ function GweiInputPill(
               value={value}
             />
             {IS_TESTING !== 'true' && (
-              <Text align="center" size="16px" weight="heavy">
+              <Text
+                align="center"
+                size="16px / 22px (Deprecated)"
+                weight="heavy"
+              >
                 Gwei
               </Text>
             )}

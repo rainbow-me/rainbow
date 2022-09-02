@@ -207,9 +207,13 @@ export default function FeesPanel({
           // @ts-expect-error
           onPress={openHelper}
         >
-          <Text size="14px" weight="heavy">
+          <Text size="14px / 19px (Deprecated)" weight="heavy">
             {`${label} `}
-            <Text color={{ custom: color }} weight="bold">
+            <Text
+              size="14px / 19px (Deprecated)"
+              color={{ custom: color }}
+              weight="bold"
+            >
               {text}
             </Text>
           </Text>
@@ -390,11 +394,15 @@ export default function FeesPanel({
       return (
         (error && (
           <Box paddingTop="8px">
-            <Text color={{ custom: colors.red }} size="14px" weight="heavy">
+            <Text
+              color={{ custom: colors.red }}
+              size="14px / 19px (Deprecated)"
+              weight="heavy"
+            >
               {errorPrefix}
               <Text
                 color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
-                size="14px"
+                size="14px / 19px (Deprecated)"
                 weight="bold"
               >
                 {errorSuffix}
@@ -406,13 +414,13 @@ export default function FeesPanel({
           <Box paddingTop="8px">
             <Text
               color={{ custom: colors.yellowFavorite }}
-              size="14px"
+              size="14px / 19px (Deprecated)"
               weight="heavy"
             >
               {warningPrefix}
               <Text
                 color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
-                size="14px"
+                size="14px / 19px (Deprecated)"
                 weight="heavy"
               >
                 {warningSuffix}
@@ -680,7 +688,7 @@ export default function FeesPanel({
             scaleTo={1}
           >
             <Text
-              size="14px"
+              size="14px / 19px (Deprecated)"
               weight="heavy"
               color={{
                 custom: GAS_TRENDS[currentGasTrend]?.color || colors.appleBlue,
@@ -709,7 +717,7 @@ export default function FeesPanel({
                 onPress={() => openGasHelper(trendType)}
                 scaleTo={1}
               >
-                <Text size="14px" weight="heavy">
+                <Text size="14px / 19px (Deprecated)" weight="heavy">
                   {formattedBaseFee}
                 </Text>
               </Box>
@@ -729,18 +737,20 @@ export default function FeesPanel({
                 )}
                 {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
               </Box>
-              <FeesGweiInput
-                buttonColor={colorForAsset}
-                inputRef={maxBaseFieldRef}
-                minusAction={substMaxFee}
-                onChange={onMaxBaseFeeChange}
-                onPress={handleMaxBaseInputGweiPress}
-                onBlur={() => null}
-                plusAction={addMaxFee}
-                testID="max-base-fee-input"
-                value={maxBaseFee}
-                editable
-              />
+              <Box marginRight="-5px">
+                <FeesGweiInput
+                  buttonColor={colorForAsset}
+                  inputRef={maxBaseFieldRef}
+                  minusAction={substMaxFee}
+                  onChange={onMaxBaseFeeChange}
+                  onPress={handleMaxBaseInputGweiPress}
+                  onBlur={() => null}
+                  plusAction={addMaxFee}
+                  testID="max-base-fee-input"
+                  value={maxBaseFee}
+                  editable
+                />
+              </Box>
             </Inline>
           </Box>
         </Row>
@@ -757,18 +767,20 @@ export default function FeesPanel({
                 )}
                 {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
               </Box>
-              <FeesGweiInput
-                buttonColor={colorForAsset}
-                editable={!flashbotTransaction}
-                inputRef={minerTipFieldRef}
-                minusAction={substMinerTip}
-                onChange={onMinerTipChange}
-                onPress={handleMinerTipInputGweiPress}
-                plusAction={addMinerTip}
-                testID="max-priority-fee-input"
-                value={maxPriorityFee}
-                onBlur={() => null}
-              />
+              <Box marginRight="-5px">
+                <FeesGweiInput
+                  buttonColor={colorForAsset}
+                  editable={!flashbotTransaction}
+                  inputRef={minerTipFieldRef}
+                  minusAction={substMinerTip}
+                  onChange={onMinerTipChange}
+                  onPress={handleMinerTipInputGweiPress}
+                  plusAction={addMinerTip}
+                  testID="max-priority-fee-input"
+                  value={maxPriorityFee}
+                  onBlur={() => null}
+                />
+              </Box>
             </Inline>
           </Box>
         </Row>
@@ -776,10 +788,10 @@ export default function FeesPanel({
         <Row>
           <Box paddingTop={{ custom: 9 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
-              <Text size="14px" weight="heavy">
+              <Text size="14px / 19px (Deprecated)" weight="heavy">
                 {lang.t('gas.max_transaction_fee')}
               </Text>
-              <Text size="14px" weight="heavy">
+              <Text size="14px / 19px (Deprecated)" weight="heavy">
                 {maxFee}
               </Text>
             </Inline>
