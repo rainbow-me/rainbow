@@ -13,7 +13,6 @@ import { useTheme } from '@/theme';
 
 const notchHeight = 48;
 const notchSideWidth = 78;
-const ANDROID_NOTCH_OFFSET = 8;
 
 const NotchMiddle = styled(FastImage).attrs(
   ({ isDarkMode }: { isDarkMode: boolean }) => ({
@@ -22,15 +21,15 @@ const NotchMiddle = styled(FastImage).attrs(
   })
 )({
   height: notchHeight,
-  left: android ? -ANDROID_NOTCH_OFFSET : 0,
+  left: 0,
   width: ({ deviceWidth }: { deviceWidth: number }) =>
     deviceWidth - notchSideWidth * 2,
 });
 
 const NotchSide = styled(FastImage)({
   height: android ? notchHeight + 2 : notchHeight,
-  left: android ? -ANDROID_NOTCH_OFFSET : 0,
-  width: android ? notchSideWidth + ANDROID_NOTCH_OFFSET : notchSideWidth,
+  left: 0,
+  width: notchSideWidth,
 });
 
 interface ExchangeNotchProps {
