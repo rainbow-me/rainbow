@@ -167,13 +167,14 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       const urlObj = new URL(data);
       if (
         urlObj?.protocol === 'https:' &&
-        urlObj?.pathname?.split('/')?.[1] === 'wc'
+        urlObj?.searchParams?.get('uri').startsWith('wc:')
       ) {
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { uri } = qs.parse(urlObj.query.substring(1));
         onSuccess();
         return handleScanWalletConnect(uri);
       }
+
       // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
         return handleScanRainbowProfile(data);
