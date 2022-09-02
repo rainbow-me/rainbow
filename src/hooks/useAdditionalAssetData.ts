@@ -7,8 +7,7 @@ import { getAdditionalAssetData } from '@/handlers/dispersion';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
-
-type implementation = { address: EthereumAddress; decimals: number };
+import { implementation } from '@/entities/dispersion';
 
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,

@@ -15,13 +15,11 @@ import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
 import { AssetType, RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
-import { EthereumAddress } from '@rainbow-me/swaps';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { implementation } from '@/entities/dispersion';
 
 const NOOP = () => null;
-
-type implementation = { address: EthereumAddress; decimals: number };
 
 const AvailableNetworksv2 = ({
   asset,
