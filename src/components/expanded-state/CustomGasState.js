@@ -23,7 +23,7 @@ import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
 
 const FOOTER_HEIGHT = 76;
-const CONTENT_HEIGHT = 310;
+const CONTENT_HEIGHT = 296;
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -86,7 +86,7 @@ export default function CustomGasState({ asset }) {
       radius={0}
       scrollEnabled={false}
     >
-      <FloatingPanel radius={android ? 38 : 38}>
+      <FloatingPanel radius={38}>
         <ExchangeHeader testID="custom-gas" />
         <FeesPanelWrapper>
           <FeesPanel
