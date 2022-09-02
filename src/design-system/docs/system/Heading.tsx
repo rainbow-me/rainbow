@@ -11,14 +11,14 @@ export const Heading = ({
   children,
   color = 'primary',
   level,
-  size = '23px',
-  weight = 'heavy',
+  size = '23px / 27px (Deprecated)',
+  weight,
 }: {
   children: ReactNode;
   color?: ForegroundColor;
   level?: Levels;
   size?: HeadingSizes;
-  weight?: FontWeight;
+  weight: FontWeight;
 }) => {
   let Component: any = 'span';
   if (level) {

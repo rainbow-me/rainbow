@@ -72,7 +72,7 @@ export default function ActionButton({
               <Text
                 align="center"
                 color={variant === 'outlined' ? 'secondary80' : 'primary'}
-                size="15px"
+                size="15px / 21px (Deprecated)"
                 weight="heavy"
               >
                 {icon || children}
