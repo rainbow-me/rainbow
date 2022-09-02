@@ -30,6 +30,8 @@ import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
+import { position } from '../styles';
+import AndroidKeyboardLayoutFixer from '@/components/layout/AndroidKeyboardLayoutFixer';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
@@ -68,7 +70,6 @@ import {
 import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { position } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';
@@ -91,7 +92,7 @@ const NOOP = () => null;
 
 const FloatingPanels = AnimatedExchangeFloatingPanels;
 
-const Wrapper = KeyboardFixedOpenLayout;
+const Wrapper = ios ? KeyboardFixedOpenLayout : AndroidKeyboardLayoutFixer;
 
 const InnerWrapper = styled(Column).attrs({
   direction: 'column',
@@ -133,7 +134,6 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
-  const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
   const {
     slippageInBips,
@@ -161,6 +161,8 @@ export default function ExchangeModal({
     dangerouslyGetParent,
     addListener,
   } = useNavigation();
+
+  const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
 
   // if the default input is on a different network than
   // we want to update the output to be on the same, if its not available -> null
