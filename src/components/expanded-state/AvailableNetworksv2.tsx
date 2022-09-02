@@ -26,7 +26,7 @@ type implementation = { address: EthereumAddress; decimals: number };
 const AvailableNetworksv2 = ({
   asset,
   networks,
-  hideDivider,
+  hideDivider = false,
   marginHorizontal = 19,
 }: {
   asset: RainbowToken;
@@ -132,6 +132,7 @@ const AvailableNetworksv2 = ({
         isMenuPrimaryAction
         onPressMenuItem={handlePressContextMenu}
         useActionSheetFallback={false}
+        style={{ paddingBottom: 27 }}
       >
         <Box
           as={ButtonPressAnimation}
@@ -142,8 +143,8 @@ const AvailableNetworksv2 = ({
         >
           <Box
             borderRadius={99}
-            padding="8px"
-            paddingHorizontal={{ custom: 12 }}
+            paddingVertical="8px"
+            paddingHorizontal="12px"
             justifyContent="center"
           >
             <RadialGradient
@@ -160,25 +161,25 @@ const AvailableNetworksv2 = ({
                       <Box
                         background="body"
                         key={`availableNetwork-${network}`}
-                        marginLeft={{ custom: -4 }}
+                        marginLeft="-4px"
                         style={{
                           backgroundColor: colors.transparent,
                           zIndex: availableNetworks?.length - index,
                           borderRadius: 30,
                         }}
                       >
-                        {network !== 'mainnet' ? (
+                        {network !== Network.mainnet ? (
                           <ChainBadge
                             assetType={network}
                             position="relative"
                             size="small"
                           />
                         ) : (
+                          // @ts-expect-error overloaded props RadialGradient
                           <CoinIcon
                             address={ETH_ADDRESS}
                             size={20}
                             symbol={ETH_SYMBOL}
-                            forcedShadowColor={undefined}
                             type={AssetType.token}
                           />
                         )}
@@ -190,7 +191,7 @@ const AvailableNetworksv2 = ({
                 <Box paddingLeft="6px">
                   <Text
                     color="secondary60"
-                    size="14px"
+                    size="14px / 19px (Deprecated)"
                     weight="semibold"
                     numberOfLines={2}
                   >
@@ -207,8 +208,8 @@ const AvailableNetworksv2 = ({
               </Inline>
               <Text
                 align="center"
-                color="secondary60"
-                size="14px"
+                color="secondary40"
+                size="14px / 19px (Deprecated)"
                 weight="semibold"
               >
                 {availableNetworks?.length > 1 ? '􀁱' : '􀯻'}
