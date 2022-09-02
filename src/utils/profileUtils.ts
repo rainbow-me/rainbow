@@ -1,6 +1,6 @@
 import colors from '../styles/colors';
 import { EthereumAddress } from '@/entities';
-import { fetchReverseRecord } from '@/handlers/ens';
+import { fetchENSName } from '@/hooks/useENSName';
 
 // avatars groups emojis with their respective color backgrounds in the `avatarBackgrounds` object in colors.js
 export const avatars = [
@@ -122,7 +122,7 @@ export function isValidImagePath(path: string | null) {
 export async function fetchReverseRecordWithRetry(address: EthereumAddress) {
   for (let i = 0; i < 3; i++) {
     try {
-      return await fetchReverseRecord(address);
+      return await fetchENSName(address);
       // eslint-disable-next-line no-empty
     } catch {}
   }

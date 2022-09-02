@@ -18,7 +18,6 @@ import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { fetchReverseRecord } from '@/handlers/ens';
 import { fetchRainbowProfile } from '@/handlers/rainbowProfiles';
 import { resolveUnstoppableDomain, web3Provider } from '@/handlers/web3';
 import {
@@ -34,6 +33,7 @@ import { walletsLoadState } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, sanitizeSeedPhrase } from '@/utils';
 import logger from '@/utils/logger';
+import { fetchENSName } from './useENSName';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -182,7 +182,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       } else if (isValidAddress(input)) {
         try {
-          const ens = await fetchReverseRecord(input);
+          const ens = await fetchENSName(input);
           if (ens && ens !== input) {
             name = ens;
             if (!avatarUrl && profilesEnabled) {
@@ -208,7 +208,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
 
-            const ens = await fetchReverseRecord(walletResult.address);
+            const ens = await fetchENSName(walletResult.address);
             if (ens && ens !== input) {
               name = ens;
               if (!avatarUrl && profilesEnabled) {

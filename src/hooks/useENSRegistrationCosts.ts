@@ -12,7 +12,6 @@ import {
   estimateENSRenewGasLimit,
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
-  fetchReverseRecord,
 } from '@/handlers/ens';
 import { NetworkTypes } from '@/helpers';
 import {
@@ -36,6 +35,7 @@ import {
 } from '@/helpers/utilities';
 import { ethUnits, timeUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
+import { fetchENSName } from './useENSName';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',
@@ -177,7 +177,7 @@ export default function useENSRegistrationCosts({
   }, [registrationParameters?.name, duration]);
 
   const getReverseRecord = useCallback(async () => {
-    const reverseRecord = await fetchReverseRecord(accountAddress);
+    const reverseRecord = await fetchENSName(accountAddress);
     return Boolean(reverseRecord);
   }, [accountAddress]);
 

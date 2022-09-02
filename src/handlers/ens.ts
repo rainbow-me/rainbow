@@ -63,6 +63,7 @@ import {
 } from '@/utils/profileUtils';
 import { labelhash, logger } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
+import { fetchENSName } from '@/hooks/useENSName';
 
 const DUMMY_RECORDS = {
   'description': 'description',
@@ -234,7 +235,7 @@ export const fetchSuggestions = async (
 ) => {
   if (isValidAddress(recipient)) {
     const address = getAddress(recipient);
-    const ens = await fetchReverseRecord(address);
+    const ens = await fetchENSName(address);
     if (!ens) {
       setSuggestions([]);
       setIsFetching(false);
@@ -526,7 +527,7 @@ export const fetchOwner = async (ensName: string) => {
 
   let owner: { address?: string; name?: string } = {};
   if (ownerAddress) {
-    const name = await fetchReverseRecord(ownerAddress);
+    const name = await fetchENSName(ownerAddress);
     owner = {
       address: ownerAddress,
       name,
@@ -548,7 +549,7 @@ export const fetchRegistration = async (ensName: string) => {
   let registrant: { address?: string; name?: string } = {};
   if (data.registrant?.id) {
     const registrantAddress = data.registrant?.id;
-    const name = await fetchReverseRecord(registrantAddress);
+    const name = await fetchENSName(registrantAddress);
     registrant = {
       address: registrantAddress,
       name,
@@ -573,7 +574,7 @@ export const fetchPrimary = async (ensName: string) => {
 };
 
 export const fetchAccountPrimary = async (accountAddress: string) => {
-  const ensName = await fetchReverseRecord(accountAddress);
+  const ensName = await fetchENSName(accountAddress);
   return {
     ensName,
   };

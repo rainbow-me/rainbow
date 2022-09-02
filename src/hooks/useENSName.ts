@@ -16,12 +16,12 @@ const STALE_TIME = 10000;
 export async function fetchENSName(
   address: EthereumAddress | null | undefined,
   { cacheFirst }: { cacheFirst?: boolean } = {}
-) {
+): Promise<string> {
   if (!address || !isValidAddress(address)) return '';
   const cachedData = await getENSName(address);
   if (cachedData) {
     queryClient.setQueryData(ensNameQueryKey(address), cachedData?.address);
-    if (cacheFirst) return cachedData?.address as string | null;
+    if (cacheFirst) return cachedData?.address ?? '';
   }
 
   const name = await fetchReverseRecord(address);

@@ -20,9 +20,11 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
 import networkInfo from '@/helpers/networkInfo';
 import {
+  prefetchENSName,
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  useContacts,
   useInitializeAccountData,
   useInitializeDiscoverData,
   useInitializeWallet,
@@ -82,6 +84,7 @@ export default function WalletScreen() {
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
+  const { contacts } = useContacts();
 
   const revertToMainnet = useCallback(async () => {
     await resetAccountState();
@@ -225,11 +228,12 @@ export default function WalletScreen() {
         // as the RPC call queue is considerably slower.
         if (ios) {
           prefetchENSIntroData();
+          Object.keys(contacts).map(address => prefetchENSName(address));
         }
         trackENSProfile();
       });
     }
-  }, [profilesEnabled, trackENSProfile, walletReady]);
+  }, [contacts, profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet)
