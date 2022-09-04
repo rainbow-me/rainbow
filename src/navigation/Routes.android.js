@@ -25,7 +25,9 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsSheet from '../screens/SettingsSheet';
+import SettingsSheet, {
+  CUSTOM_MARGIN_TOP_ANDROID,
+} from '../screens/SettingsSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
@@ -358,7 +360,10 @@ function BSNavigator() {
         name={Routes.SETTINGS_SHEET}
         options={{
           ...bottomSheetPreset,
-          height: deviceUtils.dimensions.height - StatusBar.currentHeight,
+          height:
+            deviceUtils.dimensions.height +
+            CUSTOM_MARGIN_TOP_ANDROID -
+            StatusBar.currentHeight,
         }}
       />
     </BSStack.Navigator>

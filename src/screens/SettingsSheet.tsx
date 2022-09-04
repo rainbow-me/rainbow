@@ -29,6 +29,8 @@ import { Box } from '@/design-system';
 import { useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 
+export const CUSTOM_MARGIN_TOP_ANDROID = 8;
+
 function cardStyleInterpolator({
   current,
   next,
@@ -184,7 +186,10 @@ export default function SettingsSheet() {
       background="cardBackdrop"
       flexGrow={1}
       testID="settings-sheet"
-      {...(android && { borderTopRadius: 30, marginTop: { custom: 8 } })}
+      {...(android && {
+        borderTopRadius: 30,
+        marginTop: { custom: CUSTOM_MARGIN_TOP_ANDROID },
+      })}
     >
       <Stack.Navigator
         // @ts-ignore
