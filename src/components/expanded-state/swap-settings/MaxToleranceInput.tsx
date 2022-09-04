@@ -130,7 +130,7 @@ export const MaxToleranceInput = forwardRef(
                   )}
                 </Text>
                 {hasPriceImpact && (
-                  <Box paddingTop={android ? '2px' : '1px'}>
+                  <Box paddingTop={android ? '2px' : '1px (Deprecated)'}>
                     <Icon color={priceImpactColor} name="warning" size={18} />
                   </Box>
                 )}

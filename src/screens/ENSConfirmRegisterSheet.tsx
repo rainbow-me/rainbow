@@ -402,8 +402,8 @@ export default function ENSConfirmRegisterSheet() {
       <AccentColorProvider color={accentColor}>
         <Box
           background="body"
-          paddingTop="19px"
-          paddingVertical="30px"
+          paddingTop="19px (Deprecated)"
+          paddingVertical="30px (Deprecated)"
           style={{
             height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
           }}
@@ -413,7 +413,7 @@ export default function ENSConfirmRegisterSheet() {
             <Row height="content">
               {/* @ts-expect-error JavaScript component */}
               <Box horizontal="30px">
-                <Stack alignHorizontal="center" space="15px">
+                <Stack alignHorizontal="center" space="15px (Deprecated)">
                   {avatarUrl && (
                     <Box
                       background="body"
@@ -431,7 +431,7 @@ export default function ENSConfirmRegisterSheet() {
                       />
                     </Box>
                   )}
-                  <Inset horizontal="30px">
+                  <Inset horizontal="30px (Deprecated)">
                     <Heading
                       align="center"
                       numberOfLines={1}
@@ -455,7 +455,7 @@ export default function ENSConfirmRegisterSheet() {
             <Row>
               <Box
                 flexGrow={1}
-                paddingHorizontal={isSmallPhone ? '24px' : '30px'}
+                paddingHorizontal={isSmallPhone ? '24px' : '30px (Deprecated)'}
               >
                 {stepContent[step]}
               </Box>

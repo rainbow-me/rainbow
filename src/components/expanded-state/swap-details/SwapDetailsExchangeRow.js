@@ -206,7 +206,7 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
                 </Column>
                 {steps?.[step]?.part && (
                   <Column width="content">
-                    <Bleed right="5px" vertical="6px">
+                    <Bleed right="5px (Deprecated)" vertical="6px">
                       <Pill
                         height={20}
                         style={{

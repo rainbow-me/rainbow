@@ -677,8 +677,8 @@ export default function SendConfirmationSheet() {
             <Divider color={colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {(isL2 || isENS || shouldShowChecks) && (
-            <Inset bottom="30px" horizontal="19px">
-              <Stack space="19px">
+            <Inset bottom="30px (Deprecated)" horizontal="19px (Deprecated)">
+              <Stack space="19px (Deprecated)">
                 {isL2 && (
                   <Fragment>
                     {/* @ts-expect-error JavaScript component */}
