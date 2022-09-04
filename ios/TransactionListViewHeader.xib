@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="4352" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -208,6 +208,8 @@
                 <outlet property="addCashLabel" destination="Nlo-pe-gcO" id="gmi-vr-aLa"/>
                 <outlet property="avatarView" destination="FtZ-Ws-R6l" id="Bpb-UI-1m8"/>
                 <outlet property="copyAddress" destination="a0n-Oe-SxC" id="zrO-dh-wBT"/>
+                <outlet property="innerAddCashGradient" destination="9zi-tb-NQp" id="4g0-9e-rfN"/>
+                <outlet property="outerAddCashGradient" destination="Hy9-ml-9zf" id="tQw-55-YIc"/>
                 <outlet property="receive" destination="bT8-DB-DfA" id="kq4-6J-fh6"/>
             </connections>
             <point key="canvasLocation" x="-64.799999999999997" y="241.62561576354682"/>

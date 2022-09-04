@@ -20,4 +20,6 @@ class TransactionListViewHeader : UIView {
     @IBOutlet weak var copyAddress: UIButton!
     @IBOutlet weak var receive: UIButton!
     @IBOutlet weak var accountNameViewWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var innerAddCashGradient: AddCashButton!;
+    @IBOutlet weak var outerAddCashGradient: AddCashButton!;
 }

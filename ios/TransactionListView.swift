@@ -31,6 +31,18 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       headerSeparator.frame.origin.y = header.frame.size.height - 2
     }
   }
+  @objc var addCashDegraded: Bool = true {
+    didSet {
+      if (addCashDegraded) {
+        header.innerAddCashGradient.outerColor = UIColor.RainbowTheme.Transactions.disabledGray;
+        header.innerAddCashGradient.middleColor = UIColor.RainbowTheme.Transactions.disabledGray;
+        header.innerAddCashGradient.innerColor = UIColor.RainbowTheme.Transactions.disabledGray;
+        header.outerAddCashGradient.outerColor = UIColor.RainbowTheme.Transactions.disabledGray;
+        header.outerAddCashGradient.middleColor = UIColor.RainbowTheme.Transactions.disabledGray;
+        header.outerAddCashGradient.innerColor = UIColor.RainbowTheme.Transactions.disabledGray;
+      }
+    }
+  }
   @objc var isAvatarPickerAvailable: Bool = true {
     didSet {
       header.accountView.isEnabled = isAvatarPickerAvailable;

@@ -222,7 +222,9 @@ export default function ProfileMasthead({
           }}
         />
       </RowWithMargins>
-      {addCashAvailable && <AddCashButton onPress={handlePressAddCash} />}
+      {addCashAvailable && (
+        <AddCashButton onPress={handlePressAddCash} disabled />
+      )}
       {showBottomDivider && <ProfileMastheadDivider />}
     </Column>
   );

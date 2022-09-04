@@ -324,6 +324,7 @@ export default function TransactionList({
         accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
+        addCashDegraded={true}
         as={NativeTransactionListView}
         avatarOptions={avatarOptions}
         darkMode={isDarkMode}
