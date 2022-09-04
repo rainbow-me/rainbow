@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
 import { useENSRegistration, useInterval } from '.';
 import { RegistrationParameters } from '@/entities';
-import { Network } from '@/helpers';
+import store from '@/redux/store';
 import {
   getHasMerged,
   getProviderForNetwork,
@@ -31,8 +31,9 @@ const checkRegisterBlockTimestamp = async ({
   isTestingHardhat: boolean;
 }) => {
   try {
+    const { network } = store.getState().settings;
     const provider = await getProviderForNetwork();
-    const hasMerged = getHasMerged(provider.network.name as Network);
+    const hasMerged = getHasMerged(network);
     const block = await provider.getBlock(hasMerged ? 'safe' : 'latest');
     const msBlockTimestamp = getBlockMsTimestamp(block);
     const secs = differenceInSeconds(

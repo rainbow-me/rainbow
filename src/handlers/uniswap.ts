@@ -32,7 +32,8 @@ import {
   toHexNoLeadingZeros,
 } from './web3';
 import config from '@/model/config';
-import { Asset } from '@/entities';
+import store from '@/redux/store';
+import { Asset } from '@rainbow-me/entities';
 import {
   add,
   convertRawAmountToDecimalFormat,
@@ -187,6 +188,7 @@ export const getSwapGasLimitWithFakeApproval = async (
   provider: StaticJsonRpcProvider,
   tradeDetails: Quote
 ): Promise<number> => {
+  const { network } = store.getState().settings;
   let stateDiff: any;
 
   try {
@@ -201,7 +203,7 @@ export const getSwapGasLimitWithFakeApproval = async (
       ...(methodArgs ?? []),
       params
     );
-    const hasMerged = getHasMerged(provider.network.name as Network);
+    const hasMerged = getHasMerged(network);
     const gasLimit = await getClosestGasEstimate(async (gas: number) => {
       const callParams = [
         {
