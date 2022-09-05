@@ -76,6 +76,7 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
+import QRScannerScreen from '@/screens/QRScannerScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -415,6 +416,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.SWAP_SETTINGS_SHEET}
         {...customGasSheetConfig}
+      />
+      <NativeStack.Screen
+        component={QRScannerScreen}
+        name={Routes.QR_SCANNER_SCREEN}
+        {...registerENSNavigatorConfig}
       />
 
       {profilesEnabled && (

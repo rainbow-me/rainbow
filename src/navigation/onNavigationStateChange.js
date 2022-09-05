@@ -15,7 +15,7 @@ let action = null;
 const isOnSwipeScreen = name =>
   [
     Routes.WALLET_SCREEN,
-    Routes.QR_SCANNER_SCREEN,
+    Routes.DISCOVER_SCREEN,
     Routes.PROFILE_SCREEN,
   ].includes(name);
 

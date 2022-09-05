@@ -1,20 +1,18 @@
-import { useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
-import { useSharedValue } from 'react-native-reanimated';
-import { DiscoverSheet } from '../components/discover-sheet';
-import { BackButton, Header, HeaderHeight } from '../components/header';
+import { useIsFocused } from '@react-navigation/core';
+import { Header } from '../components/header';
 import { Centered } from '../components/layout';
 import {
   CameraDimmer,
   EmulatorPasteUriButton,
   QRCodeScanner,
 } from '../components/qrcode-scanner';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { Navbar } from '@/components/navbar/Navbar';
+import { Box, ColorModeProvider } from '@/design-system';
 
 const Background = styled.View({
   backgroundColor: 'black',
@@ -40,68 +38,31 @@ const ScannerHeader = styled(Header).attrs({
 
 export default function QRScannerScreen() {
   const isFocused = useIsFocused();
-  const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
-  const { navigate } = useNavigation();
-  const [cameraVisible, setCameraVisible] = useState();
-
-  const dsRef = useRef();
-  useEffect(
-    () => dsRef.current?.addOnCrossMagicBorderListener(setCameraVisible),
-    []
-  );
-
-  const handlePressBackButton = useCallback(
-    () => navigate(Routes.WALLET_SCREEN),
-    [navigate]
-  );
-
-  useEffect(() => {
-    cameraVisible && !initializeCamera && setInitializeCamera(true);
-  }, [cameraVisible, initializeCamera]);
-
-  const { colors } = useTheme();
   const { result: isEmulator } = useIsEmulator();
-  const androidSheetPosition = useSharedValue(0);
 
   return (
     <View pointerEvents="box-none">
-      {ios ? <DiscoverSheet ref={dsRef} /> : null}
-      <ScannerContainer>
-        <Background />
-        <CameraDimmer cameraVisible={cameraVisible}>
-          {android && (
+      <ColorModeProvider value="darkTinted">
+        <Box position="absolute" top={0} width="full" style={{ zIndex: 1 }}>
+          <Navbar title="Scan" />
+        </Box>
+        <ScannerContainer>
+          <Background />
+          <CameraDimmer cameraVisible={true}>
+            {android && (
+              <ScannerHeader>
+                <EmulatorPasteUriButton />
+              </ScannerHeader>
+            )}
+            {!isEmulator && <QRCodeScanner enabled={isFocused} />}
+          </CameraDimmer>
+          {ios && (
             <ScannerHeader>
-              <BackButton
-                color={colors.whiteLabel}
-                direction="left"
-                onPress={handlePressBackButton}
-                testID="goToBalancesFromScanner"
-              />
               <EmulatorPasteUriButton />
             </ScannerHeader>
           )}
-          {initializeCamera && !isEmulator && (
-            <QRCodeScanner
-              contentPositionTop={HeaderHeight}
-              dsRef={dsRef}
-              enableCamera={isFocused}
-            />
-          )}
-        </CameraDimmer>
-        {android ? (
-          <DiscoverSheet ref={dsRef} sheetPosition={androidSheetPosition} />
-        ) : (
-          <ScannerHeader>
-            <BackButton
-              color={colors.whiteLabel}
-              direction="left"
-              onPress={handlePressBackButton}
-              testID="goToBalancesFromScanner"
-            />
-            <EmulatorPasteUriButton />
-          </ScannerHeader>
-        )}
-      </ScannerContainer>
+        </ScannerContainer>
+      </ColorModeProvider>
     </View>
   );
 }

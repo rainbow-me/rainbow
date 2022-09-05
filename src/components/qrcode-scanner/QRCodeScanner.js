@@ -1,57 +1,31 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
-import { useIsEmulator } from 'react-native-device-info';
 import {
   check as checkForPermissions,
   PERMISSIONS,
   request as requestPermission,
   RESULTS,
 } from 'react-native-permissions';
-import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import ConnectedDapps from './ConnectedDapps';
-import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
-import SimulatorFakeCameraImageSource from '@/assets/simulator-fake-camera-image.jpg';
-import { useAsyncEffect, useHardwareBack, useScanner } from '@/hooks';
-import { ImgixImage } from '@/components/images';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
+import { useHardwareBack, useScanner } from '@/hooks';
 import { deviceUtils } from '@/utils';
+import {
+  AccentColorProvider,
+  Box,
+  Cover,
+  Inset,
+  Rows,
+  Row,
+  useForegroundColor,
+} from '@/design-system';
+import { useNavigation } from '@/navigation';
+import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 
-const Camera = styled(RNCamera)({
-  ...position.coverAsObject,
-  // just to move it to the top a bit
-  // so the part of the video feed isn't covered by the bottom sheet
-  height: deviceUtils.dimensions.height - 200,
-  width: '100%',
-});
-
-const CameraWrapper = styled(Centered)(({ theme }) => ({
-  backgroundColor: theme.colors.trueBlack || theme.colors.black,
-  width: '100%',
-}));
-
-const Container = styled.View(({ theme }) => ({
-  ...position.coverAsObject,
-  backgroundColor: theme.colors.stackBackground,
-}));
-
-const ContentOverlay = styled(Centered)(({ contentPositionTop }) => ({
-  ...position.coverAsObject,
-  bottom: 200,
-  flexDirection: 'column',
-  top: contentPositionTop || 0,
-}));
-
-const EmulatorCameraFallback = styled(ImgixImage).attrs({
-  source: SimulatorFakeCameraImageSource,
-})({
-  ...position.coverAsObject,
-  height: '100%',
-  width: '100%',
-});
+const deviceWidth = deviceUtils.dimensions.width;
+const deviceHeight = deviceUtils.dimensions.height;
 
 const CameraState = {
   // unexpected mount error
@@ -64,136 +38,149 @@ const CameraState = {
   Waiting: 'waiting',
 };
 
-export default function QRCodeScanner({
-  contentPositionTop,
-  dsRef,
-  enableCamera: isEnabledByFocus,
-}) {
+export default function QRCodeScanner({ enabled }: { enabled: boolean }) {
   const cameraRef = useRef();
-  const { result: isEmulator } = useIsEmulator();
-  const [cameraEnabledByBottomSheetPosition, setCameraEnabled] = useState(
-    false
-  );
   const [cameraState, setCameraState] = useState(CameraState.Waiting);
-  const shouldInitializeCamera =
-    isEnabledByFocus && cameraEnabledByBottomSheetPosition;
+  const { goBack } = useNavigation();
 
-  const cameraEnabled =
-    cameraState === CameraState.Scanning && shouldInitializeCamera;
+  const isActive = enabled && cameraState === CameraState.Scanning;
 
   const hideCamera = useCallback(() => {
-    dsRef.current?.jumpToLong();
-  }, [dsRef]);
+    goBack();
+  }, [goBack]);
 
-  const { onScan } = useScanner(cameraEnabled, hideCamera);
+  const { onScan } = useScanner(isActive, hideCamera);
 
   // handle back button press on android
-  useHardwareBack(hideCamera, !shouldInitializeCamera);
-
-  const onCrossMagicBorder = useCallback(
-    below => {
-      setCameraEnabled(below);
-    },
-    [setCameraEnabled]
-  );
-  useEffect(() => {
-    dsRef.current?.addOnCrossMagicBorderListener(onCrossMagicBorder);
-  }, [dsRef, onCrossMagicBorder]);
+  useHardwareBack(hideCamera, !enabled);
 
   const askForPermissions = useCallback(async () => {
-    if (!shouldInitializeCamera) {
+    if (!enabled) {
       setCameraState(CameraState.Waiting);
-
       return;
     }
 
-    const permission = ios
-      ? PERMISSIONS.IOS.CAMERA
-      : PERMISSIONS.ANDROID.CAMERA;
+    try {
+      const permission = ios
+        ? PERMISSIONS.IOS.CAMERA
+        : PERMISSIONS.ANDROID.CAMERA;
 
-    const res = await checkForPermissions(permission);
+      const res = await checkForPermissions(permission);
 
-    // we should ask permission natively with the native alert thing
-    if (res === RESULTS.DENIED || res === RESULTS.BLOCKED) {
-      const askResult = await requestPermission(permission);
+      // we should ask permission natively with the native alert thing
+      if (res === RESULTS.DENIED || res === RESULTS.BLOCKED) {
+        const askResult = await requestPermission(permission);
 
-      if (askResult !== RESULTS.GRANTED) {
+        if (askResult !== RESULTS.GRANTED) {
+          setCameraState(CameraState.Unauthorized);
+        } else {
+          setCameraState(CameraState.Scanning);
+        }
+      }
+      // we should ask for permission through the UI
+      else if (res === RESULTS.BLOCKED || res === RESULTS.UNAVAILABLE) {
         setCameraState(CameraState.Unauthorized);
-      } else {
+      }
+      // initialize the camera and celebrate
+      else if (res === RESULTS.GRANTED) {
         setCameraState(CameraState.Scanning);
       }
+    } catch (err) {
+      setCameraState(CameraState.Error);
+      throw err;
     }
-    // we should ask for permission through the UI
-    else if (res === RESULTS.BLOCKED || res === RESULTS.UNAVAILABLE) {
-      setCameraState(CameraState.Unauthorized);
-    }
-    // initialize the camera and celebrate
-    else if (res === RESULTS.GRANTED) {
-      setCameraState(CameraState.Scanning);
-    }
-  }, [shouldInitializeCamera]);
+  }, [enabled]);
 
-  useAsyncEffect(askForPermissions, [shouldInitializeCamera]);
+  useEffect(() => {
+    askForPermissions();
+  }, [askForPermissions]);
 
-  if (!shouldInitializeCamera) {
-    return null;
-  }
-
-  if (__DEV__ && isEmulator) {
-    return (
-      <Container>
-        <CameraWrapper>
-          <EmulatorCameraFallback />
-        </CameraWrapper>
-      </Container>
-    );
-  }
+  const secondary80 = useForegroundColor('secondary80');
 
   return (
-    <Container>
-      {cameraState === CameraState.Scanning && (
-        <>
-          <Camera
+    <>
+      <Box
+        position="absolute"
+        width="full"
+        height={{ custom: deviceHeight }}
+        marginTop={{ custom: -48 }}
+      >
+        {enabled && (
+          <Box
+            as={RNCamera}
             captureAudio={false}
             onBarCodeRead={onScan}
             onMountError={() => setCameraState(CameraState.Error)}
             pendingAuthorizationView={null}
             ref={cameraRef}
+            borderRadius={40}
+            width="full"
+            height={{ custom: deviceHeight }}
+            position="absolute"
           />
-
-          <ContentOverlay contentPositionTop={contentPositionTop}>
-            <QRCodeScannerCrosshair />
-
+        )}
+        <Rows>
+          <Row>
+            <Box
+              style={{ backgroundColor: 'black', opacity: 0.8 }}
+              height="full"
+            />
+          </Row>
+          <Row height="content">
+            <Box
+              as={CameraMaskSvg}
+              width={{ custom: deviceWidth }}
+              height={{ custom: deviceWidth }}
+            />
+            <Cover alignHorizontal="center">
+              <Inset top={{ custom: 14 }}>
+                <AccentColorProvider color={secondary80}>
+                  <Box
+                    background="accent"
+                    borderRadius={3}
+                    height={{ custom: 5 }}
+                    width={{ custom: 36 }}
+                  />
+                </AccentColorProvider>
+              </Inset>
+            </Cover>
+            <Cover>
+              <Box
+                borderRadius={40}
+                width={{ custom: deviceWidth }}
+                height={{ custom: deviceWidth }}
+                style={{
+                  borderColor: 'rgba(245, 248, 255, 0.12)',
+                  borderStyle: 'solid',
+                  borderWidth: 2,
+                  zIndex: 2,
+                }}
+              />
+            </Cover>
+            <Cover alignHorizontal="center" alignVertical="center">
+              {cameraState === CameraState.Error && (
+                <ErrorText error={lang.t('wallet.qr.error_mounting_camera')} />
+              )}
+              {cameraState === CameraState.Unauthorized && (
+                <QRCodeScannerNeedsAuthorization
+                  onGetBack={askForPermissions}
+                />
+              )}
+            </Cover>
+          </Row>
+          <Row>
+            <Box
+              style={{ backgroundColor: 'black', opacity: 0.8 }}
+              height="full"
+            />
+          </Row>
+        </Rows>
+        <Cover alignHorizontal="center" alignVertical="bottom">
+          <Inset bottom={{ custom: 54 }}>
             <ConnectedDapps />
-          </ContentOverlay>
-        </>
-      )}
-
-      {cameraState === CameraState.Waiting && (
-        <ContentOverlay contentPositionTop={contentPositionTop}>
-          <QRCodeScannerCrosshair />
-        </ContentOverlay>
-      )}
-
-      {cameraState === CameraState.Error && (
-        <ContentOverlay contentPositionTop={contentPositionTop}>
-          <ErrorText error={lang.t('wallet.qr.error_mounting_camera')} />
-
-          <ConnectedDapps />
-        </ContentOverlay>
-      )}
-
-      {cameraState === CameraState.Unauthorized && (
-        <>
-          <QRCodeScannerNeedsAuthorization onGetBack={askForPermissions} />
-          <ContentOverlay
-            contentPositionTop={contentPositionTop + 350}
-            pointerEvents="box-none"
-          >
-            <ConnectedDapps />
-          </ContentOverlay>
-        </>
-      )}
-    </Container>
+          </Inset>
+        </Cover>
+      </Box>
+    </>
   );
 }
