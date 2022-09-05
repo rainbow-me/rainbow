@@ -9,7 +9,7 @@ import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';
-import { useAccountSettings, useCoinListEdited } from '@rainbow-me/hooks';
+import { useAccountSettings, useCoinListEdited } from '@/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
 

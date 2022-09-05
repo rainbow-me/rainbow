@@ -28,9 +28,9 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
-import { analytics } from '@rainbow-me/analytics';
-import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
+import { analytics } from '@/analytics';
+import { addHexPrefix } from '@/handlers/web3';
+import { CurrencySelectionTypes, Network } from '@/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
@@ -39,20 +39,14 @@ import {
   usePrevious,
   useSwapCurrencies,
   useSwapCurrencyList,
-} from '@rainbow-me/hooks';
-import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
-import {
-  getActiveRoute,
-  useNavigation,
-} from '@rainbow-me/navigation/Navigation';
-import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@rainbow-me/redux/explorer';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { ethereumUtils, filterList } from '@rainbow-me/utils';
+} from '@/hooks';
+import { delayNext } from '@/hooks/useMagicAutofocus';
+import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { ethereumUtils, filterList } from '@/utils';
 
 const storage = new MMKV();
 const getHasShownWarning = () =>
@@ -512,6 +506,7 @@ export default function CurrencySelectModal() {
                 colors={colors}
                 currentChainId={currentChainId}
                 setCurrentChainId={setCurrentChainId}
+                testID="currency-select-network-switcher"
               />
             )}
             {type === null || type === undefined ? null : (

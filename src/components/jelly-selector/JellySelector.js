@@ -7,7 +7,7 @@ import {
   JellySelectorColorIndicator,
   JellySelectorIndicator,
 } from './jelly-selector-indicator';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@/utils';
 
 const springConfig = {
   damping: 38,

@@ -3,9 +3,9 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Text } from '../text';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { ThemeContextProps } from '@/theme';
 
 const FontSizeMultiple = 0.24;
 const HeightMultiple = 0.288;

@@ -9,24 +9,24 @@ import {
   EthereumAddress,
   RainbowToken,
   UniswapFavoriteTokenData,
-} from '@rainbow-me/entities';
-import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
+} from '@/entities';
+import { getUniswapV2Tokens } from '@/handlers/dispersion';
 import {
   getUniswapFavorites,
   getUniswapFavoritesMetadata as getUniswapFavoritesMetadataLS,
   saveUniswapFavorites,
   saveUniswapFavoritesMetadata,
-} from '@rainbow-me/handlers/localstorage/uniswap';
-import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/localstorage/uniswap';
+import { getTestnetUniswapPairs } from '@/handlers/uniswap';
+import { Network } from '@/helpers/networkTypes';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
   ETH_ADDRESS,
   rainbowTokenList,
   WETH_ADDRESS,
-} from '@rainbow-me/references';
-import logger from 'logger';
+} from '@/references';
+import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
 

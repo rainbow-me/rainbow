@@ -1,6 +1,6 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { DeviceDimensions } from '@rainbow-me/hooks';
-import { Colors } from '@rainbow-me/styles';
+import { DeviceDimensions } from '@/hooks';
+import { Colors } from '@/styles';
 
 export interface HoldToAuthorizeBaseProps {
   backgroundColor: string;

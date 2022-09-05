@@ -3,10 +3,10 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { fonts } from '@rainbow-me/styles';
+import { useColorForAsset } from '@/hooks';
+import { supportedNativeCurrencies } from '@/references';
+import styled from '@/styled-thing';
+import { fonts } from '@/styles';
 
 const CurrencySymbol = styled(Text).attrs(({ height, color }) => ({
   color: color,
@@ -35,11 +35,17 @@ const ExchangeNativeField = (
     onFocus,
     setNativeAmount,
     updateOnFocus,
+    mainnetAddress,
+    type,
     testID,
   },
   ref
 ) => {
-  const colorForAsset = useColorForAsset({ address });
+  const colorForAsset = useColorForAsset({
+    address,
+    mainnet_address: mainnetAddress,
+    type,
+  });
   const [value, setValue] = useState(nativeAmount);
 
   const { mask, placeholder, symbol } = supportedNativeCurrencies[

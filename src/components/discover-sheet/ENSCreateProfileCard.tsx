@@ -5,7 +5,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
 import ImgixImage from '../images/ImgixImage';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
   Box,
@@ -18,16 +18,16 @@ import {
   Text,
   useColorMode,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   prefetchENSAvatar,
   prefetchENSRecords,
   useAccountENSDomains,
   useWallets,
-} from '@rainbow-me/hooks';
-import { ensIntroMarqueeNames } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { watchingAlert } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ensIntroMarqueeNames } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { watchingAlert } from '@/utils';
 
 const CARD_BORDER_WIDTH = 0.25;
 
@@ -64,7 +64,7 @@ export default function ENSCreateProfileCard() {
     () => ({
       borderColor: `rgba(0, 0, 0, ${colorMode === 'dark' ? '0' : '0.1'})`,
       borderWidth: CARD_BORDER_WIDTH,
-      overflow: 'hidden' as 'hidden',
+      overflow: 'hidden' as const,
     }),
     [colorMode]
   );
@@ -141,10 +141,18 @@ export default function ENSCreateProfileCard() {
                     space="12px"
                   >
                     <Stack space={{ custom: 13 }}>
-                      <Heading color="primary" size="20px" weight="bold">
+                      <Heading
+                        color="primary"
+                        size="20px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {lang.t('discover.ens_create_profile.title')}
                       </Heading>
-                      <Text color="secondary60" size="15px" weight="semibold">
+                      <Text
+                        color="secondary60"
+                        size="15px / 21px (Deprecated)"
+                        weight="semibold"
+                      >
                         {lang.t('discover.ens_create_profile.body')}
                       </Text>
                     </Stack>
@@ -153,7 +161,7 @@ export default function ENSCreateProfileCard() {
                         <Heading
                           align="right"
                           color="primary"
-                          size="20px"
+                          size="20px / 22px (Deprecated)"
                           weight="bold"
                         >
                           􀜍

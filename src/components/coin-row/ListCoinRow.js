@@ -5,10 +5,10 @@ import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { ethereumUtils, magicMemo } from '@rainbow-me/utils';
+import { useAccountSettings } from '@/hooks';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { ethereumUtils, magicMemo } from '@/utils';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;

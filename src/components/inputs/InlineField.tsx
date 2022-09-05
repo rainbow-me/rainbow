@@ -11,11 +11,13 @@ import {
   Inline,
   Inset,
   Text,
+  TextProps,
   useTextStyle,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
 
-const textSize = 16;
+const textSize: TextProps['size'] = '16px / 22px (Deprecated)';
+const textSizeNumeric = 16;
 
 export type InlineFieldProps = {
   autoFocus?: TextInputProps['autoFocus'];
@@ -60,16 +62,16 @@ export default function InlineField({
   const { width } = useDimensions();
 
   const paddingVertical = 17;
-  const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
+  const textStyle = useTextStyle({ size: textSize, weight: 'bold' });
 
-  const [inputHeight, setInputHeight] = useState(textSize);
+  const [inputHeight, setInputHeight] = useState(textSizeNumeric);
   const handleContentSizeChange = useCallback(({ nativeEvent }) => {
     const contentHeight =
-      nativeEvent.contentSize.height - textSize - paddingVertical;
+      nativeEvent.contentSize.height - textSizeNumeric - paddingVertical;
     if (contentHeight > 30) {
       setInputHeight(contentHeight);
     } else {
-      setInputHeight(textSize);
+      setInputHeight(textSizeNumeric);
     }
   }, []);
 
@@ -117,18 +119,21 @@ export default function InlineField({
               {...(errorMessage && {
                 color: { custom: colors.red },
               })}
-              size={`${textSize}px`}
+              size={textSize}
               weight="heavy"
             >
               {label}
             </Text>
             {errorMessage && (
               <Bleed space="10px">
-                <ButtonPressAnimation onPress={() => Alert.alert(errorMessage)}>
+                <ButtonPressAnimation
+                  onPress={() => Alert.alert(errorMessage)}
+                  testID={`${testID}-error`}
+                >
                   <Inset space="10px">
                     <Text
                       color={{ custom: colors.red }}
-                      size={`${textSize}px`}
+                      size={textSize}
                       weight="heavy"
                     >
                       􀇿
@@ -144,7 +149,11 @@ export default function InlineField({
         <Inline alignVertical="center" space="2px" wrap={false}>
           {startsWith && (
             <Inset top={ios ? '2px' : '1px'}>
-              <Text color="secondary30" weight="heavy">
+              <Text
+                color="secondary30"
+                size="16px / 22px (Deprecated)"
+                weight="heavy"
+              >
                 {startsWith}
               </Text>
             </Inset>

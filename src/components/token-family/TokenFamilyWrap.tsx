@@ -3,9 +3,9 @@ import { View } from 'react-native';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
-import { times } from '@rainbow-me/helpers/utilities';
-import { useTimeout } from '@rainbow-me/hooks';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { times } from '@/helpers/utilities';
+import { useTimeout } from '@/hooks';
+import { ThemeContextProps } from '@/theme';
 
 type Props = {
   childrenAmount: number;

@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
@@ -10,7 +9,7 @@ export const basicUsage: Example = {
   Example: () =>
     source(
       <DebugLayout>
-        <Text>Debug</Text>
+        <Text size="17pt">Debug</Text>
       </DebugLayout>
     ),
 };

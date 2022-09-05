@@ -59,7 +59,7 @@ const Home: NextPage = () => {
       })}
     >
       <Stack space="40px">
-        <Heading size="32px">
+        <Heading size="32px" weight="heavy">
           🌈🎨 Rainbow Design System Cheat Sheet 🎨🌈
         </Heading>
         <Text>
@@ -84,14 +84,14 @@ const Home: NextPage = () => {
             </Text>
             <Text>
               It&apos;s recommended that all code importing from{' '}
-              <Code>@rainbow-me/design-system</Code> is written in TypeScript so
-              that API changes are picked up.
+              <Code>@/design-system</Code> is written in TypeScript so that API
+              changes are picked up.
             </Text>
           </Stack>
         </Blockquote>
         {orderedDocsByCategory.map(([categoryName, subCategories], i) => (
           <Stack key={i} space="16px">
-            <Heading>{categoryName}</Heading>
+            <Heading weight="heavy">{categoryName}</Heading>
             <div>
               {subCategories.map((docs, i) => {
                 return <DocsAccordion key={i} {...docs} />;

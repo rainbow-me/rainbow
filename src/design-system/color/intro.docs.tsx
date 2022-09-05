@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 
 import { Box } from '../components/Box/Box';
@@ -24,7 +23,13 @@ const docs: DocsType = {
         For example, let&apos;s assume we have the following piece of text:
       </Docs.Text>
       <Docs.CodePreview
-        Example={() => source(<Text color="secondary50">Lorem ipsum</Text>)}
+        Example={() =>
+          source(
+            <Text color="secondary50" size="17pt">
+              Lorem ipsum
+            </Text>
+          )
+        }
         disableActions
         showCode
       />
@@ -41,10 +46,14 @@ const docs: DocsType = {
           source(
             <>
               <Box background="swap" padding="19px">
-                <Text color="secondary50">Lorem ipsum</Text>
+                <Text color="secondary50" size="17pt">
+                  Lorem ipsum
+                </Text>
               </Box>
               <Box background="action" padding="19px">
-                <Text color="secondary50">Lorem ipsum</Text>
+                <Text color="secondary50" size="17pt">
+                  Lorem ipsum
+                </Text>
               </Box>
             </>
           )

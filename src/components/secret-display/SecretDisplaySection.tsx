@@ -14,15 +14,13 @@ import { BiometricButtonContent, Button } from '../buttons';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import SecretDisplayCard from './SecretDisplayCard';
-import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
-import WalletTypes, {
-  EthereumWalletType,
-} from '@rainbow-me/helpers/walletTypes';
-import { useWallets } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { margin, position, shadow } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
-import logger from 'logger';
+import { Box, Inline, Stack, Text } from '@/design-system';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import { useWallets } from '@/hooks';
+import styled from '@/styled-thing';
+import { margin, position, shadow } from '@/styles';
+import { useTheme } from '@/theme';
+import logger from '@/utils/logger';
 
 const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }: any) => ({
   color: colors.appleBlue,
@@ -105,7 +103,12 @@ export default function SecretDisplaySection({
           paddingHorizontal="60px"
         >
           <Stack space="10px">
-            <Text align="center" color="secondary" size="18px" weight="regular">
+            <Text
+              align="center"
+              color="secondary"
+              size="18px / 27px (Deprecated)"
+              weight="regular"
+            >
               {lang.t('back_up.secret.you_need_to_authenticate', {
                 typeName: typeLabel,
               })}
@@ -125,9 +128,19 @@ export default function SecretDisplaySection({
       );
     } else {
       return (
-        <Text align="center" color="secondary60" size="16px">
-          {lang.t('back_up.secret.biometrically_secured')}
-        </Text>
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          paddingHorizontal="60px"
+        >
+          <Text
+            align="center"
+            color="secondary60"
+            size="16px / 22px (Deprecated)"
+          >
+            {lang.t('back_up.secret.biometrically_secured')}
+          </Text>
+        </Box>
       );
     }
   }, [isRecoveryPhraseVisible, typeLabel, loadSeed, colors.white, seed]);
@@ -147,7 +160,11 @@ export default function SecretDisplaySection({
                 <CopyFloatingEmojis textToCopy={seed}>
                   <Inline alignVertical="center" space="6px">
                     <CopyButtonIcon />
-                    <Text color="action" size="16px" weight="bold">
+                    <Text
+                      color="action"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       {lang.t('back_up.secret.copy_to_clipboard')}
                     </Text>
                   </Inline>
@@ -156,13 +173,17 @@ export default function SecretDisplaySection({
               <Stack alignHorizontal="center" space="19px">
                 {/* @ts-ignore */}
                 <SecretDisplayCard seed={seed} type={type} />
-                <Text containsEmoji size="16px" weight="bold">
+                <Text
+                  containsEmoji
+                  size="16px / 22px (Deprecated)"
+                  weight="bold"
+                >
                   👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
                 </Text>
                 <Text
                   align="center"
                   color="secondary60"
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="semibold"
                 >
                   {lang.t('back_up.secret.anyone_who_has_these')}

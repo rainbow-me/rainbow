@@ -23,17 +23,17 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountENSDomains,
   useDimensions,
   useENSAvatar,
   useENSRecords,
   useENSRegistration,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -49,10 +49,10 @@ export default function ENSIntroSheet() {
   const { params } = useRoute<any>();
 
   const {
+    controlledDomains,
     isLoading,
     isFetched,
     nonPrimaryDomains,
-    ownedDomains,
     uniqueDomain,
   } = useAccountENSDomains();
   const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {
@@ -159,10 +159,19 @@ export default function ENSIntroSheet() {
             <Row>
               <Stack space={{ custom: isSmallPhone ? 30 : 38 }}>
                 <Stack alignHorizontal="center" space={{ custom: 17 }}>
-                  <Heading align="center" size="34px">
+                  <Heading
+                    align="center"
+                    size="34px / 41px (Deprecated)"
+                    weight="heavy"
+                  >
                     {lang.t('profiles.intro.create_your')}
                   </Heading>
-                  <Heading align="center" color="action" size="34px">
+                  <Heading
+                    align="center"
+                    color="action"
+                    size="34px / 41px (Deprecated)"
+                    weight="heavy"
+                  >
                     {lang.t('profiles.intro.ens_profile')}
                   </Heading>
                 </Stack>
@@ -222,7 +231,7 @@ export default function ENSIntroSheet() {
                   )}
                   {isFetched && (
                     <>
-                      {ownedDomains?.length === 0 ? (
+                      {controlledDomains?.length === 0 ? (
                         <Inset bottom={android ? '10px' : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}
@@ -338,7 +347,12 @@ function InfoRow({
                 paddingTop: '6px',
               })}
             >
-              <Heading align="center" color="action" size="28px" weight="bold">
+              <Heading
+                align="center"
+                color="action"
+                size="28px / 33px (Deprecated)"
+                weight="bold"
+              >
                 {icon}
               </Heading>
             </Box>
@@ -358,8 +372,14 @@ function InfoRow({
       </Column>
       <Bleed top="3px">
         <Stack space="12px">
-          <Text weight="bold">{title}</Text>
-          <Text color="secondary60" size="14px" weight="medium">
+          <Text size="16px / 22px (Deprecated)" weight="bold">
+            {title}
+          </Text>
+          <Text
+            color="secondary60"
+            size="14px / 19px (Deprecated)"
+            weight="medium"
+          >
             {description}
           </Text>
         </Stack>

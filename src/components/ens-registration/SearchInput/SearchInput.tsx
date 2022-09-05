@@ -12,8 +12,8 @@ import {
   Heading,
   Inset,
   useHeadingStyle,
-} from '@rainbow-me/design-system';
-import { useDimensions, useMagicAutofocus } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions, useMagicAutofocus } from '@/hooks';
 
 export type SearchInputProps = {
   isLoading?: boolean;
@@ -35,7 +35,10 @@ const SearchInput = ({
   testID,
 }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
-  const headingStyle = useHeadingStyle({ size: '30px', weight: 'heavy' });
+  const headingStyle = useHeadingStyle({
+    size: '30px / 34px (Deprecated)',
+    weight: 'heavy',
+  });
 
   const inputRef = useRef();
   const { handleFocus } = useMagicAutofocus(
@@ -110,7 +113,7 @@ const SearchInput = ({
                         <Spinner duration={1000} size={28} />
                       </Box>
                     ) : (
-                      <Heading size="30px" weight="heavy">
+                      <Heading size="30px / 34px (Deprecated)" weight="heavy">
                         􀊫
                       </Heading>
                     )}
@@ -146,7 +149,11 @@ const SearchInput = ({
               value={value}
             />
             <Column width="content">
-              <Heading align="right" size="30px" weight="heavy">
+              <Heading
+                align="right"
+                size="30px / 34px (Deprecated)"
+                weight="heavy"
+              >
                 .eth
               </Heading>
             </Column>

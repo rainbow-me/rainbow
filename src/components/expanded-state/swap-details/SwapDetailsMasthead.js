@@ -1,8 +1,8 @@
 import React from 'react';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
-import { Bleed, Box, Columns, Cover, Text } from '@rainbow-me/design-system';
-import { useSwapCurrencies } from '@rainbow-me/hooks';
+import { Bleed, Box, Columns, Cover, Text } from '@/design-system';
+import { useSwapCurrencies } from '@/hooks';
 
 const containerPaddingTop = 34;
 export const SwapDetailsMastheadHeight =
@@ -11,11 +11,19 @@ export const SwapDetailsMastheadHeight =
 const DoubleChevron = () => (
   <Cover alignHorizontal="center" alignVertical="center">
     <RowWithMargins>
-      <Text color="secondary60" weight="semibold">
+      <Text
+        color="secondary60"
+        size="16px / 22px (Deprecated)"
+        weight="semibold"
+      >
         􀯻
       </Text>
       <Bleed left="6px">
-        <Text color="secondary40" weight="semibold">
+        <Text
+          color="secondary40"
+          size="16px / 22px (Deprecated)"
+          weight="semibold"
+        >
           􀯻
         </Text>
       </Bleed>

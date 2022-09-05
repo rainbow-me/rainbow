@@ -4,9 +4,9 @@ import { exec } from 'child_process';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
-import registrarABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
-import publicResolverABI from '@rainbow-me/references/ens/ENSPublicResolver.json';
-import registryWithFallbackABI from '@rainbow-me/references/ens/ENSRegistryWithFallback.json';
+import registrarABI from '@/references/ens/ENSETHRegistrarController.json';
+import publicResolverABI from '@/references/ens/ENSPublicResolver.json';
+import registryWithFallbackABI from '@/references/ens/ENSRegistryWithFallback.json';
 
 const ensETHRegistrarControllerAddress =
   '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
@@ -22,8 +22,21 @@ const RAINBOW_WALLET_NAME = 'rainbowwallet.eth';
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const RECORD_BIO = 'my bio';
 const RECORD_NAME = 'random';
+const RECORD_TWITTER = 'twitter123';
+const RECORD_EMAIL = 'abc@abc.com';
+const RECORD_INSTAGRAM = 'insta123';
+const RECORD_DISCORD = 'abc#8133';
+const RECORD_GITHUB = 'github123';
+const RECORD_SNAPCHAT = 'snapchat123';
+const RECORD_TELEGRAM = 'telegram123';
+const RECORD_REDDIT = 'reddit123';
+const RECORD_PRONOUNS = 'they/them';
+const RECORD_NOTICE = 'notice123';
+const RECORD_KEYWORDS = 'keywords123';
+const RECORD_URL = 'abc123.com';
 const EIP155_FORMATTED_AVATAR_RECORD =
   'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227';
+const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
 
 const address = (address, start, finish) =>
   [
@@ -61,13 +74,47 @@ const getRecords = async ensName => {
     provider
   );
   const hashName = hash(ensName);
-  const description = await publicResolver.text(hashName, 'description');
-  const displayName = await publicResolver.text(
-    hashName,
-    'me.rainbow.displayName'
-  );
-  const avatar = await publicResolver.text(hashName, 'avatar');
-  return { avatar, description, displayName };
+  const [
+    avatar,
+    description,
+    name,
+    url,
+    twitter,
+    email,
+    instagram,
+    discord,
+    github,
+    snapchat,
+    telegram,
+    reddit,
+  ] = await Promise.all([
+    publicResolver.text(hashName, 'avatar'),
+    publicResolver.text(hashName, 'description'),
+    publicResolver.text(hashName, 'name'),
+    publicResolver.text(hashName, 'url'),
+    publicResolver.text(hashName, 'com.twitter'),
+    publicResolver.text(hashName, 'email'),
+    publicResolver.text(hashName, 'com.instagram'),
+    publicResolver.text(hashName, 'com.discord'),
+    publicResolver.text(hashName, 'com.github'),
+    publicResolver.text(hashName, 'com.snapchat'),
+    publicResolver.text(hashName, 'org.telegram'),
+    publicResolver.text(hashName, 'com.reddit'),
+  ]);
+  return {
+    avatar,
+    description,
+    discord,
+    email,
+    github,
+    instagram,
+    name,
+    reddit,
+    snapchat,
+    telegram,
+    twitter,
+    url,
+  };
 };
 
 const resolveName = async ensName => {
@@ -170,6 +217,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
@@ -233,16 +281,12 @@ describe('Register ENS Flow', () => {
   it('Should go to view to set records', async () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
-    await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
-    await Helpers.typeText(
-      'ens-text-record-me.rainbow.displayName',
-      RECORD_NAME,
-      false
-    );
+    await Helpers.checkIfVisible('ens-text-record-name');
+    await Helpers.typeText('ens-text-record-name', RECORD_NAME, false);
     await Helpers.tapByText('Got it');
     await Helpers.checkIfVisible('ens-text-record-description');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
-    await Helpers.clearField('ens-text-record-me.rainbow.displayName');
+    await Helpers.clearField('ens-text-record-name');
     await Helpers.waitAndTap('use-select-image-avatar');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
@@ -278,12 +322,9 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the bio record is set', async () => {
-    const { description, displayName, avatar } = await getRecords(
-      RANDOM_NAME_ETH
-    );
+    const { description, name, avatar } = await getRecords(RANDOM_NAME_ETH);
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
-    if (displayName === RECORD_NAME)
-      throw new Error('ENS displayName is wrong');
+    if (name === RECORD_NAME) throw new Error('ENS name is wrong');
     if (avatar !== EIP155_FORMATTED_AVATAR_RECORD)
       throw new Error('ENS avatar is wrong');
   });
@@ -350,10 +391,263 @@ describe('Register ENS Flow', () => {
       `change-wallet-address-row-label-${RAINBOW_TEST_WALLET_NAME}`
     );
     await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should open the View Profile Sheet after tapping "View Profile"', async () => {
+    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+    await Helpers.checkIfExistsByText('View Profile');
+    await Helpers.tapByText('View Profile');
+    await Helpers.checkIfExists('profile-sheet');
+    await Helpers.checkIfExistsByText('rainbowtestwallet.eth');
+    await Helpers.checkIfExistsByText('Test 2');
+    await Helpers.swipe('profile-sheet', 'down');
+  });
+
+  it('Should open the Edit Profile Sheet after tapping "Edit Profile"', async () => {
+    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+    await Helpers.checkIfExistsByText('Edit Profile');
+    await Helpers.tapByText('Edit Profile');
+    await Helpers.checkIfExists('ens-edit-records-sheet');
+    await Helpers.checkIfExistsByText('rainbowtestwallet.eth');
+    await Helpers.checkIfExistsByText('Name');
+    await Helpers.checkIfExistsByText('Bio');
+  });
+
+  it('Should select ENS attributes in the Edit Profile Sheet', async () => {
+    // Select all the attributes
+    await Helpers.waitAndTap('ens-selectable-attribute-website');
+    await Helpers.waitAndTap('ens-selectable-attribute-twitter');
+    await Helpers.waitAndTap('ens-selectable-attribute-email');
+    await Helpers.waitAndTap('ens-selectable-attribute-instagram');
+    await Helpers.waitAndTap('ens-selectable-attribute-discord');
+    await Helpers.waitAndTap('ens-selectable-attribute-github');
+    await Helpers.waitAndTap('ens-selectable-attribute-btc');
+    await Helpers.waitAndTap('ens-selectable-attribute-dots');
+    await Helpers.waitAndTap('ens-selectable-attribute-snapchat');
+    await Helpers.waitAndTap('ens-selectable-attribute-telegram');
+    await Helpers.waitAndTap('ens-selectable-attribute-reddit');
+    await Helpers.waitAndTap('ens-selectable-attribute-pronouns');
+    await Helpers.waitAndTap('ens-selectable-attribute-notice');
+    await Helpers.waitAndTap('ens-selectable-attribute-keywords');
+    await Helpers.waitAndTap('ens-selectable-attribute-ltc');
+    await Helpers.waitAndTap('ens-selectable-attribute-doge');
+    await Helpers.waitAndTap('ens-selectable-attribute-content');
+
+    // Dismiss the bottom attribute sheet
+    await Helpers.swipe('ens-additional-records-sheet', 'down');
+
+    // Validate that the fields are there
+    await Helpers.checkIfExistsByText('Website');
+    await Helpers.checkIfExistsByText('Twitter');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.checkIfExistsByText('Email');
+    await Helpers.checkIfExistsByText('Instagram');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.checkIfExistsByText('Discord');
+    await Helpers.checkIfExistsByText('GitHub');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.checkIfExistsByText('Bitcoin');
+    await Helpers.checkIfExistsByText('Snapchat');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.checkIfExistsByText('Telegram');
+    await Helpers.checkIfExistsByText('Reddit');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.checkIfExistsByText('Pronouns');
+    await Helpers.checkIfExistsByText('Notice');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.checkIfExistsByText('Keywords');
+    await Helpers.checkIfExistsByText('Litecoin');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.checkIfExistsByText('Dogecoin');
+    await Helpers.checkIfExistsByText('Content');
+    await Helpers.swipe('ens-edit-records-sheet', 'down');
+  });
+
+  it('Should fill & validate the fields', async () => {
+    // Fill "Website" field
+    await Helpers.checkIfVisible('ens-text-record-url');
+    await Helpers.typeText('ens-text-record-url', 'abc', false);
+    await Helpers.waitAndTap('ens-text-record-url-error');
+    await Helpers.checkIfElementByTextToExist('Invalid URL');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText('ens-text-record-url', '123.com', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfNotVisible('ens-text-record-url-error');
+
+    // Fill "Twitter" field
+    await Helpers.typeText(
+      'ens-text-record-com.twitter',
+      RECORD_TWITTER,
+      false
+    );
+
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+
+    // Fill "Email" field
+    await Helpers.typeText(
+      'ens-text-record-email',
+      RECORD_EMAIL.slice(0, 3),
+      false
+    );
+    await Helpers.waitAndTap('ens-text-record-email-error');
+    await Helpers.checkIfElementByTextToExist('Invalid email');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText(
+      'ens-text-record-email',
+      RECORD_EMAIL.slice(3),
+      false
+    );
+    await Helpers.delay(1000);
+    await Helpers.checkIfNotVisible('ens-text-record-email-error');
+
+    // Fill "Instagram" field
+    await Helpers.typeText(
+      'ens-text-record-com.instagram',
+      RECORD_INSTAGRAM,
+      false
+    );
+
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+
+    // Fill "Discord" field
+    await Helpers.typeText(
+      'ens-text-record-com.discord',
+      RECORD_DISCORD.slice(0, 3),
+      false
+    );
+    await Helpers.waitAndTap('ens-text-record-com.discord-error');
+    await Helpers.checkIfElementByTextToExist('Invalid Discord username');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText(
+      'ens-text-record-com.discord',
+      RECORD_DISCORD.slice(3),
+      false
+    );
+    await Helpers.delay(1000);
+    await Helpers.checkIfNotVisible('ens-text-record-com.discord-error');
+
+    // Fill "GitHub" field
+    await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB, false);
+
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+  });
+
+  it('Should fill & validate the fields 2', async () => {
+    // Fill "Bitcoin" field
+    await Helpers.typeText('ens-text-record-BTC', '1F1', false);
+    await Helpers.waitAndTap('ens-text-record-BTC-error');
+    await Helpers.checkIfElementByTextToExist('Invalid BTC address');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText(
+      'ens-text-record-BTC',
+      'tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX',
+      false
+    );
+    await Helpers.delay(3000);
+    await Helpers.checkIfNotVisible('ens-text-record-BTC-error');
+
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+
+    // Fill "Snapchat" field
+    await Helpers.typeText(
+      'ens-text-record-com.snapchat',
+      RECORD_SNAPCHAT,
+      false
+    );
+
+    // Fill "Telegram" field
+    await Helpers.typeText(
+      'ens-text-record-org.telegram',
+      RECORD_TELEGRAM,
+      false
+    );
+
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+
+    // Fill "Reddit" field
+    await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT, false);
+
+    // Fill "Pronouns" field
+    await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS, false);
+
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+
+    // Fill "Notice" field
+    await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE, false);
+
+    // Fill "Keywords" field
+    await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS, false);
+
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+
+    // Fill "Litecoin" field
+    await Helpers.typeText('ens-text-record-LTC', 'MGx', false);
+    await Helpers.waitAndTap('ens-text-record-LTC-error');
+    await Helpers.checkIfElementByTextToExist('Invalid LTC address');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText(
+      'ens-text-record-LTC',
+      'NPPB7eBoWPUaprtX9v9CXJZoD2465zN',
+      false
+    );
+    await Helpers.delay(3000);
+    await Helpers.checkIfNotVisible('ens-text-record-LTC-error');
+  });
+
+  it('Should unselect a field', async () => {
+    await Helpers.swipe('ens-edit-records-sheet', 'down');
+    await Helpers.waitAndTap('hide-keyboard-button');
+    await Helpers.waitAndTap('ens-selectable-attribute-bio');
+    await Helpers.checkIfNotVisible('ens-text-record-description');
+  });
+
+  it('Should update a field', async () => {
+    await Helpers.typeText('ens-text-record-name', ' Guy', false);
+    await Helpers.waitAndTap('hide-keyboard-button');
+  });
+
+  it('Should submit updated fields', async () => {
+    await Helpers.checkIfVisible('ens-assign-records-review-action-button');
+    await Helpers.waitAndTap('ens-assign-records-review-action-button');
+    await Helpers.checkIfVisible(`ens-transaction-action-EDIT`);
+    await Helpers.waitAndTap(`ens-transaction-action-EDIT`);
+  });
+
+  it('Should confirm the update was successful', async () => {
+    const {
+      description,
+      discord,
+      email,
+      github,
+      instagram,
+      reddit,
+      snapchat,
+      telegram,
+      twitter,
+      url,
+    } = await getRecords(RAINBOW_TEST_WALLET_NAME);
+    if (description) throw new Error('description should be empty');
+    if (discord !== RECORD_DISCORD)
+      throw new Error('discord is incorrect.', discord);
+    if (email !== RECORD_EMAIL) throw new Error('email is incorrect.', email);
+    if (github !== RECORD_GITHUB)
+      throw new Error('github is incorrect.', github);
+    if (instagram !== RECORD_INSTAGRAM)
+      throw new Error('instagram is incorrect.', instagram);
+    if (reddit !== RECORD_REDDIT)
+      throw new Error('reddit is incorrect.', reddit);
+    if (snapchat !== RECORD_SNAPCHAT)
+      throw new Error('snapchat is incorrect.', snapchat);
+    if (telegram !== RECORD_TELEGRAM)
+      throw new Error('telegram is incorrect.', telegram);
+    if (twitter !== RECORD_TWITTER)
+      throw new Error('twitter is incorrect.', twitter);
+    if (url !== RECORD_URL) throw new Error('url is incorrect.', url);
   });
 
   it('Should navigate to the Wallet screen to renew', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
   });
 
@@ -399,7 +693,7 @@ describe('Register ENS Flow', () => {
 
   it('Should confirm the ENS was sent correctly', async () => {
     await Helpers.delay(1000);
-    const { displayName } = await getRecords(RAINBOW_TEST_WALLET_NAME);
+    const { name } = await getRecords(RAINBOW_TEST_WALLET_NAME);
     const { address, primaryName } = await resolveName(
       RAINBOW_TEST_WALLET_NAME
     );
@@ -408,7 +702,7 @@ describe('Register ENS Flow', () => {
       throw new Error('Resolved address is wrong');
     if (primaryName !== RAINBOW_WALLET_NAME)
       throw new Error('Resolved primary name is wrong');
-    if (displayName) throw new Error('me.rainbow.displayName name is wrong');
+    if (name) throw new Error('name is wrong');
     if (owner !== RAINBOW_WALLET_ADDRESS)
       throw new Error('Owner not set correctly');
   });

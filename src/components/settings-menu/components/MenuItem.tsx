@@ -3,11 +3,11 @@ import { Source } from 'react-native-fast-image';
 import { ButtonPressAnimation } from '../../animations';
 import CheckmarkCircledIcon from '../../icons/svg/CheckmarkCircledIcon';
 import WarningIcon from '../../icons/svg/WarningIcon';
-import Chevron from '@rainbow-me/assets/chevronUpDown.png';
-import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
-import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
-import { useTheme } from '@rainbow-me/theme';
+import Chevron from '@/assets/chevronUpDown.png';
+import Caret from '@/assets/family-dropdown-arrow.png';
+import { Box, Inline, Stack, Text } from '@/design-system';
+import { ImgixImage } from '@/components/images';
+import { useTheme } from '@/theme';
 
 interface ImageIconProps {
   size?: number;
@@ -54,7 +54,7 @@ const TextIcon = ({
           : 'primary'
       }
       containsEmoji
-      size="18px"
+      size="18px / 27px (Deprecated)"
       weight="semibold"
     >
       {icon}
@@ -67,7 +67,7 @@ interface SelectionProps {
 }
 
 const Selection = ({ children }: SelectionProps) => (
-  <Text color="secondary60" size="18px" weight="semibold">
+  <Text color="secondary60" size="18px / 27px (Deprecated)" weight="semibold">
     {children}
   </Text>
 );
@@ -92,13 +92,15 @@ const StatusIcon = ({ status }: StatusIconProps) => {
       backgroundColor={statusColors[status]}
       color={statusColors[status]}
       colors={colors}
+      borderRadius={status !== 'warning' ? 6 : undefined}
       fillColor={colors.white}
       shadowColor={isDarkMode ? colors.shadow : statusColors[status]}
       shadowOffset={{
         height: 4,
         width: 0,
       }}
-      shadowOpacity={0.4}
+      elevation={12}
+      shadowOpacity={ios ? 0.4 : 1}
       shadowRadius={6}
     />
   );
@@ -115,7 +117,7 @@ const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
   <Text
     color={disabled ? 'secondary60' : isLink ? 'action' : 'primary'}
     containsEmoji
-    size="18px"
+    size="18px / 27px (Deprecated)"
     weight={weight}
   >
     {text}
@@ -132,7 +134,7 @@ const Label = ({ text, warn }: LabelProps) => {
   return (
     <Text
       color={warn ? { custom: colors.orangeLight } : 'secondary60'}
-      size="14px"
+      size="14px / 19px (Deprecated)"
       weight="medium"
     >
       {text}

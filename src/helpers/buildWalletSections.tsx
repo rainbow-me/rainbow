@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { compact, groupBy, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -16,15 +15,9 @@ import {
   buildUniqueTokenList,
 } from './assets';
 import networkTypes from './networkTypes';
-import {
-  add,
-  convertAmountToNativeDisplay,
-  flattenDeep,
-  multiply,
-} from './utilities';
+import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
-import { ImgixImage } from '@rainbow-me/images';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 const LOADING_ASSETS_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -407,66 +400,7 @@ const withBriefBalanceSection = (
   ];
 };
 
-let isPreloadComplete = false;
-const largeFamilyThreshold = 4;
-const jumboFamilyThreshold = largeFamilyThreshold * 2;
-const minTopFoldThreshold = 10;
-
-const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
-  const isLargeFamily = family.tokens.length > largeFamilyThreshold;
-  const isJumboFamily = family.tokens.length >= jumboFamilyThreshold;
-  const isTopFold = index < Math.max(families.length / 2, minTopFoldThreshold);
-
-  return family.tokens.map((token: any, rowIndex: any) => {
-    let priority = ImgixImage.priority[isTopFold ? 'high' : 'normal'];
-
-    if (isTopFold && isLargeFamily) {
-      if (rowIndex <= largeFamilyThreshold) {
-        priority = ImgixImage.priority.high;
-      } else if (isJumboFamily) {
-        const isMedium =
-          rowIndex > largeFamilyThreshold && rowIndex <= jumboFamilyThreshold;
-        // @ts-expect-error ts-migrate(2322) FIXME: Type '"normal" | "low"' is not assignable to type ... Remove this comment to see the full error message
-        priority = ImgixImage.priority[isMedium ? 'normal' : 'low'];
-      } else {
-        priority = ImgixImage.priority.normal;
-      }
-    }
-
-    const images = token.map(({ image_url, uniqueId }: any) => {
-      if (!image_url) return null;
-      return {
-        id: uniqueId,
-        priority,
-        uri: image_url,
-      };
-    });
-
-    return images.length ? images : null;
-  });
-};
-
-const sortImagesToPreload = (images: any) => {
-  const filtered = compact(flattenDeep(images));
-  const grouped = groupBy(filtered, property('priority'));
-  return [
-    ...(grouped?.high ?? []),
-    ...(grouped?.normal ?? []),
-    ...(grouped?.low ?? []),
-  ];
-};
-
 const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
-  // TODO preload elsewhere?
-  if (!isPreloadComplete) {
-    const imagesToPreload = sortImagesToPreload(
-      data.map(buildImagesToPreloadArray)
-    );
-    isPreloadComplete = !!imagesToPreload.length;
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(false | "" | 0 | null | undefin... Remove this comment to see the full error message
-    ImgixImage.preload(imagesToPreload, 200);
-  }
-
   return {
     collectibles: true,
     data,

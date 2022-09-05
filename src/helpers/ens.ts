@@ -14,9 +14,9 @@ import {
   handleSignificantDecimals,
   multiply,
 } from './utilities';
-import { ENSRegistrationRecords, EthereumAddress } from '@rainbow-me/entities';
-import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
-import { gweiToWei } from '@rainbow-me/parsers';
+import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
+import { getProviderForNetwork, toHex } from '@/handlers/web3';
+import { gweiToWei } from '@/parsers';
 import {
   ENSBaseRegistrarImplementationABI,
   ensBaseRegistrarImplementationAddress,
@@ -28,13 +28,10 @@ import {
   ENSRegistryWithFallbackABI,
   ENSReverseRegistrarABI,
   ensReverseRegistrarAddress,
-} from '@rainbow-me/references';
-import { colors } from '@rainbow-me/styles';
-import { labelhash } from '@rainbow-me/utils';
-import {
-  encodeContenthash,
-  isValidContenthash,
-} from '@rainbow-me/utils/contenthash';
+} from '@/references';
+import { colors } from '@/styles';
+import { labelhash } from '@/utils';
+import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
 
 export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;
@@ -59,6 +56,7 @@ export enum ENS_RECORDS {
   BTC = 'BTC',
   LTC = 'LTC',
   DOGE = 'DOGE',
+  name = 'name',
   displayName = 'me.rainbow.displayName',
   header = 'header',
   content = 'content',
@@ -113,19 +111,19 @@ export type TextRecordField = {
 };
 
 export const textRecordFields = {
-  [ENS_RECORDS.displayName]: {
+  [ENS_RECORDS.name]: {
     id: 'name',
     inputProps: {
       maxLength: 50,
     },
-    key: ENS_RECORDS.displayName,
+    key: ENS_RECORDS.name,
     label: lang.t('profiles.create.name'),
     placeholder: lang.t('profiles.create.name_placeholder'),
   },
   [ENS_RECORDS.description]: {
     id: 'bio',
     inputProps: {
-      maxLength: 100,
+      maxLength: 160,
       multiline: true,
     },
     key: ENS_RECORDS.description,
@@ -208,7 +206,7 @@ export const textRecordFields = {
       message: lang.t('profiles.create.invalid_username', {
         app: lang.t('profiles.create.discord'),
       }),
-      validator: value => /^([\w#.])*$/.test(value),
+      validator: value => /^(\w)+#[0-9]{4}$/.test(value),
     },
   },
   [ENS_RECORDS.github]: {
@@ -367,6 +365,12 @@ export const textRecordFields = {
   },
 } as {
   [key in ENS_RECORDS]?: TextRecordField;
+};
+
+export const deprecatedTextRecordFields = {
+  [ENS_RECORDS.displayName]: ENS_RECORDS.name,
+} as {
+  [key in ENS_RECORDS]: ENS_RECORDS;
 };
 
 export const ENS_DOMAIN = '.eth';

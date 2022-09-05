@@ -1,7 +1,7 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
-import { getHiddenTokens } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getPreference } from '@rainbow-me/model/preferences';
+import { getHiddenTokens } from '@/handlers/localstorage/accountLocal';
+import { getPreference } from '@/model/preferences';
 
 export const hiddenTokensQueryKey = ({ address }: { address?: string }) => [
   'hidden-tokens',
@@ -18,7 +18,7 @@ export default function useFetchHiddenTokens({
   return useQuery(
     hiddenTokensQueryKey({ address }),
     async () => {
-      if (!address) return;
+      if (!address) return [];
       let hiddenTokens = await getHiddenTokens(address, network);
       const hiddenTokensFromCloud = (await getPreference('hidden', address)) as
         | any
