@@ -127,10 +127,13 @@ export default function useWalletCloudBackup() {
       try {
         if (!latestBackup) {
           logger.log(`backing up to ${cloudPlatform}`, wallets![walletId]);
-          updatedBackupFile = await backupWalletToCloud(
-            fetchedPassword,
-            wallets![walletId]
-          );
+          updatedBackupFile = await backupWalletToCloud({
+            password: fetchedPassword,
+            wallet: wallets![walletId],
+            onBeforePINCreated: () => setIsWalletLoading(null),
+            onAfterPINCreated: () =>
+              setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET),
+          });
         } else {
           logger.log(
             `adding wallet to ${cloudPlatform} backup`,
