@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Records } from '@/entities';
 import { fetchCoinAddresses, fetchRecords } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';

@@ -102,7 +102,7 @@ export default function ENSAssignRecordsSheet() {
   const defaultFields = useMemo(
     () =>
       [
-        ENS_RECORDS.displayName,
+        ENS_RECORDS.name,
         ENS_RECORDS.description,
         ENS_RECORDS.url,
         ENS_RECORDS.twitter,
@@ -224,12 +224,17 @@ export default function ENSAssignRecordsSheet() {
                 <Heading
                   align="center"
                   numberOfLines={1}
-                  size="26px"
+                  size="26px / 30px (Deprecated)"
                   weight="heavy"
                 >
                   {abbreviateEnsForDisplay(name, 15)}
                 </Heading>
-                <Text align="center" color="accent" size="16px" weight="heavy">
+                <Text
+                  align="center"
+                  color="accent"
+                  size="16px / 22px (Deprecated)"
+                  weight="heavy"
+                >
                   {displayTitleLabel
                     ? lang.t(
                         `profiles.${
@@ -486,7 +491,12 @@ function HideKeyboardButton({ color }: { color: string }) {
           >
             <Cover alignHorizontal="center" alignVertical="center">
               <Box paddingTop={android ? '4px' : '2px'}>
-                <Text align="center" color="primary" size="14px" weight="heavy">
+                <Text
+                  align="center"
+                  color="primary"
+                  size="14px / 19px (Deprecated)"
+                  weight="heavy"
+                >
                   􀆈
                 </Text>
               </Box>

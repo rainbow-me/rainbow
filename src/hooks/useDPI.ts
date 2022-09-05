@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { emitAssetRequest } from '../redux/explorer';
 import { AppState } from '../redux/store';
@@ -21,7 +21,7 @@ export default function useDPI() {
     if (underlyingAddresses) {
       dispatch(emitAssetRequest(underlyingAddresses));
     }
-    return defiPulseData;
+    return defiPulseData ?? null;
   }, [dispatch]);
 
   const { data } = useQuery(['defiPulse'], fetchDPIData, {

@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
+import { useQuery } from '@tanstack/react-query';
 import keys from 'lodash/keys';
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
@@ -66,7 +66,7 @@ const useWalletBalances = (wallets: AllRainbowWallets) => {
 
   const resultFromStorage = queryClient.getQueryData<{
     [address: string]: string;
-  }>(WALLET_BALANCES_FROM_STORAGE);
+  }>([WALLET_BALANCES_FROM_STORAGE]);
 
   if (isEmpty(data) && !isEmpty(resultFromStorage)) {
     return resultFromStorage;
