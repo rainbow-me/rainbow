@@ -13,8 +13,8 @@ import {
 import { emitAssetRequest } from '@/redux/explorer';
 import { AppGetState, AppState } from '@/redux/store';
 import { uniswapUpdateFavorites } from '@/redux/uniswap';
-import { excludeSpecifiedStrings } from '@/helpers/utilities';
 import { DefaultTokenLists, TokenListsExtendedRecord } from '@/references';
+import { excludeSpecifiedStrings } from '@/helpers/utilities';
 
 // -- Constants ------------------------------------------------------------- //
 const USER_LISTS_READY = 'userLists/USER_LISTS_READY';
@@ -120,10 +120,9 @@ export const userListsLoadState = () => async (
   }
 };
 
-export const userListsSetSelectedList = (
-  listId: string,
-  save: boolean = true
-) => (dispatch: Dispatch<UserListsSetSelectedListAction>) => {
+export const userListsSetSelectedList = (listId: string, save = true) => (
+  dispatch: Dispatch<UserListsSetSelectedListAction>
+) => {
   dispatch({
     payload: listId,
     type: USER_LISTS_SET_SELECTED_LIST,

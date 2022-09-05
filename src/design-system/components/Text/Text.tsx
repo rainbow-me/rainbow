@@ -10,11 +10,19 @@ import {
 import { TextColor, textSizes, textWeights } from '../../typography/typography';
 import { useTextStyle } from './useTextStyle';
 
+export type TextSize = keyof typeof textSizes;
+
+export function selectTextSizes<SelectedTextSizes extends readonly TextSize[]>(
+  ...textSizes: SelectedTextSizes
+): SelectedTextSizes {
+  return textSizes;
+}
+
 export type TextProps = {
   align?: 'center' | 'left' | 'right';
   color?: TextColor | CustomColor;
   numberOfLines?: number;
-  size?: keyof typeof textSizes;
+  size: TextSize;
   tabularNumbers?: boolean;
   testID?: string;
   uppercase?: boolean;
@@ -27,9 +35,6 @@ export type TextProps = {
   | { containsEmoji?: false; children: ReactNode }
 );
 
-/**
- * @description Default size is `"16px"`
- */
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
   function Text(
     {

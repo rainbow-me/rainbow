@@ -272,11 +272,16 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const fetchPage = async (page: number, network: Network) => {
     let shouldStopFetching = false;
     try {
-      let newPageResults = await apiGetAccountUniqueTokens(
-        network,
-        accountAddress,
-        page
-      );
+      let newPageResults;
+      try {
+        newPageResults = await apiGetAccountUniqueTokens(
+          network,
+          accountAddress,
+          page
+        );
+      } catch (e) {
+        newPageResults = [];
+      }
 
       // If there are any "unknown" ENS names, fallback to the ENS
       // metadata service.

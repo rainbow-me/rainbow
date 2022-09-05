@@ -92,7 +92,7 @@ export default function TextRecordsForm({
                   placeholder={placeholder}
                   selectionColor={selectionColor}
                   shouldFormatText={
-                    key === ENS_RECORDS.displayName ||
+                    key === ENS_RECORDS.name ||
                     key === ENS_RECORDS.description ||
                     key === ENS_RECORDS.notice ||
                     key === ENS_RECORDS.keywords ||

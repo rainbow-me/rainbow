@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,11 +15,7 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "globals": [
-    "android",
-    "ios",
-    "web"
-  ],
+  "globals": ["android", "ios", "web"],
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -31,7 +23,5 @@
     "../../src/**/*.ts",
     "../../src/**/*.tsx"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
