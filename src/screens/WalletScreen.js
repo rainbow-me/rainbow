@@ -11,7 +11,6 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import { jumpToShort } from '@/components/discover-sheet/DiscoverSheet';
 import Navbar from '@/components/navbar/Navbar';
 import { Inline } from '@/design-system';
 import {
@@ -237,12 +236,11 @@ export default function WalletScreen() {
   }, [navigate]);
 
   const handlePressQRScanner = useCallback(() => {
-    jumpToShort();
     navigate(Routes.QR_SCANNER_SCREEN);
   }, [navigate]);
 
   const handlePressDiscover = useCallback(() => {
-    navigate(Routes.QR_SCANNER_SCREEN);
+    navigate(Routes.DISCOVER_SCREEN);
   }, [navigate]);
 
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
@@ -254,6 +252,7 @@ export default function WalletScreen() {
     <WalletPage testID="wallet-screen">
       <HeaderOpacityToggler isVisible={isCoinListEdited}>
         <Navbar
+          hasStatusBarInset
           leftComponent={
             <Navbar.Item onPress={handlePressActivity} testID="activity-button">
               <Navbar.TextIcon icon="􀐫" />

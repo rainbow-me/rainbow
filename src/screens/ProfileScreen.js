@@ -73,6 +73,7 @@ export default function ProfileScreen({ navigation }) {
   return (
     <ProfileScreenPage testID="profile-screen">
       <Navbar
+        hasStatusBarInset
         leftComponent={
           <Navbar.Item onPress={onPressSettings} testID="settings-button">
             <Navbar.TextIcon icon="􀣋" />

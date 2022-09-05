@@ -47,7 +47,7 @@ export default function DiscoverHeaderButton() {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
-  const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
+  const onPress = useCallback(() => navigate(Routes.DISCOVER_SCREEN), [
     navigate,
   ]);
 
