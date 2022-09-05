@@ -35,6 +35,8 @@ interface ExchangeNativeFieldProps {
   onFocus: ({ target }: { target: Element }) => void;
   setNativeAmount: (value: string | null) => void;
   updateOnFocus: boolean;
+  mainnetAddress?: string;
+  type?: string;
   testID: string;
 }
 
