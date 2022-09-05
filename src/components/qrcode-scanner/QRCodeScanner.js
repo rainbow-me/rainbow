@@ -38,28 +38,24 @@ const CameraState = {
   Waiting: 'waiting',
 };
 
-export default function QRCodeScanner({ enabled }: { enabled: boolean }) {
+export default function QRCodeScanner() {
   const cameraRef = useRef();
   const [cameraState, setCameraState] = useState(CameraState.Waiting);
   const { goBack } = useNavigation();
-
-  const isActive = enabled && cameraState === CameraState.Scanning;
 
   const hideCamera = useCallback(() => {
     goBack();
   }, [goBack]);
 
-  const { onScan } = useScanner(isActive, hideCamera);
+  const { onScan } = useScanner(
+    cameraState === CameraState.Scanning,
+    hideCamera
+  );
 
   // handle back button press on android
-  useHardwareBack(hideCamera, !enabled);
+  useHardwareBack(hideCamera);
 
   const askForPermissions = useCallback(async () => {
-    if (!enabled) {
-      setCameraState(CameraState.Waiting);
-      return;
-    }
-
     try {
       const permission = ios
         ? PERMISSIONS.IOS.CAMERA
@@ -89,7 +85,7 @@ export default function QRCodeScanner({ enabled }: { enabled: boolean }) {
       setCameraState(CameraState.Error);
       throw err;
     }
-  }, [enabled]);
+  }, []);
 
   useEffect(() => {
     askForPermissions();
@@ -105,20 +101,18 @@ export default function QRCodeScanner({ enabled }: { enabled: boolean }) {
         height={{ custom: deviceHeight }}
         marginTop={{ custom: -48 }}
       >
-        {enabled && (
-          <Box
-            as={RNCamera}
-            captureAudio={false}
-            onBarCodeRead={onScan}
-            onMountError={() => setCameraState(CameraState.Error)}
-            pendingAuthorizationView={null}
-            ref={cameraRef}
-            borderRadius={40}
-            width="full"
-            height={{ custom: deviceHeight }}
-            position="absolute"
-          />
-        )}
+        <Box
+          as={RNCamera}
+          captureAudio={false}
+          onBarCodeRead={onScan}
+          onMountError={() => setCameraState(CameraState.Error)}
+          pendingAuthorizationView={null}
+          ref={cameraRef}
+          borderRadius={40}
+          width="full"
+          height={{ custom: deviceHeight }}
+          position="absolute"
+        />
         <Rows>
           <Row>
             <Box
