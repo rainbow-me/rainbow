@@ -680,6 +680,15 @@
           "fragment3": " about our approach to routing swaps."
         }
       },
+      "wyre_degradation": {
+        "text": "Because of the ongoing Ethereum upgrade known as \"The Merge\", our partners have temporarily paused crypto purchasing to ensure safety of user funds.",
+        "title": "It's happening \nThe Merge is underway",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Learn more",
+          "fragment3": " about \"The Merge\"." 
+        }
+      },
       "slippage": {
         "text": "Slippage occurs when the price of a swap changes during the time between you submitting your transaction and its confirmation. \n\nSetting a higher slippage tolerance increases the likelihood your swap will be successful, but may result in you getting a worse price.",
         "title": "Slippage",
