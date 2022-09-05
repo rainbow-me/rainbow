@@ -31,6 +31,8 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@/utils';
+import config from '@/model/config';
+import logger from 'logger';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -82,6 +84,11 @@ export default function TransactionList({
   const onAddCashPress = useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
+      return;
+    }
+
+    if (!config.wyre_enabled) {
+      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
       return;
     }
 
@@ -172,7 +179,7 @@ export default function TransactionList({
       });
 
       if (hash) {
-        let buttons = [
+        const buttons = [
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
           blockExplorerAction,
@@ -324,7 +331,7 @@ export default function TransactionList({
         accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
-        addCashDegraded={true}
+        addCashDegraded={!config.wyre_enabled}
         as={NativeTransactionListView}
         avatarOptions={avatarOptions}
         darkMode={isDarkMode}

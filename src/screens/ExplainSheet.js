@@ -29,6 +29,7 @@ import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { cloudPlatformAccountName } from '@/utils/platform';
+import config from '@/model/config';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -485,6 +486,13 @@ export const explainers = (params, colors) => ({
       feePercentage: params?.feePercentage,
     }),
     title: 'Rainbow Fee',
+  },
+  wyre_degradation: {
+    emoji: config.wyre_degradation_data.emoji,
+    extraHeight: 40,
+    text: config.wyre_degradation_data.body,
+    title: config.wyre_degradation_data.title,
+    readMoreLink: config.wyre_degradation_data.link,
   },
   swapResetInputs: {
     button: {

@@ -19,6 +19,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import config from '@/model/config';
 
 const ContainerWidth = 261;
 
@@ -146,6 +147,10 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
       [0, 5, 15, colors.shadow, 0.2],
       [0, 10, 30, colors.purpleDark, 0.4],
     ],
+    [colors.lightGrey]: [
+      [0, 5, 15, colors.shadow, 0.2],
+      [0, 10, 30, colors.lightGrey, 0.4],
+    ],
   };
 
   return (
@@ -189,6 +194,10 @@ const AddFundsInterstitial = ({ network }) => {
       if (isDamaged) {
         showWalletErrorAlert();
         captureMessage('Damaged wallet preventing add cash');
+        return;
+      }
+      if (!config.wyre_enabled) {
+        navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
         return;
       }
       if (ios) {
@@ -244,20 +253,26 @@ const AddFundsInterstitial = ({ network }) => {
           <Row justify="space-between" marginVertical={30}>
             <AmountButton
               amount={100}
-              backgroundColor={colors.swapPurple}
-              color={colors.neonSkyblue}
+              backgroundColor={
+                config.wyre_enabled ? colors.swapPurple : colors.lightGrey
+              }
+              color={config.wyre_enabled ? colors.neonSkyblue : colors.white}
               onPress={handlePressAmount}
             />
             <AmountButton
               amount={200}
-              backgroundColor={colors.swapPurple}
-              color={colors.neonSkyblue}
+              backgroundColor={
+                config.wyre_enabled ? colors.swapPurple : colors.lightGrey
+              }
+              color={config.wyre_enabled ? colors.neonSkyblue : colors.white}
               onPress={handlePressAmount}
             />
             <AmountButton
               amount={300}
-              backgroundColor={colors.purpleDark}
-              color={colors.pinkLight}
+              backgroundColor={
+                config.wyre_enabled ? colors.purpleDark : colors.lightGrey
+              }
+              color={config.wyre_enabled ? colors.pinkLight : colors.white}
               onPress={handlePressAmount}
             />
           </Row>
