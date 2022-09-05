@@ -18,6 +18,7 @@ import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
+import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
@@ -115,6 +116,29 @@ const SmolAppIcon = () => {
     >
       <ImgixImage
         source={AppIconSmol}
+        style={{
+          width: 64,
+          height: 64,
+        }}
+      />
+    </Box>
+  );
+};
+
+const TheMergeIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <Box
+      style={{
+        shadowColor: colors.shadowBlack,
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={TheMergePng}
         style={{
           width: 64,
           height: 64,
@@ -723,8 +747,8 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.slippage.title'),
   },
   wyre_degradation: {
-    emoji: '🔀',
-    extraHeight: 40,
+    logo: <TheMergeIcon />,
+    extraHeight: 76,
     text: lang.t('explain.wyre_degradation.text'),
     title: lang.t('explain.wyre_degradation.title'),
     stillCurious: (
