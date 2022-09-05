@@ -30,7 +30,6 @@ import {
 import {
   useAccountProfile,
   useAccountSettings,
-  useLatestCallback,
   usePersistentDominantColorFromImage,
   useSwapCurrencyHandlers,
   useWallets,
@@ -38,12 +37,12 @@ import {
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
-import { showActionSheetWithOptions, watchingAlert } from '@/utils';
+import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
-import ContextMenu from '@/components/native-context-menu/contextMenu';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 
@@ -339,79 +338,52 @@ function MoreButton() {
   }, [navigate]);
 
   // ////////////////////////////////////////////////////
-  // Action Sheet (iOS) / Context Menu (Android)
+  // Context Menu
 
   const { network } = useAccountSettings();
 
   const isAddCashAvailable =
     IS_TESTING === 'true' || network === NetworkTypes.mainnet;
 
-  const items = React.useMemo(
-    () => ({
-      addCash: lang.t('button.add_cash'),
-      myQRCode: lang.t('button.my_qr_code'),
-      cancel: lang.t('button.cancel'),
-    }),
-    []
-  );
-  const options = [
-    isAddCashAvailable ? items.addCash : null,
-    items.myQRCode,
-    ios ? items.cancel : null,
-  ].filter(x => x);
-
-  const ContextMenuButton = ios ? React.Fragment : ContextMenu;
-
   const menuConfig = React.useMemo(
     () => ({
-      menuItems: options.map((label, i) => ({
-        actionKey: i.toString(),
-        actionTitle: label,
-      })),
+      menuItems: [
+        isAddCashAvailable
+          ? {
+              actionKey: 'addCash',
+              actionTitle: lang.t('button.add_cash'),
+              icon: { iconType: 'SYSTEM', iconValue: 'dollarsign.circle' },
+            }
+          : null,
+        {
+          actionKey: 'qrCode',
+          actionTitle: lang.t('button.my_qr_code'),
+          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+        },
+      ].filter(x => x),
+      ...(ios ? { menuTitle: '' } : {}),
     }),
-    [options]
+    [isAddCashAvailable]
   );
 
   const handlePressMenuItem = React.useCallback(
-    index => {
-      if (options[index] === items.addCash) {
+    e => {
+      if (e.nativeEvent.actionKey === 'addCash') {
         handlePressAddCash();
       }
-      if (options[index] === items.myQRCode) {
+      if (e.nativeEvent.actionKey === 'qrCode') {
         handlePressQRCode();
       }
     },
-    [
-      handlePressAddCash,
-      handlePressQRCode,
-      items.addCash,
-      items.myQRCode,
-      options,
-    ]
+    [handlePressAddCash, handlePressQRCode]
   );
-
-  const handlePressContextMenuItem = useLatestCallback((e: any) => {
-    handlePressMenuItem(e.nativeEvent.actionKey);
-  });
-
-  const showActionSheet = () => {
-    showActionSheetWithOptions(
-      { options, cancelButtonIndex: options.length - 1 },
-      handlePressMenuItem
-    );
-  };
 
   return (
     <ContextMenuButton
-      // @ts-expect-error – JS component
       menuConfig={menuConfig}
-      onPressMenuItem={handlePressContextMenuItem}
+      onPressMenuItem={handlePressMenuItem}
     >
-      <ActionButton
-        icon="􀍡"
-        onPress={ios ? showActionSheet : undefined}
-        testID="more-button"
-      >
+      <ActionButton icon="􀍡" testID="more-button">
         {lang.t('button.more')}
       </ActionButton>
     </ContextMenuButton>

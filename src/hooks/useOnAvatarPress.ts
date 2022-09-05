@@ -202,22 +202,66 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     ]
   );
 
-  const avatarActionSheetOptions = [
-    isENSProfile &&
-      !isReadOnly &&
-      lang.t('profiles.profile_avatar.edit_profile'),
-    isENSProfile && lang.t('profiles.profile_avatar.view_profile'),
-    !isENSProfile &&
-      !isReadOnly &&
-      lang.t('profiles.profile_avatar.create_profile'),
-    lang.t('profiles.profile_avatar.choose_from_library'),
-    !accountImage
-      ? ios
-        ? lang.t('profiles.profile_avatar.pick_emoji')
-        : lang.t('profiles.profile_avatar.shuffle_emoji')
-      : lang.t('profiles.profile_avatar.remove_photo'),
-  ]
-    .filter(option => Boolean(option))
+  const avatarContextMenuConfig = {
+    menuTitle: '',
+    menuItems: [
+      isENSProfile &&
+        !isReadOnly && {
+          actionKey: 'editProfile',
+          actionTitle: lang.t('profiles.profile_avatar.edit_profile'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: ios ? 'pencil.circle' : null,
+          },
+        },
+      isENSProfile && {
+        actionKey: 'viewProfile',
+        actionTitle: lang.t('profiles.profile_avatar.view_profile'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: ios ? 'person.crop.circle' : null,
+        },
+      },
+      !isENSProfile &&
+        !isReadOnly && {
+          actionKey: 'createProfile',
+          actionTitle: lang.t('profiles.profile_avatar.create_profile'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: ios ? 'person.crop.circle' : null,
+          },
+        },
+      {
+        actionKey: 'chooseFromLibrary',
+        actionTitle: lang.t('profiles.profile_avatar.choose_from_library'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: ios ? 'photo.on.rectangle.angled' : null,
+        },
+      },
+      !accountImage
+        ? ios
+          ? {
+              actionKey: 'pickEmoji',
+              actionTitle: lang.t('profiles.profile_avatar.pick_emoji'),
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'face.smiling',
+              },
+            }
+          : {
+              actionKey: 'shuffleEmoji',
+              actionTitle: lang.t('profiles.profile_avatar.shuffle_emoji'),
+            }
+        : {
+            actionKey: 'removePhoto',
+            actionTitle: lang.t('profiles.profile_avatar.remove_photo'),
+          },
+    ].filter(x => x),
+  };
+
+  const avatarActionSheetOptions = avatarContextMenuConfig.menuItems
+    .map(item => item.actionTitle)
     .concat(ios ? ['Cancel'] : []);
 
   const onAvatarPressProfile = useCallback(() => {
@@ -287,6 +331,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   );
 
   return {
+    avatarContextMenuConfig,
     avatarActionSheetOptions,
     avatarOptions,
     onAvatarChooseImage,

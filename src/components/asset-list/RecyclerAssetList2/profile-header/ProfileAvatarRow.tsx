@@ -36,8 +36,7 @@ export function ProfileAvatarRow({
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
   const {
-    avatarActionSheetOptions,
-    onAvatarPress: onAvatarPressActionSheet,
+    avatarContextMenuConfig,
     onAvatarPressProfile,
     onSelectionCallback,
   } = useOnAvatarPress({ screenType: 'wallet' });
@@ -47,23 +46,12 @@ export function ProfileAvatarRow({
   );
 
   // ////////////////////////////////////////////////////
-  // Action Sheet (iOS) / Context Menu (Android)
+  // Context Menu
 
-  const ContextMenuButton =
-    ios || onAvatarPressProfile ? React.Fragment : ContextMenu;
-
-  const menuConfig = React.useMemo(
-    () => ({
-      menuItems: avatarActionSheetOptions?.map(label => ({
-        actionKey: label,
-        actionTitle: label,
-      })),
-    }),
-    [avatarActionSheetOptions]
-  );
+  const ContextMenuButton = onAvatarPressProfile ? React.Fragment : ContextMenu;
 
   const handlePressMenuItem = useLatestCallback((e: any) => {
-    const index = menuConfig.menuItems?.findIndex(
+    const index = avatarContextMenuConfig.menuItems?.findIndex(
       item => item.actionKey === e.nativeEvent.actionKey
     );
     onSelectionCallback(index);
@@ -122,12 +110,12 @@ export function ProfileAvatarRow({
     <AccentColorProvider color={accentColor}>
       <Animated.View style={[expandStyle]}>
         <ContextMenuButton
-          /* @ts-expect-error – JS component */
-          menuConfig={menuConfig}
+          // @ts-expect-error - JS component
+          menuConfig={avatarContextMenuConfig}
           onPressMenuItem={handlePressMenuItem}
         >
           <ButtonPressAnimation
-            onPress={ios ? onAvatarPressActionSheet : onAvatarPressProfile}
+            onPress={onAvatarPressProfile}
             scale={0.8}
             testID="avatar-button"
           >
