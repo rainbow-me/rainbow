@@ -35,11 +35,17 @@ const ExchangeNativeField = (
     onFocus,
     setNativeAmount,
     updateOnFocus,
+    mainnetAddress,
+    type,
     testID,
   },
   ref
 ) => {
-  const colorForAsset = useColorForAsset({ address });
+  const colorForAsset = useColorForAsset({
+    address,
+    mainnet_address: mainnetAddress,
+    type,
+  });
   const [value, setValue] = useState(nativeAmount);
 
   const { mask, placeholder, symbol } = supportedNativeCurrencies[

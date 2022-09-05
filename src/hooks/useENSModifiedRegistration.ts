@@ -9,7 +9,7 @@ import {
 } from '.';
 import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
@@ -118,10 +118,19 @@ export default function useENSModifiedRegistration({
   // (these should be used for SET_TEXT txns instead of `records` to save
   // gas).
   const changedRecords = useMemo(() => {
-    //get element from  Object.entries(records) with values which not included in Object.entries(initialRecords)
+    const initialRecordsWithDeprecated = Object.entries(
+      deprecatedTextRecordFields
+    ).reduce((records, [deprecatedKey, key]) => {
+      return {
+        ...records,
+        // @ts-expect-error – This is a key in ENS_RECORDS...
+        [key]: initialRecords[deprecatedKey],
+      };
+    }, initialRecords);
+
     const entriesToChange = Object.entries(records).filter(
       ([recordKey, recordValue]) => {
-        return !Object.entries(initialRecords).some(
+        return !Object.entries(initialRecordsWithDeprecated).some(
           ([initRecordKey, initRecordValue]) => {
             return (
               recordKey === initRecordKey && recordValue === initRecordValue

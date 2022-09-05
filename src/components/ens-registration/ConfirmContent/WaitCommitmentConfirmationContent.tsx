@@ -32,10 +32,19 @@ const WaitCommitmentConfirmationContent = ({
               <Stack space={isSmallPhone ? '24px' : '34px'}>
                 <HourglassAnimation />
                 <Stack alignHorizontal="center" space="19px">
-                  <Heading align="center" size="23px">
+                  <Heading
+                    align="center"
+                    size="23px / 27px (Deprecated)"
+                    weight="heavy"
+                  >
                     {lang.t('profiles.confirm.transaction_pending')}
                   </Heading>
-                  <Text align="center" color="secondary60" weight="semibold">
+                  <Text
+                    align="center"
+                    color="secondary60"
+                    size="16px / 22px (Deprecated)"
+                    weight="semibold"
+                  >
                     {lang.t('profiles.confirm.transaction_pending_description')}
                   </Text>
                 </Stack>
@@ -50,7 +59,7 @@ const WaitCommitmentConfirmationContent = ({
             align="center"
             color={{ custom: accentColor }}
             containsEmoji
-            size="16px"
+            size="16px / 22px (Deprecated)"
             weight="heavy"
           >
             {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
