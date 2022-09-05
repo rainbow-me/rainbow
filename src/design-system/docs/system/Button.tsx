@@ -15,8 +15,8 @@ export type ButtonOverlayProps = {
 };
 
 const fontSizes = {
-  default: '18px',
-  small: '14px',
+  default: '18px / 27px (Deprecated)',
+  small: '14px / 19px (Deprecated)',
 } as { [key: string]: TextSizes };
 
 export const ButtonOverlay = ({

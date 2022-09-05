@@ -131,7 +131,9 @@ export default function ProfileSheetHeader({
         </Bleed>
         <Inset horizontal="19px">
           <Stack space="19px">
-            <Heading size="23px">{abbreviateEnsForDisplay(ensName)}</Heading>
+            <Heading size="23px / 27px (Deprecated)" weight="heavy">
+              {abbreviateEnsForDisplay(ensName)}
+            </Heading>
             <>
               {isLoading ? (
                 <DescriptionPlaceholder />
@@ -152,6 +154,7 @@ export default function ProfileSheetHeader({
                         ...coinAddresses,
                       }}
                       show={[
+                        ENS_RECORDS.name,
                         ENS_RECORDS.displayName,
                         ENS_RECORDS.url,
                         ENS_RECORDS.twitter,
