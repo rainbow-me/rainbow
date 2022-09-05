@@ -44,7 +44,7 @@ import {
   generateSalt,
   getENSExecutionDetails,
   getNameOwner,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import { add, isEmpty } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
 import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
@@ -272,7 +272,7 @@ export const fetchSuggestions = async (
     }[] = [];
     setIsFetching(true);
     const recpt = recipient.toLowerCase();
-    let result = await ensClient.query({
+    const result = await ensClient.query({
       query: ENS_SUGGESTIONS,
       variables: {
         amount: 8,
