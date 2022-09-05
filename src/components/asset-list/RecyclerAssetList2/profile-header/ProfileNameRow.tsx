@@ -9,7 +9,7 @@ import Routes from '@rainbow-me/routes';
 
 export const ProfileNameRowHeight = 16;
 
-export function ProfileNameRow() {
+export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
   // ////////////////////////////////////////////////////
   // Account
   const { accountENS, accountName } = useAccountProfile();
@@ -51,7 +51,7 @@ export function ProfileNameRow() {
         <ButtonPressAnimation
           onPress={onPressName}
           scale={0.8}
-          testID={`profile-name-${name}`}
+          testID={testIDPrefix ? `${testIDPrefix}-${name}` : undefined}
         >
           <Inline alignVertical="center" space="4px" wrap={false}>
             <Box style={{ maxWidth }}>

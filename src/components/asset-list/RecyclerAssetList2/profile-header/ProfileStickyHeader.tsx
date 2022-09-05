@@ -16,7 +16,7 @@ export function ProfileStickyHeader() {
         width="full"
         testID="profile-sticky-header"
       >
-        <ProfileNameRow />
+        <ProfileNameRow testIDPrefix="profile-name-sticky" />
       </Box>
     </StickyHeader>
   );

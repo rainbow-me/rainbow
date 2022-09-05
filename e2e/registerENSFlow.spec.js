@@ -337,13 +337,13 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.checkIfExists(`profile-name-${RANDOM_NAME_ETH}`);
-    await Helpers.waitAndTap(`profile-name-${RANDOM_NAME_ETH}`);
+    await Helpers.tap(`profile-name-${RANDOM_NAME_ETH}`);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
     await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
     await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.tapByText(`${RANDOM_NAME_ETH}`);
+    await Helpers.tapAtPoint('profile-screen', { x: 210, y: 185 });
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
@@ -382,7 +382,7 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.checkIfExists(`profile-name-${RAINBOW_TEST_WALLET_NAME}`);
     await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.tapByText(RAINBOW_TEST_WALLET_NAME);
+    await Helpers.tapAtPoint('profile-screen', { x: 210, y: 185 });
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RAINBOW_TEST_WALLET_NAME}`
     );
@@ -707,8 +707,8 @@ describe('Register ENS Flow', () => {
     const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfExists(`profile-name-${TRUNCATED_ADDRESS}`);
-    await Helpers.waitAndTap(`profile-name-${TRUNCATED_ADDRESS}`);
+    await Helpers.checkIfExists(`profile-name-sticky-${TRUNCATED_ADDRESS}`);
+    await Helpers.waitAndTap(`profile-name-sticky-${TRUNCATED_ADDRESS}`);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-address-${RAINBOW_TEST_WALLET_ADDRESS}`
     );
