@@ -76,23 +76,19 @@ export function ProfileActionButtonsRow() {
   const hasImageColorLoaded = state === 2 || state === 3;
   const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
 
-  const scale = useDerivedValue(() => {
-    return hasLoaded ? 1 : 0.9;
-  });
-  const expandStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: withSpring(scale.value, {
-            damping: 12,
-            restDisplacementThreshold: 0.001,
-            restSpeedThreshold: 0.001,
-            stiffness: 280,
-          }),
-        },
-      ],
-    };
-  });
+  const scale = useDerivedValue(() => (hasLoaded ? 1 : 0.9));
+  const expandStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: withSpring(scale.value, {
+          damping: 12,
+          restDisplacementThreshold: 0.001,
+          restSpeedThreshold: 0.001,
+          stiffness: 280,
+        }),
+      },
+    ],
+  }));
 
   if (!hasLoaded) return null;
   return (
@@ -177,7 +173,11 @@ function ActionButton({
             {icon}
           </Text>
         </Box>
-        <Text color="secondary80" size="14px" weight="medium">
+        <Text
+          color="secondary80"
+          size="14px / 19px (Deprecated)"
+          weight="medium"
+        >
           {children}
         </Text>
       </Stack>
@@ -358,7 +358,7 @@ function MoreButton() {
     isAddCashAvailable ? items.addCash : null,
     items.myQRCode,
     ios ? items.cancel : null,
-  ].filter(x => x);
+  ].filter(Boolean);
 
   const ContextMenuButton = ios ? React.Fragment : ContextMenu;
 
@@ -390,9 +390,11 @@ function MoreButton() {
     ]
   );
 
-  const handlePressContextMenuItem = useLatestCallback((e: any) => {
-    handlePressMenuItem(e.nativeEvent.actionKey);
-  });
+  const handlePressContextMenuItem = useLatestCallback(
+    (e: React.SyntheticEvent<React.ElementType, { actionKey: string }>) => {
+      handlePressMenuItem(e.nativeEvent.actionKey);
+    }
+  );
 
   const showActionSheet = () => {
     showActionSheetWithOptions(

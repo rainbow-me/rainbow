@@ -7,9 +7,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '../../../animations';
-import { ImgixImage } from '../../../images';
-import Skeleton from '../../../skeleton/Skeleton';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ImgixImage } from '@/components/images';
+import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
 import { maybeSignUri } from '@/handlers/imgix';
 import {

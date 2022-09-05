@@ -55,7 +55,11 @@ export function ProfileNameRow() {
         >
           <Inline alignVertical="center" space="4px" wrap={false}>
             <Box style={{ maxWidth }}>
-              <Text numberOfLines={1} size="23px" weight="bold">
+              <Text
+                numberOfLines={1}
+                size="23px / 27px (Deprecated)"
+                weight="bold"
+              >
                 {name}
               </Text>
             </Box>
