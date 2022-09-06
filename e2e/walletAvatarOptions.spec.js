@@ -50,6 +50,7 @@ describe('Wallet avatar options', () => {
       await Helpers.authenticatePin('1234');
       await Helpers.authenticatePin('1234');
     }
+    // Remove this once https://github.com/rainbow-me/rainbow/pull/4115 is merged.
     await Helpers.relaunchApp();
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.checkIfVisible('profile-screen', 40000);
@@ -77,10 +78,6 @@ describe('Wallet avatar options', () => {
     await Helpers.typeText('import-sheet-input', RAINBOW_TEST_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
-    // await Helpers.relaunchApp();
-    // await Helpers.swipe('wallet-screen', 'right', 'slow');
-    // await Helpers.checkIfVisible('profile-screen');
   });
 
   it('test watched wallet with ENS but without ENS avatar', async () => {
@@ -110,10 +107,6 @@ describe('Wallet avatar options', () => {
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
     await Helpers.checkIfVisible('wallet-screen', 40000);
-    // Commenting this out as this is pointless. What do we expect to see after swiping right if not profile-screen?
-    // await Helpers.relaunchApp();
-    // await Helpers.swipe('wallet-screen', 'right', 'slow');
-    // await Helpers.checkIfVisible('profile-screen');
   });
 
   it('test imported wallet with ENS but without ENS avatar', async () => {
@@ -148,14 +141,9 @@ describe('Wallet avatar options', () => {
     await Helpers.typeText('import-sheet-input', RAINBOW_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
-    // await Helpers.relaunchApp();
-    // await Helpers.swipe('wallet-screen', 'right', 'slow');
-    // await Helpers.checkIfVisible('profile-screen');
   });
 
   it('test watched wallet with ENS avatar', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
     await Helpers.checkIfExistsByText('View Profile');
     await Helpers.tapByText('View Profile');
