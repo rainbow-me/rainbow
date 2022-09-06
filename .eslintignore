@@ -11,3 +11,4 @@ out/
 .eslintrc.js
 babel.config.js
 metro.config.js
+__generated__
