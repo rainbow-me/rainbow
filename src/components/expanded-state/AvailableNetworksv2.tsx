@@ -130,7 +130,6 @@ const AvailableNetworksv2 = ({
         isMenuPrimaryAction
         onPressMenuItem={handlePressContextMenu}
         useActionSheetFallback={false}
-        style={{ paddingBottom: 27 }}
       >
         <Box
           as={ButtonPressAnimation}

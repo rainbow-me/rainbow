@@ -57,7 +57,6 @@ const AvailableNetworksv1 = ({
   return (
     <>
       <ButtonPressAnimation
-        marginBottom={marginBottom}
         onPress={handleAvailableNetworksPress}
         scaleTo={0.95}
       >

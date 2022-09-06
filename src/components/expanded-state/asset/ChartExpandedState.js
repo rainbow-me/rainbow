@@ -56,6 +56,7 @@ import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
+import { Box } from '@/design-system';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -433,7 +434,9 @@ export default function ChartExpandedState({ asset }) {
         />
       )}
       {networks && !hasBalance && (
-        <AvailableNetworks asset={assetWithPrice} networks={networks} />
+        <Box paddingBottom={{ custom: 27 }}>
+          <AvailableNetworks asset={assetWithPrice} networks={networks} />
+        </Box>
       )}
       {!isL2 && (
         <CarouselWrapper
