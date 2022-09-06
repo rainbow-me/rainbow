@@ -77,7 +77,7 @@ const getRecords = async ensName => {
   const [
     avatar,
     description,
-    displayName,
+    name,
     url,
     twitter,
     email,
@@ -90,7 +90,7 @@ const getRecords = async ensName => {
   ] = await Promise.all([
     publicResolver.text(hashName, 'avatar'),
     publicResolver.text(hashName, 'description'),
-    publicResolver.text(hashName, 'me.rainbow.displayName'),
+    publicResolver.text(hashName, 'name'),
     publicResolver.text(hashName, 'url'),
     publicResolver.text(hashName, 'com.twitter'),
     publicResolver.text(hashName, 'email'),
@@ -105,10 +105,10 @@ const getRecords = async ensName => {
     avatar,
     description,
     discord,
-    displayName,
     email,
     github,
     instagram,
+    name,
     reddit,
     snapchat,
     telegram,
@@ -281,16 +281,12 @@ describe('Register ENS Flow', () => {
   it('Should go to view to set records', async () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
-    await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
-    await Helpers.typeText(
-      'ens-text-record-me.rainbow.displayName',
-      RECORD_NAME,
-      false
-    );
+    await Helpers.checkIfVisible('ens-text-record-name');
+    await Helpers.typeText('ens-text-record-name', RECORD_NAME, false);
     await Helpers.tapByText('Got it');
     await Helpers.checkIfVisible('ens-text-record-description');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
-    await Helpers.clearField('ens-text-record-me.rainbow.displayName');
+    await Helpers.clearField('ens-text-record-name');
     await Helpers.waitAndTap('use-select-image-avatar');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
@@ -326,12 +322,9 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the bio record is set', async () => {
-    const { description, displayName, avatar } = await getRecords(
-      RANDOM_NAME_ETH
-    );
+    const { description, name, avatar } = await getRecords(RANDOM_NAME_ETH);
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
-    if (displayName === RECORD_NAME)
-      throw new Error('ENS displayName is wrong');
+    if (name === RECORD_NAME) throw new Error('ENS name is wrong');
     if (avatar !== EIP155_FORMATTED_AVATAR_RECORD)
       throw new Error('ENS avatar is wrong');
   });
@@ -610,11 +603,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should update a field', async () => {
-    await Helpers.typeText(
-      'ens-text-record-me.rainbow.displayName',
-      ' Guy',
-      false
-    );
+    await Helpers.typeText('ens-text-record-name', ' Guy', false);
     await Helpers.waitAndTap('hide-keyboard-button');
   });
 
@@ -704,7 +693,7 @@ describe('Register ENS Flow', () => {
 
   it('Should confirm the ENS was sent correctly', async () => {
     await Helpers.delay(1000);
-    const { displayName } = await getRecords(RAINBOW_TEST_WALLET_NAME);
+    const { name } = await getRecords(RAINBOW_TEST_WALLET_NAME);
     const { address, primaryName } = await resolveName(
       RAINBOW_TEST_WALLET_NAME
     );
@@ -713,7 +702,7 @@ describe('Register ENS Flow', () => {
       throw new Error('Resolved address is wrong');
     if (primaryName !== RAINBOW_WALLET_NAME)
       throw new Error('Resolved primary name is wrong');
-    if (displayName) throw new Error('me.rainbow.displayName name is wrong');
+    if (name) throw new Error('name is wrong');
     if (owner !== RAINBOW_WALLET_ADDRESS)
       throw new Error('Owner not set correctly');
   });

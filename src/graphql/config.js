@@ -1,13 +1,13 @@
 exports.config = {
   ens: {
+    document: './queries/ens.graphql',
     schema: {
-      url: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens',
       method: 'POST',
+      url: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens',
     },
-    file: './queries/ens.graphql',
   },
   metadata: {
-    schema: { url: 'https://metadata.p.rainbow.me/v1/graph', method: 'GET' },
-    file: './queries/metadata.graphql',
+    document: './queries/metadata.graphql',
+    schema: { method: 'GET', url: 'https://metadata.p.rainbow.me/v1/graph' },
   },
 };

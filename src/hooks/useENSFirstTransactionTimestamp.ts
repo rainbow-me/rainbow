@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
 import PQueue from 'p-queue/dist';
-import { useQuery } from 'react-query';
 import { fetchENSAddress } from './useENSAddress';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
 import { queryClient } from '@/react-query/queryClient';
@@ -35,7 +35,7 @@ export async function fetchENSFirstTransactionTimestamp(
     ? saveENSData('firstTxTimestamp', name, { firstTxTimestamp: timestamp })
     : queryClient.invalidateQueries(ensFirstTxTimestampQueryKey(name));
 
-  return timestamp;
+  return timestamp ?? null;
 }
 
 export async function prefetchENSFirstTransactionTimestamp(

@@ -1,12 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  AccentColorProvider,
-  Box,
-  Inset,
-  Text,
-} from '@/design-system';
+import { AccentColorProvider, Box, Inset, Text } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 
@@ -68,7 +63,11 @@ const SearchResultGradientIndicator = ({
           <Text
             color={type === 'availability' ? 'accent' : 'secondary80'}
             containsEmoji
-            size={isSmallPhone ? '18px' : '20px'}
+            size={
+              isSmallPhone
+                ? '18px / 27px (Deprecated)'
+                : '20px / 24px (Deprecated)'
+            }
             testID={testID}
             weight="heavy"
           >

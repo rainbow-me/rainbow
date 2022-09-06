@@ -10,10 +10,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
-import {
-  addressSetSelected,
-  walletsSetSelected,
-} from '@/redux/wallets';
+import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { doesWalletsContainAddress, logger } from '@/utils';
 

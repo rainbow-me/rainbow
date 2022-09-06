@@ -4,13 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
-import {
-  Box,
-  Column,
-  Columns,
-  Divider,
-  Stack,
-} from '@/design-system';
+import { Box, Column, Columns, Divider, Stack } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@/hooks';
 
@@ -98,7 +92,7 @@ export default function TextRecordsForm({
                   placeholder={placeholder}
                   selectionColor={selectionColor}
                   shouldFormatText={
-                    key === ENS_RECORDS.displayName ||
+                    key === ENS_RECORDS.name ||
                     key === ENS_RECORDS.description ||
                     key === ENS_RECORDS.notice ||
                     key === ENS_RECORDS.keywords ||

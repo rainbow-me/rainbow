@@ -31,11 +31,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import {
-  ethereumUtils,
-  magicMemo,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
 
@@ -513,7 +509,7 @@ const UniqueTokenExpandedStateHeader = ({
   return (
     <Stack space="15px">
       <Columns space="24px">
-        <Heading containsEmoji size="23px" weight="heavy">
+        <Heading containsEmoji size="23px / 27px (Deprecated)" weight="heavy">
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
@@ -528,7 +524,11 @@ const UniqueTokenExpandedStateHeader = ({
             >
               <ButtonPressAnimation scaleTo={0.75}>
                 <Inset space={overflowMenuHitSlop}>
-                  <Text color="accent" size="23px" weight="heavy">
+                  <Text
+                    color="accent"
+                    size="23px / 27px (Deprecated)"
+                    weight="heavy"
+                  >
                     􀍡
                   </Text>
                 </Inset>
@@ -562,11 +562,20 @@ const UniqueTokenExpandedStateHeader = ({
                         maxWidth: deviceWidth - paddingHorizontal * 6,
                       }}
                     >
-                      <Text color="secondary50" numberOfLines={1} weight="bold">
+                      <Text
+                        color="secondary50"
+                        numberOfLines={1}
+                        size="16px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {asset.familyName}
                       </Text>
                     </View>
-                    <Text color="secondary50" weight="bold">
+                    <Text
+                      color="secondary50"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       􀆊
                     </Text>
                   </Inline>

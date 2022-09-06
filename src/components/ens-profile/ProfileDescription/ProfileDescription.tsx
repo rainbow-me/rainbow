@@ -18,7 +18,7 @@ const ProfileDescription = ({ description }: { description?: string }) => {
             color="secondary80"
             containsEmoji
             key={i}
-            size="15px"
+            size="15px / 21px (Deprecated)"
             weight="medium"
           >
             {t}

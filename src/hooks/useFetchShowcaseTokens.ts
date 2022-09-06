@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
 import { getShowcaseTokens } from '@/handlers/localstorage/accountLocal';
 import { getPreference } from '@/model/preferences';
@@ -18,7 +18,7 @@ export default function useFetchShowcaseTokens({
   return useQuery<string[]>(
     showcaseTokensQueryKey({ address }),
     async () => {
-      if (!address) return;
+      if (!address) return [];
 
       let showcaseTokens = await getShowcaseTokens(address, network);
       const showcaseTokensFromCloud = (await getPreference(

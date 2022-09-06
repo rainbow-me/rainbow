@@ -55,10 +55,10 @@ import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 
 const DUMMY_RECORDS = {
-  'description': 'description',
-  'header':
+  description: 'description',
+  header:
     'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
-  'me.rainbow.displayName': 'name',
+  name: 'name',
 };
 
 const buildEnsToken = ({
@@ -903,6 +903,7 @@ export const formatRecordsForTransaction = (
         case ENS_RECORDS.header:
         case ENS_RECORDS.twitter:
         case ENS_RECORDS.displayName:
+        case ENS_RECORDS.name:
         case ENS_RECORDS.email:
         case ENS_RECORDS.url:
         case ENS_RECORDS.avatar:

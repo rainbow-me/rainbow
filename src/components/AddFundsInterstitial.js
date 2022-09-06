@@ -14,11 +14,7 @@ import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
 import { analytics } from '@/analytics';
-import {
-  useAccountSettings,
-  useDimensions,
-  useWallets,
-} from '@/hooks';
+import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';

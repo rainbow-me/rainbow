@@ -12,11 +12,7 @@ import { Circle, Defs, G, RadialGradient, Stop, Svg } from 'react-native-svg';
 import { CheckmarkAnimation } from '../animations/CheckmarkAnimation';
 import { SeparatorDots } from './SeparatorDots';
 import { useVariableFont } from './useVariableFont';
-import {
-  Box,
-  useForegroundColor,
-  useTextStyle,
-} from '@/design-system';
+import { Box, useForegroundColor, useTextStyle } from '@/design-system';
 
 type LargeCountdownClockProps = {
   initialSeconds?: number;
@@ -274,6 +270,7 @@ const ClockText = ({
   const textStyles = useTextStyle({
     align: 'center',
     color: 'accent',
+    size: '16px / 22px (Deprecated)',
     tabularNumbers: true,
     weight: 'heavy',
   });

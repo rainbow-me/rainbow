@@ -2,18 +2,21 @@
 const { config } = require('./config');
 
 module.exports = {
-  generates: Object.entries(config).reduce((config, [key, value]) => {
-    return {
-      ...config,
-      [`./__generated__/${key}.ts`]: {
-        schema: [{ [value.schema.url]: { method: value.schema.method } }],
-        documents: [value.file],
-        plugins: [
-          'typescript',
-          'typescript-operations',
-          'typescript-generic-sdk',
-        ],
-      },
-    };
-  }, {}),
+  generates: Object.entries(config).reduce(
+    (config, [key, value]) => {
+      return {
+        ...config,
+        [`./__generated__/${key}.ts`]: {
+          documents: [value.document],
+          plugins: [
+            'typescript',
+            'typescript-operations',
+            'typescript-generic-sdk',
+          ],
+          schema: [{ [value.schema.url]: { method: value.schema.method } }],
+        },
+      };
+    },
+    {}
+  ),
 };
