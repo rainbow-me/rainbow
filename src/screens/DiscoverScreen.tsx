@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ScrollView } from 'react-native';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
-import Navbar from '@/components/navbar/Navbar';
+import { Navbar } from '@/components/navbar/Navbar';
 import DiscoverSheetContent from '@/components/discover-sheet/DiscoverSheetContent';
 import DiscoverSheetContext from '@/components/discover-sheet/DiscoverSheetContext';
 import CaretLeftIcon from '@/components/icons/svg/CaretLeftIcon';

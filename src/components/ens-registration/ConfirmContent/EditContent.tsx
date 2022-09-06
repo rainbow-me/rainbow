@@ -38,14 +38,22 @@ const EditContent = ({
         <Inset top="19px">
           <Inline alignHorizontal="justify" alignVertical="center">
             <Inline>
-              <Text color="secondary80" size="16px" weight="bold">
+              <Text
+                color="secondary80"
+                size="16px / 22px (Deprecated)"
+                weight="bold"
+              >
                 {`${lang.t('profiles.confirm.set_ens_name')} `}
               </Text>
               <ButtonPressAnimation
                 onPress={openPrimaryENSNameHelper}
                 scaleTo={0.9}
               >
-                <Text color="secondary30" size="16px" weight="bold">
+                <Text
+                  color="secondary30"
+                  size="16px / 22px (Deprecated)"
+                  weight="bold"
+                >
                   􀅵
                 </Text>
               </ButtonPressAnimation>

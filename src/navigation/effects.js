@@ -356,7 +356,7 @@ export const emojiPresetWallet = {
         <View
           style={{
             alignItems: 'center',
-            top: HeaderHeightWithStatusBar + 14,
+            top: HeaderHeightWithStatusBar + 16,
           }}
         >
           <EmojiAvatar size={ProfileAvatarSize} />

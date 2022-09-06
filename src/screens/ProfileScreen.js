@@ -16,7 +16,7 @@ import {
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import Navbar from '@/components/navbar/Navbar';
+import { Navbar } from '@/components/navbar/Navbar';
 import CaretRightIcon from '@/components/icons/svg/CaretRightIcon';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;

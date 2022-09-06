@@ -1,12 +1,10 @@
 import React from 'react';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { Box, Cover, Inline, Inset, Text } from '@/design-system';
 
 import { NavbarSvgIcon } from './NavbarSvgIcon';
 import { NavbarItem } from './NavbarItem';
 import { NavbarTextIcon } from './NavbarTextIcon';
-
-const statusBarHeight = getStatusBarHeight(true);
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;
@@ -21,9 +19,10 @@ export function Navbar({
   rightComponent = <Box />,
   title,
 }: NavbarProps) {
+  const insets = useSafeArea();
   return (
     <Box>
-      {hasStatusBarInset && <Box height={{ custom: statusBarHeight }} />}
+      {hasStatusBarInset && <Box height={{ custom: insets.top }} />}
       <Box height={{ custom: 48 }} justifyContent="center" alignItems="center">
         <Cover alignVertical="center" alignHorizontal="justify">
           <Box width="full">
@@ -36,7 +35,7 @@ export function Navbar({
           </Box>
         </Cover>
         <Inset top="1px">
-          <Text size="20px" weight="heavy">
+          <Text size="20pt" weight="heavy">
             {title}
           </Text>
         </Inset>
@@ -45,8 +44,6 @@ export function Navbar({
   );
 }
 
-export default Object.assign(Navbar, {
-  Item: NavbarItem,
-  TextIcon: NavbarTextIcon,
-  SvgIcon: NavbarSvgIcon,
-});
+Navbar.Item = NavbarItem;
+Navbar.TextIcon = NavbarTextIcon;
+Navbar.SvgIcon = NavbarSvgIcon;

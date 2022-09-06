@@ -104,7 +104,7 @@ function rowRenderer(
     case CellType.PROFILE_NAME_ROW:
       return (
         <ProfileRowWrapper>
-          <ProfileNameRow />
+          <ProfileNameRow testIDPrefix="profile-name" />
         </ProfileRowWrapper>
       );
     case CellType.UNISWAP_POOL:

@@ -11,7 +11,7 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import Navbar from '@/components/navbar/Navbar';
+import { Navbar } from '@/components/navbar/Navbar';
 import { Inline } from '@/design-system';
 import {
   useAccountEmptyState,

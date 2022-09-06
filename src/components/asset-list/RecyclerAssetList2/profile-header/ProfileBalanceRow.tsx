@@ -28,7 +28,11 @@ export function ProfileBalanceRow({ totalValue }: { totalValue: string }) {
       ) : (
         <Heading
           numberOfLines={1}
-          size={totalValue?.length > 14 ? '26px' : '34px'}
+          size={
+            totalValue?.length > 14
+              ? '26px / 30px (Deprecated)'
+              : '34px / 41px (Deprecated)'
+          }
           weight="heavy"
           testID="balance-text"
         >

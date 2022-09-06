@@ -7,7 +7,7 @@ type NavbarIconProps = {
 
 export function NavbarTextIcon({ icon }: NavbarIconProps) {
   return (
-    <Text align="center" size="23px" weight="semibold">
+    <Text align="center" size="23px / 27px (Deprecated)" weight="semibold">
       {icon}
     </Text>
   );
