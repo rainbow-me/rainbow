@@ -18,7 +18,7 @@ import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { fetchRainbowProfile } from '@/handlers/rainbowProfiles';
+import { fetchRainbowProfile } from './useRainbowProfile';
 import { resolveUnstoppableDomain, web3Provider } from '@/handlers/web3';
 import {
   isENSAddressFormat,

@@ -5,18 +5,14 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
-import { useAccountProfile, useRequests } from '@/hooks';
+import { useAccountProfile, useRainbowProfile, useRequests } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 
 export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
-  const {
-    accountAddress,
-    accountImage,
-    accountColor,
-    accountSymbol,
-  } = useAccountProfile();
+  const { accountAddress, accountImage } = useAccountProfile();
+  const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
     navigate,
@@ -39,8 +35,8 @@ export default function ProfileHeaderButton() {
         ) : (
           <ContactAvatar
             address={accountAddress}
-            color={accountColor}
-            emoji={accountSymbol}
+            color={rainbowProfile?.color}
+            emoji={rainbowProfile?.emoji}
             size="small"
           />
         )}

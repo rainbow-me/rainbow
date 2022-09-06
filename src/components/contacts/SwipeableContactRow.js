@@ -53,6 +53,8 @@ const SwipeableContactRow = (
   {
     accountType,
     address,
+    color,
+    emoji,
     image,
     network,
     nickname,
@@ -123,6 +125,8 @@ const SwipeableContactRow = (
       <ContactRow
         accountType={accountType}
         address={address}
+        color={color}
+        emoji={emoji}
         image={image}
         network={network}
         nickname={nickname}

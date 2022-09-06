@@ -13,7 +13,6 @@ import {
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
-import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
 import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import {
@@ -52,7 +51,6 @@ import {
   saveHiddenCoins,
   savePinnedCoins,
 } from '@/handlers/localstorage/accountLocal';
-import { queryClient } from '@/react-query/queryClient';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { getUserLists, saveUserLists } from '@/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@/handlers/web3';
@@ -66,7 +64,7 @@ import { ethereumUtils, profileUtils } from '@/utils';
 import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
 import logger from '@/utils/logger';
 import { getAvatarColorHex, getAvatarColorIndex } from '@/helpers/colorHandler';
-import { fetchRainbowProfile } from '@/handlers/rainbowProfiles';
+import { fetchRainbowProfile } from '../hooks/useRainbowProfile';
 
 export default async function runMigrations() {
   // get current version
@@ -708,10 +706,6 @@ export default async function runMigrations() {
         const newAddresses = await Promise.all(
           wallet.addresses.map(async (account: RainbowAccount) => {
             const rainbowProfile = await fetchRainbowProfile(account?.address);
-            queryClient.setQueryData(
-              rainbowProfileQueryKey(account?.address),
-              rainbowProfile
-            );
             return {
               ...account,
               color:

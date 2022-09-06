@@ -19,6 +19,7 @@ import {
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { isValidAddress } from 'ethereumjs-util';
+import { prefetchRainbowProfile } from '@/hooks/useRainbowProfile';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({
@@ -69,6 +70,8 @@ const ContactRow = (
   const {
     accountType,
     balance,
+    color,
+    emoji,
     image,
     label,
     network,
@@ -76,7 +79,6 @@ const ContactRow = (
     showcaseItem,
     testID,
   } = props;
-  const { rainbowProfile } = useRainbowProfile(address);
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -88,6 +90,8 @@ const ContactRow = (
   const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: profilesEnabled && Boolean(ensName),
   });
+
+  const { rainbowProfile } = useRainbowProfile(address);
 
   useEffect(() => {
     if (
@@ -134,8 +138,8 @@ const ContactRow = (
         ) : (
           <ContactAvatar
             address={address}
-            color={rainbowProfile?.color}
-            emoji={rainbowProfile?.emoji}
+            color={color || rainbowProfile?.color}
+            emoji={emoji || rainbowProfile?.emoji}
             marginRight={10}
             size="medium"
           />

@@ -3,10 +3,8 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { useRainbowProfile } from '@/hooks';
 import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
-import { isValidAddress } from 'ethereumjs-util';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
@@ -65,32 +63,29 @@ const sizeConfigs = colors => ({
 const ContactAvatar = ({
   address,
   color,
-  size = 'medium',
   emoji,
+  size = 'medium',
   ...props
 }) => {
   const { colors } = useTheme();
-  const { rainbowProfile } = useRainbowProfile(address, {
-    enabled: !(color && emoji) && isValidAddress(address),
-  });
-  const profileColor = color || rainbowProfile?.color;
-  const profileEmoji = emoji || rainbowProfile?.emoji;
   const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [
     colors,
     size,
   ]);
   const { isDarkMode } = useTheme();
 
-  const shadows = useMemo(
-    () => buildShadows(profileColor, size, isDarkMode, colors),
-    [profileColor, size, isDarkMode, colors]
-  );
+  const shadows = useMemo(() => buildShadows(color, size, isDarkMode, colors), [
+    color,
+    size,
+    isDarkMode,
+    colors,
+  ]);
 
   return (
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={profileColor || colors.skeleton}
+      backgroundColor={color || colors.skeleton}
       shadows={shadows}
     >
       <Centered flex={1}>
@@ -101,7 +96,7 @@ const ContactAvatar = ({
           size={textSize}
           weight="bold"
         >
-          {profileEmoji}
+          {emoji}
         </Text>
       </Centered>
     </ShadowStack>

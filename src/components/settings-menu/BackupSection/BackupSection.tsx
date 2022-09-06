@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import { cloudPlatform } from '../../../utils/platform';
 import { ContactAvatar } from '../../contacts';
 import Menu from '../components/Menu';
@@ -11,12 +11,29 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
-import { addressHashedEmoji } from '@/utils/profileUtils';
+import { fetchRainbowProfile } from '@/hooks/useRainbowProfile';
+import { EthereumAddress } from '@/entities';
+import { RainbowWallet } from '@/model/wallet';
+
+interface Backup {
+  address: EthereumAddress;
+  color: string;
+  emoji: string;
+  key: string;
+  label: string;
+  numAccounts: number;
+  wallet: RainbowWallet;
+}
 
 const BackupSection = () => {
   const { navigate } = useNavigation();
   const { walletNames, wallets } = useWallets();
   const { manageCloudBackups } = useManageCloudBackups();
+  const [backups, setBackups] = useState<Backup[]>([]);
+  const [cloudBackedUpWallets, incrementCloudBackedUpWallets] = useReducer(
+    n => n + 1,
+    0
+  );
 
   const onPress = useCallback(
     (walletId: string, name: string) => {
@@ -39,38 +56,48 @@ const BackupSection = () => {
     [navigate, wallets]
   );
 
-  let cloudBackedUpWallets = 0;
-
-  const backups = wallets
-    ? Object.keys(wallets)
-        .filter(key => wallets[key].type !== WalletTypes.readOnly)
-        .map(key => {
-          const wallet = wallets[key];
-          const visibleAccounts = wallet.addresses.filter(
-            (a: any) => a.visible
-          );
-          const account = visibleAccounts[0];
-          const totalAccounts = visibleAccounts.length;
-          const { color, label, address } = account;
-          if (wallet.backupType === WalletBackupTypes.cloud) {
-            cloudBackedUpWallets += 1;
-          }
-          let labelOrName = label;
-          if (!label) {
-            if (walletNames[address]) {
-              labelOrName = walletNames[address];
-            }
-          }
-          return {
-            address,
-            color,
-            key,
-            label: labelOrName,
-            numAccounts: totalAccounts,
-            wallet,
-          };
-        })
-    : [];
+  useEffect(() => {
+    const loadBackups = async () => {
+      if (wallets) {
+        const loadedBackups = await Promise.all(
+          Object.keys(wallets)
+            .filter(key => wallets[key].type !== WalletTypes.readOnly)
+            .map(async key => {
+              const wallet = wallets[key];
+              const visibleAccounts = wallet.addresses.filter(
+                (a: any) => a.visible
+              );
+              const account = visibleAccounts[0];
+              const totalAccounts = visibleAccounts.length;
+              const { label, address } = account;
+              if (wallet.backupType === WalletBackupTypes.cloud) {
+                incrementCloudBackedUpWallets();
+              }
+              const rainbowProfile = await fetchRainbowProfile(address, {
+                cacheFirst: true,
+              });
+              let labelOrName = label;
+              if (!label) {
+                if (walletNames[address]) {
+                  labelOrName = walletNames[address];
+                }
+              }
+              return {
+                address,
+                color: rainbowProfile?.color,
+                emoji: rainbowProfile?.emoji,
+                key,
+                label: labelOrName,
+                numAccounts: totalAccounts,
+                wallet,
+              } as Backup;
+            })
+        );
+        setBackups(loadedBackups);
+      }
+    };
+    loadBackups();
+  }, [walletNames, wallets]);
 
   return (
     <MenuContainer>
@@ -79,11 +106,12 @@ const BackupSection = () => {
           ({
             address,
             color,
+            emoji,
             key,
             label: labelOrName,
             numAccounts,
             wallet,
-          }) => (
+          }: Backup) => (
             <MenuItem
               hasRightArrow
               key={key}
@@ -111,11 +139,12 @@ const BackupSection = () => {
               }
               leftComponent={
                 <ContactAvatar
+                  address={address}
                   alignSelf="center"
                   color={color}
+                  emoji={emoji}
                   marginRight={10}
                   size="small"
-                  value={addressHashedEmoji(address)}
                 />
               }
               onPress={() =>

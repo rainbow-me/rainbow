@@ -1,5 +1,4 @@
 import { isValidAddress } from 'ethereumjs-util';
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/react-query/queryClient';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -14,88 +13,75 @@ import { profileUtils } from '@rainbow-me/utils';
 import { getPreference } from '../model/preferences';
 
 const STALE_TIME = 10000;
-const TIMEOUT_MS = 500;
+const TIMEOUT_MS = 5000;
 
 export const rainbowProfileQueryKey = (address: EthereumAddress) => [
   'rainbow-profiles',
   address,
 ];
 
-const getWebProfile = async (address: EthereumAddress) => {
-  const response: any = address && (await getPreference('profile', address));
-  return response?.profile;
-};
-
 export const fetchRainbowProfile = async (
   address: EthereumAddress | null | undefined,
   { cacheFirst }: { cacheFirst?: boolean } = {}
 ) => {
   if (!address || !isValidAddress(address)) return null;
+
   const cachedProfile = await getRainbowProfile(address);
   if (cachedProfile) {
     queryClient.setQueryData(rainbowProfileQueryKey(address), cachedProfile);
     if (cacheFirst) return cachedProfile;
   }
-  const rainbowProfile = await Promise.race([
-    getWebProfile(address),
+
+  const webData = await Promise.race([
+    getPreference('profile', address),
     new Promise(resolve => {
       setTimeout(resolve, TIMEOUT_MS, null);
     }),
   ]);
+  const profile = webData?.profile;
+
+  const rainbowProfile = {
+    color:
+      profile?.accountColor ||
+      colors.avatarBackgrounds[
+        profileUtils.addressHashedColorIndex(address) || 0
+      ],
+    emoji: profile?.accountSymbol || profileUtils.addressHashedEmoji(address),
+  };
+
   saveRainbowProfile(address, rainbowProfile);
   return rainbowProfile;
 };
 
+export async function prefetchRainbowProfile(
+  address: EthereumAddress | null | undefined,
+  { cacheFirst }: { cacheFirst?: boolean } = {}
+) {
+  if (!address || !isValidAddress(address)) return;
+
+  queryClient.prefetchQuery(
+    rainbowProfileQueryKey(address),
+    async () => fetchRainbowProfile(address, { cacheFirst }),
+    { staleTime: STALE_TIME }
+  );
+}
+
 export default function useRainbowProfile(
   address: EthereumAddress | null | undefined,
-  config?: QueryConfig<typeof fetchRainbowProfile>,
-  fallback = true
+  config?: QueryConfig<typeof fetchRainbowProfile>
 ) {
   const addressString = address ?? '';
-
-  const addressHashedColor = useMemo(
-    () =>
-      fallback && addressString
-        ? colors.avatarBackgrounds[
-            profileUtils.addressHashedColorIndex(addressString) || 0
-          ]
-        : null,
-    [addressString, fallback]
-  );
-  const addressHashedEmoji = useMemo(
-    () =>
-      fallback && addressString
-        ? profileUtils.addressHashedEmoji(addressString)
-        : null,
-    [addressString, fallback]
-  );
+  const isValid = isValidAddress(addressString);
 
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchRainbowProfile>
   >(
     rainbowProfileQueryKey(addressString),
-    async () => {
-      const cachedProfile = await getRainbowProfile(addressString);
-      if (cachedProfile) {
-        queryClient.setQueryData(
-          rainbowProfileQueryKey(addressString),
-          cachedProfile
-        );
-      }
-      const rainbowProfile = await fetchRainbowProfile(addressString);
-
-      rainbowProfile && saveRainbowProfile(addressString, rainbowProfile);
-      return (
-        rainbowProfile ?? {
-          color: addressHashedColor,
-          emoji: addressHashedEmoji,
-        }
-      );
-    },
+    async () => fetchRainbowProfile(addressString),
     {
       ...config,
       // Data will be stale for 10s to avoid dupe queries
-      enabled: isValidAddress(addressString),
+      enabled: isValid,
       staleTime: STALE_TIME,
     }
   );

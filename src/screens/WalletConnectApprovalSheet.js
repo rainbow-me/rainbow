@@ -34,7 +34,7 @@ import {
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
 } from '@/helpers/walletConnectNetworks';
-import { useAccountSettings, useWallets } from '@/hooks';
+import { useAccountSettings, useRainbowProfile, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -111,6 +111,8 @@ export default function WalletConnectApprovalSheet() {
   const [approvalNetwork, setApprovalNetwork] = useState(
     currentNetwork || network
   );
+
+  const { rainbowProfile } = useRainbowProfile(approvalAccount?.address);
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
@@ -389,6 +391,8 @@ export default function WalletConnectApprovalSheet() {
                   ) : (
                     <ContactAvatar
                       address={approvalAccount?.address}
+                      color={rainbowProfile?.color}
+                      emoji={rainbowProfile?.emoji}
                       size="smaller"
                     />
                   )}

@@ -26,6 +26,7 @@ import WalletOption from './WalletOption';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { fetchRainbowProfile } from '@/hooks/useRainbowProfile';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -115,55 +116,63 @@ export default function WalletList({
 
   // Update the rows when allWallets changes
   useEffect(() => {
-    const seedRows = [];
-    const privateKeyRows = [];
-    const readOnlyRows = [];
+    const loadRows = async () => {
+      const seedRows = [];
+      const privateKeyRows = [];
+      const readOnlyRows = [];
 
-    if (isEmpty(allWallets)) return;
-    const sortedKeys = Object.keys(allWallets).sort();
-    sortedKeys.forEach(key => {
-      const wallet = allWallets[key];
-      const filteredAccounts = wallet.addresses.filter(
-        account => account.visible
-      );
-      filteredAccounts.forEach(account => {
-        const row = {
-          ...account,
-          editMode,
-          height: rowHeight,
-          id: account.address,
-          isOnlyAddress: filteredAccounts.length === 1,
-          isReadOnly: wallet.type === WalletTypes.readOnly,
-          isSelected:
-            accountAddress === account.address &&
-            (watchOnly || wallet?.id === currentWallet?.id),
-          label:
-            network !== networkTypes.mainnet && account.ens === account.label
-              ? address(account.address, 6, 4)
-              : account.label,
-          onPress: () => onChangeAccount(wallet?.id, account.address),
-          rowType: RowTypes.ADDRESS,
-          walletId: wallet?.id,
-        };
-        switch (wallet.type) {
-          case WalletTypes.mnemonic:
-          case WalletTypes.seed:
-            seedRows.push(row);
-            break;
-          case WalletTypes.privateKey:
-            privateKeyRows.push(row);
-            break;
-          case WalletTypes.readOnly:
-            readOnlyRows.push(row);
-            break;
-          default:
-            break;
+      if (isEmpty(allWallets)) return;
+      const sortedKeys = Object.keys(allWallets).sort();
+      for (const key of sortedKeys) {
+        const wallet = allWallets[key];
+        const filteredAccounts = wallet.addresses.filter(
+          account => account.visible
+        );
+        for (const account of filteredAccounts) {
+          const rainbowProfile = await fetchRainbowProfile(account.address, {
+            cacheFirst: true,
+          });
+          const row = {
+            ...account,
+            color: rainbowProfile?.color,
+            editMode,
+            emoji: rainbowProfile?.emoji,
+            height: rowHeight,
+            id: account.address,
+            isOnlyAddress: filteredAccounts.length === 1,
+            isReadOnly: wallet.type === WalletTypes.readOnly,
+            isSelected:
+              accountAddress === account.address &&
+              (watchOnly || wallet?.id === currentWallet?.id),
+            label:
+              network !== networkTypes.mainnet && account.ens === account.label
+                ? address(account.address, 6, 4)
+                : account.label,
+            onPress: () => onChangeAccount(wallet?.id, account.address),
+            rowType: RowTypes.ADDRESS,
+            walletId: wallet?.id,
+          };
+          switch (wallet.type) {
+            case WalletTypes.mnemonic:
+            case WalletTypes.seed:
+              seedRows.push(row);
+              break;
+            case WalletTypes.privateKey:
+              privateKeyRows.push(row);
+              break;
+            case WalletTypes.readOnly:
+              readOnlyRows.push(row);
+              break;
+            default:
+              break;
+          }
         }
-      });
-    });
+      }
 
-    const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
-    setRows(newRows);
+      const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
+      setRows(newRows);
+    };
+    loadRows();
   }, [
     accountAddress,
     allWallets,

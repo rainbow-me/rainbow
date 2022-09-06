@@ -18,6 +18,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { filterList } from '@/utils';
+import { prefetchRainbowProfile } from '@/hooks/useRainbowProfile';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,

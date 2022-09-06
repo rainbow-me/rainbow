@@ -19,7 +19,11 @@ import {
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
 } from '@/helpers/walletConnectNetworks';
-import { useWalletConnectConnections, useWallets } from '@/hooks';
+import {
+  useRainbowProfile,
+  useWalletConnectConnections,
+  useWallets,
+} from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -82,6 +86,7 @@ export default function WalletConnectListItem({
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
+  const { rainbowProfile } = useRainbowProfile(account);
 
   const overrideLogo = useMemo(() => {
     return dappLogoOverride(dappUrl);
@@ -239,7 +244,12 @@ export default function WalletConnectListItem({
                     size="smaller"
                   />
                 ) : (
-                  <ContactAvatar address={account} size="smaller" />
+                  <ContactAvatar
+                    address={account}
+                    color={rainbowProfile?.color}
+                    emoji={rainbowProfile?.emoji}
+                    size="smaller"
+                  />
                 )}
                 <TruncatedText
                   size="medium"

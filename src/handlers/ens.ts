@@ -28,14 +28,13 @@ import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSFirstTransactionTimestamp } from '../hooks/useENSFirstTransactionTimestamp';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
-import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
+import { fetchRainbowProfile } from '../hooks/useRainbowProfile';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import {
   getENSData,
   getNameFromLabelhash,
   saveENSData,
 } from './localstorage/ens';
-import { fetchRainbowProfile } from './rainbowProfiles';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
@@ -47,7 +46,6 @@ import {
   getENSExecutionDetails,
   getNameOwner,
 } from '@/helpers/ens';
-import { queryClient } from '@/react-query/queryClient';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
 import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
@@ -254,7 +252,9 @@ export const fetchSuggestions = async (
       });
       // eslint-disable-next-line no-empty
     } catch (e) {}
-    const rainbowProfile = await fetchRainbowProfile(address);
+    const rainbowProfile = avatar
+      ? null
+      : await fetchRainbowProfile(address, { cacheFirst: true });
     const suggestion = [
       {
         address: address,
@@ -339,30 +339,13 @@ export const fetchSuggestions = async (
         domains
           .filter((domain: any) => !domain?.name?.includes?.('['))
           .map(async (ensDomain: any) => {
-            let color =
-              colors.avatarBackgrounds[
-                addressHashedColorIndex(ensDomain?.resolver?.addr?.id) || 0
-              ];
-            let emoji = addressHashedEmoji(ensDomain?.resolver?.addr?.id);
-            try {
-              const rainbowProfile = await fetchRainbowProfile(
-                ensDomain?.resolver?.addr?.id
-              );
-              queryClient.setQueryData(
-                rainbowProfileQueryKey(ensDomain?.resolver?.addr?.id),
-                rainbowProfile
-              );
-
-              if (rainbowProfile) {
-                color = rainbowProfile?.color;
-                emoji = rainbowProfile?.emoji;
-              }
-              // eslint-disable-next-line no-empty
-            } catch (e) {}
+            const rainbowProfile = await fetchRainbowProfile(
+              ensDomain?.resolver?.addr?.id
+            );
             return {
               address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
-              color: color,
-              emoji: emoji,
+              color: rainbowProfile?.color,
+              emoji: rainbowProfile?.emoji,
               ens: true,
               image: ensDomain?.avatar,
               network: 'mainnet',

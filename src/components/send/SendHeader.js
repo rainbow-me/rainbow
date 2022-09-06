@@ -15,17 +15,18 @@ import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import {
+  prefetchENSAvatar,
   useClipboard,
   useContacts,
   useDimensions,
   useENSName,
-  useRainbowProfile,
   useUserAccounts,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
+import { prefetchRainbowProfile } from '@/hooks/useRainbowProfile';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
@@ -88,7 +89,15 @@ export default function SendHeader({
   const { colors } = useTheme();
   const [hexAddress, setHexAddress] = useState('');
   const { data: ensName } = useENSName(hexAddress);
-  useRainbowProfile(hexAddress);
+
+  useEffect(() => {
+    if (hexAddress) {
+      prefetchRainbowProfile(hexAddress);
+    }
+    if (ensName) {
+      prefetchENSAvatar(ensName);
+    }
+  }, [ensName, hexAddress]);
 
   useEffect(() => {
     if (isValidAddress) {

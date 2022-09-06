@@ -20,7 +20,6 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
 import networkInfo from '@/helpers/networkInfo';
 import {
-  prefetchENSName,
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
@@ -44,6 +43,9 @@ import { emitChartsRequest, emitPortfolioRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { fetchENSName } from '@/hooks/useENSName';
+import { fetchENSAvatar } from '@/hooks/useENSAvatar';
+import { prefetchRainbowProfile } from '@/hooks/useRainbowProfile';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -221,19 +223,35 @@ export default function WalletScreen() {
     walletReady,
   ]);
 
+  const prefetch = useCallback(async () => {
+    // We are not prefetching intro profiles data on Android
+    // as the RPC call queue is considerably slower.
+    const contactAddresses = Object.keys(contacts);
+    if (ios) {
+      prefetchENSIntroData();
+      contactAddresses.map(async address => {
+        const ensName = await fetchENSName(address);
+        let ensAvatar;
+        if (ensName) {
+          ensAvatar = await fetchENSAvatar(ensName);
+        }
+        if (!ensAvatar) {
+          prefetchRainbowProfile(address);
+        }
+      });
+    } else {
+      contactAddresses.map(address => prefetchRainbowProfile(address));
+    }
+  }, [contacts]);
+
   useEffect(() => {
     if (walletReady && profilesEnabled) {
       InteractionManager.runAfterInteractions(() => {
-        // We are not prefetching intro profiles data on Android
-        // as the RPC call queue is considerably slower.
-        if (ios) {
-          prefetchENSIntroData();
-          Object.keys(contacts).map(address => prefetchENSName(address));
-        }
+        prefetch();
         trackENSProfile();
       });
     }
-  }, [contacts, profilesEnabled, trackENSProfile, walletReady]);
+  }, [contacts, prefetch, profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet)
