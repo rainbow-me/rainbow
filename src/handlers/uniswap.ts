@@ -26,6 +26,7 @@ import { loadWallet } from '../model/wallet';
 import {
   estimateGasWithPadding,
   getFlashbotsProvider,
+  getHasMerged,
   getProviderForNetwork,
   toHex,
   toHexNoLeadingZeros,
@@ -42,6 +43,7 @@ import {
 import { Network } from '@/helpers/networkTypes';
 import { erc20ABI, ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
+import store from '@/redux/store';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -186,6 +188,7 @@ export const getSwapGasLimitWithFakeApproval = async (
   provider: StaticJsonRpcProvider,
   tradeDetails: Quote
 ): Promise<number> => {
+  const { network } = store.getState().settings;
   let stateDiff: any;
 
   try {
@@ -200,7 +203,7 @@ export const getSwapGasLimitWithFakeApproval = async (
       ...(methodArgs ?? []),
       params
     );
-
+    const hasMerged = getHasMerged(network);
     const gasLimit = await getClosestGasEstimate(async (gas: number) => {
       const callParams = [
         {
@@ -211,7 +214,7 @@ export const getSwapGasLimitWithFakeApproval = async (
           to: RAINBOW_ROUTER_CONTRACT_ADDRESS,
           value: '0x0', // 100 gwei
         },
-        'latest',
+        hasMerged ? 'safe' : 'latest',
       ];
 
       try {

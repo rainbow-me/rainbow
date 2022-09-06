@@ -49,6 +49,7 @@ import {
   saveLocalTransactions,
 } from '@/handlers/localstorage/accountLocal';
 import {
+  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   web3Provider,
@@ -1552,11 +1553,15 @@ export const checkPendingTransactionsOnInitialize = (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
 ) => {
-  const { accountAddress: currentAccountAddress } = getState().settings;
+  const {
+    accountAddress: currentAccountAddress,
+    network,
+  } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
+  const hasMerged = getHasMerged(network);
   const currentNonce = await (provider || web3Provider).getTransactionCount(
     currentAccountAddress,
-    'latest'
+    hasMerged ? 'safe' : 'latest'
   );
   await dispatch(dataWatchPendingTransactions(provider, currentNonce));
 };
