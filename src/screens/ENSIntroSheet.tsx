@@ -71,10 +71,16 @@ export default function ENSIntroSheet() {
 
   const profileExists = useMemo(
     () =>
+      ensRecords?.contenthash ||
       Object.keys(ensRecords?.coinAddresses || {}).length > 1 ||
       ensAvatar?.imageUrl ||
       Object.keys(ensRecords?.records || {}).length > 0,
-    [ensAvatar?.imageUrl, ensRecords?.coinAddresses, ensRecords?.records]
+    [
+      ensAvatar?.imageUrl,
+      ensRecords?.coinAddresses,
+      ensRecords?.contenthash,
+      ensRecords?.records,
+    ]
   );
 
   const { navigate } = useNavigation();
