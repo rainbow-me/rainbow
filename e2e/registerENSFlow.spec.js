@@ -319,11 +319,12 @@ describe('Register ENS Flow', () => {
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-COMMIT');
     }
-    await Helpers.delay(1000);
+    await Helpers.delay(3000);
     if (device.getPlatform() === 'android') {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );

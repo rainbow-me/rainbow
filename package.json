@@ -442,7 +442,7 @@
         "binaryPath": "./android/app/build/outputs/apk/debug/app-debug.apk",
         "build": "cd ./android && ./gradlew clean && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.emulator",
-        "name": "Pixel_3_API_29"
+        "name": "Pixel_5_API_31"
       },
       "android.emu.release": {
         "binaryPath": "./android/app/build/outputs/apk/release/app-release.apk",
