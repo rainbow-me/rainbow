@@ -25,7 +25,6 @@ describe('Wallet avatar options', () => {
 
   it('test watched wallet without ENS', async () => {
     // TODO: verify that wallet address matches the EMPTY_WALLET.
-    // await element(by.text(EMPTY_WALLET)).toExist();
 
     await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
     await Helpers.checkIfExistsByText('Choose from Library');
@@ -36,10 +35,9 @@ describe('Wallet avatar options', () => {
     } else {
       await Helpers.checkIfExistsByText('Pick an Emoji');
       await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+      await Helpers.checkIfVisible('avatar-builder');
+      await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
     }
-
-    // await Helpers.checkIfVisible('avatar-builder');
-    // await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
   });
 
   it('import wallet without ENS', async () => {
@@ -56,7 +54,6 @@ describe('Wallet avatar options', () => {
     await Helpers.checkIfVisible('profile-screen', 40000);
 
     // TODO: check that wallet has different address (otherwise it means that creating wallet failed!).
-    // await element(by.text(EMPTY_WALLET)).toNotExist();
   });
 
   it('test imported wallet without ENS', async () => {
@@ -73,86 +70,94 @@ describe('Wallet avatar options', () => {
     await Helpers.swipe('ens-intro-sheet', 'down', 'slow');
   });
 
-  // it('watch wallet with ENS but without ENS avatar', async () => {
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
-  //   await Helpers.tapByText('􀂍 Add an existing wallet');
-  //   await Helpers.typeText('import-sheet-input', RAINBOW_TEST_WALLET, false);
-  //   await Helpers.waitAndTap('import-sheet-button');
-  //   await Helpers.waitAndTap('wallet-info-submit-button');
-  //   await Helpers.relaunchApp();
-  //   await Helpers.swipe('wallet-screen', 'right', 'slow');
-  //   await Helpers.checkIfVisible('profile-screen');
-  // });
+  it('watch wallet with ENS but without ENS avatar', async () => {
+    await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
+    await Helpers.tapByText('􀂍 Add an existing wallet');
+    await Helpers.typeText('import-sheet-input', RAINBOW_TEST_WALLET, false);
+    await Helpers.waitAndTap('import-sheet-button');
+    await Helpers.waitAndTap('wallet-info-submit-button');
+    // await Helpers.relaunchApp();
+    // await Helpers.swipe('wallet-screen', 'right', 'slow');
+    // await Helpers.checkIfVisible('profile-screen');
+  });
 
-  // it('test watched wallet with ENS but without ENS avatar', async () => {
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-  //   await Helpers.checkIfExistsByText('Choose from Library');
-  //   if (android) {
-  //     await Helpers.checkIfExistsByText('Shuffle Emoji');
-  //   } else {
-  //     await Helpers.checkIfExistsByText('Pick an Emoji');
-  //   }
-  //   await Helpers.checkIfExistsByText('View Profile');
-  //   await Helpers.tapByText('Pick an Emoji');
-  //   await Helpers.checkIfVisible('avatar-builder');
-  //   await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-  //   await Helpers.tapByText('View Profile');
-  //   await Helpers.checkIfVisible('profile-sheet');
-  //   await Helpers.swipe('profile-sheet', 'down', 'slow');
-  // });
+  it('test watched wallet with ENS but without ENS avatar', async () => {
+    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+    await Helpers.checkIfExistsByText('Choose from Library');
+    if (android) {
+      await Helpers.checkIfExistsByText('Shuffle Emoji');
+    } else {
+      await Helpers.checkIfExistsByText('Pick an Emoji');
+    }
+    await Helpers.checkIfExistsByText('View Profile');
+    if (!android) {
+      await Helpers.tapByText('Pick an Emoji');
+      await Helpers.checkIfVisible('avatar-builder');
+      await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
+      await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+    }
+    await Helpers.tapByText('View Profile');
+    await Helpers.checkIfVisible('profile-sheet');
+    await Helpers.swipe('profile-sheet', 'down', 'slow');
+  });
 
-  // it('import wallet with ENS but without ENS avatar', async () => {
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
-  //   await Helpers.tapByText('􀂍 Add an existing wallet');
-  //   await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-  //   await Helpers.waitAndTap('import-sheet-button');
-  //   await Helpers.waitAndTap('wallet-info-submit-button');
-  //   await Helpers.relaunchApp();
-  //   await Helpers.swipe('wallet-screen', 'right', 'slow');
-  //   await Helpers.checkIfVisible('profile-screen');
-  // });
+  it('import wallet with ENS but without ENS avatar', async () => {
+    await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
+    await Helpers.tapByText('􀂍 Add an existing wallet');
+    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
+    await Helpers.waitAndTap('import-sheet-button');
+    await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.checkIfVisible('wallet-screen', 80000);
+    // Commenting this out as this is pointless. What do we expect to see after swiping right if not profile-screen?
+    // await Helpers.relaunchApp();
+    // await Helpers.swipe('wallet-screen', 'right', 'slow');
+    // await Helpers.checkIfVisible('profile-screen');
+  });
 
-  // it('test imported wallet with ENS but without ENS avatar', async () => {
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-  //   await Helpers.checkIfExistsByText('Choose from Library');
-  //   if (android) {
-  //     await Helpers.checkIfExistsByText('Shuffle Emoji');
-  //   } else {
-  //     await Helpers.checkIfExistsByText('Pick an Emoji');
-  //   }
-  //   await Helpers.checkIfExistsByText('View Profile');
-  //   await Helpers.checkIfExistsByText('Edit Profile');
-  //   await Helpers.tapByText('Pick an Emoji');
-  //   await Helpers.checkIfVisible('avatar-builder');
-  //   await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-  //   await Helpers.tapByText('View Profile');
-  //   await Helpers.checkIfVisible('profile-sheet');
-  //   await Helpers.waitAndSwipe('profile-sheet', 'down');
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-  //   await Helpers.tapByText('Edit Profile');
-  //   await Helpers.checkIfExists('ens-edit-records-sheet');
-  //   await Helpers.swipe('ens-edit-records-sheet', 'down', 'slow');
-  // });
+  it('test imported wallet with ENS but without ENS avatar', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+    await Helpers.checkIfExistsByText('Choose from Library');
+    if (android) {
+      await Helpers.checkIfExistsByText('Shuffle Emoji');
+    } else {
+      await Helpers.checkIfExistsByText('Pick an Emoji');
+    }
+    await Helpers.checkIfExistsByText('View Profile');
+    await Helpers.checkIfExistsByText('Edit Profile');
+    if (!android) {
+      await Helpers.tapByText('Pick an Emoji');
+      await Helpers.checkIfVisible('avatar-builder');
+      await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
+      await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+    }
+    await Helpers.tapByText('View Profile');
+    await Helpers.checkIfVisible('profile-sheet');
+    await Helpers.waitAndSwipe('profile-sheet', 'down');
+    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+    await Helpers.tapByText('Edit Profile');
+    await Helpers.checkIfExists('ens-edit-records-sheet');
+    await Helpers.swipe('ens-edit-records-sheet', 'down', 'slow');
+  });
 
-  // it('import wallet with ENS avatar', async () => {
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
-  //   await Helpers.tapByText('􀂍 Add an existing wallet');
-  //   await Helpers.typeText('import-sheet-input', RAINBOW_WALLET, false);
-  //   await Helpers.waitAndTap('import-sheet-button');
-  //   await Helpers.waitAndTap('wallet-info-submit-button');
-  //   await Helpers.relaunchApp();
-  //   await Helpers.swipe('wallet-screen', 'right', 'slow');
-  //   await Helpers.checkIfVisible('profile-screen');
-  // });
+  it('import wallet with ENS avatar', async () => {
+    await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
+    await Helpers.tapByText('􀂍 Add an existing wallet');
+    await Helpers.typeText('import-sheet-input', RAINBOW_WALLET, false);
+    await Helpers.waitAndTap('import-sheet-button');
+    await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    // await Helpers.relaunchApp();
+    // await Helpers.swipe('wallet-screen', 'right', 'slow');
+    // await Helpers.checkIfVisible('profile-screen');
+  });
 
-  // it('test watched wallet with ENS avatar', async () => {
-  //   await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-  //   await Helpers.checkIfExistsByText('View Profile');
-  //   await Helpers.tapByText('View Profile');
-  //   await Helpers.checkIfVisible('profile-sheet');
-  // });
+  it('test watched wallet with ENS avatar', async () => {
+    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+    await Helpers.checkIfExistsByText('View Profile');
+    await Helpers.tapByText('View Profile');
+    await Helpers.checkIfVisible('profile-sheet');
+  });
 
   // missing case: imported wallet with ENS avatar
 
