@@ -150,6 +150,7 @@
     "fast-text-encoding": "1.0.3",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
+    "graphql-request": "5.0.0",
     "graphql-tag": "2.11.0",
     "hermes-engine": "0.11.0",
     "https-browserify": "0.0.1",
