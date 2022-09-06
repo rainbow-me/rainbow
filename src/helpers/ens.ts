@@ -56,6 +56,7 @@ export enum ENS_RECORDS {
   BTC = 'BTC',
   LTC = 'LTC',
   DOGE = 'DOGE',
+  name = 'name',
   displayName = 'me.rainbow.displayName',
   header = 'header',
   content = 'content',
@@ -110,19 +111,19 @@ export type TextRecordField = {
 };
 
 export const textRecordFields = {
-  [ENS_RECORDS.displayName]: {
+  [ENS_RECORDS.name]: {
     id: 'name',
     inputProps: {
       maxLength: 50,
     },
-    key: ENS_RECORDS.displayName,
+    key: ENS_RECORDS.name,
     label: lang.t('profiles.create.name'),
     placeholder: lang.t('profiles.create.name_placeholder'),
   },
   [ENS_RECORDS.description]: {
     id: 'bio',
     inputProps: {
-      maxLength: 100,
+      maxLength: 160,
       multiline: true,
     },
     key: ENS_RECORDS.description,
@@ -364,6 +365,12 @@ export const textRecordFields = {
   },
 } as {
   [key in ENS_RECORDS]?: TextRecordField;
+};
+
+export const deprecatedTextRecordFields = {
+  [ENS_RECORDS.displayName]: ENS_RECORDS.name,
+} as {
+  [key in ENS_RECORDS]: ENS_RECORDS;
 };
 
 export const ENS_DOMAIN = '.eth';

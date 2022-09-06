@@ -132,7 +132,7 @@ const DevNotificationsSection = () => {
     <ScrollView>
       <Box paddingHorizontal="19px" paddingTop="19px">
         <Box paddingBottom="19px">
-          <Text size="20px" weight="bold">
+          <Text size="20px / 24px (Deprecated)" weight="bold">
             Notifications Debug
           </Text>
         </Box>
@@ -196,12 +196,12 @@ const DevNotificationsSection = () => {
                   />
                 </Box>
                 <Box>
-                  <Text size="18px" weight="bold">
+                  <Text size="18px / 27px (Deprecated)" weight="bold">
                     {wallet.label || wallet.color}
                   </Text>
                 </Box>
                 <Box paddingTop="15px">
-                  <Text color="secondary60" size="16px">
+                  <Text color="secondary60" size="16px / 22px (Deprecated)">
                     {formatAddressForDisplay(wallet.address)}
                   </Text>
                 </Box>
