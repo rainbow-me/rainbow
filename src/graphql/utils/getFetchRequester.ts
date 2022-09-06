@@ -1,5 +1,6 @@
 import { rainbowFetch, RainbowFetchRequestOpts } from '@/rainbow-fetch';
 import { DocumentNode } from 'graphql';
+import { resolveRequestDocument } from 'graphql-request';
 
 const allowedOperations = ['mutation', 'query'];
 
@@ -24,11 +25,13 @@ export function getFetchRequester(url: string) {
       throw new Error('Node must contain a single query or mutation');
     }
 
+    const { query, operationName } = resolveRequestDocument(node);
     const { data } = await rainbowFetch(url, {
       ...options,
       method: 'POST',
       body: JSON.stringify({
-        query: node.loc?.source.body,
+        query,
+        operationName,
         variables,
       }),
     });
