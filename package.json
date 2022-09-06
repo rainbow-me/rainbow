@@ -3,7 +3,7 @@
   "version": "1.7.4-1",
   "private": true,
   "scripts": {
-    "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
+    "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
     "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
     "android": "yarn uninstall:android && react-native run-android",
@@ -12,6 +12,8 @@
     "android:bundle": "./scripts/check-env.sh && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
     "android:load-apk": "adb install android/app/build/outputs/apk/release/app-release.apk",
     "android-all:load-apk": "yarn adb-all install android/app/build/outputs/apk/release/app-release.apk",
+    "graphql-codegen:install": "yarn install --cwd src/graphql",
+    "graphql-codegen": "cd src/graphql && yarn codegen",
     "check-lockfile": "./scripts/check-lockfile.sh",
     "clean:android": "yarn uninstall:android && rm -rf android/build && yarn gradle clean",
     "clean:ios": "rm -rf ios/build && cd ios && pod deintegrate",
@@ -145,9 +147,10 @@
     "ethereumjs-util": "6.2.1",
     "ethereumjs-wallet": "1.0.1",
     "events": "1.1.1",
-    "fast-text-encoding": "1.0.3",
+    "fast-text-encoding": "1.0.4",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
+    "graphql-request": "5.0.0",
     "graphql-tag": "2.11.0",
     "hermes-engine": "0.11.0",
     "https-browserify": "0.0.1",
@@ -543,7 +546,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "*.{js,jsx,ts,tsx,graphql}": [
       "prettier --write",
       "eslint --cache"
     ]
