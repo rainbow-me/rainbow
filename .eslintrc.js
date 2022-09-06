@@ -22,6 +22,7 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
   );
 
 module.exports = {
+  root: true,
   extends: ['rainbow'],
   parserOptions: {
     project: ['./tsconfig.json'],
