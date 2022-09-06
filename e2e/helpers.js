@@ -102,9 +102,16 @@ export async function swipe(
   elementId,
   direction,
   speed = 'fast',
-  percentage = 0.75
+  percentage = 0.75,
+  normalizedStartingPointY = NaN
 ) {
-  await element(by.id(elementId))?.swipe(direction, speed, percentage);
+  await element(by.id(elementId))?.swipe(
+    direction,
+    speed,
+    percentage,
+    NaN,
+    normalizedStartingPointY
+  );
 }
 
 export async function scrollTo(scrollviewId, edge) {
@@ -136,7 +143,7 @@ export function checkIfExists(elementId) {
 }
 
 export function checkIfExistsByText(text) {
-  return expect(element(by.text(text))).toExist();
+  return expect(element(by.text(text)).atIndex(0)).toExist();
 }
 
 export function checkIfElementByTextIsVisible(text, timeout) {

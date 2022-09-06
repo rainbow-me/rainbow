@@ -319,11 +319,12 @@ describe('Register ENS Flow', () => {
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-COMMIT');
     }
-    await Helpers.delay(1000);
+    await Helpers.delay(3000);
     if (device.getPlatform() === 'android') {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
@@ -421,12 +422,12 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible(
       `wallet-screen-account-name-${RAINBOW_TEST_WALLET_NAME}`
     );
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.swipe('wallet-screen', 'right', 'fast');
     await Helpers.tapByText(RAINBOW_TEST_WALLET_NAME);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RAINBOW_TEST_WALLET_NAME}`
     );
-    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'fast');
   });
 
   it('Should open the View Profile Sheet after tapping "View Profile"', async () => {
@@ -434,9 +435,11 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfExistsByText('View Profile');
     await Helpers.tapByText('View Profile');
     await Helpers.checkIfExists('profile-sheet');
+    await Helpers.delay(2000);
     await Helpers.checkIfExistsByText('rainbowtestwallet.eth');
     await Helpers.checkIfExistsByText('Test 2');
     await Helpers.swipe('profile-sheet', 'down');
+    await Helpers.delay(1000);
   });
 
   it('Should open the Edit Profile Sheet after tapping "Edit Profile"', async () => {

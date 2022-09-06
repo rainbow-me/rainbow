@@ -123,7 +123,7 @@ export default function RainbowContextWrapper({ children }: any) {
       {children}
       {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type... Remove this comment to see the full error message */}
       {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
-      {((showConnectToHardhatButton && __DEV__) || IS_TESTING) && (
+      {((showConnectToHardhatButton && __DEV__) || IS_TESTING === 'true') && (
         <DevButton
           color={colors.purple}
           onPress={connectToHardhat}
