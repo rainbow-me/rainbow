@@ -12,6 +12,9 @@ let connector = null;
 let uri = null;
 let account = null;
 
+const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
+
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -49,9 +52,11 @@ const getOnchainBalance = async (address, tokenContractAddress) => {
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
-  await exec(
-    'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-  );
+  if (android) {
+    await exec(
+      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
+    );
+  }
 });
 
 const acceptAlertIfGasPriceIsHigh = async () => {
@@ -101,7 +106,7 @@ describe('Hardhat Transaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -138,7 +143,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('developer-settings-sheet');
   });
 
-  if (device.getPlatform() === 'ios') {
+  if (ios) {
     it('Should show Applied alert after pressing Alert', async () => {
       await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
       await Helpers.waitAndTap('alert-section');
