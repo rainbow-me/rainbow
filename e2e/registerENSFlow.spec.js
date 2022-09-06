@@ -201,31 +201,30 @@ describe('Register ENS Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should navigate to the Profile screen after swiping right', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
-  });
-
-  it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
-    await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-sheet');
-  });
-
-  it('Should navigate to Developer Settings after tapping Developer Section', async () => {
-    await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-sheet');
-  });
+  // it('Should navigate to the Profile screen after swiping right', async () => {
+  //   await Helpers.swipe('wallet-screen', 'right', 'slow');
+  //   await Helpers.checkIfVisible('profile-screen');
+  // });
+  //
+  // it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
+  //   await Helpers.waitAndTap('settings-button');
+  //   await Helpers.checkIfVisible('settings-sheet');
+  // });
+  //
+  // it('Should navigate to Developer Settings after tapping Developer Section', async () => {
+  //   await Helpers.waitAndTap('developer-section');
+  //   await Helpers.checkIfVisible('developer-settings-sheet');
+  // });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
-    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
-  it('Should navigate to the Wallet screen after swiping left', async () => {
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.checkIfVisible('wallet-screen');
-  });
+  // it('Should navigate to the Wallet screen after swiping left', async () => {
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  //   await Helpers.checkIfVisible('wallet-screen');
+  // });
 
   it('Should navigate to the Discover sheet screen after tapping Discover Button', async () => {
     await Helpers.waitAndTap('discover-button');
@@ -288,7 +287,7 @@ describe('Register ENS Flow', () => {
       RECORD_NAME,
       false
     );
-    await Helpers.tapByText('Got it');
+    await Helpers.tapByText('Got it'); // TODO check if not reusing
     await Helpers.checkIfVisible('ens-text-record-description');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');

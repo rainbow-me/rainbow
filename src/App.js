@@ -337,12 +337,12 @@ class App extends Component {
 
   render = () => (
     <MainThemeProvider>
-      <RainbowContextWrapper>
-        <ErrorBoundary>
-          <Portal>
-            <SafeAreaProvider>
-              <QueryClientProvider client={queryClient}>
-                <Provider store={store}>
+      <Provider store={store}>
+        <RainbowContextWrapper>
+          <ErrorBoundary>
+            <Portal>
+              <SafeAreaProvider>
+                <QueryClientProvider client={queryClient}>
                   <RecoilRoot>
                     <SharedValuesProvider>
                       <View style={containerStyle}>
@@ -362,12 +362,12 @@ class App extends Component {
                       </View>
                     </SharedValuesProvider>
                   </RecoilRoot>
-                </Provider>
-              </QueryClientProvider>
-            </SafeAreaProvider>
-          </Portal>
-        </ErrorBoundary>
-      </RainbowContextWrapper>
+                </QueryClientProvider>
+              </SafeAreaProvider>
+            </Portal>
+          </ErrorBoundary>
+        </RainbowContextWrapper>
+      </Provider>
     </MainThemeProvider>
   );
 }

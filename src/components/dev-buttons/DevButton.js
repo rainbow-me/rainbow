@@ -38,6 +38,7 @@ export default function DevButton({
   onPress = () => RNRestart.Restart(),
   children = <Icon color="white" name="warning" size="lmedium" />,
   initialDisplacement = 100,
+  testID = '',
 }) {
   const { colors } = useTheme();
   const color = givenColor || colors.purpleDark;
@@ -72,7 +73,7 @@ export default function DevButton({
       onHandlerStateChange={gestureHandler}
     >
       <Wrapper style={style}>
-        <Button color={color} onPress={onPress}>
+        <Button color={color} onPress={onPress} testID={testID}>
           {children}
         </Button>
       </Wrapper>
