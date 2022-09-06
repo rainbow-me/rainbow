@@ -422,12 +422,12 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible(
       `wallet-screen-account-name-${RAINBOW_TEST_WALLET_NAME}`
     );
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.swipe('wallet-screen', 'right', 'fast');
     await Helpers.tapByText(RAINBOW_TEST_WALLET_NAME);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RAINBOW_TEST_WALLET_NAME}`
     );
-    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'fast');
   });
 
   it('Should open the View Profile Sheet after tapping "View Profile"', async () => {
