@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
+import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
 describe('Watch address flow', () => {
@@ -37,6 +38,7 @@ describe('Watch address flow', () => {
 
   it('Should say "test.eth" in the Profile Screen header', async () => {
     if (device.getPlatform() === 'android') {
+      // TODO: now is the time to clean this up.
       // not working on android!
       // (app isn't idle and test times out)
       //   // await Helpers.checkIfElementByTextIsVisible('test.eth');
@@ -49,5 +51,6 @@ describe('Watch address flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
+    await exec('kill $(lsof -t -i:8545)');
   });
 });
