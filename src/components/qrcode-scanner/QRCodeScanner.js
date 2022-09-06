@@ -41,9 +41,22 @@ const CameraState = {
 export default function QRCodeScanner() {
   const cameraRef = useRef();
   const [cameraState, setCameraState] = useState(CameraState.Waiting);
-  const { goBack } = useNavigation();
+  const { goBack, setOptions } = useNavigation();
+
+  // We have to do this instead of `useIsFocused` because the
+  // component does not unmount properly when navigating away
+  // from the screen.
+  const [enabled, setEnabled] = useState(true);
+  useEffect(() => {
+    setOptions({
+      onWillDismiss: () => {
+        setEnabled(false);
+      },
+    });
+  }, [setOptions]);
 
   const hideCamera = useCallback(() => {
+    setEnabled(false);
     goBack();
   }, [goBack]);
 
@@ -101,22 +114,24 @@ export default function QRCodeScanner() {
         height={{ custom: deviceHeight }}
         marginTop={{ custom: -48 }}
       >
-        <Box
-          as={RNCamera}
-          captureAudio={false}
-          onBarCodeRead={onScan}
-          onMountError={() => setCameraState(CameraState.Error)}
-          pendingAuthorizationView={null}
-          ref={cameraRef}
-          borderRadius={40}
-          width="full"
-          height={{ custom: deviceHeight }}
-          position="absolute"
-        />
+        {enabled && (
+          <Box
+            as={RNCamera}
+            captureAudio={false}
+            onBarCodeRead={onScan}
+            onMountError={() => setCameraState(CameraState.Error)}
+            pendingAuthorizationView={null}
+            ref={cameraRef}
+            borderRadius={40}
+            width="full"
+            height={{ custom: deviceHeight }}
+            position="absolute"
+          />
+        )}
         <Rows>
           <Row>
             <Box
-              style={{ backgroundColor: 'black', opacity: 0.8 }}
+              style={{ backgroundColor: 'black', opacity: 0.9 }}
               height="full"
             />
           </Row>
@@ -164,7 +179,7 @@ export default function QRCodeScanner() {
           </Row>
           <Row>
             <Box
-              style={{ backgroundColor: 'black', opacity: 0.8 }}
+              style={{ backgroundColor: 'black', opacity: 0.9 }}
               height="full"
             />
           </Row>

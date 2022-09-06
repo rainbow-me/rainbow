@@ -1,7 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
-import { useIsFocused } from '@react-navigation/core';
 import { Header } from '../components/header';
 import { Centered } from '../components/layout';
 import {
@@ -37,7 +36,6 @@ const ScannerHeader = styled(Header).attrs({
 });
 
 export default function QRScannerScreen() {
-  const isFocused = useIsFocused();
   const { result: isEmulator } = useIsEmulator();
 
   return (
@@ -54,7 +52,7 @@ export default function QRScannerScreen() {
                 <EmulatorPasteUriButton />
               </ScannerHeader>
             )}
-            {!isEmulator && isFocused && <QRCodeScanner />}
+            {!isEmulator && <QRCodeScanner />}
           </CameraDimmer>
           {ios && (
             <ScannerHeader>
