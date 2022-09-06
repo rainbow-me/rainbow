@@ -383,7 +383,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   return {
-    action: actions[registrationStep] as (...args: any) => void,
+    action: actions[registrationStep] as (...args: any) => Promise<void>,
   };
 }
 
