@@ -126,22 +126,17 @@ const SmolAppIcon = () => {
 };
 
 const TheMergeIcon = () => {
-  const { colors } = useTheme();
   return (
     <Box
       style={{
-        shadowColor: colors.shadowBlack,
-        shadowOffset: { height: 4, width: 0 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
         marginVertical: 10,
       }}
     >
       <ImgixImage
         source={TheMergePng}
         style={{
-          width: 64,
-          height: 64,
+          width: 53,
+          height: 50,
         }}
       />
     </Box>
@@ -748,27 +743,29 @@ export const explainers = (params, colors) => ({
   },
   wyre_degradation: {
     logo: <TheMergeIcon />,
-    extraHeight: 76,
+    extraHeight: 6,
     text: lang.t('explain.wyre_degradation.text'),
     title: lang.t('explain.wyre_degradation.title'),
     stillCurious: (
-      <Text {...getBodyTextPropsWithColor(colors)}>
-        {lang.t('explain.wyre_degradation.still_curious.fragment1')}
-        <Text
-          color={colors?.appleBlue}
-          onPress={() =>
-            Linking.openURL(
-              'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
-            )
-          }
-          size="large"
-          suppressHighlighting
-          weight="semibold"
-        >
-          {lang.t('explain.wyre_degradation.still_curious.fragment2')}
+      <Box style={{ marginTop: -30 }}>
+        <Text {...getBodyTextPropsWithColor(colors)}>
+          {lang.t('explain.wyre_degradation.still_curious.fragment1')}
+          <Text
+            color={colors?.appleBlue}
+            onPress={() =>
+              Linking.openURL(
+                'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
+              )
+            }
+            size="large"
+            suppressHighlighting
+            weight="semibold"
+          >
+            {lang.t('explain.wyre_degradation.still_curious.fragment2')}
+          </Text>
+          {lang.t('explain.wyre_degradation.still_curious.fragment3')}
         </Text>
-        {lang.t('explain.wyre_degradation.still_curious.fragment3')}
-      </Text>
+      </Box>
     ),
   },
 });
