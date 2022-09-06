@@ -478,25 +478,25 @@ describe('Register ENS Flow', () => {
     // Validate that the fields are there
     await Helpers.checkIfExistsByText('Website');
     await Helpers.checkIfExistsByText('Twitter');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     await Helpers.checkIfExistsByText('Email');
     await Helpers.checkIfExistsByText('Instagram');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     await Helpers.checkIfExistsByText('Discord');
     await Helpers.checkIfExistsByText('GitHub');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     await Helpers.checkIfExistsByText('Bitcoin');
     await Helpers.checkIfExistsByText('Snapchat');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     await Helpers.checkIfExistsByText('Telegram');
     await Helpers.checkIfExistsByText('Reddit');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     await Helpers.checkIfExistsByText('Pronouns');
     await Helpers.checkIfExistsByText('Notice');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     await Helpers.checkIfExistsByText('Keywords');
     await Helpers.checkIfExistsByText('Litecoin');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     await Helpers.checkIfExistsByText('Dogecoin');
     await Helpers.checkIfExistsByText('Content');
     await Helpers.swipe('ens-edit-records-sheet', 'down');
@@ -539,6 +539,9 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-email-error');
 
+    if (device.getPlatform() === "android") {
+      await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
+    }
     // Fill "Instagram" field
     await Helpers.typeText(
       'ens-text-record-com.instagram',
@@ -546,7 +549,7 @@ describe('Register ENS Flow', () => {
       false
     );
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
 
     // Fill "Discord" field
     await Helpers.typeText(
@@ -568,7 +571,7 @@ describe('Register ENS Flow', () => {
     // Fill "GitHub" field
     await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB, false);
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
   });
 
   it('Should fill & validate the fields 2', async () => {
@@ -584,8 +587,10 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('ens-text-record-BTC-error');
+  })
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+  it('Should fill & validate the fields 3', async () => {
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
 
     // Fill "Snapchat" field
     await Helpers.typeText(
@@ -594,6 +599,10 @@ describe('Register ENS Flow', () => {
       false
     );
 
+    if (device.getPlatform() === "android") {
+      await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.3, 0.3);
+    }
+
     // Fill "Telegram" field
     await Helpers.typeText(
       'ens-text-record-org.telegram',
@@ -601,7 +610,7 @@ describe('Register ENS Flow', () => {
       false
     );
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
 
     // Fill "Reddit" field
     await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT, false);
@@ -609,7 +618,7 @@ describe('Register ENS Flow', () => {
     // Fill "Pronouns" field
     await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS, false);
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
 
     // Fill "Notice" field
     await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE, false);
@@ -617,9 +626,12 @@ describe('Register ENS Flow', () => {
     // Fill "Keywords" field
     await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS, false);
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
 
+  })
+
+  it('Should fill & validate the fields 4', async () => {
     // Fill "Litecoin" field
     await Helpers.typeText('ens-text-record-LTC', 'MGx', false);
     await Helpers.waitAndTap('ens-text-record-LTC-error');
@@ -654,7 +666,14 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.checkIfVisible(`ens-transaction-action-EDIT`);
-    await Helpers.waitAndTap(`ens-transaction-action-EDIT`);
+    if (device.getPlatform() === 'ios') {
+      await Helpers.waitAndTap(`ens-transaction-action-EDIT`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-EDIT');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
   it('Should confirm the update was successful', async () => {
@@ -695,6 +714,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should open ENS rainbowtestwallet.eth to renew', async () => {
+    await Helpers.waitAndTap('token-family-header-ENS'); // TODO remove me
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
   });
@@ -702,7 +722,14 @@ describe('Register ENS Flow', () => {
   it('Should renew rainbowtestwallet.eth', async () => {
     await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
     await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
-    await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
+    if (device.getPlatform() === 'ios') {
+      await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-RENEW');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
   it('Should navigate to the Wallet screen to send ENS from renew tx', async () => {
