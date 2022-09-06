@@ -180,30 +180,6 @@ export const ENS_SEARCH = gql`
   }
 `;
 
-export const ENS_DOMAINS = gql`
-  query lookup($name: String!) {
-    domains(where: { name: $name }) {
-      name
-      labelhash
-      resolver {
-        addr {
-          id
-        }
-      }
-    }
-  }
-`;
-
-export const ENS_REGISTRATIONS = gql`
-  query lookup($labelHash: String!) {
-    registrations(first: 1, where: { id: $labelHash }) {
-      id
-      registrationDate
-      expiryDate
-    }
-  }
-`;
-
 export type EnsGetRegistrationData = {
   registration: {
     id: string;

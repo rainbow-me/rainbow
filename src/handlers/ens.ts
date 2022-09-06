@@ -8,12 +8,10 @@ import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient as ensClientDeprecated } from '../apollo/client';
 import {
-  ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_NAME_FROM_LABELHASH,
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
-  ENS_REGISTRATIONS,
   EnsGetCoinTypesData,
   EnsGetNameFromLabelhash,
   EnsGetRecordsData,
@@ -337,25 +335,16 @@ export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 
 export const fetchRegistrationDate = async (recipient: string) => {
   if (recipient.length > 2) {
-    const recpt = recipient.toLowerCase();
-    const result = await ensClientDeprecated.query({
-      query: ENS_DOMAINS,
-      variables: {
-        name: recpt,
-      },
+    const { domains } = await ensClient.getDomainsByName({
+      name: recipient.toLowerCase(),
     });
-    const labelHash = result?.data?.domains?.[0]?.labelhash;
-    const registrations = await ensClientDeprecated.query({
-      query: ENS_REGISTRATIONS,
-      variables: {
-        labelHash,
-      },
+    const labelHash = domains?.[0]?.labelhash;
+    const { registrations } = await ensClient.getRegistrationsByLabelhash({
+      labelHash,
     });
-
-    const { registrationDate } = registrations?.data?.registrations?.[0] || {
+    const { registrationDate } = registrations?.[0] || {
       registrationDate: null,
     };
-
     return registrationDate;
   }
 };
