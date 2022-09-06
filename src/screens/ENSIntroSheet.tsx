@@ -1,5 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
+import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
@@ -168,7 +169,9 @@ export default function ENSIntroSheet() {
                 </Stack>
                 <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
                   <Bleed left="10px">
-                    <IntroMarquee isSmallPhone={isSmallPhone} />
+                    {IS_TESTING !== 'true' && (
+                      <IntroMarquee isSmallPhone={isSmallPhone} />
+                    )}
                   </Bleed>
                   <Inset horizontal="34px">
                     <Divider color="divider60" />

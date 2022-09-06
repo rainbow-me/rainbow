@@ -127,7 +127,7 @@ export default function RainbowContextWrapper({ children }: any) {
         <DevButton
           color={colors.purple}
           onPress={connectToHardhat}
-          initialDisplacement={300}
+          initialDisplacement={150}
           testID={'dev-button-hardhat'}
           size={20}
         >
