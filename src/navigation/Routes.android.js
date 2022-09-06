@@ -64,6 +64,7 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import QRScannerScreen from '@/screens/QRScannerScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -276,6 +277,10 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         options={expandedPresetWithSmallGestureResponseDistance}
+      />
+      <BSStack.Screen
+        component={QRScannerScreen}
+        name={Routes.QR_SCANNER_SCREEN}
       />
       {profilesEnabled && (
         <>

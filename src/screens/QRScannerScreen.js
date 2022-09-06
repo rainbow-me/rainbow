@@ -42,7 +42,7 @@ export default function QRScannerScreen() {
     <View pointerEvents="box-none">
       <ColorModeProvider value="darkTinted">
         <Box position="absolute" top={0} width="full" style={{ zIndex: 1 }}>
-          <Navbar title="Scan" />
+          <Navbar hasStatusBarInset={android} title="Scan" />
         </Box>
         <ScannerContainer>
           <Background />

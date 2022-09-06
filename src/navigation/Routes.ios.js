@@ -52,6 +52,7 @@ import {
   nativeStackDefaultConfigWithoutStatusBar,
   profileConfig,
   profilePreviewConfig,
+  qrScannerConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
@@ -420,7 +421,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
-        {...registerENSNavigatorConfig}
+        {...qrScannerConfig}
       />
 
       {profilesEnabled && (

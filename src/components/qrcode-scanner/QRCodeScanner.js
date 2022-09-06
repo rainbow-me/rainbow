@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
+import { InteractionManager } from 'react-native';
 import {
   check as checkForPermissions,
   PERMISSIONS,
@@ -43,11 +44,19 @@ export default function QRCodeScanner() {
   const [cameraState, setCameraState] = useState(CameraState.Waiting);
   const { goBack, setOptions } = useNavigation();
 
-  // We have to do this instead of `useIsFocused` because the
-  // component does not unmount properly when navigating away
-  // from the screen.
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(ios);
   useEffect(() => {
+    if (android) {
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          setEnabled(true);
+        }, 200); // to stop fps drop on android
+      });
+    }
+
+    // We have to do this instead of `useIsFocused` because the
+    // component does not unmount properly when navigating away
+    // from the screen.
     setOptions({
       onWillDismiss: () => {
         setEnabled(false);
@@ -153,19 +162,21 @@ export default function QRCodeScanner() {
                 </AccentColorProvider>
               </Inset>
             </Cover>
-            <Cover>
-              <Box
-                borderRadius={40}
-                width={{ custom: deviceWidth }}
-                height={{ custom: deviceWidth }}
-                style={{
-                  borderColor: 'rgba(245, 248, 255, 0.12)',
-                  borderStyle: 'solid',
-                  borderWidth: 2,
-                  zIndex: 2,
-                }}
-              />
-            </Cover>
+            {ios && (
+              <Cover>
+                <Box
+                  borderRadius={40}
+                  width={{ custom: deviceWidth }}
+                  height={{ custom: deviceWidth }}
+                  style={{
+                    borderColor: 'rgba(245, 248, 255, 0.12)',
+                    borderStyle: 'solid',
+                    borderWidth: 2,
+                    zIndex: 2,
+                  }}
+                />
+              </Cover>
+            )}
             <Cover alignHorizontal="center" alignVertical="center">
               {cameraState === CameraState.Error && (
                 <ErrorText error={lang.t('wallet.qr.error_mounting_camera')} />
