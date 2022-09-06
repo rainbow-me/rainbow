@@ -539,7 +539,7 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-email-error');
 
-    if (device.getPlatform() === "android") {
+    if (device.getPlatform() === 'android') {
       await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     }
     // Fill "Instagram" field
@@ -587,7 +587,7 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('ens-text-record-BTC-error');
-  })
+  });
 
   it('Should fill & validate the fields 3', async () => {
     await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
@@ -599,7 +599,7 @@ describe('Register ENS Flow', () => {
       false
     );
 
-    if (device.getPlatform() === "android") {
+    if (device.getPlatform() === 'android') {
       await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.3, 0.3);
     }
 
@@ -628,8 +628,7 @@ describe('Register ENS Flow', () => {
 
     await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
     await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
-
-  })
+  });
 
   it('Should fill & validate the fields 4', async () => {
     // Fill "Litecoin" field
@@ -714,7 +713,6 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should open ENS rainbowtestwallet.eth to renew', async () => {
-    await Helpers.waitAndTap('token-family-header-ENS'); // TODO remove me
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
   });
