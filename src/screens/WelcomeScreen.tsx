@@ -29,15 +29,15 @@ import {
   syncCloud,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 
-import { useHideSplashScreen } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position, shadow } from '@rainbow-me/styles';
-import { ThemeContextProps, useTheme } from '@rainbow-me/theme';
-import logger from 'logger';
+import { useHideSplashScreen } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position, shadow } from '@/styles';
+import { ThemeContextProps, useTheme } from '@/theme';
+import logger from '@/utils/logger';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,

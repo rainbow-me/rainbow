@@ -11,13 +11,14 @@ import {
   Box,
   Inline,
   Inset,
+  selectTextSizes,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import { Records } from '@rainbow-me/entities';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/design-system';
+import { Records } from '@/entities';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
+import { useENSRecordDisplayProperties } from '@/hooks';
+import { useTheme } from '@/theme';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {
@@ -41,11 +42,23 @@ export default function RecordTags({
 }) {
   const recordsToShow = useMemo(
     () =>
-      show.map(key => ({
-        key,
-        type: getRecordType(key),
-        value: records[key],
-      })) as {
+      show
+        .map(key => {
+          // If a deprecated record exists with it's updated counterpart
+          // (e.g. `me.rainbow.displayName` & `name` exists) then omit
+          // the deprecated record.
+          if (
+            deprecatedTextRecordFields[key] &&
+            records[deprecatedTextRecordFields[key]]
+          )
+            return null;
+          return {
+            key,
+            type: getRecordType(key),
+            value: records[key],
+          };
+        })
+        .filter(Boolean) as {
         key: string;
         value: string;
         type: 'address' | 'record';
@@ -81,17 +94,24 @@ export default function RecordTags({
   );
 }
 
+const tagSizes = selectTextSizes(
+  '14px / 19px (Deprecated)',
+  '16px / 22px (Deprecated)'
+);
+
+type TagSize = typeof tagSizes[number];
+
 function Tag({
   children,
   color,
   icon,
-  size = '14px',
+  size = '14px / 19px (Deprecated)',
   symbol,
 }: {
   children: React.ReactNode;
   color: 'appleBlue' | 'grey';
   icon?: string;
-  size?: '14px' | '16px';
+  size?: TagSize;
   symbol?: string;
 }) {
   const { colors } = useTheme();

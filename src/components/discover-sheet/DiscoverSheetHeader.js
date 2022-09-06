@@ -9,11 +9,11 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { borders, position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { borders, position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const Header = styled.View({
   flexDirection: 'row',

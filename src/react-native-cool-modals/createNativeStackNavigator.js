@@ -7,7 +7,7 @@ import {
 import * as React from 'react';
 
 import NativeStackView from './NativeStackView';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 function NativeStackNavigator(props) {
   const { children, initialRouteName, screenOptions, ...rest } = props;

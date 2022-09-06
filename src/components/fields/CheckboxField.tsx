@@ -7,7 +7,7 @@ import {
   Inset,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 export default function CheckboxField({
   color: customColor,
@@ -46,7 +46,11 @@ export default function CheckboxField({
           {isChecked && (
             <Inset left="1px">
               <AccentColorProvider color="white">
-                <Text color="accent" size="12px" weight="bold">
+                <Text
+                  color="accent"
+                  size="12px / 14px (Deprecated)"
+                  weight="bold"
+                >
                   􀆅
                 </Text>
               </AccentColorProvider>
@@ -57,7 +61,7 @@ export default function CheckboxField({
           <AccentColorProvider color={customColor || action}>
             <Text
               color={isChecked ? 'accent' : 'secondary80'}
-              size="16px"
+              size="16px / 22px (Deprecated)"
               weight="bold"
             >
               {label}

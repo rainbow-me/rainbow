@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { View } from 'react-native';
 
@@ -62,9 +61,9 @@ export const withText: Example = {
   Example: () =>
     source(
       <Stack space="15px">
-        <Text>Lorem ipsum</Text>
-        <Text>Lorem ipsum</Text>
-        <Text>Lorem ipsum</Text>
+        <Text size="17pt">Lorem ipsum</Text>
+        <Text size="17pt">Lorem ipsum</Text>
+        <Text size="17pt">Lorem ipsum</Text>
       </Stack>
     ),
 };

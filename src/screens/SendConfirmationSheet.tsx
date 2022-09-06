@@ -36,31 +36,23 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { Box, Heading, Inset, Stack, Text } from '@rainbow-me/design-system';
-import { AssetTypes } from '@rainbow-me/entities';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { Box, Heading, Inset, Stack, Text } from '@/design-system';
+import { AssetTypes } from '@/entities';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
-} from '@rainbow-me/handlers/ens';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { estimateGasLimit } from '@rainbow-me/handlers/web3';
+} from '@/handlers/ens';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
-import {
-  add,
-  convertAmountToNativeDisplay,
-} from '@rainbow-me/helpers/utilities';
-import {
-  isENSAddressFormat,
-  isValidDomainFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/emojiHandler';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -71,14 +63,14 @@ import {
   useGas,
   useUserAccounts,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
-import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -552,7 +544,11 @@ export default function SendConfirmationSheet() {
           <Column padding={24}>
             <Row>
               <Column justify="center" width={deviceWidth - 117}>
-                <Heading numberOfLines={1} size="26px" weight="heavy">
+                <Heading
+                  numberOfLines={1}
+                  size="26px / 30px (Deprecated)"
+                  weight="heavy"
+                >
                   {isNft ? asset?.name : nativeDisplayAmount}
                 </Heading>
                 <Row marginTop={12}>
@@ -562,7 +558,7 @@ export default function SendConfirmationSheet() {
                         ? colors.alpha(colors.blueGreyDark, 0.6)
                         : color,
                     }}
-                    size="16px"
+                    size="16px / 22px (Deprecated)"
                     weight={isNft ? 'bold' : 'heavy'}
                   >
                     {isNft
@@ -620,7 +616,11 @@ export default function SendConfirmationSheet() {
             <Row marginBottom={android ? 15 : 30}>
               <Column flex={1} justify="center">
                 <Row width={android ? '80%' : '90%'}>
-                  <Heading numberOfLines={1} size="26px" weight="heavy">
+                  <Heading
+                    numberOfLines={1}
+                    size="26px / 30px (Deprecated)"
+                    weight="heavy"
+                  >
                     {avatarName}
                   </Heading>
                   <Centered marginLeft={4}>
@@ -639,7 +639,7 @@ export default function SendConfirmationSheet() {
                             isDarkMode ? 0.5 : 0.6
                           ),
                         }}
-                        size="20px"
+                        size="20px / 24px (Deprecated)"
                         weight="heavy"
                       >
                         􀍡
@@ -650,7 +650,7 @@ export default function SendConfirmationSheet() {
                 <Row marginTop={12}>
                   <Text
                     color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
-                    size="16px"
+                    size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
                     {isSendingToUserAccount
@@ -702,7 +702,11 @@ export default function SendConfirmationSheet() {
                   >
                     <Callout
                       after={
-                        <Text color="secondary30" weight="heavy">
+                        <Text
+                          color="secondary30"
+                          size="16px / 22px (Deprecated)"
+                          weight="heavy"
+                        >
                           􀅵
                         </Text>
                       }

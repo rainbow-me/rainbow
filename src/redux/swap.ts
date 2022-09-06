@@ -1,9 +1,9 @@
 import { Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
-import { SwappableAsset } from '@rainbow-me/entities';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
-import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import { SwappableAsset } from '@/entities';
+import { ExchangeModalTypes } from '@/helpers';
+import { AppDispatch, AppGetState } from '@/redux/store';
 
 export interface SwapAmount {
   display: string | null;
@@ -203,7 +203,7 @@ export const updateSwapOutputCurrency = (
 };
 
 export const flipSwapCurrencies = (
-  outputIndependentField: Boolean,
+  outputIndependentField: boolean,
   independentValue?: string | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { inputCurrency, outputCurrency } = getState().swap;

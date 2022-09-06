@@ -8,12 +8,9 @@ import {
 import { Source } from 'react-native-fast-image';
 import { MMKV } from 'react-native-mmkv';
 import parse from 'url-parse';
-import {
-  isCloudinaryStorageLink,
-  signUrl,
-} from '@rainbow-me/handlers/cloudinary';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
-import logger from 'logger';
+import { isCloudinaryStorageLink, signUrl } from '@/handlers/cloudinary';
+import { STORAGE_IDS } from '@/model/mmkv';
+import logger from '@/utils/logger';
 
 export const imgixCacheStorage = new MMKV({
   id: STORAGE_IDS.IMGIX_CACHE,
@@ -217,7 +214,10 @@ export const maybeSignUri = (
   return externalImageUri;
 };
 
-export const maybeSignSource = (source: Source, options?: {}): Source => {
+export const maybeSignSource = (
+  source: Source,
+  options?: Record<string, unknown>
+): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
     return {

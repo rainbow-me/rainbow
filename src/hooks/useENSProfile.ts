@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
 import { ensAddressQueryKey, fetchENSAddress } from './useENSAddress';
 import { ensAvatarQueryKey, fetchENSAvatar } from './useENSAvatar';
@@ -8,12 +8,9 @@ import { ensRecordsQueryKey, fetchENSRecords } from './useENSRecords';
 import { ensRegistrantQueryKey, fetchENSRegistrant } from './useENSRegistrant';
 import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
 import useWallets from './useWallets';
-import {
-  getENSProfile,
-  saveENSProfile,
-} from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { getENSProfile, saveENSProfile } from '@/handlers/localstorage/ens';
+import { queryClient } from '@/react-query/queryClient';
+import { QueryConfig, UseQueryData } from '@/react-query/types';
 
 const queryKey = (
   name: string,

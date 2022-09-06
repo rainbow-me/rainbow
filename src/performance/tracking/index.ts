@@ -2,7 +2,7 @@ import { IS_TESTING, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
 import { PerformanceMetricsType } from './types/PerformanceMetrics';
 import { PerformanceTagsType } from './types/PerformanceTags';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 /*
 This will be a version for all performance tracking events.
 If we make breaking changes we will be able to take it into consideration when doing analytics
@@ -136,7 +136,6 @@ export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
   return function wrapper(this: any, ...args: Parameters<Fn>): ReturnType<Fn> {
     const startTime = performance.now();
 
-    // eslint-disable-next-line babel/no-invalid-this
     const res = fn.apply(this, args);
 
     const durationInMs = performance.now() - startTime;

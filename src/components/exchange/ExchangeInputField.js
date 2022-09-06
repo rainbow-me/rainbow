@@ -3,7 +3,7 @@ import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
   paddingTop: android ? 0 : 6,
@@ -67,12 +67,14 @@ export default function ExchangeInputField({
           editable={editable}
           height={64}
           loading={loading}
+          mainnetAddress={inputCurrencyMainnetAddress}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
           onFocus={onFocus}
           ref={nativeFieldRef}
           setNativeAmount={setNativeAmount}
           testID={testID + '-native'}
+          type={inputCurrencyAssetType}
           updateOnFocus={updateAmountOnFocus}
         />
         <ExchangeMaxButton

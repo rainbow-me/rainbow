@@ -4,9 +4,9 @@ import {
   useAccountTransactions,
   usePendingTransactions,
 } from '.';
-import { ENSRegistrationState } from '@rainbow-me/entities';
-import { AppState } from '@rainbow-me/redux/store';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ENSRegistrationState } from '@/entities';
+import { AppState } from '@/redux/store';
+import { ethereumUtils } from '@/utils';
 
 /**
  * @description Returns the local ENS transactions for a given name.

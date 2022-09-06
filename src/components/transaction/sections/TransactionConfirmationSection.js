@@ -6,9 +6,9 @@ import { CoinIcon } from '../../coin-icon';
 import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
-import { formatFixedDecimals } from '@rainbow-me/helpers/utilities';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { formatFixedDecimals } from '@/helpers/utilities';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const Amount = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
   color: colors.dark,

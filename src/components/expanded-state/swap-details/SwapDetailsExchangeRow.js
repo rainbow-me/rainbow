@@ -16,11 +16,11 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { usePrevious, useStepper } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { getExchangeIconUrl, magicMemo } from '@rainbow-me/utils';
+} from '@/design-system';
+import networkInfo from '@/helpers/networkInfo';
+import { usePrevious, useStepper } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { getExchangeIconUrl, magicMemo } from '@/utils';
 
 const parseExchangeName = name => {
   const networks = Object.keys(networkInfo).map(network =>
@@ -82,7 +82,7 @@ const ExchangeIcon = magicMemo(
                   <Text
                     align="center"
                     color="secondary80"
-                    size="14px"
+                    size="14px / 19px (Deprecated)"
                     weight="semibold"
                   >
                     {protocol?.substring(0, 1)}

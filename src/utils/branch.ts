@@ -3,7 +3,7 @@ import pako from 'pako';
 import qs from 'qs';
 import branch from 'react-native-branch';
 import { IS_TESTING } from 'react-native-dotenv';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const branchListener = (handleOpenLinkingURL: (url: any) => void) =>
   branch.subscribe(({ error, params, uri }) => {

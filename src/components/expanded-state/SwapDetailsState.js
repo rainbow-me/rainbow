@@ -21,13 +21,14 @@ import {
 } from './swap-details';
 import {
   useHeight,
+  usePrevious,
   usePriceImpactDetails,
   useSwapCurrencies,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import { abbreviations } from '@/utils';
 
 const springConfig = {
   damping: 500,
@@ -86,6 +87,8 @@ export default function SwapDetailsState({
   restoreFocusOnSwapModal,
 }) {
   const { setParams } = useNavigation();
+  const isFocused = useIsFocused();
+  const prevIsFocused = usePrevious(isFocused);
   const {
     params: { longFormHeight, currentNetwork, flashbotTransaction } = {},
   } = useRoute();
@@ -124,7 +127,11 @@ export default function SwapDetailsState({
     FOOTER_CONTENT_MIN_HEIGHT
   );
 
-  useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
+  useEffect(() => {
+    if (!isFocused && prevIsFocused) {
+      return restoreFocusOnSwapModal();
+    }
+  }, [isFocused, prevIsFocused, restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
 
   const sheetHeightWithoutKeyboard =

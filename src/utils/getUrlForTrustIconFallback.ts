@@ -1,4 +1,4 @@
-import { AssetType, EthereumAddress } from '@rainbow-me/entities';
+import { AssetType, EthereumAddress } from '@/entities';
 
 export default function getUrlForTrustIconFallback(
   address: EthereumAddress,

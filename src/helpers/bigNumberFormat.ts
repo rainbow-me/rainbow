@@ -1,10 +1,10 @@
 import { memoFn } from '../utils/memoFn';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { supportedNativeCurrencies } from '@/references';
 import {
   convertAmountToNativeDisplay,
   divide,
   greaterThan,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 export const bigNumberFormat = memoFn(
   (

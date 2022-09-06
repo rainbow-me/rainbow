@@ -15,7 +15,7 @@ export { MarkdownText } from './components/MarkdownText/MarkdownText';
 export { renderStringWithEmoji } from './typography/renderStringWithEmoji';
 export { Rows, Row } from './components/Rows/Rows';
 export { Stack } from './components/Stack/Stack';
-export { Text } from './components/Text/Text';
+export { selectTextSizes, Text } from './components/Text/Text';
 export { TextLink } from './components/TextLink/TextLink';
 export { useColorMode } from './color/ColorMode';
 export { useForegroundColor } from './color/useForegroundColor';

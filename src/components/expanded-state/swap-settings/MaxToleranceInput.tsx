@@ -20,17 +20,13 @@ import {
   Inline,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { Network } from '@rainbow-me/helpers';
-import {
-  add,
-  convertNumberToString,
-  greaterThan,
-} from '@rainbow-me/helpers/utilities';
-import { useMagicAutofocus, useSwapSettings } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+} from '@/design-system';
+import { Network } from '@/helpers';
+import { add, convertNumberToString, greaterThan } from '@/helpers/utilities';
+import { useMagicAutofocus, useSwapSettings } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();
 const convertPercentToBips = (percent: number) => (percent * 100).toString();
@@ -121,10 +117,14 @@ export const MaxToleranceInput = forwardRef(
               testID="swap-slippage-label"
             >
               <Inline alignVertical="center">
-                <Text size="16px" weight="bold">
+                <Text size="16px / 22px (Deprecated)" weight="bold">
                   {`${lang.t('exchange.slippage_tolerance')} `}
                   {!hasPriceImpact && (
-                    <Text color="secondary30" size="16px" weight="bold">
+                    <Text
+                      color="secondary30"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       {' 􀅵'}
                     </Text>
                   )}
@@ -138,11 +138,21 @@ export const MaxToleranceInput = forwardRef(
             </Box>
             {hasPriceImpact && (
               <Box>
-                <Text size={android ? '12px' : '14px'}>
+                <Text
+                  size={
+                    android
+                      ? '12px / 14px (Deprecated)'
+                      : '14px / 19px (Deprecated)'
+                  }
+                >
                   <AccentColorProvider color={priceImpactColor!}>
                     <Text
                       color="accent"
-                      size={android ? '12px' : '14px'}
+                      size={
+                        android
+                          ? '12px / 14px (Deprecated)'
+                          : '14px / 19px (Deprecated)'
+                      }
                       weight="bold"
                     >
                       {lang.t('exchange.high')}
@@ -150,7 +160,11 @@ export const MaxToleranceInput = forwardRef(
                   </AccentColorProvider>
                   <Text
                     color="secondary50"
-                    size={android ? '12px' : '14px'}
+                    size={
+                      android
+                        ? '12px / 14px (Deprecated)'
+                        : '14px / 19px (Deprecated)'
+                    }
                     weight="bold"
                   >{` · ${lang.t('exchange.price_impact.label')}`}</Text>
                 </Text>

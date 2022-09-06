@@ -2,10 +2,10 @@ import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
-import { Text } from '@rainbow-me/design-system';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { position } from '@rainbow-me/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { Text } from '@/design-system';
+import { TransactionStatusTypes } from '@/entities';
+import { position } from '@/styles';
+import { ThemeContextProps } from '@/theme';
 
 const StatusProps = {
   [TransactionStatusTypes.approved]: {
@@ -159,7 +159,11 @@ export default React.memo(function FastTransactionStatusBadge({
       {showIcon && (
         <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
       )}
-      <Text color={{ custom: statusColor }} size="14px" weight="semibold">
+      <Text
+        color={{ custom: statusColor }}
+        size="14px / 19px (Deprecated)"
+        weight="semibold"
+      >
         {title}
       </Text>
     </View>

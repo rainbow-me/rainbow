@@ -4,8 +4,8 @@ import AesEncryptor from '../handlers/aesEncryption';
 import * as keychain from '../model/keychain';
 import { Navigation } from '../navigation';
 import { pinKey } from '../utils/keychainConstants';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
 
 const encryptor = new AesEncryptor();
 
@@ -56,6 +56,23 @@ export async function authenticateWithPINAndCreateIfNeeded() {
         resolve(pin);
       },
       validPin,
+    });
+  });
+}
+
+export async function saveNewAuthenticationPIN() {
+  return new Promise((resolve, reject) => {
+    return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
+      onCancel: reject,
+      onSuccess: async (pin: any) => {
+        try {
+          await savePIN(pin);
+        } catch (e) {
+          reject();
+        }
+        resolve(pin);
+      },
+      validPin: false,
     });
   });
 }

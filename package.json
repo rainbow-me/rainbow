@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.7.3-1",
+  "version": "1.7.4-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
@@ -37,7 +37,7 @@
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx}'",
     "lint": "yarn lint:ts && yarn lint:js",
-    "lint:js": "eslint --cache --ext '.ts,.tsx,.js,.jsx' .",
+    "lint:js": "eslint --cache .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "preview": "git reset && git commit -m \"/preview\" --allow-empty",
@@ -107,6 +107,7 @@
     "@segment/analytics-react-native": "2.7.0",
     "@segment/sovran-react-native": "0.4.3",
     "@sentry/react-native": "3.4.1",
+    "@tanstack/react-query": "4.2.1",
     "@tradle/react-native-http": "2.0.1",
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
@@ -252,7 +253,6 @@
     "react-native-widgetkit": "1.0.9",
     "react-navigation-backhandler": "2.0.1",
     "react-primitives": "0.8.1",
-    "react-query": "3.34.15",
     "react-redux": "7.2.1",
     "react-style-proptype": "3.2.2",
     "readable-stream": "1.1.14",
@@ -319,9 +319,8 @@
     "chai": "4.2.0",
     "detox": "19.7.1",
     "dotenv": "8.2.0",
-    "eslint": "7.32.0",
-    "eslint-config-rainbow": "2.0.0",
-    "eslint-import-resolver-babel-module": "5.3.1",
+    "eslint": "8.22.0",
+    "eslint-config-rainbow": "4.2.0",
     "ethereum-waffle": "3.4.0",
     "ethers": "5.6.8",
     "graphql": "15.3.0",
@@ -449,6 +448,7 @@
     "test-runner": "jest"
   },
   "react-native": {
+    "@tanstack/react-query": "@tanstack/react-query/build/esm/index",
     "zlib": "browserify-zlib",
     "console": "console-browserify",
     "constants": "constants-browserify",
@@ -475,6 +475,7 @@
     "tls": false
   },
   "browser": {
+    "@tanstack/react-query": "@tanstack/react-query/build/esm/index",
     "zlib": "browserify-zlib",
     "console": "console-browserify",
     "constants": "constants-browserify",
@@ -543,7 +544,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "prettier --write",
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js"
+      "eslint --cache"
     ]
   }
 }

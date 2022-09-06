@@ -6,10 +6,10 @@ import {
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplayWithThreshold,
   isZero,
-} from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+} from '@/helpers/utilities';
+import { useAccountSettings, useStepper } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 export default function SwapDetailsUniswapRow({
   tradeDetails,

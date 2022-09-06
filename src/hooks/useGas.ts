@@ -8,14 +8,14 @@ import {
   LegacyGasFee,
   LegacyGasFeeParams,
   ParsedAddressAsset,
-} from '@rainbow-me/entities';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/entities';
+import { isL2Network } from '@/handlers/web3';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import {
   fromWei,
   greaterThan,
   greaterThanOrEqualTo,
-} from '@rainbow-me/helpers/utilities';
+} from '@/helpers/utilities';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,
@@ -23,8 +23,8 @@ import {
   gasUpdateGasFeeOption,
   gasUpdateToCustomGasFee,
   gasUpdateTxFee,
-} from '@rainbow-me/redux/gas';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/redux/gas';
+import { ethereumUtils } from '@/utils';
 
 const checkSufficientGas = (
   txFee: LegacyGasFee | GasFee,

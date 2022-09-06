@@ -23,22 +23,22 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
 } from '../components/sheet';
-import { analytics } from '@rainbow-me/analytics';
-import { Text } from '@rainbow-me/design-system';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import { analytics } from '@/analytics';
+import { Text } from '@/design-system';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { getDappHostname } from '@/helpers/dappNameHandler';
+import networkInfo from '@/helpers/networkInfo';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import {
   androidShowNetworksActionSheet,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
-} from '@rainbow-me/helpers/walletConnectNetworks';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/helpers/walletConnectNetworks';
+import { useAccountSettings, useWallets } from '@/hooks';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { ethereumUtils } from '@/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -68,7 +68,7 @@ const LabelText = ({ children, ...props }) => {
     <Text
       color="primary"
       numberOfLines={1}
-      size="18px"
+      size="18px / 27px (Deprecated)"
       weight="bold"
       {...props}
     >
@@ -79,7 +79,12 @@ const LabelText = ({ children, ...props }) => {
 
 const SwitchText = ({ children, ...props }) => {
   return (
-    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+    <Text
+      color="secondary40"
+      size="14px / 19px (Deprecated)"
+      weight="semibold"
+      {...props}
+    >
       {children}
     </Text>
   );
@@ -320,7 +325,7 @@ export default function WalletConnectApprovalSheet() {
                     align="center"
                     color="primary"
                     numberOfLines={1}
-                    size="23px"
+                    size="23px / 27px (Deprecated)"
                     weight="heavy"
                   >
                     {dappName}
@@ -329,7 +334,7 @@ export default function WalletConnectApprovalSheet() {
                 <Text
                   align="center"
                   color="secondary60"
-                  size="23px"
+                  size="23px / 27px (Deprecated)"
                   weight="semibold"
                 >
                   {type === WalletConnectApprovalSheetType.connect
@@ -341,7 +346,11 @@ export default function WalletConnectApprovalSheet() {
               </Column>
             </Centered>
             <Row marginBottom={30} marginTop={30}>
-              <Text color="action" size="18px" weight="heavy">
+              <Text
+                color="action"
+                size="18px / 27px (Deprecated)"
+                weight="heavy"
+              >
                 {formattedDappUrl}
               </Text>
             </Row>

@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 
 import { Example } from '../../docs/types';
@@ -290,8 +289,8 @@ export const dynamicWidthContent: Example = {
   Example: () =>
     source(
       <Columns space="19px">
-        <Text>Lorem</Text>
-        <Text>{loremIpsum}</Text>
+        <Text size="17pt">Lorem</Text>
+        <Text size="17pt">{loremIpsum}</Text>
       </Columns>
     ),
 };

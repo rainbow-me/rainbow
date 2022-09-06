@@ -12,7 +12,7 @@ import RecordTags, {
 } from './RecordTags/RecordTags';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { getLowResUrl } from '@/utils/getLowResUrl';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@/config';
 import {
   Bleed,
   Box,
@@ -22,8 +22,8 @@ import {
   Heading,
   Inset,
   Stack,
-} from '@rainbow-me/design-system';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { ENS_RECORDS } from '@/helpers/ens';
 import {
   useENSAddress,
   useENSAvatar,
@@ -32,8 +32,8 @@ import {
   useENSRecords,
   useFetchUniqueTokens,
   useOpenENSNFTHandler,
-} from '@rainbow-me/hooks';
-import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
+} from '@/hooks';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -131,7 +131,9 @@ export default function ProfileSheetHeader({
         </Bleed>
         <Inset horizontal="19px">
           <Stack space="19px">
-            <Heading size="23px">{abbreviateEnsForDisplay(ensName)}</Heading>
+            <Heading size="23px / 27px (Deprecated)" weight="heavy">
+              {abbreviateEnsForDisplay(ensName)}
+            </Heading>
             <>
               {isLoading ? (
                 <DescriptionPlaceholder />
@@ -152,6 +154,7 @@ export default function ProfileSheetHeader({
                         ...coinAddresses,
                       }}
                       show={[
+                        ENS_RECORDS.name,
                         ENS_RECORDS.displayName,
                         ENS_RECORDS.url,
                         ENS_RECORDS.twitter,
