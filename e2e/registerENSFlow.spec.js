@@ -372,13 +372,13 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
-    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'fast');
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.tapByText(`${RANDOM_NAME_ETH}`);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
-    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'fast');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
