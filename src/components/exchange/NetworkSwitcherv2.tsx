@@ -4,7 +4,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
-import { Box, Columns, Inline, Text } from '@/design-system';
+import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
 import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
@@ -114,17 +114,19 @@ const NetworkSwitcherv2 = ({
                         size="small"
                       />
                     )}
-                    <Text
-                      color={
-                        isSelected
-                          ? { custom: colors.networkColors[network] }
-                          : 'secondary50'
-                      }
-                      size="16px / 22px (Deprecated)"
-                      weight="bold"
-                    >
-                      {title}
-                    </Text>
+                    <Bleed top={{ custom: android ? 2 : 0 }}>
+                      <Text
+                        color={
+                          isSelected
+                            ? { custom: colors.networkColors[network] }
+                            : 'secondary50'
+                        }
+                        size="16px / 22px (Deprecated)"
+                        weight="bold"
+                      >
+                        {title}
+                      </Text>
+                    </Bleed>
                   </Inline>
                 </Box>
               );
