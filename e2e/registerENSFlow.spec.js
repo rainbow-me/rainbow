@@ -435,9 +435,11 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfExistsByText('View Profile');
     await Helpers.tapByText('View Profile');
     await Helpers.checkIfExists('profile-sheet');
+    await Helpers.delay(2000);
     await Helpers.checkIfExistsByText('rainbowtestwallet.eth');
     await Helpers.checkIfExistsByText('Test 2');
     await Helpers.swipe('profile-sheet', 'down');
+    await Helpers.delay(1000);
   });
 
   it('Should open the Edit Profile Sheet after tapping "Edit Profile"', async () => {
