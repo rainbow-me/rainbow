@@ -6,7 +6,6 @@ module.exports = {
   maxWorkers: 4,
   setupFilesAfterEnv: ['./init.js'],
   testEnvironment: './environment',
-  testRunner: 'jest-circus/runner',
   testTimeout: 120000,
   testRegex: '\\.spec\\.[jt]sx?$',
   reporters: ['detox/runners/jest/streamlineReporter'],
