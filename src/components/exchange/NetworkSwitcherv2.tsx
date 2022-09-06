@@ -51,7 +51,7 @@ const NetworkSwitcherv2 = ({
     };
   };
 
-  // if polygon is selcted intially we should scroll into view
+  // if polygon or optimism are selected initially we should scroll into view
   useEffect(() => {
     if (
       isFocused &&
