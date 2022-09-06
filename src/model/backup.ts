@@ -27,9 +27,13 @@ import {
   RainbowWallet,
 } from './wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { saveNewAuthenticationPIN } from '@/handlers/authentication';
+import {
+  authenticateWithPIN,
+  saveNewAuthenticationPIN,
+} from '@/handlers/authentication';
 import { analytics } from '@/analytics';
 import logger from '@/utils/logger';
+import delay from 'delay';
 
 type BackupPassword = string;
 
@@ -278,6 +282,40 @@ async function restoreCurrentBackupIntoKeychain(
 
               logger.sentry(
                 'This wallet was backuped with faceId and now we replace it by seed with PIN '
+              );
+              return keychain.saveString(key, valueWithPINInfo, accessControl);
+            }
+          } else if (wasBackupSavedWithPIN) {
+            // the seed phrase should not be encrypted at this stage, if it is,
+            // it means it's encrypted with the PIN that was used with wallet creation,
+            // and we need to encrypt it and let the user create a new PIN
+            onBeforePINCreated();
+            const backupPIN = await authenticateWithPIN();
+            onAfterPINCreated();
+
+            const decryptedSeed = await encryptor.decrypt(
+              backupPIN,
+              seedphrase
+            );
+
+            await delay(1000);
+            onBeforePINCreated();
+            const userPIN = await saveNewAuthenticationPIN();
+            onAfterPINCreated();
+
+            const encryptedSeed = await encryptor.encrypt(
+              userPIN,
+              decryptedSeed
+            );
+            if (encryptedSeed) {
+              // in the PIN flow, we must manually encrypt the seedphrase with PIN
+              const valueWithPINInfo = JSON.stringify({
+                ...parsedValue,
+                seedphrase: encryptedSeed,
+              });
+
+              logger.sentry(
+                'This wallet was backuped with an encrypted PIN, and now we decrypt it and encrypt it with own PIN'
               );
               return keychain.saveString(key, valueWithPINInfo, accessControl);
             }
