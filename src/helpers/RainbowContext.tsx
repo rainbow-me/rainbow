@@ -129,6 +129,7 @@ export default function RainbowContextWrapper({ children }: any) {
           onPress={connectToHardhat}
           initialDisplacement={150}
           testID={'dev-button-hardhat'}
+          size={20}
         >
           {/* @ts-ignore */}
           <Emoji>👷</Emoji>
