@@ -231,11 +231,11 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('discover-header');
   });
 
-  it('Should go to ENS search screen by pressing the ENS search banner', async () => {
-    await Helpers.waitAndTap('ens-register-name-banner');
-    await Helpers.checkIfVisible('ens-search-input');
-    await Helpers.swipe('ens-search-sheet', 'down');
-  });
+  // it('Should go to ENS search screen by pressing the ENS search banner', async () => {
+  //   await Helpers.waitAndTap('ens-register-name-banner');
+  //   await Helpers.checkIfVisible('ens-search-input');
+  //   await Helpers.swipe('ens-search-sheet', 'down');
+  // });
 
   it('Should go to ENS flow pressing the ENS banner', async () => {
     device.getPlatform() === 'android' && (await Helpers.delay(2000));
@@ -251,21 +251,21 @@ describe('Register ENS Flow', () => {
     );
   });
 
-  it('Should be able to type a name that is not available', async () => {
-    await Helpers.checkIfVisible('ens-search-input');
-    await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
-    await Helpers.waitAndTap('ens-search-clear-button');
-  });
-
-  it('Should be able to type a name that has special characters', async () => {
-    await Helpers.checkIfVisible('ens-search-input');
-    await Helpers.typeText('ens-search-input', '/invalidname', false);
-    await Helpers.waitAndTap('ens-search-clear-button');
-    await Helpers.typeText('ens-search-input', '&&&ivalidname', false);
-    await Helpers.waitAndTap('ens-search-clear-button');
-    await Helpers.typeText('ens-search-input', '/invalidname/', false);
-    await Helpers.waitAndTap('ens-search-clear-button');
-  });
+  // it('Should be able to type a name that is not available', async () => {
+  //   await Helpers.checkIfVisible('ens-search-input');
+  //   await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
+  //   await Helpers.waitAndTap('ens-search-clear-button');
+  // });
+  //
+  // it('Should be able to type a name that has special characters', async () => {
+  //   await Helpers.checkIfVisible('ens-search-input');
+  //   await Helpers.typeText('ens-search-input', '/invalidname', false);
+  //   await Helpers.waitAndTap('ens-search-clear-button');
+  //   await Helpers.typeText('ens-search-input', '&&&ivalidname', false);
+  //   await Helpers.waitAndTap('ens-search-clear-button');
+  //   await Helpers.typeText('ens-search-input', '/invalidname/', false);
+  //   await Helpers.waitAndTap('ens-search-clear-button');
+  // });
 
   it('Should be able to type a name that is available and wait for fees', async () => {
     await Helpers.checkIfVisible('ens-search-input');
@@ -282,12 +282,18 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
     await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
+    if (device.getPlatform() === 'android') {
+      await Helpers.waitAndTap('ens-text-record-me.rainbow.displayName');
+      await Helpers.tapByText('Got it');
+    }
     await Helpers.typeText(
       'ens-text-record-me.rainbow.displayName',
       RECORD_NAME,
       false
     );
-    await Helpers.tapByText('Got it'); // TODO check if not reusing
+    if (device.getPlatform() === 'ios') {
+      await Helpers.tapByText('Got it');
+    }
     await Helpers.checkIfVisible('ens-text-record-description');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
@@ -295,6 +301,7 @@ describe('Register ENS Flow', () => {
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
+    await Helpers.delay(2000);
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
   });
 
@@ -307,8 +314,16 @@ describe('Register ENS Flow', () => {
   it('Should go to review registration and start it', async () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
-    await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+    if (device.getPlatform() === 'ios') {
+      await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-COMMIT');
+    }
     await Helpers.delay(1000);
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
@@ -317,7 +332,14 @@ describe('Register ENS Flow', () => {
 
   it('Should see confirm registration screen', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
-    await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
+    if (device.getPlatform() === 'ios') {
+      await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-REGISTER');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
   it('Should confirm that the name is not available anymore', async () => {
@@ -379,7 +401,14 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
-    await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
+    if (device.getPlatform() === 'ios') {
+      await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-SET_NAME');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
   it('Should confirm rainbowtestwallet.eth is primary name', async () => {
