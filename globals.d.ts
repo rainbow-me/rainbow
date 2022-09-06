@@ -1,7 +1,22 @@
+/**
+ * @deprecated use `IS_ANDROID` from `@/env`
+ */
 declare let android: boolean;
+/**
+ * @deprecated use `IS_IOS` from `@/env`
+ */
 declare let ios: boolean;
-// @ts-ignore
+/**
+ * @deprecated use `IS_WEB` from `@/env`
+ */
+declare let web: boolean;
+/**
+ * @deprecated use `IS_DEV` from `@/env`
+ */
 declare let __DEV__: boolean;
+/**
+ * @deprecated use `IS_DEV` from `@/env`
+ */
 declare let IS_DEV: boolean;
 
 declare module 'react-native-dotenv' {
