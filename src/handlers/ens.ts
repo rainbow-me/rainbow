@@ -54,11 +54,6 @@ import {
   ensIntroMarqueeNames,
   ethUnits,
 } from '@/references';
-import { colors } from '@/styles';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@/utils/profileUtils';
 import { labelhash, logger } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { fetchENSName } from '@/hooks/useENSName';
@@ -340,7 +335,8 @@ export const fetchSuggestions = async (
           .filter((domain: any) => !domain?.name?.includes?.('['))
           .map(async (ensDomain: any) => {
             const rainbowProfile = await fetchRainbowProfile(
-              ensDomain?.resolver?.addr?.id
+              ensDomain?.resolver?.addr?.id,
+              { cacheFirst: true }
             );
             return {
               address: ensDomain?.resolver?.addr?.id || ensDomain?.name,

@@ -68,7 +68,6 @@ const SendSheetTitle = styled(SheetTitle).attrs({
 });
 
 export default function SendHeader({
-  // contact,
   hideDivider,
   isValidAddress,
   fromProfile,
@@ -198,9 +197,8 @@ export default function SendHeader({
     text => {
       onChangeAddressInput(text);
       setHexAddress('');
-      // setContact(null);
     },
-    [onChangeAddressInput, setContact]
+    [onChangeAddressInput]
   );
 
   return (

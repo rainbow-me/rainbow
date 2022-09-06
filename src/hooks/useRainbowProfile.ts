@@ -27,6 +27,7 @@ export const fetchRainbowProfile = async (
   if (!address || !isValidAddress(address)) return null;
 
   const cachedProfile = await getRainbowProfile(address);
+
   if (cachedProfile) {
     queryClient.setQueryData(rainbowProfileQueryKey(address), cachedProfile);
     if (cacheFirst) return cachedProfile;
