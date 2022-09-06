@@ -103,7 +103,12 @@ export default function SecretDisplaySection({
           paddingHorizontal="60px"
         >
           <Stack space="10px">
-            <Text align="center" color="secondary" size="18px" weight="regular">
+            <Text
+              align="center"
+              color="secondary"
+              size="18px / 27px (Deprecated)"
+              weight="regular"
+            >
               {lang.t('back_up.secret.you_need_to_authenticate', {
                 typeName: typeLabel,
               })}
@@ -128,7 +133,11 @@ export default function SecretDisplaySection({
           justifyContent="center"
           paddingHorizontal="60px"
         >
-          <Text align="center" color="secondary60" size="16px">
+          <Text
+            align="center"
+            color="secondary60"
+            size="16px / 22px (Deprecated)"
+          >
             {lang.t('back_up.secret.biometrically_secured')}
           </Text>
         </Box>
@@ -151,7 +160,11 @@ export default function SecretDisplaySection({
                 <CopyFloatingEmojis textToCopy={seed}>
                   <Inline alignVertical="center" space="6px">
                     <CopyButtonIcon />
-                    <Text color="action" size="16px" weight="bold">
+                    <Text
+                      color="action"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       {lang.t('back_up.secret.copy_to_clipboard')}
                     </Text>
                   </Inline>
@@ -160,13 +173,17 @@ export default function SecretDisplaySection({
               <Stack alignHorizontal="center" space="19px">
                 {/* @ts-ignore */}
                 <SecretDisplayCard seed={seed} type={type} />
-                <Text containsEmoji size="16px" weight="bold">
+                <Text
+                  containsEmoji
+                  size="16px / 22px (Deprecated)"
+                  weight="bold"
+                >
                   👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
                 </Text>
                 <Text
                   align="center"
                   color="secondary60"
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="semibold"
                 >
                   {lang.t('back_up.secret.anyone_who_has_these')}

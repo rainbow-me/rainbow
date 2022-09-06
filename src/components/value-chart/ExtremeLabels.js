@@ -46,7 +46,11 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
         position: 'absolute',
       }}
     >
-      <Text color={{ custom: props.color }} size="14px" weight="bold">
+      <Text
+        color={{ custom: props.color }}
+        size="14px / 19px (Deprecated)"
+        weight="bold"
+      >
         {props.children}
       </Text>
     </View>

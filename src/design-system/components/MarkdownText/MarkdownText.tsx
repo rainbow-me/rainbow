@@ -33,7 +33,7 @@ const defaultProps: {
 } = {
   listSpace: '19px',
   paragraphSpace: '30px',
-  size: '16px',
+  size: '16px / 22px (Deprecated)',
 };
 
 interface MarkdownStackContextObject {
