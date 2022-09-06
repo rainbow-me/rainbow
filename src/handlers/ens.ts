@@ -14,7 +14,6 @@ import {
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
-  ENS_SUGGESTIONS,
   EnsGetCoinTypesData,
   EnsGetNameFromLabelhash,
   EnsGetRecordsData,
@@ -275,56 +274,40 @@ export const fetchSuggestions = async (
       uniqueId: any;
     }[] = [];
     setIsFetching(true);
-    const recpt = recipient.toLowerCase();
-    let result = await ensClientDeprecated.query({
-      query: ENS_SUGGESTIONS,
-      variables: {
-        amount: 8,
-        name: recpt,
-      },
+    const result = await ensClient.getSuggestions({
+      name: recipient.toLowerCase(),
+      first: 8,
     });
-    if (!isEmpty(result?.data?.domains)) {
+    if (!isEmpty(result?.domains)) {
       const domains = await Promise.all(
-        result?.data?.domains
-          .filter(
-            (domain: { owner: { id: string } }) =>
-              !isZeroAddress(domain.owner.id)
-          )
-          .map(
-            async (
-              domain: {
-                name: string;
-                resolver: { texts: string[] };
-                owner: { id: string };
-              },
-              i: number
-            ) => {
-              const hasAvatar = domain?.resolver?.texts?.find(
-                text => text === ENS_RECORDS.avatar
-              );
-              if (!!hasAvatar && profilesEnabled) {
-                try {
-                  const avatar = await fetchENSAvatar(domain.name, {
+        result?.domains
+          .filter(domain => !isZeroAddress(domain.owner.id))
+          .map(async (domain, i) => {
+            const hasAvatar = domain?.resolver?.texts?.find(
+              text => text === ENS_RECORDS.avatar
+            );
+            if (!!hasAvatar && profilesEnabled && domain.name) {
+              try {
+                const avatar = await fetchENSAvatar(domain.name, {
+                  cacheFirst: true,
+                });
+                if (i === 0) {
+                  prefetchENSAddress(domain.name, { cacheFirst: true });
+                  prefetchENSCover(domain.name, { cacheFirst: true });
+                  prefetchENSRecords(domain.name, { cacheFirst: true });
+                  prefetchENSFirstTransactionTimestamp(domain.name, {
                     cacheFirst: true,
                   });
-                  if (i === 0) {
-                    prefetchENSAddress(domain.name, { cacheFirst: true });
-                    prefetchENSCover(domain.name, { cacheFirst: true });
-                    prefetchENSRecords(domain.name, { cacheFirst: true });
-                    prefetchENSFirstTransactionTimestamp(domain.name, {
-                      cacheFirst: true,
-                    });
-                  }
-                  return {
-                    ...domain,
-                    avatar: avatar?.imageUrl,
-                  };
-                  // eslint-disable-next-line no-empty
-                } catch (e) {}
-              }
-              return domain;
+                }
+                return {
+                  ...domain,
+                  avatar: avatar?.imageUrl,
+                };
+                // eslint-disable-next-line no-empty
+              } catch (e) {}
             }
-          )
+            return domain;
+          })
       );
       const ensSuggestions = domains
         .map((ensDomain: any) => ({
@@ -338,8 +321,8 @@ export const fetchSuggestions = async (
           nickname: ensDomain?.name,
           uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
-        .filter((domain: any) => !domain?.nickname?.includes?.('['));
-      suggestions = sortBy(ensSuggestions, domain => domain.nickname.length, [
+        .filter(domain => !domain?.nickname?.includes?.('['));
+      suggestions = sortBy(ensSuggestions, domain => domain.nickname?.length, [
         'asc',
       ]);
     }
