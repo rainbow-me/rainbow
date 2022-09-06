@@ -67,12 +67,14 @@ export default function ExchangeInputField({
           editable={editable}
           height={64}
           loading={loading}
+          mainnetAddress={inputCurrencyMainnetAddress}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
           onFocus={onFocus}
           ref={nativeFieldRef}
           setNativeAmount={setNativeAmount}
           testID={testID + '-native'}
+          type={inputCurrencyAssetType}
           updateOnFocus={updateAmountOnFocus}
         />
         <ExchangeMaxButton

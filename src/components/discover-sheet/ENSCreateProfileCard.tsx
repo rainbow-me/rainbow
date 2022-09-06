@@ -141,10 +141,18 @@ export default function ENSCreateProfileCard() {
                     space="12px"
                   >
                     <Stack space={{ custom: 13 }}>
-                      <Heading color="primary" size="20px" weight="bold">
+                      <Heading
+                        color="primary"
+                        size="20px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {lang.t('discover.ens_create_profile.title')}
                       </Heading>
-                      <Text color="secondary60" size="15px" weight="semibold">
+                      <Text
+                        color="secondary60"
+                        size="15px / 21px (Deprecated)"
+                        weight="semibold"
+                      >
                         {lang.t('discover.ens_create_profile.body')}
                       </Text>
                     </Stack>
@@ -153,7 +161,7 @@ export default function ENSCreateProfileCard() {
                         <Heading
                           align="right"
                           color="primary"
-                          size="20px"
+                          size="20px / 22px (Deprecated)"
                           weight="bold"
                         >
                           􀜍

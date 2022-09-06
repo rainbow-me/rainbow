@@ -8,7 +8,7 @@ import { letterSpacings, sizes, TextSizes } from './typography.css';
 export const Text = ({
   children,
   color,
-  size = '18px',
+  size = '18px / 27px (Deprecated)',
   weight = 'regular',
 }: {
   children: ReactNode;
