@@ -743,29 +743,27 @@ export const explainers = (params, colors) => ({
   },
   wyre_degradation: {
     logo: <TheMergeIcon />,
-    extraHeight: 6,
+    extraHeight: 56,
     text: lang.t('explain.wyre_degradation.text'),
     title: lang.t('explain.wyre_degradation.title'),
     stillCurious: (
-      <Box style={{ marginTop: -30 }}>
-        <Text {...getBodyTextPropsWithColor(colors)}>
-          {lang.t('explain.wyre_degradation.still_curious.fragment1')}
-          <Text
-            color={colors?.appleBlue}
-            onPress={() =>
-              Linking.openURL(
-                'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
-              )
-            }
-            size="large"
-            suppressHighlighting
-            weight="semibold"
-          >
-            {lang.t('explain.wyre_degradation.still_curious.fragment2')}
-          </Text>
-          {lang.t('explain.wyre_degradation.still_curious.fragment3')}
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.wyre_degradation.still_curious.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.wyre_degradation.still_curious.fragment2')}
         </Text>
-      </Box>
+        {lang.t('explain.wyre_degradation.still_curious.fragment3')}
+      </Text>
     ),
   },
 });

@@ -681,10 +681,10 @@
         }
       },
       "wyre_degradation": {
-        "text": "Because of the ongoing Ethereum upgrade known as \"The Merge\", our partners have temporarily paused crypto purchasing to ensure safety of user funds.",
+        "text": "Because of the ongoing Ethereum network upgrade known as \"The Merge,\" our partners have temporarily paused crypto purchasing.",
         "title": "It's happening \nThe Merge is underway",
         "still_curious": {
-          "fragment1": "Still curious? ",
+          "fragment1": "This is a precautionary step to ensure accurate pricing and the safety of user funds. Still curious? ",
           "fragment2": "Learn more",
           "fragment3": "" 
         }
