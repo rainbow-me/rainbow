@@ -304,7 +304,6 @@
     "@types/qs": "6.9.7",
     "@types/react": "16.9.52",
     "@types/react-native": "0.63.25",
-    "@types/react-native-dotenv": "0.2.0",
     "@types/react-test-renderer": "16.9.3",
     "@types/socket.io-client": "1.4.36",
     "@types/styled-components": "5.1.7",
