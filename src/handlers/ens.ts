@@ -459,6 +459,13 @@ export const fetchCoinAddresses = async (
   return coinAddresses;
 };
 
+export const fetchContenthash = async (ensName: string) => {
+  const provider = await getProviderForNetwork();
+  const resolver = await provider.getResolver(ensName);
+  const contenthash = await resolver?.getContentHash();
+  return contenthash;
+};
+
 export const fetchOwner = async (ensName: string) => {
   const ownerAddress = await getNameOwner(ensName);
 
@@ -640,6 +647,22 @@ export const estimateENSSetAddressGasLimit = async ({
     ownerAddress,
     records,
     type: ENSRegistrationTransactionType.SET_ADDR,
+  });
+
+export const estimateENSSetContenthashGasLimit = async ({
+  name,
+  records,
+  ownerAddress,
+}: {
+  name: string;
+  ownerAddress?: string;
+  records: ENSRegistrationRecords;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    records,
+    type: ENSRegistrationTransactionType.SET_CONTENTHASH,
   });
 
 export const estimateENSSetTextGasLimit = async ({
@@ -845,6 +868,15 @@ export const estimateENSSetRecordsGasLimit = async ({
           })
         );
         break;
+      case ENSRegistrationTransactionType.SET_CONTENTHASH:
+        promises.push(
+          estimateENSSetContenthashGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
+        break;
       default:
     }
   }
@@ -867,7 +899,7 @@ export const formatRecordsForTransaction = (
 ): ENSRegistrationRecords => {
   const coinAddress = [] as { key: string; address: string }[];
   const text = [] as { key: string; value: string }[];
-  let contentHash = null;
+  let contenthash = null;
   const ensAssociatedAddress = null;
   records &&
     Object.entries(records).forEach(([key, value]) => {
@@ -904,14 +936,14 @@ export const formatRecordsForTransaction = (
             coinAddress.push({ address: value, key });
           }
           return;
-        case ENS_RECORDS.content:
+        case ENS_RECORDS.contenthash:
           if (value || value === '') {
-            contentHash = value;
+            contenthash = value;
           }
           return;
       }
     });
-  return { coinAddress, contentHash, ensAssociatedAddress, text };
+  return { coinAddress, contenthash, ensAssociatedAddress, text };
 };
 
 export const recordsForTransactionAreValid = (
@@ -919,13 +951,13 @@ export const recordsForTransactionAreValid = (
 ) => {
   const {
     coinAddress,
-    contentHash,
+    contenthash,
     ensAssociatedAddress,
     text,
   } = registrationRecords;
   if (
     !coinAddress?.length &&
-    !contentHash &&
+    typeof contenthash !== 'string' &&
     !ensAssociatedAddress &&
     !text?.length
   ) {
@@ -939,17 +971,21 @@ export const getTransactionTypeForRecords = (
 ) => {
   const {
     coinAddress,
-    contentHash,
+    contenthash,
     ensAssociatedAddress,
     text,
   } = registrationRecords;
 
   if (
-    contentHash ||
     ensAssociatedAddress ||
-    (text?.length || 0) + (coinAddress?.length || 0) > 1
+    (text?.length || 0) +
+      (coinAddress?.length || 0) +
+      (typeof contenthash === 'string' ? 1 : 0) >
+      1
   ) {
     return ENSRegistrationTransactionType.MULTICALL;
+  } else if (typeof contenthash === 'string') {
+    return ENSRegistrationTransactionType.SET_CONTENTHASH;
   } else if (text?.length) {
     return ENSRegistrationTransactionType.SET_TEXT;
   } else if (coinAddress?.length) {
@@ -969,6 +1005,8 @@ export const getRapActionTypeForTxType = (
       return RapActionTypes.setAddrENS;
     case ENSRegistrationTransactionType.SET_TEXT:
       return RapActionTypes.setTextENS;
+    case ENSRegistrationTransactionType.SET_CONTENTHASH:
+      return RapActionTypes.setContenthashENS;
     default:
       return null;
   }
