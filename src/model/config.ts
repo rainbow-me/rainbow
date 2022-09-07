@@ -43,6 +43,7 @@ export interface RainbowConfig extends Record<string, any> {
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
   trace_call_block_number_offset?: number;
+  wyre_enabled?: boolean;
 }
 
 const DEFAULT_CONFIG = {
@@ -93,7 +94,7 @@ const init = async () => {
       const [key, entry] = $;
       if (key === 'default_slippage_bips') {
         config[key] = JSON.parse(entry.asString());
-      } else if (key === 'flashbots_enabled') {
+      } else if (key === 'flashbots_enabled' || key === 'wyre_enabled') {
         config[key] = entry.asBoolean();
       } else {
         config[key] = entry.asString();
