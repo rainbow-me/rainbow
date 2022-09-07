@@ -181,18 +181,18 @@ export default function AddressRow({
     [colors, isDarkMode]
   );
 
-  const menuConfig = useMemo(() => {
-    const menuItems = notificationsEnabled
+  const contextMenuItems = [
+    {
+      actionKey: ContextMenuKeys.Remove,
+      actionTitle: lang.t('wallet.action.remove'),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'trash.fill',
+      },
+      menuAttributes: ['destructive'],
+    },
+    ...(notificationsEnabled
       ? [
-          {
-            actionKey: ContextMenuKeys.Remove,
-            actionTitle: lang.t('wallet.action.remove'),
-            icon: {
-              iconType: 'SYSTEM',
-              iconValue: 'trash.fill',
-            },
-            menuAttributes: ['destructive'],
-          },
           {
             actionKey: ContextMenuKeys.Notifications,
             actionTitle: lang.t('wallet.action.notifications'),
@@ -201,40 +201,22 @@ export default function AddressRow({
               iconValue: 'bell.fill',
             },
           },
-          {
-            actionKey: ContextMenuKeys.Edit,
-            actionTitle: lang.t('wallet.action.edit'),
-            icon: {
-              iconType: 'SYSTEM',
-              iconValue: 'pencil',
-            },
-          },
         ]
-      : [
-          {
-            actionKey: ContextMenuKeys.Remove,
-            actionTitle: lang.t('wallet.action.remove'),
-            icon: {
-              iconType: 'SYSTEM',
-              iconValue: 'trash.fill',
-            },
-            menuAttributes: ['destructive'],
-          },
-          {
-            actionKey: ContextMenuKeys.Edit,
-            actionTitle: lang.t('wallet.action.edit'),
-            icon: {
-              iconType: 'SYSTEM',
-              iconValue: 'pencil',
-            },
-          },
-        ];
+      : []),
+    {
+      actionKey: ContextMenuKeys.Edit,
+      actionTitle: lang.t('wallet.action.edit'),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'pencil',
+      },
+    },
+  ];
 
-    return {
-      menuItems: IS_IOS ? menuItems : menuItems.reverse(),
-      menuTitle: walletName,
-    };
-  }, [walletName, notificationsEnabled]);
+  const menuConfig = {
+    menuItems: IS_IOS ? contextMenuItems : contextMenuItems.reverse(),
+    menuTitle: walletName,
+  };
 
   const handleSelectMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
