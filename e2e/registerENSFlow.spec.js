@@ -244,8 +244,8 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should be able to press a profile and continue to the ENS search screen', async () => {
-    await Helpers.swipe('ens-names-marquee', 'left', 'slow');
-    await Helpers.swipe('ens-names-marquee', 'right', 'slow');
+    // await Helpers.swipe('ens-names-marquee', 'left', 'slow');
+    // await Helpers.swipe('ens-names-marquee', 'right', 'slow');
     await Helpers.waitAndTap(
       'ens-intro-sheet-search-new-name-button-action-button'
     );
