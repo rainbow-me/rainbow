@@ -310,9 +310,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.RENEW]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => {
-            action(() => goToProfileScreen());
-          }}
+          action={() => action(goToProfileScreen)}
           isSufficientGas={Boolean(
             registrationCostsData?.isSufficientGasForRegistration &&
               registrationCostsData?.isSufficientGasForStep
