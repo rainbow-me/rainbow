@@ -156,7 +156,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
           borderRadius={25}
-          shadows={shadows[backgroundColor]}
+          shadows={shadows?.[backgroundColor] || []}
           {...(android && {
             height: 80,
             width: isVeryNarrowPhone ? 95 : 100,
@@ -251,19 +251,19 @@ const AddFundsInterstitial = ({ network }) => {
           <Row justify="space-between" marginVertical={30}>
             <AmountButton
               amount={100}
-              backgroundColor={colors.swapPurple}
+              backgroundColor={colors.grey}
               color={colors.neonSkyblue}
               onPress={handlePressAmount}
             />
             <AmountButton
               amount={200}
-              backgroundColor={colors.swapPurple}
-              color={colors.neonSkyblue}
+              backgroundColor={colors.grey}
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
               onPress={handlePressAmount}
             />
             <AmountButton
               amount={300}
-              backgroundColor={colors.purpleDark}
+              backgroundColor={colors.grey}
               color={colors.pinkLight}
               onPress={handlePressAmount}
             />
