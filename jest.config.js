@@ -8,7 +8,6 @@ module.exports = {
   testPathIgnorePatterns: ['node_modules', 'e2e'],
   transform: {
     '\\.tsx?$': 'ts-jest',
-    '\\.json?$': 'ts-jest',
   },
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|@react-native(-community)?)/)',
