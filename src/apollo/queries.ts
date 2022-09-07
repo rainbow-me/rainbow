@@ -1,4 +1,3 @@
-import { AddressZero } from '@ethersproject/constants';
 import gql from 'graphql-tag';
 
 export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (
@@ -167,97 +166,10 @@ export const USER_HISTORY = gql`
   }
 `;
 
-export const ENS_SEARCH = gql`
-  query lookup($name: String!, $amount: Int!) {
-    domains(first: $amount, where: { name: $name }) {
-      name
-      resolver {
-        addr {
-          id
-        }
-      }
-    }
-  }
-`;
-
-export type EnsGetRegistrationData = {
-  registration: {
-    id: string;
-    registrationDate: number;
-    expiryDate: number;
-    registrant: {
-      id: string;
-    };
-  };
-};
-
-export const ENS_GET_REGISTRATION = gql`
-  query getRegistration($id: ID!) {
-    registration(id: $id) {
-      id
-      registrationDate
-      expiryDate
-      registrant {
-        id
-      }
-    }
-  }
-`;
-
-export type EnsGetRecordsData = {
-  domains: {
-    resolver: {
-      texts: string[];
-    };
-  }[];
-};
-
-export const ENS_GET_RECORDS = gql`
-  query lookup($name: String!) {
-    domains(first: 1, where: { name: $name }) {
-      resolver {
-        texts
-      }
-    }
-  }
-`;
-
-export type EnsGetCoinTypesData = {
-  domains: {
-    resolver: {
-      coinTypes: number[];
-    };
-  }[];
-};
-
-export const ENS_GET_COIN_TYPES = gql`
-  query lookup($name: String!) {
-    domains(first: 1, where: { name: $name }) {
-      resolver {
-        coinTypes
-      }
-    }
-  }
-`;
-
 export const CONTRACT_FUNCTION = gql`
   query contractFunction($chainID: Int!, $hex: String!) {
     contractFunction(chainID: $chainID, hex: $hex) {
       text
-    }
-  }
-`;
-
-export type EnsGetNameFromLabelhash = {
-  domains: {
-    labelName: string;
-  }[];
-};
-
-export const ENS_GET_NAME_FROM_LABELHASH = gql`
-  query lookup($labelhash: String!) {
-    domains(first: 1, where: { labelhash: $labelhash }) {
-      labelName
     }
   }
 `;

@@ -6,17 +6,6 @@ import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { ensClient as ensClientDeprecated } from '../apollo/client';
-import {
-  ENS_GET_COIN_TYPES,
-  ENS_GET_NAME_FROM_LABELHASH,
-  ENS_GET_RECORDS,
-  ENS_GET_REGISTRATION,
-  EnsGetCoinTypesData,
-  EnsGetNameFromLabelhash,
-  EnsGetRecordsData,
-  EnsGetRegistrationData,
-} from '../apollo/queries';
 import { prefetchENSAddress } from '../hooks/useENSAddress';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
@@ -155,14 +144,7 @@ export const fetchMetadata = async ({
 
     let name = await getNameFromLabelhash(labelhash);
     if (!name) {
-      const { data } = await ensClientDeprecated.query<EnsGetNameFromLabelhash>(
-        {
-          query: ENS_GET_NAME_FROM_LABELHASH,
-          variables: {
-            labelhash,
-          },
-        }
-      );
+      const data = await ensClient.getNameFromLabelhash({ labelhash });
       name = `${data.domains[0].labelName}.eth`;
     }
 
@@ -383,18 +365,15 @@ export const fetchRecords = async (
   ensName: string,
   { supportedOnly = true }: { supportedOnly?: boolean } = {}
 ) => {
-  const response = await ensClientDeprecated.query<EnsGetRecordsData>({
-    query: ENS_GET_RECORDS,
-    variables: {
-      name: ensName,
-    },
+  const response = await ensClient.getTextRecordKeysByName({
+    name: ensName,
   });
-  const data = response.data?.domains[0] || {};
+  const data = response.domains[0] || {};
+  const rawRecordKeys = data.resolver?.texts || [];
 
   const provider = await getProviderForNetwork();
   const resolver = await provider.getResolver(ensName);
   const supportedRecords = Object.values(ENS_RECORDS);
-  const rawRecordKeys: string[] = data.resolver?.texts || [];
   const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key =>
     supportedOnly ? supportedRecords.includes(key) : true
   );
@@ -415,13 +394,8 @@ export const fetchCoinAddresses = async (
   ensName: string,
   { supportedOnly = true }: { supportedOnly?: boolean } = {}
 ): Promise<{ [key in ENS_RECORDS]: string }> => {
-  const response = await ensClientDeprecated.query<EnsGetCoinTypesData>({
-    query: ENS_GET_COIN_TYPES,
-    variables: {
-      name: ensName,
-    },
-  });
-  const data = response.data?.domains[0] || {};
+  const response = await ensClient.getCoinTypesByName({ name: ensName });
+  const data = response.domains[0] || {};
   const supportedRecords = Object.values(ENS_RECORDS);
   const provider = await getProviderForNetwork();
   const resolver = await provider.getResolver(ensName);
@@ -482,16 +456,13 @@ export const fetchOwner = async (ensName: string) => {
 };
 
 export const fetchRegistration = async (ensName: string) => {
-  const response = await ensClientDeprecated.query<EnsGetRegistrationData>({
-    query: ENS_GET_REGISTRATION,
-    variables: {
-      id: labelhash(ensName.replace(ENS_DOMAIN, '')),
-    },
+  const response = await ensClient.getRegistration({
+    id: labelhash(ensName.replace(ENS_DOMAIN, '')),
   });
-  const data = response.data?.registration || {};
+  const data = response.registration;
 
   let registrant: { address?: string; name?: string } = {};
-  if (data.registrant?.id) {
+  if (data?.registrant?.id) {
     const registrantAddress = data.registrant?.id;
     const name = await fetchReverseRecord(registrantAddress);
     registrant = {
