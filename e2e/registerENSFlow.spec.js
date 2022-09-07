@@ -756,7 +756,14 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('clear-records');
     await Helpers.waitAndTap('set-address');
     await Helpers.waitAndTap('transfer-control');
-    await Helpers.tapAndLongPress('send-confirmation-button');
+    if (device.getPlatform() === 'ios') {
+      await Helpers.waitAndTap(`send-confirmation-button`);
+    } else {
+      await Helpers.tapAndLongPress('send-confirmation-button');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
   it('Should confirm the ENS was sent correctly', async () => {
