@@ -642,14 +642,7 @@
   dependencies:
     "@babel/types" "^7.16.7"
 
-"@babel/helper-split-export-declaration@^7.18.6":
-  version "7.18.6"
-  resolved "https://registry.yarnpkg.com/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.18.6.tgz#7367949bc75b20c6d5a5d4a97bba2824ae8ef075"
-  integrity sha512-bde1etTx6ZyTmobl9LLMMQsaizFVZrquTEHOqKeQESMKo4PlObf+8+JA25ZsIpZhT/WEd39+vOdLXAFG/nELpA==
-  dependencies:
-    "@babel/types" "^7.18.6"
-
-"@babel/helper-string-parser@^7.18.10":
+"@babel/helper-string-parser@7.18.10":
   version "7.18.10"
   resolved "https://registry.yarnpkg.com/@babel/helper-string-parser/-/helper-string-parser-7.18.10.tgz#181f22d28ebe1b3857fa575f5c290b1aaf659b56"
   integrity sha512-XtIfWmeNY3i4t7t4D2t02q50HvqHybPqW2ki1kosnvWCwuCMeo81Jf0gwr85jy/neUdg5XDdeFE/80DXiO+njw==
@@ -4212,10 +4205,9 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@0.1.14":
+"@rainbow-me/swaps@../swap-aggregator/sdk/rainbow-me-swaps-v0.1.14.tgz":
   version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.14.tgz#9772f9a5ab21b6d3f88d9f90424f5d42b4f68fd2"
-  integrity sha512-AJlirHhXhRfnTuRt1Yr4L4qTtuVGUF21FpCjfy02jUSsYYJ6GxVSuUWdqePNgKaADfMQwp/R/i1tP7Y1di6CmQ==
+  resolved "../swap-aggregator/sdk/rainbow-me-swaps-v0.1.14.tgz#a19ab1f2780ac27cb8fbe6ac17a12897579a219c"
   dependencies:
     "@ethersproject/abi" "5.6.0"
     "@ethersproject/bignumber" "5.6.0"
@@ -4228,6 +4220,7 @@
     "@ethersproject/transactions" "5.6.0"
     "@ethersproject/wallet" "5.6.0"
     "@metamask/eth-sig-util" "4.0.0"
+    caniuse-lite "^1.0.30001390"
     ethereumjs-util "6.2.1"
 
 "@react-native-async-storage/async-storage@1.17.7", "@react-native-async-storage/async-storage@^1.15.15", "@react-native-async-storage/async-storage@^1.15.17":
@@ -7625,6 +7618,20 @@ caniuse-lite@^1.0.30001274:
   version "1.0.30001274"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001274.tgz#26ca36204d15b17601ba6fc35dbdad950a647cc7"
 
+<<<<<<< HEAD
+=======
+caniuse-lite@^1.0.30001390:
+  version "1.0.30001390"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001390.tgz#158a43011e7068ef7fc73590e9fd91a7cece5e7f"
+  integrity sha512-sS4CaUM+/+vqQUlCvCJ2WtDlV81aWtHhqeEVkLokVJJa3ViN4zDxAGfq9R8i1m90uGHxo99cy10Od+lvn3hf0g==
+
+capture-exit@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/capture-exit/-/capture-exit-2.0.0.tgz#fb953bfaebeb781f62898239dabb426d08a509a4"
+  dependencies:
+    rsvp "^4.8.4"
+
+>>>>>>> c5505e89b (wip)
 caseless@^0.12.0, caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"

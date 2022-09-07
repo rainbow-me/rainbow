@@ -142,6 +142,7 @@ export default function CurrencySelectModal() {
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
+  const [toChainId, setToChainId] = useState(chainId);
   useEffect(() => {
     if (chainId && typeof chainId === 'number') {
       setCurrentChainId(chainId);
@@ -383,7 +384,7 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
-      if (checkForRequiredAssets(item)) return;
+      // if (checkForRequiredAssets(item)) return;
 
       const isMainnet = currentChainId === 1;
       const assetWithType =
@@ -398,16 +399,16 @@ export default function CurrencySelectModal() {
         callback?.();
         onSelectCurrency(assetWithType, handleNavigate);
       };
-      if (
-        checkForSameNetwork(
-          assetWithType,
-          selectAsset,
-          type === CurrencySelectionTypes.output
-            ? CurrencySelectionTypes.output
-            : CurrencySelectionTypes.input
-        )
-      )
-        return;
+      // if (
+      //   checkForSameNetwork(
+      //     assetWithType,
+      //     selectAsset,
+      //     type === CurrencySelectionTypes.output
+      //       ? CurrencySelectionTypes.output
+      //       : CurrencySelectionTypes.input
+      //   )
+      // )
+      //   return;
 
       selectAsset();
     },
