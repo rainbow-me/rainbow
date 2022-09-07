@@ -31,8 +31,8 @@ const sizeConfigs = {
     iconSize: 20,
   },
   tiny: {
-    containerSize: 22,
-    iconSize: 10,
+    containerSize: 30,
+    iconSize: 14,
   },
 };
 

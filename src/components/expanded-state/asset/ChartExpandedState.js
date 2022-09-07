@@ -11,13 +11,15 @@ import React, {
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
-import AvailableNetworks from '../../AvailableNetworks';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
+import useExperimentalFlag, {
+  CROSSCHAIN_SWAPS,
+} from '@/config/experimentalHooks';
 import {
   BuyActionButton,
   SendActionButton,
@@ -52,6 +54,9 @@ import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
+import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
+import { Box } from '@/design-system';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -322,6 +327,11 @@ export default function ChartExpandedState({ asset }) {
 
   const { colors } = useTheme();
 
+  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+  const AvailableNetworks = !crosschainEnabled
+    ? AvailableNetworksv1
+    : AvailableNetworksv2;
+
   const MoreButton = useCallback(() => {
     return (
       <View marginTop={-10}>
@@ -424,11 +434,9 @@ export default function ChartExpandedState({ asset }) {
         />
       )}
       {networks && !hasBalance && (
-        <AvailableNetworks
-          asset={assetWithPrice}
-          colors={colors}
-          networks={networks}
-        />
+        <Box paddingBottom={{ custom: 27 }}>
+          <AvailableNetworks asset={assetWithPrice} networks={networks} />
+        </Box>
       )}
       {!isL2 && (
         <CarouselWrapper

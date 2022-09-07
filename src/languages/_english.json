@@ -427,6 +427,7 @@
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
         "available_network": "Available on the %{availableNetwork} network",
+        "available_networkv2": "Also available on %{availableNetwork}",
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
