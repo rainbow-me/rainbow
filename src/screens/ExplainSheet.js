@@ -28,8 +28,9 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { ethereumUtils, gasUtils } from '@/utils';
+import { deviceUtils, ethereumUtils, gasUtils } from '@/utils';
 import { cloudPlatformAccountName } from '@/utils/platform';
+import { IS_ANDROID } from '@/env';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -743,7 +744,7 @@ export const explainers = (params, colors) => ({
   },
   wyre_degradation: {
     logo: <TheMergeIcon />,
-    extraHeight: 56,
+    extraHeight: IS_ANDROID || deviceUtils.isSmallPhone ? 121 : 76,
     text: lang.t('explain.wyre_degradation.text'),
     title: lang.t('explain.wyre_degradation.title'),
     stillCurious: (
