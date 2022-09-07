@@ -84,6 +84,8 @@ const getInputAmount = async (
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       source: realSource,
+      swapType: 'cross-chain',
+      toChainId: 137,
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -161,11 +163,19 @@ const getOutputAmount = async (
   }
 
   try {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    const buyTokenAddress = isNativeAsset(outputToken?.address, network)
+    // const network = ethereumUtils.getNetworkFromChainId(chainId);
+
+    const outputChainId =
+      outputToken?.chainId ||
+      ethereumUtils.getChainIdFromType(outputToken?.type);
+    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
+    const buyTokenAddress = isNativeAsset(outputToken?.address, outputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
-    const sellTokenAddress = isNativeAsset(inputToken?.address, network)
+    const inputChainId =
+      inputToken?.chainId || ethereumUtils.getChainIdFromType(inputToken?.type);
+    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
+    const sellTokenAddress = isNativeAsset(inputToken?.address, inputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
 
@@ -184,6 +194,8 @@ const getOutputAmount = async (
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       source: realSource,
+      swapType: 'cross-chain',
+      toChainId: outputChainId,
     };
 
     const rand = Math.floor(Math.random() * 100);
