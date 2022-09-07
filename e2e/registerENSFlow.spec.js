@@ -474,32 +474,6 @@ describe('Register ENS Flow', () => {
 
     // Dismiss the bottom attribute sheet
     await Helpers.swipe('ens-additional-records-sheet', 'down');
-
-    // Validate that the fields are there
-    await Helpers.checkIfExistsByText('Website');
-    await Helpers.checkIfExistsByText('Twitter');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
-    await Helpers.checkIfExistsByText('Email');
-    await Helpers.checkIfExistsByText('Instagram');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
-    await Helpers.checkIfExistsByText('Discord');
-    await Helpers.checkIfExistsByText('GitHub');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
-    await Helpers.checkIfExistsByText('Bitcoin');
-    await Helpers.checkIfExistsByText('Snapchat');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
-    await Helpers.checkIfExistsByText('Telegram');
-    await Helpers.checkIfExistsByText('Reddit');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
-    await Helpers.checkIfExistsByText('Pronouns');
-    await Helpers.checkIfExistsByText('Notice');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
-    await Helpers.checkIfExistsByText('Keywords');
-    await Helpers.checkIfExistsByText('Litecoin');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
-    await Helpers.checkIfExistsByText('Dogecoin');
-    await Helpers.checkIfExistsByText('Content');
-    await Helpers.swipe('ens-edit-records-sheet', 'down');
   });
 
   it('Should fill & validate the fields', async () => {
