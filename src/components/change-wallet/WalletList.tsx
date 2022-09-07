@@ -7,10 +7,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { StyleSheet } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
-  FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -226,6 +226,10 @@ export default function WalletList({
     opacity: opacityAnimation.value,
   }));
 
+  const emptyOpacityStyle = useAnimatedStyle(() => ({
+    opacity: emptyOpacityAnimation.value,
+  }));
+
   const renderItem = useCallback(
     ({ item }) => {
       switch (item.rowType) {
@@ -249,41 +253,34 @@ export default function WalletList({
 
   return (
     <Container height={height}>
-      {ready ? (
-        <WalletsContainer style={opacityStyle}>
-          <WalletFlatList
-            data={rows}
-            initialNumToRender={rows.length}
-            ref={scrollView}
-            renderItem={renderItem}
-            scrollEnabled={scrollEnabled}
-            showDividers={showDividers}
-          />
-          {showDividers && <WalletListDivider />}
-          {!watchOnly && (
-            <WalletListFooter>
-              <WalletOption
-                editMode={editMode}
-                label={`􀁍 ${lang.t('wallet.action.create_new')}`}
-                onPress={onPressAddAccount}
-              />
-              <WalletOption
-                editMode={editMode}
-                label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
-                onPress={onPressImportSeedPhrase}
-              />
-            </WalletListFooter>
-          )}
-        </WalletsContainer>
-      ) : (
-        <Animated.View
-          exiting={FadeOut.easing(Easing.out(Easing.ease)).duration(
-            transitionDuration
-          )}
-        >
-          <EmptyWalletList />
-        </Animated.View>
-      )}
+      <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
+        <EmptyWalletList />
+      </Animated.View>
+      <WalletsContainer style={opacityStyle}>
+        <WalletFlatList
+          data={rows}
+          initialNumToRender={rows.length}
+          ref={scrollView}
+          renderItem={renderItem}
+          scrollEnabled={scrollEnabled}
+          showDividers={showDividers}
+        />
+        {showDividers && <WalletListDivider />}
+        {!watchOnly && (
+          <WalletListFooter>
+            <WalletOption
+              editMode={editMode}
+              label={`􀁍 ${lang.t('wallet.action.create_new')}`}
+              onPress={onPressAddAccount}
+            />
+            <WalletOption
+              editMode={editMode}
+              label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
+              onPress={onPressImportSeedPhrase}
+            />
+          </WalletListFooter>
+        )}
+      </WalletsContainer>
     </Container>
   );
 }
