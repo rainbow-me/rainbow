@@ -231,11 +231,11 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('discover-header');
   });
 
-  // it('Should go to ENS search screen by pressing the ENS search banner', async () => {
-  //   await Helpers.waitAndTap('ens-register-name-banner');
-  //   await Helpers.checkIfVisible('ens-search-input');
-  //   await Helpers.swipe('ens-search-sheet', 'down');
-  // });
+  it('Should go to ENS search screen by pressing the ENS search banner', async () => {
+    await Helpers.waitAndTap('ens-register-name-banner');
+    await Helpers.checkIfVisible('ens-search-input');
+    await Helpers.swipe('ens-search-sheet', 'down');
+  });
 
   it('Should go to ENS flow pressing the ENS banner', async () => {
     device.getPlatform() === 'android' && (await Helpers.delay(2000));
