@@ -504,6 +504,15 @@
           "message": "You have insufficient %{symbol} to cover the fees to swap the maximum amount. :)"
         }
       },
+      "wyre_degradation": {
+        "text": "Because of the ongoing Ethereum upgrade known as \"The Merge\", our partners have temporarily paused crypto purchasing to ensure safety of user funds. :)",
+        "title": "It's happening \nThe Merge is underway :)",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Learn more",
+          "fragment3": " about \"The Merge\". :)" 
+        }
+      },
       "swap_details": {
         "exchange_rate": "Exchange rate :)",
         "rainbow_fee": "Included Rainbow fee :)",
