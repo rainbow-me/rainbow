@@ -66,10 +66,11 @@ const DEFAULT_CONFIG = {
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
   trace_call_block_number_offset: 20,
+  wyre_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
-let config: RainbowConfig = { ...DEFAULT_CONFIG };
+const config: RainbowConfig = { ...DEFAULT_CONFIG };
 setRpcEndpoints(config);
 
 const init = async () => {
