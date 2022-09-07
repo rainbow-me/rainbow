@@ -427,6 +427,7 @@
         "read_more_button": "Read more :)",
         "available_networks": "Available on %{availableNetworks} networks :)",
         "available_network": "Available on the %{availableNetwork} network :)",
+        "available_networkv2": "Available on the %{availableNetwork} network :)",
         "social": {
           "facebook": "Facebook :)",
           "homepage": "Homepage :)",
@@ -503,6 +504,15 @@
         "swap_max_insufficient_alert": {
           "title": "Insufficient %{symbol} :)",
           "message": "You have insufficient %{symbol} to cover the fees to swap the maximum amount. :)"
+        }
+      },
+      "wyre_degradation": {
+        "text": "Because of the ongoing Ethereum upgrade known as \"The Merge\", our partners have temporarily paused crypto purchasing to ensure safety of user funds. :)",
+        "title": "It's happening \nThe Merge is underway :)",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Learn more",
+          "fragment3": " about \"The Merge\". :)" 
         }
       },
       "swap_details": {

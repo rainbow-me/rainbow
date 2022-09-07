@@ -54,9 +54,12 @@ export default function ProfileSheetHeader({
     enabled: profilesEnabled,
   });
   const { rainbowProfile } = useRainbowProfile(profileAddress);
-  const { data: { coinAddresses, records } = {} } = useENSRecords(ensName, {
-    enabled: profilesEnabled,
-  });
+  const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(
+    ensName,
+    {
+      enabled: profilesEnabled,
+    }
+  );
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName, {
     enabled: profilesEnabled,
   });
@@ -127,7 +130,9 @@ export default function ProfileSheetHeader({
         </Bleed>
         <Inset horizontal="19px">
           <Stack space="19px">
-            <Heading size="23px">{abbreviateEnsForDisplay(ensName)}</Heading>
+            <Heading size="23px / 27px (Deprecated)" weight="heavy">
+              {abbreviateEnsForDisplay(ensName)}
+            </Heading>
             <>
               {isLoading ? (
                 <DescriptionPlaceholder />
@@ -144,10 +149,12 @@ export default function ProfileSheetHeader({
                     <RecordTags
                       firstTransactionTimestamp={firstTransactionTimestamp}
                       records={{
+                        contenthash,
                         ...records,
                         ...coinAddresses,
                       }}
                       show={[
+                        ENS_RECORDS.name,
                         ENS_RECORDS.displayName,
                         ENS_RECORDS.url,
                         ENS_RECORDS.twitter,

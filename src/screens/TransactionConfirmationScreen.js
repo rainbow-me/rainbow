@@ -147,7 +147,12 @@ const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
 const SwitchText = ({ children, ...props }) => {
   return (
-    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+    <Text
+      color="secondary40"
+      size="14px / 19px (Deprecated)"
+      weight="semibold"
+      {...props}
+    >
       {children}
     </Text>
   );
@@ -162,7 +167,7 @@ const WalletText = ({ balanceTooLow, children }) => {
           : 'secondary80'
       }
       numberOfLines={1}
-      size="18px"
+      size="18px / 27px (Deprecated)"
       weight={balanceTooLow ? 'bold' : 'semibold'}
     >
       {children}
@@ -1105,7 +1110,7 @@ export default function TransactionConfirmationScreen() {
                       align="center"
                       color="secondary80"
                       numberOfLines={1}
-                      size="18px"
+                      size="18px / 27px (Deprecated)"
                       weight="bold"
                     >
                       {isAuthenticated ? dappName : formattedDappUrl}
@@ -1119,7 +1124,7 @@ export default function TransactionConfirmationScreen() {
                   <Text
                     align="center"
                     color={methodName ? 'primary' : { custom: 'transparent' }}
-                    size="18px"
+                    size="18px / 27px (Deprecated)"
                     weight="heavy"
                   >
                     {methodName ||

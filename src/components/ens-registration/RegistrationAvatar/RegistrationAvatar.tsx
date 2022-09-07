@@ -214,7 +214,11 @@ const RegistrationAvatar = ({
                   />
                 ) : (
                   <AccentColorProvider color={accentColor}>
-                    <Text color="accent" size="18px" weight="heavy">
+                    <Text
+                      color="accent"
+                      size="18px / 27px (Deprecated)"
+                      weight="heavy"
+                    >
                       {` 􀣵 `}
                     </Text>
                   </AccentColorProvider>

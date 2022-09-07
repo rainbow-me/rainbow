@@ -428,6 +428,7 @@
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
         "available_network": "Available on the %{availableNetwork} network",
+        "available_networkv2": "Also available on %{availableNetwork}",
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
@@ -679,6 +680,15 @@
           "fragment1": "Still curious? ",
           "fragment2": "Read more",
           "fragment3": " about our approach to routing swaps."
+        }
+      },
+      "wyre_degradation": {
+        "text": "Because of the ongoing Ethereum network upgrade known as \"The Merge,\" our partners have temporarily paused crypto purchasing.",
+        "title": "It's happening \nThe Merge is underway",
+        "still_curious": {
+          "fragment1": "This is a precautionary step to ensure accurate pricing and the safety of user funds. Still curious? ",
+          "fragment2": "Learn more",
+          "fragment3": "" 
         }
       },
       "slippage": {
@@ -1196,6 +1206,12 @@
         "system": "System",
         "dark": "Dark",
         "light": "Light"
+      },
+      "icon_change": {
+        "title": "Confirm icon change",
+        "warning": "Changing your icon may cause Rainbow to restart.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
       }
     },
     "subscribe_form": {

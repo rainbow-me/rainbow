@@ -220,6 +220,36 @@ const executeSetAddr = async (
   );
 };
 
+const executeSetContenthash = async (
+  name?: string,
+  records?: ENSRegistrationRecords,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    name,
+    records,
+    type: ENSRegistrationTransactionType.SET_CONTENTHASH,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.setContenthash(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
 const executeSetText = async (
   name?: string,
   records?: ENSRegistrationRecords,
@@ -451,6 +481,20 @@ const ensAction = async (
           category: 'profiles',
         });
         break;
+      case ENSRegistrationTransactionType.SET_CONTENTHASH:
+        tx = await executeSetContenthash(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+        });
+        break;
       case ENSRegistrationTransactionType.SET_ADDR:
         tx = await executeSetAddr(
           name,
@@ -665,6 +709,23 @@ const setTextENS = async (
   );
 };
 
+const setContenthashENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setContenthashENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_CONTENTHASH,
+    baseNonce
+  );
+};
+
 export default {
   commitENS,
   multicallENS,
@@ -672,6 +733,7 @@ export default {
   registerWithConfig,
   renewENS,
   setAddrENS,
+  setContenthashENS,
   setNameENS,
   setTextENS,
 };

@@ -82,7 +82,12 @@ export default function CurrencySelectModalHeader({
       )}
       {showCoinIcon && (
         <Inset right="4px" top={android ? '2px' : '3px'}>
-          <CoinIcon size={20} {...defaultOutputAsset} ignoreBadge />
+          <CoinIcon
+            size={28}
+            {...defaultOutputAsset}
+            badgeSize="tiny"
+            badgeXPosition={-3}
+          />
         </Inset>
       )}
       <Title>{title}</Title>
