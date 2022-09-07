@@ -505,6 +505,11 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.checkIfVisible('profile-screen');
     const postSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
@@ -538,6 +543,11 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.checkIfVisible('profile-screen');
     const postSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
