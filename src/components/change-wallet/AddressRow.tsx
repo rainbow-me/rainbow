@@ -303,6 +303,7 @@ export default function AddressRow({
                   <OptionsIcon onPress={NOOP} />
                 </ContextMenuButton>
               ) : (
+                // @ts-expect-error js component
                 <ContextMenuAndroid
                   menuConfig={menuConfig}
                   isAnchoredToRight
