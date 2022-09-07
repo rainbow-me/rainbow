@@ -133,7 +133,7 @@ export default function ProfileMasthead({
       return;
     }
 
-    if (config.wyre_enabled) {
+    if (!config.wyre_enabled) {
       navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
       return;
     }
