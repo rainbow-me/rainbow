@@ -52,7 +52,7 @@ const getOnchainBalance = async (address, tokenContractAddress) => {
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
-  if (android) {
+  if (ios) {
     await exec(
       'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
     );
