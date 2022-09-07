@@ -1,6 +1,7 @@
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuote,
+  getCrosschainQuote,
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
@@ -63,9 +64,15 @@ const getInputAmount = async (
 
   try {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const buyTokenNetwork = ethereumUtils.getNetworkFromChainId(
+      outputToken?.chainId
+    );
     const buyTokenAddress = isNativeAsset(outputToken?.address, network)
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
+    const sellTokenNetwork = ethereumUtils.getNetworkFromChainId(
+      inputToken?.chainId
+    );
     const sellTokenAddress = isNativeAsset(inputToken?.address, network)
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
@@ -78,14 +85,14 @@ const getInputAmount = async (
     const quoteParams = {
       buyAmount,
       buyTokenAddress,
-      chainId: Number(chainId),
+      chainId: Number(outputToken?.chainId),
       fromAddress,
       sellTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       source: realSource,
       swapType: 'cross-chain',
-      toChainId: 137,
+      toChainId: Number(inputToken?.chainId),
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -201,7 +208,7 @@ const getOutputAmount = async (
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
-    const quote: Quote = await getQuote(quoteParams);
+    const quote: Quote = await getCrosschainQuote(quoteParams, SOCKET_API_KEY);
     Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.buyAmount) {
