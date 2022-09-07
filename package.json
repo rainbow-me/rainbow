@@ -92,7 +92,7 @@
     "@metamask/eth-sig-util": "4.0.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/react-native-payments": "1.1.5",
-    "@rainbow-me/swaps": "0.1.14",
+    "@rainbow-me/swaps": "../swap-aggregator/sdk/rainbow-me-swaps-v0.1.14.tgz",
     "@react-native-async-storage/async-storage": "1.17.7",
     "@react-native-community/blur": "3.6.0",
     "@react-native-community/cameraroll": "4.1.2",
@@ -288,6 +288,7 @@
   "devDependencies": {
     "@babel/core": "7.18.13",
     "@babel/helper-skip-transparent-expression-wrappers": "7.16.0",
+    "@babel/helper-string-parser": "7.18.10",
     "@babel/parser": "7.12.14",
     "@babel/plugin-transform-react-inline-elements": "7.12.1",
     "@babel/plugin-transform-runtime": "7.12.1",

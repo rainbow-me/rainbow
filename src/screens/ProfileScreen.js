@@ -69,8 +69,8 @@ export default function ProfileScreen({ navigation }) {
   }, [navigate]);
 
   const addCashSupportedNetworks = network === NetworkTypes.mainnet;
-  const addCashAvailable =
-    IS_TESTING === 'true' ? false : addCashSupportedNetworks;
+  const addCashAvailable = true;
+  // IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 
   return (
     <ProfileScreenPage testID="profile-screen">

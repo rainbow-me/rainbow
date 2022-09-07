@@ -271,12 +271,22 @@ export default function ExchangeModal({
   const chainId = useMemo(() => {
     if (inputCurrency?.type || outputCurrency?.type) {
       return ethereumUtils.getChainIdFromType(
-        inputCurrency?.type! ?? outputCurrency?.type!
+        inputCurrency?.type ?? outputCurrency?.type ??AssetType.token
       );
     }
 
     return 1;
   }, [inputCurrency, outputCurrency]);
+
+  const inputNetwork = useMemo(() => {
+    const chainId = ethereumUtils.getChainIdFromType(inputCurrency?.type ||AssetType.token);
+    return ethereumUtils.getNetworkFromChainId(chainId);
+  }, [inputCurrency]);
+
+  const outputNetwork = useMemo(() => {
+    const chainId = ethereumUtils.getChainIdFromType(outputCurrency?.type || AssetType.token);
+    return ethereumUtils.getNetworkFromChainId(chainId);
+  }, [outputCurrency]);
 
   const currentNetwork = useMemo(
     () => ethereumUtils.getNetworkFromChainId(chainId),
@@ -943,7 +953,7 @@ export default function ExchangeModal({
                 nativeAmount={nativeAmountDisplay}
                 nativeCurrency={nativeCurrency}
                 nativeFieldRef={nativeFieldRef}
-                network={currentNetwork}
+                network={inputNetwork}
                 onFocus={handleFocus}
                 onPressMaxBalance={handlePressMaxBalance}
                 onPressSelectInputCurrency={navigateToSelectInputCurrency}
@@ -957,7 +967,7 @@ export default function ExchangeModal({
                   editable={
                     !!outputCurrency && currentNetwork !== Network.arbitrum
                   }
-                  network={currentNetwork}
+                  network={outputNetwork}
                   onFocus={handleFocus}
                   onPressSelectOutputCurrency={() =>
                     navigateToSelectOutputCurrency(chainId)
