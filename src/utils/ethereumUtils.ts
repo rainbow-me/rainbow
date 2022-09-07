@@ -110,7 +110,7 @@ const getNativeAssetForNetwork = async (
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
-  let differentWallet =
+  const differentWallet =
     address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
@@ -268,7 +268,7 @@ const formatGenericAsset = (
 
 export const checkWalletEthZero = () => {
   const ethAsset = getAccountAsset(ETH_ADDRESS);
-  let amount = ethAsset?.balance?.amount ?? 0;
+  const amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
 
@@ -424,6 +424,7 @@ export const daysFromTheFirstTx = (address: EthereumAddress) => {
     }
   });
 };
+
 /**
  * @desc Checks if a an address has previous transactions
  * @param  {String} address
@@ -434,16 +435,21 @@ const hasPreviousTransactions = (
 ): Promise<boolean> => {
   return new Promise(async resolve => {
     try {
-      const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=latest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+      const url = `https://aha.rainbow.me/?address=${address}`;
       const response = await fetch(url);
-      const parsedResponse = await response.json();
-      // Timeout needed to avoid the 5 requests / second rate limit of etherscan API
-      setTimeout(() => {
-        if (parsedResponse.status !== '0' && parsedResponse.result.length > 0) {
-          resolve(true);
-        }
+
+      if (!response.ok) {
         resolve(false);
-      }, 260);
+        return;
+      }
+
+      const parsedResponse: {
+        data: {
+          addresses: Record<string, boolean>;
+        };
+      } = await response.json();
+
+      resolve(parsedResponse?.data?.addresses[address.toLowerCase()] === true);
     } catch (e) {
       resolve(false);
     }
