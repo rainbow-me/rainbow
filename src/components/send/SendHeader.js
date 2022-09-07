@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import isEmpty from 'lodash/isEmpty';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
@@ -25,7 +24,7 @@ import {
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { showActionSheetWithOptions } from '@/utils';
+import { abbreviations, showActionSheetWithOptions } from '@/utils';
 import { prefetchRainbowProfile } from '@/hooks/useRainbowProfile';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
@@ -72,6 +71,7 @@ export default function SendHeader({
   isValidAddress,
   fromProfile,
   onChangeAddressInput,
+  nickname,
   onFocus,
   onPressPaste,
   onRefocusInput,
@@ -81,7 +81,7 @@ export default function SendHeader({
   showAssetList,
 }) {
   const { setClipboard } = useClipboard();
-  const { contacts, onRemoveContact } = useContacts();
+  const { onRemoveContact } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
@@ -122,30 +122,24 @@ export default function SendHeader({
     );
   }, [recipient, userAccounts, watchedAccounts, hexAddress]);
 
-  const contact = useMemo(() => {
-    return contacts?.[hexAddress?.toLowerCase()];
-  }, [contacts, hexAddress]);
+  const isPreExistingContact = Boolean(nickname);
 
-  const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
-
-  const name = userWallet?.label || contact?.nickname || ensName || recipient;
+  const name =
+    userWallet?.label ||
+    nickname ||
+    ensName ||
+    abbreviations.formatAddressForDisplay(recipient, 4, 4);
 
   const handleNavigateToContact = useCallback(() => {
     android && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
       address: hexAddress,
-      contactNickname: userWallet?.label ?? contact?.nickname,
+      contactNickname: nickname || name,
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [
-    contact?.nickname,
-    hexAddress,
-    navigate,
-    onRefocusInput,
-    userWallet?.label,
-  ]);
+  }, [navigate, hexAddress, nickname, name, onRefocusInput]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(
@@ -247,9 +241,7 @@ export default function SendHeader({
             </Text>
           </ButtonPressAnimation>
         )}
-        {isValidAddress && !hexAddress && isEmpty(contact?.address) && (
-          <LoadingSpinner />
-        )}
+        {isValidAddress && !hexAddress && <LoadingSpinner />}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       {hideDivider && !isTinyPhone ? null : (

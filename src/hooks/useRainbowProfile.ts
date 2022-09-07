@@ -9,7 +9,6 @@ import {
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
-
 import { getPreference } from '../model/preferences';
 
 const STALE_TIME = 10000;
@@ -39,15 +38,16 @@ export const fetchRainbowProfile = async (
       setTimeout(resolve, TIMEOUT_MS, null);
     }),
   ]);
-  const profile = webData?.profile;
 
   const rainbowProfile = {
     color:
-      profile?.accountColor ||
+      webData?.profile?.accountColor ||
       colors.avatarBackgrounds[
         profileUtils.addressHashedColorIndex(address) || 0
       ],
-    emoji: profile?.accountSymbol || profileUtils.addressHashedEmoji(address),
+    emoji:
+      webData?.profile?.accountSymbol ||
+      profileUtils.addressHashedEmoji(address),
   };
 
   saveRainbowProfile(address, rainbowProfile);

@@ -7,7 +7,6 @@ import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { ENS_DOMAIN } from '@/helpers/ens';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useContacts,
@@ -18,8 +17,6 @@ import {
 } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import { isValidAddress } from 'ethereumjs-util';
-import { prefetchRainbowProfile } from '@/hooks/useRainbowProfile';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({
@@ -112,7 +109,8 @@ const ContactRow = (
         accountType === 'suggestions' && isENSAddressFormat(nickname)
           ? nickname
           : ensName || address;
-      onPress(recipient);
+      const contactNickname = accountType === 'contacts' ? nickname : '';
+      onPress(recipient, contactNickname);
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 

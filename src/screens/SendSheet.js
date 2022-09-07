@@ -123,7 +123,7 @@ export default function SendSheet(props) {
   const recipientFieldRef = useRef();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
-  const { contacts, onRemoveContact, filteredContacts } = useContacts();
+  const { onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
@@ -135,6 +135,7 @@ export default function SendSheet(props) {
   const savings = useSendSavingsAccount();
   const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
+  const [nickname, setNickname] = useState();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,
@@ -939,6 +940,7 @@ export default function SendSheet(props) {
           fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
+          nickname={nickname}
           onChangeAddressInput={onChangeInput}
           onPressPaste={recipient => {
             checkAddress(recipient);
@@ -955,9 +957,12 @@ export default function SendSheet(props) {
             ensSuggestions={ensSuggestions}
             key={sendContactListDataKey}
             loadingEnsSuggestions={loadingEnsSuggestions}
-            onPressContact={recipient => {
+            onPressContact={(recipient, nickname = '') => {
               setIsValidAddress(true);
               setRecipient(recipient);
+              if (nickname) {
+                setNickname(nickname);
+              }
             }}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}
