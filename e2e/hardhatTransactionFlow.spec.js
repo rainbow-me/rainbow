@@ -380,6 +380,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
     await Helpers.typeText('exchange-modal-input', '0.005', true);
+    await Helpers.delay(1000);
     if (device.getPlatform() === 'ios') {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
@@ -466,6 +467,11 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('gas-speed-done-button');
     await Helpers.waitAndTap('send-sheet-confirm-action-button', 20000);
     await Helpers.tapAndLongPress('send-confirmation-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.checkIfVisible('profile-screen');
     const isOwnerRecipient = await isNFTOwner(RAINBOW_WALLET_DOT_ETH);
     if (!isOwnerRecipient) {
