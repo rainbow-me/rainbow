@@ -1,9 +1,6 @@
 import './languages';
-import notifee, { AndroidStyle } from '@notifee/react-native';
-import messaging from '@react-native-firebase/messaging';
 import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
-import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
 import {
   AppRegistry,
@@ -53,7 +50,6 @@ import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
-import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
@@ -69,7 +65,6 @@ import {
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
-import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -78,8 +73,6 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
-import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notifications/constants';
-import { setupNotifications } from '@/notifications/setup';
 import { analytics } from '@/analytics';
 import { STORAGE_IDS } from './model/mmkv';
 import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
@@ -88,9 +81,7 @@ import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
-import { handleShowingForegroundNotification } from '@/notifications/foreground';
-
-const WALLETCONNECT_SYNC_DELAY = 500;
+import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 
 const FedoraToastRef = createRef();
 
@@ -154,10 +145,6 @@ enableScreens();
 const containerStyle = { flex: 1 };
 
 class App extends Component {
-  static propTypes = {
-    requestsForTopic: PropTypes.func,
-  };
-
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
@@ -172,17 +159,7 @@ class App extends Component {
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
-    setupNotifications();
-    saveFCMToken();
-    this.onTokenRefreshListener = registerTokenRefreshListener();
-    this.foregroundNotificationListener = messaging().onMessage(
-      this.onForegroundRemoteNotification
-    );
-    this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
-      this.onBackgroundRemoteNotification
-    );
     this.branchListener = branchListener(this.handleOpenLinkingURL);
-
     // Walletconnect uses direct deeplinks
     if (android) {
       try {
@@ -224,9 +201,6 @@ class App extends Component {
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
     rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
-    this.onTokenRefreshListener?.();
-    this.foregroundNotificationListener?.();
-    this.backgroundNotificationListener?.();
     this.branchListener?.();
   }
 
@@ -240,34 +214,6 @@ class App extends Component {
   async handleTokenListUpdate() {
     store.dispatch(uniswapPairsInit());
   }
-
-  onForegroundRemoteNotification = async remoteMessage => {
-    const type = remoteMessage?.data?.type;
-    if (type === 'wc') {
-      this.handleWalletConnectNotification(remoteMessage);
-    } else if (remoteMessage?.notification !== undefined) {
-      handleShowingForegroundNotification(remoteMessage);
-    }
-  };
-
-  onBackgroundRemoteNotification = async remoteMessage => {
-    const type = remoteMessage?.data?.type;
-    if (type === 'wc') {
-      this.handleWalletConnectNotification(remoteMessage);
-    }
-  };
-
-  handleWalletConnectNotification = remoteMessage => {
-    const topic = remoteMessage?.data?.topic;
-    const { requestsForTopic } = this.props;
-    setTimeout(() => {
-      const requests = requestsForTopic(topic);
-      if (requests) {
-        // WC requests will open automatically
-        return false;
-      }
-    }, WALLETCONNECT_SYNC_DELAY);
-  };
 
   handleOpenLinkingURL = url => {
     handleDeeplink(url, this.state.initialRoute);
@@ -365,21 +311,25 @@ class App extends Component {
                 <Provider store={store}>
                   <RecoilRoot>
                     <SharedValuesProvider>
-                      <View style={containerStyle}>
-                        {this.state.initialRoute && (
-                          <InitialRouteContext.Provider
-                            value={this.state.initialRoute}
-                          >
-                            <RoutesComponent
-                              onReady={this.handleSentryNavigationIntegration}
-                              ref={this.handleNavigatorRef}
-                            />
-                            <PortalConsumer />
-                          </InitialRouteContext.Provider>
-                        )}
-                        <OfflineToast />
-                        <FedoraToast ref={FedoraToastRef} />
-                      </View>
+                      <NotificationsHandler
+                        walletReady={this.props.walletReady}
+                      >
+                        <View style={containerStyle}>
+                          {this.state.initialRoute && (
+                            <InitialRouteContext.Provider
+                              value={this.state.initialRoute}
+                            >
+                              <RoutesComponent
+                                onReady={this.handleSentryNavigationIntegration}
+                                ref={this.handleNavigatorRef}
+                              />
+                              <PortalConsumer />
+                            </InitialRouteContext.Provider>
+                          )}
+                          <OfflineToast />
+                          <FedoraToast ref={FedoraToastRef} />
+                        </View>
+                      </NotificationsHandler>
                     </SharedValuesProvider>
                   </RecoilRoot>
                 </Provider>
@@ -392,12 +342,9 @@ class App extends Component {
   );
 }
 
-const AppWithRedux = connect(
-  ({ appState: { walletReady } }) => ({ walletReady }),
-  {
-    requestsForTopic,
-  }
-)(App);
+const AppWithRedux = connect(({ appState: { walletReady } }) => ({
+  walletReady,
+}))(App);
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 

@@ -2,12 +2,7 @@
 import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notifications/constants';
 import notifee, { AndroidStyle, Notification } from '@notifee/react-native';
 import { logger } from '@/utils';
-import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-
-// FCM sends a different kind than the typings cover
-interface FixedRemoteMessage extends FirebaseMessagingTypes.RemoteMessage {
-  data: { [key: string]: string } & { fcm_options: { image: string } };
-}
+import { FixedRemoteMessage } from '@/notifications/types';
 
 export function handleShowingForegroundNotification(
   remoteMessage: FixedRemoteMessage
@@ -17,10 +12,13 @@ export function handleShowingForegroundNotification(
     : remoteMessage.notification?.android?.imageUrl;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { fcm_options, ...data } = remoteMessage.data;
-  console.log(JSON.stringify(remoteMessage, null, 2));
   const notification: Notification = {
     ...remoteMessage.notification,
-    android: { channelId: ANDROID_DEFAULT_CHANNEL_ID },
+    android: {
+      smallIcon: 'ic_state_ic_notification',
+      channelId: ANDROID_DEFAULT_CHANNEL_ID,
+      pressAction: { id: 'default' },
+    },
     data,
     ios: {},
   };
