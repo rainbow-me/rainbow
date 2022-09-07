@@ -310,10 +310,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.RENEW]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => {
-            action();
-            goToProfileScreen();
-          }}
+          action={() => action(goToProfileScreen)}
           isSufficientGas={Boolean(
             registrationCostsData?.isSufficientGasForRegistration &&
               registrationCostsData?.isSufficientGasForStep
@@ -432,12 +429,18 @@ export default function ENSConfirmRegisterSheet() {
                     </Box>
                   )}
                   <Inset horizontal="30px">
-                    <Heading align="center" numberOfLines={1} size="26px">
+                    <Heading
+                      align="center"
+                      numberOfLines={1}
+                      size="26px / 30px (Deprecated)"
+                      weight="heavy"
+                    >
                       {abbreviateEnsForDisplay(ensName, 15)}
                     </Heading>
                   </Inset>
                   <Text
                     color="accent"
+                    size="16px / 22px (Deprecated)"
                     testID={`ens-confirm-register-label-${step}`}
                     weight="heavy"
                   >

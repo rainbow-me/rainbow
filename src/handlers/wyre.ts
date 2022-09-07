@@ -4,21 +4,13 @@ import { captureException } from '@sentry/react-native';
 import values from 'lodash/values';
 
 import {
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   RAINBOW_WYRE_MERCHANT_ID,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   RAINBOW_WYRE_MERCHANT_ID_TEST,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   WYRE_ACCOUNT_ID,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   WYRE_ACCOUNT_ID_TEST,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   WYRE_ENDPOINT,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   WYRE_ENDPOINT_TEST,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   WYRE_TOKEN,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
 import { RAINBOW_FETCH_ERROR, RainbowFetchClient } from '../rainbow-fetch';

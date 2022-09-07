@@ -24,6 +24,7 @@ import { fonts, fontWithWidth, getFontSize } from '@/styles';
 import { abbreviations, deviceUtils, profileUtils } from '@/utils';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { toChecksumAddress } from '@/handlers/web3';
+import { IS_IOS, IS_ANDROID } from '@/env';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -99,7 +100,7 @@ const OptionsIcon = ({ onPress }: { onPress: () => void }) => {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
       <Centered height={40} width={60}>
-        {android ? (
+        {IS_ANDROID ? (
           <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
         ) : (
           <Text style={sx.editIcon}>􀍡</Text>
@@ -230,7 +231,7 @@ export default function AddressRow({
         ];
 
     return {
-      menuItems: ios ? menuItems : menuItems.reverse(),
+      menuItems: IS_IOS ? menuItems : menuItems.reverse(),
       menuTitle: walletName,
     };
   }, [walletName, notificationsEnabled]);
@@ -280,7 +281,7 @@ export default function AddressRow({
                 value={emoji}
               />
             )}
-            <ColumnWithMargins margin={android ? -6 : 3}>
+            <ColumnWithMargins margin={IS_ANDROID ? -6 : 3}>
               <StyledTruncatedText
                 color={colors.dark}
                 testID={`change-wallet-address-row-label-${walletName}`}
@@ -311,7 +312,7 @@ export default function AddressRow({
               <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
             )}
             {editMode &&
-              (ios ? (
+              (IS_IOS ? (
                 <ContextMenuButton
                   isMenuPrimaryAction
                   menuConfig={menuConfig}

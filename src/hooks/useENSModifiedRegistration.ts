@@ -10,7 +10,7 @@ import {
 } from '.';
 import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
@@ -86,7 +86,11 @@ export default function useENSModifiedRegistration({
     enabled: fetchEnabled,
   });
   const {
-    data: { coinAddresses: fetchedCoinAddresses, records: fetchedRecords } = {},
+    data: {
+      coinAddresses: fetchedCoinAddresses,
+      contenthash: fetchedContenthash,
+      records: fetchedRecords,
+    } = {},
     isSuccess: isRecordsSuccess,
   } = useENSRecords(name, {
     enabled: fetchEnabled,
@@ -101,6 +105,7 @@ export default function useENSModifiedRegistration({
       isSuccess
     ) {
       const initialRecords = {
+        contenthash: fetchedContenthash,
         ...fetchedRecords,
         ...fetchedCoinAddresses,
       } as Records;
@@ -113,15 +118,26 @@ export default function useENSModifiedRegistration({
     fetchedRecords,
     isSuccess,
     setInitialRecordsWhenInEditMode,
+    fetchedContenthash,
   ]);
 
   // Derive the records that should be added or removed from the profile
   // (these should be used for SET_TEXT txns instead of `records` to save
   // gas).
   const changedRecords = useMemo(() => {
+    const initialRecordsWithDeprecated = Object.entries(
+      deprecatedTextRecordFields
+    ).reduce((records, [deprecatedKey, key]) => {
+      return {
+        ...records,
+        // @ts-expect-error – This is a key in ENS_RECORDS...
+        [key]: initialRecords[deprecatedKey],
+      };
+    }, initialRecords);
+
     const entriesToChange = differenceWith(
       Object.entries(records),
-      Object.entries(initialRecords),
+      Object.entries(initialRecordsWithDeprecated),
       isEqual
     ) as [keyof Records, string][];
 

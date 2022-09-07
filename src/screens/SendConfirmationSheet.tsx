@@ -97,7 +97,10 @@ export type Checkbox = {
 };
 
 const hasClearProfileInfo = (ensProfile?: ENSProfile) =>
-  isEmpty({ ...ensProfile?.data?.records, ...ensProfile?.data?.coinAddresses });
+  isEmpty({
+    ...ensProfile?.data?.records,
+    ...ensProfile?.data?.coinAddresses,
+  }) && !ensProfile?.data?.contenthash;
 const doesNamePointToRecipient = (
   ensProfile?: ENSProfile,
   recipientAddress?: string
@@ -330,6 +333,9 @@ export default function SendConfirmationSheet() {
 
       if (sendENSOptions['clear-records']) {
         let records = Object.keys({
+          ...(ensProfile?.data?.contenthash
+            ? { contenthash: ensProfile?.data?.contenthash }
+            : {}),
           ...(ensProfile?.data?.coinAddresses ?? {}),
           ...(ensProfile?.data?.records ?? {}),
         }).reduce((records, recordKey) => {
@@ -384,6 +390,7 @@ export default function SendConfirmationSheet() {
     asset,
     checkboxes,
     ensProfile?.data?.coinAddresses,
+    ensProfile?.data?.contenthash,
     ensProfile?.data?.records,
     isENS,
     toAddress,
@@ -544,7 +551,11 @@ export default function SendConfirmationSheet() {
           <Column padding={24}>
             <Row>
               <Column justify="center" width={deviceWidth - 117}>
-                <Heading numberOfLines={1} size="26px" weight="heavy">
+                <Heading
+                  numberOfLines={1}
+                  size="26px / 30px (Deprecated)"
+                  weight="heavy"
+                >
                   {isNft ? asset?.name : nativeDisplayAmount}
                 </Heading>
                 <Row marginTop={12}>
@@ -554,7 +565,7 @@ export default function SendConfirmationSheet() {
                         ? colors.alpha(colors.blueGreyDark, 0.6)
                         : color,
                     }}
-                    size="16px"
+                    size="16px / 22px (Deprecated)"
                     weight={isNft ? 'bold' : 'heavy'}
                   >
                     {isNft
@@ -612,7 +623,11 @@ export default function SendConfirmationSheet() {
             <Row marginBottom={android ? 15 : 30}>
               <Column flex={1} justify="center">
                 <Row width={android ? '80%' : '90%'}>
-                  <Heading numberOfLines={1} size="26px" weight="heavy">
+                  <Heading
+                    numberOfLines={1}
+                    size="26px / 30px (Deprecated)"
+                    weight="heavy"
+                  >
                     {avatarName}
                   </Heading>
                   <Centered marginLeft={4}>
@@ -631,7 +646,7 @@ export default function SendConfirmationSheet() {
                             isDarkMode ? 0.5 : 0.6
                           ),
                         }}
-                        size="20px"
+                        size="20px / 24px (Deprecated)"
                         weight="heavy"
                       >
                         􀍡
@@ -642,7 +657,7 @@ export default function SendConfirmationSheet() {
                 <Row marginTop={12}>
                   <Text
                     color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
-                    size="16px"
+                    size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
                     {isSendingToUserAccount
@@ -694,7 +709,11 @@ export default function SendConfirmationSheet() {
                   >
                     <Callout
                       after={
-                        <Text color="secondary30" weight="heavy">
+                        <Text
+                          color="secondary30"
+                          size="16px / 22px (Deprecated)"
+                          weight="heavy"
+                        >
                           􀅵
                         </Text>
                       }
