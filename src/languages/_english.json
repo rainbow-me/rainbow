@@ -1195,6 +1195,12 @@
         "system": "System",
         "dark": "Dark",
         "light": "Light"
+      },
+      "icon_change": {
+        "title": "Confirm icon change",
+        "warning": "Changing your icon may cause Rainbow to restart.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
       }
     },
     "subscribe_form": {
