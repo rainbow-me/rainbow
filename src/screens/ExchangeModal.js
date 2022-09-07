@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import equal from 'react-fast-compare';
 import { InteractionManager, Keyboard, NativeModules } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
@@ -165,7 +166,7 @@ export default function ExchangeModal({
   // if the default input is on a different network than
   // we want to update the output to be on the same, if its not available -> null
   const defaultOutputAssetOverride = useMemo(() => {
-    let newOutput = defaultOutputAsset;
+    const newOutput = defaultOutputAsset;
 
     if (
       defaultInputAsset &&
@@ -519,7 +520,7 @@ export default function ExchangeModal({
   }, [updateMaxInputAmount]);
 
   const checkGasVsOutput = async (gasPrice, outputPrice) => {
-    if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
+    if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice) && !(android && IS_TESTING)) {
       const res = new Promise(resolve => {
         Alert.alert(
           lang.t('swap.warning.cost.are_you_sure_title'),
@@ -550,7 +551,7 @@ export default function ExchangeModal({
   const submit = useCallback(
     async amountInUSD => {
       setIsAuthorizing(true);
-      let NotificationManager = ios ? NativeModules.NotificationManager : null;
+      const NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
         const wallet = await loadWallet();
         if (!wallet) {
@@ -639,7 +640,7 @@ export default function ExchangeModal({
 
   const handleSubmit = useCallback(async () => {
     let amountInUSD = 0;
-    let NotificationManager = ios ? NativeModules.NotificationManager : null;
+    const NotificationManager = ios ? NativeModules.NotificationManager : null;
     try {
       // Tell iOS we're running a rap (for tracking purposes)
       NotificationManager &&
