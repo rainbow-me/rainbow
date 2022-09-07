@@ -1,10 +1,4 @@
 /* eslint-disable no-undef */
-jest.mock('react-native-background-timer', () => ({
-  identify: () => null,
-  reset: () => null,
-  setup: () => null,
-}));
-
 jest.mock('react-native-device-info', () => ({
   identify: () => null,
   reset: () => null,

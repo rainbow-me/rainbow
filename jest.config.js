@@ -5,8 +5,10 @@ const { compilerOptions } = require('./tsconfig');
 module.exports = {
   preset: 'react-native',
   setupFiles: ['./config/test/jest-setup.js'],
+  testPathIgnorePatterns: ['node_modules', 'e2e'],
   transform: {
     '\\.tsx?$': 'ts-jest',
+    '\\.json?$': 'ts-jest',
   },
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>',

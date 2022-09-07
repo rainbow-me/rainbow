@@ -45,7 +45,7 @@
     "preview": "git reset && git commit -m \"/preview\" --allow-empty",
     "start": "react-native start",
     "start:clean": "yarn clean:packager && react-native start -- --reset-cache",
-    "test": "jest test.js",
+    "test": "jest",
     "ts-coverage": "typescript-coverage-report",
     "ts-migrate-folder": "./scripts/ts-migrate-folder.sh",
     "uninstall:android": "adb uninstall me.rainbow; true",
