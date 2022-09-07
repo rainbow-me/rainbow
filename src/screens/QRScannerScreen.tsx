@@ -13,7 +13,7 @@ import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, ColorModeProvider } from '@/design-system';
 
-const Background = styled.View({
+const Background = styled(View)({
   backgroundColor: 'black',
   height: '100%',
   position: 'absolute',
@@ -41,8 +41,8 @@ export default function QRScannerScreen() {
   return (
     <View pointerEvents="box-none">
       <ColorModeProvider value="darkTinted">
-        <Box position="absolute" top={0} width="full" style={{ zIndex: 1 }}>
-          <Navbar hasStatusBarInset={android} title="Scan" />
+        <Box position="absolute" top="0px" width="full" style={{ zIndex: 1 }}>
+          <Navbar hasStatusBarInset={android} title="Scan QR Code" />
         </Box>
         <ScannerContainer>
           <Background />

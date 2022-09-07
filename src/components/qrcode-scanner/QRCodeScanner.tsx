@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { InteractionManager } from 'react-native';
 import {
@@ -40,7 +40,6 @@ const CameraState = {
 };
 
 export default function QRCodeScanner() {
-  const cameraRef = useRef();
   const [cameraState, setCameraState] = useState(CameraState.Waiting);
   const { goBack, setOptions } = useNavigation();
 
@@ -96,7 +95,7 @@ export default function QRCodeScanner() {
         }
       }
       // we should ask for permission through the UI
-      else if (res === RESULTS.BLOCKED || res === RESULTS.UNAVAILABLE) {
+      else if (res === RESULTS.UNAVAILABLE) {
         setCameraState(CameraState.Unauthorized);
       }
       // initialize the camera and celebrate
@@ -129,8 +128,7 @@ export default function QRCodeScanner() {
             captureAudio={false}
             onBarCodeRead={onScan}
             onMountError={() => setCameraState(CameraState.Error)}
-            pendingAuthorizationView={null}
-            ref={cameraRef}
+            pendingAuthorizationView={undefined}
             borderRadius={40}
             width="full"
             height={{ custom: deviceHeight }}
@@ -169,6 +167,7 @@ export default function QRCodeScanner() {
                   width={{ custom: deviceWidth }}
                   height={{ custom: deviceWidth }}
                   style={{
+                    // TODO: replace with new colors
                     borderColor: 'rgba(245, 248, 255, 0.12)',
                     borderStyle: 'solid',
                     borderWidth: 2,
@@ -179,6 +178,7 @@ export default function QRCodeScanner() {
             )}
             <Cover alignHorizontal="center" alignVertical="center">
               {cameraState === CameraState.Error && (
+                // @ts-expect-error – JS component
                 <ErrorText error={lang.t('wallet.qr.error_mounting_camera')} />
               )}
               {cameraState === CameraState.Unauthorized && (
