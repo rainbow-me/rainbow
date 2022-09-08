@@ -460,7 +460,7 @@ export default function TransactionConfirmationScreen() {
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
-    if (isFocused && (!peerId || !walletConnector)) {
+    if (isFocused && (!peerId || !walletConnector) && (ios || IS_TESTING !== "true")) {
       Alert.alert(
         lang.t('wallet.transaction.alert.connection_expired'),
         lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
