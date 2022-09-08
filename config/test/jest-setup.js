@@ -24,3 +24,10 @@ jest.mock('react-native-keychain', () => ({
   resetGenericPassword: jest.fn(),
   setGenericPassword: jest.fn(),
 }));
+
+jest.mock('react-native', () => ({
+  Platform: OS => OS,
+  select: () => null,
+}));
+
+jest.mock('react-native-mmkv');
