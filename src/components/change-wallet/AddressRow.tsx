@@ -183,14 +183,14 @@ export default function AddressRow({
 
   const contextMenuItems = [
     {
-      actionKey: ContextMenuKeys.Remove,
-      actionTitle: lang.t('wallet.action.remove'),
+      actionKey: ContextMenuKeys.Edit,
+      actionTitle: lang.t('wallet.action.edit'),
       icon: {
         iconType: 'SYSTEM',
-        iconValue: 'trash.fill',
+        iconValue: 'pencil',
       },
-      menuAttributes: ['destructive'],
     },
+
     ...(notificationsEnabled
       ? [
           {
@@ -204,17 +204,18 @@ export default function AddressRow({
         ]
       : []),
     {
-      actionKey: ContextMenuKeys.Edit,
-      actionTitle: lang.t('wallet.action.edit'),
+      actionKey: ContextMenuKeys.Remove,
+      actionTitle: lang.t('wallet.action.remove'),
       icon: {
         iconType: 'SYSTEM',
-        iconValue: 'pencil',
+        iconValue: 'trash.fill',
       },
+      menuAttributes: ['destructive'],
     },
   ];
 
   const menuConfig = {
-    menuItems: IS_IOS ? contextMenuItems : contextMenuItems.reverse(),
+    menuItems: contextMenuItems,
     menuTitle: walletName,
   };
 
