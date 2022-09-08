@@ -35,6 +35,7 @@ import {
 } from '@/handlers/authentication';
 import { analytics } from '@/analytics';
 import logger from '@/utils/logger';
+import delay from 'delay';
 
 type BackupPassword = string;
 
@@ -338,6 +339,38 @@ async function restoreCurrentBackupIntoKeychain(
 
               logger.sentry(
                 'This wallet was backuped with faceId and now we replace it by seed with PIN '
+              );
+              return keychain.saveString(key, valueWithPINInfo, accessControl);
+            }
+          } else if (wasBackupSavedWithPIN) {
+            // the seed phrase shouldn't be encrypted at this stage, if it's encrypted,
+            // it means that it was created before the backup flow was fixed.
+            // We need to decrypt it and allow the user to create a new PIN
+            const encryptedPinKey = backedUpData[pinKey];
+            const backupPIN = await decryptPIN(encryptedPinKey);
+
+            const decryptedSeed = await encryptor.decrypt(
+              backupPIN,
+              seedphrase
+            );
+
+            onBeforePINCreated();
+            const userPIN = await saveNewAuthenticationPIN();
+            onAfterPINCreated();
+
+            const encryptedSeed = await encryptor.encrypt(
+              userPIN,
+              decryptedSeed
+            );
+            if (encryptedSeed) {
+              // in the PIN flow, we must manually encrypt the seedphrase with PIN
+              const valueWithPINInfo = JSON.stringify({
+                ...parsedValue,
+                seedphrase: encryptedSeed,
+              });
+
+              logger.sentry(
+                'This wallet was backuped with an encrypted PIN, and now we decrypt it and encrypt it with own PIN'
               );
               return keychain.saveString(key, valueWithPINInfo, accessControl);
             }
