@@ -9,8 +9,8 @@ import {
   Box,
   Column,
   Columns,
-  Divider,
   Inset,
+  Separator,
   Stack,
   Text,
 } from '@/design-system';
@@ -49,7 +49,7 @@ const PendingRegistration = ({
         <Column>
           <Box>
             <Text
-              color="primary"
+              color="primary (Deprecated)"
               numberOfLines={1}
               size="16px / 22px (Deprecated)"
               weight="heavy"
@@ -76,7 +76,7 @@ const PendingRegistration = ({
               >
                 <Inset horizontal="10px">
                   <Text
-                    color="action"
+                    color="action (Deprecated)"
                     size="16px / 22px (Deprecated)"
                     weight="heavy"
                   >
@@ -93,7 +93,7 @@ const PendingRegistration = ({
             scaleTo={0.9}
           >
             <Text
-              color="secondary50"
+              color="secondary50 (Deprecated)"
               size="18px / 27px (Deprecated)"
               weight="bold"
             >
@@ -141,10 +141,14 @@ const PendingRegistrations = () => {
   return pendingRegistrations?.length > 0 ? (
     <Box paddingHorizontal="19px">
       <Inset vertical="24px">
-        <Divider color="divider60" />
+        <Separator color="divider60 (Deprecated)" />
       </Inset>
       <Stack space="19px">
-        <Text color="secondary50" size="14px / 19px (Deprecated)" weight="bold">
+        <Text
+          color="secondary50 (Deprecated)"
+          size="14px / 19px (Deprecated)"
+          weight="bold"
+        >
           {lang.t('profiles.pending_registrations.in_progress')}
         </Text>
         {pendingRegistrations.map(registration => (

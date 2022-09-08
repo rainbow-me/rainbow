@@ -20,7 +20,10 @@ export const CodeBlock = ({ code }: { code: string }) => {
     <div className={colorMode === 'light' ? dark : ''}>
       <div
         className={sprinkles({
-          backgroundColor: colorMode === 'light' ? 'body' : 'bodyTint',
+          backgroundColor:
+            colorMode === 'light'
+              ? 'body (Deprecated)'
+              : 'bodyTint (Deprecated)',
           borderRadius: '16px',
           padding: '24px',
           position: 'relative',
@@ -29,7 +32,7 @@ export const CodeBlock = ({ code }: { code: string }) => {
       >
         <div
           className={sprinkles({
-            color: 'primary',
+            color: 'primary (Deprecated)',
             position: 'absolute',
             right: '16px',
             ...(isMultipleLines

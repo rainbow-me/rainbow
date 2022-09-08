@@ -118,7 +118,7 @@ function isNativeText(child: ReactNode) {
 export type MarkdownTextProps = {
   children: string;
   size?: TextProps['size'];
-  color?: TextProps['color'];
+  color: TextProps['color'];
   heading1Color?: TextProps['color'];
   heading2Color?: TextProps['color'];
   paragraphSpace: Space;

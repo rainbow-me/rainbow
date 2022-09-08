@@ -75,7 +75,7 @@ const AvailableNetworks = ({
             {availableNetworks?.map((network, index) => {
               return (
                 <Box
-                  background="body"
+                  background="body (Deprecated)"
                   height={{ custom: 22 }}
                   key={`availbleNetwork-${network}`}
                   marginLeft={{ custom: -6 }}

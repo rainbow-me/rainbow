@@ -25,7 +25,7 @@ const docs: DocsType = {
       <Docs.CodePreview
         Example={() =>
           source(
-            <Text color="secondary50" size="17pt">
+            <Text color="label" size="17pt" weight="bold">
               Lorem ipsum
             </Text>
           )
@@ -45,13 +45,13 @@ const docs: DocsType = {
         Example={() =>
           source(
             <>
-              <Box background="swap" padding="19px">
-                <Text color="secondary50" size="17pt">
+              <Box background="blue" padding="19px">
+                <Text color="label" size="17pt" weight="bold">
                   Lorem ipsum
                 </Text>
               </Box>
-              <Box background="action" padding="19px">
-                <Text color="secondary50" size="17pt">
+              <Box background="purple" padding="19px">
+                <Text color="label" size="17pt" weight="bold">
                   Lorem ipsum
                 </Text>
               </Box>

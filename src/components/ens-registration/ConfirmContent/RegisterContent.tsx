@@ -3,7 +3,15 @@ import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { Box, Divider, Inline, Row, Rows, Stack, Text } from '@/design-system';
+import {
+  Box,
+  Inline,
+  Row,
+  Rows,
+  Separator,
+  Stack,
+  Text,
+} from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
@@ -33,7 +41,7 @@ const RegisterContent = ({
             <Stack space="24px">
               <Text
                 align="center"
-                color="primary"
+                color="primary (Deprecated)"
                 containsEmoji
                 size="23px / 27px (Deprecated)"
                 weight="heavy"
@@ -42,7 +50,7 @@ const RegisterContent = ({
               </Text>
               <Text
                 align="center"
-                color="secondary60"
+                color="secondary60 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="semibold"
               >
@@ -53,11 +61,11 @@ const RegisterContent = ({
         </Row>
         <Row height="content">
           <Stack space="19px">
-            <Divider />
+            <Separator color="divider80 (Deprecated)" />
             <Inline alignHorizontal="justify" alignVertical="center">
               <Inline>
                 <Text
-                  color="secondary80"
+                  color="secondary80 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
@@ -68,7 +76,7 @@ const RegisterContent = ({
                   scaleTo={0.9}
                 >
                   <Text
-                    color="secondary30"
+                    color="secondary30 (Deprecated)"
                     size="16px / 22px (Deprecated)"
                     weight="bold"
                   >

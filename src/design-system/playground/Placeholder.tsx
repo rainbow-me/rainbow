@@ -11,8 +11,8 @@ export const Placeholder = ({
   height?: number | '100%';
   width?: number | '100%';
 }) => {
-  const backgroundColor = useForegroundColor('secondary10');
-  const borderColor = useForegroundColor('secondary20');
+  const backgroundColor = useForegroundColor('fillSecondary');
+  const borderColor = useForegroundColor('scrim');
   return (
     <View
       style={{

@@ -61,9 +61,15 @@ export const withText: Example = {
   Example: () =>
     source(
       <Stack space="15px">
-        <Text size="17pt">Lorem ipsum</Text>
-        <Text size="17pt">Lorem ipsum</Text>
-        <Text size="17pt">Lorem ipsum</Text>
+        <Text color="label" size="17pt">
+          Lorem ipsum
+        </Text>
+        <Text color="label" size="17pt">
+          Lorem ipsum
+        </Text>
+        <Text color="label" size="17pt">
+          Lorem ipsum
+        </Text>
       </Stack>
     ),
 };

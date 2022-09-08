@@ -62,7 +62,11 @@ export default function InlineField({
   const { width } = useDimensions();
 
   const paddingVertical = 17;
-  const textStyle = useTextStyle({ size: textSize, weight: 'bold' });
+  const textStyle = useTextStyle({
+    color: 'primary (Deprecated)',
+    size: textSize,
+    weight: 'bold',
+  });
 
   const [inputHeight, setInputHeight] = useState(textSizeNumeric);
   const handleContentSizeChange = useCallback(({ nativeEvent }) => {
@@ -116,9 +120,9 @@ export default function InlineField({
         <Inset top="19px">
           <Inline space="4px">
             <Text
-              {...(errorMessage && {
-                color: { custom: colors.red },
-              })}
+              color={
+                errorMessage ? { custom: colors.red } : 'primary (Deprecated)'
+              }
               size={textSize}
               weight="heavy"
             >
@@ -150,7 +154,7 @@ export default function InlineField({
           {startsWith && (
             <Inset top={ios ? '2px' : '1px'}>
               <Text
-                color="secondary30"
+                color="secondary30 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="heavy"
               >

@@ -122,7 +122,7 @@ export default function SettingsSheet() {
   const getRealRoute = useCallback(
     (key: any) => {
       let route = key;
-      let paramsToPass: { imported?: boolean; type?: string } = {};
+      const paramsToPass: { imported?: boolean; type?: string } = {};
       if (key === SettingsPages.backup.key) {
         const walletId = params?.walletId;
         if (
@@ -181,7 +181,7 @@ export default function SettingsSheet() {
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Box
-      background="cardBackdrop"
+      background="cardBackdrop (Deprecated)"
       flexGrow={1}
       testID="settings-sheet"
       {...(android && { borderTopRadius: 30, marginTop: { custom: 8 } })}

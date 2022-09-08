@@ -15,10 +15,10 @@ import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   Box,
-  Divider,
   Heading,
   Inline,
   Inset,
+  Separator,
   Stack,
   Text,
 } from '@/design-system';
@@ -102,7 +102,7 @@ export default function ENSSearchSheet() {
 
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       flexGrow={1}
       paddingTop={{ custom: topPadding }}
       testID="ens-search-sheet"
@@ -112,7 +112,7 @@ export default function ENSSearchSheet() {
           <Stack alignHorizontal="center" space={{ custom: 16 }}>
             <Heading
               align="center"
-              color="primary"
+              color="primary (Deprecated)"
               size="23px / 27px (Deprecated)"
               weight="heavy"
             >
@@ -120,7 +120,7 @@ export default function ENSSearchSheet() {
             </Heading>
             <Text
               align="center"
-              color="secondary60"
+              color="secondary60 (Deprecated)"
               size="18px / 27px (Deprecated)"
               weight="bold"
             >
@@ -168,7 +168,7 @@ export default function ENSSearchSheet() {
                 </Box>
                 <Text
                   align="center"
-                  color="secondary50"
+                  color="secondary50 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
@@ -182,7 +182,7 @@ export default function ENSSearchSheet() {
             <Inset horizontal="30px">
               <Text
                 align="center"
-                color="secondary50"
+                color="secondary50 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="bold"
               >
@@ -195,7 +195,7 @@ export default function ENSSearchSheet() {
               <Stack space="15px">
                 <Text
                   align="center"
-                  color="secondary50"
+                  color="secondary50 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
@@ -209,7 +209,7 @@ export default function ENSSearchSheet() {
               <Stack
                 separator={
                   <Inset horizontal="19px">
-                    <Divider color="divider60" />
+                    <Separator color="divider60 (Deprecated)" />
                   </Inset>
                 }
                 space="19px"
@@ -238,7 +238,7 @@ export default function ENSSearchSheet() {
                   registrationData?.registrationDate ? (
                     <Inset horizontal="15px">
                       <Text
-                        color="secondary60"
+                        color="secondary60 (Deprecated)"
                         size="16px / 22px (Deprecated)"
                         weight="bold"
                       >
@@ -253,14 +253,14 @@ export default function ENSSearchSheet() {
                     <Inline>
                       {registrationCostsDataIsAvailable ? (
                         <Text
-                          color="secondary60"
+                          color="secondary60 (Deprecated)"
                           size="16px / 22px (Deprecated)"
                           testID="ens-registration-fees"
                           weight="bold"
                         >
                           {lang.t('profiles.search.estimated_total_cost_1')}
                           <Text
-                            color="secondary80"
+                            color="secondary80 (Deprecated)"
                             size="16px / 22px (Deprecated)"
                             weight="heavy"
                           >
@@ -270,7 +270,7 @@ export default function ENSSearchSheet() {
                         </Text>
                       ) : (
                         <Text
-                          color="secondary60"
+                          color="secondary60 (Deprecated)"
                           size="16px / 22px (Deprecated)"
                           weight="bold"
                         >

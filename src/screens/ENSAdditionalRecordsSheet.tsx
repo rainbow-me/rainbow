@@ -49,7 +49,7 @@ export default function ENSAdditionalRecordsSheet() {
     >
       <AccentColorProvider color={accentColor}>
         <Box
-          background="body"
+          background="body (Deprecated)"
           paddingHorizontal="19px"
           paddingVertical="24px"
           style={boxStyle}
@@ -70,7 +70,7 @@ export default function ENSAdditionalRecordsSheet() {
                         ({ id }) => textRecordField.id === id
                       );
                       const fieldToRemove = selectedFields[index];
-                      let newFields = [...selectedFields];
+                      const newFields = [...selectedFields];
                       newFields.splice(index, 1);
                       onRemoveField(fieldToRemove, newFields);
                     } else {

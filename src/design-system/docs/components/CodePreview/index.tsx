@@ -41,7 +41,7 @@ export const CodePreview = ({
     <Stack space="16px">
       <div
         className={sprinkles({
-          backgroundColor: 'bodyTint',
+          backgroundColor: 'bodyTint (Deprecated)',
           borderRadius: '16px',
           padding: '24px',
         })}
@@ -51,7 +51,7 @@ export const CodePreview = ({
             borderRadius: '16px',
             ...(showFrame
               ? {
-                  backgroundColor: 'body',
+                  backgroundColor: 'body (Deprecated)',
                 }
               : {}),
           })}
@@ -66,7 +66,7 @@ export const CodePreview = ({
             <Inline space="24px">
               {enableCodeSnippet && (
                 <Button
-                  color="action"
+                  color="action (Deprecated)"
                   iconBefore={
                     showCode ? <ChevronUpIcon /> : <ChevronDownIcon />
                   }
@@ -77,7 +77,7 @@ export const CodePreview = ({
               )}
               {enablePlayroom && (
                 <ButtonLink
-                  color="action"
+                  color="action (Deprecated)"
                   href={`${
                     process.env.NODE_ENV === 'production'
                       ? // @ts-ignore

@@ -105,7 +105,7 @@ export default function SecretDisplaySection({
           <Stack space="10px">
             <Text
               align="center"
-              color="secondary"
+              color="secondary (Deprecated)"
               size="18px / 27px (Deprecated)"
               weight="regular"
             >
@@ -135,7 +135,7 @@ export default function SecretDisplaySection({
         >
           <Text
             align="center"
-            color="secondary60"
+            color="secondary60 (Deprecated)"
             size="16px / 22px (Deprecated)"
           >
             {lang.t('back_up.secret.biometrically_secured')}
@@ -161,7 +161,7 @@ export default function SecretDisplaySection({
                   <Inline alignVertical="center" space="6px">
                     <CopyButtonIcon />
                     <Text
-                      color="action"
+                      color="action (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
                     >
@@ -175,6 +175,7 @@ export default function SecretDisplaySection({
                 <SecretDisplayCard seed={seed} type={type} />
                 <Text
                   containsEmoji
+                  color="primary (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
@@ -182,7 +183,7 @@ export default function SecretDisplaySection({
                 </Text>
                 <Text
                   align="center"
-                  color="secondary60"
+                  color="secondary60 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="semibold"
                 >

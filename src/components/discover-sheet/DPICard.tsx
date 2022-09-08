@@ -96,11 +96,15 @@ export default function DPICard() {
       testID="dpi-button"
     >
       <AccentColorProvider color={shadowColor}>
-        <Box background="body" borderRadius={24} shadow={CardShadow}>
+        <Box
+          background="body (Deprecated)"
+          borderRadius={24}
+          shadow={CardShadow}
+        >
           <ColorModeProvider value="darkTinted">
             <Box
               as={LinearGradient}
-              background="body"
+              background="body (Deprecated)"
               borderRadius={24}
               colors={['#6D58F5', '#A970FF']}
               end={{ x: 1, y: 0.5 }}
@@ -119,14 +123,14 @@ export default function DPICard() {
                   >
                     <Stack space={{ custom: 13 }}>
                       <Heading
-                        color="primary"
+                        color="primary (Deprecated)"
                         size="20px / 22px (Deprecated)"
                         weight="bold"
                       >
                         {lang.t('discover.dpi.title')}
                       </Heading>
                       <Text
-                        color="secondary60"
+                        color="secondary60 (Deprecated)"
                         size="15px / 21px (Deprecated)"
                         weight="semibold"
                       >
@@ -149,7 +153,7 @@ export default function DPICard() {
                     <Box style={ButtonShadow}>
                       <Box
                         as={LinearGradient}
-                        background="body"
+                        background="body (Deprecated)"
                         borderRadius={18}
                         colors={['#5236C2', '#7533D6']}
                         end={{ x: 1, y: 0.5 }}
@@ -160,6 +164,7 @@ export default function DPICard() {
                         <Cover alignHorizontal="center" alignVertical="center">
                           <Text
                             align="center"
+                            color="primary (Deprecated)"
                             size="15px / 21px (Deprecated)"
                             weight="heavy"
                           >

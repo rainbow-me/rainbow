@@ -36,6 +36,7 @@ const SearchInput = ({
 }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
   const headingStyle = useHeadingStyle({
+    color: 'primary (Deprecated)',
     size: '30px / 34px (Deprecated)',
     weight: 'heavy',
   });
@@ -60,7 +61,7 @@ const SearchInput = ({
           as={MaskedView}
           maskElement={
             <Box
-              background="body"
+              background="body (Deprecated)"
               borderRadius={46}
               height={`${height}px`}
               width="full"
@@ -82,7 +83,7 @@ const SearchInput = ({
           maskElement={
             <Inset space="3px">
               <Box
-                background="body"
+                background="body (Deprecated)"
                 borderRadius={46}
                 height={{ custom: height - strokeWidth * 2 }}
                 width="full"
@@ -113,7 +114,11 @@ const SearchInput = ({
                         <Spinner duration={1000} size={28} />
                       </Box>
                     ) : (
-                      <Heading size="30px / 34px (Deprecated)" weight="heavy">
+                      <Heading
+                        color="primary (Deprecated)"
+                        size="30px / 34px (Deprecated)"
+                        weight="heavy"
+                      >
                         􀊫
                       </Heading>
                     )}
@@ -151,6 +156,7 @@ const SearchInput = ({
             <Column width="content">
               <Heading
                 align="right"
+                color="primary (Deprecated)"
                 size="30px / 34px (Deprecated)"
                 weight="heavy"
               >

@@ -138,13 +138,17 @@ const PromoSheet = ({
                     </Box>
                     <Stack alignHorizontal="center" space={{ custom: 13 }}>
                       <Text
-                        color="secondary60"
+                        color="secondary60 (Deprecated)"
                         size="15px / 21px (Deprecated)"
                         weight="heavy"
                       >
                         {lang.t(`promos.${campaignKey}.subheader`)}
                       </Text>
-                      <Heading size="30px / 34px (Deprecated)" weight="heavy">
+                      <Heading
+                        color="primary (Deprecated)"
+                        size="30px / 34px (Deprecated)"
+                        weight="heavy"
+                      >
                         {lang.t(`promos.${campaignKey}.header`)}
                       </Heading>
                     </Stack>

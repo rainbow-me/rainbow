@@ -81,7 +81,7 @@ const ExchangeIcon = magicMemo(
                 >
                   <Text
                     align="center"
-                    color="secondary80"
+                    color="secondary80 (Deprecated)"
                     size="14px / 19px (Deprecated)"
                     weight="semibold"
                   >
@@ -162,7 +162,7 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
   }, [protocols]);
 
   const [step, nextStep] = useStepper(steps.length);
-  const defaultColor = useForegroundColor('secondary');
+  const defaultColor = useForegroundColor('secondary (Deprecated)');
 
   if (protocols?.length > 1) {
     return (

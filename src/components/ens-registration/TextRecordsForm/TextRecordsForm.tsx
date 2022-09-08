@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
-import { Box, Column, Columns, Divider, Stack } from '@/design-system';
+import { Box, Column, Columns, Separator, Stack } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@/hooks';
 
@@ -126,7 +126,7 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
 
   return (
     <>
-      <Divider color="divider40" />
+      <Separator color="divider40 (Deprecated)" />
       <InlineField
         {...props}
         onChangeText={text => {

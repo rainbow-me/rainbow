@@ -22,8 +22,8 @@ export default function CheckboxField({
   onPress: () => void;
   testID: string;
 }) {
-  const secondary15 = useForegroundColor('secondary15');
-  const action = useForegroundColor('action');
+  const secondary15 = useForegroundColor('secondary15 (Deprecated)');
+  const action = useForegroundColor('action (Deprecated)');
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.925} testID={testID}>
@@ -40,7 +40,9 @@ export default function CheckboxField({
           }}
           width={{ custom: 20 }}
           {...(!customColor && {
-            background: !isChecked ? 'action' : 'body',
+            background: !isChecked
+              ? 'action (Deprecated)'
+              : 'body (Deprecated)',
           })}
         >
           {isChecked && (
@@ -60,7 +62,7 @@ export default function CheckboxField({
         <Box flexShrink={1}>
           <AccentColorProvider color={customColor || action}>
             <Text
-              color={isChecked ? 'accent' : 'secondary80'}
+              color={isChecked ? 'accent' : 'secondary80 (Deprecated)'}
               size="16px / 22px (Deprecated)"
               weight="bold"
             >

@@ -546,6 +546,7 @@ export default function SendConfirmationSheet() {
               <Column justify="center" width={deviceWidth - 117}>
                 <Heading
                   numberOfLines={1}
+                  color="primary (Deprecated)"
                   size="26px / 30px (Deprecated)"
                   weight="heavy"
                 >
@@ -618,6 +619,7 @@ export default function SendConfirmationSheet() {
                 <Row width={android ? '80%' : '90%'}>
                   <Heading
                     numberOfLines={1}
+                    color="primary (Deprecated)"
                     size="26px / 30px (Deprecated)"
                     weight="heavy"
                   >
@@ -703,7 +705,7 @@ export default function SendConfirmationSheet() {
                     <Callout
                       after={
                         <Text
-                          color="secondary30"
+                          color="secondary30 (Deprecated)"
                           size="16px / 22px (Deprecated)"
                           weight="heavy"
                         >

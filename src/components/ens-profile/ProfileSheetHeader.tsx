@@ -18,9 +18,9 @@ import {
   Box,
   Column,
   Columns,
-  Divider,
   Heading,
   Inset,
+  Separator,
   Stack,
 } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
@@ -95,7 +95,7 @@ export default function ProfileSheetHeader({
 
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
     >
       <Stack space={{ custom: 18 }}>
@@ -131,7 +131,11 @@ export default function ProfileSheetHeader({
         </Bleed>
         <Inset horizontal="19px">
           <Stack space="19px">
-            <Heading size="23px / 27px (Deprecated)" weight="heavy">
+            <Heading
+              color="primary (Deprecated)"
+              size="23px / 27px (Deprecated)"
+              weight="heavy"
+            >
               {abbreviateEnsForDisplay(ensName)}
             </Heading>
             <>
@@ -179,7 +183,7 @@ export default function ProfileSheetHeader({
             </Bleed>
             {!isPreview && (
               <Inset bottom="6px">
-                <Divider color="divider60" />
+                <Separator color="divider60 (Deprecated)" />
               </Inset>
             )}
           </Stack>
@@ -195,13 +199,13 @@ function DescriptionPlaceholder() {
       <Skeleton animated>
         <Stack space="8px">
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={10}
             height={{ custom: 14 }}
             width="full"
           />
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={10}
             height={{ custom: 14 }}
             width="1/3"

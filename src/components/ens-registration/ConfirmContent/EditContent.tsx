@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { Divider, Inline, Inset, Row, Rows, Text } from '@/design-system';
+import { Inline, Inset, Row, Rows, Separator, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
@@ -27,19 +27,19 @@ const EditContent = ({
     return (
       <Rows alignVertical="bottom">
         <Row height="content">
-          <Divider />
+          <Separator color="divider80 (Deprecated)" />
         </Row>
       </Rows>
     );
   return (
     <Rows alignVertical="bottom">
       <Row height="content">
-        <Divider />
+        <Separator color="divider80 (Deprecated)" />
         <Inset top="19px">
           <Inline alignHorizontal="justify" alignVertical="center">
             <Inline>
               <Text
-                color="secondary80"
+                color="secondary80 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="bold"
               >
@@ -50,7 +50,7 @@ const EditContent = ({
                 scaleTo={0.9}
               >
                 <Text
-                  color="secondary30"
+                  color="secondary30 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >

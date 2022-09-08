@@ -49,7 +49,7 @@ const DevNotificationsSection = () => {
   const { chainId } = useAccountSettings();
   const [loading, setLoading] = useState<boolean>(true);
   const walletIDs = Object.keys(wallets!);
-  let allWallets: any[] = useMemo(() => [], []);
+  const allWallets: any[] = useMemo(() => [], []);
   const [notificationState, setNotificationState] = useState<any>({});
 
   useEffect(() => {
@@ -132,7 +132,11 @@ const DevNotificationsSection = () => {
     <ScrollView>
       <Box paddingHorizontal="19px" paddingTop="19px">
         <Box paddingBottom="19px">
-          <Text size="20px / 24px (Deprecated)" weight="bold">
+          <Text
+            color="primary (Deprecated)"
+            size="20px / 24px (Deprecated)"
+            weight="bold"
+          >
             Notifications Debug
           </Text>
         </Box>
@@ -142,7 +146,7 @@ const DevNotificationsSection = () => {
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
-              color="secondary60"
+              color="dark"
               hideShadow
               onPress={unsubscribeAll}
             >
@@ -152,7 +156,7 @@ const DevNotificationsSection = () => {
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
-              color="secondary60"
+              color="dark"
               hideShadow
               onPress={() => subscribeAll('watcher')}
             >
@@ -162,7 +166,7 @@ const DevNotificationsSection = () => {
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
-              color="secondary60"
+              color="dark"
               hideShadow
               onPress={() => subscribeAll('owner')}
             >
@@ -196,12 +200,19 @@ const DevNotificationsSection = () => {
                   />
                 </Box>
                 <Box>
-                  <Text size="18px / 27px (Deprecated)" weight="bold">
+                  <Text
+                    color="primary (Deprecated)"
+                    size="18px / 27px (Deprecated)"
+                    weight="bold"
+                  >
                     {wallet.label || wallet.color}
                   </Text>
                 </Box>
                 <Box paddingTop="15px">
-                  <Text color="secondary60" size="16px / 22px (Deprecated)">
+                  <Text
+                    color="secondary60 (Deprecated)"
+                    size="16px / 22px (Deprecated)"
+                  >
                     {formatAddressForDisplay(wallet.address)}
                   </Text>
                 </Box>
@@ -213,7 +224,7 @@ const DevNotificationsSection = () => {
                       backgroundColor={
                         isOff ? colors.appleBlue : colors.blueGreyDark30
                       }
-                      color={isOff ? 'white' : 'secondary60'}
+                      color={isOff ? 'white' : 'dark'}
                       hideShadow
                       onPress={() => unsubscribe(wallet.address)}
                     >
@@ -225,7 +236,7 @@ const DevNotificationsSection = () => {
                       backgroundColor={
                         isWatcher ? colors.appleBlue : colors.blueGreyDark30
                       }
-                      color={isWatcher ? 'white' : 'secondary60'}
+                      color={isWatcher ? 'white' : 'dark'}
                       hideShadow
                       onPress={() => subscribe('watcher', wallet.address)}
                     >
@@ -237,7 +248,7 @@ const DevNotificationsSection = () => {
                       backgroundColor={
                         isOwner ? colors.appleBlue : colors.blueGreyDark30
                       }
-                      color={isOwner ? 'white' : 'secondary60'}
+                      color={isOwner ? 'white' : 'dark'}
                       hideShadow
                       onPress={() => subscribe('owner', wallet.address)}
                     >

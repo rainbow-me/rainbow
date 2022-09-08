@@ -1,6 +1,118 @@
 import { mapValues } from 'lodash';
 
-export const colors = {
+export const globalPalette = {
+  green10: '#EAFCE8',
+  green20: '#CDFACD',
+  green30: '#A6F5AC',
+  green40: '#74E082',
+  green50: '#4BD166',
+  green60: '#1DB847',
+  green70: '#189943',
+  green80: '#09752D',
+  green90: '#005723',
+  green100: '#003816',
+
+  blue10: '#EDF9FF',
+  blue20: '#D1EDFF',
+  blue30: '#A3D7FF',
+  blue40: '#6BBFFF',
+  blue50: '#3898FF',
+  blue60: '#0E76FD',
+  blue70: '#1761E0',
+  blue80: '#0B4AB8',
+  blue90: '#053085',
+  blue100: '#001E59',
+
+  purple10: '#F7F5FF',
+  purple20: '#E7E0FF',
+  purple30: '#C6B8FF',
+  purple40: '#9E8FFF',
+  purple50: '#7A70FF',
+  purple60: '#5F5AFA',
+  purple70: '#5248E0',
+  purple80: '#4936C2',
+  purple90: '#38228F',
+  purple100: '#2C0D6B',
+
+  pink10: '#FFF0FA',
+  pink20: '#FFD6F1',
+  pink30: '#FFB8E2',
+  pink40: '#FF99CF',
+  pink50: '#FF7AB8',
+  pink60: '#FF5CA0',
+  pink70: '#E04887',
+  pink80: '#CC3976',
+  pink90: '#851B53',
+  pink100: '#570040',
+
+  red10: '#FFF0F0',
+  red20: '#FFD4D1',
+  red30: '#FFACA3',
+  red40: '#FF887A',
+  red50: '#FF6257',
+  red60: '#FA423C',
+  red70: '#D13732',
+  red80: '#B22824',
+  red90: '#7A1714',
+  red100: '#520907',
+
+  orange10: '#FFF6EB',
+  orange20: '#FFE7CC',
+  orange30: '#FFCF99',
+  orange40: '#FFB266',
+  orange50: '#FF983D',
+  orange60: '#FF801F',
+  orange70: '#E06E16',
+  orange80: '#AD530E',
+  orange90: '#703B12',
+  orange100: '#3D1E0A',
+
+  yellow10: '#FFFBE0',
+  yellow20: '#FFF5C2',
+  yellow30: '#FFEE99',
+  yellow40: '#FFE566',
+  yellow50: '#FFDF3D',
+  yellow60: '#FFD014',
+  yellow70: '#EBAF09',
+  yellow80: '#B88700',
+  yellow90: '#7A600A',
+  yellow100: '#42320B',
+
+  grey10: '#F7F7F7',
+  grey20: 'rgba(9, 17, 31, 0.05)',
+  grey30: 'rgba(16, 21, 31, 0.1)',
+  grey40: 'rgba(16, 21, 31, 0.16)',
+  grey50: 'rgba(22, 25, 31, 0.24)',
+  grey60: 'rgba(26, 28, 31, 0.36)',
+  grey70: 'rgba(27, 29, 31, 0.5)',
+  grey80: 'rgba(27, 29, 31, 0.7)',
+  grey90: 'rgba(27, 29, 31, 0.88)',
+  grey100: '#000',
+
+  white10: '#1B1C1E',
+  white20: 'rgba(245, 248, 255, 0.12)',
+  white30: 'rgba(245, 248, 255, 0.16)',
+  white40: 'rgba(245, 248, 255, 0.2)',
+  white50: 'rgba(245, 248, 255, 0.28)',
+  white60: 'rgba(245, 248, 255, 0.4)',
+  white70: 'rgba(245, 248, 255, 0.56)',
+  white80: 'rgba(245, 248, 255, 0.76)',
+  white90: 'rgba(247, 250, 255, 0.92)',
+  white100: '#FFFFFF',
+
+  blueGrey10: '#F5F5F7',
+  blueGrey20: '#E6E9F0',
+  blueGrey30: '#DADEE5',
+  blueGrey40: '#CAD0D9',
+  blueGrey50: '#AFB9C7',
+  blueGrey60: '#929EAD',
+  blueGrey70: '#78828F',
+  blueGrey80: '#5F6670',
+  blueGrey90: '#3C4047',
+  blueGrey100: '#242529',
+};
+
+export const deprecatedColors = {
   appleBlue: '#0E76FD',
   appleBlueLight: '#1F87FF',
   black: '#000000',
@@ -60,209 +172,439 @@ export type ContextualColorValue<Value> = {
 };
 
 export type BackgroundColor =
-  | 'body'
-  | 'action'
-  | 'swap'
-  | 'card'
-  | 'cardBackdrop';
+  | 'surface'
+  | 'surfaceSecondary'
+  | 'surfaceTertiary'
+  | 'fill'
+  | 'fillSecondary'
+  | 'fillTertiary'
+  | 'blue'
+  | 'green'
+  | 'red'
+  | 'purple'
+  | 'pink'
+  | 'orange'
+  | 'yellow'
+  | 'body (Deprecated)'
+  | 'action (Deprecated)'
+  | 'swap (Deprecated)'
+  | 'card (Deprecated)'
+  | 'cardBackdrop (Deprecated)';
 
 export type BackgroundColorValue = {
   color: string;
   mode: ColorMode;
 };
 
-export const defaultAccentColor: BackgroundColorValue = {
-  color: colors.paleBlue,
-  mode: 'darkTinted',
-};
-
 export const backgroundColors: Record<
   BackgroundColor,
   BackgroundColorValue | ContextualColorValue<BackgroundColorValue>
 > = {
-  action: {
+  'surface': {
+    light: {
+      color: globalPalette.white100,
+      mode: 'light',
+    },
     dark: {
-      color: colors.appleBlueLight,
+      color: globalPalette.grey100,
+      mode: 'dark',
+    },
+  },
+  'surfaceSecondary': {
+    light: {
+      color: globalPalette.white100,
+      mode: 'light',
+    },
+    dark: {
+      color: globalPalette.white10,
+      mode: 'dark',
+    },
+  },
+  'surfaceTertiary': {
+    light: {
+      color: '#F0F1F5',
+      mode: 'light',
+    },
+    dark: {
+      color: globalPalette.white10,
+      mode: 'dark',
+    },
+  },
+  'fill': {
+    light: {
+      color: globalPalette.grey30,
+      mode: 'light',
+    },
+    dark: {
+      color: globalPalette.white30,
+      mode: 'dark',
+    },
+  },
+  'fillSecondary': {
+    light: {
+      color: globalPalette.grey20,
+      mode: 'light',
+    },
+    dark: {
+      color: globalPalette.white20,
+      mode: 'dark',
+    },
+  },
+  'fillTertiary': {
+    light: {
+      color: globalPalette.white100,
+      mode: 'light',
+    },
+    dark: {
+      color: globalPalette.blueGrey100,
+      mode: 'dark',
+    },
+  },
+  'blue': {
+    light: {
+      color: globalPalette.blue60,
+      mode: 'dark',
+    },
+    dark: {
+      color: globalPalette.blue50,
+      mode: 'dark',
+    },
+  },
+  'green': {
+    light: {
+      color: globalPalette.green60,
+      mode: 'dark',
+    },
+    dark: {
+      color: globalPalette.green50,
+      mode: 'dark',
+    },
+  },
+  'red': {
+    light: {
+      color: globalPalette.red60,
+      mode: 'dark',
+    },
+    dark: {
+      color: globalPalette.red50,
+      mode: 'dark',
+    },
+  },
+  'purple': {
+    light: {
+      color: globalPalette.purple60,
+      mode: 'dark',
+    },
+    dark: {
+      color: globalPalette.purple50,
+      mode: 'dark',
+    },
+  },
+  'pink': {
+    light: {
+      color: globalPalette.pink60,
+      mode: 'dark',
+    },
+    dark: {
+      color: globalPalette.pink50,
+      mode: 'dark',
+    },
+  },
+  'orange': {
+    light: {
+      color: globalPalette.orange60,
+      mode: 'dark',
+    },
+    dark: {
+      color: globalPalette.orange50,
+      mode: 'dark',
+    },
+  },
+  'yellow': {
+    light: {
+      color: globalPalette.yellow60,
+      mode: 'light',
+    },
+    dark: {
+      color: globalPalette.yellow50,
+      mode: 'light',
+    },
+  },
+  'action (Deprecated)': {
+    dark: {
+      color: deprecatedColors.appleBlueLight,
       mode: 'darkTinted',
     },
     light: {
-      color: colors.appleBlue,
+      color: deprecatedColors.appleBlue,
       mode: 'darkTinted',
     },
   },
-  body: {
+  'body (Deprecated)': {
     dark: {
-      color: colors.blackTint,
+      color: deprecatedColors.blackTint,
       mode: 'dark',
     },
     darkTinted: {
-      color: colors.blackTint,
+      color: deprecatedColors.blackTint,
       mode: 'darkTinted',
     },
     light: {
-      color: colors.white,
+      color: deprecatedColors.white,
       mode: 'light',
     },
     lightTinted: {
-      color: colors.white,
+      color: deprecatedColors.white,
       mode: 'lightTinted',
     },
   },
-  card: {
+  'card (Deprecated)': {
     dark: {
-      color: colors.dark,
+      color: deprecatedColors.dark,
       mode: 'dark',
     },
     light: {
-      color: colors.white,
+      color: deprecatedColors.white,
       mode: 'light',
     },
   },
-  cardBackdrop: {
+  'cardBackdrop (Deprecated)': {
     dark: {
-      color: colors.darker,
+      color: deprecatedColors.darker,
       mode: 'dark',
     },
     light: {
-      color: colors.offwhite,
+      color: deprecatedColors.offwhite,
       mode: 'light',
     },
   },
-  swap: {
-    color: colors.swapPurple,
+  'swap (Deprecated)': {
+    color: deprecatedColors.swapPurple,
     mode: 'darkTinted',
   },
 };
 
 export type ForegroundColor =
-  | 'action'
-  | 'divider20'
-  | 'divider40'
-  | 'divider60'
-  | 'divider80'
-  | 'divider100'
-  | 'primary'
-  | 'secondary'
-  | 'secondary06'
-  | 'secondary10'
-  | 'secondary15'
-  | 'secondary20'
-  | 'secondary25'
-  | 'secondary30'
-  | 'secondary40'
-  | 'secondary50'
-  | 'secondary60'
-  | 'secondary70'
-  | 'secondary80'
+  | 'label'
+  | 'labelSecondary'
+  | 'labelTertiary'
+  | 'labelQuaternary'
+  | 'blue'
+  | 'green'
+  | 'red'
+  | 'purple'
+  | 'pink'
+  | 'orange'
+  | 'yellow'
+  | 'fill'
+  | 'fillSecondary'
+  | 'fillTertiary'
+  | 'scrim'
+  | 'scrimSecondary'
+  | 'scrimTertiary'
+  | 'separator'
+  | 'separatorSecondary'
+  | 'buttonStroke'
+  | 'buttonStrokeSecondary'
   | 'shadow'
-  | 'swap';
+  | 'action (Deprecated)'
+  | 'divider20 (Deprecated)'
+  | 'divider40 (Deprecated)'
+  | 'divider60 (Deprecated)'
+  | 'divider80 (Deprecated)'
+  | 'divider100 (Deprecated)'
+  | 'primary (Deprecated)'
+  | 'secondary (Deprecated)'
+  | 'secondary06 (Deprecated)'
+  | 'secondary10 (Deprecated)'
+  | 'secondary15 (Deprecated)'
+  | 'secondary20 (Deprecated)'
+  | 'secondary25 (Deprecated)'
+  | 'secondary30 (Deprecated)'
+  | 'secondary40 (Deprecated)'
+  | 'secondary50 (Deprecated)'
+  | 'secondary60 (Deprecated)'
+  | 'secondary70 (Deprecated)'
+  | 'secondary80 (Deprecated)'
+  | 'swap (Deprecated)';
+
+function selectBackgroundAsForeground(
+  backgroundName: BackgroundColor
+): string | ContextualColorValue<string> {
+  const bg = backgroundColors[backgroundName];
+
+  if ('color' in bg) {
+    return bg.color;
+  }
+
+  return {
+    dark: bg.dark.color,
+    light: bg.light.color,
+    ...(bg.lightTinted && { lightTinted: bg.lightTinted.color }),
+    ...(bg.darkTinted && { darkTinted: bg.darkTinted.color }),
+  };
+}
 
 export const foregroundColors: Record<
   ForegroundColor,
   string | ContextualColorValue<string>
 > = {
-  action: {
-    dark: colors.appleBlueLight,
-    light: colors.appleBlue,
+  'label': {
+    light: globalPalette.grey100,
+    dark: globalPalette.white100,
   },
-  divider100: {
+  'labelSecondary': {
+    light: globalPalette.grey80,
+    dark: globalPalette.white80,
+  },
+  'labelTertiary': {
+    light: globalPalette.grey70,
+    dark: globalPalette.white70,
+  },
+  'labelQuaternary': {
+    light: globalPalette.grey60,
+    dark: globalPalette.white60,
+  },
+  'blue': selectBackgroundAsForeground('blue'),
+  'green': selectBackgroundAsForeground('green'),
+  'red': selectBackgroundAsForeground('red'),
+  'purple': selectBackgroundAsForeground('purple'),
+  'pink': selectBackgroundAsForeground('pink'),
+  'orange': selectBackgroundAsForeground('orange'),
+  'yellow': selectBackgroundAsForeground('yellow'),
+  'fill': selectBackgroundAsForeground('fill'),
+  'fillSecondary': selectBackgroundAsForeground('fillSecondary'),
+  'fillTertiary': selectBackgroundAsForeground('fillTertiary'),
+  'scrim': {
+    light: 'rgba(0, 0, 0, 0.2)',
+    dark: 'rgba(0, 0, 0, 0.4)',
+  },
+  'scrimSecondary': {
+    light: 'rgba(0, 0, 0, 0.4)',
+    dark: 'rgba(0, 0, 0, 0.6)',
+  },
+  'scrimTertiary': {
+    light: 'rgba(0, 0, 0, 0.6)',
+    dark: 'rgba(0, 0, 0, 0.8)',
+  },
+  'separator': {
+    light: globalPalette.grey20,
+    dark: globalPalette.white20,
+  },
+  'separatorSecondary': {
+    light: globalPalette.grey20,
+    dark: 'rgba(245, 248, 255, 0.06)',
+  },
+  'buttonStroke': {
+    light: 'rgba(0, 0, 0, 0.05)',
+    dark: 'rgba(255, 255, 255, 0.03)',
+  },
+  'buttonStrokeSecondary': {
+    light: globalPalette.white20,
+    dark: globalPalette.white20,
+  },
+  'action (Deprecated)': {
+    dark: deprecatedColors.appleBlueLight,
+    light: deprecatedColors.appleBlue,
+  },
+  'divider100 (Deprecated)': {
     dark: 'rgba(60, 66, 82, 0.6)',
     darkTinted: 'rgba(255, 255, 255, 0.15)',
     light: 'rgba(60, 66, 82, 0.12)',
   },
-  divider20: {
+  'divider20 (Deprecated)': {
     dark: 'rgba(60, 66, 82, 0.025)',
     darkTinted: 'rgba(255, 255, 255, 0.01)',
     light: 'rgba(60, 66, 82, 0.01)',
   },
-  divider40: {
+  'divider40 (Deprecated)': {
     dark: 'rgba(60, 66, 82, 0.0375)',
     darkTinted: 'rgba(255, 255, 255, 0.0375)',
     light: 'rgba(60, 66, 82, 0.015)',
   },
-  divider60: {
+  'divider60 (Deprecated)': {
     dark: 'rgba(60, 66, 82, 0.05)',
     darkTinted: 'rgba(255, 255, 255, 0.05)',
     light: 'rgba(60, 66, 82, 0.02)',
   },
-  divider80: {
+  'divider80 (Deprecated)': {
     dark: 'rgba(60, 66, 82, 0.075)',
     darkTinted: 'rgba(255, 255, 255, 0.075)',
     light: 'rgba(60, 66, 82, 0.03)',
   },
-  primary: {
-    dark: colors.sky,
-    darkTinted: colors.white,
-    light: colors.greyDark,
-    lightTinted: colors.greyDark,
+  'primary (Deprecated)': {
+    dark: deprecatedColors.sky,
+    darkTinted: deprecatedColors.white,
+    light: deprecatedColors.greyDark,
+    lightTinted: deprecatedColors.greyDark,
   },
-  secondary: {
-    dark: colors.sky,
-    darkTinted: colors.white90,
-    light: colors.grey,
+  'secondary (Deprecated)': {
+    dark: deprecatedColors.sky,
+    darkTinted: deprecatedColors.white90,
+    light: deprecatedColors.grey,
   },
-  secondary06: {
-    dark: colors.sky06,
-    darkTinted: colors.white06,
-    light: colors.grey06,
+  'secondary06 (Deprecated)': {
+    dark: deprecatedColors.sky06,
+    darkTinted: deprecatedColors.white06,
+    light: deprecatedColors.grey06,
   },
-  secondary10: {
-    dark: colors.sky10,
-    darkTinted: colors.white10,
-    light: colors.grey10,
+  'secondary10 (Deprecated)': {
+    dark: deprecatedColors.sky10,
+    darkTinted: deprecatedColors.white10,
+    light: deprecatedColors.grey10,
   },
-  secondary15: {
-    dark: colors.sky15,
-    darkTinted: colors.white15,
-    light: colors.grey15,
+  'secondary15 (Deprecated)': {
+    dark: deprecatedColors.sky15,
+    darkTinted: deprecatedColors.white15,
+    light: deprecatedColors.grey15,
   },
-  secondary20: {
-    dark: colors.sky20,
-    darkTinted: colors.white20,
-    light: colors.grey20,
+  'secondary20 (Deprecated)': {
+    dark: deprecatedColors.sky20,
+    darkTinted: deprecatedColors.white20,
+    light: deprecatedColors.grey20,
   },
-  secondary25: {
-    dark: colors.sky25,
-    darkTinted: colors.white25,
-    light: colors.grey25,
+  'secondary25 (Deprecated)': {
+    dark: deprecatedColors.sky25,
+    darkTinted: deprecatedColors.white25,
+    light: deprecatedColors.grey25,
   },
-  secondary30: {
-    dark: colors.sky30,
-    darkTinted: colors.white30,
-    light: colors.grey30,
+  'secondary30 (Deprecated)': {
+    dark: deprecatedColors.sky30,
+    darkTinted: deprecatedColors.white30,
+    light: deprecatedColors.grey30,
   },
-  secondary40: {
-    dark: colors.sky40,
-    darkTinted: colors.white40,
-    light: colors.grey40,
+  'secondary40 (Deprecated)': {
+    dark: deprecatedColors.sky40,
+    darkTinted: deprecatedColors.white40,
+    light: deprecatedColors.grey40,
   },
-  secondary50: {
-    dark: colors.sky50,
-    darkTinted: colors.white50,
-    light: colors.grey50,
+  'secondary50 (Deprecated)': {
+    dark: deprecatedColors.sky50,
+    darkTinted: deprecatedColors.white50,
+    light: deprecatedColors.grey50,
   },
-  secondary60: {
-    dark: colors.sky60,
-    darkTinted: colors.white60,
-    light: colors.grey60,
+  'secondary60 (Deprecated)': {
+    dark: deprecatedColors.sky60,
+    darkTinted: deprecatedColors.white60,
+    light: deprecatedColors.grey60,
   },
-  secondary70: {
-    dark: colors.sky70,
-    darkTinted: colors.white70,
-    light: colors.grey70,
+  'secondary70 (Deprecated)': {
+    dark: deprecatedColors.sky70,
+    darkTinted: deprecatedColors.white70,
+    light: deprecatedColors.grey70,
   },
-  secondary80: {
-    dark: colors.sky80,
-    darkTinted: colors.white80,
-    light: colors.grey80,
+  'secondary80 (Deprecated)': {
+    dark: deprecatedColors.sky80,
+    darkTinted: deprecatedColors.white80,
+    light: deprecatedColors.grey80,
   },
-  shadow: {
-    dark: colors.black,
-    darkTinted: colors.black,
-    light: colors.greyDark,
-    lightTinted: colors.greyDark,
+  'shadow': {
+    dark: deprecatedColors.black,
+    darkTinted: deprecatedColors.black,
+    light: deprecatedColors.greyDark,
+    lightTinted: deprecatedColors.greyDark,
   },
-  swap: colors.swapPurple,
+  'swap (Deprecated)': deprecatedColors.swapPurple,
 };
 
 /**
@@ -287,6 +629,12 @@ export function getValueForColorMode<Value>(
   }
 
   return value;
+}
+
+export function getDefaultAccentColorForColorMode(colorMode: ColorMode) {
+  const defaultAccentColor = backgroundColors.blue;
+
+  return getValueForColorMode(defaultAccentColor, colorMode);
 }
 
 export type Palette = {
@@ -332,31 +680,47 @@ function selectForegroundColors<
 
 export const textColors = selectForegroundColors(
   'accent',
-  'action',
-  'primary',
-  'secondary',
-  'secondary30',
-  'secondary40',
-  'secondary50',
-  'secondary60',
-  'secondary70',
-  'secondary80'
+  'label',
+  'labelSecondary',
+  'labelTertiary',
+  'labelQuaternary',
+  'blue',
+  'green',
+  'red',
+  'purple',
+  'pink',
+  'orange',
+  'yellow',
+  'action (Deprecated)',
+  'primary (Deprecated)',
+  'secondary (Deprecated)',
+  'secondary10 (Deprecated)',
+  'secondary20 (Deprecated)',
+  'secondary25 (Deprecated)',
+  'secondary30 (Deprecated)',
+  'secondary40 (Deprecated)',
+  'secondary50 (Deprecated)',
+  'secondary60 (Deprecated)',
+  'secondary70 (Deprecated)',
+  'secondary80 (Deprecated)'
 );
 export type TextColor = typeof textColors[number];
 
 export const shadowColors = selectForegroundColors(
   'shadow',
   'accent',
-  'swap',
-  'action'
+  'swap (Deprecated)',
+  'action (Deprecated)'
 );
 export type ShadowColor = typeof shadowColors[number];
 
-export const dividerColors = selectForegroundColors(
-  'divider20',
-  'divider40',
-  'divider60',
-  'divider80',
-  'divider100'
+export const separatorColors = selectForegroundColors(
+  'separator',
+  'separatorSecondary',
+  'divider20 (Deprecated)',
+  'divider40 (Deprecated)',
+  'divider60 (Deprecated)',
+  'divider80 (Deprecated)',
+  'divider100 (Deprecated)'
 );
-export type DividerColor = typeof dividerColors[number];
+export type SeparatorColor = typeof separatorColors[number];

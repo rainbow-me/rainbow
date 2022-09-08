@@ -7,9 +7,9 @@ export const Code = ({ children }: { children: ReactNode }) => (
   <code
     className={classnames([
       sprinkles({
-        backgroundColor: 'actionTint',
+        backgroundColor: 'actionTint (Deprecated)',
         borderRadius: '4px',
-        color: 'action',
+        color: 'action (Deprecated)',
         fontWeight: 'medium',
         paddingHorizontal: '2px',
       }),

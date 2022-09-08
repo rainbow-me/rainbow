@@ -40,13 +40,13 @@ import {
   Box,
   ColorModeProvider,
   Columns,
-  Divider,
   Heading,
   HeadingProps,
   Inline,
   Inset,
   MarkdownText,
   MarkdownTextProps,
+  Separator,
   Space,
   Stack,
   Text,
@@ -141,7 +141,7 @@ const TextButton = ({
 
 const headingSize: HeadingProps['size'] = '18px / 21px (Deprecated)';
 const textSize: TextProps['size'] = '18px / 27px (Deprecated)';
-const textColor: TextProps['color'] = 'secondary50';
+const textColor: TextProps['color'] = 'secondary50 (Deprecated)';
 const sectionSpace: Space = '30px';
 const paragraphSpace: Space = { custom: 22 };
 const listSpace: Space = '19px';
@@ -180,6 +180,7 @@ const Section = ({
             <Bleed right="1px">
               <Heading
                 containsEmoji
+                color="primary (Deprecated)"
                 size={
                   ios ? '23px / 27px (Deprecated)' : '20px / 22px (Deprecated)'
                 }
@@ -190,7 +191,7 @@ const Section = ({
             </Bleed>
           )}
         </Box>
-        <Heading size={headingSize} weight="heavy">
+        <Heading color="primary (Deprecated)" size={headingSize} weight="heavy">
           {title}
         </Heading>
       </Inline>
@@ -597,7 +598,7 @@ const UniqueTokenExpandedState = ({
                       />
                     ) : null}
                     <Stack
-                      separator={<Divider color="divider20" />}
+                      separator={<Separator color="divider20 (Deprecated)" />}
                       space={sectionSpace}
                     >
                       {(isNFT || isENS) && isSaleInfoSupported ? (
