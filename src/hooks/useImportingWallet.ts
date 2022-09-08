@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
