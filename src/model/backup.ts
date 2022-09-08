@@ -15,6 +15,7 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import {
   allWalletsKey,
+  pinKey,
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
@@ -28,7 +29,7 @@ import {
 } from './wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
 import {
-  authenticateWithPIN,
+  decryptPIN,
   saveNewAuthenticationPIN,
 } from '@/handlers/authentication';
 import { analytics } from '@/analytics';
@@ -286,19 +287,17 @@ async function restoreCurrentBackupIntoKeychain(
               return keychain.saveString(key, valueWithPINInfo, accessControl);
             }
           } else if (wasBackupSavedWithPIN) {
-            // the seed phrase should not be encrypted at this stage, if it is,
-            // it means it's encrypted with the PIN that was used with wallet creation,
-            // and we need to encrypt it and let the user create a new PIN
-            onBeforePINCreated();
-            const backupPIN = await authenticateWithPIN();
-            onAfterPINCreated();
+            // the seed phrase shouldn't be encrypted at this stage, if it's encrypted,
+            // it means that it was created before the backup flow was fixed.
+            // We need to decrypt it and allow the user to create a new PIN
+            const encryptedPinKey = backedUpData[pinKey];
+            const backupPIN = await decryptPIN(encryptedPinKey);
 
             const decryptedSeed = await encryptor.decrypt(
               backupPIN,
               seedphrase
             );
 
-            await delay(1000);
             onBeforePINCreated();
             const userPIN = await saveNewAuthenticationPIN();
             onAfterPINCreated();
