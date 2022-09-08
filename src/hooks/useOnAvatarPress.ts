@@ -24,6 +24,9 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@/utils';
+import useAccountAsset from './useAccountAsset';
+import { ETH_ADDRESS } from '@/references';
+import { isZero } from '@/helpers/utilities';
 
 export default () => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
@@ -37,6 +40,8 @@ export default () => {
     accountENS,
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const accountAsset = useAccountAsset(ETH_ADDRESS);
+
   const profileEnabled = Boolean(accountENS);
 
   const { isOwner } = useENSOwner(accountENS, {
@@ -155,6 +160,7 @@ export default () => {
   const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
+  const isZeroETH = isZero(accountAsset.balance.amount);
 
   const callback = useCallback(
     async (buttonIndex: number) => {
@@ -166,7 +172,7 @@ export default () => {
             onAvatarViewProfile();
           }
         } else {
-          if (!isReadOnly) {
+          if (!isReadOnly && !isZeroETH) {
             onAvatarCreateProfile();
           } else {
             onAvatarChooseImage();
@@ -182,7 +188,7 @@ export default () => {
             }
           }
         } else {
-          if (!isReadOnly) {
+          if (!isReadOnly && !isZeroETH) {
             onAvatarChooseImage();
           } else {
             if (!accountImage) {
@@ -245,6 +251,7 @@ export default () => {
       hasENSAvatar,
       isENSProfile,
       isReadOnly,
+      isZeroETH,
       onAvatarChooseImage,
       onAvatarCreateProfile,
       onAvatarEditProfile,
@@ -267,6 +274,7 @@ export default () => {
         isENSProfile && lang.t('profiles.profile_avatar.view_profile'),
         !isENSProfile &&
           !isReadOnly &&
+          !isZeroETH &&
           lang.t('profiles.profile_avatar.create_profile'),
         lang.t('profiles.profile_avatar.choose_from_library'),
         !accountImage
