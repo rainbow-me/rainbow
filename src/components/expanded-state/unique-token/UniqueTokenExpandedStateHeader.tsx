@@ -503,11 +503,11 @@ const UniqueTokenExpandedStateHeader = ({
     goBack,
   ]);
 
-  const overflowMenuHitSlop: Space = '15px';
-  const familyNameHitSlop: Space = '19px';
+  const overflowMenuHitSlop: Space = '15px (Deprecated)';
+  const familyNameHitSlop: Space = '19px (Deprecated)';
 
   return (
-    <Stack space="15px">
+    <Stack space="15px (Deprecated)">
       <Columns space="24px">
         <Heading containsEmoji size="23px / 27px (Deprecated)" weight="heavy">
           {buildUniqueTokenName(asset)}

@@ -43,6 +43,7 @@ export interface RainbowConfig extends Record<string, any> {
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
   trace_call_block_number_offset?: number;
+  wyre_enabled?: boolean;
 }
 
 const DEFAULT_CONFIG = {
@@ -65,10 +66,11 @@ const DEFAULT_CONFIG = {
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
   trace_call_block_number_offset: 20,
+  wyre_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
-let config: RainbowConfig = { ...DEFAULT_CONFIG };
+const config: RainbowConfig = { ...DEFAULT_CONFIG };
 setRpcEndpoints(config);
 
 const init = async () => {
@@ -93,7 +95,7 @@ const init = async () => {
       const [key, entry] = $;
       if (key === 'default_slippage_bips') {
         config[key] = JSON.parse(entry.asString());
-      } else if (key === 'flashbots_enabled') {
+      } else if (key === 'flashbots_enabled' || key === 'wyre_enabled') {
         config[key] = entry.asBoolean();
       } else {
         config[key] = entry.asString();
