@@ -29,6 +29,7 @@ import {
 } from './wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
 import {
+  authenticateWithPIN,
   decryptPIN,
   saveNewAuthenticationPIN,
 } from '@/handlers/authentication';
@@ -89,13 +90,54 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   return secrets;
 }
 
-export async function backupWalletToCloud(
-  password: BackupPassword,
-  wallet: RainbowWallet
-) {
+export async function backupWalletToCloud({
+  password,
+  wallet,
+  onBeforePINCreated = NOOP,
+  onAfterPINCreated = NOOP,
+}: {
+  password: BackupPassword;
+  wallet: RainbowWallet;
+  onBeforePINCreated: () => void;
+  onAfterPINCreated: () => void;
+}) {
   const now = Date.now();
 
   const secrets = await extractSecretsForWallet(wallet);
+  const hasBiometricsEnabled = await getSupportedBiometryType();
+  if (android && !hasBiometricsEnabled) {
+    let userPIN;
+    let privateKey: string;
+
+    await Promise.all(
+      Object.keys(secrets).map(async key => {
+        const value = secrets[key];
+
+        if (key.endsWith(seedPhraseKey)) {
+          const parsedValue = JSON.parse(value);
+          const { seedphrase } = parsedValue;
+
+          try {
+            onBeforePINCreated();
+            userPIN = await authenticateWithPIN();
+            onAfterPINCreated();
+          } catch (error) {
+            return;
+          }
+
+          if (userPIN && seedphrase) {
+            privateKey = await encryptor.decrypt(userPIN, seedphrase);
+          }
+
+          secrets[key] = JSON.stringify({
+            ...parsedValue,
+            seedphrase: privateKey,
+          });
+        }
+      })
+    );
+  }
+
   const data = {
     createdAt: now,
     secrets,
