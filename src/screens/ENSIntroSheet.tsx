@@ -159,7 +159,7 @@ export default function ENSIntroSheet() {
       style={{ height: contentHeight }}
       testID="ens-intro-sheet"
     >
-      <Inset top={isSmallPhone ? '15px' : '36px'}>
+      <Inset top={isSmallPhone ? '15px (Deprecated)' : '36px'}>
         <Box height="full">
           <Rows>
             <Row>
@@ -185,7 +185,7 @@ export default function ENSIntroSheet() {
                   <Bleed left="10px">
                     <IntroMarquee isSmallPhone={isSmallPhone} />
                   </Bleed>
-                  <Inset horizontal="34px">
+                  <Inset horizontal="34px (Deprecated)">
                     <Divider color="divider60" />
                   </Inset>
                 </Stack>
@@ -228,9 +228,12 @@ export default function ENSIntroSheet() {
             </Row>
             <Row height="content">
               <Box paddingBottom="4px">
-                <Inset space="19px" {...(isSmallPhone && { bottom: '8px' })}>
+                <Inset
+                  space="19px (Deprecated)"
+                  {...(isSmallPhone && { bottom: '8px' })}
+                >
                   {isLoading && (
-                    <Box alignItems="center" paddingBottom="15px">
+                    <Box alignItems="center" paddingBottom="15px (Deprecated)">
                       {/* @ts-expect-error JavaScript component */}
                       <ActivityIndicator />
                     </Box>
