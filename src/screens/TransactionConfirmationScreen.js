@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
+import { IS_TESTING } from '@/env';
 import React, {
   Fragment,
   useCallback,
@@ -465,7 +466,11 @@ export default function TransactionConfirmationScreen() {
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
-    if (isFocused && (!peerId || !walletConnector) && (ios || IS_TESTING !== "true")) {
+    if (
+      isFocused &&
+      (!peerId || !walletConnector) &&
+      (ios || IS_TESTING !== 'true')
+    ) {
       Alert.alert(
         lang.t('wallet.transaction.alert.connection_expired'),
         lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
