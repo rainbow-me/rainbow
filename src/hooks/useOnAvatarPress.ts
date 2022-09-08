@@ -203,7 +203,7 @@ export default () => {
           }
         }
       } else if (buttonIndex === 2) {
-        if (!hasENSAvatar) {
+        if (!hasENSAvatar && !isZeroETH) {
           if (isENSProfile) {
             if (!isReadOnly) {
               onAvatarChooseImage();
