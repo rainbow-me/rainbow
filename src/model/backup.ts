@@ -15,6 +15,7 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import {
   allWalletsKey,
+  pinKey,
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
@@ -27,7 +28,10 @@ import {
   RainbowWallet,
 } from './wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { saveNewAuthenticationPIN } from '@/handlers/authentication';
+import {
+  decryptPIN,
+  saveNewAuthenticationPIN,
+} from '@/handlers/authentication';
 import { analytics } from '@/analytics';
 import logger from '@/utils/logger';
 
@@ -224,7 +228,21 @@ async function restoreSpecificBackupIntoKeychain(
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
         const { seedphrase } = JSON.parse(valueStr);
-        await createWallet(seedphrase, null, null, true);
+        let privateKey = seedphrase;
+        const wasBackupSavedWithPIN =
+          seedphrase?.includes('salt') && seedphrase?.includes('cipher');
+
+        if (android && wasBackupSavedWithPIN) {
+          try {
+            const backupPIN = await decryptPIN(backedUpData[pinKey]);
+
+            privateKey = await encryptor.decrypt(backupPIN, seedphrase);
+          } catch (error) {
+            return false;
+          }
+        }
+
+        await createWallet(privateKey, null, null, true);
       }
     }
     return true;
