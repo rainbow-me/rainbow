@@ -54,7 +54,7 @@ const TintButton = ({
           />
         </AccentColorProvider>
       </Cover>
-      <Text color={color} size="20px" weight="heavy">
+      <Text color={color} size="20px / 24px (Deprecated)" weight="heavy">
         {children}
       </Text>
     </Box>

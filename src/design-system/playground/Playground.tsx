@@ -88,13 +88,13 @@ const ExamplePreview = ({
   Example,
 }: Example & { meta: Meta }) => {
   return (
-    <Stack space="19px">
+    <Stack space="20px">
       {subTitle ? (
-        <Text size="16px" weight="medium">
+        <Text size="16px / 22px (Deprecated)" weight="medium">
           {subTitle}
         </Text>
       ) : (
-        <Heading size="18px" weight="bold">
+        <Heading size="18px / 21px (Deprecated)" weight="bold">
           {name}
         </Heading>
       )}
@@ -122,15 +122,19 @@ const DocsRow = ({ meta, examples }: Docs) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Stack space="42px">
+    <Stack space="44px">
       <TouchableOpacity
         onPress={useCallback(() => setOpen(x => !x), [setOpen])}
       >
         <Inline space="6px">
           <View style={styles.docsRowToggle}>
-            <Heading size="20px">{open ? '-' : '+'}</Heading>
+            <Heading size="20px / 22px (Deprecated)" weight="heavy">
+              {open ? '-' : '+'}
+            </Heading>
           </View>
-          <Heading size="20px">{meta.name}</Heading>
+          <Heading size="20px / 22px (Deprecated)" weight="heavy">
+            {meta.name}
+          </Heading>
         </Inline>
       </TouchableOpacity>
       {open
@@ -181,10 +185,12 @@ export const Playground = () => {
               {android ? (
                 <View style={{ height: StatusBar.currentHeight }} />
               ) : null}
-              <Inset space="19px">
+              <Inset space="20px">
                 <Stack space="24px">
                   <TouchableOpacity onPress={toggleColorMode}>
-                    <Heading>Color mode: {colorMode}</Heading>
+                    <Heading size="20px / 22px (Deprecated)" weight="heavy">
+                      Color mode: {colorMode}
+                    </Heading>
                   </TouchableOpacity>
                   <Divider />
                   {allDocs.map(({ meta, examples }, index) => (

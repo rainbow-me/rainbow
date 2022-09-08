@@ -1,6 +1,5 @@
 import c from 'chroma-js';
 import makeColorMoreChill from 'make-color-more-chill';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import Palette, { IPalette } from 'react-native-palette-full';
 

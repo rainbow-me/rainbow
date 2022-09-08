@@ -91,9 +91,13 @@ export default function SourcePicker({ onSelect, currentSource }) {
           paddingVertical="12px"
           testID="swap-settings-routes-label"
         >
-          <Text size="16px" weight="bold">
+          <Text size="16px / 22px (Deprecated)" weight="bold">
             {lang.t('exchange.source_picker')}
-            <Text color="secondary30" size="16px" weight="bold">
+            <Text
+              color="secondary30"
+              size="16px / 22px (Deprecated)"
+              weight="bold"
+            >
               {' 􀅵'}
             </Text>
           </Text>
@@ -125,7 +129,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
                 width={20}
               />
               <Text
-                size="18px"
+                size="18px / 27px (Deprecated)"
                 testID={`swap-settings-routes-current-${currentSource}`}
                 weight="bold"
               >

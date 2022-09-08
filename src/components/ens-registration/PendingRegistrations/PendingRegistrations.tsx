@@ -48,13 +48,18 @@ const PendingRegistration = ({
         )}
         <Column>
           <Box>
-            <Text color="primary" numberOfLines={1} size="16px" weight="heavy">
+            <Text
+              color="primary"
+              numberOfLines={1}
+              size="16px / 22px (Deprecated)"
+              weight="heavy"
+            >
               {abbreviateEnsForDisplay(registration.name, 15)}
             </Text>
           </Box>
         </Column>
         <Column width="content">
-          <Box paddingRight="15px">
+          <Box paddingRight="15px (Deprecated)">
             <ButtonPressAnimation
               onPress={() => finishRegistration(registration.name)}
               scaleTo={0.9}
@@ -70,7 +75,11 @@ const PendingRegistration = ({
                 start={{ x: 0, y: 0.6 }}
               >
                 <Inset horizontal="10px">
-                  <Text color="action" size="16px" weight="heavy">
+                  <Text
+                    color="action"
+                    size="16px / 22px (Deprecated)"
+                    weight="heavy"
+                  >
                     {lang.t('profiles.pending_registrations.finish')}
                   </Text>
                 </Inset>
@@ -83,7 +92,11 @@ const PendingRegistration = ({
             onPress={() => onRemove(registration.name)}
             scaleTo={0.9}
           >
-            <Text color="secondary50" size="18px" weight="bold">
+            <Text
+              color="secondary50"
+              size="18px / 27px (Deprecated)"
+              weight="bold"
+            >
               􀈒
             </Text>
           </ButtonPressAnimation>
@@ -126,12 +139,12 @@ const PendingRegistrations = () => {
   );
 
   return pendingRegistrations?.length > 0 ? (
-    <Box paddingHorizontal="19px">
+    <Box paddingHorizontal="19px (Deprecated)">
       <Inset vertical="24px">
         <Divider color="divider60" />
       </Inset>
-      <Stack space="19px">
-        <Text color="secondary50" size="14px" weight="bold">
+      <Stack space="19px (Deprecated)">
+        <Text color="secondary50" size="14px / 19px (Deprecated)" weight="bold">
           {lang.t('profiles.pending_registrations.in_progress')}
         </Text>
         {pendingRegistrations.map(registration => (

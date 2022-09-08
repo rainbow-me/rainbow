@@ -14,7 +14,7 @@ export const basicUsage: Example = {
   name: 'Basic usage',
   Example: () =>
     source(
-      <Columns space="19px">
+      <Columns space="20px">
         <Placeholder />
         <Placeholder />
       </Columns>
@@ -36,8 +36,8 @@ export const customWidths: Example = {
   name: 'Custom widths',
   Example: () =>
     source(
-      <Stack space="19px">
-        <Columns space="19px">
+      <Stack space="20px">
+        <Columns space="20px">
           <Column width="1/2">
             <Placeholder />
           </Column>
@@ -46,7 +46,7 @@ export const customWidths: Example = {
           </Column>
         </Columns>
 
-        <Columns space="19px">
+        <Columns space="20px">
           <Column width="1/3">
             <Placeholder />
           </Column>
@@ -58,7 +58,7 @@ export const customWidths: Example = {
           </Column>
         </Columns>
 
-        <Columns space="19px">
+        <Columns space="20px">
           <Column width="2/3">
             <Placeholder />
           </Column>
@@ -67,7 +67,7 @@ export const customWidths: Example = {
           </Column>
         </Columns>
 
-        <Columns space="19px">
+        <Columns space="20px">
           <Column width="1/4">
             <Placeholder />
           </Column>
@@ -82,7 +82,7 @@ export const customWidths: Example = {
           </Column>
         </Columns>
 
-        <Columns space="19px">
+        <Columns space="20px">
           <Column width="1/4">
             <Placeholder />
           </Column>
@@ -94,7 +94,7 @@ export const customWidths: Example = {
           </Column>
         </Columns>
 
-        <Columns space="19px">
+        <Columns space="20px">
           <Column width="1/4">
             <Placeholder />
           </Column>
@@ -103,7 +103,7 @@ export const customWidths: Example = {
           </Column>
         </Columns>
 
-        <Columns space="19px">
+        <Columns space="20px">
           <Column width="1/5">
             <Placeholder />
           </Column>
@@ -115,7 +115,7 @@ export const customWidths: Example = {
           </Column>
         </Columns>
 
-        <Columns space="19px">
+        <Columns space="20px">
           <Column width="1/5">
             <Placeholder />
           </Column>
@@ -127,7 +127,7 @@ export const customWidths: Example = {
           </Column>
         </Columns>
 
-        <Columns space="19px">
+        <Columns space="20px">
           <Column width="1/5">
             <Placeholder />
           </Column>
@@ -143,7 +143,7 @@ export const columnWithContentWidth: Example = {
   name: 'Column with content width',
   Example: () =>
     source(
-      <Columns space="19px">
+      <Columns space="20px">
         <Placeholder />
         <Column width="content">
           <Placeholder width={100} />
@@ -186,7 +186,7 @@ export const nestedColumnsWithExplicitWidthsContent: Example = {
   name: 'Nested columns with explicit widths (content)',
   Example: () =>
     source(
-      <Columns space="19px">
+      <Columns space="20px">
         <Placeholder />
         <Column width="content">
           <Columns space="6px">
@@ -206,7 +206,7 @@ export const centerAlignedVertically: Example = {
   name: 'Center-aligned vertically',
   Example: () =>
     source(
-      <Columns alignVertical="center" space="19px">
+      <Columns alignVertical="center" space="20px">
         <Placeholder height={30} />
         <Placeholder height={60} />
         <Placeholder height={20} />
@@ -218,7 +218,7 @@ export const bottomAlignedVertically: Example = {
   name: 'Bottom-aligned vertically',
   Example: () =>
     source(
-      <Columns alignVertical="bottom" space="19px">
+      <Columns alignVertical="bottom" space="20px">
         <Placeholder height={30} />
         <Placeholder height={60} />
         <Placeholder height={20} />
@@ -230,7 +230,7 @@ export const centerAlignedHorizontally: Example = {
   name: 'Center-aligned horizontally',
   Example: () =>
     source(
-      <Columns alignHorizontal="center" space="19px">
+      <Columns alignHorizontal="center" space="20px">
         <Column width="1/4">
           <Placeholder height={30} />
         </Column>
@@ -245,7 +245,7 @@ export const rightAlignedHorizontally: Example = {
   name: 'Right-aligned horizontally',
   Example: () =>
     source(
-      <Columns alignHorizontal="right" space="19px">
+      <Columns alignHorizontal="right" space="20px">
         <Column width="1/4">
           <Placeholder height={30} />
         </Column>
@@ -260,7 +260,7 @@ export const justifiedHorizontally: Example = {
   name: 'Justified horizontally',
   Example: () =>
     source(
-      <Columns alignHorizontal="justify" space="19px">
+      <Columns alignHorizontal="justify" space="20px">
         <Column width="1/4">
           <Placeholder height={30} />
         </Column>
@@ -275,7 +275,7 @@ export const fullHeightColumnFlexGrow: Example = {
   name: 'Full-height column via flexGrow',
   Example: () =>
     source(
-      <Columns alignVertical="bottom" space="30px">
+      <Columns alignVertical="bottom" space="32px">
         <Placeholder flexGrow={1} />
         <Placeholder height={30} />
         <Placeholder height={100} />
@@ -288,9 +288,9 @@ export const dynamicWidthContent: Example = {
   name: 'Dynamic width content',
   Example: () =>
     source(
-      <Columns space="19px">
-        <Text>Lorem</Text>
-        <Text>{loremIpsum}</Text>
+      <Columns space="20px">
+        <Text size="17pt">Lorem</Text>
+        <Text size="17pt">{loremIpsum}</Text>
       </Columns>
     ),
 };

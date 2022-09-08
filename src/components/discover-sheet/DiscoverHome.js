@@ -20,11 +20,11 @@ export default function DiscoverHome() {
   return (
     <React.Fragment>
       <Inset top={{ custom: 16 }}>
-        <Stack space="30px">
+        <Stack space="30px (Deprecated)">
           {profilesEnabled && !testNetwork ? (
-            <Inset horizontal={ios && '19px'}>
-              <Stack space={ios && '19px'}>
-                <Columns space={ios && '19px'}>
+            <Inset horizontal={ios && '19px (Deprecated)'}>
+              <Stack space={ios && '19px (Deprecated)'}>
+                <Columns space={ios && '19px (Deprecated)'}>
                   <GasCard />
                   <ENSSearchCard />
                 </Columns>
@@ -38,7 +38,7 @@ export default function DiscoverHome() {
               <PulseIndex />
             </Stack>
           )}
-          <Stack space="30px">
+          <Stack space="30px (Deprecated)">
             <Lists />
             {accountAddress ? <UniswapPools /> : null}
           </Stack>

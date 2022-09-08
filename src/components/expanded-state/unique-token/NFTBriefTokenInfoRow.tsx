@@ -92,7 +92,7 @@ export default function NFTBriefTokenInfoRow({
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (
-    <Columns space="19px">
+    <Columns space="19px (Deprecated)">
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         color={

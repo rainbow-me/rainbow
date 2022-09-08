@@ -159,7 +159,11 @@ export default React.memo(function FastTransactionStatusBadge({
       {showIcon && (
         <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
       )}
-      <Text color={{ custom: statusColor }} size="14px" weight="semibold">
+      <Text
+        color={{ custom: statusColor }}
+        size="14px / 19px (Deprecated)"
+        weight="semibold"
+      >
         {title}
       </Text>
     </View>
