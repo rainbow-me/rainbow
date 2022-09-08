@@ -118,6 +118,13 @@ export async function scrollTo(scrollviewId, edge) {
   await element(by.id(scrollviewId)).scrollTo(edge);
 }
 
+export async function scrollToElement(elementId, direction) {
+  await waitFor(element(by.id(elementId)))
+    .toBeVisible()
+    .whileElement(by.id(elementId))
+    .scroll(direction);
+}
+
 export async function scrollUpTo(elementId, distance, direction) {
   await element(by.id(elementId)).scroll(distance, direction);
 }
