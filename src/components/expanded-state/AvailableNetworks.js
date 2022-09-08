@@ -2,12 +2,6 @@ import lang from 'i18n-js';
 import React from 'react';
 import { Linking } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from './Divider';
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
-import { CoinIcon } from './coin-icon';
-import ChainBadge from './coin-icon/ChainBadge';
-import { Column, Row } from './layout';
-import { Text } from './text';
 import { Box } from '@/design-system';
 import networkInfo from '@/helpers/networkInfo';
 import { useNavigation } from '@/navigation';
@@ -15,16 +9,22 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { ethereumUtils } from '@/utils';
+import { useTheme } from '@/theme';
+import { ButtonPressAnimation } from '../animations';
+import { Column, Row } from '../layout';
+import { ChainBadge, CoinIcon } from '../coin-icon';
+import Divider from '../Divider';
+import { Text } from '../text';
 
-const AvailableNetworks = ({
+const AvailableNetworksv1 = ({
   asset,
   networks,
-  colors,
   hideDivider,
   marginBottom = 24,
   marginHorizontal = 19,
   prominent,
 }) => {
+  const { colors } = useTheme();
   const { navigate } = useNavigation();
 
   const radialGradientProps = {
@@ -57,7 +57,6 @@ const AvailableNetworks = ({
   return (
     <>
       <ButtonPressAnimation
-        marginBottom={marginBottom}
         onPress={handleAvailableNetworksPress}
         scaleTo={0.95}
       >
@@ -142,4 +141,4 @@ const AvailableNetworks = ({
   );
 };
 
-export default AvailableNetworks;
+export default AvailableNetworksv1;

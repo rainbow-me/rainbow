@@ -32,7 +32,7 @@ const androidNetworkMenuItems = () => {
     .map(netInfo => netInfo.name);
 };
 
-const NetworkSwitcher = ({
+const NetworkSwitcherv1 = ({
   colors,
   hideDivider,
   marginVertical = 12,
@@ -142,4 +142,4 @@ const NetworkSwitcher = ({
   );
 };
 
-export default NetworkSwitcher;
+export default NetworkSwitcherv1;

@@ -546,10 +546,10 @@ export const createWallet = async (
   seed: null | EthereumSeed = null,
   color: null | number = null,
   name: null | string = null,
-  overwrite: boolean = false,
+  overwrite = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent: boolean = false
+  silent = false
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
@@ -557,7 +557,7 @@ export const createWallet = async (
     logger.sentry('Generating a new seed phrase');
   }
   const walletSeed = seed || generateMnemonic();
-  let addresses: RainbowAccount[] = [];
+  const addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
 
@@ -728,9 +728,9 @@ export const createWallet = async (
       logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
       let lookup = true;
-      // Starting on index 1, we are gonna hit etherscan API and check the tx history
+      // Starting on index 1, we are gonna hit an API and check the tx history
       // for each account. If there's history we add it to the wallet.
-      //(We stop once we find the first one with no history)
+      // (We stop once we find the first one with no history)
       while (lookup) {
         const child = root.deriveChild(index);
         const walletObj = child.getWallet();
@@ -1217,7 +1217,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     }
 
     const selectedWalletData = await getSelectedWallet();
-    let wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
+    const wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
     if (!wallet) {
       return null;
     }

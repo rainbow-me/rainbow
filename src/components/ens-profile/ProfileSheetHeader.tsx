@@ -53,9 +53,12 @@ export default function ProfileSheetHeader({
   const { data: profileAddress } = useENSAddress(ensName, {
     enabled: profilesEnabled,
   });
-  const { data: { coinAddresses, records } = {} } = useENSRecords(ensName, {
-    enabled: profilesEnabled,
-  });
+  const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(
+    ensName,
+    {
+      enabled: profilesEnabled,
+    }
+  );
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName, {
     enabled: profilesEnabled,
   });
@@ -154,6 +157,7 @@ export default function ProfileSheetHeader({
                     <RecordTags
                       firstTransactionTimestamp={firstTransactionTimestamp}
                       records={{
+                        contenthash,
                         ...records,
                         ...coinAddresses,
                       }}

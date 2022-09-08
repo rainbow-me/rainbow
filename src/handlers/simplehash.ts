@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react-native';
-// @ts-expect-error
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { Network } from '@/helpers';
