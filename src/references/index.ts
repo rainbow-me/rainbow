@@ -1,6 +1,6 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
-import { default as DefaultTokenListsSource } from './default-token-lists.json';
+import { default as DefaultTokenListsSource } from './default-token-lists';
 import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
 export { default as polygonAllowList } from './polygon-allowlist.json';
@@ -24,9 +24,9 @@ export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
 export { DPI_ADDRESS } from './indexes';
 
-export { default as migratedTokens } from './migratedTokens.json';
+export { default as migratedTokens } from './migratedTokens';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
-export { default as shitcoins } from './shitcoins.json';
+export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export { UNISWAP_TESTNET_TOKEN_LIST } from './uniswap';
 export { rainbowTokenList } from './rainbow-token-list';
