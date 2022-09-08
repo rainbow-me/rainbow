@@ -17,14 +17,14 @@ import {
 
 const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
   <Stack space="24px">
-    <Text size="18px" weight="bold">
+    <Text size="17pt" weight="bold">
       {mode} mode
     </Text>
     <ColorModeProvider value={mode}>
       {(Object.keys(backgroundColors) as (keyof typeof backgroundColors)[]).map(
         (color: BackgroundColor) => (
           <Box background={color} key={color} padding="24px">
-            <Text size="18px" weight="bold">
+            <Text size="17pt" weight="bold">
               {color}
             </Text>
           </Box>
@@ -36,14 +36,14 @@ const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
 
 const ForegroundColors = ({ mode }: { mode: ColorMode }) => (
   <Stack space="24px">
-    <Text size="18px" weight="bold">
+    <Text size="17pt" weight="bold">
       {mode} mode
     </Text>
     <ColorModeProvider value={mode}>
       <Box background="body" padding="24px">
         <Stack space="12px">
           {textColors.map(color => (
-            <Text color={color} key={color} size="18px" weight="bold">
+            <Text color={color} key={color} size="17pt" weight="bold">
               {color}
             </Text>
           ))}

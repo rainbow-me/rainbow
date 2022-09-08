@@ -1,0 +1,7 @@
+# https://metadata.p.rainbow.me/v1/graph
+
+query getContractFunction($chainID: Int!, $hex: String!) {
+  contractFunction(chainID: $chainID, hex: $hex) {
+    text
+  }
+}

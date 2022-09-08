@@ -31,6 +31,7 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@/utils';
+import config from '@/model/config';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -82,6 +83,11 @@ export default function TransactionList({
   const onAddCashPress = useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
+      return;
+    }
+
+    if (!config.wyre_enabled) {
+      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
       return;
     }
 

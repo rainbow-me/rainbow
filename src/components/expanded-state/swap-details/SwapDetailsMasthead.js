@@ -11,11 +11,19 @@ export const SwapDetailsMastheadHeight =
 const DoubleChevron = () => (
   <Cover alignHorizontal="center" alignVertical="center">
     <RowWithMargins>
-      <Text color="secondary60" weight="semibold">
+      <Text
+        color="secondary60"
+        size="16px / 22px (Deprecated)"
+        weight="semibold"
+      >
         􀯻
       </Text>
       <Bleed left="6px">
-        <Text color="secondary40" weight="semibold">
+        <Text
+          color="secondary40"
+          size="16px / 22px (Deprecated)"
+          weight="semibold"
+        >
           􀯻
         </Text>
       </Bleed>
@@ -40,8 +48,8 @@ export default function SwapDetailsMasthead({
     <Box
       {...props}
       alignItems="center"
-      paddingHorizontal="19px"
-      paddingTop="42px"
+      paddingHorizontal="19px (Deprecated)"
+      paddingTop="42px (Deprecated)"
     >
       <Columns space={{ custom: 9 }}>
         <CurrencyTile

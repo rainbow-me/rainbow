@@ -270,6 +270,7 @@ const ClockText = ({
   const textStyles = useTextStyle({
     align: 'center',
     color: 'accent',
+    size: '16px / 22px (Deprecated)',
     tabularNumbers: true,
     weight: 'heavy',
   });

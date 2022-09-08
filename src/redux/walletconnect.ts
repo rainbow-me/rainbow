@@ -4,10 +4,7 @@ import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';

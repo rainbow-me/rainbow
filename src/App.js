@@ -8,6 +8,7 @@ import React, { Component, createRef } from 'react';
 import {
   AppRegistry,
   AppState,
+  Dimensions,
   InteractionManager,
   Linking,
   LogBox,
@@ -212,12 +213,7 @@ class App extends Component {
           if (IS_TESTING === 'true') {
             return;
           }
-
-          if (ios) {
-            runFeatureAndCampaignChecks();
-          } else {
-            runCampaignChecks();
-          }
+          runFeatureAndCampaignChecks();
         }, 2000);
       });
     }
@@ -280,6 +276,15 @@ class App extends Component {
       mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, true);
     } else if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
       mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
+      // track device dimensions
+      const screenWidth = Dimensions.get('screen').width;
+      const screenHeight = Dimensions.get('screen').height;
+      const screenScale = Dimensions.get('screen').scale;
+      analytics.identify(storedIdentifier, {
+        screenHeight,
+        screenWidth,
+        screenScale,
+      });
     }
   };
 

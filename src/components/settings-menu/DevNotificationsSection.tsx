@@ -49,7 +49,7 @@ const DevNotificationsSection = () => {
   const { chainId } = useAccountSettings();
   const [loading, setLoading] = useState<boolean>(true);
   const walletIDs = Object.keys(wallets!);
-  let allWallets: any[] = useMemo(() => [], []);
+  const allWallets: any[] = useMemo(() => [], []);
   const [notificationState, setNotificationState] = useState<any>({});
 
   useEffect(() => {
@@ -130,9 +130,9 @@ const DevNotificationsSection = () => {
 
   return (
     <ScrollView>
-      <Box paddingHorizontal="19px" paddingTop="19px">
-        <Box paddingBottom="19px">
-          <Text size="20px" weight="bold">
+      <Box paddingHorizontal="19px (Deprecated)" paddingTop="19px (Deprecated)">
+        <Box paddingBottom="19px (Deprecated)">
+          <Text size="20px / 24px (Deprecated)" weight="bold">
             Notifications Debug
           </Text>
         </Box>
@@ -171,7 +171,10 @@ const DevNotificationsSection = () => {
           </Columns>
         )}
       </Box>
-      <Box paddingBottom="19px" paddingHorizontal="19px">
+      <Box
+        paddingBottom="19px (Deprecated)"
+        paddingHorizontal="19px (Deprecated)"
+      >
         {!loading &&
           allWallets.map(wallet => {
             const isOff =
@@ -196,16 +199,16 @@ const DevNotificationsSection = () => {
                   />
                 </Box>
                 <Box>
-                  <Text size="18px" weight="bold">
+                  <Text size="18px / 27px (Deprecated)" weight="bold">
                     {wallet.label || wallet.color}
                   </Text>
                 </Box>
-                <Box paddingTop="15px">
-                  <Text color="secondary60" size="16px">
+                <Box paddingTop="15px (Deprecated)">
+                  <Text color="secondary60" size="16px / 22px (Deprecated)">
                     {formatAddressForDisplay(wallet.address)}
                   </Text>
                 </Box>
-                <Box paddingTop="15px">
+                <Box paddingTop="15px (Deprecated)">
                   <Columns space="8px">
                     {/*
                     // @ts-expect-error */}
