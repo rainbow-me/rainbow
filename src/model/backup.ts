@@ -229,11 +229,10 @@ async function restoreSpecificBackupIntoKeychain(
         const valueStr = backedUpData[key];
         const { seedphrase } = JSON.parse(valueStr);
         let privateKey = seedphrase;
-        const hasBiometricsEnabled = await getSupportedBiometryType();
         const wasBackupSavedWithPIN =
           seedphrase?.includes('salt') && seedphrase?.includes('cipher');
 
-        if (!hasBiometricsEnabled && android && wasBackupSavedWithPIN) {
+        if (android && wasBackupSavedWithPIN) {
           try {
             const backupPIN = await decryptPIN(backedUpData[pinKey]);
 
