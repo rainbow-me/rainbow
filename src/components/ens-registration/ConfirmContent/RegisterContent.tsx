@@ -60,7 +60,7 @@ const RegisterContent = ({
           </Box>
         </Row>
         <Row height="content">
-          <Stack space="19px">
+          <Stack space="19px (Deprecated)">
             <Separator color="divider80 (Deprecated)" />
             <Inline alignHorizontal="justify" alignVertical="center">
               <Inline>

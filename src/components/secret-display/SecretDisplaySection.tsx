@@ -150,12 +150,12 @@ export default function SecretDisplaySection({
         <Box
           alignItems="center"
           justifyContent="center"
-          paddingBottom="30px"
+          paddingBottom="30px (Deprecated)"
           paddingHorizontal={{ custom: 46 }}
         >
           {seed ? (
             <>
-              <Box paddingBottom="19px">
+              <Box paddingBottom="19px (Deprecated)">
                 {/* @ts-ignore */}
                 <CopyFloatingEmojis textToCopy={seed}>
                   <Inline alignVertical="center" space="6px">
@@ -170,7 +170,7 @@ export default function SecretDisplaySection({
                   </Inline>
                 </CopyFloatingEmojis>
               </Box>
-              <Stack alignHorizontal="center" space="19px">
+              <Stack alignHorizontal="center" space="19px (Deprecated)">
                 {/* @ts-ignore */}
                 <SecretDisplayCard seed={seed} type={type} />
                 <Text

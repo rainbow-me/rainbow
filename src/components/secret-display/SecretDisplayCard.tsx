@@ -84,8 +84,8 @@ export default function SecretDisplayCard({
           background="card (Deprecated)"
           borderRadius={25}
           height={{ custom: 240 }}
-          paddingHorizontal="30px"
-          paddingVertical="19px"
+          paddingHorizontal="30px (Deprecated)"
+          paddingVertical="19px (Deprecated)"
           shadow="21px light"
         >
           <CopyTooltip

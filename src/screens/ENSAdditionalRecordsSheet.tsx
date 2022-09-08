@@ -50,7 +50,7 @@ export default function ENSAdditionalRecordsSheet() {
       <AccentColorProvider color={accentColor}>
         <Box
           background="body (Deprecated)"
-          paddingHorizontal="19px"
+          paddingHorizontal="19px (Deprecated)"
           paddingVertical="24px"
           style={boxStyle}
           testID="ens-additional-records-sheet"

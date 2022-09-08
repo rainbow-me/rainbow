@@ -185,8 +185,8 @@ const PromoSheet = ({
               </Row>
               <Row height="content">
                 <Inset
-                  bottom={isSmallPhone && ios ? '24px' : '42px'}
-                  horizontal="19px"
+                  bottom={isSmallPhone && ios ? '24px' : '42px (Deprecated)'}
+                  horizontal="19px (Deprecated)"
                 >
                   <Stack space="12px">
                     <SheetActionButton

@@ -17,14 +17,14 @@ const WaitENSConfirmationContent = ({
     <Rows alignHorizontal="center">
       <Row>
         <Box flexGrow={1} justifyContent="center">
-          <Inset horizontal="34px">
-            <Stack space="34px">
+          <Inset horizontal="34px (Deprecated)">
+            <Stack space="34px (Deprecated)">
               <LargeCountdownClock
                 initialSeconds={ENS_SECONDS_WAIT}
                 onFinished={() => {}}
                 seconds={seconds || ENS_SECONDS_WAIT}
               />
-              <Stack alignHorizontal="center" space="19px">
+              <Stack alignHorizontal="center" space="19px (Deprecated)">
                 <Heading
                   color="primary (Deprecated)"
                   size="23px / 27px (Deprecated)"

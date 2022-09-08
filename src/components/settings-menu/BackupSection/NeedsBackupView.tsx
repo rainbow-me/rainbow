@@ -89,7 +89,7 @@ export default function NeedsBackupView() {
         width="full"
       >
         <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
-        <Stack alignHorizontal="center" space="19px">
+        <Stack alignHorizontal="center" space="19px (Deprecated)">
           <Text
             color="primary (Deprecated)"
             size="20px / 24px (Deprecated)"
@@ -97,7 +97,7 @@ export default function NeedsBackupView() {
           >
             {lang.t('back_up.needs_backup.back_up_your_wallet')}{' '}
           </Text>
-          <Box paddingBottom="24px" paddingHorizontal="42px">
+          <Box paddingBottom="24px" paddingHorizontal="42px (Deprecated)">
             <Text
               align="center"
               color="secondary50 (Deprecated)"

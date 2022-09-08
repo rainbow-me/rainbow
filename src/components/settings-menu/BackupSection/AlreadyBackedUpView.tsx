@@ -178,7 +178,7 @@ export default function AlreadyBackedUpView() {
               lang.t('back_up.already_backed_up.imported'))}
         </Text>
       </Box>
-      <Box alignItems="center" marginTop="-42px">
+      <Box alignItems="center" marginTop="-42px (Deprecated)">
         <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
         <Text
           color="primary (Deprecated)"
@@ -205,7 +205,7 @@ export default function AlreadyBackedUpView() {
                 lang.t('back_up.explainers.if_lose_imported'))}
           </Text>
         </Box>
-        <Box paddingTop="42px">
+        <Box paddingTop="42px (Deprecated)">
           <AccentColorProvider color={colors.whiteLabel}>
             <ButtonPressAnimation
               onPress={handleViewRecoveryPhrase}
@@ -221,7 +221,7 @@ export default function AlreadyBackedUpView() {
                 borderRadius={56}
                 height={{ custom: 48 }}
                 justifyContent="center"
-                paddingHorizontal="19px"
+                paddingHorizontal="19px (Deprecated)"
                 shadow="15px light"
               >
                 <Text
@@ -241,7 +241,7 @@ export default function AlreadyBackedUpView() {
           </AccentColorProvider>
         </Box>
       </Box>
-      <Box paddingBottom="42px">
+      <Box paddingBottom="42px (Deprecated)">
         {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
           <ButtonPressAnimation onPress={handleIcloudBackup}>
             <Text

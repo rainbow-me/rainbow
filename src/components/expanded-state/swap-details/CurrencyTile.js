@@ -88,7 +88,7 @@ export default function CurrencyTile({
   return (
     <Container {...props}>
       <Gradient color={colorForAsset} />
-      <Box paddingHorizontal="15px">
+      <Box paddingHorizontal="15px (Deprecated)">
         <Rows alignHorizontal="center" alignVertical="center" space="10px">
           <Row height="content">
             <CoinIcon

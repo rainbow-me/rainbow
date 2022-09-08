@@ -59,7 +59,7 @@ const PendingRegistration = ({
           </Box>
         </Column>
         <Column width="content">
-          <Box paddingRight="15px">
+          <Box paddingRight="15px (Deprecated)">
             <ButtonPressAnimation
               onPress={() => finishRegistration(registration.name)}
               scaleTo={0.9}
@@ -139,11 +139,11 @@ const PendingRegistrations = () => {
   );
 
   return pendingRegistrations?.length > 0 ? (
-    <Box paddingHorizontal="19px">
+    <Box paddingHorizontal="19px (Deprecated)">
       <Inset vertical="24px">
         <Separator color="divider60 (Deprecated)" />
       </Inset>
-      <Stack space="19px">
+      <Stack space="19px (Deprecated)">
         <Text
           color="secondary50 (Deprecated)"
           size="14px / 19px (Deprecated)"

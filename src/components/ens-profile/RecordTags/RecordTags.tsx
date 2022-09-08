@@ -68,7 +68,7 @@ export default function RecordTags({
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <Inset horizontal="19px">
+      <Inset horizontal="19px (Deprecated)">
         <Inline space="10px">
           {recordsToShow?.map(({ key: recordKey, value: recordValue, type }) =>
             recordValue ? (
@@ -201,7 +201,7 @@ export function Placeholder() {
   return (
     <Box height={{ custom: 30 }}>
       <Skeleton animated>
-        <Inset horizontal="19px">
+        <Inset horizontal="19px (Deprecated)">
           <Inline space="8px" wrap={false}>
             <PlaceholderItem />
             <PlaceholderItem />

@@ -35,7 +35,7 @@ const EditContent = ({
     <Rows alignVertical="bottom">
       <Row height="content">
         <Separator color="divider80 (Deprecated)" />
-        <Inset top="19px">
+        <Inset top="19px (Deprecated)">
           <Inline alignHorizontal="justify" alignVertical="center">
             <Inline>
               <Text

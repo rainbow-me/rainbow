@@ -109,7 +109,11 @@ export default function ProfileSheetHeader({
           isFetched={isImagesFetched}
         />
         <Bleed top={{ custom: 38 }}>
-          <Inset left="19px" right="15px" top={{ custom: 1 }}>
+          <Inset
+            left="19px (Deprecated)"
+            right="15px (Deprecated)"
+            top={{ custom: 1 }}
+          >
             <Columns>
               <Column width="content">
                 <ProfileAvatar
@@ -121,7 +125,7 @@ export default function ProfileSheetHeader({
                 />
               </Column>
               {!isLoading && (
-                <Inset top="34px">
+                <Inset top="34px (Deprecated)">
                   <ActionButtons
                     address={profileAddress ?? ''}
                     avatarUrl={avatarUrl}
@@ -132,8 +136,8 @@ export default function ProfileSheetHeader({
             </Columns>
           </Inset>
         </Bleed>
-        <Inset horizontal="19px">
-          <Stack space="19px">
+        <Inset horizontal="19px (Deprecated)">
+          <Stack space="19px (Deprecated)">
             <Heading
               color="primary (Deprecated)"
               size="23px / 27px (Deprecated)"
@@ -148,7 +152,7 @@ export default function ProfileSheetHeader({
                 <ProfileDescription description={records?.description} />
               ) : null}
             </>
-            <Bleed horizontal="19px">
+            <Bleed horizontal="19px (Deprecated)">
               {isLoading ? (
                 <RecordTagsPlaceholder />
               ) : (

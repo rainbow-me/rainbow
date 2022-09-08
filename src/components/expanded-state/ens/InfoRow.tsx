@@ -120,7 +120,7 @@ export default function InfoRow({
   return (
     <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
       <Box style={{ minWidth: 60, opacity: show ? 1 : 0 }}>
-        <Inset top={isMultiline ? '15px' : '10px'}>
+        <Inset top={isMultiline ? '15px (Deprecated)' : '10px'}>
           <Inline space="4px">
             <Text
               color="secondary60 (Deprecated)"
@@ -150,7 +150,11 @@ export default function InfoRow({
               setShow(true);
             }}
             padding={
-              (isSwitch ? '0px' : isMultiline ? '15px' : '10px') as Space
+              isSwitch
+                ? undefined
+                : isMultiline
+                ? ('15px (Deprecated)' as const)
+                : ('10px' as const)
             }
             style={{
               backgroundColor: isSwitch

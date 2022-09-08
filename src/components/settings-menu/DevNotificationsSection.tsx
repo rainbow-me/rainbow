@@ -130,8 +130,8 @@ const DevNotificationsSection = () => {
 
   return (
     <ScrollView>
-      <Box paddingHorizontal="19px" paddingTop="19px">
-        <Box paddingBottom="19px">
+      <Box paddingHorizontal="19px (Deprecated)" paddingTop="19px (Deprecated)">
+        <Box paddingBottom="19px (Deprecated)">
           <Text
             color="primary (Deprecated)"
             size="20px / 24px (Deprecated)"
@@ -175,7 +175,10 @@ const DevNotificationsSection = () => {
           </Columns>
         )}
       </Box>
-      <Box paddingBottom="19px" paddingHorizontal="19px">
+      <Box
+        paddingBottom="19px (Deprecated)"
+        paddingHorizontal="19px (Deprecated)"
+      >
         {!loading &&
           allWallets.map(wallet => {
             const isOff =
@@ -208,7 +211,7 @@ const DevNotificationsSection = () => {
                     {wallet.label || wallet.color}
                   </Text>
                 </Box>
-                <Box paddingTop="15px">
+                <Box paddingTop="15px (Deprecated)">
                   <Text
                     color="secondary60 (Deprecated)"
                     size="16px / 22px (Deprecated)"
@@ -216,7 +219,7 @@ const DevNotificationsSection = () => {
                     {formatAddressForDisplay(wallet.address)}
                   </Text>
                 </Box>
-                <Box paddingTop="15px">
+                <Box paddingTop="15px (Deprecated)">
                   <Columns space="8px">
                     {/*
                     // @ts-expect-error */}

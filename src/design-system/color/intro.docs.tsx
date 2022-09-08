@@ -45,13 +45,13 @@ const docs: DocsType = {
         Example={() =>
           source(
             <>
-              <Box background="blue" padding="19px">
-                <Text color="label" size="17pt" weight="bold">
+              <Box background="blue" padding="20px">
+                <Text color="label" size="17pt">
                   Lorem ipsum
                 </Text>
               </Box>
-              <Box background="purple" padding="19px">
-                <Text color="label" size="17pt" weight="bold">
+              <Box background="purple" padding="20px">
+                <Text color="label" size="17pt">
                   Lorem ipsum
                 </Text>
               </Box>

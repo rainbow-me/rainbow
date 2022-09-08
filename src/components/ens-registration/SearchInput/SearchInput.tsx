@@ -102,7 +102,7 @@ const SearchInput = ({
         </Box>
       </Cover>
       <Box height={`${height}px`} justifyContent="center" width="full">
-        <Inset left="15px" right="19px">
+        <Inset left="15px (Deprecated)" right="19px (Deprecated)">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
               <MaskedView

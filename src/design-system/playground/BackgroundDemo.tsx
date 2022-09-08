@@ -13,7 +13,7 @@ export function BackgroundDemo() {
       {(Object.keys(backgroundColors) as (keyof typeof backgroundColors)[]).map(
         color => (
           <Box background={color} key={color}>
-            <Inset space="19px">
+            <Inset space="20px">
               <Stack space="10px">
                 <Text color="label" size="17pt" weight="bold">
                   {color}

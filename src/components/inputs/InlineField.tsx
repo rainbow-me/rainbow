@@ -117,7 +117,7 @@ export default function InlineField({
   return (
     <Columns>
       <Column width="1/3">
-        <Inset top="19px">
+        <Inset top="19px (Deprecated)">
           <Inline space="4px">
             <Text
               color={
@@ -152,7 +152,7 @@ export default function InlineField({
       <Column>
         <Inline alignVertical="center" space="2px" wrap={false}>
           {startsWith && (
-            <Inset top={ios ? '2px' : '1px'}>
+            <Inset top={ios ? '2px' : '1px (Deprecated)'}>
               <Text
                 color="secondary30 (Deprecated)"
                 size="16px / 22px (Deprecated)"

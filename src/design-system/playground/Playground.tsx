@@ -88,7 +88,7 @@ const ExamplePreview = ({
   Example,
 }: Example & { meta: Meta }) => {
   return (
-    <Stack space="19px">
+    <Stack space="20px">
       {subTitle ? (
         <Text color="label" size="17pt" weight="medium">
           {subTitle}
@@ -122,7 +122,7 @@ const DocsRow = ({ meta, examples }: Docs) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Stack space="42px">
+    <Stack space="44px">
       <TouchableOpacity
         onPress={useCallback(() => setOpen(x => !x), [setOpen])}
       >
@@ -185,7 +185,7 @@ export const Playground = () => {
               {android ? (
                 <View style={{ height: StatusBar.currentHeight }} />
               ) : null}
-              <Inset space="19px">
+              <Inset space="20px">
                 <Stack space="24px">
                   <TouchableOpacity onPress={toggleColorMode}>
                     <Text color="label" size="20pt" weight="heavy">
