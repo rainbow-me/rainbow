@@ -266,7 +266,7 @@ export const walletConnectRemovePendingRedirect = (
         Minimizer.goBack();
       }, 300);
     } else {
-      Minimizer.goBack();
+      IS_TESTING !== 'true' && Minimizer.goBack();
     }
     // If it's still active after showRedirectSheetThreshold
     // We need to show the redirect sheet cause the redirect
