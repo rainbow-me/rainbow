@@ -15,7 +15,6 @@ jest.mock('@sentry/react-native', () => ({
   captureException: () => null,
 }));
 
-jest.autoMockOff();
 jest.mock('react-native-keychain', () => ({
   ACCESSIBLE: {
     ALWAYS_THIS_DEVICE_ONLY: 'kSecAttrAccessibleAlwaysThisDeviceOnly',
@@ -24,3 +23,5 @@ jest.mock('react-native-keychain', () => ({
   resetGenericPassword: jest.fn(),
   setGenericPassword: jest.fn(),
 }));
+
+jest.mock('react-native-mmkv');

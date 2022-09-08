@@ -9,6 +9,9 @@ module.exports = {
   transform: {
     '\\.tsx?$': 'ts-jest',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|@react-native(-community)?)/)',
+  ],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>',
   }),
