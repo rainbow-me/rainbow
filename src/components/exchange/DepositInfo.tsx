@@ -107,7 +107,7 @@ export default function DepositInfo({
         <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
           <Inset left="2px" right="10px" vertical={android ? '6px' : '10px'}>
             <Inline alignHorizontal="center" alignVertical="center">
-              <Box paddingRight="5px">
+              <Box paddingRight="5px (Deprecated)">
                 {/* @ts-expect-error - Javascript Component */}
                 <CoinIcon
                   address={asset?.address}

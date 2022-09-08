@@ -25,7 +25,9 @@ import { useTheme } from '@/theme';
 import { AccentColorProvider, Box, Space } from '@/design-system';
 
 const ExchangeFieldHeight = android ? 64 : 38;
-const ExchangeFieldPadding: Space = android ? '15px' : '19px';
+const ExchangeFieldPadding: Space = android
+  ? '15px (Deprecated)'
+  : '19px (Deprecated)';
 
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',

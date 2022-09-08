@@ -35,7 +35,7 @@ export default function ExchangeMaxButton({
     <Container disabled={disabled} onPress={onPress} testID={testID}>
       <Box
         height="30px"
-        paddingHorizontal="19px"
+        paddingHorizontal="19px (Deprecated)"
         paddingTop="3px"
         justifyContent="center"
       >
