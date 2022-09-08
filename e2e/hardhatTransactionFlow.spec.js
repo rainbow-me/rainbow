@@ -605,13 +605,12 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('wc-connect-action-button');
     const isConnected = await connected;
     if (!isConnected) throw new Error('WC Connection failed');
-    android && await Helpers.delay(2137)
+    android && (await Helpers.delay(2137));
     await Helpers.checkIfVisible('wc-redirect-sheet');
     if (device.getPlatform() === 'android') {
-      await device.pressBack()
+      await device.pressBack();
     } else {
       await Helpers.swipe('wc-redirect-sheet', 'down', 'fast');
-
     }
   });
 
@@ -619,7 +618,10 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signPersonalMessage(['My msg', account]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     if (!result) throw new Error('WC Connection failed');
     const signature = await result;
     if (
@@ -743,6 +745,11 @@ describe('Hardhat Transaction Flow', () => {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
+
+    if (android) {
+      await Helpers.swipe('wallet-screen', 'right', 'slow');
+    }
+
     await Helpers.checkIfVisible('profile-screen');
     const hash = await result;
     if (!hash) {
