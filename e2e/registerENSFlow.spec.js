@@ -337,7 +337,7 @@ describe('Register ENS Flow', () => {
       await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-REGISTER');
-      await Helpers.delay(1000);
+      await Helpers.delay(2000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
