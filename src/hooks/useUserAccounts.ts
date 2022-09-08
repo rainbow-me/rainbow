@@ -1,3 +1,7 @@
+import {
+  addDefaultNotificationSettingsForWallet,
+  NotificationRelationship,
+} from './../utils/notifications';
 import { values } from 'lodash';
 
 import useAccountSettings from './useAccountSettings';
@@ -20,6 +24,11 @@ export default function useUserAccounts() {
           ...account,
           network,
         });
+
+        addDefaultNotificationSettingsForWallet(
+          account.address,
+          NotificationRelationship.OWNER
+        );
       });
     });
     return addresses;
@@ -37,6 +46,11 @@ export default function useUserAccounts() {
           ...account,
           network,
         });
+
+        addDefaultNotificationSettingsForWallet(
+          account.address,
+          NotificationRelationship.WATCHER
+        );
       });
     });
     return addresses;
