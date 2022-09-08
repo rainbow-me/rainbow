@@ -97,7 +97,10 @@ export type Checkbox = {
 };
 
 const hasClearProfileInfo = (ensProfile?: ENSProfile) =>
-  isEmpty({ ...ensProfile?.data?.records, ...ensProfile?.data?.coinAddresses });
+  isEmpty({
+    ...ensProfile?.data?.records,
+    ...ensProfile?.data?.coinAddresses,
+  }) && !ensProfile?.data?.contenthash;
 const doesNamePointToRecipient = (
   ensProfile?: ENSProfile,
   recipientAddress?: string
@@ -330,6 +333,9 @@ export default function SendConfirmationSheet() {
 
       if (sendENSOptions['clear-records']) {
         let records = Object.keys({
+          ...(ensProfile?.data?.contenthash
+            ? { contenthash: ensProfile?.data?.contenthash }
+            : {}),
           ...(ensProfile?.data?.coinAddresses ?? {}),
           ...(ensProfile?.data?.records ?? {}),
         }).reduce((records, recordKey) => {
@@ -384,6 +390,7 @@ export default function SendConfirmationSheet() {
     asset,
     checkboxes,
     ensProfile?.data?.coinAddresses,
+    ensProfile?.data?.contenthash,
     ensProfile?.data?.records,
     isENS,
     toAddress,

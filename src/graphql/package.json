@@ -1,0 +1,14 @@
+{
+  "name": "@rainbow-me/graphql-client",
+  "private": true,
+  "scripts": {
+    "codegen": "graphql-codegen --config codegen.config.js"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "2.11.7",
+    "@graphql-codegen/typescript": "2.7.3",
+    "@graphql-codegen/typescript-generic-sdk": "3.0.1",
+    "@graphql-codegen/typescript-operations": "2.5.3",
+    "@graphql-eslint/eslint-plugin": "3.10.7"
+  }
+}
