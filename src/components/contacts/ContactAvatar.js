@@ -75,7 +75,7 @@ const sizeConfigs = colors => ({
     textSize: 'larger',
   },
   small: {
-    dimensions: 34,
+    dimensions: 36,
     textSize: 'large',
   },
   smaller: {
