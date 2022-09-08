@@ -551,7 +551,9 @@ export default function ExchangeModal({
   const submit = useCallback(
     async amountInUSD => {
       setIsAuthorizing(true);
-      const NotificationManager = ios ? NativeModules.NotificationManager : null;
+      const NotificationManager = ios
+        ? NativeModules.NotificationManager
+        : null;
       try {
         const wallet = await loadWallet();
         if (!wallet) {
@@ -972,7 +974,7 @@ export default function ExchangeModal({
           {isWithdrawal && <Spacer />}
         </FloatingPanels>
         <Box height="content">
-          <Rows alignVertical="bottom" space="19px">
+          <Rows alignVertical="bottom" space="19px (Deprecated)">
             <Row height="content">
               {showConfirmButton && (
                 <ConfirmExchangeButton

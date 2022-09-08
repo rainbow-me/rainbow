@@ -53,9 +53,12 @@ export default function ProfileSheetHeader({
   const { data: profileAddress } = useENSAddress(ensName, {
     enabled: profilesEnabled,
   });
-  const { data: { coinAddresses, records } = {} } = useENSRecords(ensName, {
-    enabled: profilesEnabled,
-  });
+  const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(
+    ensName,
+    {
+      enabled: profilesEnabled,
+    }
+  );
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName, {
     enabled: profilesEnabled,
   });
@@ -106,7 +109,11 @@ export default function ProfileSheetHeader({
           isFetched={isImagesFetched}
         />
         <Bleed top={{ custom: 38 }}>
-          <Inset left="19px" right="15px" top={{ custom: 1 }}>
+          <Inset
+            left="19px (Deprecated)"
+            right="15px (Deprecated)"
+            top={{ custom: 1 }}
+          >
             <Columns>
               <Column width="content">
                 <ProfileAvatar
@@ -118,7 +125,7 @@ export default function ProfileSheetHeader({
                 />
               </Column>
               {!isLoading && (
-                <Inset top="34px">
+                <Inset top="34px (Deprecated)">
                   <ActionButtons
                     address={profileAddress ?? ''}
                     avatarUrl={avatarUrl}
@@ -129,9 +136,11 @@ export default function ProfileSheetHeader({
             </Columns>
           </Inset>
         </Bleed>
-        <Inset horizontal="19px">
-          <Stack space="19px">
-            <Heading size="23px">{abbreviateEnsForDisplay(ensName)}</Heading>
+        <Inset horizontal="19px (Deprecated)">
+          <Stack space="19px (Deprecated)">
+            <Heading size="23px / 27px (Deprecated)" weight="heavy">
+              {abbreviateEnsForDisplay(ensName)}
+            </Heading>
             <>
               {isLoading ? (
                 <DescriptionPlaceholder />
@@ -139,7 +148,7 @@ export default function ProfileSheetHeader({
                 <ProfileDescription description={records?.description} />
               ) : null}
             </>
-            <Bleed horizontal="19px">
+            <Bleed horizontal="19px (Deprecated)">
               {isLoading ? (
                 <RecordTagsPlaceholder />
               ) : (
@@ -148,10 +157,12 @@ export default function ProfileSheetHeader({
                     <RecordTags
                       firstTransactionTimestamp={firstTransactionTimestamp}
                       records={{
+                        contenthash,
                         ...records,
                         ...coinAddresses,
                       }}
                       show={[
+                        ENS_RECORDS.name,
                         ENS_RECORDS.displayName,
                         ENS_RECORDS.url,
                         ENS_RECORDS.twitter,

@@ -4,10 +4,7 @@ import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -266,7 +263,7 @@ export const walletConnectRemovePendingRedirect = (
         Minimizer.goBack();
       }, 300);
     } else {
-      Minimizer.goBack();
+      IS_TESTING !== 'true' && Minimizer.goBack();
     }
     // If it's still active after showRedirectSheetThreshold
     // We need to show the redirect sheet cause the redirect

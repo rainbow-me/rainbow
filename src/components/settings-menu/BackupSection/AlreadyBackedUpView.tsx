@@ -40,7 +40,11 @@ const CheckmarkIconContainer = styled(View)(
 const CheckmarkIcon = ({ color, isDarkMode }: any) => (
   <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
     <Box alignItems="center" height="full" justifyContent="center" width="full">
-      <Text color={{ custom: colors.whiteLabel }} size="20px" weight="bold">
+      <Text
+        color={{ custom: colors.whiteLabel }}
+        size="20px / 24px (Deprecated)"
+        weight="bold"
+      >
         􀆅
       </Text>
     </Box>
@@ -161,7 +165,11 @@ export default function AlreadyBackedUpView() {
       width="full"
     >
       <Box marginTop="-10px">
-        <Text color="secondary50" size="14px" weight="medium">
+        <Text
+          color="secondary50"
+          size="14px / 19px (Deprecated)"
+          weight="medium"
+        >
           {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
             lang.t('back_up.already_backed_up.backed_up')) ||
             (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
@@ -170,15 +178,19 @@ export default function AlreadyBackedUpView() {
               lang.t('back_up.already_backed_up.imported'))}
         </Text>
       </Box>
-      <Box alignItems="center" marginTop="-42px">
+      <Box alignItems="center" marginTop="-42px (Deprecated)">
         <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
-        <Text size="20px" weight="bold">
+        <Text size="20px / 24px (Deprecated)" weight="bold">
           {(walletStatus === WalletBackupStatus.IMPORTED &&
             lang.t('back_up.already_backed_up.imported_message')) ||
             lang.t('back_up.already_backed_up.backed_up_message')}
         </Text>
         <Box paddingHorizontal="60px" paddingTop="24px">
-          <Text align="center" color="secondary50" size="18px">
+          <Text
+            align="center"
+            color="secondary50"
+            size="18px / 27px (Deprecated)"
+          >
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
               lang.t('back_up.explainers.if_lose_cloud', {
                 cloudPlatformName: cloudPlatform,
@@ -189,7 +201,7 @@ export default function AlreadyBackedUpView() {
                 lang.t('back_up.explainers.if_lose_imported'))}
           </Text>
         </Box>
-        <Box paddingTop="42px">
+        <Box paddingTop="42px (Deprecated)">
           <AccentColorProvider color={colors.whiteLabel}>
             <ButtonPressAnimation
               onPress={handleViewRecoveryPhrase}
@@ -205,13 +217,13 @@ export default function AlreadyBackedUpView() {
                 borderRadius={56}
                 height={{ custom: 48 }}
                 justifyContent="center"
-                paddingHorizontal="19px"
+                paddingHorizontal="19px (Deprecated)"
                 shadow="15px light"
               >
                 <Text
                   color="secondary"
                   containsEmoji
-                  size="18px"
+                  size="18px / 27px (Deprecated)"
                   weight="semibold"
                 >
                   {`🗝 ${
@@ -225,10 +237,14 @@ export default function AlreadyBackedUpView() {
           </AccentColorProvider>
         </Box>
       </Box>
-      <Box paddingBottom="42px">
+      <Box paddingBottom="42px (Deprecated)">
         {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
           <ButtonPressAnimation onPress={handleIcloudBackup}>
-            <Text color="action" size="18px" weight="semibold">
+            <Text
+              color="action"
+              size="18px / 27px (Deprecated)"
+              weight="semibold"
+            >
               {`􀙶 ${lang.t('back_up.cloud.back_up_to_platform', {
                 cloudPlatformName: cloudPlatform,
               })}`}
@@ -236,7 +252,11 @@ export default function AlreadyBackedUpView() {
           </ButtonPressAnimation>
         ) : !hasMultipleWallets ? (
           <ButtonPressAnimation onPress={manageCloudBackups}>
-            <Text color="secondary60" size="18px" weight="semibold">
+            <Text
+              color="secondary60"
+              size="18px / 27px (Deprecated)"
+              weight="semibold"
+            >
               {`􀍢 ${lang.t('back_up.cloud.manage_platform_backups', {
                 cloudPlatformName: cloudPlatform,
               })}`}

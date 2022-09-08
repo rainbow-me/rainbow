@@ -22,6 +22,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { abbreviations } from '@/utils';
+import config from '@/model/config';
 
 // NOTE:
 // If you’re trying to edit this file for iOS and you’re not seeing any changes,
@@ -129,6 +130,11 @@ export default function ProfileMasthead({
   const handlePressAddCash = useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
+      return;
+    }
+
+    if (!config.wyre_enabled) {
+      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
       return;
     }
 

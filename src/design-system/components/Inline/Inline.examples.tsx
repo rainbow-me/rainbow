@@ -76,7 +76,7 @@ export const differentSpaceOnAxis: Example = {
   name: 'Different space on each axis',
   Example: () =>
     source(
-      <Inline horizontalSpace="19px" verticalSpace="12px">
+      <Inline horizontalSpace="20px" verticalSpace="12px">
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
@@ -114,7 +114,7 @@ export const centerAlignedHorizontally: Example = {
   name: 'Center-aligned horizontally',
   Example: () =>
     source(
-      <Inline alignHorizontal="center" space="19px">
+      <Inline alignHorizontal="center" space="20px">
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
@@ -131,7 +131,7 @@ export const rightAlignedHorizontally: Example = {
   name: 'Right-aligned horizontally',
   Example: () =>
     source(
-      <Inline alignHorizontal="right" space="19px">
+      <Inline alignHorizontal="right" space="20px">
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
@@ -148,7 +148,7 @@ export const justifiedHorizontally: Example = {
   name: 'Justified horizontally',
   Example: () =>
     source(
-      <Inline alignHorizontal="justify" space="19px">
+      <Inline alignHorizontal="justify" space="20px">
         <Placeholder width={40} />
         <Placeholder width={40} />
         <Placeholder width={40} />
@@ -160,7 +160,7 @@ export const centerAlignedVertically: Example = {
   name: 'Center-aligned vertically',
   Example: () =>
     source(
-      <Inline alignVertical="center" space="19px">
+      <Inline alignVertical="center" space="20px">
         <Placeholder height={20} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={60} width={40} />
@@ -178,7 +178,7 @@ export const bottomAlignedVertically: Example = {
   name: 'Bottom-aligned vertically',
   Example: () =>
     source(
-      <Inline alignVertical="bottom" space="19px">
+      <Inline alignVertical="bottom" space="20px">
         <Placeholder height={20} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={60} width={40} />
@@ -196,7 +196,7 @@ export const centerAlignedHorizontallyVertically: Example = {
   name: 'Center-aligned horizontally and vertically',
   Example: () =>
     source(
-      <Inline alignHorizontal="center" alignVertical="center" space="19px">
+      <Inline alignHorizontal="center" alignVertical="center" space="20px">
         <Placeholder height={20} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={60} width={40} />
@@ -218,7 +218,7 @@ export const fixedHeightSeparators: Example = {
         separator={
           <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
         }
-        space="19px"
+        space="20px"
         wrap={false}
       >
         <Placeholder width={40} />
@@ -237,7 +237,7 @@ export const fixedHeightSeparatorsVerticalAlignment: Example = {
         separator={
           <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
         }
-        space="19px"
+        space="20px"
         wrap={false}
       >
         <Placeholder height={40} width={40} />
@@ -256,7 +256,7 @@ export const fixedHeightSeparatorsHorizontalAlignment: Example = {
         separator={
           <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
         }
-        space="19px"
+        space="20px"
         wrap={false}
       >
         <Placeholder width={40} />
@@ -275,7 +275,7 @@ export const fullHeightSeparators: Example = {
         separator={
           <View style={{ backgroundColor: '#999', flexGrow: 1, width: 1 }} />
         }
-        space="19px"
+        space="20px"
         wrap={false}
       >
         <Placeholder height={40} width={40} />
