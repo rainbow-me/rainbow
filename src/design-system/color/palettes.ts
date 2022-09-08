@@ -1,6 +1,6 @@
 import { mapValues } from 'lodash';
 
-export const globalPalette = {
+export const globalColors = {
   green10: '#EAFCE8',
   green20: '#CDFACD',
   green30: '#A6F5AC',
@@ -202,21 +202,21 @@ export const backgroundColors: Record<
 > = {
   'surface': {
     light: {
-      color: globalPalette.white100,
+      color: globalColors.white100,
       mode: 'light',
     },
     dark: {
-      color: globalPalette.grey100,
+      color: globalColors.grey100,
       mode: 'dark',
     },
   },
   'surfaceSecondary': {
     light: {
-      color: globalPalette.white100,
+      color: globalColors.white100,
       mode: 'light',
     },
     dark: {
-      color: globalPalette.white10,
+      color: globalColors.white10,
       mode: 'dark',
     },
   },
@@ -226,107 +226,107 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalPalette.white10,
+      color: globalColors.white10,
       mode: 'dark',
     },
   },
   'fill': {
     light: {
-      color: globalPalette.grey30,
+      color: globalColors.grey30,
       mode: 'light',
     },
     dark: {
-      color: globalPalette.white30,
+      color: globalColors.white30,
       mode: 'dark',
     },
   },
   'fillSecondary': {
     light: {
-      color: globalPalette.grey20,
+      color: globalColors.grey20,
       mode: 'light',
     },
     dark: {
-      color: globalPalette.white20,
+      color: globalColors.white20,
       mode: 'dark',
     },
   },
   'fillTertiary': {
     light: {
-      color: globalPalette.white100,
+      color: globalColors.white100,
       mode: 'light',
     },
     dark: {
-      color: globalPalette.blueGrey100,
+      color: globalColors.blueGrey100,
       mode: 'dark',
     },
   },
   'blue': {
     light: {
-      color: globalPalette.blue60,
+      color: globalColors.blue60,
       mode: 'dark',
     },
     dark: {
-      color: globalPalette.blue50,
+      color: globalColors.blue50,
       mode: 'dark',
     },
   },
   'green': {
     light: {
-      color: globalPalette.green60,
+      color: globalColors.green60,
       mode: 'dark',
     },
     dark: {
-      color: globalPalette.green50,
+      color: globalColors.green50,
       mode: 'dark',
     },
   },
   'red': {
     light: {
-      color: globalPalette.red60,
+      color: globalColors.red60,
       mode: 'dark',
     },
     dark: {
-      color: globalPalette.red50,
+      color: globalColors.red50,
       mode: 'dark',
     },
   },
   'purple': {
     light: {
-      color: globalPalette.purple60,
+      color: globalColors.purple60,
       mode: 'dark',
     },
     dark: {
-      color: globalPalette.purple50,
+      color: globalColors.purple50,
       mode: 'dark',
     },
   },
   'pink': {
     light: {
-      color: globalPalette.pink60,
+      color: globalColors.pink60,
       mode: 'dark',
     },
     dark: {
-      color: globalPalette.pink50,
+      color: globalColors.pink50,
       mode: 'dark',
     },
   },
   'orange': {
     light: {
-      color: globalPalette.orange60,
+      color: globalColors.orange60,
       mode: 'dark',
     },
     dark: {
-      color: globalPalette.orange50,
+      color: globalColors.orange50,
       mode: 'dark',
     },
   },
   'yellow': {
     light: {
-      color: globalPalette.yellow60,
+      color: globalColors.yellow60,
       mode: 'light',
     },
     dark: {
-      color: globalPalette.yellow50,
+      color: globalColors.yellow50,
       mode: 'light',
     },
   },
@@ -450,20 +450,20 @@ export const foregroundColors: Record<
   string | ContextualColorValue<string>
 > = {
   'label': {
-    light: globalPalette.grey100,
-    dark: globalPalette.white100,
+    light: globalColors.grey100,
+    dark: globalColors.white100,
   },
   'labelSecondary': {
-    light: globalPalette.grey80,
-    dark: globalPalette.white80,
+    light: globalColors.grey80,
+    dark: globalColors.white80,
   },
   'labelTertiary': {
-    light: globalPalette.grey70,
-    dark: globalPalette.white70,
+    light: globalColors.grey70,
+    dark: globalColors.white70,
   },
   'labelQuaternary': {
-    light: globalPalette.grey60,
-    dark: globalPalette.white60,
+    light: globalColors.grey60,
+    dark: globalColors.white60,
   },
   'blue': selectBackgroundAsForeground('blue'),
   'green': selectBackgroundAsForeground('green'),
@@ -488,11 +488,11 @@ export const foregroundColors: Record<
     dark: 'rgba(0, 0, 0, 0.8)',
   },
   'separator': {
-    light: globalPalette.grey20,
-    dark: globalPalette.white20,
+    light: globalColors.grey20,
+    dark: globalColors.white20,
   },
   'separatorSecondary': {
-    light: globalPalette.grey20,
+    light: globalColors.grey20,
     dark: 'rgba(245, 248, 255, 0.06)',
   },
   'buttonStroke': {
@@ -500,8 +500,8 @@ export const foregroundColors: Record<
     dark: 'rgba(255, 255, 255, 0.03)',
   },
   'buttonStrokeSecondary': {
-    light: globalPalette.white20,
-    dark: globalPalette.white20,
+    light: globalColors.white20,
+    dark: globalColors.white20,
   },
   'action (Deprecated)': {
     dark: deprecatedColors.appleBlueLight,

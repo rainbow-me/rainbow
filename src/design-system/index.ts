@@ -7,6 +7,7 @@ export { Columns, Column } from './components/Columns/Columns';
 export { DesignSystemProvider } from './context/DesignSystemContext';
 export { Cover } from './components/Cover/Cover';
 export { DebugLayout } from './components/DebugLayout/DebugLayout';
+export { globalColors } from './color/palettes';
 export { Heading } from './components/Heading/Heading';
 export { Inline } from './components/Inline/Inline';
 export { Inset } from './components/Inset/Inset';
