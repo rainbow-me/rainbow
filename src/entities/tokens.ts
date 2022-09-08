@@ -136,4 +136,5 @@ export interface ExchangeAsset {
   type: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
+  network: string;
 }
