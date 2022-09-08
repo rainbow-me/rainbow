@@ -21,6 +21,7 @@ export async function getExistingPIN() {
   } catch (e) {}
   return null;
 }
+
 export async function decryptPIN(encryptedPin: any) {
   try {
     const userPIN = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPin);
