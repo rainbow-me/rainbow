@@ -18,6 +18,7 @@ import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
+import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
@@ -27,7 +28,7 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { ethereumUtils, gasUtils } from '@/utils';
+import { deviceUtils, ethereumUtils, gasUtils } from '@/utils';
 import { cloudPlatformAccountName } from '@/utils/platform';
 
 const { GAS_TRENDS } = gasUtils;
@@ -118,6 +119,24 @@ const SmolAppIcon = () => {
         style={{
           width: 64,
           height: 64,
+        }}
+      />
+    </Box>
+  );
+};
+
+const TheMergeIcon = () => {
+  return (
+    <Box
+      style={{
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={TheMergePng}
+        style={{
+          width: 53,
+          height: 50,
         }}
       />
     </Box>
@@ -721,6 +740,31 @@ export const explainers = (params, colors) => ({
     ),
     text: lang.t('explain.slippage.text'),
     title: lang.t('explain.slippage.title'),
+  },
+  wyre_degradation: {
+    logo: <TheMergeIcon />,
+    extraHeight: deviceUtils.isSmallPhone ? 121 : 76,
+    text: lang.t('explain.wyre_degradation.text'),
+    title: lang.t('explain.wyre_degradation.title'),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.wyre_degradation.still_curious.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.wyre_degradation.still_curious.fragment2')}
+        </Text>
+        {lang.t('explain.wyre_degradation.still_curious.fragment3')}
+      </Text>
+    ),
   },
 });
 

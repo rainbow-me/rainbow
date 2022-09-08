@@ -5,7 +5,7 @@ export type Records = { [key in ENS_RECORDS]?: string };
 
 export interface ENSRegistrationRecords {
   coinAddress: { key: string; address: string }[] | null;
-  contentHash: string | null;
+  contenthash: string | null;
   ensAssociatedAddress: string | null;
   text: { key: string; value: string }[] | null;
 }

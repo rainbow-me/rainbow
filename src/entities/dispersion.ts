@@ -31,3 +31,8 @@ export interface UniswapPoolData {
   oneMonthHistory: UniswapPairHistoricalData;
   pair: UniswapPairData;
 }
+
+export interface implementation {
+  address: EthereumAddress;
+  decimals: number;
+}
