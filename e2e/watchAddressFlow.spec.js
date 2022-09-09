@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
 describe('Watch address flow', () => {
@@ -51,6 +50,5 @@ describe('Watch address flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
   });
 });
