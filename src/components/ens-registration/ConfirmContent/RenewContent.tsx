@@ -30,8 +30,8 @@ const RenewContent = ({
   );
 
   return (
-    <Inset vertical={isSmallPhone ? '12px' : '30px'}>
-      <Stack space={isSmallPhone ? '19px' : '30px'}>
+    <Inset vertical={isSmallPhone ? '12px' : '30px (Deprecated)'}>
+      <Stack space={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
         <Divider color="divider60" />
         <RegistrationReviewRows
           duration={yearsDuration}
