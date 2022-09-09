@@ -10,7 +10,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  Linking,
+  StatusBar,
+  TextInput,
+} from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -115,7 +121,7 @@ export default function CurrencySelectModal() {
 
   const scrollPosition = (usePagerPosition() as unknown) as { value: number };
 
-  const searchInputRef = useRef();
+  const searchInputRef = useRef<TextInput>(null);
   const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState<
@@ -519,7 +525,6 @@ export default function CurrencySelectModal() {
               />
             </Row>
             <Row height="content">
-              {/* @ts-expect-error JavaScript component */}
               <ExchangeSearch
                 clearTextOnFocus={false}
                 isFetching={swapCurrencyListLoading}
