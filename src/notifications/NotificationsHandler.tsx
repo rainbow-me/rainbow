@@ -1,5 +1,10 @@
 import React, { PropsWithChildren, useEffect, useRef } from 'react';
-import { usePrevious, useWallets } from '@/hooks';
+import {
+  useAccountProfile,
+  useContacts,
+  usePrevious,
+  useWallets,
+} from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
   FirebaseMessagingTypes,
@@ -32,6 +37,11 @@ import notifee, {
   Event as NotifeeEvent,
   EventType,
 } from '@notifee/react-native';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { MinimalTransactionDetails } from '@/entities/transactions/transaction';
+import { TransactionStatus, TransactionType } from '@/entities';
+import { showTransactionDetailsSheet } from '@/handlers/transactions';
 
 type Callback = () => void;
 
@@ -39,7 +49,9 @@ type Props = PropsWithChildren<{ walletReady: boolean }>;
 
 export const NotificationsHandler = ({ children, walletReady }: Props) => {
   const wallets = useWallets();
-  const walletsRef = useRef(wallets);
+  const { contacts } = useContacts();
+  const { accountAddress } = useAccountProfile();
+  const syncedStateRef = useRef({ wallets, contacts, accountAddress });
   const prevWalletReady = usePrevious(walletReady);
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const onTokenRefreshListener = useRef<Callback>();
@@ -49,9 +61,11 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
   const appState = useRef<AppStateStatus>(null);
   const notifeeForegroundEventListener = useRef<Callback>();
 
-  // We need to save useWallets result to a ref in order to provide
+  // We need to save some state result to a ref in order to provide
   // an always up-to-date reference for event listeners
-  walletsRef.current = wallets;
+  syncedStateRef.current.wallets = wallets;
+  syncedStateRef.current.contacts = contacts;
+  syncedStateRef.current.accountAddress = accountAddress;
 
   useEffect(() => {
     setupAndroidChannels();
@@ -166,27 +180,62 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     performActionBasedOnOpenedNotificationType(notification);
   };
 
-  const performActionBasedOnOpenedNotificationType = (
+  const performActionBasedOnOpenedNotificationType = async (
     notification: MinimalNotification
   ) => {
     const data = notification?.data;
     const type = data?.type;
 
     if (type === NotificationTypes.transaction) {
-      if (!data?.address) {
+      if (!data?.address || !data?.hash || !data?.chain) {
         return;
       }
 
-      // Using the function stored in the ref intentionally
-      walletsRef.current
-        .switchToWalletWithAddress(data.address)
-        .then(walletAddress => {
-          if (walletAddress === null) {
-            return;
-          }
-          Navigation.handleAction(Routes.PROFILE_SCREEN, {});
-          // TODO: Open action sheet for tx
-        });
+      const { wallets, contacts, accountAddress } = syncedStateRef.current;
+      let walletAddress = accountAddress;
+      if (accountAddress !== data.address) {
+        walletAddress = await wallets.switchToWalletWithAddress(data.address);
+      }
+
+      if (!walletAddress) {
+        return;
+      }
+      Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+      const zerionTransaction = store
+        .getState()
+        .data.transactions.find(tx =>
+          isLowerCaseMatch(ethereumUtils.getHash(tx) ?? '', data.hash)
+        );
+
+      if (zerionTransaction) {
+        console.log('NOTIFICATIONS: Getting zerion finished tx data');
+        showTransactionDetailsSheet(
+          zerionTransaction,
+          contacts,
+          accountAddress
+        );
+      } else {
+        console.log('NOTIFICATIONS: Getting data from RPC');
+        const network = ethereumUtils.getNetworkFromChainId(
+          parseInt(data.chaing, 10)
+        );
+        const provider = await getProviderForNetwork(network);
+        const rpcTransaction = await provider.getTransaction(data.hash);
+        const transaction: MinimalTransactionDetails = {
+          type: TransactionType.send,
+          hash: data.hash,
+          minedAt: rpcTransaction.timestamp ?? null,
+          from: rpcTransaction.from,
+          network,
+          pending: !rpcTransaction.blockHash,
+          status: rpcTransaction.blockHash
+            ? TransactionStatus.sent
+            : TransactionStatus.sending,
+          to: rpcTransaction.from,
+        };
+
+        showTransactionDetailsSheet(transaction, contacts, accountAddress);
+      }
     }
   };
 
