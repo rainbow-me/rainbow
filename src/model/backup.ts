@@ -11,6 +11,7 @@ import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
+import { IS_ANDROID } from '@/env';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import {
@@ -315,14 +316,14 @@ async function restoreCurrentBackupIntoKeychain(
 
         const hasBiometricsEnabled = await getSupportedBiometryType();
 
-        if (!hasBiometricsEnabled && android && endsWith(key, seedPhraseKey)) {
+        if (IS_ANDROID && endsWith(key, seedPhraseKey)) {
           const parsedValue = JSON.parse(value);
           const { seedphrase } = parsedValue;
 
           const wasBackupSavedWithPIN =
             seedphrase?.includes('salt') && seedphrase?.includes('cipher');
 
-          if (!wasBackupSavedWithPIN) {
+          if (!wasBackupSavedWithPIN && !hasBiometricsEnabled) {
             // interrupt loader
             onBeforePINCreated();
             const userPIN = await saveNewAuthenticationPIN();
@@ -354,26 +355,24 @@ async function restoreCurrentBackupIntoKeychain(
               seedphrase
             );
 
-            onBeforePINCreated();
-            const userPIN = await saveNewAuthenticationPIN();
-            onAfterPINCreated();
+            let encryptedSeed;
+            if (!hasBiometricsEnabled) {
+              onBeforePINCreated();
+              const userPIN = await saveNewAuthenticationPIN();
+              onAfterPINCreated();
 
-            const encryptedSeed = await encryptor.encrypt(
-              userPIN,
-              decryptedSeed
-            );
-            if (encryptedSeed) {
-              // in the PIN flow, we must manually encrypt the seedphrase with PIN
-              const valueWithPINInfo = JSON.stringify({
-                ...parsedValue,
-                seedphrase: encryptedSeed,
-              });
-
-              logger.sentry(
-                'This wallet was backuped with an encrypted PIN, and now we decrypt it and encrypt it with own PIN'
-              );
-              return keychain.saveString(key, valueWithPINInfo, accessControl);
+              encryptedSeed = await encryptor.encrypt(userPIN, decryptedSeed);
             }
+
+            const valueWithPINInfo = JSON.stringify({
+              ...parsedValue,
+              seedphrase: hasBiometricsEnabled ? decryptedSeed : encryptedSeed,
+            });
+
+            logger.sentry(
+              'This wallet was backuped with an encrypted PIN, and now we decrypt it and encrypt it with own PIN'
+            );
+            return keychain.saveString(key, valueWithPINInfo, accessControl);
           }
         } else if (typeof value === 'string') {
           return keychain.saveString(key, value, accessControl);
