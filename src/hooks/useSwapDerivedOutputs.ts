@@ -1,6 +1,6 @@
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  getQuote,
+  // getQuote,
   getCrosschainQuote,
   Quote,
   QuoteError,
@@ -98,7 +98,7 @@ const getInputAmount = async (
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
-    const quote: Quote = await getQuote(quoteParams);
+    const quote: Quote = await getCrosschainQuote(quoteParams);
     Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.sellAmount) {
@@ -203,12 +203,13 @@ const getOutputAmount = async (
       source: realSource,
       swapType: 'cross-chain',
       toChainId: outputChainId,
+      refuel: true,
     };
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
-    const quote: Quote = await getCrosschainQuote(quoteParams, SOCKET_API_KEY);
+    const quote: Quote = await getCrosschainQuote(quoteParams);
     Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.buyAmount) {
