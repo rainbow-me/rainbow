@@ -209,6 +209,9 @@ describe('Hardhat Transaction Flow', () => {
       '0xefa6903aa49cd539c079ac4b0a090db432615822',
       true
     );
+  });
+
+  it('Should be able to search random tokens (like SWYF) via address and swap them 2', async () => {
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-SWYF-token'
     );
@@ -480,6 +483,9 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should show completed send NFT (Cryptokitties)', async () => {
+    if (device.getPlatform() === 'android') {
+      await Helpers.swipe('profile-screen', 'down', 'slow');
+    }
     try {
       await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
     } catch (e) {
