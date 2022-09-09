@@ -12,7 +12,7 @@ import {
   SwapActionParameters,
 } from './common';
 import { Asset } from '@/entities';
-import { estimateSwapGasLimit } from '@/handlers/uniswap';
+import { estimateSwapGasLimit } from '@/handlers/swap';
 import store from '@/redux/store';
 import { ethUnits, savingsAssetsListByUnderlying } from '@/references';
 import { add } from '@/helpers/utilities';
