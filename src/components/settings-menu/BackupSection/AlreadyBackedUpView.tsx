@@ -57,9 +57,9 @@ export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
   const { params } = useRoute();
   const { manageCloudBackups } = useManageCloudBackups();
-  const { wallets, selectedWallet } = useWallets();
+  const { wallets } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
-  const walletId = (params as any)?.walletId || selectedWallet.id;
+  const walletId = (params as any)?.walletId;
 
   useEffect(() => {
     analytics.track('Already Backed Up View', {
