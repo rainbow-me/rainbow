@@ -122,26 +122,38 @@ export default function SettingsSheet() {
   const getRealRoute = useCallback(
     (key: any) => {
       let route = key;
-      let paramsToPass: { imported?: boolean; type?: string } = {};
+      let paramsToPass: {
+        imported?: boolean;
+        type?: string;
+        walletId?: string;
+      } = {};
+      const nonReadonlyWallets = Object.keys(wallets!).filter(
+        key => wallets![key].type !== WalletTypes.readOnly
+      );
       if (key === SettingsPages.backup.key) {
         const walletId = params?.walletId;
-        if (
-          !walletId &&
-          Object.keys(wallets!).filter(
-            key => wallets![key].type !== WalletTypes.readOnly
-          ).length > 1
-        ) {
+        // Check if we have more than 1 NON readonly wallets, then show the list of wallets
+        if (!walletId && nonReadonlyWallets.length > 1) {
           route = 'BackupSection';
+          // Check if we have one wallet that's not readonly
+          // then show the single screen for that wallet.
         } else {
-          if (
-            wallets &&
-            Object.keys(wallets).length === 1 &&
-            (selectedWallet.imported || selectedWallet.backedUp)
-          ) {
-            paramsToPass.imported = true;
-            paramsToPass.type = 'AlreadyBackedUpView';
+          if (wallets && nonReadonlyWallets.length === 1) {
+            // Get the primary wallet
+            const primaryWalletId = Object.keys(wallets!).find(
+              (key: string) => wallets![key].primary
+            );
+            if (primaryWalletId) {
+              if (wallets[primaryWalletId].backedUp) {
+                paramsToPass.type = 'AlreadyBackedUpView';
+              }
+              if (wallets[primaryWalletId].imported) {
+                paramsToPass.imported = true;
+              }
+              paramsToPass.walletId = primaryWalletId;
+            }
+            route = 'SettingsBackupView';
           }
-          route = 'SettingsBackupView';
         }
       }
       return { params: { ...params, ...paramsToPass }, route };
