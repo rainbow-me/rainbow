@@ -152,8 +152,8 @@ export default function SettingsSheet() {
               }
               paramsToPass.walletId = primaryWalletId;
             }
-            route = 'SettingsBackupView';
           }
+          route = 'SettingsBackupView';
         }
       }
       return { params: { ...params, ...paramsToPass }, route };
