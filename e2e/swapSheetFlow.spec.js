@@ -168,7 +168,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('currency-select-network-switcher-10');
     await Helpers.tapByText('Arbitrum');
     await Helpers.waitAndTap('currency-select-network-switcher-42161');
-    await Helpers.tapByText('Polygon (Matic)');
+    await Helpers.tapByText(ios ? 'Polygon (Matic)' : 'Polygon');
     await Helpers.checkIfVisible('currency-select-network-switcher-137');
     await Helpers.waitAndTap('currency-select-header-back-button');
     await Helpers.tap('exchange-modal-output-selection-button');
