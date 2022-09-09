@@ -8,6 +8,8 @@ beforeAll(async () => {
   await exec('yarn hardhat');
 });
 
+const ios = device.getPlatform() === 'ios';
+
 describe('Swap Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
@@ -71,7 +73,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
     await Helpers.waitAndTap('exchange-modal-input-max');
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    // await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
@@ -79,8 +81,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swaps-details-fee-row');
     await Helpers.waitAndTap('swaps-details-show-details-button');
     await Helpers.checkIfVisible('swaps-details-price-row');
-    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
-    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    await Helpers.swipe(
+      ios ? 'swap-details-sheet' : 'swap-details-header',
+      'down',
+      'fast'
+    );
+    await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
   it('Should go to swap and open review sheet on optimism swap', async () => {
     await Helpers.waitAndTap('exchange-fab');
@@ -96,8 +102,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swaps-details-fee-row');
     await Helpers.waitAndTap('swaps-details-show-details-button');
     await Helpers.checkIfVisible('swaps-details-price-row');
-    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
-    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    await Helpers.swipe(
+      ios ? 'swap-details-sheet' : 'swap-details-header',
+      'down',
+      'fast'
+    );
+    await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
   it('Should go to swap and open review sheet on polygon swap', async () => {
     await Helpers.waitAndTap('exchange-fab');
@@ -113,8 +123,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swaps-details-fee-row');
     await Helpers.waitAndTap('swaps-details-show-details-button');
     await Helpers.checkIfVisible('swaps-details-price-row');
-    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
-    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    await Helpers.swipe(
+      ios ? 'swap-details-sheet' : 'swap-details-header',
+      'down',
+      'fast'
+    );
+    await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
   it('Should go to swap and open review sheet on arbitrum swap', async () => {
     await Helpers.waitAndTap('exchange-fab');
@@ -130,8 +144,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swaps-details-fee-row');
     await Helpers.waitAndTap('swaps-details-show-details-button');
     await Helpers.checkIfVisible('swaps-details-price-row');
-    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
-    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    await Helpers.swipe(
+      ios ? 'swap-details-sheet' : 'swap-details-header',
+      'down',
+      'fast'
+    );
+    await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
 
   it('Should display currency selection screen on swap-fab press', async () => {
