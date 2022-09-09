@@ -46,8 +46,8 @@ export default function CurrencySelectModalHeader({
       {showBackButton && (
         <Box
           position="absolute"
-          bottom={{ custom: 0 }}
-          left={{ custom: 0 }}
+          bottom="0px"
+          left="0px"
           top={{ custom: 3 }}
           justifyContent="center"
           alignItems="center"
