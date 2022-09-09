@@ -16,6 +16,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import WalletTypes from '@/helpers/walletTypes';
+import { RainbowWallet } from '@/model/wallet';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -41,9 +42,10 @@ export default function NeedsBackupView() {
     if (selectedWallet.type === WalletTypes.readOnly) {
       // Loop through the wallets and find the primary
       for (let wallet of Object.values(wallets)) {
+        const rainbowWallet = wallet as RainbowWallet;
         // Found the primary, take the id and break out of the loop
-        if (wallet.primary) {
-          walletId = wallet.id;
+        if (rainbowWallet.primary) {
+          walletId = rainbowWallet.id;
           break;
         }
       }
