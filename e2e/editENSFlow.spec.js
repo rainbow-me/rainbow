@@ -5,7 +5,6 @@ import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
 import publicResolverABI from '@/references/ens/ENSPublicResolver.json';
-import { IS_ANDROID } from '@/env';
 
 const ensPublicResolverAddress = '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41';
 
@@ -196,8 +195,10 @@ describe('Register ENS Flow', () => {
     // Fill "Twitter" field
     await Helpers.typeText('ens-text-record-com.twitter', RECORD_TWITTER);
 
-    IS_ANDROID && (await Helpers.waitAndTap('hide-keyboard-button'));
-    await Helpers.scrollToElement('ens-text-record-email', 'up');
+    if (device.getPlatform() === 'android') {
+      await Helpers.waitAndTap('hide-keyboard-button');
+    }
+    await Helpers.scrollToElement('ens-text-record-email', 'down');
 
     // Fill "Email" field
     await Helpers.typeText('ens-text-record-email', RECORD_EMAIL.slice(0, 3));
@@ -208,7 +209,10 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-email-error');
 
-    await Helpers.scrollToElement('ens-text-record-com.instagram', 'up');
+    if (device.getPlatform() === 'android') {
+      await Helpers.waitAndTap('hide-keyboard-button');
+    }
+    await Helpers.scrollToElement('ens-text-record-com.instagram', 'down');
 
     // Fill "Instagram" field
     await Helpers.typeText('ens-text-record-com.instagram', RECORD_INSTAGRAM);
