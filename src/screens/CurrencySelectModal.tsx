@@ -384,7 +384,6 @@ export default function CurrencySelectModal() {
         dispatch(emitAssetRequest(item.mainnet_address || item.address));
         setIsTransitioning(true); // continue to display list during transition
         callback?.();
-        console.log(handleNavigate);
         onSelectCurrency(assetWithType, handleNavigate);
       };
       if (
