@@ -4,8 +4,10 @@ import { Wallet } from '@ethersproject/wallet';
 import {
   ALLOWS_PERMIT,
   ChainId,
+  CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   fillQuote,
+  getCrosschainQuoteExecutionDetails,
   getQuoteExecutionDetails,
   getWrappedAssetMethod,
   PermitSupportedTokenList,
@@ -343,6 +345,59 @@ export const estimateSwapGasLimit = async ({
     } catch (error) {
       return getDefaultGasLimitForTrade(tradeDetails, chainId);
     }
+  }
+};
+
+export const estimateCrosschainSwapGasLimit = async ({
+  chainId,
+  requiresApprove,
+  tradeDetails,
+}: {
+  chainId: ChainId;
+  requiresApprove?: boolean;
+  tradeDetails: CrosschainQuote | null;
+}): Promise<string | number> => {
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const provider = await getProviderForNetwork(network);
+  if (!provider || !tradeDetails) {
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
+  }
+
+  try {
+    const { method: estimateGas } = getCrosschainQuoteExecutionDetails(
+      tradeDetails,
+      { from: tradeDetails.from },
+      provider
+    );
+
+    // if (requiresApprove) {
+    //   if (
+    //     CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) &&
+    //     IS_TESTING !== 'true'
+    //   ) {
+    //     try {
+    //       const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
+    //         chainId,
+    //         provider,
+    //         tradeDetails
+    //       );
+    //       logger.debug(
+    //         ' ✅ Got gasLimitWithFakeApproval!',
+    //         gasLimitWithFakeApproval
+    //       );
+    //       return gasLimitWithFakeApproval;
+    //     } catch (e) {
+    //       logger.debug('Error estimating swap gas limit with approval', e);
+    //     }
+    //   }
+
+    //   return getDefaultGasLimitForTrade(tradeDetails, chainId);
+    // }
+
+    const gasLimit = await estimateGas();
+    return gasLimit || getDefaultGasLimitForTrade(tradeDetails, chainId);
+  } catch (error) {
+    return getDefaultGasLimitForTrade(tradeDetails, chainId);
   }
 };
 
