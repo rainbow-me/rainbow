@@ -191,11 +191,7 @@ export default function SettingsSheet() {
         screenOptions={{
           ...memoSettingsOptions,
           headerRight: renderHeaderRight,
-          headerStyle: {
-            ...memoSettingsOptions.headerStyle,
-            // ios MenuContainer scroll fix
-            ...(ios && { backgroundColor: colors.cardBackdrop }),
-          },
+          headerStyle: memoSettingsOptions.headerStyle,
         }}
       >
         <Stack.Screen
@@ -229,6 +225,11 @@ export default function SettingsSheet() {
                 options={{
                   cardStyleInterpolator,
                   title: getTitle(),
+                  headerStyle: {
+                    ...memoSettingsOptions.headerStyle,
+                    // ios MenuContainer scroll fix
+                    ...(ios && { backgroundColor: colors.cardBackdrop }),
+                  },
                 }}
                 // @ts-ignore
                 title={getTitle()}
