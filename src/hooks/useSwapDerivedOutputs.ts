@@ -2,8 +2,10 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   // getQuote,
   getCrosschainQuote,
+  getQuote,
   Quote,
   QuoteError,
+  SwapType,
 } from '@rainbow-me/swaps';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
@@ -194,22 +196,24 @@ const getOutputAmount = async (
     const quoteParams = {
       buyAmount: null || '0',
       buyTokenAddress,
-      chainId: Number(chainId),
+      chainId: Number(inputChainId),
       fromAddress,
       sellAmount,
       sellTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       source: realSource,
-      swapType: 'cross-chain',
-      toChainId: outputChainId,
+      swapType:
+        outputNetwork !== inputNetwork ? SwapType.crossChain : SwapType.normal,
+      toChainId: Number(outputChainId),
       refuel: true,
     };
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
-    const quote: Quote = await getCrosschainQuote(quoteParams);
+    // const quote: Quote = await getCrosschainQuote(quoteParams);
+    const quote: Quote = await getQuote(quoteParams);
     Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.buyAmount) {

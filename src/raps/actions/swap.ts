@@ -1,5 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
-import { ChainId, SwapType } from '@rainbow-me/swaps';
+import { ChainId } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import {
@@ -8,11 +8,7 @@ import {
   SwapActionParameters,
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
-import {
-  estimateCrosschainSwapGasLimit,
-  estimateSwapGasLimit,
-  executeSwap,
-} from '@/handlers/uniswap';
+import { estimateSwapGasLimit, executeSwap } from '@/handlers/uniswap';
 import { isL2Network, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
@@ -38,7 +34,6 @@ const swap = async (
     permit,
     chainId,
     requiresApprove,
-    swapType,
   } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
@@ -73,11 +68,6 @@ const swap = async (
   }
   let gasLimit;
   try {
-    // const newGasLimit = await (swapType === SwapType.crossChain ? estimateCrosschainSwapGasLimit  :  estimateSwapGasLimit)({
-    //   chainId: Number(chainId),
-    //   requiresApprove,
-    //   tradeDetails,
-    // });
     const newGasLimit = await estimateSwapGasLimit({
       chainId: Number(chainId),
       requiresApprove,
