@@ -65,14 +65,8 @@ describe('Wallet avatar options', () => {
     await Helpers.checkIfExistsByText('Choose from Library');
     if (android) {
       await Helpers.checkIfExistsByText('Shuffle Emoji');
+      await element(by.text('Shuffle Emoji')).tap();
     } else {
-      await Helpers.checkIfExistsByText('Pick an Emoji');
-    }
-    await Helpers.checkIfExistsByText('Create your Profile');
-    await Helpers.tapByText('Create your Profile');
-    await Helpers.checkIfVisible('ens-intro-sheet');
-    await Helpers.swipe('ens-intro-sheet', 'down', 'slow');
-    if (ios) {
       await Helpers.checkIfExistsByText('Pick an Emoji');
       await Helpers.tapByText('Pick an Emoji');
       await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
@@ -137,9 +131,6 @@ describe('Wallet avatar options', () => {
     await Helpers.checkIfVisible('profile-sheet');
     await Helpers.waitAndSwipe('profile-sheet', 'down');
     await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-    await Helpers.tapByText('Edit Profile');
-    await Helpers.checkIfExists('ens-edit-records-sheet');
-    await Helpers.swipe('ens-edit-records-sheet', 'down', 'slow');
   });
 
   it('import wallet with ENS avatar', async () => {
@@ -148,6 +139,7 @@ describe('Wallet avatar options', () => {
     await Helpers.typeText('import-sheet-input', RAINBOW_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
   });
 
   it('test watched wallet with ENS avatar', async () => {
