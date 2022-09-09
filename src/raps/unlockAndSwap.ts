@@ -17,9 +17,9 @@ import {
 } from './common';
 import { isNativeAsset } from '@/handlers/assets';
 import {
-  estimateCrosschainSwapGasLimit,
+  // estimateCrosschainSwapGasLimit,
   estimateSwapGasLimit,
-} from '@/handlers/uniswap';
+} from '@/handlers/swap';
 import store from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
 import { add } from '@/helpers/utilities';
