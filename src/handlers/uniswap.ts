@@ -7,6 +7,7 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   fillQuote,
   getQuoteExecutionDetails,
+  getCrosschainQuoteExecutionDetails,
   getWrappedAssetMethod,
   PermitSupportedTokenList,
   Quote,
@@ -14,6 +15,8 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
   WRAPPED_ASSET,
+  CrosschainQuote,
+  fillCrosschainQuote,
 } from '@rainbow-me/swaps';
 import { ethers } from 'ethers';
 import { mapKeys, mapValues } from 'lodash';
@@ -67,7 +70,7 @@ async function getClosestGasEstimate(
   let highestFailedGuess = null;
   let lowestSuccessfulGuess = null;
   let lowestFailureGuess = null;
-  //guess is typically middle of array
+  // guess is typically middle of array
   let guessIndex = Math.floor((end - start) / 2);
   while (end > start) {
     const gasEstimationSucceded = await estimationFn(gasEstimates[guessIndex]);
@@ -346,6 +349,45 @@ export const estimateSwapGasLimit = async ({
   }
 };
 
+export const estimateCrosschainSwapGasLimit = async ({
+  chainId,
+  requiresApprove,
+  tradeDetails,
+}: {
+  chainId: ChainId;
+  requiresApprove?: boolean;
+  tradeDetails: CrosschainQuote | null;
+}): Promise<string | number> => {
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const provider = await getProviderForNetwork(network);
+  if (!provider || !tradeDetails) {
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
+  }
+
+  // const { sellTokenAddress, buyTokenAddress } = tradeDetails;
+  try {
+    const {
+      params,
+      method: estimateGasMethod,
+      methodArgs,
+    } = getCrosschainQuoteExecutionDetails(
+      tradeDetails,
+      { from: tradeDetails.from },
+      provider
+    );
+
+    if (requiresApprove) {
+      return getDefaultGasLimitForTrade(tradeDetails, chainId);
+    }
+
+    const gasLimit = await estimateGasMethod();
+    console.log('--------- gas limittttttttt ', gasLimit);
+    return gasLimit || getDefaultGasLimitForTrade(tradeDetails, chainId);
+  } catch (error) {
+    return getDefaultGasLimitForTrade(tradeDetails, chainId);
+  }
+};
+
 export const computeSlippageAdjustedAmounts = (
   trade: any,
   allowedSlippageInBlips: string
@@ -475,13 +517,18 @@ export const executeSwap = async ({
       permit,
       chainId
     );
-    return fillQuote(
-      tradeDetails,
+    return fillCrosschainQuote(
+      tradeDetails as CrosschainQuote,
       transactionParams,
-      walletToUse,
-      permit,
-      chainId
+      walletToUse
     );
+    // return fillQuote(
+    //   tradeDetails,
+    //   transactionParams,
+    //   walletToUse,
+    //   permit,
+    //   chainId
+    // );
   }
 };
 

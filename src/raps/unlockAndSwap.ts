@@ -4,6 +4,7 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
   PermitSupportedTokenList,
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  SwapType,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
@@ -15,7 +16,10 @@ import {
   SwapActionParameters,
 } from './common';
 import { isNativeAsset } from '@/handlers/assets';
-import { estimateSwapGasLimit } from '@/handlers/uniswap';
+import {
+  estimateCrosschainSwapGasLimit,
+  estimateSwapGasLimit,
+} from '@/handlers/uniswap';
 import store from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
 import { add } from '@/helpers/utilities';
@@ -24,7 +28,7 @@ import { ethereumUtils } from '@/utils';
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
 ) => {
-  const { inputAmount, tradeDetails, chainId } = swapParameters;
+  const { inputAmount, tradeDetails, chainId, swapType } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
 
   if (!inputCurrency || !outputCurrency || !inputAmount) {
@@ -42,7 +46,7 @@ export const estimateUnlockAndSwap = async (
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-  let nativeAsset =
+  const nativeAsset =
     ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
       inputCurrency.address?.toLowerCase() ||
     isNativeAsset(
@@ -72,6 +76,17 @@ export const estimateUnlockAndSwap = async (
     );
     gasLimits = gasLimits.concat(unlockGasLimit);
   }
+  // swapGasLimit = await estimateSwapGasLimit({
+  //   chainId: Number(chainId),
+  //   requiresApprove: swapAssetNeedsUnlocking,
+  //   tradeDetails,
+  // });
+
+  //  swapGasLimit = await (swapType !== SwapType.crossChain ? estimateCrosschainSwapGasLimit  :  estimateSwapGasLimit)({
+  //     chainId: Number(chainId),
+  //     requiresApprove: swapAssetNeedsUnlocking,
+  //     tradeDetails,
+  //   });
   swapGasLimit = await estimateSwapGasLimit({
     chainId: Number(chainId),
     requiresApprove: swapAssetNeedsUnlocking,
@@ -98,7 +113,7 @@ export const createUnlockAndSwapRap = async (
     chainId === ChainId.mainnet;
 
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-  let nativeAsset =
+  const nativeAsset =
     ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
       inputCurrency?.address?.toLowerCase() ||
     isNativeAsset(
