@@ -9,7 +9,9 @@ const DISMISS_AVATAR_BUILDER_COORDS = { x: 20, y: 90 };
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 const RAINBOW_WALLET = 'rainbowwallet.eth';
 const EMPTY_WALLET = '0x6791da9CCd95405e73d6a1117d02Dc81c4E58775';
+
 const android = device.getPlatform() === 'android';
+const ios = device.getPlatform() === 'ios';
 
 describe('Wallet avatar options', () => {
   it('watch wallet without ENS', async () => {
@@ -70,6 +72,11 @@ describe('Wallet avatar options', () => {
     await Helpers.tapByText('Create your Profile');
     await Helpers.checkIfVisible('ens-intro-sheet');
     await Helpers.swipe('ens-intro-sheet', 'down', 'slow');
+    if (ios) {
+      await Helpers.checkIfExistsByText('Pick an Emoji');
+      await Helpers.tapByText('Pick an Emoji');
+      await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
+    }
   });
 
   it('watch wallet with ENS but without ENS avatar', async () => {
