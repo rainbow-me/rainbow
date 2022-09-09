@@ -1,5 +1,5 @@
-import React, { forwardRef } from 'react';
-import { View } from 'react-native';
+import React, { forwardRef, ForwardRefRenderFunction } from 'react';
+import { SectionList } from 'react-native';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -7,21 +7,29 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
+import { ExchangeAsset } from '@/entities';
+import { Box } from '@/design-system';
 
-const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
-  pointerEvents: 'none',
-})({
-  ...position.coverAsObject,
-  backgroundColor: ({ theme: { colors } }) => colors.white,
-});
+interface CurrencySelectionListProps {
+  keyboardDismissMode?: string;
+  footerSpacer: boolean;
+  itemProps: {
+    onActionAsset: (asset: any, isFavorited: any) => void;
+    onPress: (item: any) => void;
+    showBalance: boolean;
+    showFavoriteButton: boolean;
+  };
+  listItems: { data: ExchangeAsset[]; title: string }[];
+  loading: boolean;
+  query: string;
+  showList: boolean;
+  testID: string;
+}
 
-const NoCurrencyResults = styled(NoResults)({
-  paddingBottom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
-});
-
-const CurrencySelectionList = (
+const CurrencySelectionList: ForwardRefRenderFunction<
+  SectionList,
+  CurrencySelectionListProps
+> = (
   {
     keyboardDismissMode,
     footerSpacer,
@@ -29,7 +37,6 @@ const CurrencySelectionList = (
     listItems,
     loading,
     query,
-    scrollIndicatorInsets,
     showList,
     testID,
   },
@@ -40,11 +47,17 @@ const CurrencySelectionList = (
   const showSkeleton = noResults && loading;
 
   return (
-    <View flex={1} testID={testID}>
+    <Box flexGrow={1} testID={testID}>
       {showList && !showSkeleton && (
         <Centered flex={1}>
           {showGhost ? (
-            <NoCurrencyResults />
+            <Box
+              as={NoResults}
+              paddingBottom={{
+                custom:
+                  CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
+              }}
+            />
           ) : (
             <ExchangeAssetList
               footerSpacer={footerSpacer}
@@ -53,14 +66,20 @@ const CurrencySelectionList = (
               keyboardDismissMode={keyboardDismissMode}
               query={query}
               ref={ref}
-              scrollIndicatorInsets={scrollIndicatorInsets}
               testID={testID}
             />
           )}
         </Centered>
       )}
-      {(showSkeleton || !showList) && <EmptyCurrencySelectionList />}
-    </View>
+      {(showSkeleton || !showList) && (
+        <Box
+          as={EmptyAssetList}
+          width="full"
+          height="full"
+          style={{ pointerEvents: 'none' }}
+        />
+      )}
+    </Box>
   );
 };
 

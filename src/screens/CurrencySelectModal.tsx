@@ -548,18 +548,15 @@ export default function CurrencySelectModal() {
               </Row>
             )}
             {type === null || type === undefined ? null : (
-              <>
-                {/* @ts-expect-error JavaScript component */}
-                <CurrencySelectionList
-                  footerSpacer={android}
-                  itemProps={itemProps}
-                  listItems={currencyList}
-                  loading={swapCurrencyListLoading}
-                  query={searchQueryForSearch}
-                  showList={showList}
-                  testID="currency-select-list"
-                />
-              </>
+              <CurrencySelectionList
+                footerSpacer={android}
+                itemProps={itemProps}
+                listItems={currencyList}
+                loading={swapCurrencyListLoading}
+                query={searchQueryForSearch}
+                showList={showList}
+                testID="currency-select-list"
+              />
             )}
           </Rows>
           <GestureBlocker type="bottom" />
