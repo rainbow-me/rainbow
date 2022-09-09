@@ -7,19 +7,19 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
-import { ExchangeAsset } from '@/entities';
 import { Box } from '@/design-system';
+import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 
 interface CurrencySelectionListProps {
-  keyboardDismissMode?: string;
+  keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
   footerSpacer: boolean;
   itemProps: {
-    onActionAsset: (asset: any, isFavorited: any) => void;
+    onActionAsset: (asset: any, isFavorited?: any) => void;
     onPress: (item: any) => void;
     showBalance: boolean;
     showFavoriteButton: boolean;
   };
-  listItems: { data: ExchangeAsset[]; title: string }[];
+  listItems: { data: EnrichedExchangeAsset[]; title: string }[];
   loading: boolean;
   query: string;
   showList: boolean;

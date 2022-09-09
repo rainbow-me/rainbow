@@ -1,7 +1,8 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
-  Fragment,
+  ForwardRefRenderFunction,
+  ReactElement,
   useCallback,
   useContext,
   useImperativeHandle,
@@ -13,14 +14,12 @@ import {
   InteractionManager,
   Keyboard,
   SectionList,
-  StyleSheet,
-  View,
+  SectionListData,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { ButtonPressAnimation } from '../../components/animations';
+import { ButtonPressAnimation } from '../animations';
 import useAccountSettings from '../../hooks/useAccountSettings';
 import FastCurrencySelectionRow from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
-import { CoinRowHeight } from '../coin-row';
 import { ContactRow } from '../contacts';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
@@ -36,19 +35,16 @@ import { useNavigation } from '@/navigation';
 import store from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { padding } from '@/styles';
 import { useTheme } from '@/theme';
 import { abbreviations, deviceUtils, haptics, magicMemo } from '@/utils';
+import { Box } from '@/design-system';
+import { Colors } from '@/styles';
+import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
-const Header = styled.View({
-  position: 'relative',
-  ...padding.object(11, 0, 2.5, 19),
-});
-
 const HeaderBackground = styled(LinearGradient).attrs(
-  ({ theme: { colors } }) => ({
+  ({ theme: { colors } }: { theme: { colors: Colors } }) => ({
     colors: [colors.white, colors.alpha(colors.white, 0)],
     end: { x: 0.5, y: 1 },
     locations: [0.55, 1],
@@ -60,12 +56,20 @@ const HeaderBackground = styled(LinearGradient).attrs(
   width: deviceWidth,
 });
 
-const HeaderTitle = styled(Text).attrs(({ color, theme: { colors } }) => ({
-  color: color || colors.blueGreyDark50,
-  letterSpacing: 'roundedMedium',
-  size: 'smedium',
-  weight: 'heavy',
-}))({});
+const HeaderTitle = styled(Text).attrs(
+  ({
+    color,
+    theme: { colors },
+  }: {
+    color: string;
+    theme: { colors: Colors };
+  }) => ({
+    color: color || colors.blueGreyDark50,
+    letterSpacing: 'roundedMedium',
+    size: 'smedium',
+    weight: 'heavy',
+  })
+)({});
 
 const HeaderTitleGradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
@@ -75,23 +79,13 @@ const HeaderTitleGradient = styled(GradientText).attrs({
   weight: 'heavy',
 })({});
 
-const HeaderTitleWrapper = styled.View({});
-
 const contentContainerStyle = { paddingBottom: 9.5 };
 const scrollIndicatorInsets = { bottom: 24 };
-const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
-
-const getItemLayout = ({ showBalance }, index) => {
-  const height = showBalance ? CoinRowHeight + 1 : CoinRowHeight;
-  return {
-    index,
-    length: height,
-    offset: height * index,
-  };
-};
+const keyExtractor = ({ uniqueId }: { uniqueId: string }) =>
+  `ExchangeAssetList-${uniqueId}`;
 
 function useSwapDetailsClipboardState() {
-  const [copiedText, setCopiedText] = useState(undefined);
+  const [copiedText, setCopiedText] = useState<string>();
   const [copyCount, setCopyCount] = useState(0);
   const onCopySwapDetailsText = useCallback(text => {
     setCopiedText(abbreviations.formatAddressForDisplay(text));
@@ -104,25 +98,7 @@ function useSwapDetailsClipboardState() {
   };
 }
 
-const Spacer = styled.View({
-  height: 35,
-  width: '100%',
-});
-
-const ExchangeAssetSectionList = styled(SectionList).attrs({
-  alwaysBounceVertical: true,
-  contentContainerStyle,
-  directionalLockEnabled: true,
-  getItemLayout,
-  keyboardShouldPersistTaps: 'always',
-  keyExtractor,
-  scrollIndicatorInsets,
-  windowSize: 7,
-})({
-  height: '100%',
-});
-
-function renderItem({ item }) {
+function renderItem({ item }: { item: EnrichedExchangeAsset }) {
   if (item.ens) {
     // TODO RNBW-3676
     return (
@@ -140,7 +116,26 @@ function renderItem({ item }) {
   return <FastCurrencySelectionRow item={item} />;
 }
 
-const ExchangeAssetList = (
+interface ExchangeAssetListProps {
+  footerSpacer: boolean;
+  keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
+  itemProps: {
+    onActionAsset: (asset: any, isFavorited?: any) => void;
+    onPress: (item: any) => void;
+    showBalance: boolean;
+    showFavoriteButton: boolean;
+    showAddButton?: boolean;
+  };
+  items: { data: EnrichedExchangeAsset[]; title: string }[];
+  onLayout?: () => void;
+  query: string;
+  testID: string;
+}
+
+const ExchangeAssetList: ForwardRefRenderFunction<
+  SectionList,
+  ExchangeAssetListProps
+> = (
   {
     footerSpacer,
     keyboardDismissMode = 'none',
@@ -153,8 +148,13 @@ const ExchangeAssetList = (
   ref
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
-  useImperativeHandle(ref, () => sectionListRef.current);
+  const { sectionListRef = useRef<SectionList>(null) } = useContext(
+    DiscoverSheetContext
+  ) || {
+    sectionListRef: undefined,
+  };
+
+  useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
   const { dangerouslyGetParent, navigate } = useNavigation();
   const {
@@ -202,7 +202,11 @@ const ExchangeAssetList = (
     navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
   }, [navigate]);
 
-  const ExchangeAssetSectionListHeader = ({ section }) => {
+  const ExchangeAssetSectionListHeader = ({
+    section,
+  }: {
+    section: SectionListData<EnrichedExchangeAsset>;
+  }) => {
     const TitleComponent = section.useGradientText
       ? HeaderTitleGradient
       : HeaderTitle;
@@ -213,36 +217,44 @@ const ExchangeAssetList = (
         onPress={openVerifiedExplainer}
         scaleTo={0.96}
       >
-        <Header>
+        <Box paddingTop="10px" paddingBottom="2px" paddingLeft="20px">
           <HeaderBackground />
-          <HeaderTitleWrapper>
+          <Box>
             <TitleComponent color={section.color} testID={section.key}>
               {`${section.title}${isVerified ? '  􀅵' : ' '}`}
             </TitleComponent>
-          </HeaderTitleWrapper>
-        </Header>
+          </Box>
+        </Box>
       </ButtonPressAnimation>
     ) : null;
   };
 
-  const FooterSpacer = useCallback(() => (footerSpacer ? <Spacer /> : null), [
-    footerSpacer,
-  ]);
+  const FooterSpacer = useCallback(
+    () => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null),
+    [footerSpacer]
+  );
 
   const isFocused = useIsFocused();
 
   const theme = useTheme();
 
+  type LocalFavourite = Record<string, boolean | undefined>;
+
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
-  const [localFavorite, setLocalFavorite] = useState(() => {
+  const [localFavorite, setLocalFavorite] = useState<
+    LocalFavourite | undefined
+  >(() => {
     const meta = store.getState().uniswap.favoritesMeta;
     if (!meta) {
       return;
     }
-    return Object.keys(meta).reduce((acc, curr) => {
-      acc[curr] = meta[curr].favorite;
-      return acc;
-    }, {});
+    return Object.keys(meta).reduce(
+      (acc: Record<string, boolean | undefined>, curr: string) => {
+        acc[curr] = meta[curr].favorite;
+        return acc;
+      },
+      {}
+    );
   });
 
   const enrichedItems = useMemo(
@@ -251,19 +263,14 @@ const ExchangeAssetList = (
         ...item,
         data: data.map(rowData => ({
           ...rowData,
-          contextMenuProps: contextMenuProps(
-            rowData ?? store.getState().data.genericAssets?.[rowData.uniqueId],
-            onCopySwapDetailsText
-          ),
+          contextMenuProps: contextMenuProps(rowData, onCopySwapDetailsText),
           nativeCurrency,
           nativeCurrencySymbol,
           onAddPress: () => {
-            itemProps.onActionAsset(
-              rowData ?? store.getState().data.genericAssets?.[rowData.uniqueId]
-            );
+            itemProps.onActionAsset(rowData);
           },
           onCopySwapDetailsText,
-          onPress: givenItem => {
+          onPress: (givenItem: ReactElement) => {
             if (rowData.ens) {
               return itemProps.onPress(givenItem);
             }
@@ -281,10 +288,11 @@ const ExchangeAssetList = (
           showFavoriteButton: itemProps.showFavoriteButton,
           testID,
           theme,
-          toggleFavorite: onNewEmoji => {
+          toggleFavorite: (onNewEmoji: () => void) => {
             setLocalFavorite(prev => {
-              const newValue = !prev[rowData.address];
-              updateList(rowData?.address, 'favorites', newValue);
+              const address = rowData.address;
+              const newValue = !prev?.[address];
+              updateList(address, 'favorites', newValue);
               if (newValue) {
                 ios && onNewEmoji();
                 haptics.notificationSuccess();
@@ -294,7 +302,7 @@ const ExchangeAssetList = (
 
               return {
                 ...prev,
-                [rowData.address]: newValue,
+                [address]: newValue,
               };
             });
           },
@@ -320,17 +328,21 @@ const ExchangeAssetList = (
         ...item,
         data: data.map(rowData => ({
           ...rowData,
-          favorite: !!localFavorite[rowData.address] || false,
+          favorite: !!localFavorite?.[rowData.address] || false,
         })),
       })),
     [enrichedItems, localFavorite]
   );
 
   return (
-    <Fragment>
-      <View style={sx.wrapper}>
-        <ExchangeAssetSectionList
+    <>
+      <Box width="full" height="full">
+        <SectionList
+          alwaysBounceVertical
+          contentContainerStyle={contentContainerStyle}
+          directionalLockEnabled
           ListFooterComponent={FooterSpacer}
+          keyboardShouldPersistTaps="always"
           keyboardDismissMode={keyboardDismissMode}
           onLayout={onLayout}
           onScroll={android ? onScroll : undefined}
@@ -339,18 +351,18 @@ const ExchangeAssetList = (
           renderSectionHeader={ExchangeAssetSectionListHeader}
           scrollsToTop={isFocused}
           sections={itemsWithFavorite}
+          keyExtractor={keyExtractor}
+          scrollIndicatorInsets={scrollIndicatorInsets}
+          windowSize={7}
+          style={{ height: '100%' }}
         />
-      </View>
+      </Box>
 
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
       </ToastPositionContainer>
-    </Fragment>
+    </>
   );
 };
-
-const sx = StyleSheet.create({
-  wrapper: { height: '100%', width: '100%' },
-});
 
 export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query']);

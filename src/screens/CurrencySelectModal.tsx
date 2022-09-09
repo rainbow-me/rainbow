@@ -4,6 +4,7 @@ import { uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
+  ReactElement,
   useCallback,
   useEffect,
   useMemo,
@@ -55,6 +56,17 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
+
+export interface EnrichedExchangeAsset extends ExchangeAsset {
+  ens: boolean;
+  color: string;
+  nickname: string;
+  onPress: (el: ReactElement) => void;
+  testID: string;
+  useGradientText: boolean;
+  title?: string;
+  key: string;
+}
 
 const storage = new MMKV();
 const getHasShownWarning = () =>
@@ -234,7 +246,7 @@ export default function CurrencySelectModal() {
   const currencyList = useMemo(() => {
     let list = (type === CurrencySelectionTypes.input
       ? getWalletCurrencyList()
-      : swapCurrencyList) as { data: SwappableAsset[]; title: string }[];
+      : swapCurrencyList) as { data: EnrichedExchangeAsset[]; title: string }[];
 
     // Remove tokens that show up in two lists and empty sections
     let uniqueIds: string[] = [];
