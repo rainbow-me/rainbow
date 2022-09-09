@@ -536,6 +536,9 @@ export default function SendSheet(props) {
           clearRecords,
           name: ensName,
           records: {
+            ...(ensProfile?.data?.contenthash
+              ? { contenthash: ensProfile?.data?.contenthash }
+              : {}),
             ...(ensProfile?.data?.records || {}),
             ...(ensProfile?.data?.coinAddresses || {}),
           },
@@ -614,6 +617,7 @@ export default function SendSheet(props) {
       dispatch,
       ensName,
       ensProfile?.data?.coinAddresses,
+      ensProfile?.data?.contenthash,
       ensProfile?.data?.records,
       gasLimit,
       getNextNonce,

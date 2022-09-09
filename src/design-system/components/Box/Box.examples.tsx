@@ -14,23 +14,23 @@ export const background: Example = {
   Example: () =>
     source(
       <>
-        <Box background="body" padding="19px">
-          <Text size="18px" weight="bold">
+        <Box background="body" padding="20px">
+          <Text size="17pt" weight="bold">
             Body
           </Text>
         </Box>
-        <Box background="accent" padding="19px">
-          <Text size="18px" weight="bold">
+        <Box background="accent" padding="20px">
+          <Text size="17pt" weight="bold">
             Accent
           </Text>
         </Box>
-        <Box background="action" padding="19px">
-          <Text size="18px" weight="bold">
+        <Box background="action" padding="20px">
+          <Text size="17pt" weight="bold">
             Action
           </Text>
         </Box>
-        <Box background="swap" padding="19px">
-          <Text size="18px" weight="bold">
+        <Box background="swap" padding="20px">
+          <Text size="17pt" weight="bold">
             Swap
           </Text>
         </Box>
@@ -43,25 +43,25 @@ export const padding: Example = {
   Example: () =>
     source(
       <Stack space="12px">
-        <Box background="body" padding="19px">
+        <Box background="body" padding="20px">
           <Placeholder />
         </Box>
-        <Box background="body" paddingHorizontal="19px">
+        <Box background="body" paddingHorizontal="20px">
           <Placeholder />
         </Box>
-        <Box background="body" paddingVertical="19px">
+        <Box background="body" paddingVertical="20px">
           <Placeholder />
         </Box>
-        <Box background="body" paddingLeft="19px">
+        <Box background="body" paddingLeft="20px">
           <Placeholder />
         </Box>
-        <Box background="body" paddingRight="19px">
+        <Box background="body" paddingRight="20px">
           <Placeholder />
         </Box>
-        <Box background="body" paddingTop="19px">
+        <Box background="body" paddingTop="20px">
           <Placeholder />
         </Box>
-        <Box background="body" paddingBottom="19px">
+        <Box background="body" paddingBottom="20px">
           <Placeholder />
         </Box>
       </Stack>
@@ -73,31 +73,31 @@ export const margin: Example = {
   Example: () =>
     source(
       <Stack space="12px">
-        <Box background="body" margin="-19px">
+        <Box background="body" margin="-20px">
           <Placeholder />
         </Box>
-        <Inset vertical="19px">
-          <Box background="body" marginHorizontal="-19px">
+        <Inset vertical="20px">
+          <Box background="body" marginHorizontal="-20px">
             <Placeholder />
           </Box>
         </Inset>
-        <Box background="body" marginVertical="-19px">
+        <Box background="body" marginVertical="-20px">
           <Placeholder />
         </Box>
-        <Inset vertical="19px">
-          <Box background="body" marginLeft="-19px">
+        <Inset vertical="20px">
+          <Box background="body" marginLeft="-20px">
             <Placeholder />
           </Box>
         </Inset>
-        <Box background="body" marginRight="-19px">
+        <Box background="body" marginRight="-20px">
           <Placeholder />
         </Box>
-        <Inset vertical="19px">
-          <Box background="body" marginTop="-19px">
+        <Inset vertical="20px">
+          <Box background="body" marginTop="-20px">
             <Placeholder />
           </Box>
         </Inset>
-        <Box background="body" marginBottom="-19px">
+        <Box background="body" marginBottom="-20px">
           <Placeholder />
         </Box>
       </Stack>
@@ -109,15 +109,15 @@ export const borderRadius: Example = {
   Example: () =>
     source(
       <Stack space="24px">
-        <Box background="accent" borderRadius={16} padding="19px" />
-        <Box background="accent" borderLeftRadius={16} padding="19px" />
-        <Box background="accent" borderRightRadius={16} padding="19px" />
-        <Box background="accent" borderTopRadius={16} padding="19px" />
-        <Box background="accent" borderBottomRadius={16} padding="19px" />
-        <Box background="accent" borderBottomLeftRadius={16} padding="19px" />
-        <Box background="accent" borderBottomRightRadius={16} padding="19px" />
-        <Box background="accent" borderTopLeftRadius={16} padding="19px" />
-        <Box background="accent" borderTopRightRadius={16} padding="19px" />
+        <Box background="accent" borderRadius={16} padding="20px" />
+        <Box background="accent" borderLeftRadius={16} padding="20px" />
+        <Box background="accent" borderRightRadius={16} padding="20px" />
+        <Box background="accent" borderTopRadius={16} padding="20px" />
+        <Box background="accent" borderBottomRadius={16} padding="20px" />
+        <Box background="accent" borderBottomLeftRadius={16} padding="20px" />
+        <Box background="accent" borderBottomRightRadius={16} padding="20px" />
+        <Box background="accent" borderTopLeftRadius={16} padding="20px" />
+        <Box background="accent" borderTopRightRadius={16} padding="20px" />
       </Stack>
     ),
 };
@@ -160,35 +160,35 @@ export const shadowsWithSizes: Example = {
   subTitle: 'Sizes',
   Example: () =>
     source(
-      <Stack space="30px">
-        <Columns space="30px">
+      <Stack space="32px">
+        <Columns space="32px">
           <Column width="1/3" />
           <Column width="1/3">
-            <Box background="body" padding="15px" shadow="9px medium" />
+            <Box background="body" padding="16px" shadow="9px medium" />
           </Column>
         </Columns>
-        <Columns space="30px">
+        <Columns space="32px">
           <Column width="1/3" />
           <Column width="1/3">
-            <Box background="body" padding="15px" shadow="12px medium" />
+            <Box background="body" padding="16px" shadow="12px medium" />
           </Column>
           <Column width="1/3">
-            <Box background="body" padding="15px" shadow="12px heavy" />
+            <Box background="body" padding="16px" shadow="12px heavy" />
           </Column>
         </Columns>
-        <Columns space="30px">
+        <Columns space="32px">
           <Column width="1/3">
-            <Box background="body" padding="15px" shadow="21px light" />
+            <Box background="body" padding="16px" shadow="21px light" />
           </Column>
           <Column width="1/3" />
           <Column width="1/3">
-            <Box background="body" padding="15px" shadow="21px heavy" />
+            <Box background="body" padding="16px" shadow="21px heavy" />
           </Column>
         </Columns>
-        <Columns space="30px">
-          <Box background="body" padding="15px" shadow="30px light" />
-          <Box background="body" padding="15px" shadow="30px medium" />
-          <Box background="body" padding="15px" shadow="30px heavy" />
+        <Columns space="32px">
+          <Box background="body" padding="16px" shadow="30px light" />
+          <Box background="body" padding="16px" shadow="30px medium" />
+          <Box background="body" padding="16px" shadow="30px heavy" />
         </Columns>
       </Stack>
     ),
@@ -199,10 +199,10 @@ export const shadowsWithColors: Example = {
   subTitle: 'Colors',
   Example: () =>
     source(
-      <Columns space="30px">
-        <Box background="body" padding="15px" shadow="12px medium accent" />
-        <Box background="body" padding="15px" shadow="21px heavy swap" />
-        <Box background="body" padding="15px" shadow="30px heavy action" />
+      <Columns space="32px">
+        <Box background="body" padding="16px" shadow="12px medium accent" />
+        <Box background="body" padding="16px" shadow="21px heavy swap" />
+        <Box background="body" padding="16px" shadow="30px heavy action" />
       </Columns>
     ),
 };
@@ -212,10 +212,10 @@ export const shadowsWithCustom: Example = {
   subTitle: 'Custom shadows',
   Example: () =>
     source(
-      <Columns space="30px">
+      <Columns space="32px">
         <Box
           background="body"
-          padding="15px"
+          padding="16px"
           shadow={{
             custom: {
               ios: [
@@ -239,7 +239,7 @@ export const shadowsWithCustom: Example = {
         />
         <Box
           background="body"
-          padding="15px"
+          padding="16px"
           shadow={{
             custom: {
               ios: [

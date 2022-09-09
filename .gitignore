@@ -105,3 +105,4 @@ coverage-ts
 
 # Generated TypeScript declarations
 src/languages/types-generated.d.ts
+__generated__/

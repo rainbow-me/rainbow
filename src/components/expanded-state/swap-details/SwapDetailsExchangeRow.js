@@ -82,7 +82,7 @@ const ExchangeIcon = magicMemo(
                   <Text
                     align="center"
                     color="secondary80"
-                    size="14px"
+                    size="14px / 19px (Deprecated)"
                     weight="semibold"
                   >
                     {protocol?.substring(0, 1)}
@@ -206,7 +206,7 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
                 </Column>
                 {steps?.[step]?.part && (
                   <Column width="content">
-                    <Bleed right="5px" vertical="6px">
+                    <Bleed right="5px (Deprecated)" vertical="6px">
                       <Pill
                         height={20}
                         style={{

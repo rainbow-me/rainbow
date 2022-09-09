@@ -503,13 +503,13 @@ const UniqueTokenExpandedStateHeader = ({
     goBack,
   ]);
 
-  const overflowMenuHitSlop: Space = '15px';
-  const familyNameHitSlop: Space = '19px';
+  const overflowMenuHitSlop: Space = '15px (Deprecated)';
+  const familyNameHitSlop: Space = '19px (Deprecated)';
 
   return (
-    <Stack space="15px">
+    <Stack space="15px (Deprecated)">
       <Columns space="24px">
-        <Heading containsEmoji size="23px" weight="heavy">
+        <Heading containsEmoji size="23px / 27px (Deprecated)" weight="heavy">
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
@@ -524,7 +524,11 @@ const UniqueTokenExpandedStateHeader = ({
             >
               <ButtonPressAnimation scaleTo={0.75}>
                 <Inset space={overflowMenuHitSlop}>
-                  <Text color="accent" size="23px" weight="heavy">
+                  <Text
+                    color="accent"
+                    size="23px / 27px (Deprecated)"
+                    weight="heavy"
+                  >
                     􀍡
                   </Text>
                 </Inset>
@@ -558,11 +562,20 @@ const UniqueTokenExpandedStateHeader = ({
                         maxWidth: deviceWidth - paddingHorizontal * 6,
                       }}
                     >
-                      <Text color="secondary50" numberOfLines={1} weight="bold">
+                      <Text
+                        color="secondary50"
+                        numberOfLines={1}
+                        size="16px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {asset.familyName}
                       </Text>
                     </View>
-                    <Text color="secondary50" weight="bold">
+                    <Text
+                      color="secondary50"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       􀆊
                     </Text>
                   </Inline>

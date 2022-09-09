@@ -107,7 +107,7 @@ export default function InfoRow({
 
   const explainer = explainSheetType ? (
     <ButtonPressAnimation onPress={handlePressExplain}>
-      <Text color="secondary25" size="16px" weight="bold">
+      <Text color="secondary25" size="16px / 22px (Deprecated)" weight="bold">
         􀅵
       </Text>
     </ButtonPressAnimation>
@@ -116,9 +116,13 @@ export default function InfoRow({
   return (
     <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
       <Box style={{ minWidth: 60, opacity: show ? 1 : 0 }}>
-        <Inset top={isMultiline ? '15px' : '10px'}>
+        <Inset top={isMultiline ? '15px (Deprecated)' : '10px'}>
           <Inline space="4px">
-            <Text color="secondary60" size="16px" weight="bold">
+            <Text
+              color="secondary60"
+              size="16px / 22px (Deprecated)"
+              weight="bold"
+            >
               {label}
               {android && <Fragment> {explainer}</Fragment>}
             </Text>
@@ -142,7 +146,11 @@ export default function InfoRow({
               setShow(true);
             }}
             padding={
-              (isSwitch ? '0px' : isMultiline ? '15px' : '10px') as Space
+              isSwitch
+                ? undefined
+                : isMultiline
+                ? ('15px (Deprecated)' as const)
+                : ('10px' as const)
             }
             style={{
               backgroundColor: isSwitch
@@ -170,6 +178,7 @@ export default function InfoRow({
                   align={isMultiline ? 'left' : 'center'}
                   color={useAccentColor ? 'accent' : undefined}
                   containsEmoji
+                  size="16px / 22px (Deprecated)"
                   weight={isMultiline ? 'semibold' : 'bold'}
                 >
                   {value}

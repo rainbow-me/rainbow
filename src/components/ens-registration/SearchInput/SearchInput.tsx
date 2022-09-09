@@ -35,7 +35,10 @@ const SearchInput = ({
   testID,
 }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
-  const headingStyle = useHeadingStyle({ size: '30px', weight: 'heavy' });
+  const headingStyle = useHeadingStyle({
+    size: '30px / 34px (Deprecated)',
+    weight: 'heavy',
+  });
 
   const inputRef = useRef();
   const { handleFocus } = useMagicAutofocus(
@@ -98,7 +101,7 @@ const SearchInput = ({
         </Box>
       </Cover>
       <Box height={`${height}px`} justifyContent="center" width="full">
-        <Inset left="15px" right="19px">
+        <Inset left="15px (Deprecated)" right="19px (Deprecated)">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
               <MaskedView
@@ -110,7 +113,7 @@ const SearchInput = ({
                         <Spinner duration={1000} size={28} />
                       </Box>
                     ) : (
-                      <Heading size="30px" weight="heavy">
+                      <Heading size="30px / 34px (Deprecated)" weight="heavy">
                         􀊫
                       </Heading>
                     )}
@@ -146,7 +149,11 @@ const SearchInput = ({
               value={value}
             />
             <Column width="content">
-              <Heading align="right" size="30px" weight="heavy">
+              <Heading
+                align="right"
+                size="30px / 34px (Deprecated)"
+                weight="heavy"
+              >
                 .eth
               </Heading>
             </Column>
