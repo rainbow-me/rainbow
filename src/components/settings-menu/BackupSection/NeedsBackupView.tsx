@@ -15,6 +15,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import WalletTypes from '@/helpers/walletTypes';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -32,7 +33,25 @@ export default function NeedsBackupView() {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
   const { wallets, selectedWallet } = useWallets();
-  const walletId = (params as any)?.walletId || selectedWallet.id;
+  let walletId = (params as any)?.walletId;
+
+  // This flow oonly happens when you have one imported or created wallet and 1 or more watch only wallets
+  if (!walletId && wallets) {
+    // We can't use a readonly wallet to back up, so we need to find the primary
+    if (selectedWallet.type === WalletTypes.readOnly) {
+      // Loop through the wallets and find the primary
+      for (let wallet of Object.values(wallets)) {
+        // Found the primary, take the id and break out of the loop
+        if (wallet.primary) {
+          walletId = wallet.id;
+          break;
+        }
+      }
+      // If it's not read only we can just use the selected one
+    } else {
+      walletId = selectedWallet.id;
+    }
+  }
 
   useEffect(() => {
     if (wallets?.[walletId]?.backedUp) {
