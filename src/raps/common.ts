@@ -7,6 +7,7 @@ import {
   depositCompound,
   ens,
   swap,
+  crosschainSwap,
   unlock,
   withdrawCompound,
 } from './actions';
@@ -55,6 +56,7 @@ const {
 export enum RapActionType {
   depositCompound = 'depositCompound',
   swap = 'swap',
+  crosschainSwap = 'crosschainSwap',
   unlock = 'unlock',
   withdrawCompound = 'withdrawCompound',
   commitENS = 'commitENS',
@@ -185,6 +187,7 @@ export const RapActionTypes = {
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
+  crosschainSwap: 'crosschainSwap' as RapActionType,
   transferENS: 'transferENS' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
@@ -285,6 +288,8 @@ const findSwapActionByType = (type: RapActionType) => {
       return depositCompound;
     case RapActionTypes.withdrawCompound:
       return withdrawCompound;
+    case RapActionTypes.crosschainSwap:
+      return crosschainSwap;
     default:
       return NOOP;
   }
