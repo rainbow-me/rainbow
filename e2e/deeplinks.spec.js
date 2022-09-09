@@ -2,6 +2,8 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
+const android = device.getPlatform() === 'android';
+
 const testEthereumDeeplink = async (url, coldStart = true) => {
   coldStart
     ? await Helpers.openDeeplinkColdStart(url)
@@ -18,6 +20,14 @@ const testEthereumDeeplink = async (url, coldStart = true) => {
     }
   }
   await Helpers.swipe('send-sheet', 'down');
+};
+
+const escapeUrl = url => {
+  if (android) {
+    return url.replace(/&/g, '\\&');
+  } else {
+    return url;
+  }
 };
 
 describe('Deeplinks spec', () => {
@@ -89,18 +99,19 @@ describe('Deeplinks spec', () => {
   });
 
   it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@1?value=1e2';
+    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@1?value=1e2');
     await testEthereumDeeplink(url, false);
   });
 
   it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@10?value=1e15';
+    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@10?value=1e15');
     await testEthereumDeeplink(url, false);
   });
 
   it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
-    const url =
-      'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18';
+    const url = escapeUrl(
+      'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18'
+    );
     await testEthereumDeeplink(url);
   });
 
@@ -110,13 +121,14 @@ describe('Deeplinks spec', () => {
   });
 
   it.skip('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
-    const url =
-      'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15';
+    const url = escapeUrl(
+      'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15'
+    );
     await testEthereumDeeplink(url);
   });
 
   it.skip('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@137?value=1e15';
+    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@137?value=1e15');
     await testEthereumDeeplink(url);
   });
 

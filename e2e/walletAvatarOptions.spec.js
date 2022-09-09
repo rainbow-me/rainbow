@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
@@ -11,7 +10,6 @@ const RAINBOW_WALLET = 'rainbowwallet.eth';
 const EMPTY_WALLET = '0x6791da9CCd95405e73d6a1117d02Dc81c4E58775';
 
 const android = device.getPlatform() === 'android';
-const ios = device.getPlatform() === 'ios';
 
 describe('Wallet avatar options', () => {
   it('watch wallet without ENS', async () => {
@@ -153,6 +151,5 @@ describe('Wallet avatar options', () => {
 
   afterAll(async () => {
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
   });
 });
