@@ -19,7 +19,10 @@ import {
   SwapActionParameters,
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
-import { estimateSwapGasLimit } from '@/handlers/swap';
+import {
+  estimateCrosschainSwapGasLimit,
+  estimateSwapGasLimit,
+} from '@/handlers/swap';
 import {
   getFlashbotsProvider,
   getProviderForNetwork,
@@ -400,10 +403,10 @@ const crosschainSwap = async (
   }
   let gasLimit;
   try {
-    const newGasLimit = await estimateSwapGasLimit({
+    const newGasLimit = await estimateCrosschainSwapGasLimit({
       chainId: Number(chainId),
       requiresApprove,
-      tradeDetails,
+      tradeDetails: tradeDetails as CrosschainQuote,
     });
     gasLimit = newGasLimit;
   } catch (e) {
