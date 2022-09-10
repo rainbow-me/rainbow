@@ -369,7 +369,7 @@ export default function ExchangeModal({
     loading,
     resetSwapInputs,
     quoteError,
-  } = useSwapDerivedOutputs(Number(chainId), type);
+  } = useSwapDerivedOutputs(type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
@@ -673,8 +673,9 @@ export default function ExchangeModal({
       outputCurrency?.name,
       outputCurrency?.symbol,
       priceImpactPercentDisplay,
-      selectedGasFee?.gasFee,
-      selectedGasFee?.gasFeeParams,
+      selectedGasFee?.gasFee?.estimatedFee?.value?.amount,
+      selectedGasFee?.gasFee?.maxFee?.value?.amount,
+      selectedGasFee?.gasFeeParams?.gasPrice?.amount,
       selectedGasFee?.option,
       setParams,
       slippageInBips,
