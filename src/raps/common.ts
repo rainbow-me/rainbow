@@ -1,7 +1,7 @@
 import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
-import { Quote, SwapType } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import {
   depositCompound,
@@ -105,7 +105,7 @@ export interface SwapActionParameters {
   inputAmount: string;
   nonce?: number;
   outputAmount: string;
-  tradeDetails: Quote;
+  tradeDetails: Quote | CrosschainQuote;
   permit?: boolean;
   flashbots?: boolean;
   provider?: Provider;

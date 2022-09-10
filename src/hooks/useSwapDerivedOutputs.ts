@@ -15,7 +15,7 @@ import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import isTestFlight from '@/helpers/isTestFlight';
 import { useDispatch, useSelector } from 'react-redux';
-import { Token } from '../entities/tokens';
+import { SwappableAsset, Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@/analytics';
 import { EthereumAddress } from '@/entities';
@@ -53,8 +53,7 @@ const getInputAmount = async (
   inputPrice: string | null,
   slippage: number,
   source: Source | null,
-  fromAddress: EthereumAddress,
-  chainId = 1
+  fromAddress: EthereumAddress
 ) => {
   if (!outputAmount || isZero(outputAmount) || !outputToken) {
     return {
@@ -65,42 +64,51 @@ const getInputAmount = async (
   }
 
   try {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    const buyTokenNetwork = ethereumUtils.getNetworkFromChainId(
-      outputToken?.chainId
-    );
-    const buyTokenAddress = isNativeAsset(outputToken?.address, network)
-      ? ETH_ADDRESS_AGGREGATORS
-      : outputToken?.address;
-    const sellTokenNetwork = ethereumUtils.getNetworkFromChainId(
+    const inputTokenNetwork = ethereumUtils.getNetworkFromChainId(
       inputToken?.chainId
     );
-    const sellTokenAddress = isNativeAsset(inputToken?.address, network)
+    const inputTokenAddress = isNativeAsset(
+      inputToken?.address,
+      inputTokenNetwork
+    )
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
+
+    const outputTokenNetwork = ethereumUtils.getNetworkFromChainId(
+      outputToken?.chainId
+    );
+    const outputTokenAddress = isNativeAsset(
+      outputToken?.address,
+      outputTokenNetwork
+    )
+      ? ETH_ADDRESS_AGGREGATORS
+      : outputToken?.address;
 
     const buyAmount = convertAmountToRawAmount(
       convertNumberToString(outputAmount),
       outputToken.decimals
     );
     const realSource = getSource(source);
+    const isCrosschainSwap = inputTokenNetwork !== outputTokenNetwork;
     const quoteParams = {
       buyAmount,
-      buyTokenAddress,
+      buyTokenAddress: outputTokenAddress,
       chainId: Number(outputToken?.chainId),
       fromAddress,
-      sellTokenAddress,
+      sellTokenAddress: inputTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       source: realSource,
-      swapType: 'cross-chain',
+      swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(inputToken?.chainId),
     };
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
-    const quote: Quote = await getCrosschainQuote(quoteParams);
+    const quote: Quote = await (isCrosschainSwap
+      ? getCrosschainQuote
+      : getQuote)(quoteParams);
     Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.sellAmount) {
@@ -155,14 +163,14 @@ const getInputAmount = async (
 
 const getOutputAmount = async (
   inputAmount: string | null,
-  inputToken: Token,
-  outputToken: Token | null,
+  inputToken: SwappableAsset,
+  outputToken: SwappableAsset | null,
   outputPrice: string | number | null | undefined,
   slippage: number,
   source: Source,
-  fromAddress: EthereumAddress,
-  chainId = 1
+  fromAddress: EthereumAddress
 ) => {
+  console.log('---- getOutputAmount');
   if (!inputAmount || isZero(inputAmount) || !outputToken) {
     return {
       outputAmount: null,
@@ -172,27 +180,34 @@ const getOutputAmount = async (
   }
 
   try {
-    // const network = ethereumUtils.getNetworkFromChainId(chainId);
-
-    const outputChainId =
-      outputToken?.chainId ||
-      ethereumUtils.getChainIdFromType(outputToken?.type);
+    const outputChainId = ethereumUtils.getChainIdFromType(
+      outputToken?.type || 'token'
+    );
     const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
     const buyTokenAddress = isNativeAsset(outputToken?.address, outputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
-    const inputChainId =
-      inputToken?.chainId || ethereumUtils.getChainIdFromType(inputToken?.type);
+    console.log(
+      '---- getOutputAmount outputChainId',
+      outputChainId,
+      outputToken
+    );
+    const inputChainId = ethereumUtils.getChainIdFromType(
+      inputToken?.type || 'token'
+    );
     const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
     const sellTokenAddress = isNativeAsset(inputToken?.address, inputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
 
+    console.log('---- getOutputAmount inputChainId', inputChainId);
     const sellAmount = convertAmountToRawAmount(
       convertNumberToString(inputAmount),
       inputToken.decimals
     );
     const realSource = getSource(source);
+    const isCrosschainSwap = outputNetwork !== inputNetwork;
+    console.log('---- getOutputAmount isCrosschainSwap', isCrosschainSwap);
     const quoteParams = {
       buyAmount: null || '0',
       buyTokenAddress,
@@ -203,8 +218,7 @@ const getOutputAmount = async (
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       source: realSource,
-      swapType:
-        outputNetwork !== inputNetwork ? SwapType.crossChain : SwapType.normal,
+      swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(outputChainId),
       refuel: true,
     };
@@ -213,7 +227,15 @@ const getOutputAmount = async (
     Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
     // const quote: Quote = await getCrosschainQuote(quoteParams);
-    const quote: Quote = await getQuote(quoteParams);
+    console.log(
+      '----- isCrosschainSwap',
+      isCrosschainSwap,
+      outputNetwork,
+      inputNetwork
+    );
+    const quote: Quote = await (isCrosschainSwap
+      ? getCrosschainQuote
+      : getQuote)(quoteParams);
     Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.buyAmount) {
@@ -274,7 +296,7 @@ const displayValues: { [key in DisplayValue]: string | null } = {
   [DisplayValue.native]: null,
 };
 
-export default function useSwapDerivedOutputs(chainId: number, type: string) {
+export default function useSwapDerivedOutputs(type: string) {
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
 
@@ -401,8 +423,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         outputPrice,
         slippagePercentage,
         source,
-        accountAddress,
-        chainId
+        accountAddress
       );
       // if original value changed, ignore new quote
       if (derivedValues[SwapModalField.input] !== independentValue) return;
@@ -450,8 +471,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         outputPrice,
         slippagePercentage,
         source,
-        accountAddress,
-        chainId
+        accountAddress
       );
       // if original value changed, ignore new quote
       if (derivedValues[SwapModalField.native] !== independentValue) return;
@@ -488,8 +508,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         inputPrice.toString(),
         slippagePercentage,
         source,
-        accountAddress,
-        chainId
+        accountAddress
       );
       // if original value changed, ignore new quote
       if (derivedValues[SwapModalField.output] !== independentValue) return;
@@ -530,7 +549,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       inputTokenName: inputToken?.name || '',
       inputTokenSymbol: inputToken?.symbol || '',
       liquiditySources: (data.tradeDetails?.protocols as any[]) || [],
-      network: ethereumUtils.getNetworkFromChainId(chainId),
+      network: ethereumUtils.getNetworkFromChainId(inputCurrency.chainId),
       outputTokenAddress: outputToken?.address || '',
       outputTokenName: outputToken?.name || '',
       outputTokenSymbol: outputToken?.symbol || '',
@@ -541,7 +560,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     return { quoteError, result: data };
   }, [
     accountAddress,
-    chainId,
     dispatch,
     independentField,
     independentValue,
