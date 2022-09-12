@@ -9,5 +9,5 @@ export const metadataClient = getMetadataSdk(
   getFetchRequester(config.metadata.schema.url)
 );
 export const uniswapClient = getUniswapSdk(
-  getFetchRequester(config.metadata.schema.url)
+  getFetchRequester(config.uniswap.schema.url)
 );
