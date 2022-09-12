@@ -41,5 +41,12 @@ module.exports = {
       type: 'android.emulator',
       name: 'Pixel_3_API_29',
     },
+    'android.emu.release': {
+      type: 'android.emulator',
+      binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
+      build:
+        'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
+      name: 'Pixel_3_API_29',
+    },
   },
 };
