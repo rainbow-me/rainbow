@@ -3,10 +3,10 @@ import { uniqBy } from 'lodash';
 import { useMemo } from 'react';
 import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
-import { EnsDomain } from '@/apollo/queries';
 import { fetchAccountDomains } from '@/handlers/ens';
 import { getENSDomains, setENSDomains } from '@/handlers/localstorage/ens';
 import { queryClient } from '@/react-query/queryClient';
+import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [
   'domains',
@@ -21,18 +21,25 @@ async function fetchAccountENSDomains({
   accountAddress: string;
 }) {
   const result = await fetchAccountDomains(accountAddress);
-  const { domains: controlledDomains, registrations } =
-    result.data?.account || {};
+  if (!result.account) return [];
+
+  const { domains: controlledDomains, registrations } = result.account;
   const registarDomains = registrations?.map(({ domain }) => domain);
 
   const domains = uniqBy(
     [...(controlledDomains || []), ...(registarDomains || [])],
     'name'
   );
-  return domains.map(domain => {
-    prefetchENSAvatar(domain.name, { cacheFirst: true });
-    return domain;
-  });
+  return domains
+    .map(domain => {
+      if (!domain) return;
+      domain.name && prefetchENSAvatar(domain.name, { cacheFirst: true });
+      return domain;
+    })
+    .filter(
+      <TDomain>(domain: TDomain | null | undefined): domain is TDomain =>
+        !!domain
+    );
 }
 
 async function fetchENSDomainsWithCache({
@@ -64,7 +71,7 @@ export default function useAccountENSDomains() {
   const { accountAddress, accountENS } = useAccountProfile();
 
   const { data: domains, isLoading, isFetched, isSuccess } = useQuery<
-    EnsDomain[]
+    BaseEnsDomainFragment[]
   >(
     queryKey({ accountAddress }),
     async () => fetchENSDomainsWithCache({ accountAddress }),
