@@ -57,7 +57,7 @@ import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 
-export interface EnrichedExchangeAsset extends ExchangeAsset {
+export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
   color: string;
   nickname: string;
