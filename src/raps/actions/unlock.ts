@@ -24,7 +24,7 @@ export const estimateApprove = async (
   owner: string,
   tokenAddress: string,
   spender: string,
-  chainId: number = 1
+  chainId = 1
 ): Promise<number | string> => {
   try {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
@@ -62,7 +62,7 @@ const getRawAllowance = async (
   owner: string,
   token: Asset,
   spender: string,
-  chainId: number = 1
+  chainId = 1
 ) => {
   try {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
@@ -95,20 +95,20 @@ const executeApprove = async (
       },
   wallet: Wallet,
   nonce: number | null = null,
-  chainId: number = 1
+  chainId = 1
 ) => {
   const network = ethereumUtils.getNetworkFromChainId(chainId);
-  let provider = await getProviderForNetwork(network);
+  const provider = await getProviderForNetwork(network);
   const walletToUse = new Wallet(wallet.privateKey, provider);
 
   const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
-    gasPrice: gasParams.gasPrice || undefined,
+    gasPrice: gasParams.gasPrice,
     // EIP-1559 like networks
-    maxFeePerGas: gasParams.maxFeePerGas || undefined,
-    maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas || undefined,
+    maxFeePerGas: gasParams.maxFeePerGas,
+    maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas,
     nonce: nonce ? toHex(nonce) : undefined,
   });
 };
@@ -153,7 +153,7 @@ const unlock = async (
     throw e;
   }
   let approval;
-  let gasParams = parseGasParamsForTransaction(selectedGasFee);
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (
     !gasParams.maxFeePerGas ||
@@ -245,12 +245,11 @@ export const assetNeedsUnlocking = async (
 
   const cacheKey = `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
 
-  let allowance;
   // Check on cache first
   // if (AllowancesCache.cache[cacheKey]) {
   //   allowance = AllowancesCache.cache[cacheKey];
   // } else {
-  allowance = await getRawAllowance(
+  const allowance = await getRawAllowance(
     accountAddress,
     assetToUnlock,
     contractAddress,
@@ -261,7 +260,6 @@ export const assetNeedsUnlocking = async (
   // if (!isNull(allowance)) {
   //   AllowancesCache.cache[cacheKey] = allowance;
   // }
-  //}
 
   logger.log('raw allowance', allowance.toString());
   // Cache that value
