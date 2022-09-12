@@ -48,7 +48,7 @@ describe('invalid names', () => {
   it('domain with special characters', () => {
     expect(validateENS('omg$.eth')).toMatchInlineSnapshot(`
       Object {
-        "code": "invalid-domain-name",
+        "code": "invalid-subdomain-name",
         "hint": "Your name cannot include special characters",
         "valid": false,
       }
@@ -101,7 +101,7 @@ describe('invalid names', () => {
     expect(validateENS('haha$.rofl.eth')).toMatchInlineSnapshot(`
       Object {
         "code": "invalid-subdomain-name",
-        "hint": "Your subdomain cannot include special characters",
+        "hint": "Your name cannot include special characters",
         "valid": false,
       }
     `);
