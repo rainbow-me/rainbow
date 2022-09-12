@@ -31,7 +31,7 @@ export default function SelectUniqueTokenSheet() {
     <Box
       background="body"
       height="full"
-      paddingTop={android ? undefined : '34px'}
+      paddingTop={android ? undefined : '34px (Deprecated)'}
       {...(android && { borderTopRadius: 30 })}
     >
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">

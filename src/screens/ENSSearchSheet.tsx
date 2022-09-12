@@ -107,21 +107,31 @@ export default function ENSSearchSheet() {
       paddingTop={{ custom: topPadding }}
       testID="ens-search-sheet"
     >
-      <Stack space="15px">
+      <Stack space="15px (Deprecated)">
         <Box flexGrow={1} paddingTop={{ custom: 28 }}>
           <Stack alignHorizontal="center" space={{ custom: 16 }}>
-            <Heading align="center" color="primary" size="23px" weight="heavy">
+            <Heading
+              align="center"
+              color="primary"
+              size="23px / 27px (Deprecated)"
+              weight="heavy"
+            >
               {`􀠎 ${lang.t('profiles.search.header')}`}
             </Heading>
-            <Text align="center" color="secondary60" size="18px" weight="bold">
+            <Text
+              align="center"
+              color="secondary60"
+              size="18px / 27px (Deprecated)"
+              weight="bold"
+            >
               {lang.t('profiles.search.description')}
             </Text>
           </Stack>
 
           <Box
             alignItems="center"
-            paddingBottom="19px"
-            paddingHorizontal="19px"
+            paddingBottom="19px (Deprecated)"
+            paddingHorizontal="19px (Deprecated)"
             paddingTop={{ custom: 37 }}
           >
             <SearchInput
@@ -159,7 +169,7 @@ export default function ENSSearchSheet() {
                 <Text
                   align="center"
                   color="secondary50"
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
                   {lang.t('profiles.search.3_char_min')}
@@ -169,11 +179,11 @@ export default function ENSSearchSheet() {
           )}
           {isIdle && <PendingRegistrations />}
           {isInvalid && (
-            <Inset horizontal="30px">
+            <Inset horizontal="30px (Deprecated)">
               <Text
                 align="center"
                 color="secondary50"
-                size="16px"
+                size="16px / 22px (Deprecated)"
                 weight="bold"
               >
                 {registrationData?.hint}
@@ -181,12 +191,12 @@ export default function ENSSearchSheet() {
             </Inset>
           )}
           {isPending && (
-            <Inset horizontal="30px">
-              <Stack space="15px">
+            <Inset horizontal="30px (Deprecated)">
+              <Stack space="15px (Deprecated)">
                 <Text
                   align="center"
                   color="secondary50"
-                  size="16px"
+                  size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
                   {lang.t('profiles.search.already_registering_name')}
@@ -195,14 +205,14 @@ export default function ENSSearchSheet() {
             </Inset>
           )}
           {showSearchSection && (
-            <Inset horizontal="19px">
+            <Inset horizontal="19px (Deprecated)">
               <Stack
                 separator={
-                  <Inset horizontal="19px">
+                  <Inset horizontal="19px (Deprecated)">
                     <Divider color="divider60" />
                   </Inset>
                 }
-                space="19px"
+                space="19px (Deprecated)"
               >
                 <Inline alignHorizontal="justify" wrap={false}>
                   <SearchResultGradientIndicator
@@ -226,8 +236,12 @@ export default function ENSSearchSheet() {
                 </Inline>
                 {isRegistered ? (
                   registrationData?.registrationDate ? (
-                    <Inset horizontal="15px">
-                      <Text color="secondary60" size="16px" weight="bold">
+                    <Inset horizontal="15px (Deprecated)">
+                      <Text
+                        color="secondary60"
+                        size="16px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {lang.t('profiles.search.registered_on', {
                           content: registrationData?.registrationDate,
                         })}
@@ -235,23 +249,31 @@ export default function ENSSearchSheet() {
                     </Inset>
                   ) : null
                 ) : (
-                  <Inset horizontal="15px">
+                  <Inset horizontal="15px (Deprecated)">
                     <Inline>
                       {registrationCostsDataIsAvailable ? (
                         <Text
                           color="secondary60"
-                          size="16px"
+                          size="16px / 22px (Deprecated)"
                           testID="ens-registration-fees"
                           weight="bold"
                         >
                           {lang.t('profiles.search.estimated_total_cost_1')}
-                          <Text color="secondary80" size="16px" weight="heavy">
+                          <Text
+                            color="secondary80"
+                            size="16px / 22px (Deprecated)"
+                            weight="heavy"
+                          >
                             {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
                           </Text>
                           {lang.t('profiles.search.estimated_total_cost_2')}
                         </Text>
                       ) : (
-                        <Text color="secondary60" size="16px" weight="bold">
+                        <Text
+                          color="secondary60"
+                          size="16px / 22px (Deprecated)"
+                          weight="bold"
+                        >
                           {`${lang.t('profiles.search.loading_fees')}\n`}
                         </Text>
                       )}

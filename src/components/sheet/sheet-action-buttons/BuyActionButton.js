@@ -8,6 +8,8 @@ import {
   useExpandedStateNavigation,
   useWallets,
 } from '@/hooks';
+import config from '@/model/config';
+import { useNavigation } from '@/navigation';
 
 import Routes from '@/navigation/routesNames';
 
@@ -15,12 +17,18 @@ function BuyActionButton({ color: givenColor, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
+  const { navigate: appNavigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
 
   const handlePress = useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
+      return;
+    }
+
+    if (!config.wyre_enabled) {
+      appNavigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
       return;
     }
 

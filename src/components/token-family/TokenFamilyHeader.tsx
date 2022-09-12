@@ -145,7 +145,7 @@ const TokenFamilyHeader = ({
       >
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
-            <Text containsEmoji size="16px">
+            <Text containsEmoji size="16px / 22px (Deprecated)">
               {emoji}
             </Text>
           ) : (
@@ -162,7 +162,7 @@ const TokenFamilyHeader = ({
               title === lang.t('button.hidden') ? 'secondary60' : 'primary'
             }
             numberOfLines={1}
-            size="18px"
+            size="18px / 27px (Deprecated)"
             weight="heavy"
           >
             {title}
@@ -175,7 +175,7 @@ const TokenFamilyHeader = ({
               color={
                 title === lang.t('button.hidden') ? 'secondary60' : 'primary'
               }
-              size="18px"
+              size="18px / 27px (Deprecated)"
             >
               {childrenAmount}
             </Text>

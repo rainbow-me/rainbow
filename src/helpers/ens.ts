@@ -46,6 +46,7 @@ export enum ENSRegistrationTransactionType {
   RENEW = 'renew',
   SET_ADDR = 'setAddr',
   RECLAIM = 'reclaim',
+  SET_CONTENTHASH = 'setContenthash',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
@@ -56,9 +57,11 @@ export enum ENS_RECORDS {
   BTC = 'BTC',
   LTC = 'LTC',
   DOGE = 'DOGE',
+  name = 'name',
   displayName = 'me.rainbow.displayName',
   header = 'header',
   content = 'content',
+  contenthash = 'contenthash',
   url = 'url',
   email = 'email',
   website = 'website',
@@ -110,19 +113,19 @@ export type TextRecordField = {
 };
 
 export const textRecordFields = {
-  [ENS_RECORDS.displayName]: {
+  [ENS_RECORDS.name]: {
     id: 'name',
     inputProps: {
       maxLength: 50,
     },
-    key: ENS_RECORDS.displayName,
+    key: ENS_RECORDS.name,
     label: lang.t('profiles.create.name'),
     placeholder: lang.t('profiles.create.name_placeholder'),
   },
   [ENS_RECORDS.description]: {
     id: 'bio',
     inputProps: {
-      maxLength: 100,
+      maxLength: 160,
       multiline: true,
     },
     key: ENS_RECORDS.description,
@@ -351,10 +354,10 @@ export const textRecordFields = {
       validator: value => validateCoinRecordValue(value, ENS_RECORDS.DOGE),
     },
   },
-  [ENS_RECORDS.content]: {
-    id: 'content',
+  [ENS_RECORDS.contenthash]: {
+    id: 'contenthash',
     inputProps: {},
-    key: ENS_RECORDS.content,
+    key: ENS_RECORDS.contenthash,
     label: lang.t('profiles.create.content'),
     placeholder: lang.t('profiles.create.content_placeholder'),
     validation: {
@@ -364,6 +367,13 @@ export const textRecordFields = {
   },
 } as {
   [key in ENS_RECORDS]?: TextRecordField;
+};
+
+export const deprecatedTextRecordFields = {
+  [ENS_RECORDS.displayName]: ENS_RECORDS.name,
+  [ENS_RECORDS.content]: ENS_RECORDS.contenthash,
+} as {
+  [key in ENS_RECORDS]: ENS_RECORDS;
 };
 
 export const ENS_DOMAIN = '.eth';
@@ -470,13 +480,13 @@ const setupMulticallRecords = (
       ])
     );
   }
-  // content hash address
-  const contentHashAssociatedRecord = records.contentHash;
-  if (
-    Boolean(contentHashAssociatedRecord) &&
-    typeof contentHashAssociatedRecord === 'string' &&
-    parseInt(contentHashAssociatedRecord, 16) !== 0
-  ) {
+  if (typeof records.contenthash === 'string') {
+    // content hash address
+    const { encoded: encodedContentHash } = encodeContenthash(
+      records.contenthash || ''
+    );
+    const contentHashAssociatedRecord =
+      records.contenthash === '' ? Buffer.from('') : encodedContentHash;
     data.push(
       resolver.encodeFunctionData('setContenthash', [
         namehash,
@@ -644,6 +654,19 @@ const getENSExecutionDetails = async ({
       const record = records?.text[0];
       const namehash = hash(name);
       args = [namehash, record.key, record.value];
+      contract = await getENSPublicResolverContract(wallet, resolverAddress);
+      break;
+    }
+    case ENSRegistrationTransactionType.SET_CONTENTHASH: {
+      if (!name || !records || typeof records?.contenthash !== 'string')
+        throw new Error('Bad arguments for contenthash');
+      const namehash = hash(name);
+      const { encoded: encodedContentHash } = encodeContenthash(
+        records?.contenthash || ''
+      );
+      const contentHash =
+        records.contenthash === '' ? Buffer.from('') : encodedContentHash;
+      args = [namehash, contentHash];
       contract = await getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
