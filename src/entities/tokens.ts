@@ -91,10 +91,10 @@ export interface SwappableAsset extends ParsedAddressAsset {
       amount?: string;
     };
   };
-  implementations: {
+  implementations?: {
     [network: string]: { address: EthereumAddress; decimals: number };
   };
-  network: string;
+  network?: string;
 }
 
 export interface RainbowToken extends Asset {
@@ -113,32 +113,4 @@ export interface RainbowToken extends Asset {
 
 export interface IndexToken extends Asset {
   amount: string;
-}
-
-export interface ExchangeAsset {
-  address: EthereumAddress;
-  balance: { amount: string; display: string };
-  decimals: number;
-  icon_url: string;
-  id: string;
-  implementations: {
-    [network: string]: { address: EthereumAddress; decimals: number };
-  };
-  isNativeAsset: boolean;
-  isRainbowCurated: boolean;
-  isVerified: boolean;
-  is_displayable: boolean;
-  is_verified: boolean;
-  name: string;
-  native: {
-    balance: { amount: string; display: string };
-    change: string;
-    price: { amount: number; display: string };
-  };
-  price: { changed_at: number; relative_change_24h: number; value: number };
-  symbol: string;
-  type: string;
-  uniqueId: string;
-  mainnet_address?: EthereumAddress;
-  network: string;
 }

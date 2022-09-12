@@ -46,7 +46,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { ExchangeAsset } from '@/entities';
+import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 
@@ -56,11 +56,11 @@ const getHasShownWarning = () =>
 const setHasShownWarning = () =>
   storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
 
-const headerlessSection = (data: ExchangeAsset[]) => [{ data, title: '' }];
+const headerlessSection = (data: SwappableAsset[]) => [{ data, title: '' }];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 const searchWalletCurrencyList = (
-  searchList: ExchangeAsset[],
+  searchList: SwappableAsset[],
   query: string
 ) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
@@ -79,11 +79,11 @@ const searchWalletCurrencyList = (
 
 type ParamList = {
   Currency: {
-    defaultOutputAsset: ExchangeAsset;
-    defaultInputAsset: ExchangeAsset;
+    defaultOutputAsset: SwappableAsset;
+    defaultInputAsset: SwappableAsset;
     chainId: number;
     fromDiscover: boolean;
-    onSelectCurrency: (asset: ExchangeAsset, cb: (item: any) => void) => void;
+    onSelectCurrency: (asset: SwappableAsset, cb: (item: any) => void) => void;
     params: Record<string, unknown>;
     restoreFocusOnSwapModal: () => void;
     toggleGestureEnabled: (arg: boolean) => void;
@@ -126,7 +126,7 @@ export default function CurrencySelectModal() {
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
-  const assetsInWallet = useAssetsInWallet() as ExchangeAsset[];
+  const assetsInWallet = useAssetsInWallet() as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
@@ -228,7 +228,7 @@ export default function CurrencySelectModal() {
   const currencyList = useMemo(() => {
     let list = (type === CurrencySelectionTypes.input
       ? getWalletCurrencyList()
-      : swapCurrencyList) as { data: ExchangeAsset[]; title: string }[];
+      : swapCurrencyList) as { data: SwappableAsset[]; title: string }[];
 
     // Remove tokens that show up in two lists and empty sections
     let uniqueIds: string[] = [];
