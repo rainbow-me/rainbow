@@ -41,7 +41,7 @@ import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
-import { AssetType, ExchangeAsset } from '@/entities';
+import { AssetType, SwappableAsset } from '@/entities';
 import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
@@ -103,7 +103,7 @@ const Wrapper = KeyboardFixedOpenLayout;
 
 const getInputHeaderTitle = (
   type: keyof typeof ExchangeModalTypes,
-  defaultInputAsset: ExchangeAsset
+  defaultInputAsset: SwappableAsset
 ) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
@@ -153,7 +153,7 @@ export default function ExchangeModal({
   } = useRoute<{
     key: string;
     name: string;
-    params: { inputAsset: ExchangeAsset; outputAsset: ExchangeAsset };
+    params: { inputAsset: SwappableAsset; outputAsset: SwappableAsset };
   }>();
 
   useLayoutEffect(() => {
@@ -164,8 +164,8 @@ export default function ExchangeModal({
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
   const genericAssets = useSelector<
-    { data: { genericAssets: { [address: string]: ExchangeAsset } } },
-    { [address: string]: ExchangeAsset }
+    { data: { genericAssets: { [address: string]: SwappableAsset } } },
+    { [address: string]: SwappableAsset }
   >(({ data: { genericAssets } }) => genericAssets);
 
   const {
