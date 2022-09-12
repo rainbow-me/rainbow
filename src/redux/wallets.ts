@@ -189,12 +189,23 @@ export const walletsLoadState = (profilesEnabled: boolean = false) => async (
       );
     }
 
-    const selectedAddress = selectedWallet!.addresses.find(a => {
+    const selectedAddress = selectedWallet?.addresses.find(a => {
       return a.visible && a.address === addressFromKeychain;
     });
 
+    // Let's select the first visible account if we don't have a selected address
     if (!selectedAddress) {
-      const account = selectedWallet!.addresses.find(a => a.visible)!;
+      const allWallets = Object.values(allWalletsResult?.wallets || {});
+      let account = null;
+      for (const wallet of allWallets) {
+        for (const rainbowAccount of wallet.addresses) {
+          if (rainbowAccount.visible) {
+            account = rainbowAccount;
+            break;
+          }
+        }
+      }
+      if (!account) return;
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
       logger.sentry(
