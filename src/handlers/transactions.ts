@@ -100,7 +100,7 @@ export const getTransactionMethodName = async (
 };
 
 export const showTransactionDetailsSheet = (
-  transactionDetails: MinimalTransactionDetails,
+  transactionDetails: RainbowTransaction,
   contacts: { [p: string]: Contact },
   accountAddress: string
 ) => {

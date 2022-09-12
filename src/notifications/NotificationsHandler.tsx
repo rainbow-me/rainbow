@@ -1,10 +1,5 @@
 import React, { PropsWithChildren, useEffect, useRef } from 'react';
-import {
-  useAccountProfile,
-  useContacts,
-  usePrevious,
-  useWallets,
-} from '@/hooks';
+import { useContacts, usePrevious, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
   FirebaseMessagingTypes,
@@ -13,6 +8,7 @@ import {
   FixedRemoteMessage,
   MinimalNotification,
   NotificationTypes,
+  TransactionNotificationData,
 } from '@/notifications/types';
 import { handleShowingForegroundNotification } from '@/notifications/foregroundHandler';
 import {
@@ -39,9 +35,16 @@ import notifee, {
 } from '@notifee/react-native';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
-import { MinimalTransactionDetails } from '@/entities/transactions/transaction';
-import { TransactionStatus, TransactionType } from '@/entities';
+import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/transaction';
+import {
+  TransactionDirection,
+  TransactionStatus,
+  TransactionType,
+} from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
+import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
+import { isZero } from '@/helpers/utilities';
+import { getConfirmedState } from '@/helpers/transactions';
 
 type Callback = () => void;
 
@@ -50,10 +53,12 @@ type Props = PropsWithChildren<{ walletReady: boolean }>;
 export const NotificationsHandler = ({ children, walletReady }: Props) => {
   const wallets = useWallets();
   const { contacts } = useContacts();
-  const { accountAddress } = useAccountProfile();
-  const syncedStateRef = useRef({ wallets, contacts, accountAddress });
-  const prevWalletReady = usePrevious(walletReady);
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
+  const syncedStateRef = useRef({
+    wallets,
+    contacts,
+  });
+  const prevWalletReady = usePrevious(walletReady);
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
   const notificationOpenedListener = useRef<Callback>();
@@ -65,7 +70,6 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
   // an always up-to-date reference for event listeners
   syncedStateRef.current.wallets = wallets;
   syncedStateRef.current.contacts = contacts;
-  syncedStateRef.current.accountAddress = accountAddress;
 
   useEffect(() => {
     setupAndroidChannels();
@@ -183,20 +187,22 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
   const performActionBasedOnOpenedNotificationType = async (
     notification: MinimalNotification
   ) => {
-    const data = notification?.data;
-    const type = data?.type;
+    const type = notification?.data?.type;
 
     if (type === NotificationTypes.transaction) {
-      if (!data?.address || !data?.hash || !data?.chain) {
+      const untypedData = notification?.data;
+      if (!untypedData?.address || !untypedData?.hash || !untypedData?.chain) {
         return;
       }
 
-      const { wallets, contacts, accountAddress } = syncedStateRef.current;
-      let walletAddress = accountAddress;
+      // converting data to type we receive from backend
+      const data = (notification.data as unknown) as TransactionNotificationData;
+      const { wallets, contacts } = syncedStateRef.current;
+      const { accountAddress, nativeCurrency } = store.getState().settings;
+      let walletAddress: string | null = accountAddress;
       if (accountAddress !== data.address) {
         walletAddress = await wallets.switchToWalletWithAddress(data.address);
       }
-
       if (!walletAddress) {
         return;
       }
@@ -206,7 +212,6 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
         .data.transactions.find(tx =>
           isLowerCaseMatch(ethereumUtils.getHash(tx) ?? '', data.hash)
         );
-
       if (zerionTransaction) {
         console.log('NOTIFICATIONS: Getting zerion finished tx data');
         showTransactionDetailsSheet(
@@ -217,24 +222,85 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       } else {
         console.log('NOTIFICATIONS: Getting data from RPC');
         const network = ethereumUtils.getNetworkFromChainId(
-          parseInt(data.chaing, 10)
+          parseInt(data.chain, 10)
         );
-        const provider = await getProviderForNetwork(network);
-        const rpcTransaction = await provider.getTransaction(data.hash);
-        const transaction: MinimalTransactionDetails = {
+        const p = await getProviderForNetwork(network);
+        const txObj = await p.getTransaction(data.hash);
+        const txDetails: NewTransactionOrAddCashTransaction = {
           type: TransactionType.send,
-          hash: data.hash,
-          minedAt: rpcTransaction.timestamp ?? null,
-          from: rpcTransaction.from,
           network,
-          pending: !rpcTransaction.blockHash,
-          status: rpcTransaction.blockHash
-            ? TransactionStatus.sent
-            : TransactionStatus.sending,
-          to: rpcTransaction.from,
+          hash: txObj.hash,
+          status: TransactionStatus.unknown,
+          amount: txObj.value.toString(),
+          nonce: null,
+          from: txObj.from,
+          to: txObj.to ?? null,
+          asset: null,
+          gasLimit: txObj.gasLimit,
+          maxFeePerGas: txObj.maxFeePerGas,
+          maxPriorityFeePerGas: txObj.maxPriorityFeePerGas,
+          gasPrice: txObj.gasPrice,
+          data: txObj.data,
         };
 
-        showTransactionDetailsSheet(transaction, contacts, accountAddress);
+        const tx = await parseNewTransaction(txDetails, nativeCurrency);
+        const transaction = { ...tx };
+
+        if (txObj?.blockNumber && txObj?.blockHash) {
+          const minedAt = Math.floor(Date.now() / 1000);
+          let receipt;
+          try {
+            if (txObj) {
+              receipt = await txObj.wait();
+            }
+          } catch (e: any) {
+            // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
+            if (e.transaction) {
+              // if a transaction field exists, it was confirmed but failed
+              transaction.status = TransactionStatus.failed;
+            } else {
+              // cancelled or replaced
+              transaction.status = TransactionStatus.cancelled;
+            }
+          }
+          const status = receipt?.status || 0;
+          if (!isZero(status)) {
+            let direction = TransactionDirection.out;
+            if (tx?.from!.toLowerCase() === tx?.to!.toLowerCase()) {
+              direction = TransactionDirection.self;
+            }
+            if (
+              accountAddress.toLowerCase() === transaction.to?.toLowerCase() &&
+              tx?.from?.toLowerCase() !== accountAddress.toLowerCase()
+            ) {
+              direction = TransactionDirection.in;
+            }
+            const newStatus = getTransactionLabel({
+              direction,
+              pending: false,
+              protocol: tx?.protocol,
+              status:
+                tx.status === TransactionStatus.cancelling
+                  ? TransactionStatus.cancelled
+                  : getConfirmedState(tx.type),
+              type: tx?.type,
+            });
+            transaction.status = newStatus;
+          } else {
+            transaction.status = TransactionStatus.failed;
+          }
+          transaction.title = getTitle({
+            protocol: tx.protocol,
+            status: transaction.status,
+            type: tx.type,
+          });
+          transaction.pending = false;
+          transaction.minedAt = minedAt;
+        }
+
+        if (transaction) {
+          showTransactionDetailsSheet(transaction, contacts, accountAddress);
+        }
       }
     }
   };

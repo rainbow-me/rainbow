@@ -18,3 +18,10 @@ export interface MinimalNotification {
   title?: string;
   body?: string;
 }
+
+export interface TransactionNotificationData {
+  type: 'transaction';
+  address: string;
+  chain: string;
+  hash: string;
+}
