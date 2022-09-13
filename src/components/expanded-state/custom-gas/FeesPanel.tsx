@@ -11,7 +11,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
 } from 'react-native';
-// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import { Alert } from '../../alerts';
 import { useTheme } from '../../../theme/ThemeContext';
@@ -752,7 +751,7 @@ export default function FeesPanel({
                 )}
                 {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
               </Box>
-              <Box marginRight="-5px">
+              <Box marginRight="-5px (Deprecated)">
                 <FeesGweiInput
                   buttonColor={colorForAsset}
                   inputRef={maxBaseFieldRef}
@@ -782,7 +781,7 @@ export default function FeesPanel({
                 )}
                 {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
               </Box>
-              <Box marginRight="-5px">
+              <Box marginRight="-5px (Deprecated)">
                 <FeesGweiInput
                   buttonColor={colorForAsset}
                   editable={!flashbotTransaction}
