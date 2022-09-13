@@ -1,4 +1,7 @@
 /* eslint-disable no-undef */
+// needed to set up global translations
+import '../../src/languages';
+
 jest.mock('react-native-device-info', () => ({
   identify: () => null,
   reset: () => null,
