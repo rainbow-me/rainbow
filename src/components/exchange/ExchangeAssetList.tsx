@@ -238,11 +238,9 @@ const ExchangeAssetList: ForwardRefRenderFunction<
 
   const theme = useTheme();
 
-  type LocalFavourite = Record<string, boolean | undefined>;
-
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const [localFavorite, setLocalFavorite] = useState<
-    LocalFavourite | undefined
+    Record<string, boolean | undefined> | undefined
   >(() => {
     const meta = store.getState().uniswap.favoritesMeta;
     if (!meta) {
@@ -353,8 +351,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
           sections={itemsWithFavorite}
           keyExtractor={keyExtractor}
           scrollIndicatorInsets={scrollIndicatorInsets}
-          windowSize={7}
-          style={{ height: '100%' }}
         />
       </Box>
 
