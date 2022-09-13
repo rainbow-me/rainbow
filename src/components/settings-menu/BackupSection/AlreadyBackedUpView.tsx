@@ -57,9 +57,9 @@ export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
   const { params } = useRoute();
   const { manageCloudBackups } = useManageCloudBackups();
-  const { wallets, selectedWallet } = useWallets();
+  const { wallets } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
-  const walletId = (params as any)?.walletId || selectedWallet.id;
+  const walletId = (params as any)?.walletId;
 
   useEffect(() => {
     analytics.track('Already Backed Up View', {
@@ -69,7 +69,7 @@ export default function AlreadyBackedUpView() {
 
   const walletStatus = useMemo(() => {
     let status = null;
-    if (wallets?.[walletId].backedUp) {
+    if (wallets?.[walletId]?.backedUp) {
       if (wallets?.[walletId].backupType === WalletBackupTypes.manual) {
         status = WalletBackupStatus.MANUAL_BACKUP;
       } else {
@@ -133,7 +133,7 @@ export default function AlreadyBackedUpView() {
 
   const { colors, isDarkMode } = useTheme();
 
-  const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId].type;
+  const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId]?.type;
 
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
@@ -178,7 +178,7 @@ export default function AlreadyBackedUpView() {
               lang.t('back_up.already_backed_up.imported'))}
         </Text>
       </Box>
-      <Box alignItems="center" marginTop="-42px">
+      <Box alignItems="center" marginTop="-42px (Deprecated)">
         <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
         <Text size="20px / 24px (Deprecated)" weight="bold">
           {(walletStatus === WalletBackupStatus.IMPORTED &&
@@ -201,7 +201,7 @@ export default function AlreadyBackedUpView() {
                 lang.t('back_up.explainers.if_lose_imported'))}
           </Text>
         </Box>
-        <Box paddingTop="42px">
+        <Box paddingTop="42px (Deprecated)">
           <AccentColorProvider color={colors.whiteLabel}>
             <ButtonPressAnimation
               onPress={handleViewRecoveryPhrase}
@@ -217,7 +217,7 @@ export default function AlreadyBackedUpView() {
                 borderRadius={56}
                 height={{ custom: 48 }}
                 justifyContent="center"
-                paddingHorizontal="19px"
+                paddingHorizontal="19px (Deprecated)"
                 shadow="15px light"
               >
                 <Text
@@ -237,7 +237,7 @@ export default function AlreadyBackedUpView() {
           </AccentColorProvider>
         </Box>
       </Box>
-      <Box paddingBottom="42px">
+      <Box paddingBottom="42px (Deprecated)">
         {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
           <ButtonPressAnimation onPress={handleIcloudBackup}>
             <Text

@@ -110,7 +110,7 @@ export default function ProfileSheet() {
               (!isAddressSuccess ||
                 !hasListFetched ||
                 !hasFirstTxTimestampFetched) ? (
-                <Stack space="19px">
+                <Stack space="19px (Deprecated)">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
@@ -145,10 +145,10 @@ function AndroidWrapper({ children }: { children: React.ReactElement }) {
 
 function PlaceholderList() {
   return (
-    <Inset horizontal="19px">
+    <Inset horizontal="19px (Deprecated)">
       <Box height="full">
         <Skeleton animated>
-          <Stack space="15px">
+          <Stack space="15px (Deprecated)">
             <PlaceholderRow />
             <PlaceholderRow />
             <PlaceholderRow />

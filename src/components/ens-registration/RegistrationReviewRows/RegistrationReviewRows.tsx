@@ -101,7 +101,7 @@ export default function RegistrationReviewRows({
 
   return (
     <Box>
-      <Stack space="30px">
+      <Stack space="30px (Deprecated)">
         <Columns>
           <Column width="3/5">
             <Text size="16px / 22px (Deprecated)" weight="heavy">
