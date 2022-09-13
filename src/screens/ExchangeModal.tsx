@@ -283,15 +283,15 @@ export default function ExchangeModal({
     const outputNetwork = ethereumUtils.getNetworkFromType(
       outputCurrency?.type
     );
-    const chainId =
-      inputCurrency?.type || outputCurrency?.type
-        ? ethereumUtils.getChainIdFromType(
-            inputCurrency?.type ?? outputCurrency?.type
-          )
-        : 1;
-    const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
-    const isCrosschainSwap =
-      crosschainSwapsEnabled && inputNetwork !== outputNetwork;
+    }
+
+    return 1;
+  }, [inputCurrency, outputCurrency]);
+
+  const inputNetwork = useMemo(() => {
+    const chainId = ethereumUtils.getChainIdFromType(inputCurrency?.type ||AssetType.token);
+    return ethereumUtils.getNetworkFromChainId(chainId);
+  }, [inputCurrency]);
 
     return {
       inputNetwork,
@@ -493,6 +493,7 @@ export default function ExchangeModal({
     inputAmount,
     isCrosschainSwap,
     outputAmount,
+    outputNetwork,
     tradeDetails,
     type,
     updateTxFee,
