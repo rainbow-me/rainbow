@@ -10,6 +10,7 @@ import {
   GasFeesBySpeed,
   LegacyGasFee,
   LegacyGasFeeParams,
+  LegacySelectedGasFee,
   ParsedAddressAsset,
   SelectedGasFee,
 } from '@/entities';
@@ -86,7 +87,7 @@ export default function useGas({
     gasFeeParamsBySpeed: GasFeeParamsBySpeed;
     gasFeesBySpeed: GasFeesBySpeed;
     gasLimit: string;
-    selectedGasFee: SelectedGasFee;
+    selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
     selectedGasFeeOption: string;
     txNetwork: Network;
   } = useSelector(

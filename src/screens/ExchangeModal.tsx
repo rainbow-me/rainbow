@@ -41,7 +41,13 @@ import config from '../model/config';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
-import { AssetType, SwappableAsset } from '@/entities';
+import {
+  AssetType,
+  GasFee,
+  LegacyGasFee,
+  LegacyGasFeeParams,
+  SwappableAsset,
+} from '@/entities';
 import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
@@ -537,7 +543,7 @@ export default function ExchangeModal({
     updateMaxInputAmount();
   }, [updateMaxInputAmount]);
 
-  const checkGasVsOutput = async (gasPrice: number, outputPrice: string) => {
+  const checkGasVsOutput = async (gasPrice: string, outputPrice: string) => {
     if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
       const res = new Promise(resolve => {
         Alert.alert(
@@ -581,7 +587,7 @@ export default function ExchangeModal({
         }
 
         const callback = (
-          success: boolean = false,
+          success = false,
           errorMessage: string | null = null
         ) => {
           setIsAuthorizing(false);
@@ -614,9 +620,12 @@ export default function ExchangeModal({
           inputTokenName: inputCurrency?.name || '',
           inputTokenSymbol: inputCurrency?.symbol || '',
           isHighPriceImpact: debouncedIsHighPriceImpact,
-          legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
+          legacyGasPrice:
+            (selectedGasFee?.gasFeeParams as LegacyGasFeeParams)?.gasPrice
+              ?.amount || '',
           liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
-          maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
+          maxNetworkFee:
+            (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
           network: currentNetwork,
           networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
           outputTokenAddress: outputCurrency?.address || '',
@@ -653,6 +662,9 @@ export default function ExchangeModal({
       outputCurrency?.name,
       outputCurrency?.symbol,
       priceImpactPercentDisplay,
+      selectedGasFee?.gasFee,
+      selectedGasFee?.gasFeeParams,
+      selectedGasFee?.option,
       setParams,
       slippageInBips,
       tradeDetails,
@@ -692,9 +704,12 @@ export default function ExchangeModal({
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
         isHighPriceImpact: debouncedIsHighPriceImpact,
-        legacyGasPrice: selectedGasFee?.gasFeeParams?.gasPrice?.amount || '',
+        legacyGasPrice:
+          (selectedGasFee?.gasFeeParams as LegacyGasFeeParams)?.gasPrice
+            ?.amount || '',
         liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
-        maxNetworkFee: selectedGasFee?.gasFee?.maxFee?.value?.amount || '',
+        maxNetworkFee:
+          (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
         network: currentNetwork,
         networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
         outputTokenAddress: outputCurrency?.address || '',
@@ -707,7 +722,10 @@ export default function ExchangeModal({
     }
 
     const outputInUSD = multiply(outputPriceValue!, outputAmount!);
-    const gasPrice = selectedGasFee?.gasFee?.maxFee?.native?.value?.amount;
+    const gasPrice =
+      (selectedGasFee?.gasFee as GasFee)?.maxFee?.native?.value?.amount ||
+      (selectedGasFee?.gasFee as LegacyGasFee)?.estimatedFee?.native?.value
+        ?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
