@@ -134,7 +134,7 @@ export default function DPICard() {
                       </Text>
                     </Stack>
                     <Column width="content">
-                      <Bleed top="5px">
+                      <Bleed top="5px (Deprecated)">
                         {/* @ts-expect-error JavaScript component */}
                         <CoinIcon
                           address={DPI_ADDRESS}

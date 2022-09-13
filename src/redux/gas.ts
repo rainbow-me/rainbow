@@ -2,10 +2,7 @@ import { captureException } from '@sentry/react-native';
 import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
 import { analytics } from '@/analytics';
 import {
@@ -235,7 +232,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   newGasFeesBySpeed[CUSTOM] = customGasFees;
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
-    gasParams.maxFeePerGas.amount,
+    gasParams.maxBaseFee.amount,
     gasParams.maxPriorityFeePerGas.amount,
     blocksToConfirmation
   );

@@ -18,7 +18,7 @@ export const standardBackgrounds: Example = {
   name: 'Standard backgrounds',
   Example: () =>
     source(
-      <Columns space="19px">
+      <Columns space="20px">
         <Stack space="10px">
           <Text size="17pt" weight="bold">
             Light mode
@@ -47,7 +47,7 @@ export const customAccentColorDark: Example = {
         <BackgroundProvider color="accent">
           {({ backgroundStyle }) => (
             <View style={backgroundStyle}>
-              <Inset space="19px">
+              <Inset space="20px">
                 <Stack space="10px">
                   <Text color="primary" size="17pt" weight="bold">
                     {darkAccentColor}
@@ -72,7 +72,7 @@ export const customAccentColorLight: Example = {
         <BackgroundProvider color="accent">
           {({ backgroundStyle }) => (
             <View style={backgroundStyle}>
-              <Inset space="19px">
+              <Inset space="20px">
                 <Stack space="10px">
                   <Text color="primary" size="17pt" weight="bold">
                     {lightAccentColor}

@@ -46,7 +46,7 @@ jobs:
         run:  yarn audit-ci --moderate --config audit-ci.json
 
       - name: Lint
-        run: yarn lint:ts && yarn lint:js --quiet
+        run: yarn lint:ci
         
       - name: Install Pods
         run: cd ios && pod install && cd ..
