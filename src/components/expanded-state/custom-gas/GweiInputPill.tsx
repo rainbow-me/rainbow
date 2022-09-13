@@ -36,6 +36,7 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     timing: 'linear',
     weight: 'heavy',
     maxWidth: 80,
+    minWidth: 12,
   })
 )(
   // @ts-expect-error
