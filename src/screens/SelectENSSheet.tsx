@@ -59,9 +59,10 @@ export default function SelectENSSheet() {
   );
 
   const controlledDomains = useMemo(() => {
-    const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) =>
-      a.name > b.name ? 1 : -1
-    );
+    const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) => {
+      if (a.name && b.name) return a.name > b.name ? 1 : -1;
+      return 1;
+    });
 
     if (primaryDomain) sortedNonPrimaryDomains.unshift(primaryDomain);
 

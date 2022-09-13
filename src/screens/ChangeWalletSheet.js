@@ -257,7 +257,7 @@ export default function ChangeWalletSheet() {
                     color: args.color,
                     label: args.name,
                   };
-                  let updatedWalletAddresses = [...walletAddresses];
+                  const updatedWalletAddresses = [...walletAddresses];
                   updatedWalletAddresses[
                     walletAddressIndex
                   ] = updatedWalletAddress;
@@ -467,7 +467,16 @@ export default function ChangeWalletSheet() {
 
                     // If doesn't exist, we need to create a new wallet
                   } else {
-                    await createWallet(null, color, name);
+                    await createWallet(
+                      null,
+                      color,
+                      name,
+                      false,
+                      null,
+                      null,
+                      false,
+                      true
+                    );
                     await dispatch(walletsLoadState(profilesEnabled));
                     await initializeWallet();
                   }
