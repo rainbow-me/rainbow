@@ -75,6 +75,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     // await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('swaps-details-value-row');
@@ -96,6 +97,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-optimism');
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('swaps-details-value-row');
@@ -117,6 +119,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('swaps-details-value-row');
@@ -138,6 +141,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-arbitrum');
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('swaps-details-value-row');
@@ -252,6 +256,7 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
+  // THIS IS NOT PASSING
   it('Should clear inputs when typing a number in inputs and then clearing it', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
