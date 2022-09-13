@@ -48,8 +48,8 @@ export default function SwapDetailsMasthead({
     <Box
       {...props}
       alignItems="center"
-      paddingHorizontal="19px"
-      paddingTop="42px"
+      paddingHorizontal="19px (Deprecated)"
+      paddingTop="42px (Deprecated)"
     >
       <Columns space={{ custom: 9 }}>
         <CurrencyTile

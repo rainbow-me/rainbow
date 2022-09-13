@@ -44,7 +44,7 @@ export default function CheckboxField({
           })}
         >
           {isChecked && (
-            <Inset left="1px">
+            <Inset left="1px (Deprecated)">
               <AccentColorProvider color="white">
                 <Text
                   color="accent"

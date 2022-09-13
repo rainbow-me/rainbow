@@ -10,7 +10,7 @@ export const basicUsage: Example = {
   name: 'Basic usage',
   Example: () =>
     source(
-      <Box background="body" borderRadius={8} padding="19px">
+      <Box background="body" borderRadius={8} padding="20px">
         <Divider />
       </Box>
     ),
@@ -20,7 +20,7 @@ export const divider80: Example = {
   name: 'Color: divider80',
   Example: () =>
     source(
-      <Box background="body" borderRadius={8} padding="19px">
+      <Box background="body" borderRadius={8} padding="20px">
         <Divider color="divider80" />
       </Box>
     ),
@@ -30,7 +30,7 @@ export const divider60: Example = {
   name: 'Color: divider60',
   Example: () =>
     source(
-      <Box background="body" borderRadius={8} padding="19px">
+      <Box background="body" borderRadius={8} padding="20px">
         <Divider color="divider60" />
       </Box>
     ),
@@ -40,7 +40,7 @@ export const divider40: Example = {
   name: 'Color: divider40',
   Example: () =>
     source(
-      <Box background="body" borderRadius={8} padding="19px">
+      <Box background="body" borderRadius={8} padding="20px">
         <Divider color="divider40" />
       </Box>
     ),
@@ -50,7 +50,7 @@ export const divider20: Example = {
   name: 'Color: divider20',
   Example: () =>
     source(
-      <Box background="body" borderRadius={8} padding="19px">
+      <Box background="body" borderRadius={8} padding="20px">
         <Divider color="divider20" />
       </Box>
     ),
@@ -60,8 +60,8 @@ export const vertical: Example = {
   name: 'Vertical',
   Example: () =>
     source(
-      <Box background="body" borderRadius={8} padding="19px">
-        <Inline space="19px" wrap={false}>
+      <Box background="body" borderRadius={8} padding="20px">
+        <Inline space="20px" wrap={false}>
           <Placeholder width={20} />
           <Divider direction="vertical" />
           <Placeholder width={20} />
