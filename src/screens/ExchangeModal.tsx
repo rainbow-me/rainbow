@@ -83,12 +83,12 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import logger from '@/utils/logger';
 import {
   CrosschainSwapActionParameters,
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import logger from '@/utils/logger';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -486,17 +486,7 @@ export default function ExchangeModal({
     } catch (error) {
       updateTxFee(defaultGasLimit, null);
     }
-  }, [
-    chainId,
-    currentNetwork,
-    defaultGasLimit,
-    inputAmount,
-    isCrosschainSwap,
-    outputAmount,
-    tradeDetails,
-    type,
-    updateTxFee,
-  ]);
+  }, [chainId, currentNetwork, defaultGasLimit, inputAmount, isCrosschainSwap, outputAmount, tradeDetails, type, updateTxFee]);
 
   useEffect(() => {
     if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {

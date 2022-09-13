@@ -32,7 +32,9 @@ import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
-import { estimateSwapGasLimit } from '@/handlers/swap';
+import {
+  estimateSwapGasLimit,
+} from '@/handlers/swap';
 
 const actionName = 'swap';
 
