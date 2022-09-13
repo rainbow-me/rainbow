@@ -69,7 +69,7 @@ export default function AlreadyBackedUpView() {
 
   const walletStatus = useMemo(() => {
     let status = null;
-    if (wallets?.[walletId].backedUp) {
+    if (wallets?.[walletId]?.backedUp) {
       if (wallets?.[walletId].backupType === WalletBackupTypes.manual) {
         status = WalletBackupStatus.MANUAL_BACKUP;
       } else {
