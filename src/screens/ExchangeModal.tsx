@@ -85,6 +85,7 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';
 import { SwapType } from '@rainbow-me/swaps';
+import { RapActionTypes } from '@/raps/common';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -610,7 +611,17 @@ export default function ExchangeModal({
           outputAmount: outputAmount!,
           tradeDetails: tradeDetails!,
         };
-        const rapType = getSwapRapTypeByExchangeType(type);
+        const rapType =
+          inputNetwork !== outputNetwork
+            ? RapActionTypes.crosschainSwap
+            : getSwapRapTypeByExchangeType(type);
+
+        // ///////
+        // ///////
+        // ///////
+        // ///////
+        // ///////
+
         await executeRap(wallet, rapType, swapParameters, callback);
         logger.log('[exchange - handle submit] executed rap!');
         const slippage = slippageInBips / 100;
