@@ -32,9 +32,7 @@ import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
-import {
-  estimateSwapGasLimit,
-} from '@/handlers/swap';
+import { estimateSwapGasLimit } from '@/handlers/swap';
 
 const actionName = 'swap';
 
@@ -276,11 +274,10 @@ const swap = async (
 
   dispatch(
     dataAddNewTransaction(
-      // @ts-ignore
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider
+      wallet?.provider as any
     )
   );
   return swap?.nonce;
