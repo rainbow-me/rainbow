@@ -84,6 +84,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from 'logger';
+import { assert } from 'chai';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -621,8 +622,8 @@ export default function ExchangeModal({
           inputTokenSymbol: inputCurrency?.symbol || '',
           isHighPriceImpact: debouncedIsHighPriceImpact,
           legacyGasPrice:
-            (selectedGasFee?.gasFeeParams as LegacyGasFeeParams)?.gasPrice
-              ?.amount || '',
+            ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
+              ?.gasPrice?.amount || '',
           liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
           maxNetworkFee:
             (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
@@ -705,8 +706,8 @@ export default function ExchangeModal({
         inputTokenSymbol: inputCurrency?.symbol || '',
         isHighPriceImpact: debouncedIsHighPriceImpact,
         legacyGasPrice:
-          (selectedGasFee?.gasFeeParams as LegacyGasFeeParams)?.gasPrice
-            ?.amount || '',
+          ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
+            ?.gasPrice?.amount || '',
         liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
         maxNetworkFee:
           (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',

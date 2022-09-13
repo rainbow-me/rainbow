@@ -38,7 +38,7 @@ const TabPill = ({
   return (
     <Box
       as={ButtonPressAnimation}
-      // @ts-expect-error
+      // @ts-expect-error Not seen as a valid prop
       onPress={handleOnPress}
       scaleTo={0.8}
       testID={testID}

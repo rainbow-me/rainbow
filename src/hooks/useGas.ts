@@ -87,7 +87,7 @@ export default function useGas({
     gasFeeParamsBySpeed: GasFeeParamsBySpeed;
     gasFeesBySpeed: GasFeesBySpeed;
     gasLimit: string;
-    selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+    selectedGasFee: SelectedGasFee;
     selectedGasFeeOption: string;
     txNetwork: Network;
   } = useSelector(
