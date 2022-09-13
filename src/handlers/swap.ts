@@ -265,6 +265,7 @@ export const estimateSwapGasLimit = async ({
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
+  console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ estimateSwapGasLimit');
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
 
@@ -353,20 +354,19 @@ export const estimateCrosschainSwapGasLimit = async ({
   requiresApprove,
   tradeDetails,
 }: {
-  chainId: ChainId;
+  chainId: number;
   requiresApprove?: boolean;
-  tradeDetails: CrosschainQuote | null;
+  tradeDetails: CrosschainQuote;
 }): Promise<string | number> => {
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const provider = await getProviderForNetwork(network);
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
-
   try {
     const { method: estimateGas } = getCrosschainQuoteExecutionDetails(
       tradeDetails,
-      { from: tradeDetails.from },
+      {},
       provider
     );
 

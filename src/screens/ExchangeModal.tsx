@@ -83,8 +83,8 @@ import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
-import logger from 'logger';
-import { assert } from 'chai';
+import logger from '@/utils/logger';
+import { SwapType } from '@rainbow-me/swaps';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -182,6 +182,26 @@ export default function ExchangeModal({
     addListener,
   } = useNavigation();
 
+  const isDeposit = type === ExchangeModalTypes.deposit;
+  const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+  const isSavings = isDeposit || isWithdrawal;
+  const {
+    selectedGasFee,
+    gasFeeParamsBySpeed,
+    startPollingGasFees,
+    stopPollingGasFees,
+    updateDefaultGasLimit,
+    updateGasFeeOption,
+    updateTxFee,
+    txNetwork,
+    isGasReady,
+  } = useGas();
+  const {
+    accountAddress,
+    flashbotsEnabled,
+    nativeCurrency,
+  } = useAccountSettings();
+
   // if the default input is on a different network than
   // we want to update the output to be on the same, if its not available -> null
   const defaultOutputAssetOverride = useMemo(() => {
@@ -219,29 +239,7 @@ export default function ExchangeModal({
     }
   }, [defaultInputAsset, defaultOutputAsset]);
 
-  const isDeposit = type === ExchangeModalTypes.deposit;
-  const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-  const isSavings = isDeposit || isWithdrawal;
-  const {
-    selectedGasFee,
-    gasFeeParamsBySpeed,
-    startPollingGasFees,
-    stopPollingGasFees,
-    updateDefaultGasLimit,
-    updateGasFeeOption,
-    updateTxFee,
-    txNetwork,
-    isGasReady,
-  } = useGas();
-  const {
-    accountAddress,
-    flashbotsEnabled,
-    nativeCurrency,
-  } = useAccountSettings();
-
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [currentProvider, setCurrentProvider] = useState<Provider>();
-
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
   const prevTxNetwork = usePrevious(txNetwork);
 
@@ -339,22 +337,11 @@ export default function ExchangeModal({
 
   const defaultGasLimit = useMemo(() => {
     const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
-    return isDeposit
-      ? ethUnits.basic_deposit
-      : isWithdrawal
-      ? ethUnits.basic_withdrawal
-      : basicSwap;
+    if (isDeposit) return ethUnits.basic_deposit;
+    return isWithdrawal ? ethUnits.basic_withdrawal : basicSwap;
   }, [chainId, isDeposit, isWithdrawal]);
 
   const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
-
-  useEffect(() => {
-    const getProvider = async () => {
-      const p = await getProviderForNetwork(currentNetwork);
-      setCurrentProvider(p);
-    };
-    getProvider();
-  }, [currentNetwork]);
 
   const {
     result: {
@@ -446,15 +433,21 @@ export default function ExchangeModal({
 
   const updateGasLimit = useCallback(async () => {
     try {
+      const provider = await getProviderForNetwork(currentNetwork);
       const swapParams = {
         chainId,
-        inputAmount: inputAmount!,
-        outputAmount: outputAmount!,
-        provider: currentProvider!,
-        tradeDetails: tradeDetails!,
+        inputAmount,
+        outputAmount,
+        inputNetwork,
+        outputNetwork,
+        provider,
+        tradeDetails,
       };
 
-      const rapType = getSwapRapTypeByExchangeType(type);
+      const rapType =
+        inputNetwork === outputNetwork
+          ? getSwapRapTypeByExchangeType(type)
+          : SwapType.crossChain;
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
       if (gasLimit) {
         if (currentNetwork === Network.optimism) {
@@ -466,7 +459,7 @@ export default function ExchangeModal({
                 to: tradeDetails.to ?? null,
                 value: tradeDetails.value,
               },
-              currentProvider!
+              provider
             );
             updateTxFee(gasLimit, null, l1GasFeeOptimism);
           } else {
@@ -486,10 +479,11 @@ export default function ExchangeModal({
   }, [
     chainId,
     currentNetwork,
-    currentProvider,
     defaultGasLimit,
     inputAmount,
+    inputNetwork,
     outputAmount,
+    outputNetwork,
     tradeDetails,
     type,
     updateTxFee,
@@ -512,6 +506,7 @@ export default function ExchangeModal({
     prevGasFeesParamsBySpeed,
     updateTxFee,
   ]);
+
   // Update gas limit
   useEffect(() => {
     if (
@@ -549,10 +544,6 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
     flashbots,
   ]);
-
-  const handlePressMaxBalance = useCallback(async () => {
-    updateMaxInputAmount();
-  }, [updateMaxInputAmount]);
 
   const checkGasVsOutput = async (gasPrice: string, outputPrice: string) => {
     if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
@@ -657,31 +648,7 @@ export default function ExchangeModal({
         return false;
       }
     },
-    [
-      chainId,
-      currentNetwork,
-      debouncedIsHighPriceImpact,
-      flashbots,
-      getNextNonce,
-      inputAmount,
-      inputCurrency?.address,
-      inputCurrency?.name,
-      inputCurrency?.symbol,
-      navigate,
-      outputAmount,
-      outputCurrency?.address,
-      outputCurrency?.name,
-      outputCurrency?.symbol,
-      priceImpactPercentDisplay,
-      selectedGasFee?.gasFee?.estimatedFee?.value?.amount,
-      selectedGasFee?.gasFee?.maxFee?.value?.amount,
-      selectedGasFee?.gasFeeParams?.gasPrice?.amount,
-      selectedGasFee?.option,
-      setParams,
-      slippageInBips,
-      tradeDetails,
-      type,
-    ]
+    [chainId, currentNetwork, debouncedIsHighPriceImpact, flashbots, getNextNonce, inputAmount, inputCurrency?.address, inputCurrency?.name, inputCurrency?.symbol, navigate, outputAmount, outputCurrency?.address, outputCurrency?.name, outputCurrency?.symbol, priceImpactPercentDisplay, selectedGasFee?.gasFee, selectedGasFee?.gasFeeParams, selectedGasFee?.option, setParams, slippageInBips, tradeDetails, type]
   );
 
   const handleSubmit = useCallback(async () => {
