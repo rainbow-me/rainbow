@@ -286,15 +286,14 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
           if (
             parsedTransaction?.from &&
             parsedTransaction?.to &&
-            parsedTransaction.from.toLowerCase() ===
-              parsedTransaction.to.toLowerCase()
+            isLowerCaseMatch(parsedTransaction.from, parsedTransaction.to)
           ) {
             direction = TransactionDirection.self;
           }
           if (
             parsedTransaction?.from &&
             parsedTransaction?.to &&
-            walletAddress.toLowerCase() === parsedTransaction.to.toLowerCase()
+            isLowerCaseMatch(walletAddress, parsedTransaction.to)
           ) {
             direction = TransactionDirection.in;
           }
