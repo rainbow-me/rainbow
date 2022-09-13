@@ -109,7 +109,7 @@ const getInputAmount = async (
     const quote: Quote = await (isCrosschainSwap
       ? getCrosschainQuote
       : getQuote)(quoteParams);
-    Logger.debug('Got quote', rand, quote);
+    // Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.sellAmount) {
       const quoteError = (quote as unknown) as QuoteError;

@@ -40,7 +40,10 @@ import {
 import { ExchangeModalTypes } from '@/helpers';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import logger from '@/utils/logger';
-import { estimateUnlockAndCrosschainSwap } from './unlockAndCrosschainSwap';
+import {
+  createUnlockAndCrosschainSwapRap,
+  estimateUnlockAndCrosschainSwap,
+} from './unlockAndCrosschainSwap';
 
 const {
   commitENS,
@@ -208,7 +211,6 @@ export const getSwapRapTypeByExchangeType = (type: string) => {
       return RapActionTypes.withdrawCompound;
     case ExchangeModalTypes.deposit:
       return RapActionTypes.depositCompound;
-
     default:
       return RapActionTypes.swap;
   }
@@ -218,11 +220,14 @@ const createSwapRapByType = (
   type: keyof typeof RapActionTypes,
   swapParameters: SwapActionParameters
 ) => {
+  console.log('😡😡😡 createSwapRapByType', type);
   switch (type) {
     case RapActionTypes.depositCompound:
       return createSwapAndDepositCompoundRap(swapParameters);
     case RapActionTypes.withdrawCompound:
       return createWithdrawFromCompoundRap(swapParameters);
+    case RapActionTypes.crosschainSwap:
+      return createUnlockAndCrosschainSwapRap(swapParameters);
     default:
       return createUnlockAndSwapRap(swapParameters);
   }
@@ -405,11 +410,14 @@ const executeAction = async (
 };
 
 const getRapTypeFromActionType = (actionType: RapActionType) => {
+  console.log('--- getRapTypeFromActionType', actionType);
   switch (actionType) {
     case RapActionTypes.swap:
+    case RapActionTypes.crosschainSwap:
     case RapActionTypes.unlock:
     case RapActionTypes.depositCompound:
     case RapActionTypes.withdrawCompound:
+      console.log('--- returning ', RAP_TYPE.EXCHANGE);
       return RAP_TYPE.EXCHANGE;
     case RapActionTypes.commitENS:
     case RapActionTypes.registerENS:
@@ -425,6 +433,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.transferENS:
       return RAP_TYPE.ENS;
   }
+  console.log('--- returning ', '');
   return '';
 };
 

@@ -2,7 +2,8 @@ export {
   default as depositCompound,
   getDepositGasLimit,
 } from './depositCompound';
-export { swap, crosschainSwap } from './swap';
+export { swap } from './swap';
+export { crosschainSwap } from './crosschainSwap';
 export {
   default as unlock,
   assetNeedsUnlocking,
