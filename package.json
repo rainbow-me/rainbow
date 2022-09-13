@@ -109,7 +109,9 @@
     "@segment/analytics-react-native": "2.7.0",
     "@segment/sovran-react-native": "0.4.3",
     "@sentry/react-native": "3.4.1",
+    "@tanstack/query-async-storage-persister": "4.2.1",
     "@tanstack/react-query": "4.2.1",
+    "@tanstack/react-query-persist-client": "4.2.1",
     "@tradle/react-native-http": "2.0.1",
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
@@ -452,7 +454,9 @@
     "test-runner": "jest"
   },
   "react-native": {
+    "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
     "@tanstack/react-query": "@tanstack/react-query/build/esm/index",
+    "@tanstack/react-query-persist-client": "@tanstack/react-query-persist-client/build/esm/index",
     "zlib": "browserify-zlib",
     "console": "console-browserify",
     "constants": "constants-browserify",
@@ -479,7 +483,9 @@
     "tls": false
   },
   "browser": {
+    "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
     "@tanstack/react-query": "@tanstack/react-query/build/esm/index",
+    "@tanstack/react-query-persist-client": "@tanstack/react-query-persist-client/build/esm/index",
     "zlib": "browserify-zlib",
     "console": "console-browserify",
     "constants": "constants-browserify",

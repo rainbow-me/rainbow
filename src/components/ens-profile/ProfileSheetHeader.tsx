@@ -28,12 +28,12 @@ import {
   useENSAddress,
   useENSAvatar,
   useENSCover,
-  useENSFirstTransactionTimestamp,
   useENSRecords,
   useFetchUniqueTokens,
   useOpenENSNFTHandler,
 } from '@/hooks';
 import { addressHashedEmoji } from '@/utils/profileUtils';
+import { useFirstTransactionTimestamp } from '@/queries/transactions/first-transaction-timestamp';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -87,9 +87,9 @@ export default function ProfileSheetHeader({
   });
   const enableZoomOnPressCover = enableZoomableImages && !onPressCover;
 
-  const { data: firstTransactionTimestamp } = useENSFirstTransactionTimestamp(
-    ensName
-  );
+  const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({
+    addressOrName: profileAddress ?? '',
+  });
 
   const emoji = useMemo(
     () => (profileAddress ? addressHashedEmoji(profileAddress) : ''),
