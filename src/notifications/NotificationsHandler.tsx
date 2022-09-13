@@ -239,7 +239,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
           hash: rpcTransaction.hash,
           status: TransactionStatus.unknown,
           amount: rpcTransaction.value.toString(),
-          nonce: null,
+          nonce: rpcTransaction.nonce,
           from: rpcTransaction.from,
           to: rpcTransaction.to ?? null,
           asset: null,
