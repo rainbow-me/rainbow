@@ -21,6 +21,7 @@ import {
 import { convertAmountToRawAmount, isEqual } from '@/helpers/utilities';
 import { gasUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { parseGasParamsForTransaction } from '@/parsers';
 
 const CTOKEN_DECIMALS = 8;
 
@@ -53,9 +54,9 @@ const withdrawCompound = async (
   logger.log(`[${actionName}] is max`, isMax);
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-  let maxPriorityFeePerGas =
-    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
+  let maxFeePerGas = gasParams.maxFeePerGas;
+  let maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
   if (!maxFeePerGas) {
     maxFeePerGas = gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
@@ -80,8 +81,8 @@ const withdrawCompound = async (
 
   const transactionParams = {
     gasLimit: ethUnits.basic_withdrawal,
-    maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
 
