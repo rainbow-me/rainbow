@@ -4,7 +4,6 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
   PermitSupportedTokenList,
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
-  SwapType,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
@@ -16,14 +15,11 @@ import {
   SwapActionParameters,
 } from './common';
 import { isNativeAsset } from '@/handlers/assets';
-import {
-  // estimateCrosschainSwapGasLimit,
-  estimateSwapGasLimit,
-} from '@/handlers/swap';
 import store from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
 import { add } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
+import { estimateSwapGasLimit } from '@/handlers/swap';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters

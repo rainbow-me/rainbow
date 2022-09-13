@@ -220,7 +220,7 @@ const getOutputAmount = async (
       source: realSource,
       swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(outputChainId),
-      refuel: true,
+      refuel: false,
     };
 
     const rand = Math.floor(Math.random() * 100);

@@ -6,7 +6,6 @@ import {
   fillCrosschainQuote,
   fillQuote,
   Quote,
-  SwapType,
   unwrapNativeAsset,
   wrapNativeAsset,
   WRAPPED_ASSET,
@@ -19,10 +18,7 @@ import {
   SwapActionParameters,
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
-import {
-  estimateCrosschainSwapGasLimit,
-  estimateSwapGasLimit,
-} from '@/handlers/swap';
+
 import {
   getFlashbotsProvider,
   getProviderForNetwork,
@@ -38,6 +34,10 @@ import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
+import {
+  estimateCrosschainSwapGasLimit,
+  estimateSwapGasLimit,
+} from '@/handlers/swap';
 
 const actionName = 'swap';
 

@@ -40,6 +40,7 @@ import {
 import { ExchangeModalTypes } from '@/helpers';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import logger from '@/utils/logger';
+import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 
 const {
   commitENS,
@@ -101,17 +102,25 @@ export interface UnlockActionParameters {
   chainId: number;
 }
 
-export interface SwapActionParameters {
+export interface BaseSwapActionParameters {
   inputAmount: string;
   nonce?: number;
   outputAmount: string;
-  tradeDetails: Quote | CrosschainQuote;
   permit?: boolean;
   flashbots?: boolean;
-  provider?: Provider;
-  chainId?: number;
+  provider: Provider;
+  chainId: number;
   requiresApprove?: boolean;
   swapType?: SwapType;
+}
+
+export interface SwapActionParameters extends BaseSwapActionParameters {
+  tradeDetails: Quote;
+}
+
+export interface CrosschainSwapActionParameters
+  extends BaseSwapActionParameters {
+  tradeDetails: CrosschainQuote;
 }
 
 export interface ENSActionParameters {
@@ -241,14 +250,18 @@ const createENSRapByType = (
 };
 
 export const getSwapRapEstimationByType = (
-  type: string,
-  swapParameters: SwapActionParameters
+  type: keyof typeof RapActionTypes,
+  swapParameters: SwapActionParameters | CrosschainSwapActionParameters
 ) => {
   switch (type) {
     case RapActionTypes.depositCompound:
       return estimateSwapAndDepositCompound(swapParameters);
     case RapActionTypes.swap:
       return estimateUnlockAndSwap(swapParameters);
+    case RapActionTypes.crosschainSwap:
+      return estimateCrosschainSwapGasLimit(
+        swapParameters as CrosschainSwapActionParameters
+      );
     case RapActionTypes.withdrawCompound:
       return estimateWithdrawFromCompound();
     default:
