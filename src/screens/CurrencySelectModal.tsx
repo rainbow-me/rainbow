@@ -4,13 +4,20 @@ import { uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
+  ReactElement,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  Linking,
+  StatusBar,
+  TextInput,
+} from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -49,6 +56,17 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
+
+export interface EnrichedExchangeAsset extends SwappableAsset {
+  ens: boolean;
+  color: string;
+  nickname: string;
+  onPress: (el: ReactElement) => void;
+  testID: string;
+  useGradientText: boolean;
+  title?: string;
+  key: string;
+}
 
 const storage = new MMKV();
 const getHasShownWarning = () =>
@@ -115,7 +133,7 @@ export default function CurrencySelectModal() {
 
   const scrollPosition = (usePagerPosition() as unknown) as { value: number };
 
-  const searchInputRef = useRef();
+  const searchInputRef = useRef<TextInput>(null);
   const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState<
@@ -228,7 +246,7 @@ export default function CurrencySelectModal() {
   const currencyList = useMemo(() => {
     let list = (type === CurrencySelectionTypes.input
       ? getWalletCurrencyList()
-      : swapCurrencyList) as { data: SwappableAsset[]; title: string }[];
+      : swapCurrencyList) as { data: EnrichedExchangeAsset[]; title: string }[];
 
     // Remove tokens that show up in two lists and empty sections
     let uniqueIds: string[] = [];
@@ -519,7 +537,6 @@ export default function CurrencySelectModal() {
               />
             </Row>
             <Row height="content">
-              {/* @ts-expect-error JavaScript component */}
               <ExchangeSearch
                 clearTextOnFocus={false}
                 isFetching={swapCurrencyListLoading}
@@ -543,18 +560,15 @@ export default function CurrencySelectModal() {
               </Row>
             )}
             {type === null || type === undefined ? null : (
-              <>
-                {/* @ts-expect-error JavaScript component */}
-                <CurrencySelectionList
-                  footerSpacer={android}
-                  itemProps={itemProps}
-                  listItems={currencyList}
-                  loading={swapCurrencyListLoading}
-                  query={searchQueryForSearch}
-                  showList={showList}
-                  testID="currency-select-list"
-                />
-              </>
+              <CurrencySelectionList
+                footerSpacer={android}
+                itemProps={itemProps}
+                listItems={currencyList}
+                loading={swapCurrencyListLoading}
+                query={searchQueryForSearch}
+                showList={showList}
+                testID="currency-select-list"
+              />
             )}
           </Rows>
           <GestureBlocker type="bottom" />
