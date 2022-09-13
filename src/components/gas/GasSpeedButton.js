@@ -343,7 +343,7 @@ const GasSpeedButton = ({
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
       const totalGwei = add(
-        gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
       const estimatedGwei = add(
