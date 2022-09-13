@@ -133,7 +133,7 @@ export default function AlreadyBackedUpView() {
 
   const { colors, isDarkMode } = useTheme();
 
-  const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId].type;
+  const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId]?.type;
 
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
