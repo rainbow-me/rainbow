@@ -106,7 +106,9 @@ export default function ENSIntroSheet() {
   );
 
   const handleSelectUniqueDomain = useCallback(() => {
-    !!uniqueDomain && navigateToAssignRecords(uniqueDomain?.name);
+    if (uniqueDomain?.name) {
+      navigateToAssignRecords(uniqueDomain?.name);
+    }
   }, [navigateToAssignRecords, uniqueDomain]);
 
   const handleSelectExistingName = useCallback(() => {
@@ -258,7 +260,7 @@ export default function ENSIntroSheet() {
                         </Inset>
                       ) : (
                         <Stack space="12px">
-                          {uniqueDomain ? (
+                          {uniqueDomain?.name ? (
                             <SheetActionButton
                               color={colors.appleBlue}
                               // @ts-expect-error JavaScript component

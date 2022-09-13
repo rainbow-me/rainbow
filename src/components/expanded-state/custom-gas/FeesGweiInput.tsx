@@ -1,69 +1,88 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ButtonPressAnimation } from '../../animations';
-import { Row } from '../../layout';
-import { Text } from '../../text';
 import GweiInputPill from './GweiInputPill';
 import { delay } from '@/helpers/utilities';
 import { usePrevious } from '@/hooks';
-import styled from '@/styled-thing';
+import { TextInput } from 'react-native';
+import { Box, Inline, Text } from '@/design-system';
+import { colors } from '@/styles';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
 const LONG_PRESS_DELAY_THRESHOLD = 69;
 const MIN_LONG_PRESS_DELAY_THRESHOLD = 200;
 
-const Wrapper = styled(Row)({});
+type GweiStepButtonProps = {
+  buttonColor: string;
+  onLongPress: () => void;
+  onLongPressEnded: () => void;
+  onPress: () => void;
+  type: string;
+  shouldLongPressHoldPress: boolean;
+};
 
-const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
-  paddingHorizontal: 7,
-  scaleTo: 0.75,
-}))({});
-
-const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
-  color: color || colors.appleBlue,
-  lineHeight: 40,
-  size: 'lmedium',
-  weight: 'heavy',
-}))({});
+type FeesGweiInputProps = {
+  buttonColor: string;
+  editable: boolean;
+  inputRef: React.MutableRefObject<TextInput | undefined>;
+  value: string;
+  minusAction: () => void;
+  onChange: (text: string) => void;
+  onPress: () => void;
+  onBlur: () => void;
+  plusAction: () => void;
+  testID: string;
+};
 
 const GweiStepButton = ({
-  type,
+  buttonColor,
   onLongPress,
   onLongPressEnded,
   onPress,
+  type,
   shouldLongPressHoldPress,
-  buttonColor,
-}) => {
+}: GweiStepButtonProps) => {
   return (
-    <StepButtonWrapper
+    <Box
+      as={ButtonPressAnimation}
+      // @ts-expect-error
+      scaleTo={0.75}
       minLongPressDuration={MIN_LONG_PRESS_DELAY_THRESHOLD}
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       useLateHaptic={false}
+      padding="4px"
+      margin="-4px"
     >
-      <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
-    </StepButtonWrapper>
+      <Text
+        size="icon 16px"
+        color={{ custom: buttonColor || colors.appleBlue }}
+        weight="heavy"
+      >
+        {type === 'plus' ? '􀁍' : '􀁏'}
+      </Text>
+    </Box>
   );
 };
 
 export default function FeesGweiInput({
+  buttonColor,
+  editable = true,
+  inputRef,
   value,
-  plusAction,
   minusAction,
   onChange,
   onPress,
   onBlur,
-  buttonColor,
+  plusAction,
   testID,
-  inputRef,
-  editable = true,
-}) {
-  const longPressHandle = useRef(null);
-  const [trigger, setTrigger] = useState(false);
-  const [actionType, setActionType] = useState(null);
+}: FeesGweiInputProps) {
+  const longPressHandle = useRef<boolean | null>(null);
+  const [trigger, setTrigger] = useState<boolean>(false);
+  const [actionType, setActionType] = useState<string | null>(null);
   const prevTrigger = usePrevious(trigger);
 
   const onMinusPress = useCallback(() => {
@@ -121,34 +140,38 @@ export default function FeesGweiInput({
   }, [trigger, prevTrigger, actionType, plusAction, minusAction]);
 
   return (
-    <Wrapper>
-      <GweiStepButton
-        buttonColor={buttonColor}
-        onLongPress={onMinusLongPress}
-        onLongPressEnded={onLongPressEnded}
-        onPress={onMinusPress}
-        shouldLongPressHoldPress
-        type={MINUS_ACTION_TYPE}
-      />
-      <GweiInputPill
-        color={buttonColor}
-        editable={editable}
-        onBlur={onBlur}
-        onChange={onChange}
-        onFocus={onInputPress}
-        onPress={onInputPress}
-        ref={inputRef}
-        testID={testID}
-        value={value}
-      />
-      <GweiStepButton
-        buttonColor={buttonColor}
-        onLongPress={onPlusLongPress}
-        onLongPressEnded={onLongPressEnded}
-        onPress={onPlusPress}
-        shouldLongPressHoldPress
-        type={PLUS_ACTION_TYPE}
-      />
-    </Wrapper>
+    <Box>
+      <Inline alignVertical="center" space="6px">
+        <GweiStepButton
+          buttonColor={buttonColor}
+          onLongPress={onMinusLongPress}
+          onLongPressEnded={onLongPressEnded}
+          onPress={onMinusPress}
+          shouldLongPressHoldPress
+          type={MINUS_ACTION_TYPE}
+        />
+        <Box>
+          <GweiInputPill
+            color={buttonColor}
+            editable={editable}
+            onBlur={onBlur}
+            onChange={onChange}
+            onFocus={onInputPress}
+            onPress={onInputPress}
+            ref={inputRef}
+            testID={testID}
+            value={value}
+          />
+        </Box>
+        <GweiStepButton
+          buttonColor={buttonColor}
+          onLongPress={onPlusLongPress}
+          onLongPressEnded={onLongPressEnded}
+          onPress={onPlusPress}
+          shouldLongPressHoldPress
+          type={PLUS_ACTION_TYPE}
+        />
+      </Inline>
+    </Box>
   );
 }
