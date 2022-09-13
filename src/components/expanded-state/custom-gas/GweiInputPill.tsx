@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 // @ts-expect-error
