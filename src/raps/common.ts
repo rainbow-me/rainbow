@@ -40,7 +40,7 @@ import {
 import { ExchangeModalTypes } from '@/helpers';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import logger from '@/utils/logger';
-import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
+import { estimateUnlockAndCrosschainSwap } from './unlockAndCrosschainSwap';
 
 const {
   commitENS,
@@ -215,7 +215,7 @@ export const getSwapRapTypeByExchangeType = (type: string) => {
 };
 
 const createSwapRapByType = (
-  type: string,
+  type: keyof typeof RapActionTypes,
   swapParameters: SwapActionParameters
 ) => {
   switch (type) {
@@ -259,7 +259,7 @@ export const getSwapRapEstimationByType = (
     case RapActionTypes.swap:
       return estimateUnlockAndSwap(swapParameters);
     case RapActionTypes.crosschainSwap:
-      return estimateCrosschainSwapGasLimit(
+      return estimateUnlockAndCrosschainSwap(
         swapParameters as CrosschainSwapActionParameters
       );
     case RapActionTypes.withdrawCompound:

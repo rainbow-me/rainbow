@@ -6,6 +6,7 @@ import {
   fillCrosschainQuote,
   fillQuote,
   Quote,
+  SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
   unwrapNativeAsset,
   wrapNativeAsset,
   WRAPPED_ASSET,
@@ -38,6 +39,7 @@ import {
   estimateCrosschainSwapGasLimit,
   estimateSwapGasLimit,
 } from '@/handlers/swap';
+import { assetNeedsUnlocking, estimateApprove } from './unlock';
 
 const actionName = 'swap';
 
