@@ -40,6 +40,7 @@ export default function CurrencySelectModalHeader({
       justifyContent="center"
       alignItems="center"
       width="full"
+      flexDirection="row"
     >
       {/** @ts-expect-error JavaScript component */}
       {showHandle && <SheetHandleFixedToTop />}
@@ -64,9 +65,9 @@ export default function CurrencySelectModalHeader({
         </Box>
       )}
       {showCoinIcon && (
-        <Inset right="4px" top={android ? '2px' : '3px'}>
+        <Inset right="4px">
           <CoinIcon
-            size={28}
+            size={20}
             {...defaultOutputAsset}
             badgeSize="tiny"
             badgeXPosition={-3}
