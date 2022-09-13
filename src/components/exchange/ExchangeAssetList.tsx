@@ -22,7 +22,7 @@ import useAccountSettings from '../../hooks/useAccountSettings';
 import FastCurrencySelectionRow from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { ContactRow } from '../contacts';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
-import { GradientText, Text } from '../text';
+import { GradientText } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';
 import { TokenSectionTypes } from '@/helpers';
@@ -37,8 +37,8 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { abbreviations, deviceUtils, haptics, magicMemo } from '@/utils';
-import { Box } from '@/design-system';
-import { Colors } from '@/styles';
+import { Box, Text } from '@/design-system';
+import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -55,21 +55,6 @@ const HeaderBackground = styled(LinearGradient).attrs(
   position: 'absolute',
   width: deviceWidth,
 });
-
-const HeaderTitle = styled(Text).attrs(
-  ({
-    color,
-    theme: { colors },
-  }: {
-    color: string;
-    theme: { colors: Colors };
-  }) => ({
-    color: color || colors.blueGreyDark50,
-    letterSpacing: 'roundedMedium',
-    size: 'smedium',
-    weight: 'heavy',
-  })
-)({});
 
 const HeaderTitleGradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
@@ -209,7 +194,15 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   }) => {
     const TitleComponent = section.useGradientText
       ? HeaderTitleGradient
-      : HeaderTitle;
+      : ({ children, color }: { children: ReactElement; color: string }) => (
+          <Text
+            size="14px / 19px (Deprecated)"
+            weight="heavy"
+            color={{ custom: color || colors.blueGreyDark50 }}
+          >
+            {children}
+          </Text>
+        );
     const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
     return section?.title ? (
       <ButtonPressAnimation

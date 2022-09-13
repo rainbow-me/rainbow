@@ -20,7 +20,6 @@ import Animated, {
 import Spinner from '../../assets/chartSpinner.png';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
-import { Text } from '../text';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
@@ -29,7 +28,8 @@ import { deviceUtils } from '@/utils';
 import ShadowStack from '@/react-native-shadow-stack';
 import { TextInput } from 'react-native';
 import { useTheme } from '@/theme';
-import { Box } from '@/design-system';
+import { Box, Text } from '@/design-system';
+import { Source } from 'react-native-fast-image';
 
 export const ExchangeSearchHeight = 40;
 const DoneButtonWidth = 52;
@@ -55,14 +55,6 @@ const BackgroundGradient = styled(LinearGradient).attrs(
   transform: [{ scaleY: ExchangeSearchHeight / ExchangeSearchWidth }],
   width: ExchangeSearchWidth,
 });
-
-const SearchIcon = styled(Text).attrs(
-  ({ theme: { colors } }: { theme: { colors: Colors } }) => ({
-    color: colors.alpha(colors.blueGreyDark, 0.6),
-    size: 'large',
-    weight: 'semibold',
-  })
-)({});
 
 const SearchInput = styled(Input).attrs(
   ({
@@ -97,17 +89,6 @@ const SearchInput = styled(Input).attrs(
     isSearchModeEnabled ? 4 : 0,
   textAlign: ({ isSearchModeEnabled }: { isSearchModeEnabled: boolean }) =>
     isSearchModeEnabled ? 'left' : 'center',
-});
-
-const SearchSpinner = styled(ImgixImage).attrs(
-  ({ theme: { colors } }: { theme: { colors: Colors } }) => ({
-    resizeMode: ImgixImage.resizeMode.contain,
-    source: Spinner,
-    tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-  })
-)({
-  height: 20,
-  width: 20,
 });
 
 const rotationConfig = {
@@ -240,11 +221,18 @@ const ExchangeSearch: ForwardRefRenderFunction<
           <>
             <Box
               as={Animated.View}
-              paddingTop={{ custom: android ? 6 : 9 }}
+              paddingTop={{ custom: 14 }}
               style={searchIconStyle}
             >
-              <SearchIcon>􀊫</SearchIcon>
+              <Text
+                weight="semibold"
+                size="17pt"
+                color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
+              >
+                􀊫
+              </Text>
             </Box>
+
             <Box
               as={Animated.View}
               height={{ custom: 20 }}
@@ -254,7 +242,12 @@ const ExchangeSearch: ForwardRefRenderFunction<
               top={{ custom: 10 }}
               style={spinnerStyle}
             >
-              <SearchSpinner />
+              <ImgixImage
+                resizeMode={ImgixImage.resizeMode.contain}
+                source={Spinner as Source}
+                tintColor={colors.alpha(colors.blueGreyDark, 0.6)}
+                style={{ height: 20, width: 20 }}
+              />
             </Box>
           </>
         )}
