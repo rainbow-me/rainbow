@@ -108,6 +108,7 @@ export default function ExchangeInputField({
           mainnetAddress={inputCurrencyMainnetAddress}
           onPress={onPressMaxBalance}
           testID={testID + '-max'}
+          type={inputCurrencyAssetType}
         />
       </NativeFieldRow>
     </Container>

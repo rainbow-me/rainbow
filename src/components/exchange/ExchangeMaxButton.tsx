@@ -5,6 +5,7 @@ import { Box, Text } from '@/design-system';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { AssetType } from '@/entities';
 
 const Container = styled(ButtonPressAnimation)({
   marginRight: 4,
@@ -16,6 +17,7 @@ interface ExchangeMaxButtonProps {
   disabled: boolean;
   onPress: () => void;
   testID: string;
+  type?: string;
 }
 
 export default function ExchangeMaxButton({
@@ -24,12 +26,18 @@ export default function ExchangeMaxButton({
   disabled,
   onPress,
   testID,
+  type,
 }: ExchangeMaxButtonProps) {
-  const colorForAsset = useColorForAsset({
-    address,
-    mainnet_address: mainnetAddress,
-  });
   const { colors } = useTheme();
+
+  const colorForAsset = useColorForAsset(
+    {
+      address,
+      mainnet_address: mainnetAddress,
+      type: mainnetAddress ? AssetType.token : type,
+    },
+    address ? undefined : colors.appleBlue
+  );
 
   return (
     <Container disabled={disabled} onPress={onPress} testID={testID}>
