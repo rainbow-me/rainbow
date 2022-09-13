@@ -40,6 +40,7 @@ import {
   Bleed,
   Box,
   Cover,
+  DebugLayout,
   Heading,
   Inline,
   Inset,
@@ -196,13 +197,11 @@ export default function ENSAssignRecordsSheet() {
             : ScrollView) as typeof ScrollView
         }
         background="body"
-        // invertStickyHeaders
-        // stickyHeaderIndices={[1]}
         contentContainerStyle={{
           paddingBottom: bottomActionHeight + ExtraBottomPadding,
         }}
         flexGrow={1}
-        scrollEnabled
+        scrollEnabled={android}
         testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
         <Stack space="19px (Deprecated)">
@@ -263,18 +262,6 @@ export default function ENSAssignRecordsSheet() {
             </Stack>
           </Inset>
         </Stack>
-      </Box>
-      <Box
-        height={{ custom: 300 }}
-        position="absolute"
-        bottom="0px"
-        width="full"
-      >
-        <ENSAssignRecordsBottomActions
-          currentRouteName={Routes.ENS_ASSIGN_RECORDS_SHEET}
-          previousRouteName={Routes.PROFILE_SCREEN}
-          visible={true}
-        />
       </Box>
     </AccentColorProvider>
   );
@@ -384,6 +371,7 @@ export function ENSAssignRecordsBottomActions({
           </Inset>
         </Box>
       )}
+
       <Box
         as={Animated.View}
         background="body"

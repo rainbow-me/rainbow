@@ -177,30 +177,37 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should fill & validate the fields', async () => {
+    // calculate the scroll interval
+    const attributes = await element(
+      by.id('ens-edit-records-sheet')
+    ).getAttributes();
+    const fieldAttributes = await element(
+      by.id('ens-text-record-name')
+    ).getAttributes();
+    const deviceHeight = attributes?.frame?.height;
+    const fieldHeight = fieldAttributes?.frame?.height;
+    const scrollPct = fieldHeight / deviceHeight;
     // Fill "Website" field
-    console.log('TESTING1');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.checkIfVisible('ens-text-record-url');
-    console.log('TESTING12');
     await Helpers.typeText('ens-text-record-url', 'abc');
-    console.log('TESTING13');
     await Helpers.waitAndTap('ens-text-record-url-error');
-    console.log('TESTING14');
     await Helpers.checkIfElementByTextToExist('Invalid URL');
-    console.log('TESTING15');
     await Helpers.tapByText('OK');
     await Helpers.typeText('ens-text-record-url', '123.com');
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-url-error');
 
     // Fill "Twitter" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-com.twitter', RECORD_TWITTER);
 
     if (device.getPlatform() === 'android') {
       await Helpers.waitAndTap('hide-keyboard-button');
     }
-    await Helpers.scrollToElement('ens-text-record-email', 'down');
 
     // Fill "Email" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-email', RECORD_EMAIL.slice(0, 3));
     await Helpers.waitAndTap('ens-text-record-email-error');
     await Helpers.checkIfElementByTextToExist('Invalid email');
@@ -212,14 +219,13 @@ describe('Register ENS Flow', () => {
     if (device.getPlatform() === 'android') {
       await Helpers.waitAndTap('hide-keyboard-button');
     }
-    await Helpers.scrollToElement('ens-text-record-com.instagram', 'down');
 
     // Fill "Instagram" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-com.instagram', RECORD_INSTAGRAM);
 
-    await Helpers.scrollToElement('ens-text-record-com.discord', 'up');
-
     // Fill "Discord" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText(
       'ens-text-record-com.discord',
       RECORD_DISCORD.slice(0, 3)
@@ -234,16 +240,12 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-com.discord-error');
 
-    await Helpers.scrollToElement('ens-text-record-com.github', 'up');
-
     // Fill "GitHub" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB);
-  });
-
-  it('Should fill & validate the fields 2', async () => {
-    await Helpers.scrollToElement('ens-text-record-BTC', 'up');
 
     // Fill "Bitcoin" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-BTC', '1F1');
     await Helpers.waitAndTap('ens-text-record-BTC-error');
     await Helpers.checkIfElementByTextToExist('Invalid BTC address');
@@ -254,44 +256,33 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('ens-text-record-BTC-error');
-  });
-
-  it('Should fill & validate the fields 3', async () => {
-    await Helpers.scrollToElement('ens-text-record-com.snapchat', 'up');
 
     // Fill "Snapchat" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-com.snapchat', RECORD_SNAPCHAT);
 
-    await Helpers.scrollToElement('ens-text-record-org.telegram', 'up');
-
     // Fill "Telegram" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-org.telegram', RECORD_TELEGRAM);
 
-    await Helpers.scrollToElement('ens-text-record-com.reddit', 'up');
-
     // Fill "Reddit" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT);
 
-    await Helpers.scrollToElement('ens-text-record-pronouns', 'up');
-
     // Fill "Pronouns" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS);
 
-    await Helpers.scrollToElement('ens-text-record-notice', 'up');
-
     // Fill "Notice" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE);
 
-    await Helpers.scrollToElement('ens-text-record-keywords', 'up');
-
     // Fill "Keywords" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS);
-  });
-
-  it('Should fill & validate the fields 4', async () => {
-    await Helpers.scrollToElement('ens-text-record-LTC', 'up');
 
     // Fill "Litecoin" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText('ens-text-record-LTC', 'MGx');
     await Helpers.waitAndTap('ens-text-record-LTC-error');
     await Helpers.checkIfElementByTextToExist('Invalid LTC address');
@@ -304,6 +295,7 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfNotVisible('ens-text-record-LTC-error');
 
     // Fill "Content" field
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', scrollPct);
     await Helpers.typeText(
       'ens-text-record-contenthash',
       RECORD_CONTENTHASH.slice(0, 3)

@@ -120,7 +120,7 @@ export async function scrollTo(scrollviewId, edge) {
 
 export async function scrollToElement(elementId, direction) {
   await waitFor(element(by.id(elementId)))
-    .toBeVisible(100)
+    .toBeVisible()
     .whileElement(by.id('ens-edit-records-sheet'))
     .scroll(50, direction);
 }
