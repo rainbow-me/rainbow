@@ -66,8 +66,10 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
   const appState = useRef<AppStateStatus>(null);
   const notifeeForegroundEventListener = useRef<Callback>();
 
-  // We need to save some state result to a ref in order to provide
-  // an always up-to-date reference for event listeners
+  /*
+  We need to save some properties to a ref in order to have an up-to-date value
+  inside the event listener callbacks closure
+   */
   syncedStateRef.current.wallets = wallets;
   syncedStateRef.current.contacts = contacts;
 
@@ -195,10 +197,12 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
         return;
       }
 
-      // converting data to type we receive from backend
+      // casting data payload to type that was agreed on with backend
       const data = (notification.data as unknown) as TransactionNotificationData;
+
       const { wallets, contacts } = syncedStateRef.current;
       const { accountAddress, nativeCurrency } = store.getState().settings;
+
       let walletAddress: string | null = accountAddress;
       if (accountAddress !== data.address) {
         walletAddress = await wallets.switchToWalletWithAddress(data.address);
@@ -214,92 +218,115 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
         );
       if (zerionTransaction) {
         console.log('NOTIFICATIONS: Getting zerion finished tx data');
-        showTransactionDetailsSheet(
-          zerionTransaction,
-          contacts,
-          accountAddress
-        );
+        showTransactionDetailsSheet(zerionTransaction, contacts, walletAddress);
       } else {
         console.log('NOTIFICATIONS: Getting data from RPC');
         const network = ethereumUtils.getNetworkFromChainId(
           parseInt(data.chain, 10)
         );
-        const p = await getProviderForNetwork(network);
-        const txObj = await p.getTransaction(data.hash);
-        const txDetails: NewTransactionOrAddCashTransaction = {
-          type: TransactionType.send,
-          network,
-          hash: txObj.hash,
-          status: TransactionStatus.unknown,
-          amount: txObj.value.toString(),
-          nonce: null,
-          from: txObj.from,
-          to: txObj.to ?? null,
-          asset: null,
-          gasLimit: txObj.gasLimit,
-          maxFeePerGas: txObj.maxFeePerGas,
-          maxPriorityFeePerGas: txObj.maxPriorityFeePerGas,
-          gasPrice: txObj.gasPrice,
-          data: txObj.data,
-        };
+        const provider = await getProviderForNetwork(network);
+        const rpcTransaction = await provider.getTransaction(data.hash);
 
-        const tx = await parseNewTransaction(txDetails, nativeCurrency);
-        const transaction = { ...tx };
-
-        if (txObj?.blockNumber && txObj?.blockHash) {
-          const minedAt = Math.floor(Date.now() / 1000);
-          let receipt;
-          try {
-            if (txObj) {
-              receipt = await txObj.wait();
-            }
-          } catch (e: any) {
-            // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
-            if (e.transaction) {
-              // if a transaction field exists, it was confirmed but failed
-              transaction.status = TransactionStatus.failed;
-            } else {
-              // cancelled or replaced
-              transaction.status = TransactionStatus.cancelled;
-            }
-          }
-          const status = receipt?.status || 0;
-          if (!isZero(status)) {
-            let direction = TransactionDirection.out;
-            if (tx?.from!.toLowerCase() === tx?.to!.toLowerCase()) {
-              direction = TransactionDirection.self;
-            }
-            if (
-              accountAddress.toLowerCase() === transaction.to?.toLowerCase() &&
-              tx?.from?.toLowerCase() !== accountAddress.toLowerCase()
-            ) {
-              direction = TransactionDirection.in;
-            }
-            const newStatus = getTransactionLabel({
-              direction,
-              pending: false,
-              protocol: tx?.protocol,
-              status:
-                tx.status === TransactionStatus.cancelling
-                  ? TransactionStatus.cancelled
-                  : getConfirmedState(tx.type),
-              type: tx?.type,
-            });
-            transaction.status = newStatus;
-          } else {
-            transaction.status = TransactionStatus.failed;
-          }
-          transaction.title = getTitle({
-            protocol: tx.protocol,
-            status: transaction.status,
-            type: tx.type,
-          });
-          transaction.pending = false;
-          transaction.minedAt = minedAt;
+        const transactionConfirmed =
+          rpcTransaction?.blockNumber && rpcTransaction?.blockHash;
+        if (!transactionConfirmed) {
+          return;
         }
 
-        if (transaction) {
-          showTransactionDetailsSheet(transaction, contacts, accountAddress);
+        const newTransactionDetails: NewTransactionOrAddCashTransaction = {
+          type: TransactionType.send,
+          network,
+          hash: rpcTransaction.hash,
+          status: TransactionStatus.unknown,
+          amount: rpcTransaction.value.toString(),
+          nonce: null,
+          from: rpcTransaction.from,
+          to: rpcTransaction.to ?? null,
+          asset: null,
+          gasLimit: rpcTransaction.gasLimit,
+          maxFeePerGas: rpcTransaction.maxFeePerGas,
+          maxPriorityFeePerGas: rpcTransaction.maxPriorityFeePerGas,
+          gasPrice: rpcTransaction.gasPrice,
+          data: rpcTransaction.data,
+        };
+
+        const parsedTransaction = await parseNewTransaction(
+          newTransactionDetails,
+          nativeCurrency
+        );
+        const resultTransaction = { ...parsedTransaction };
+        const minedAt = Math.floor(Date.now() / 1000);
+        let receipt;
+
+        try {
+          if (rpcTransaction) {
+            receipt = await rpcTransaction.wait();
+          }
+        } catch (e: any) {
+          // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
+          if (e.transaction) {
+            // if a transaction field exists, it was confirmed but failed
+            resultTransaction.status = TransactionStatus.failed;
+          } else {
+            // cancelled or replaced
+            resultTransaction.status = TransactionStatus.cancelled;
+          }
+        }
+        const status = receipt?.status || 0;
+        if (!isZero(status)) {
+          console.log(
+            'from: ',
+            parsedTransaction?.from,
+            'to: ',
+            parsedTransaction?.to,
+            'account address: ',
+            accountAddress
+          );
+          let direction = TransactionDirection.out;
+          if (
+            parsedTransaction?.from &&
+            parsedTransaction?.to &&
+            parsedTransaction.from.toLowerCase() ===
+              parsedTransaction.to.toLowerCase()
+          ) {
+            direction = TransactionDirection.self;
+          }
+          if (
+            parsedTransaction?.from &&
+            parsedTransaction?.to &&
+            walletAddress.toLowerCase() === parsedTransaction.to.toLowerCase()
+          ) {
+            direction = TransactionDirection.in;
+          }
+
+          const newStatus = getTransactionLabel({
+            direction,
+            pending: false,
+            protocol: parsedTransaction?.protocol,
+            status:
+              parsedTransaction.status === TransactionStatus.cancelling
+                ? TransactionStatus.cancelled
+                : getConfirmedState(parsedTransaction.type),
+            type: parsedTransaction?.type,
+          });
+          resultTransaction.status = newStatus;
+        } else {
+          resultTransaction.status = TransactionStatus.failed;
+        }
+        resultTransaction.title = getTitle({
+          protocol: parsedTransaction.protocol,
+          status: resultTransaction.status,
+          type: parsedTransaction.type,
+        });
+        resultTransaction.pending = false;
+        resultTransaction.minedAt = minedAt;
+
+        if (resultTransaction) {
+          showTransactionDetailsSheet(
+            resultTransaction,
+            contacts,
+            walletAddress
+          );
         }
       }
     }
