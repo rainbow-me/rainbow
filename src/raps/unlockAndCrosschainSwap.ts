@@ -57,6 +57,7 @@ export const estimateUnlockAndCrosschainSwap = async (
       gasLimits = gasLimits.concat(unlockGasLimit);
     }
   }
+  console.log('------ swapAssetNeedsUnlocking', swapAssetNeedsUnlocking);
 
   const swapGasLimit = await estimateCrosschainSwapGasLimit({
     chainId: Number(chainId),
@@ -110,7 +111,6 @@ export const createUnlockAndCrosschainSwapRap = async (
       actions = actions.concat(unlock);
     }
   }
-
   const crosschainSwap = createNewAction(RapActionTypes.crosschainSwap, {
     chainId,
     flashbots,
