@@ -272,14 +272,10 @@ async function restoreSpecificBackupIntoKeychain(
         const wasBackupSavedWithPIN =
           seedphrase?.includes('salt') && seedphrase?.includes('cipher');
 
-        if (android && wasBackupSavedWithPIN) {
-          try {
-            const backupPIN = await decryptPIN(backedUpData[pinKey]);
+        if (wasBackupSavedWithPIN) {
+          const backupPIN = await decryptPIN(backedUpData[pinKey]);
 
-            privateKey = await encryptor.decrypt(backupPIN, seedphrase);
-          } catch (error) {
-            return false;
-          }
+          privateKey = await encryptor.decrypt(backupPIN, seedphrase);
         }
 
         await createWallet(privateKey, null, null, true);
@@ -312,7 +308,7 @@ async function restoreCurrentBackupIntoKeychain(
 
         const hasBiometricsEnabled = await getSupportedBiometryType();
 
-        if (endsWith(key, seedPhraseKey)) {
+        if (key.endsWith(seedPhraseKey)) {
           const parsedValue = JSON.parse(value);
           const { seedphrase } = parsedValue;
 
@@ -393,19 +389,5 @@ export async function saveBackupPassword(
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword(): Promise<null | BackupPassword> {
-  if (android) {
-    return null;
-  }
-
-  try {
-    const results = await requestSharedWebCredentials();
-    if (results) {
-      return results.password as BackupPassword;
-    }
-    return null;
-  } catch (e) {
-    logger.sentry('Error while fetching backup password', e);
-    captureException(e);
-    return null;
-  }
+  return null;
 }
