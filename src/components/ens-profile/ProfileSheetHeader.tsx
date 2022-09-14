@@ -33,7 +33,7 @@ import {
   useOpenENSNFTHandler,
 } from '@/hooks';
 import { addressHashedEmoji } from '@/utils/profileUtils';
-import { useFirstTransactionTimestamp } from '@/queries/transactions/first-transaction-timestamp';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,

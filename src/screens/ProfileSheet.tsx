@@ -27,7 +27,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
-import { useFirstTransactionTimestamp } from '@/queries/transactions/first-transaction-timestamp';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;

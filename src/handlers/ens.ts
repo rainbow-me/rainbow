@@ -38,7 +38,7 @@ import {
 import { labelhash, logger, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
-import { prefetchFirstTransactionTimestamp } from '@/queries/transactions/first-transaction-timestamp';
+import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 
 const DUMMY_RECORDS = {
   description: 'description',
