@@ -76,6 +76,7 @@ export default function CurrencySelectModalHeader({
       )}
 
       <Text
+        color="primary (Deprecated)"
         size="18px / 27px (Deprecated)"
         weight="heavy"
         numberOfLines={1}
