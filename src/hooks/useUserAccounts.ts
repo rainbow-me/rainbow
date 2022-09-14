@@ -1,7 +1,7 @@
 import {
   addDefaultNotificationSettingsForWallet,
   NotificationRelationship,
-} from './../utils/notifications';
+} from '@/utils/notifications';
 import { values } from 'lodash';
 
 import useAccountSettings from './useAccountSettings';
