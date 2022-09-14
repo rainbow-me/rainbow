@@ -158,7 +158,7 @@ export default function RegisterENSNavigator() {
         height="100%"
         ref={sheetRef}
         removeTopPadding
-        scrollEnabled
+        // scrollEnabled
       >
         <StatusBar barStyle="light-content" />
         <Box

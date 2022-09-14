@@ -200,7 +200,7 @@ export default function ENSAssignRecordsSheet() {
           paddingBottom: bottomActionHeight + ExtraBottomPadding,
         }}
         flexGrow={1}
-        scrollEnabled={android}
+        scrollEnabled={true}
         testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
         <Stack space="19px (Deprecated)">
