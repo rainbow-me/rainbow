@@ -1,7 +1,7 @@
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { uniswapClient } from '../apollo/client';
+import { uniswapClientDeprecated } from '../apollo/client';
 import {
   UNISWAP_ADDITIONAL_POOL_DATA,
   UNISWAP_PAIR_DATA_QUERY_VOLUME,
@@ -19,7 +19,7 @@ function cutIfOver10000(value: number) {
 }
 
 async function fetchPoolDetails(address: string, dispatch: AppDispatch) {
-  const result = await uniswapClient.query({
+  const result = await uniswapClientDeprecated.query({
     query: UNISWAP_ADDITIONAL_POOL_DATA,
     variables: {
       address,
@@ -38,7 +38,7 @@ async function fetchPoolDetails(address: string, dispatch: AppDispatch) {
     const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
     const [{ number: b1 }] = await getBlocksFromTimestamps([t1]);
 
-    const oneDayResult = await uniswapClient.query({
+    const oneDayResult = await uniswapClientDeprecated.query({
       fetchPolicy: 'cache-first',
       query: UNISWAP_PAIR_DATA_QUERY_VOLUME(address, b1),
     });
