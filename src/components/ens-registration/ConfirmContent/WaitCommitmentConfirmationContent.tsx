@@ -34,6 +34,7 @@ const WaitCommitmentConfirmationContent = ({
                 <Stack alignHorizontal="center" space="19px (Deprecated)">
                   <Heading
                     align="center"
+                    color="primary (Deprecated)"
                     size="23px / 27px (Deprecated)"
                     weight="heavy"
                   >
@@ -41,7 +42,7 @@ const WaitCommitmentConfirmationContent = ({
                   </Heading>
                   <Text
                     align="center"
-                    color="secondary60"
+                    color="secondary60 (Deprecated)"
                     size="16px / 22px (Deprecated)"
                     weight="semibold"
                   >

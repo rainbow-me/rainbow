@@ -20,8 +20,8 @@ export default function SelectableButton({
   isSelected,
   testID,
 }: SelectableButtonProps) {
-  const secondary06 = useForegroundColor('secondary06');
-  const secondary30 = useForegroundColor('secondary30');
+  const secondary06 = useForegroundColor('secondary06 (Deprecated)');
+  const secondary30 = useForegroundColor('secondary30 (Deprecated)');
   const accent = useForegroundColor('accent');
   const borderColor = isSelected ? accent : secondary06;
   const textColor = isSelected ? accent : secondary30;

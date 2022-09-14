@@ -91,10 +91,14 @@ export default function SourcePicker({ onSelect, currentSource }) {
           paddingVertical="12px"
           testID="swap-settings-routes-label"
         >
-          <Text size="16px / 22px (Deprecated)" weight="bold">
+          <Text
+            color="primary (Deprecated)"
+            size="16px / 22px (Deprecated)"
+            weight="bold"
+          >
             {lang.t('exchange.source_picker')}
             <Text
-              color="secondary30"
+              color="secondary30 (Deprecated)"
               size="16px / 22px (Deprecated)"
               weight="bold"
             >
@@ -111,7 +115,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
           onPressMenuItem={handleOnPressMenuItem}
         >
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={40}
             paddingHorizontal="10px"
             paddingVertical="6px"
@@ -129,6 +133,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
                 width={20}
               />
               <Text
+                color="primary (Deprecated)"
                 size="18px / 27px (Deprecated)"
                 testID={`swap-settings-routes-current-${currentSource}`}
                 weight="bold"

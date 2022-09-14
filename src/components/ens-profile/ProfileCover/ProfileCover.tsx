@@ -37,7 +37,7 @@ export default function ProfileCover({
       {showSkeleton && (
         <Box height="126px" position="absolute" top="0px" width="full">
           <Skeleton animated>
-            <Box background="body" height="126px" width="full" />
+            <Box background="body (Deprecated)" height="126px" width="full" />
           </Skeleton>
         </Box>
       )}
@@ -58,7 +58,7 @@ export default function ProfileCover({
                   ? {}
                   : coverUrl
                   ? {
-                      background: 'body',
+                      background: 'body (Deprecated)',
                     }
                   : {
                       style: { backgroundColor: accentColor },

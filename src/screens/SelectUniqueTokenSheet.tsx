@@ -29,7 +29,7 @@ export default function SelectUniqueTokenSheet() {
 
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       height="full"
       paddingTop={android ? undefined : '34px (Deprecated)'}
       {...(android && { borderTopRadius: 30 })}

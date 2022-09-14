@@ -12,7 +12,7 @@ const DoubleChevron = () => (
   <Cover alignHorizontal="center" alignVertical="center">
     <RowWithMargins>
       <Text
-        color="secondary60"
+        color="secondary60 (Deprecated)"
         size="16px / 22px (Deprecated)"
         weight="semibold"
       >
@@ -20,7 +20,7 @@ const DoubleChevron = () => (
       </Text>
       <Bleed left="6px">
         <Text
-          color="secondary40"
+          color="secondary40 (Deprecated)"
           size="16px / 22px (Deprecated)"
           weight="semibold"
         >
@@ -72,7 +72,7 @@ export default function SwapDetailsMasthead({
       </Columns>
 
       <Box
-        background="body"
+        background="body (Deprecated)"
         borderRadius={16}
         height={{ custom: 32 }}
         shadow="21px light"

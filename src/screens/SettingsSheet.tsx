@@ -193,7 +193,7 @@ export default function SettingsSheet() {
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Box
-      background="cardBackdrop"
+      background="cardBackdrop (Deprecated)"
       flexGrow={1}
       testID="settings-sheet"
       {...(android && { borderTopRadius: 30, marginTop: { custom: 8 } })}

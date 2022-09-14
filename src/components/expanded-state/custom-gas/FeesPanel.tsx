@@ -213,7 +213,11 @@ export default function FeesPanel({
           // @ts-expect-error
           onPress={openHelper}
         >
-          <Text size="14px / 19px (Deprecated)" weight="heavy">
+          <Text
+            color="primary (Deprecated)"
+            size="14px / 19px (Deprecated)"
+            weight="heavy"
+          >
             {`${label} `}
             <Text
               size="14px / 19px (Deprecated)"
@@ -731,7 +735,11 @@ export default function FeesPanel({
                 onPress={() => openGasHelper(trendType)}
                 scaleTo={1}
               >
-                <Text size="14px / 19px (Deprecated)" weight="heavy">
+                <Text
+                  color="primary (Deprecated)"
+                  size="14px / 19px (Deprecated)"
+                  weight="heavy"
+                >
                   {formattedBaseFee}
                 </Text>
               </Box>
@@ -802,10 +810,18 @@ export default function FeesPanel({
         <Row>
           <Box paddingTop={{ custom: 14 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
-              <Text size="14px / 19px (Deprecated)" weight="heavy">
+              <Text
+                color="primary (Deprecated)"
+                size="14px / 19px (Deprecated)"
+                weight="heavy"
+              >
                 {lang.t('gas.max_transaction_fee')}
               </Text>
-              <Text size="14px / 19px (Deprecated)" weight="heavy">
+              <Text
+                color="primary (Deprecated)"
+                size="14px / 19px (Deprecated)"
+                weight="heavy"
+              >
                 {maxFee}
               </Text>
             </Inline>
