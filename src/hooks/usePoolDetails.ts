@@ -1,7 +1,7 @@
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { uniswapClient as uniswapClientDeprecated } from '../apollo/client';
+import { uniswapClientDeprecated } from '../apollo/client';
 import { UNISWAP_PAIR_DATA_QUERY_VOLUME } from '../apollo/queries';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
