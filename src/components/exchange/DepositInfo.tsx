@@ -117,10 +117,14 @@ export default function DepositInfo({
                 />
               </Box>
 
-              <Text color="secondary60" size="13pt" weight="semibold">
+              <Text
+                color="secondary60 (Deprecated)"
+                size="13pt"
+                weight="semibold"
+              >
                 {lang.t('exchange.swapping_for_prefix')}
               </Text>
-              <Text size="17pt" weight="bold">
+              <Text color="primary (Deprecated)" size="17pt" weight="bold">
                 {`${amountToDisplay} ${asset?.symbol || ''}`}
               </Text>
             </Inline>

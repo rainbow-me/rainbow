@@ -40,7 +40,7 @@ export default function PriceImpactWarning({
                   size="17pt"
                   color={{ custom: priceImpactColor }}
                 >{`􀇿 `}</Text>
-                <Text weight="bold" size="17pt" color="primary">
+                <Text weight="bold" size="17pt" color="primary (Deprecated)">
                   {lang.t('exchange.price_impact.small_market')}
                 </Text>
                 <Text

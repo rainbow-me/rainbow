@@ -21,7 +21,7 @@ const FloatingPanel = ({
 }: FloatingPanelProps) => {
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       borderRadius={borderRadius}
       paddingBottom={paddingBottom}
       style={{ ...style, overflow, zIndex: 1 }}
