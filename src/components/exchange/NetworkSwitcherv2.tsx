@@ -119,7 +119,7 @@ const NetworkSwitcherv2 = ({
                         color={
                           isSelected
                             ? { custom: colors.networkColors[network] }
-                            : 'secondary50'
+                            : 'secondary50 (Deprecated)'
                         }
                         size="16px / 22px (Deprecated)"
                         weight="bold"

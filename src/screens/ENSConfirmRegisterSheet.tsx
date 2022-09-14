@@ -398,7 +398,7 @@ export default function ENSConfirmRegisterSheet() {
     >
       <AccentColorProvider color={accentColor}>
         <Box
-          background="body"
+          background="body (Deprecated)"
           paddingTop="19px (Deprecated)"
           paddingVertical="30px (Deprecated)"
           style={{
@@ -413,7 +413,7 @@ export default function ENSConfirmRegisterSheet() {
                 <Stack alignHorizontal="center" space="15px (Deprecated)">
                   {avatarUrl && (
                     <Box
-                      background="body"
+                      background="body (Deprecated)"
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
                       shadow="15px light"
@@ -432,6 +432,7 @@ export default function ENSConfirmRegisterSheet() {
                     <Heading
                       align="center"
                       numberOfLines={1}
+                      color="primary (Deprecated)"
                       size="26px / 30px (Deprecated)"
                       weight="heavy"
                     >

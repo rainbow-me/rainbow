@@ -112,6 +112,7 @@ function GweiInputPill(
             {IS_TESTING !== 'true' && (
               <Text
                 align="center"
+                color="primary (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="heavy"
               >

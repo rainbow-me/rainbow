@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, Stack, Text } from '@/design-system';
+import { Box, Separator, Stack, Text } from '@/design-system';
 
 interface MenuProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const Menu = ({ children, description, header }: MenuProps) => {
       {!!header && (
         <Box paddingBottom="12px" paddingHorizontal={{ custom: 16 }}>
           <Text
-            color="secondary60"
+            color="secondary60 (Deprecated)"
             size="16px / 22px (Deprecated)"
             weight="regular"
           >
@@ -21,13 +21,20 @@ const Menu = ({ children, description, header }: MenuProps) => {
           </Text>
         </Box>
       )}
-      <Box background="card" borderRadius={18} shadow="21px light" width="full">
-        <Stack separator={<Divider color="divider60" />}>{children}</Stack>
+      <Box
+        background="card (Deprecated)"
+        borderRadius={18}
+        shadow="21px light"
+        width="full"
+      >
+        <Stack separator={<Separator color="divider60 (Deprecated)" />}>
+          {children}
+        </Stack>
       </Box>
       {!!description && (
         <Box paddingHorizontal={{ custom: 16 }} paddingTop={{ custom: 17 }}>
           <Text
-            color="secondary60"
+            color="secondary60 (Deprecated)"
             size="14px / 19px (Deprecated)"
             weight="regular"
           >
