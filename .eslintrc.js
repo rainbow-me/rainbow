@@ -28,13 +28,6 @@ module.exports = {
     project: ['./tsconfig.json'],
   },
   globals: globalVars,
-  settings: {
-    'import/resolver': {
-      node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx', '.android.ts', '.ios.ts'],
-      },
-    },
-  },
   rules: {
     'no-restricted-imports': [
       'warn',

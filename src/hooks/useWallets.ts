@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { findLatestBackUp } from '../model/backup';
+import { findLatestBackUp } from '../model/backupICloud';
+import { findLatestBackUp as findLatestBackUpGD } from '../model/backupGoogleDrive';
 import {
   addressSetSelected,
   setIsWalletLoading as rawSetIsWalletLoading,
@@ -13,6 +14,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
+import { IS_ANDROID } from '@/env';
 
 const walletSelector = createSelector(
   ({
@@ -30,7 +32,9 @@ const walletSelector = createSelector(
   }),
   ({ isWalletLoading, selectedWallet, walletNames, wallets }) => ({
     isWalletLoading,
-    latestBackup: findLatestBackUp(wallets) || false,
+    latestBackup: IS_ANDROID
+      ? findLatestBackUpGD(wallets) || false
+      : findLatestBackUp(wallets) || false,
     selectedWallet,
     walletNames,
     wallets,

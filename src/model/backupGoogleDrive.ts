@@ -4,7 +4,6 @@ import {
   getSupportedBiometryType,
   Options,
   requestSharedWebCredentials,
-  setSharedWebCredentials,
 } from 'react-native-keychain';
 import {
   CLOUD_BACKUP_ERRORS,
@@ -15,6 +14,7 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import {
   allWalletsKey,
+  pinKey,
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
@@ -27,8 +27,11 @@ import {
   RainbowWallet,
 } from './wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { saveNewAuthenticationPIN } from '@/handlers/authentication';
-import { analytics } from '@/analytics';
+import {
+  decryptPIN,
+  authenticateWithPIN,
+  saveNewAuthenticationPIN,
+} from '@/handlers/authentication';
 import logger from '@/utils/logger';
 
 type BackupPassword = string;
@@ -85,13 +88,54 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   return secrets;
 }
 
-export async function backupWalletToCloud(
-  password: BackupPassword,
-  wallet: RainbowWallet
-) {
+export async function backupWalletToCloud({
+  password,
+  wallet,
+  onBeforePINCreated = NOOP,
+  onAfterPINCreated = NOOP,
+}: {
+  password: BackupPassword;
+  wallet: RainbowWallet;
+  onBeforePINCreated: () => void;
+  onAfterPINCreated: () => void;
+}) {
   const now = Date.now();
 
   const secrets = await extractSecretsForWallet(wallet);
+  const hasBiometricsEnabled = await getSupportedBiometryType();
+  if (!hasBiometricsEnabled) {
+    let userPIN;
+    let privateKey: string;
+
+    await Promise.all(
+      Object.keys(secrets).map(async key => {
+        const value = secrets[key];
+
+        if (key.endsWith(seedPhraseKey)) {
+          const parsedValue = JSON.parse(value);
+          const { seedphrase } = parsedValue;
+
+          try {
+            onBeforePINCreated();
+            userPIN = await authenticateWithPIN();
+            onAfterPINCreated();
+          } catch (error) {
+            return;
+          }
+
+          if (userPIN && seedphrase) {
+            privateKey = await encryptor.decrypt(userPIN, seedphrase);
+          }
+
+          secrets[key] = JSON.stringify({
+            ...parsedValue,
+            seedphrase: privateKey,
+          });
+        }
+      })
+    );
+  }
+
   const data = {
     createdAt: now,
     secrets,
@@ -102,7 +146,7 @@ export async function backupWalletToCloud(
 export async function addWalletToCloudBackup(
   password: BackupPassword,
   wallet: RainbowWallet,
-  filename: string
+  filename: string | boolean
 ): Promise<null | boolean> {
   // @ts-ignore
   const backup = await getDataFromCloud(password, filename);
@@ -156,8 +200,8 @@ export async function restoreCloudBackup({
   password: BackupPassword;
   userData: BackupUserData | null;
   backupSelected: string | null;
-  onBeforePINCreated: () => void;
-  onAfterPINCreated: () => void;
+  onBeforePINCreated?: () => void;
+  onAfterPINCreated?: () => void;
 }): Promise<boolean> {
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
@@ -224,7 +268,21 @@ async function restoreSpecificBackupIntoKeychain(
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
         const { seedphrase } = JSON.parse(valueStr);
-        await createWallet(seedphrase, null, null, true);
+        let privateKey = seedphrase;
+        const wasBackupSavedWithPIN =
+          seedphrase?.includes('salt') && seedphrase?.includes('cipher');
+
+        if (android && wasBackupSavedWithPIN) {
+          try {
+            const backupPIN = await decryptPIN(backedUpData[pinKey]);
+
+            privateKey = await encryptor.decrypt(backupPIN, seedphrase);
+          } catch (error) {
+            return false;
+          }
+        }
+
+        await createWallet(privateKey, null, null, true);
       }
     }
     return true;
@@ -254,14 +312,14 @@ async function restoreCurrentBackupIntoKeychain(
 
         const hasBiometricsEnabled = await getSupportedBiometryType();
 
-        if (!hasBiometricsEnabled && android && endsWith(key, seedPhraseKey)) {
+        if (endsWith(key, seedPhraseKey)) {
           const parsedValue = JSON.parse(value);
           const { seedphrase } = parsedValue;
 
           const wasBackupSavedWithPIN =
             seedphrase?.includes('salt') && seedphrase?.includes('cipher');
 
-          if (!wasBackupSavedWithPIN) {
+          if (!wasBackupSavedWithPIN && !hasBiometricsEnabled) {
             // interrupt loader
             onBeforePINCreated();
             const userPIN = await saveNewAuthenticationPIN();
@@ -281,6 +339,36 @@ async function restoreCurrentBackupIntoKeychain(
               );
               return keychain.saveString(key, valueWithPINInfo, accessControl);
             }
+          } else if (wasBackupSavedWithPIN) {
+            // the seed phrase shouldn't be encrypted at this stage, if it's encrypted,
+            // it means that it was created before the backup flow was fixed.
+            // We need to decrypt it and allow the user to create a new PIN
+            const encryptedPinKey = backedUpData[pinKey];
+            const backupPIN = await decryptPIN(encryptedPinKey);
+
+            const decryptedSeed = await encryptor.decrypt(
+              backupPIN,
+              seedphrase
+            );
+
+            let encryptedSeed;
+            if (!hasBiometricsEnabled) {
+              onBeforePINCreated();
+              const userPIN = await saveNewAuthenticationPIN();
+              onAfterPINCreated();
+
+              encryptedSeed = await encryptor.encrypt(userPIN, decryptedSeed);
+            }
+
+            const valueWithPINInfo = JSON.stringify({
+              ...parsedValue,
+              seedphrase: hasBiometricsEnabled ? decryptedSeed : encryptedSeed,
+            });
+
+            logger.sentry(
+              'This wallet was backuped with an encrypted PIN, and now we decrypt it and encrypt it with own PIN'
+            );
+            return keychain.saveString(key, valueWithPINInfo, accessControl);
           }
         } else if (typeof value === 'string') {
           return keychain.saveString(key, value, accessControl);
@@ -301,16 +389,7 @@ async function restoreCurrentBackupIntoKeychain(
 // Attempts to save the password to decrypt the backup from the iCloud keychain
 export async function saveBackupPassword(
   password: BackupPassword
-): Promise<void> {
-  try {
-    if (ios) {
-      await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
-      analytics.track('Saved backup password on iCloud');
-    }
-  } catch (e) {
-    analytics.track("Didn't save backup password on iCloud");
-  }
-}
+): Promise<void> {}
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword(): Promise<null | BackupPassword> {

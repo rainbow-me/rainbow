@@ -15,7 +15,6 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import {
   allWalletsKey,
-  pinKey,
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
@@ -28,10 +27,7 @@ import {
   RainbowWallet,
 } from './wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
-import {
-  decryptPIN,
-  saveNewAuthenticationPIN,
-} from '@/handlers/authentication';
+import { saveNewAuthenticationPIN } from '@/handlers/authentication';
 import { analytics } from '@/analytics';
 import logger from '@/utils/logger';
 
@@ -89,10 +85,13 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   return secrets;
 }
 
-export async function backupWalletToCloud(
-  password: BackupPassword,
-  wallet: RainbowWallet
-) {
+export async function backupWalletToCloud({
+  password,
+  wallet,
+}: {
+  password: BackupPassword;
+  wallet: RainbowWallet;
+}) {
   const now = Date.now();
 
   const secrets = await extractSecretsForWallet(wallet);
@@ -106,7 +105,7 @@ export async function backupWalletToCloud(
 export async function addWalletToCloudBackup(
   password: BackupPassword,
   wallet: RainbowWallet,
-  filename: string
+  filename: string | boolean
 ): Promise<null | boolean> {
   // @ts-ignore
   const backup = await getDataFromCloud(password, filename);
@@ -167,6 +166,7 @@ export async function restoreCloudBackup({
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
 
+  console.log('ios.restoreCloudBackup.1.0');
   try {
     const filename =
       backupSelected || (userData && findLatestBackUp(userData?.wallets));
@@ -228,21 +228,7 @@ async function restoreSpecificBackupIntoKeychain(
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
         const { seedphrase } = JSON.parse(valueStr);
-        let privateKey = seedphrase;
-        const wasBackupSavedWithPIN =
-          seedphrase?.includes('salt') && seedphrase?.includes('cipher');
-
-        if (android && wasBackupSavedWithPIN) {
-          try {
-            const backupPIN = await decryptPIN(backedUpData[pinKey]);
-
-            privateKey = await encryptor.decrypt(backupPIN, seedphrase);
-          } catch (error) {
-            return false;
-          }
-        }
-
-        await createWallet(privateKey, null, null, true);
+        await createWallet(seedphrase, null, null, true);
       }
     }
     return true;

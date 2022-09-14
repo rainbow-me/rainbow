@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { isSamsungGalaxy } from '../../helpers/samsung';
-import { saveBackupPassword } from '../../model/backup';
+import { saveBackupPassword } from '../../model/backupICloud';
 import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
 import { PasswordField } from '../fields';
@@ -27,6 +27,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import logger from '@/utils/logger';
+import { IS_IOS } from '@/env';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -144,7 +145,9 @@ export default function BackupConfirmPasswordStep() {
 
   const onSuccess = useCallback(async () => {
     logger.log('BackupConfirmPasswordStep:: saving backup password');
-    await saveBackupPassword(password);
+    if (IS_IOS) {
+      await saveBackupPassword(password);
+    }
     if (!isSettingsRoute) {
       DelayedAlert({ title: lang.t('cloud.backup_success') }, 1000);
     }

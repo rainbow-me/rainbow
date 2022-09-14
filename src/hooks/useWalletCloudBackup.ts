@@ -8,7 +8,12 @@ import {
   addWalletToCloudBackup,
   backupWalletToCloud,
   fetchBackupPassword,
-} from '../model/backup';
+} from '@/model/backupICloud';
+import {
+  addWalletToCloudBackup as addWalletToCloudBackupGD,
+  backupWalletToCloud as backupWalletToCloudGD,
+  fetchBackupPassword as fetchBackupPasswordGD,
+} from '@/model/backupGoogleDrive';
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
@@ -22,6 +27,7 @@ import { delay } from '@/helpers/utilities';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import logger from '@/utils/logger';
+import { IS_ANDROID } from '@/env';
 
 function getUserError(e: Error) {
   switch (e.message) {
@@ -101,7 +107,11 @@ export default function useWalletCloudBackup() {
         // We want to make it clear why are we requesting faceID twice
         // So we delayed it to make sure the user can read before seeing the auth prompt
         await delay(1500);
-        fetchedPassword = await fetchBackupPassword();
+        if (IS_ANDROID) {
+          fetchedPassword = await fetchBackupPasswordGD();
+        } else {
+          fetchedPassword = await fetchBackupPassword();
+        }
         setIsWalletLoading(null);
         await delay(300);
         wasPasswordFetched = true;
@@ -127,21 +137,38 @@ export default function useWalletCloudBackup() {
       try {
         if (!latestBackup) {
           logger.log(`backing up to ${cloudPlatform}`, wallets![walletId]);
-          updatedBackupFile = await backupWalletToCloud(
-            fetchedPassword,
-            wallets![walletId]
-          );
+          if (IS_ANDROID) {
+            updatedBackupFile = await backupWalletToCloudGD({
+              password: fetchedPassword,
+              wallet: wallets![walletId],
+              onBeforePINCreated: () => setIsWalletLoading(null),
+              onAfterPINCreated: () =>
+                setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET),
+            });
+          } else {
+            updatedBackupFile = await backupWalletToCloud({
+              password: fetchedPassword,
+              wallet: wallets![walletId],
+            });
+          }
         } else {
           logger.log(
             `adding wallet to ${cloudPlatform} backup`,
             wallets![walletId]
           );
-          updatedBackupFile = await addWalletToCloudBackup(
-            fetchedPassword,
-            wallets![walletId],
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | true' is not assignable... Remove this comment to see the full error message
-            latestBackup
-          );
+          if (IS_ANDROID) {
+            updatedBackupFile = await addWalletToCloudBackupGD(
+              fetchedPassword,
+              wallets![walletId],
+              latestBackup
+            );
+          } else {
+            updatedBackupFile = await addWalletToCloudBackup(
+              fetchedPassword,
+              wallets![walletId],
+              latestBackup
+            );
+          }
         }
       } catch (e: any) {
         const userError = getUserError(e);

@@ -7,7 +7,11 @@ import {
   fetchBackupPassword,
   restoreCloudBackup,
   saveBackupPassword,
-} from '../../model/backup';
+} from '../../model/backupICloud';
+import {
+  fetchBackupPassword as fetchBackupPasswordGD,
+  restoreCloudBackup as restoreCloudBackupGD,
+} from '../../model/backupGoogleDrive';
 import { cloudPlatform } from '../../utils/platform';
 import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
@@ -38,6 +42,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import logger from '@/utils/logger';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -114,7 +119,12 @@ export default function RestoreCloudStep({
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
-      const pwd = await fetchBackupPassword();
+      let pwd;
+      if (IS_ANDROID) {
+        pwd = await fetchBackupPasswordGD();
+      } else {
+        pwd = await fetchBackupPassword();
+      }
       if (pwd) {
         setPassword(pwd);
       }
@@ -157,17 +167,28 @@ export default function RestoreCloudStep({
     try {
       Keyboard.dismiss();
       setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET);
-      const success = await restoreCloudBackup({
-        backupSelected: backupSelected?.name,
-        onAfterPINCreated: () =>
-          setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET),
-        onBeforePINCreated: () => setIsWalletLoading(null),
-        password,
-        userData,
-      });
+      let success;
+      if (IS_ANDROID) {
+        success = await restoreCloudBackupGD({
+          backupSelected: backupSelected?.name,
+          onAfterPINCreated: () =>
+            setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET),
+          onBeforePINCreated: () => setIsWalletLoading(null),
+          password,
+          userData,
+        });
+      } else {
+        success = await restoreCloudBackup({
+          backupSelected: backupSelected?.name,
+          password,
+          userData,
+        });
+      }
       if (success) {
-        // Store it in the keychain in case it was missing
-        await saveBackupPassword(password);
+        if (IS_IOS) {
+          // Store it in the keychain in case it was missing
+          await saveBackupPassword(password);
+        }
 
         // Get rid of the old wallets
         for (let i = 0; i < userAccounts.length; i++) {
