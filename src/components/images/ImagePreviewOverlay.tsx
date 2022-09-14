@@ -285,7 +285,7 @@ function ImagePreview({
           ]}
         >
           <Cover alignHorizontal="center">
-            <BackgroundProvider color="body">
+            <BackgroundProvider color="body (Deprecated)">
               {({ backgroundColor }) => (
                 <AvatarCoverPhotoMaskSvg
                   backgroundColor={backgroundColor as any}
