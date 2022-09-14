@@ -87,8 +87,11 @@ const getNftTraitUrl = (
   switch (marketplaceName) {
     case 'Stratos':
       return `https://stratosnft.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
+    // TODO:: Remove after SimpleHash updates marketplace names
     case 'Quixotic':
-      return `https://quixotic.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
+      return `https://qx.app/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
+    case 'Quix':
+      return `https://qx.app/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
     case 'Trove':
       return `https://trove.treasure.lol/collection/${collectionId}?trait%5B%5D=${traitTitle}%3A${traitValue}`;
     default:
