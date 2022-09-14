@@ -40,7 +40,6 @@ import {
   Bleed,
   Box,
   Cover,
-  DebugLayout,
   Heading,
   Inline,
   Inset,

@@ -4,14 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
-import {
-  Box,
-  Column,
-  Columns,
-  DebugLayout,
-  Divider,
-  Stack,
-} from '@/design-system';
+import { Box, Column, Columns, Divider, Stack } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@/hooks';
 
@@ -81,35 +74,33 @@ export default function TextRecordsForm({
           {selectedFields.map(
             ({ label, inputProps, placeholder, startsWith, id, key }) => (
               <Box key={id} onLayout={e => handleLayout(e, key)}>
-                <DebugLayout>
-                  <Field
-                    autoFocus={autoFocusKey === key}
-                    defaultValue={values[key]}
-                    errorMessage={errors[key]}
-                    inputProps={inputProps}
-                    key={key}
-                    label={label}
-                    onChangeText={debounce(
-                      text => onChangeField({ key, value: text }),
-                      300
-                    )}
-                    onEndEditing={({ nativeEvent }) => {
-                      onBlurField({ key, value: nativeEvent.text });
-                    }}
-                    onFocus={onFocus}
-                    placeholder={placeholder}
-                    selectionColor={selectionColor}
-                    shouldFormatText={
-                      key === ENS_RECORDS.name ||
-                      key === ENS_RECORDS.description ||
-                      key === ENS_RECORDS.notice ||
-                      key === ENS_RECORDS.keywords ||
-                      key === ENS_RECORDS.pronouns
-                    }
-                    startsWith={startsWith}
-                    testID={`ens-text-record-${key}`}
-                  />
-                </DebugLayout>
+                <Field
+                  autoFocus={autoFocusKey === key}
+                  defaultValue={values[key]}
+                  errorMessage={errors[key]}
+                  inputProps={inputProps}
+                  key={key}
+                  label={label}
+                  onChangeText={debounce(
+                    text => onChangeField({ key, value: text }),
+                    300
+                  )}
+                  onEndEditing={({ nativeEvent }) => {
+                    onBlurField({ key, value: nativeEvent.text });
+                  }}
+                  onFocus={onFocus}
+                  placeholder={placeholder}
+                  selectionColor={selectionColor}
+                  shouldFormatText={
+                    key === ENS_RECORDS.name ||
+                    key === ENS_RECORDS.description ||
+                    key === ENS_RECORDS.notice ||
+                    key === ENS_RECORDS.keywords ||
+                    key === ENS_RECORDS.pronouns
+                  }
+                  startsWith={startsWith}
+                  testID={`ens-text-record-${key}`}
+                />
               </Box>
             )
           )}
