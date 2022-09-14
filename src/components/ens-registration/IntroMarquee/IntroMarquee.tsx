@@ -111,7 +111,7 @@ function ENSAvatarPlaceholder({
         <Stack alignHorizontal="center" space={{ custom: 13 }}>
           <Box
             as={ImgixImage}
-            background="body"
+            background="body (Deprecated)"
             borderRadius={80}
             height={{ custom: 80 }}
             shadow="15px light"
@@ -120,7 +120,7 @@ function ENSAvatarPlaceholder({
           />
           <Text
             align="center"
-            color="secondary50"
+            color="secondary50 (Deprecated)"
             size="12px / 14px (Deprecated)"
             weight="semibold"
           >

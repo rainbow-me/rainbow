@@ -4,7 +4,7 @@ import { Inline } from './Inline';
 import { sprinkles } from './sprinkles.css';
 import { TextSizes } from './typography.css';
 
-type ButtonColor = 'action';
+type ButtonColor = 'action (Deprecated)';
 type ButtonSize = 'default' | 'small';
 
 export type ButtonOverlayProps = {

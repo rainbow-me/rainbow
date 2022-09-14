@@ -28,7 +28,7 @@ export default function Callout({
           <Inline alignVertical="center" space="8px" wrap={false}>
             {before}
             <Text
-              color="secondary80"
+              color="secondary80 (Deprecated)"
               size="14px / 19px (Deprecated)"
               weight="heavy"
             >

@@ -33,7 +33,7 @@ const InfoRow = ({
           >
             <Heading
               align="center"
-              color="action"
+              color="action (Deprecated)"
               size="28px / 33px (Deprecated)"
               weight="bold"
             >
@@ -56,11 +56,15 @@ const InfoRow = ({
     </Column>
     <Bleed top="3px">
       <Stack space="12px">
-        <Text size="16px / 22px (Deprecated)" weight="bold">
+        <Text
+          color="primary (Deprecated)"
+          size="16px / 22px (Deprecated)"
+          weight="bold"
+        >
           {title}
         </Text>
         <Text
-          color="secondary60"
+          color="secondary60 (Deprecated)"
           size="14px / 19px (Deprecated)"
           weight="medium"
         >

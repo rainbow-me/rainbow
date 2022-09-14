@@ -1,21 +1,18 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { DividerColor } from '../../color/palettes';
+import { SeparatorColor } from '../../color/palettes';
 import { useForegroundColor } from '../../color/useForegroundColor';
 
-export interface DividerProps {
-  color?: DividerColor;
+export interface SeparatorProps {
+  color: SeparatorColor;
   direction?: 'horizontal' | 'vertical';
 }
 
 /**
- * @description Renders a divider, either horizontal or vertical.
+ * @description Renders a separator, either horizontal or vertical.
  */
-export function Divider({
-  color = 'divider80',
-  direction = 'horizontal',
-}: DividerProps) {
-  const foregroundColor = useForegroundColor(color);
+export function Separator({ color, direction = 'horizontal' }: SeparatorProps) {
+  const foregroundColor = useForegroundColor(color ?? 'separator'); // Fallback for JS consumers
   const style = useMemo(
     () => ({
       backgroundColor: foregroundColor,

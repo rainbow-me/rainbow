@@ -509,7 +509,12 @@ const UniqueTokenExpandedStateHeader = ({
   return (
     <Stack space="15px (Deprecated)">
       <Columns space="24px">
-        <Heading containsEmoji size="23px / 27px (Deprecated)" weight="heavy">
+        <Heading
+          containsEmoji
+          color="primary (Deprecated)"
+          size="23px / 27px (Deprecated)"
+          weight="heavy"
+        >
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
@@ -563,7 +568,7 @@ const UniqueTokenExpandedStateHeader = ({
                       }}
                     >
                       <Text
-                        color="secondary50"
+                        color="secondary50 (Deprecated)"
                         numberOfLines={1}
                         size="16px / 22px (Deprecated)"
                         weight="bold"
@@ -572,7 +577,7 @@ const UniqueTokenExpandedStateHeader = ({
                       </Text>
                     </View>
                     <Text
-                      color="secondary50"
+                      color="secondary50 (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
                     >

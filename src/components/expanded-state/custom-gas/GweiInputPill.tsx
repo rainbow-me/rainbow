@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 // @ts-expect-error
@@ -37,6 +36,7 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     timing: 'linear',
     weight: 'heavy',
     maxWidth: 80,
+    minWidth: 12,
   })
 )(
   // @ts-expect-error
@@ -112,6 +112,7 @@ function GweiInputPill(
             {IS_TESTING !== 'true' && (
               <Text
                 align="center"
+                color="primary (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="heavy"
               >

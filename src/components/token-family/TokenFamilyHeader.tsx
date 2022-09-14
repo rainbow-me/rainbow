@@ -145,7 +145,11 @@ const TokenFamilyHeader = ({
       >
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
-            <Text containsEmoji size="16px / 22px (Deprecated)">
+            <Text
+              containsEmoji
+              color="primary (Deprecated)"
+              size="16px / 22px (Deprecated)"
+            >
               {emoji}
             </Text>
           ) : (
@@ -159,7 +163,9 @@ const TokenFamilyHeader = ({
         <View style={[sx.title, { paddingLeft: 10 }]}>
           <Text
             color={
-              title === lang.t('button.hidden') ? 'secondary60' : 'primary'
+              title === lang.t('button.hidden')
+                ? 'secondary60 (Deprecated)'
+                : 'primary (Deprecated)'
             }
             numberOfLines={1}
             size="18px / 27px (Deprecated)"
@@ -173,7 +179,9 @@ const TokenFamilyHeader = ({
             <Text
               align="right"
               color={
-                title === lang.t('button.hidden') ? 'secondary60' : 'primary'
+                title === lang.t('button.hidden')
+                  ? 'secondary60 (Deprecated)'
+                  : 'primary (Deprecated)'
               }
               size="18px / 27px (Deprecated)"
             >

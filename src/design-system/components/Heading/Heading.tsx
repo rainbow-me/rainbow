@@ -8,16 +8,13 @@ import {
   nodeIsString,
   renderStringWithEmoji,
 } from '../../typography/renderStringWithEmoji';
-import {
-  headingSizes,
-  headingWeights,
-  TextColor,
-} from '../../typography/typography';
+import { headingSizes, headingWeights } from '../../typography/typography';
+import { TextColor } from '../../color/palettes';
 import { useHeadingStyle } from './useHeadingStyle';
 
 export type HeadingProps = {
   align?: 'center' | 'left' | 'right';
-  color?: TextColor | CustomColor;
+  color: TextColor | CustomColor;
   size: keyof typeof headingSizes;
   weight: keyof typeof headingWeights;
   numberOfLines?: number;

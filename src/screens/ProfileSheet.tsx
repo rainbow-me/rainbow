@@ -104,7 +104,7 @@ export default function ProfileSheet() {
       <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
         <StatusBar barStyle="light-content" />
         <AccentColorProvider color={accentColor}>
-          <Box background="body" testID="profile-sheet">
+          <Box background="body (Deprecated)" testID="profile-sheet">
             <Box style={wrapperStyle}>
               {!isPreview &&
               (!isAddressSuccess ||
@@ -167,13 +167,13 @@ function PlaceholderRow() {
       <Column width="content">
         <Inline alignVertical="center" space="10px" wrap={false}>
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={15}
             height={{ custom: 30 }}
             width={{ custom: 30 }}
           />
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={15}
             height={{ custom: 20 }}
             width={{ custom: 200 }}

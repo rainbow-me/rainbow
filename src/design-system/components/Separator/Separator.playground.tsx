@@ -1,11 +1,12 @@
 import { Playground } from '../../docs/types';
-import * as examples from './Divider.examples';
-import meta from './Divider.meta';
+import * as examples from './Separator.examples';
+import meta from './Separator.meta';
 
 const docs: Playground = {
   meta,
   examples: [
     examples.basicUsage,
+    examples.secondary,
     examples.divider80,
     examples.divider60,
     examples.divider40,
