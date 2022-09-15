@@ -11,12 +11,14 @@ export function createQueryKey<TArgs>(
   /** Configuration for the query key. */
   config: {
     /**
-     * A storage version number for the query.
-     * If a query is stored against a storageVersion,
-     * which is later changed, the cache will bust for this query,
+     * A persister version number for the query.
+     * If a persisterVersion exists, this means that this query
+     * will be stored in AsyncStorage.
+     * When a query is stored against a persisterVersion,
+     * and is later changed, the cache will bust for this query,
      * and it will be invalidated.
      */
-    storageVersion?: number;
+    persisterVersion?: number;
   } = {}
 ) {
   return [args, key, config] as const;

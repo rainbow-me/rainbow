@@ -37,21 +37,19 @@ export type TemplateResourceArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-export const templateResourceQueryKey = ({
-  foo,
-  bar,
-  baz,
-}: TemplateResourceArgs) =>
-  createQueryKey('templateResource', { foo, bar, baz }, { storageVersion: 1 });
+const templateResourceQueryKey = ({ foo, bar, baz }: TemplateResourceArgs) =>
+  createQueryKey(
+    'templateResource',
+    { foo, bar, baz },
+    { persisterVersion: 1 }
+  );
 
-export type TemplateResourceQueryKey = ReturnType<
-  typeof templateResourceQueryKey
->;
+type TemplateResourceQueryKey = ReturnType<typeof templateResourceQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-export async function templateResourceQueryFunction({
+async function templateResourceQueryFunction({
   queryKey: [{ foo, bar, baz }],
 }: QueryFunctionArgs<typeof templateResourceQueryKey>) {
   // ...your async stuff here...
@@ -59,7 +57,7 @@ export async function templateResourceQueryFunction({
   // return result
 }
 
-export type TemplateResourceResult = QueryFunctionResult<
+type TemplateResourceResult = QueryFunctionResult<
   typeof templateResourceQueryFunction
 >;
 
