@@ -3,7 +3,6 @@ import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
 import { Contract, ethers } from 'ethers';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
@@ -15,10 +14,10 @@ import {
   RainbowToken,
   RainbowToken as RT,
   TokenSearchTokenListId,
-} from '@rainbow-me/entities';
-import tokenSearch from '@rainbow-me/handlers/tokenSearch';
-import { addHexPrefix, getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
+} from '@/entities';
+import tokenSearch from '@/handlers/tokenSearch';
+import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
+import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import {
   DAI_ADDRESS,
   erc20ABI,
@@ -27,8 +26,8 @@ import {
   USDC_ADDRESS,
   WBTC_ADDRESS,
   WETH_ADDRESS,
-} from '@rainbow-me/references';
-import { ethereumUtils, filterList, logger } from '@rainbow-me/utils';
+} from '@/references';
+import { ethereumUtils, filterList, logger } from '@/utils';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -390,7 +389,7 @@ const useSwapCurrencyList = (
       if (lowLiquidityAssetsWithoutImport?.length) {
         list.push({
           data: lowLiquidityAssetsWithoutImport,
-          key: 'lowLiqudiity',
+          key: 'lowLiquidity',
           title: tokenSectionTypes.lowLiquidityTokenSection,
         });
       }

@@ -9,6 +9,7 @@ export default function ContextMenuButton({
   menuTitle,
   onPressAndroid,
   onPressMenuItem,
+  testID,
 }) {
   return (
     <IOSContextMenuButton
@@ -23,7 +24,7 @@ export default function ContextMenuButton({
       useActionSheetFallback={false}
       wrapNativeComponent={false}
     >
-      <ButtonPressAnimation>{children}</ButtonPressAnimation>
+      <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>
     </IOSContextMenuButton>
   );
 }

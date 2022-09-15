@@ -40,11 +40,11 @@ import {
   BoxProps,
   Cover,
   useColorMode,
-} from '@rainbow-me/design-system';
-import { useDimensions, usePersistentAspectRatio } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
-import { safeAreaInsetValues } from '@rainbow-me/utils';
+} from '@/design-system';
+import { useDimensions, usePersistentAspectRatio } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { colors, position } from '@/styles';
+import { safeAreaInsetValues } from '@/utils';
 
 const idsAtom = atom<string[]>({
   default: [],
@@ -285,7 +285,7 @@ function ImagePreview({
           ]}
         >
           <Cover alignHorizontal="center">
-            <BackgroundProvider color="body">
+            <BackgroundProvider color="body (Deprecated)">
               {({ backgroundColor }) => (
                 <AvatarCoverPhotoMaskSvg
                   backgroundColor={backgroundColor as any}

@@ -59,9 +59,79 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('settings-sheet');
     await Helpers.waitAndTap('developer-section');
     await Helpers.checkIfVisible('developer-settings-sheet');
+    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should go to swap and open review sheet on mainnet swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.waitAndTap('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.waitAndTap('swaps-details-show-details-button');
+    await Helpers.checkIfVisible('swaps-details-price-row');
+    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+  it('Should go to swap and open review sheet on optimism swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'OP', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-OP-optimism');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-optimism');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.waitAndTap('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.waitAndTap('swaps-details-show-details-button');
+    await Helpers.checkIfVisible('swaps-details-price-row');
+    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+  it('Should go to swap and open review sheet on polygon swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-polygon');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText('currency-select-search-input', 'WETH', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.waitAndTap('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.waitAndTap('swaps-details-show-details-button');
+    await Helpers.checkIfVisible('swaps-details-price-row');
+    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+  it('Should go to swap and open review sheet on arbitrum swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-arbitrum');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
+    await Helpers.waitAndTap('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.waitAndTap('swaps-details-show-details-button');
+    await Helpers.checkIfVisible('swaps-details-price-row');
+    await Helpers.swipe('swap-details-sheet', 'down', 'slow');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
 
   it('Should display currency selection screen on swap-fab press', async () => {
@@ -70,11 +140,25 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
   });
 
-  it('Should update input value after tapping Max Button', async () => {
+  it('Should toggle through token networks and show the respective tokens', async () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.waitAndTap('currency-select-network-switcher-1');
+    await Helpers.tapByText('Optimism');
+    await Helpers.waitAndTap('currency-select-network-switcher-10');
+    await Helpers.tapByText('Arbitrum');
+    await Helpers.waitAndTap('currency-select-network-switcher-42161');
+    await Helpers.tapByText('Polygon (Matic)');
+    await Helpers.checkIfVisible('currency-select-network-switcher-137');
+    await Helpers.waitAndTap('currency-select-header-back-button');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.checkIfVisible('currency-select-network-switcher-1');
+  });
+
+  it('Should update input value after tapping Max Button', async () => {
     await Helpers.typeText('currency-select-search-input', 'BAT', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-BAT-token');
     await Helpers.checkIfVisible('exchange-modal-input');
@@ -202,9 +286,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-optimism');
-
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-network-switcher-10');
     await Helpers.tap('currency-select-list-exchange-coin-row-OP-optimism');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
@@ -218,7 +302,14 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('exchange-modal-input-native-246');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
+  });
 
+  it('Should show settings routes picker but not flashbots on Optimism', async () => {
+    await Helpers.waitAndTap('exchange-settings-button');
+    await Helpers.checkIfVisible('swap-settings-header');
+    await Helpers.checkIfVisible('swap-settings-routes-label');
+    await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
+    await Helpers.swipe('swap-settings-header', 'down', 'slow');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
@@ -232,6 +323,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-arbitrum');
     await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-network-switcher-42161');
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
@@ -241,6 +333,14 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('exchange-modal-input-native-246');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
+  });
+
+  it('Should not show settings routes picker flashbots on Arbitrum', async () => {
+    await Helpers.waitAndTap('exchange-settings-button');
+    await Helpers.checkIfVisible('swap-settings-header');
+    await Helpers.checkIfNotVisible('swap-settings-routes-label');
+    await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
+    await Helpers.swipe('swap-settings-header', 'down', 'slow');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
@@ -254,6 +354,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'WETH\n', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
     await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-network-switcher-137');
     await Helpers.tap('currency-select-list-exchange-coin-row-MATIC-polygon');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '246\n', false);
@@ -266,6 +367,14 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('exchange-modal-input-native-246');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
+  });
+
+  it('Should show settings routes picker but notflashbots on Polygon', async () => {
+    await Helpers.waitAndTap('exchange-settings-button');
+    await Helpers.checkIfVisible('swap-settings-header');
+    await Helpers.checkIfVisible('swap-settings-routes-label');
+    await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
+    await Helpers.swipe('swap-settings-header', 'down', 'slow');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
@@ -421,6 +530,41 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should show Swap Settings State on Settings Button press', async () => {
     await Helpers.waitAndTap('exchange-settings-button');
     await Helpers.checkIfVisible('swap-settings-header');
+  });
+
+  it('Should show and toggle swap routes on Mainnet', async () => {
+    await Helpers.waitAndTap('swap-settings-routes-label');
+    await Helpers.checkIfVisible('explain-sheet-routeSwaps');
+    await Helpers.swipe('explain-sheet-routeSwaps', 'down', 'slow');
+    await Helpers.waitAndTap('swap-settings-routes-current-rainbow');
+    await Helpers.tapByText('0x');
+    await Helpers.checkIfVisible('swap-settings-routes-current-0x');
+  });
+
+  // skipping until flashbots is enabled again after the merge
+  it.skip('Should show and toggle flashbots on Mainnet', async () => {
+    await Helpers.waitAndTap('swap-settings-flashbots-switch-false');
+    await Helpers.checkIfVisible('swap-settings-flashbots-switch-true');
+    await Helpers.waitAndTap('swap-settings-flashbots-label');
+    await Helpers.checkIfVisible('explain-sheet-flashbots');
+    await Helpers.swipe('explain-sheet-flashbots', 'down', 'slow');
+  });
+
+  it('Should show and update slippage on Mainnet', async () => {
+    await Helpers.clearField('swap-slippage-input-2');
+    await Helpers.typeText('swap-slippage-input-', '10', false);
+    await Helpers.checkIfVisible('swap-slippage-input-10');
+    await Helpers.waitAndTap('swap-slippage-label');
+    await Helpers.checkIfVisible('explain-sheet-slippage');
+    await Helpers.swipe('explain-sheet-slippage', 'down', 'slow');
+  });
+
+  it('Should restore swap setting defaults on Mainnet', async () => {
+    await Helpers.waitAndTap('swap-settings-defaults-button');
+    await Helpers.checkIfVisible('swap-settings-routes-current-rainbow');
+    // await Helpers.checkIfVisible('swap-settings-flashbots-switch-false');
+    await Helpers.checkIfVisible('swap-slippage-input-2');
+
     await Helpers.swipe('swap-settings-header', 'down', 'slow');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
@@ -542,7 +686,7 @@ describe('Swap Sheet Interaction Flow', () => {
     }
   });
 
-  it('Should display Gas Button on Normal by default', async () => {
+  it('Should display Gas Button on Fast by default', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
@@ -554,33 +698,33 @@ describe('Swap Sheet Interaction Flow', () => {
       'currency-select-list-exchange-coin-row-ZRX-token'
     );
     await Helpers.checkIfVisible('exchange-modal-gas');
-    await Helpers.checkIfElementByTextIsVisible('Normal');
+    await Helpers.checkIfElementByTextIsVisible('Fast');
   });
 
   it('Should display warning on invalid custom gas price', async () => {
     await Helpers.waitAndTap('gas-speed-custom');
-    await Helpers.checkIfElementByTextIsVisible('Fast');
-    await Helpers.checkIfElementByTextIsVisible('Custom');
+    await Helpers.checkIfVisible('speed-pill-fast');
+    await Helpers.checkIfVisible('speed-pill-custom');
     await Helpers.clearField('max-base-fee-input');
     await Helpers.typeText('max-base-fee-input', '\n', false);
     await Helpers.checkIfElementByTextIsVisible('Low · likely to fail');
   });
 
   it('Should rotate between Normal, Fast, Urgent, & Custom', async () => {
-    await Helpers.waitAndTap('speed-pill-normal');
     await Helpers.waitAndTap('speed-pill-fast');
     await Helpers.waitAndTap('speed-pill-urgent');
     await Helpers.waitAndTap('speed-pill-custom');
+    await Helpers.waitAndTap('speed-pill-normal');
   });
 
-  xit('Should display warning on high custom base fee price', async () => {
+  it.skip('Should display warning on high custom base fee price', async () => {
     await Helpers.clearField('max-base-fee-input');
     await Helpers.typeText('max-base-fee-input', '9999\n', false);
     await Helpers.checkIfElementByTextToExist('High · overpaying');
     await Helpers.waitAndTap('speed-pill-normal');
   });
 
-  xit('Should display alert on high custom base fee price', async () => {
+  it.skip('Should display alert on high custom base fee price', async () => {
     await Helpers.waitAndTap('speed-pill-custom');
     await Helpers.waitAndTap('gas-speed-done-button');
     await Helpers.checkIfElementByTextToExist('High max base fee!');
@@ -607,14 +751,14 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('max-base-fee-input', '200\n', false);
   });
 
-  xit('Should display warning on high custom priority fee price', async () => {
+  it.skip('Should display warning on high custom priority fee price', async () => {
     await Helpers.clearField('max-priority-fee-input');
     await Helpers.typeText('max-priority-fee-input', '999\n', false);
     await Helpers.checkIfElementByTextToExist('High · overpaying');
     await Helpers.waitAndTap('speed-pill-normal');
   });
 
-  xit('Should display alert on high custom priority fee price', async () => {
+  it.skip('Should display alert on high custom priority fee price', async () => {
     await Helpers.waitAndTap('speed-pill-custom');
     await Helpers.waitAndTap('gas-speed-done-button');
     await Helpers.checkIfElementByTextToExist('High miner tip!');
@@ -627,7 +771,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('speed-pill-normal');
   });
 
-  xit('Should display warning on low custom priority fee price', async () => {
+  it.skip('Should display warning on low custom priority fee price', async () => {
     await Helpers.clearField('max-base-fee-input');
     await Helpers.typeText('max-base-fee-input', '200\n', false);
     await Helpers.clearField('max-priority-fee-input');
@@ -635,7 +779,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextToExist('Low · likely to fail');
   });
 
-  xit('Should display alert on low custom priority fee price', async () => {
+  it.skip('Should display alert on low custom priority fee price', async () => {
     await Helpers.swipe('custom-gas-header', 'down', 'slow');
     await Helpers.checkIfElementByTextToExist(
       'Low miner tip–transaction may get stuck!'

@@ -3,21 +3,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
-} from '@rainbow-me/handlers/localstorage/walletBalances';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { nonceManagerLoadState } from '@rainbow-me/redux/nonceManager';
-import { promiseUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/localstorage/walletBalances';
+import { queryClient } from '@/react-query/queryClient';
+import { nonceManagerLoadState } from '@/redux/nonceManager';
+import { AppState } from '@/redux/store';
+import { promiseUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const loadWalletBalanceNamesToCache = () =>
-  queryClient.prefetchQuery(WALLET_BALANCES_FROM_STORAGE, getWalletBalances);
+  queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
 
 export default function useLoadGlobalLateData() {
   const dispatch = useDispatch();
 
   const walletReady = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'appState' does not exist on type 'Defaul... Remove this comment to see the full error message
-    ({ appState: { walletReady } }) => walletReady
+    ({ appState: { walletReady } }: AppState) => walletReady
   );
 
   const loadGlobalData = useCallback(async () => {

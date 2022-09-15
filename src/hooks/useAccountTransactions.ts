@@ -5,14 +5,15 @@ import NetworkTypes from '../helpers/networkTypes';
 import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
-import { useNavigation } from '@rainbow-me/navigation';
-import { useTheme } from '@rainbow-me/theme';
+import { useNavigation } from '@/navigation';
+import { AppState } from '@/redux/store';
+import { useTheme } from '@/theme';
 
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions(
-  initialized: any,
-  isFocused: any
+  initialized: boolean,
+  isFocused: boolean
 ) {
   const {
     accountAssetsData,
@@ -22,16 +23,14 @@ export default function useAccountTransactions(
     transactions,
   } = useSelector(
     ({
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
       data: {
         isLoadingTransactions,
         pendingTransactions,
         transactions,
         accountAssetsData,
       },
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'settings' does not exist on type 'Defaul... Remove this comment to see the full error message
       settings: { network },
-    }) => ({
+    }: AppState) => ({
       accountAssetsData,
       isLoadingTransactions,
       network,

@@ -7,23 +7,16 @@ import {
   RapExchangeActionParameters,
   SwapActionParameters,
 } from '../common';
-import {
-  ProtocolType,
-  TransactionStatus,
-  TransactionType,
-} from '@rainbow-me/entities';
-import {
-  estimateSwapGasLimit,
-  executeSwap,
-} from '@rainbow-me/handlers/uniswap';
-import { isL2Network, toHex } from '@rainbow-me/handlers/web3';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { additionalDataUpdateL2AssetToWatch } from '@rainbow-me/redux/additionalAssetsData';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
-import { greaterThan } from '@rainbow-me/utilities';
-import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
+import { estimateSwapGasLimit, executeSwap } from '@/handlers/uniswap';
+import { isL2Network, toHex } from '@/handlers/web3';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
+import { greaterThan } from '@/helpers/utilities';
+import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const actionName = 'swap';
 
@@ -46,7 +39,7 @@ const swap = async (
   const { accountAddress } = store.getState().settings;
   const { inputCurrency, outputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
-  let gasParams = parseGasParamsForTransaction(selectedGasFee);
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   const isL2 = isL2Network(
     ethereumUtils.getNetworkFromChainId(parameters?.chainId || ChainId.mainnet)
@@ -111,19 +104,9 @@ const swap = async (
     dispatch(
       additionalDataUpdateL2AssetToWatch({
         hash: swap?.hash || '',
-        inputCurrency: {
-          address: inputCurrency?.address,
-          decimals: inputCurrency?.decimals,
-          mainnetAddress: inputCurrency?.mainnet_address,
-          symbol: inputCurrency?.symbol,
-        },
+        inputCurrency,
         network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-        outputCurrency: {
-          address: outputCurrency?.address,
-          decimals: outputCurrency?.decimals,
-          mainnetAddress: outputCurrency?.mainnet_address,
-          symbol: outputCurrency?.symbol,
-        },
+        outputCurrency,
         userAddress: accountAddress,
       })
     );
@@ -170,7 +153,7 @@ const swap = async (
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider as any
+      wallet?.provider
     )
   );
   return swap?.nonce;

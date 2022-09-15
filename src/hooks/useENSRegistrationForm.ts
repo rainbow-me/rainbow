@@ -2,13 +2,14 @@ import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
-import { Records } from '@rainbow-me/entities';
+import { Records } from '@/entities';
 import {
+  deprecatedTextRecordFields,
   ENS_RECORDS,
   REGISTRATION_MODES,
   TextRecordField,
   textRecordFields,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 
 const disabledAtom = atom({
   default: false,
@@ -41,19 +42,41 @@ export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
 });
 
 const defaultInitialRecords = {
-  [ENS_RECORDS.displayName]: '',
+  [ENS_RECORDS.name]: '',
   [ENS_RECORDS.description]: '',
   [ENS_RECORDS.url]: '',
   [ENS_RECORDS.twitter]: '',
 };
 
-const cleanFormRecords = (initialRecords: Records) => {
+const prepareFormRecords = (initialRecords: Records) => {
   // delete these to show an empty form if the user only have one of these set
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { ETH, avatar, header, ...cleanFormRecords } = initialRecords;
-  // if ENS has some records, only show those
-  if (Object.keys(cleanFormRecords).length) return initialRecords;
-  return { ...defaultInitialRecords, ...initialRecords };
+
+  // if the profile has existing records, use these
+  if (Object.keys(cleanFormRecords).length) {
+    return {
+      ...initialRecords,
+      // migrate any deprecated field keys to their new keys
+      ...Object.entries(deprecatedTextRecordFields).reduce(
+        (fields, [deprecatedFieldKey, fieldKey]) => {
+          return {
+            ...fields,
+            [deprecatedFieldKey]: '',
+            [fieldKey]:
+              initialRecords[fieldKey] ||
+              initialRecords[deprecatedFieldKey as ENS_RECORDS],
+          };
+        },
+        {}
+      ),
+    };
+  }
+
+  return {
+    ...defaultInitialRecords,
+    ...initialRecords,
+  };
 };
 
 export default function useENSRegistrationForm({
@@ -79,7 +102,7 @@ export default function useENSRegistrationForm({
   // but will be all of the records in "create mode".
   const defaultRecords = useMemo(() => {
     return mode === REGISTRATION_MODES.EDIT
-      ? cleanFormRecords(initialRecords)
+      ? prepareFormRecords(initialRecords)
       : allRecords;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialRecords, mode]);
@@ -106,10 +129,11 @@ export default function useENSRegistrationForm({
     // populate with that.
     if (!isEmpty(defaultRecords)) {
       setSelectedFields(
-        Object.keys(defaultRecords)
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-          .map(key => textRecordFields[key])
-          .filter(Boolean)
+        Object.values(textRecordFields)
+          .map(field =>
+            defaultRecords[field.key] !== undefined ? field : undefined
+          )
+          .filter(Boolean) as TextRecordField[]
       );
     } else {
       if (defaultFields) {

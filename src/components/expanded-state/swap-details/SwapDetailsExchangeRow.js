@@ -16,11 +16,11 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { usePrevious, useStepper } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { getExchangeIconUrl, magicMemo } from '@rainbow-me/utils';
+} from '@/design-system';
+import networkInfo from '@/helpers/networkInfo';
+import { usePrevious, useStepper } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { getExchangeIconUrl, magicMemo } from '@/utils';
 
 const parseExchangeName = name => {
   const networks = Object.keys(networkInfo).map(network =>
@@ -81,8 +81,8 @@ const ExchangeIcon = magicMemo(
                 >
                   <Text
                     align="center"
-                    color="secondary80"
-                    size="14px"
+                    color="secondary80 (Deprecated)"
+                    size="14px / 19px (Deprecated)"
                     weight="semibold"
                   >
                     {protocol?.substring(0, 1)}
@@ -122,7 +122,7 @@ const ExchangeIconStack = magicMemo(
   ['protocols']
 );
 
-export default function SwapDetailsExchangeRow({ protocols }) {
+export default function SwapDetailsExchangeRow({ protocols, testID }) {
   const steps = useMemo(() => {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
@@ -162,53 +162,73 @@ export default function SwapDetailsExchangeRow({ protocols }) {
   }, [protocols]);
 
   const [step, nextStep] = useStepper(steps.length);
-  const defaultColor = useForegroundColor('secondary');
+  const defaultColor = useForegroundColor('secondary (Deprecated)');
 
   if (protocols?.length > 1) {
     return (
-      <ButtonPressAnimation onPress={nextStep} scaleTo={1.06}>
-        <Rows>
-          <Columns alignHorizontal="right" alignVertical="center" space="4px">
-            <Column>
-              <SwapDetailsLabel>
-                {lang.t('expanded_state.swap.swapping_via')}
-              </SwapDetailsLabel>
-            </Column>
-            <Column width="content">
-              <Box
-                style={{
-                  top: android ? -1.5 : 0,
-                }}
+      <Box
+        style={{
+          // enlarge tap target
+          marginVertical: -10,
+        }}
+      >
+        <ButtonPressAnimation
+          onPress={nextStep}
+          scaleTo={1.06}
+          style={{
+            // enlarge tap target
+            paddingVertical: 8,
+          }}
+        >
+          <Box>
+            <Rows>
+              <Columns
+                alignHorizontal="right"
+                alignVertical="center"
+                space="4px"
               >
-                <ExchangeIconStack protocols={steps[step]} />
-              </Box>
-            </Column>
-            <Column width="content">
-              <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
-            </Column>
-            {steps?.[step]?.part && (
-              <Column width="content">
-                <Bleed right="5px" vertical="6px">
-                  <Pill
-                    height={20}
+                <Column>
+                  <SwapDetailsLabel>
+                    {lang.t('expanded_state.swap.swapping_via')}
+                  </SwapDetailsLabel>
+                </Column>
+                <Column width="content">
+                  <Box
                     style={{
-                      lineHeight: android && 18,
-                      top: android ? -1 : 0,
+                      top: android ? -1.5 : 0,
                     }}
-                    textColor={defaultColor}
                   >
-                    {steps[step].part}
-                  </Pill>
-                </Bleed>
-              </Column>
-            )}
-          </Columns>
-        </Rows>
-      </ButtonPressAnimation>
+                    <ExchangeIconStack protocols={steps[step]} />
+                  </Box>
+                </Column>
+                <Column width="content">
+                  <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
+                </Column>
+                {steps?.[step]?.part && (
+                  <Column width="content">
+                    <Bleed right="5px (Deprecated)" vertical="6px">
+                      <Pill
+                        height={20}
+                        style={{
+                          lineHeight: android && 18,
+                          top: android ? -1 : 0,
+                        }}
+                        textColor={defaultColor}
+                      >
+                        {steps[step].part}
+                      </Pill>
+                    </Bleed>
+                  </Column>
+                )}
+              </Columns>
+            </Rows>
+          </Box>
+        </ButtonPressAnimation>
+      </Box>
     );
   } else if (protocols?.length > 0) {
     return (
-      <Rows>
+      <Rows testID={testID}>
         <Columns alignVertical="center" space="4px">
           <Column>
             <SwapDetailsLabel>

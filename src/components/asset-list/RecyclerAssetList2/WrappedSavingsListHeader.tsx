@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { SavingsListHeader } from '../../savings';
-import { useOpenSavings } from '@rainbow-me/hooks';
+import { useOpenSavings } from '@/hooks';
 
 export default React.memo(function WrappedSavingsListHeader({
   value,

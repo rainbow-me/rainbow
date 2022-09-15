@@ -2,19 +2,16 @@ import { isEmpty, isNil, remove } from 'lodash';
 import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
-import { AssetTypes } from '@rainbow-me/entities';
-import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickBy, pickShallow } from '@rainbow-me/helpers/utilities';
-import {
-  ENS_NFT_CONTRACT_ADDRESS,
-  polygonAllowList,
-} from '@rainbow-me/references';
-import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
-import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+import { AssetTypes } from '@/entities';
+import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
+import { maybeSignUri } from '@/handlers/imgix';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { Network } from '@/helpers/networkTypes';
+import { pickBy, pickShallow } from '@/helpers/utilities';
+import { ENS_NFT_CONTRACT_ADDRESS, polygonAllowList } from '@/references';
+import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
+import { getLowResUrl } from '@/utils/getLowResUrl';
+import isSVGImage from '@/utils/isSVG';
 
 const parseLastSalePrice = lastSale =>
   lastSale
@@ -24,6 +21,10 @@ const parseLastSalePrice = lastSale =>
     : null;
 
 const getCurrentPrice = ({ currentPrice, token }) => {
+  if (!token || !currentPrice) {
+    return null;
+  }
+
   const paymentToken = OpenseaPaymentTokens.find(
     osToken => osToken.address.toLowerCase() === token.toLowerCase()
   );
@@ -90,6 +91,9 @@ export const parseAccountUniqueTokens = data => {
           asset.image_original_url,
           asset.image_preview_url
         );
+
+        const sellOrder = asset.seaport_sell_orders?.[0];
+
         return {
           ...pickShallow(asset, [
             'animation_url',
@@ -123,12 +127,12 @@ export const parseAccountUniqueTokens = data => {
             'twitter_username',
             'wiki_link',
           ]),
-          currentPrice: asset.seaport_sell_orders
+          currentPrice: sellOrder
             ? getCurrentPrice({
-                currentPrice: asset.seaport_sell_orders[0].current_price,
+                currentPrice: sellOrder?.current_price,
                 token:
-                  asset.seaport_sell_orders[0].protocol_data.parameters
-                    .consideration[0].token,
+                  sellOrder?.protocol_data?.parameters?.consideration?.[0]
+                    ?.token,
               })
             : null,
           familyImage: collection.image_url,
@@ -253,13 +257,6 @@ export const parseAccountUniqueTokensPolygon = data => {
       };
     })
     .filter(token => !!token.familyName && token.familyName !== 'POAP');
-
-  //filter out NFTs that are not on our allow list
-  remove(
-    erc721s,
-    nft =>
-      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
-  );
 
   return erc721s;
 };

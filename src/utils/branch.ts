@@ -2,9 +2,8 @@
 import pako from 'pako';
 import qs from 'qs';
 import branch from 'react-native-branch';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export const branchListener = (handleOpenLinkingURL: (url: any) => void) =>
   branch.subscribe(({ error, params, uri }) => {

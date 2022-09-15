@@ -1,13 +1,8 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
-import { default as DefaultTokenListsSource } from './default-token-lists.json';
-import {
-  Asset,
-  SavingsAsset,
-  UniswapFavoriteTokenData,
-} from '@rainbow-me/entities';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-export { default as polygonAllowList } from './polygon-allowlist.json';
+import { default as DefaultTokenListsSource } from './default-token-lists';
+import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
+import { Network } from '@/helpers/networkTypes';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
@@ -22,15 +17,15 @@ export {
 export { default as emojis } from './emojis.json';
 export { default as ensIntroMarqueeNames } from './ens-intro-marquee-names.json';
 export { default as erc20ABI } from './erc20-abi.json';
-export { default as opWrapABI } from './op-wrap-abi.json';
+export { default as tokenGateCheckerAbi } from './token-gate-checker-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
 export { DPI_ADDRESS } from './indexes';
 
-export { default as migratedTokens } from './migratedTokens.json';
+export { default as migratedTokens } from './migratedTokens';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
-export { default as shitcoins } from './shitcoins.json';
+export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export { UNISWAP_TESTNET_TOKEN_LIST } from './uniswap';
 export { rainbowTokenList } from './rainbow-token-list';
@@ -108,10 +103,6 @@ export const TRANSFER_EVENT_KECCAK =
 export const AddCashCurrencies: {
   [key in Network]?: { [currency: string]: string };
 } = {
-  kovan: {
-    DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',
-    ETH: ETH_ADDRESS,
-  },
   mainnet: {
     DAI: DAI_ADDRESS,
     ETH: ETH_ADDRESS,
@@ -125,18 +116,6 @@ export const AddCashCurrencyInfo: {
     [currency: string]: AddCashCurrencyAsset;
   };
 } = {
-  kovan: {
-    '0xc4375b7de8af5a38a93548eb8453a498222c4ff2': {
-      decimals: 18,
-      name: 'Dai',
-      symbol: 'DAI',
-    },
-    'eth': {
-      decimals: 18,
-      name: 'Ethereum',
-      symbol: 'ETH',
-    },
-  },
   mainnet: {
     [DAI_ADDRESS]: {
       decimals: 18,
@@ -165,12 +144,6 @@ export type TokenListsExtendedRecord = Record<
 
 export const DefaultUniswapFavorites = {
   mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],
-  rinkeby: [
-    // Ethereum
-    ETH_ADDRESS,
-    // DAI
-    '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea',
-  ],
 };
 
 export const DefaultUniswapFavoritesMeta: Record<

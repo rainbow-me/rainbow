@@ -1,7 +1,7 @@
+import { useQueries } from '@tanstack/react-query';
 import { BigNumberish } from 'ethers';
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useQueries } from 'react-query';
 import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
 import usePrevious from './usePrevious';
@@ -13,8 +13,8 @@ import {
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
   fetchReverseRecord,
-} from '@rainbow-me/handlers/ens';
-import { NetworkTypes } from '@rainbow-me/helpers';
+} from '@/handlers/ens';
+import { NetworkTypes } from '@/helpers';
 import {
   ENS_DOMAIN,
   formatEstimatedNetworkFee,
@@ -24,8 +24,8 @@ import {
   getRentPrice,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/helpers/ens';
+import { Network } from '@/helpers/networkTypes';
 import {
   add,
   addBuffer,
@@ -33,9 +33,9 @@ import {
   fromWei,
   greaterThanOrEqualTo,
   multiply,
-} from '@rainbow-me/helpers/utilities';
-import { ethUnits, timeUnits } from '@rainbow-me/references';
-import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethUnits, timeUnits } from '@/references';
+import { ethereumUtils, gasUtils } from '@/utils';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',
@@ -181,66 +181,69 @@ export default function useENSRegistrationCosts({
     return Boolean(reverseRecord);
   }, [accountAddress]);
 
-  const queries = useQueries([
-    {
-      enabled: step === REGISTRATION_STEPS.COMMIT && nameUpdated,
-      queryFn: getCommitGasLimit,
-      queryKey: [QUERY_KEYS.GET_COMMIT_GAS_LIMIT, name],
-      staleTime: QUERY_STALE_TIME,
-    },
-    {
-      enabled:
-        (step === REGISTRATION_STEPS.COMMIT ||
-          step === REGISTRATION_STEPS.SET_NAME) &&
-        nameUpdated,
-      queryFn: getSetNameGasLimit,
-      queryKey: [QUERY_KEYS.GET_SET_NAME_GAS_LIMIT, name],
-      staleTime: QUERY_STALE_TIME,
-    },
-    {
-      enabled:
-        step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT,
-      queryFn: getSetRecordsGasLimit,
-      queryKey: [
-        QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT,
-        name,
-        changedRecords,
-        sendReverseRecord,
-      ],
-      staleTime: QUERY_STALE_TIME,
-    },
-    {
-      enabled:
-        (step === REGISTRATION_STEPS.COMMIT ||
-          step === REGISTRATION_STEPS.REGISTER) &&
-        Boolean(accountAddress),
-      queryFn: getReverseRecord,
-      queryKey: [QUERY_KEYS.GET_REVERSE_RECORD, accountAddress],
-      staleTime: QUERY_STALE_TIME,
-    },
-    {
-      enabled: step === REGISTRATION_STEPS.RENEW,
-      queryFn: getRenewGasLimit,
-      queryKey: [
-        QUERY_KEYS.GET_RENEW_GAS_LIMIT,
-        registrationParameters?.name,
-        duration,
-      ],
-      staleTime: QUERY_STALE_TIME,
-    },
-    {
-      enabled: step === REGISTRATION_STEPS.REGISTER,
-      queryFn: getRegisterRapGasLimit,
-      queryKey: [
-        QUERY_KEYS.GET_REGISTER_RAP_GAS_LIMIT,
-        sendReverseRecord,
-        nameUpdated,
-        changedRecords,
-        name,
-      ],
-      staleTime: QUERY_STALE_TIME,
-    },
-  ]);
+  const queries = useQueries({
+    queries: [
+      {
+        enabled: step === REGISTRATION_STEPS.COMMIT && nameUpdated,
+        queryFn: getCommitGasLimit,
+        queryKey: [QUERY_KEYS.GET_COMMIT_GAS_LIMIT, name],
+        staleTime: QUERY_STALE_TIME,
+      },
+      {
+        enabled:
+          (step === REGISTRATION_STEPS.COMMIT ||
+            step === REGISTRATION_STEPS.SET_NAME) &&
+          nameUpdated,
+        queryFn: getSetNameGasLimit,
+        queryKey: [QUERY_KEYS.GET_SET_NAME_GAS_LIMIT, name],
+        staleTime: QUERY_STALE_TIME,
+      },
+      {
+        enabled:
+          step === REGISTRATION_STEPS.COMMIT ||
+          step === REGISTRATION_STEPS.EDIT,
+        queryFn: getSetRecordsGasLimit,
+        queryKey: [
+          QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT,
+          name,
+          changedRecords,
+          sendReverseRecord,
+        ],
+        staleTime: QUERY_STALE_TIME,
+      },
+      {
+        enabled:
+          (step === REGISTRATION_STEPS.COMMIT ||
+            step === REGISTRATION_STEPS.REGISTER) &&
+          Boolean(accountAddress),
+        queryFn: getReverseRecord,
+        queryKey: [QUERY_KEYS.GET_REVERSE_RECORD, accountAddress],
+        staleTime: QUERY_STALE_TIME,
+      },
+      {
+        enabled: step === REGISTRATION_STEPS.RENEW,
+        queryFn: getRenewGasLimit,
+        queryKey: [
+          QUERY_KEYS.GET_RENEW_GAS_LIMIT,
+          registrationParameters?.name,
+          duration,
+        ],
+        staleTime: QUERY_STALE_TIME,
+      },
+      {
+        enabled: step === REGISTRATION_STEPS.REGISTER,
+        queryFn: getRegisterRapGasLimit,
+        queryKey: [
+          QUERY_KEYS.GET_REGISTER_RAP_GAS_LIMIT,
+          sendReverseRecord,
+          nameUpdated,
+          changedRecords,
+          name,
+        ],
+        staleTime: QUERY_STALE_TIME,
+      },
+    ],
+  });
 
   const queriesByKey = useMemo(
     () => ({

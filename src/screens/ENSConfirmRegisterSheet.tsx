@@ -27,14 +27,14 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   accentColorAtom,
   ENS_DOMAIN,
   ENS_SECONDS_WAIT,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
+} from '@/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,
@@ -46,11 +46,11 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -310,10 +310,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.RENEW]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => {
-            action();
-            goToProfileScreen();
-          }}
+          action={() => action(goToProfileScreen)}
           isSufficientGas={Boolean(
             registrationCostsData?.isSufficientGasForRegistration &&
               registrationCostsData?.isSufficientGasForStep
@@ -401,9 +398,9 @@ export default function ENSConfirmRegisterSheet() {
     >
       <AccentColorProvider color={accentColor}>
         <Box
-          background="body"
-          paddingTop="19px"
-          paddingVertical="30px"
+          background="body (Deprecated)"
+          paddingTop="19px (Deprecated)"
+          paddingVertical="30px (Deprecated)"
           style={{
             height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
           }}
@@ -413,10 +410,10 @@ export default function ENSConfirmRegisterSheet() {
             <Row height="content">
               {/* @ts-expect-error JavaScript component */}
               <Box horizontal="30px">
-                <Stack alignHorizontal="center" space="15px">
+                <Stack alignHorizontal="center" space="15px (Deprecated)">
                   {avatarUrl && (
                     <Box
-                      background="body"
+                      background="body (Deprecated)"
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
                       shadow="15px light"
@@ -431,13 +428,20 @@ export default function ENSConfirmRegisterSheet() {
                       />
                     </Box>
                   )}
-                  <Inset horizontal="30px">
-                    <Heading align="center" numberOfLines={1} size="26px">
+                  <Inset horizontal="30px (Deprecated)">
+                    <Heading
+                      align="center"
+                      numberOfLines={1}
+                      color="primary (Deprecated)"
+                      size="26px / 30px (Deprecated)"
+                      weight="heavy"
+                    >
                       {abbreviateEnsForDisplay(ensName, 15)}
                     </Heading>
                   </Inset>
                   <Text
                     color="accent"
+                    size="16px / 22px (Deprecated)"
                     testID={`ens-confirm-register-label-${step}`}
                     weight="heavy"
                   >
@@ -449,7 +453,7 @@ export default function ENSConfirmRegisterSheet() {
             <Row>
               <Box
                 flexGrow={1}
-                paddingHorizontal={isSmallPhone ? '24px' : '30px'}
+                paddingHorizontal={isSmallPhone ? '24px' : '30px (Deprecated)'}
               >
                 {stepContent[step]}
               </Box>

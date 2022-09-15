@@ -16,14 +16,10 @@ import {
   Numberish,
   RainbowMeteorologyData,
   SelectedGasFee,
-} from '@rainbow-me/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
-import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
-import {
-  ethUnits,
-  supportedNativeCurrencies,
-  timeUnits,
-} from '@rainbow-me/references';
+} from '@/entities';
+import { toHex } from '@/handlers/web3';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
+import { ethUnits, supportedNativeCurrencies, timeUnits } from '@/references';
 import {
   add,
   convertRawAmountToBalance,
@@ -33,7 +29,7 @@ import {
   lessThan,
   multiply,
   toFixedDecimals,
-} from '@rainbow-me/utilities';
+} from '@/helpers/utilities';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -90,7 +86,7 @@ const parseGasDataConfirmationTime = (
   const totalBlocksToWait =
     blocksToWaitForBaseFee +
     (blocksToWaitForBaseFee < 240 ? blocksToWaitForPriorityFee : 0);
-  let timeAmount = 15 * totalBlocksToWait;
+  const timeAmount = 15 * totalBlocksToWait;
 
   return {
     amount: timeAmount,
@@ -147,7 +143,7 @@ export const parseRainbowMeteorologyData = (
         cleanMaxPriorityFee,
         blocksToConfirmation
       ),
-      maxFeePerGas: parseGasFeeParam(cleanMaxBaseFee),
+      maxBaseFee: parseGasFeeParam(cleanMaxBaseFee),
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
       option: speed,
     };
@@ -217,18 +213,18 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
  */
 export const defaultGasParamsFormat = (
   option: string,
-  maxFeePerGas: string,
+  maxBaseFee: string,
   maxPriorityFeePerGas: string,
   blocksToConfirmation: BlocksToConfirmation
 ): GasFeeParams => {
   const time = parseGasDataConfirmationTime(
-    maxFeePerGas,
+    maxBaseFee,
     maxPriorityFeePerGas,
     blocksToConfirmation
   );
   return {
     estimatedTime: time,
-    maxFeePerGas: parseGasFeeParam(maxFeePerGas),
+    maxBaseFee: parseGasFeeParam(maxBaseFee),
     maxPriorityFeePerGas: parseGasFeeParam(maxPriorityFeePerGas),
     option,
   };
@@ -270,9 +266,9 @@ export const parseGasFees = (
   priceUnit: BigNumberish,
   nativeCurrency: keyof typeof supportedNativeCurrencies
 ) => {
-  const { maxPriorityFeePerGas, maxFeePerGas } = gasFeeParams || {};
+  const { maxPriorityFeePerGas, maxBaseFee } = gasFeeParams || {};
   const priorityFee = maxPriorityFeePerGas?.amount || 0;
-  const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
+  const maxFeePerGasAmount = maxBaseFee?.amount || 0;
   const baseFeePerGasAmount = baseFeePerGas?.amount || 0;
 
   // if user sets the max base fee to lower than the current base fee
@@ -361,7 +357,12 @@ export const parseGasParamsForTransaction = (
   }
   const gasFeeParams = (selectedGasFee as SelectedGasFee).gasFeeParams;
   return {
-    maxFeePerGas: toHex(gasFeeParams.maxFeePerGas.amount),
+    maxFeePerGas: toHex(
+      add(
+        gasFeeParams.maxBaseFee.amount,
+        gasFeeParams.maxPriorityFeePerGas.amount
+      )
+    ),
     maxPriorityFeePerGas: toHex(gasFeeParams.maxPriorityFeePerGas.amount),
   };
 };

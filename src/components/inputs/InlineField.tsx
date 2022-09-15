@@ -11,11 +11,13 @@ import {
   Inline,
   Inset,
   Text,
+  TextProps,
   useTextStyle,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
 
-const textSize = 16;
+const textSize: TextProps['size'] = '16px / 22px (Deprecated)';
+const textSizeNumeric = 16;
 
 export type InlineFieldProps = {
   autoFocus?: TextInputProps['autoFocus'];
@@ -60,16 +62,20 @@ export default function InlineField({
   const { width } = useDimensions();
 
   const paddingVertical = 17;
-  const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
+  const textStyle = useTextStyle({
+    color: 'primary (Deprecated)',
+    size: textSize,
+    weight: 'bold',
+  });
 
-  const [inputHeight, setInputHeight] = useState(textSize);
+  const [inputHeight, setInputHeight] = useState(textSizeNumeric);
   const handleContentSizeChange = useCallback(({ nativeEvent }) => {
     const contentHeight =
-      nativeEvent.contentSize.height - textSize - paddingVertical;
+      nativeEvent.contentSize.height - textSizeNumeric - paddingVertical;
     if (contentHeight > 30) {
       setInputHeight(contentHeight);
     } else {
-      setInputHeight(textSize);
+      setInputHeight(textSizeNumeric);
     }
   }, []);
 
@@ -111,24 +117,27 @@ export default function InlineField({
   return (
     <Columns>
       <Column width="1/3">
-        <Inset top="19px">
+        <Inset top="19px (Deprecated)">
           <Inline space="4px">
             <Text
-              {...(errorMessage && {
-                color: { custom: colors.red },
-              })}
-              size={`${textSize}px`}
+              color={
+                errorMessage ? { custom: colors.red } : 'primary (Deprecated)'
+              }
+              size={textSize}
               weight="heavy"
             >
               {label}
             </Text>
             {errorMessage && (
               <Bleed space="10px">
-                <ButtonPressAnimation onPress={() => Alert.alert(errorMessage)}>
+                <ButtonPressAnimation
+                  onPress={() => Alert.alert(errorMessage)}
+                  testID={`${testID}-error`}
+                >
                   <Inset space="10px">
                     <Text
                       color={{ custom: colors.red }}
-                      size={`${textSize}px`}
+                      size={textSize}
                       weight="heavy"
                     >
                       􀇿
@@ -143,8 +152,12 @@ export default function InlineField({
       <Column>
         <Inline alignVertical="center" space="2px" wrap={false}>
           {startsWith && (
-            <Inset top={ios ? '2px' : '1px'}>
-              <Text color="secondary30" weight="heavy">
+            <Inset top={ios ? '2px' : '1px (Deprecated)'}>
+              <Text
+                color="secondary30 (Deprecated)"
+                size="16px / 22px (Deprecated)"
+                weight="heavy"
+              >
                 {startsWith}
               </Text>
             </Inset>

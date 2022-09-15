@@ -11,20 +11,21 @@ import {
   ProtocolType,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
+} from '@/entities';
+import { toHex } from '@/handlers/web3';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
   ETH_ADDRESS,
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '@rainbow-me/references';
-import { convertAmountToRawAmount } from '@rainbow-me/utilities';
-import { gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/references';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
+import { gasUtils } from '@/utils';
+import logger from '@/utils/logger';
+import { parseGasParamsForTransaction } from '@/parsers';
 
 export const getDepositGasLimit = (tokenToDeposit: Asset) =>
   tokenToDeposit.address === ETH_ADDRESS
@@ -57,10 +58,10 @@ const depositCompound = async (
     tokenToDeposit.decimals
   );
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
 
-  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-  let maxPriorityFeePerGas =
-    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+  let maxFeePerGas = gasParams.maxFeePerGas;
+  let maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
   if (!maxFeePerGas) {
     maxFeePerGas = gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
@@ -88,8 +89,8 @@ const depositCompound = async (
 
   const transactionParams = {
     gasLimit: getDepositGasLimit(tokenToDeposit),
-    maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
 

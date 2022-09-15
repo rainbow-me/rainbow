@@ -9,7 +9,7 @@ interface UniswapPairTokenData {
   // returned in all tokens call
   decimals?: string;
 }
-interface UniswapPairData {
+export interface UniswapPairData {
   id: EthereumAddress;
   reserve0: string;
   reserve1: string;
@@ -20,7 +20,7 @@ interface UniswapPairData {
   trackedReserveETH: string;
   volumeUSD: string;
 }
-interface UniswapPairHistoricalData
+export interface UniswapPairHistoricalData
   extends Omit<UniswapPairData, 'token0' | 'token1'> {
   token0: { derivedETH: string };
   token1: { derivedETH: string };
@@ -30,4 +30,9 @@ export interface UniswapPoolData {
   oneDayHistory: UniswapPairHistoricalData;
   oneMonthHistory: UniswapPairHistoricalData;
   pair: UniswapPairData;
+}
+
+export interface implementation {
+  address: EthereumAddress;
+  decimals: number;
 }

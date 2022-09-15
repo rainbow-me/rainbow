@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
-import { Text } from './text';
-import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+import { Text } from '@/design-system';
+import { useAppVersion, useTimeout } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 
 const DEBUG_TAP_COUNT = 15;
 
@@ -12,16 +12,7 @@ const StyledButton = styled(Pressable)({
   marginBottom: -10,
   paddingBottom: 10,
   paddingHorizontal: 40,
-  paddingTop: 10,
 });
-
-const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.2),
-  lineHeight: 'normal',
-  size: 'smedium',
-  weight: 'bold',
-}))({});
 
 // On CI this will be modified if the app is in Fedora mode
 const FEDORA_BRANCH = '';
@@ -52,13 +43,17 @@ export default function AppVersionStamp() {
       onPress={handleVersionPress}
       onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
     >
-      <StampText>
+      <Text
+        color="secondary30 (Deprecated)"
+        size="14px / 19px (Deprecated)"
+        weight="bold"
+      >
         {FEDORA_BRANCH
           ? FEDORA_BRANCH
           : showCodePushVersion
           ? `Update: ${codePushVersion}`
           : appVersion}
-      </StampText>
+      </Text>
     </StyledButton>
   );
 }

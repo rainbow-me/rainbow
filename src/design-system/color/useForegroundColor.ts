@@ -4,6 +4,7 @@ import { ColorModeContext } from './ColorMode';
 import {
   ContextualColorValue,
   ForegroundColor,
+  getDefaultAccentColorForColorMode,
   getValueForColorMode,
 } from './palettes';
 
@@ -22,7 +23,9 @@ export function useForegroundColors(
 
   return colors.map(color => {
     if (color === 'accent') {
-      return accentColor.color;
+      return accentColor
+        ? accentColor.color
+        : getDefaultAccentColorForColorMode(colorMode).color;
     }
 
     if (typeof color === 'object') {

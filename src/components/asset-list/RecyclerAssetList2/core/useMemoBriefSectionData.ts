@@ -11,7 +11,7 @@ import {
   useOpenSavings,
   useOpenSmallBalances,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 
 const FILTER_TYPES = {
   'ens-profile': [

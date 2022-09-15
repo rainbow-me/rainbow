@@ -2,8 +2,6 @@ import { useRoute } from '@react-navigation/core';
 import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
@@ -15,35 +13,35 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { settingsUpdateNetwork } from '@/redux/settings';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { prefetchENSIntroData } from '@/handlers/ens';
+import networkInfo from '@/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  useInitializeAccountData,
   useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadAccountData,
   useLoadAccountLateData,
   useLoadGlobalLateData,
   usePortfolios,
+  useResetAccountState,
   useTrackENSProfile,
   useUserAccounts,
   useWallets,
   useWalletSectionsData,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { updateRefetchSavings } from '@rainbow-me/redux/data';
-import {
-  emitChartsRequest,
-  emitPortfolioRequest,
-} from '@rainbow-me/redux/explorer';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { updateRefetchSavings } from '@/redux/data';
+import { emitChartsRequest, emitPortfolioRequest } from '@/redux/explorer';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -72,15 +70,34 @@ export default function WalletScreen() {
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
   const { isCoinListEdited } = useCoinListEdited();
-  const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network, accountAddress } = useAccountSettings();
+  const { network: currentNetwork, accountAddress } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
+  const dispatch = useDispatch();
+  const resetAccountState = useResetAccountState();
+  const loadAccountData = useLoadAccountData();
+  const initializeAccountData = useInitializeAccountData();
+
+  const revertToMainnet = useCallback(async () => {
+    await resetAccountState();
+    await dispatch(settingsUpdateNetwork(Network.mainnet));
+    InteractionManager.runAfterInteractions(async () => {
+      await loadAccountData(Network.mainnet);
+      initializeAccountData();
+    });
+  }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
+
+  useEffect(() => {
+    const supportedNetworks = [Network.mainnet, Network.goerli];
+    if (!supportedNetworks.includes(currentNetwork)) {
+      revertToMainnet();
+    }
+  }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
@@ -109,8 +126,6 @@ export default function WalletScreen() {
   }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
 
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
-
-  const dispatch = useDispatch();
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -217,13 +232,14 @@ export default function WalletScreen() {
   }, [profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
-  // (mainnet & rinkeby)
+  // (mainnet)
   const fabs = useMemo(
     () =>
-      [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(
-        e => !!e
-      ),
-    [network]
+      [
+        !!networkInfo[currentNetwork]?.exchange_enabled && ExchangeFab,
+        SendFab,
+      ].filter(e => !!e),
+    [currentNetwork]
   );
 
   const isLoadingAssets =
@@ -231,9 +247,6 @@ export default function WalletScreen() {
 
   return (
     <WalletPage testID="wallet-screen">
-      {/* Line below appears to be needed for having scrollViewTracker persistent while
-      reattaching of react subviews */}
-      <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
         disabled={isAccountEmpty || !!params?.emptyWallet}
         fabs={fabs}
@@ -254,8 +267,7 @@ export default function WalletScreen() {
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
-          network={network}
-          scrollViewTracker={scrollViewTracker}
+          network={currentNetwork}
           walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>

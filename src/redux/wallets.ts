@@ -40,9 +40,9 @@ import {
 import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
-import { WalletLoadingState } from '@rainbow-me/helpers/walletLoadingStates';
-import { lightModeThemeColors } from '@rainbow-me/styles';
+import { fetchReverseRecord } from '@/handlers/ens';
+import { WalletLoadingState } from '@/helpers/walletLoadingStates';
+import { lightModeThemeColors } from '@/styles';
 
 // -- Types ---------------------------------------- //
 
@@ -189,12 +189,23 @@ export const walletsLoadState = (profilesEnabled: boolean = false) => async (
       );
     }
 
-    const selectedAddress = selectedWallet!.addresses.find(a => {
+    const selectedAddress = selectedWallet?.addresses.find(a => {
       return a.visible && a.address === addressFromKeychain;
     });
 
+    // Let's select the first visible account if we don't have a selected address
     if (!selectedAddress) {
-      const account = selectedWallet!.addresses.find(a => a.visible)!;
+      const allWallets = Object.values(allWalletsResult?.wallets || {});
+      let account = null;
+      for (const wallet of allWallets) {
+        for (const rainbowAccount of wallet.addresses) {
+          if (rainbowAccount.visible) {
+            account = rainbowAccount;
+            break;
+          }
+        }
+      }
+      if (!account) return;
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
       logger.sentry(

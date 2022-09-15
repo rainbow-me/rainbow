@@ -1,26 +1,34 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { analytics } from '@rainbow-me/analytics';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import { analytics } from '@/analytics';
+import showWalletErrorAlert from '@/helpers/support';
 import {
   useAccountSettings,
   useExpandedStateNavigation,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
+import config from '@/model/config';
+import { useNavigation } from '@/navigation';
 
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 
 function BuyActionButton({ color: givenColor, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
+  const { navigate: appNavigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
 
   const handlePress = useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
+      return;
+    }
+
+    if (!config.wyre_enabled) {
+      appNavigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
       return;
     }
 

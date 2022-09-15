@@ -6,10 +6,10 @@ import UniqueTokenImage from './UniqueTokenImage';
 import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { shadow as shadowUtil } from '@rainbow-me/styles';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+} from '@/hooks';
+import styled from '@/styled-thing';
+import { shadow as shadowUtil } from '@/styles';
+import isSVGImage from '@/utils/isSVG';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];

@@ -9,18 +9,18 @@ import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
 import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
-import { getTrendKey } from '@rainbow-me/helpers/gas';
+import { getTrendKey } from '@/helpers/gas';
 import {
   useAccountSettings,
   useColorForAsset,
   useDimensions,
   useGas,
   useKeyboardHeight,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { margin } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { margin } from '@/styles';
+import { deviceUtils } from '@/utils';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
@@ -33,7 +33,7 @@ function useAndroidDisableGesturesOnFocus() {
   }, [isFocused, params]);
 }
 
-const FeesPanelWrapper = styled(Column)(margin.object(13, 12, 30, 24));
+const FeesPanelWrapper = styled(Column)(margin.object(19, 24, 29, 24));
 
 const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
@@ -86,7 +86,7 @@ export default function CustomGasState({ asset }) {
       radius={0}
       scrollEnabled={false}
     >
-      <FloatingPanel radius={android ? 30 : 39}>
+      <FloatingPanel borderRadius={38}>
         <ExchangeHeader testID="custom-gas" />
         <FeesPanelWrapper>
           <FeesPanel
@@ -113,6 +113,7 @@ export default function CustomGasState({ asset }) {
           testID="swap-details-gas"
           theme="dark"
           validateGasParams={validateGasParams}
+          marginTop={19}
         />
       </Column>
     </SlackSheet>

@@ -1,15 +1,15 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
-import { Columns } from '@rainbow-me/design-system';
-import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
-import { Network } from '@rainbow-me/helpers';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
-import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { Columns } from '@/design-system';
+import { apiGetUniqueTokenFloorPrice } from '@/handlers/opensea-api';
+import { Network } from '@/helpers';
+import { useAccountSettings } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 
 const NONE = 'None';
 
@@ -92,7 +92,7 @@ export default function NFTBriefTokenInfoRow({
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (
-    <Columns space="19px">
+    <Columns space="19px (Deprecated)">
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         color={

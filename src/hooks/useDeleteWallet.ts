@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
-import { useWallets } from '@rainbow-me/hooks';
-import { walletsUpdate } from '@rainbow-me/redux/wallets';
+import { removeWalletData } from '@/handlers/localstorage/removeWallet';
+import { useWallets } from '@/hooks';
+import { RainbowAccount, RainbowWallet } from '@/model/wallet';
+import { walletsUpdate } from '@/redux/wallets';
 
 export default function useDeleteWallet({
   address: primaryAddress,
@@ -15,8 +16,12 @@ export default function useDeleteWallet({
 
   const [watchingWalletId] = useMemo(() => {
     return (
-      Object.entries(wallets || {}).find(([_, wallet]: [string, any]) =>
-        wallet.addresses.some(({ address }: any) => address === primaryAddress)
+      Object.entries<RainbowWallet>(
+        wallets || {}
+      ).find(([_, wallet]: [string, RainbowWallet]) =>
+        wallet.addresses.some(
+          ({ address }: RainbowAccount) => address === primaryAddress
+        )
       ) || ['', '']
     );
   }, [primaryAddress, wallets]);
@@ -25,13 +30,13 @@ export default function useDeleteWallet({
     const newWallets = {
       ...wallets,
       [watchingWalletId]: {
-        ...wallets[watchingWalletId],
-        addresses: wallets[
+        ...wallets![watchingWalletId],
+        addresses: wallets![
           watchingWalletId
         ].addresses.map((account: { address: string }) =>
           account.address.toLowerCase() === primaryAddress?.toLowerCase()
-            ? { ...account, visible: false }
-            : account
+            ? { ...(account as RainbowAccount), visible: false }
+            : (account as RainbowAccount)
         ),
       },
     };

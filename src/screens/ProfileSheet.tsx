@@ -4,7 +4,7 @@ import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
   Box,
@@ -13,8 +13,8 @@ import {
   Inline,
   Inset,
   Stack,
-} from '@rainbow-me/design-system';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+} from '@/design-system';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
@@ -23,11 +23,11 @@ import {
   useENSFirstTransactionTimestamp,
   useExternalWalletSectionsData,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
-import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
+} from '@/hooks';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
+import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -104,13 +104,13 @@ export default function ProfileSheet() {
       <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
         <StatusBar barStyle="light-content" />
         <AccentColorProvider color={accentColor}>
-          <Box background="body" testID="profile-sheet">
+          <Box background="body (Deprecated)" testID="profile-sheet">
             <Box style={wrapperStyle}>
               {!isPreview &&
               (!isAddressSuccess ||
                 !hasListFetched ||
                 !hasFirstTxTimestampFetched) ? (
-                <Stack space="19px">
+                <Stack space="19px (Deprecated)">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
@@ -145,10 +145,10 @@ function AndroidWrapper({ children }: { children: React.ReactElement }) {
 
 function PlaceholderList() {
   return (
-    <Inset horizontal="19px">
+    <Inset horizontal="19px (Deprecated)">
       <Box height="full">
         <Skeleton animated>
-          <Stack space="15px">
+          <Stack space="15px (Deprecated)">
             <PlaceholderRow />
             <PlaceholderRow />
             <PlaceholderRow />
@@ -167,13 +167,13 @@ function PlaceholderRow() {
       <Column width="content">
         <Inline alignVertical="center" space="10px" wrap={false}>
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={15}
             height={{ custom: 30 }}
             width={{ custom: 30 }}
           />
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={15}
             height={{ custom: 20 }}
             width={{ custom: 200 }}

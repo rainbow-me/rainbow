@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 
 import * as Docs from '../docs/components';
@@ -27,7 +26,7 @@ const docs: DocsType = {
         <Docs.Text>
           Note that all layout components accept spacing values from our
           standard space scale (e.g.{' '}
-          <Docs.Code>space=&quot;19px&quot;</Docs.Code>) which helps reduce the
+          <Docs.Code>space=&quot;20px&quot;</Docs.Code>) which helps reduce the
           amount of variation in our layouts. These are modeled as strings to
           make autocompletion easier and to allow for other naming conventions
           in the future. If you need to use a value that doesn&apos;t exist in

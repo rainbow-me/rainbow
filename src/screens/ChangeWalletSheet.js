@@ -1,3 +1,4 @@
+import { IS_TESTING } from 'react-native-dotenv';
 import { useRoute } from '@react-navigation/core';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
@@ -25,26 +26,27 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { analytics } from '@rainbow-me/analytics';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import { analytics } from '@/analytics';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import {
   useAccountSettings,
   useInitializeWallet,
   useWallets,
   useWalletsWithBalancesAndNames,
   useWebData,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 import {
   abbreviations,
   deviceUtils,
   doesWalletsContainAddress,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;
@@ -165,7 +167,17 @@ export default function ChangeWalletSheet() {
         await Promise.all([p1, p2]);
 
         initializeWallet(null, null, null, false, false, null, true);
-        !fromDeletion && goBack();
+        if (!fromDeletion) {
+          goBack();
+
+          if (IS_TESTING !== 'true') {
+            InteractionManager.runAfterInteractions(() => {
+              setTimeout(async () => {
+                await runCampaignChecks();
+              }, 5000);
+            });
+          }
+        }
       } catch (e) {
         logger.log('error while switching account', e);
       }
@@ -245,7 +257,7 @@ export default function ChangeWalletSheet() {
                     color: args.color,
                     label: args.name,
                   };
-                  let updatedWalletAddresses = [...walletAddresses];
+                  const updatedWalletAddresses = [...walletAddresses];
                   updatedWalletAddresses[
                     walletAddressIndex
                   ] = updatedWalletAddress;
@@ -455,7 +467,16 @@ export default function ChangeWalletSheet() {
 
                     // If doesn't exist, we need to create a new wallet
                   } else {
-                    await createWallet(null, color, name);
+                    await createWallet(
+                      null,
+                      color,
+                      name,
+                      false,
+                      null,
+                      null,
+                      false,
+                      true
+                    );
                     await dispatch(walletsLoadState(profilesEnabled));
                     await initializeWallet();
                   }
