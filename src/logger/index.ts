@@ -151,7 +151,7 @@ export class Logger {
     this.enabled = enabled !== false;
     this.level = debug ? LogLevel.Debug : level ?? LogLevel.Warn;
     this.debugContextRegexes = (debug || '').split(',').map(context => {
-      return new RegExp(context.replace('/', '\\/').replace('*', '.*'));
+      return new RegExp(context.replace(/\//g, '\\/').replace(/\*/g, '.*'));
     });
   }
 
