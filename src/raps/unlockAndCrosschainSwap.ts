@@ -6,9 +6,9 @@ import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
   createNewAction,
   createNewRap,
+  CrosschainSwapActionParameters,
   RapAction,
   RapActionTypes,
-  SwapActionParameters,
 } from './common';
 import { isNativeAsset } from '@/handlers/assets';
 import store from '@/redux/store';
@@ -17,8 +17,9 @@ import { ethereumUtils } from '@/utils';
 import { estimateSwapGasLimit } from '@/handlers/swap';
 
 export const estimateUnlockAndCrosschainSwap = async (
-  swapParameters: SwapActionParameters
+  swapParameters: CrosschainSwapActionParameters
 ) => {
+  console.log('😬😬😬😬😬😬 estimateUnlockAndCrosschainSwap');
   const { inputAmount, tradeDetails, chainId } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
 
@@ -26,6 +27,9 @@ export const estimateUnlockAndCrosschainSwap = async (
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   const { accountAddress } = store.getState().settings;
+  // this will probably need refactor
+  const routeAllowanceTargetAddress =
+    tradeDetails?.routes?.[0]?.userTxs?.[0]?.approvalData?.allowanceTarget;
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
@@ -38,34 +42,32 @@ export const estimateUnlockAndCrosschainSwap = async (
       ethereumUtils.getNetworkFromChainId(Number(chainId))
     );
 
-  if (!nativeAsset) {
+  if (!nativeAsset && routeAllowanceTargetAddress) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
       inputCurrency,
-      SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
+      routeAllowanceTargetAddress,
       chainId
     );
+    if (swapAssetNeedsUnlocking) {
+      const unlockGasLimit = await estimateApprove(
+        accountAddress,
+        inputCurrency.address,
+        routeAllowanceTargetAddress,
+        chainId
+      );
+      gasLimits = gasLimits.concat(unlockGasLimit);
+    }
   }
 
-  let unlockGasLimit;
-  let swapGasLimit;
-
-  if (swapAssetNeedsUnlocking) {
-    unlockGasLimit = await estimateApprove(
-      accountAddress,
-      inputCurrency.address,
-      SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
-      chainId
-    );
-    gasLimits = gasLimits.concat(unlockGasLimit);
-  }
-
-  swapGasLimit = await estimateSwapGasLimit({
+  const swapGasLimit = await estimateSwapGasLimit({
     chainId: Number(chainId),
     requiresApprove: swapAssetNeedsUnlocking,
     tradeDetails,
   });
+
+  console.log('😬😬😬😬😬😬 swapGasLimit', swapGasLimit);
 
   gasLimits = gasLimits.concat(swapGasLimit);
 
@@ -73,13 +75,17 @@ export const estimateUnlockAndCrosschainSwap = async (
 };
 
 export const createUnlockAndCrosschainSwapRap = async (
-  swapParameters: SwapActionParameters
+  swapParameters: CrosschainSwapActionParameters
 ) => {
   let actions: RapAction[] = [];
 
   const { inputAmount, tradeDetails, flashbots, chainId } = swapParameters;
   const { inputCurrency } = store.getState().swap;
   const { accountAddress } = store.getState().settings;
+
+  // this will probably need refactor
+  const routeAllowanceTargetAddress =
+    tradeDetails?.routes?.[0]?.userTxs?.[0]?.approvalData?.allowanceTarget;
 
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   const nativeAsset =
@@ -91,27 +97,25 @@ export const createUnlockAndCrosschainSwapRap = async (
     );
 
   let swapAssetNeedsUnlocking = false;
-  if (!nativeAsset) {
+  if (!nativeAsset && routeAllowanceTargetAddress) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
       inputCurrency,
-      SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
+      routeAllowanceTargetAddress,
       chainId
     );
+    if (swapAssetNeedsUnlocking) {
+      const unlock = createNewAction(RapActionTypes.unlock, {
+        amount: inputAmount,
+        assetToUnlock: inputCurrency,
+        chainId,
+        contractAddress: routeAllowanceTargetAddress,
+      });
+      actions = actions.concat(unlock);
+    }
   }
 
-  if (swapAssetNeedsUnlocking) {
-    const unlock = createNewAction(RapActionTypes.unlock, {
-      amount: inputAmount,
-      assetToUnlock: inputCurrency,
-      chainId,
-      contractAddress: SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
-    });
-    actions = actions.concat(unlock);
-  }
-
-  // create a swap rap
   const crosschainSwap = createNewAction(RapActionTypes.crosschainSwap, {
     chainId,
     flashbots,
