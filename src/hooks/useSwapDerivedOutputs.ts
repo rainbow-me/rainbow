@@ -6,7 +6,11 @@ import {
 } from '@rainbow-me/swaps';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
+// DO NOT REMOVE THESE COMMENTED ENV VARS
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import isTestFlight from '@/helpers/isTestFlight';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
