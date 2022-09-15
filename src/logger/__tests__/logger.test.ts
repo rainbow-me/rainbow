@@ -73,8 +73,8 @@ describe('general functionality', () => {
     logger.error(new Error());
 
     expect(mockTransport).toHaveBeenCalledWith(
-      LogLevel.Warn,
-      `logger.error was not provided a RainbowError so this exception will be ignored`,
+      LogLevel.Error,
+      new RainbowError(`logger.error was not provided a RainbowError`),
       {}
     );
   });
