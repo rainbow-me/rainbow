@@ -1,11 +1,5 @@
 import { isEmpty } from 'lodash';
 import { AnyAction } from 'redux';
-import { uniswapClient } from '../apollo/client';
-import {
-  USER_HISTORY,
-  USER_MINTS_BURNS_PER_PAIR,
-  USER_POSITIONS,
-} from '../apollo/queries';
 import {
   getUniswapPositions,
   saveUniswapPositions,
@@ -22,6 +16,7 @@ import {
   WETH_ADDRESS,
 } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
+import { uniswapClient } from '@/graphql';
 
 const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086;
 
@@ -181,15 +176,12 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
   let amount0 = 0;
   let amount1 = 0;
   // get all mints and burns to get principal amounts
-  const results = await uniswapClient.query({
-    query: USER_MINTS_BURNS_PER_PAIR,
-    variables: {
-      pair: pairAddress,
-      user,
-    },
+  const results = await uniswapClient.getUserMintsAndBurnsByPair({
+    pair: pairAddress,
+    user,
   });
-  for (const index in results.data.mints) {
-    const mint = results.data.mints[index];
+  for (const index in results.mints) {
+    const mint = results.mints[index];
     const mintToken0 = mint.pair.token0?.id;
     const mintToken1 = mint.pair.token1?.id;
 
@@ -211,8 +203,8 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
     amount1 += amount1 + parseFloat(mint.amount1);
   }
 
-  for (const index in results.data.burns) {
-    const burn = results.data.burns[index];
+  for (const index in results.burns) {
+    const burn = results.burns[index];
     const burnToken0 = burn.pair.token0?.id;
     const burnToken1 = burn.pair.token1?.id;
 
@@ -228,11 +220,11 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
     ) {
       usd += parseFloat(burn.amount1) * 2;
     } else {
-      usd -= parseFloat(results.data.burns[index].amountUSD);
+      usd -= parseFloat(results.burns[index].amountUSD);
     }
 
-    amount0 -= parseFloat(results.data.burns[index].amount0);
-    amount1 -= parseFloat(results.data.burns[index].amount1);
+    amount0 -= parseFloat(results.burns[index].amount0);
+    amount1 -= parseFloat(results.burns[index].amount1);
   }
 
   return { amount0, amount1, usd };
@@ -303,16 +295,12 @@ async function fetchSnapshots(account: string): Promise<Position[]> {
     let allResults: any[] = [];
     let found = false;
     while (!found) {
-      let result = await uniswapClient.query({
-        fetchPolicy: 'no-cache',
-        query: USER_HISTORY,
-        variables: {
-          skip: skip,
-          user: account.toLowerCase(),
-        },
+      const result = await uniswapClient.getUserHistory({
+        user: account.toLowerCase(),
+        skip,
       });
-      allResults = allResults.concat(result.data.liquidityPositionSnapshots);
-      if (result.data.liquidityPositionSnapshots.length < 1000) {
+      allResults = allResults.concat(result.liquidityPositionSnapshots);
+      if (result.liquidityPositionSnapshots.length < 1000) {
         found = true;
       } else {
         skip += 1000;
@@ -329,28 +317,24 @@ async function fetchData(account: string): Promise<UniswapPosition[]> {
   const priceOfEther = ethereumUtils.getEthPriceUnit();
 
   try {
-    let result = await uniswapClient.query({
-      fetchPolicy: 'no-cache',
-      query: USER_POSITIONS,
-      variables: {
-        user: account.toLowerCase(),
-      },
+    const result = await uniswapClient.getLiquidityPositionsByUser({
+      userAddress: account.toLowerCase(),
     });
-    if (result?.data?.liquidityPositions) {
+    if (result?.liquidityPositions) {
       const snapshots = await fetchSnapshots(account);
 
       return await Promise.all(
-        result?.data?.liquidityPositions.map(async (positionData: Position) => {
+        result?.liquidityPositions.map(async positionData => {
           const returnData = await getLPReturnsOnPair(
             account,
             positionData.pair,
             Number(priceOfEther),
             snapshots
           );
-          return {
+          return ({
             ...positionData,
             ...returnData,
-          };
+          } as unknown) as UniswapPosition;
         })
       );
     }

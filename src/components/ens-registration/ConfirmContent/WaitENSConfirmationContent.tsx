@@ -25,12 +25,16 @@ const WaitENSConfirmationContent = ({
                 seconds={seconds || ENS_SECONDS_WAIT}
               />
               <Stack alignHorizontal="center" space="19px (Deprecated)">
-                <Heading size="23px / 27px (Deprecated)" weight="heavy">
+                <Heading
+                  color="primary (Deprecated)"
+                  size="23px / 27px (Deprecated)"
+                  weight="heavy"
+                >
                   {lang.t('profiles.confirm.wait_one_minute')}
                 </Heading>
                 <Text
                   align="center"
-                  color="secondary60"
+                  color="secondary60 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="semibold"
                 >

@@ -23,19 +23,19 @@ const docs: DocsType = {
       Example: () =>
         source(
           <Stack space="12px">
-            <Text size="17pt" weight="regular">
+            <Text color="label" size="17pt" weight="regular">
               Regular
             </Text>
-            <Text size="17pt" weight="medium">
+            <Text color="label" size="17pt" weight="medium">
               Medium
             </Text>
-            <Text size="17pt" weight="semibold">
+            <Text color="label" size="17pt" weight="semibold">
               Semibold
             </Text>
-            <Text size="17pt" weight="bold">
+            <Text color="label" size="17pt" weight="bold">
               Bold
             </Text>
-            <Text size="17pt" weight="heavy">
+            <Text color="label" size="17pt" weight="heavy">
               Heavy
             </Text>
           </Stack>

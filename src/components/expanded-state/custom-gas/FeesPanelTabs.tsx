@@ -42,7 +42,7 @@ const TabPill = ({
       onPress={handleOnPress}
       scaleTo={0.8}
       testID={testID}
-      paddingHorizontal="5px"
+      paddingHorizontal="5px (Deprecated)"
     >
       <AccentColorProvider
         color={

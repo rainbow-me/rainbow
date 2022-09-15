@@ -1,18 +1,19 @@
 # This is a basic workflow to help you get started with Actions
 
-name: iOS e2e tests
+name: Android e2e tests
 
 # Controls when the workflow will run
 on: [pull_request, workflow_dispatch]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "ios-e2e"
-  ios-e2e:
+  # This workflow contains a single job called "android-e2e"
+  android-e2e:
+    if: github.ref_name == '@tchayen/android-detox'
     # The type of runner that the job will run on
-    runs-on: ["self-hosted"]
+    runs-on: ["self-hosted", "ci-5"]
     # Cancel current builds if there's a newer commit on the same branch
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
@@ -31,31 +32,24 @@ jobs:
           # fetch env vars
           git clone git@github.com:rainbow-me/rainbow-env.git
           # unpack dotenv
-          mv rainbow-env/dotenv .env && rm -rf rainbow-env 
+          mv rainbow-env/android/app/google-services.json android/app
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
           # run CI scripts
           eval $CI_SCRIPTS
-          # tweak dotenv for e2e 
+          # tweak dotenv for e2e
           sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          # set up password
+          cp android/keystores/debug.keystore android/keystores/rainbow-key.keystore
+          sed -i -e "s:rainbow-alias:androiddebugkey:g" android/app/build.gradle
+          export RAINBOW_KEY_ANDROID_PASSWORD=android
       - name: Install deps via Yarn
         run: yarn setup-ci
 
-      - name: Check for frozen lockfile
-        run: yarn check-lockfile
-        
-      - name: Audit CI
-        run:  yarn audit-ci --moderate --config audit-ci.json
-
-      - name: Lint
-        run: yarn lint:ci
-        
-      - name: Install Pods
-        run: cd ios && pod install && cd ..
-
       - name: Build the app in Release mode
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release
-      
-      - name: Run iOS e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
+        run: ./node_modules/.bin/detox build --configuration android.emu.release
+
+      - name: Run Android e2e tests
+        run: ./node_modules/.bin/detox test -R 5 --configuration android.emu.release --forceExit
 
       - name: Send success message to slack
         id: slack-success-msg
@@ -70,7 +64,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus: ✅  ${{ job.status }}"
+                    "text": "Android Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus: ✅  ${{ job.status }}"
                   }
                 },
                 {
@@ -117,7 +111,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ 'github.event.pull_request.title' }}\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
+                    "text": "Android Build for #${{ github.event.pull_request.number }} - ${{ 'github.event.pull_request.title' }}\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
                   }
                 },
                 {

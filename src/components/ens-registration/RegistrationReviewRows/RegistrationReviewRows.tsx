@@ -34,7 +34,7 @@ function StepButton({
       shouldLongPressHoldPress
     >
       <Text
-        color={disabled ? 'secondary20' : 'accent'}
+        color={disabled ? 'secondary20 (Deprecated)' : 'accent'}
         size="16px / 22px (Deprecated)"
         weight="heavy"
       >
@@ -104,7 +104,11 @@ export default function RegistrationReviewRows({
       <Stack space="30px (Deprecated)">
         <Columns>
           <Column width="3/5">
-            <Text size="16px / 22px (Deprecated)" weight="heavy">
+            <Text
+              color="primary (Deprecated)"
+              size="16px / 22px (Deprecated)"
+              weight="heavy"
+            >
               {lang.t(
                 `profiles.confirm.${
                   mode === REGISTRATION_MODES.CREATE
@@ -129,6 +133,7 @@ export default function RegistrationReviewRows({
                 <Box height={{ custom: 16 }}>
                   <Text
                     align="center"
+                    color="primary (Deprecated)"
                     size="16px / 22px (Deprecated)"
                     weight="heavy"
                   >
@@ -157,7 +162,7 @@ export default function RegistrationReviewRows({
           <Columns>
             <Column width="2/3">
               <Text
-                color="secondary80"
+                color="secondary80 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="bold"
               >
@@ -167,7 +172,7 @@ export default function RegistrationReviewRows({
             <Column width="1/3">
               <Text
                 align="right"
-                color="secondary80"
+                color="secondary80 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="bold"
               >
@@ -180,7 +185,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text
-              color="secondary80"
+              color="secondary80 (Deprecated)"
               size="16px / 22px (Deprecated)"
               weight="bold"
             >
@@ -192,7 +197,7 @@ export default function RegistrationReviewRows({
               {registrationFee ? (
                 <Text
                   align="right"
-                  color="secondary80"
+                  color="secondary80 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
@@ -208,7 +213,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text
-              color="secondary80"
+              color="secondary80 (Deprecated)"
               size="16px / 22px (Deprecated)"
               weight="bold"
             >
@@ -220,7 +225,7 @@ export default function RegistrationReviewRows({
               {networkFee ? (
                 <Text
                   align="right"
-                  color="secondary80"
+                  color="secondary80 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
@@ -237,7 +242,7 @@ export default function RegistrationReviewRows({
           <Columns>
             <Column width="2/3">
               <Text
-                color="secondary80"
+                color="secondary80 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="bold"
               >
@@ -249,7 +254,7 @@ export default function RegistrationReviewRows({
                 {networkFee ? (
                   <Text
                     align="right"
-                    color="secondary80"
+                    color="secondary80 (Deprecated)"
                     size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
@@ -265,7 +270,11 @@ export default function RegistrationReviewRows({
 
         <Columns>
           <Column width="2/3">
-            <Text size="16px / 22px (Deprecated)" weight="heavy">
+            <Text
+              color="primary (Deprecated)"
+              size="16px / 22px (Deprecated)"
+              weight="heavy"
+            >
               {lang.t('profiles.confirm.estimated_total')}
             </Text>
           </Column>
@@ -274,6 +283,7 @@ export default function RegistrationReviewRows({
               {totalCost ? (
                 <Text
                   align="right"
+                  color="primary (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="heavy"
                 >
