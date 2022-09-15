@@ -258,13 +258,6 @@ export const parseAccountUniqueTokensPolygon = data => {
     })
     .filter(token => !!token.familyName && token.familyName !== 'POAP');
 
-  //filter out NFTs that are not on our allow list
-  remove(
-    erc721s,
-    nft =>
-      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
-  );
-
   return erc721s;
 };
 
