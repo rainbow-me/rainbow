@@ -194,11 +194,20 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   }) => {
     const TitleComponent = section.useGradientText
       ? HeaderTitleGradient
-      : ({ children, color }: { children: ReactElement; color: string }) => (
+      : ({
+          children,
+          color,
+          testID,
+        }: {
+          children: ReactElement;
+          color: string;
+          testID: string;
+        }) => (
           <Text
             size="14px / 19px (Deprecated)"
             weight="heavy"
             color={{ custom: color || colors.blueGreyDark50 }}
+            testID={testID}
           >
             {children}
           </Text>
