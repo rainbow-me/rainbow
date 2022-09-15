@@ -37,7 +37,7 @@ sent to our reporting services.
 ## Usage
 
 ```typescript
-import { logger } from '@/logger'
+import { logger } from '@/logger';
 ```
 
 ### `logger.debug`
@@ -46,7 +46,7 @@ Debug level is for **local development only,** and is disabled by default. To
 enabled it, set `LOG_LEVEL=debug` before running the Metro server.
 
 ```typescript
-logger.debug(message)
+logger.debug(message);
 ```
 
 Inspired by [debug](https://www.npmjs.com/package/debug), when writing debug
@@ -63,7 +63,7 @@ For example, a debug log like this:
 
 ```typescript
 // src/components
-logger.debug(message, logger.DebugContext.swaps)
+logger.debug(message, logger.DebugContext.swaps);
 ```
 
 Would be logged to the console in dev mode if `LOG_LEVEL=debug`, _or_ if you
@@ -72,8 +72,8 @@ multiple contexts using commas like `LOG_DEBUG=swaps,ethers`, and _automatically
 sets the log level to `debug`, regardless of `LOG_LEVEL`._
 
 > For more advanced usage, you we can namespace our debug contexts i.e.
-`swaps:utils` or `swaps:forms`, which can then be targeted individually, or
-using a wildcard `LOG_LEVEL=swaps:*` to filter for all `swaps:` debug logs.
+> `swaps:utils` or `swaps:forms`, which can then be targeted individually, or
+> using a wildcard `LOG_LEVEL=swaps:*` to filter for all `swaps:` debug logs.
 
 ### `logger.info`
 
@@ -85,19 +85,18 @@ to Sentry as breadcrumbs.
 information from being sent in these logs.
 
 ```typescript
-logger.info(message)
+logger.info(message);
 ```
 
-`info`, along with `warn` and `error` support an additional parameter, `metadata:
-Record<string, unknown>`. Use this to provide values to the [Sentry
+`info`, along with `warn` and `error` support an additional parameter, `metadata: Record<string, unknown>`. Use this to provide values to the [Sentry
 breadcrumb](https://docs.sentry.io/platforms/react-native/enriching-events/breadcrumbs/#manual-breadcrumbs).
 The object will also be pretty printed to the console in dev mode if
 `LOG_LEVEL=info`.
 
 ```typescript
 logger.info(message, {
-   duration: '256ms'
-})
+  duration: '256ms',
+});
 ```
 
 ### `logger.warn`
@@ -114,7 +113,7 @@ These logs will also be sent as Sentry breadcrumbs, with a severity level of
 `warning`, and they also support the optional second parameter, `metadata`.
 
 ```typescript
-logger.warn(message, { ...metadata })
+logger.warn(message, { ...metadata });
 ```
 
 ### `logger.error`
@@ -133,7 +132,7 @@ be reported instead so that we can track down the incorrect usage.
 try {
   // some async code
 } catch (e) {
-  logger.error(e, { ...metadata })
+  logger.error(e, { ...metadata });
 }
 ```
 
@@ -141,12 +140,12 @@ The correct way to handle exceptions is to always create a new `RainbowError`
 with a descriptive message of what happened. Be sure to avoid any PII.
 
 ```typescript
-import { RainbowError } from '@/logger'
+import { RainbowError } from '@/logger';
 
 try {
-   // some async code
+  // some async code
 } catch (e) {
-   const error = new RainbowError('Descriptive error message')
-   logger.error(error, { ...metadata })
+  const error = new RainbowError('Descriptive error message');
+  logger.error(error, { ...metadata });
 }
 ```
