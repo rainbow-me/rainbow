@@ -24,4 +24,23 @@ export interface TransactionNotificationData {
   address: string;
   chain: string;
   hash: string;
+  transaction_type: NotificationTransactionTypesType;
 }
+
+export const NotificationTransactionTypes = {
+  approve: 'approve',
+  burn: 'burn',
+  cancel: 'cancel',
+  contract_interaction: 'contract_interaction',
+  deposit: 'deposit',
+  mint: 'mint',
+  purchase: 'purchase',
+  receive: 'receive',
+  revoke: 'revoke',
+  sale: 'sale',
+  send: 'send',
+  swap: 'swap',
+  withdraw: 'withdraw',
+} as const;
+
+export type NotificationTransactionTypesType = typeof NotificationTransactionTypes[keyof typeof NotificationTransactionTypes];

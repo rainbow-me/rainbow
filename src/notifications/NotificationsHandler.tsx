@@ -45,6 +45,7 @@ import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
 import { isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
+import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
 
 type Callback = () => void;
 
@@ -193,7 +194,12 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
 
     if (type === NotificationTypes.transaction) {
       const untypedData = notification?.data;
-      if (!untypedData?.address || !untypedData?.hash || !untypedData?.chain) {
+      if (
+        !untypedData?.address ||
+        !untypedData?.hash ||
+        !untypedData?.chain ||
+        !untypedData?.transaction_type
+      ) {
         return;
       }
 
@@ -234,7 +240,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
         }
 
         const newTransactionDetails: NewTransactionOrAddCashTransaction = {
-          type: TransactionType.send,
+          type: mapNotificationTransactionType(data.transaction_type),
           network,
           hash: rpcTransaction.hash,
           status: TransactionStatus.unknown,
