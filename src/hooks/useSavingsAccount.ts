@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountSettings from './useAccountSettings';
 import { useGenericAssets } from './useGenericAsset';
-import { compoundClient } from '@/apollo/client';
+import { compoundClientDeprecated } from '@/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@/apollo/queries';
 import { AssetTypes } from '@/entities';
 import { multiply } from '@/helpers/utilities';
@@ -108,7 +108,7 @@ export default function useSavingsAccount(includeDefaultDai: boolean) {
   const { data, error, loading, refetch: refetchSavings } = useQuery(
     COMPOUND_ACCOUNT_AND_MARKET_QUERY,
     {
-      client: compoundClient,
+      client: compoundClientDeprecated,
       pollInterval: COMPOUND_QUERY_INTERVAL,
       skip: !hasAccountAddress,
       variables: { id: accountAddress?.toLowerCase() },

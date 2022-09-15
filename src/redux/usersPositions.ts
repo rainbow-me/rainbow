@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import { AnyAction } from 'redux';
-import { uniswapClient } from '../apollo/client';
+import { uniswapClientDeprecated } from '../apollo/client';
 import {
   USER_HISTORY,
   USER_MINTS_BURNS_PER_PAIR,
@@ -181,7 +181,7 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
   let amount0 = 0;
   let amount1 = 0;
   // get all mints and burns to get principal amounts
-  const results = await uniswapClient.query({
+  const results = await uniswapClientDeprecated.query({
     query: USER_MINTS_BURNS_PER_PAIR,
     variables: {
       pair: pairAddress,
@@ -303,7 +303,7 @@ async function fetchSnapshots(account: string): Promise<Position[]> {
     let allResults: any[] = [];
     let found = false;
     while (!found) {
-      let result = await uniswapClient.query({
+      let result = await uniswapClientDeprecated.query({
         fetchPolicy: 'no-cache',
         query: USER_HISTORY,
         variables: {
@@ -329,7 +329,7 @@ async function fetchData(account: string): Promise<UniswapPosition[]> {
   const priceOfEther = ethereumUtils.getEthPriceUnit();
 
   try {
-    let result = await uniswapClient.query({
+    let result = await uniswapClientDeprecated.query({
       fetchPolicy: 'no-cache',
       query: USER_POSITIONS,
       variables: {
