@@ -20,7 +20,6 @@ import {
   useDimensions,
   useENSAddress,
   useENSAvatar,
-  useENSFirstTransactionTimestamp,
   useExternalWalletSectionsData,
   usePersistentDominantColorFromImage,
 } from '@/hooks';
@@ -28,6 +27,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -54,7 +54,7 @@ export default function ProfileSheet() {
   // Prefetch first transaction timestamp unless already fetched for intro marquee
   const {
     isSuccess: hasFirstTxTimestampFetched,
-  } = useENSFirstTransactionTimestamp(name, { enabled: !isPreview });
+  } = useFirstTransactionTimestamp({ addressOrName: ensName });
 
   // Prefetch asset list
   const {
