@@ -257,6 +257,7 @@ export const getSwapRapEstimationByType = (
   type: keyof typeof RapActionTypes,
   swapParameters: SwapActionParameters | CrosschainSwapActionParameters
 ) => {
+  console.log('😡😡😡😡😡😡😡😡😡😡😡😡 getSwapRapEstimationByType', type);
   switch (type) {
     case RapActionTypes.depositCompound:
       return estimateSwapAndDepositCompound(swapParameters);
