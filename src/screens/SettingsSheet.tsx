@@ -122,7 +122,7 @@ export default function SettingsSheet() {
   const getRealRoute = useCallback(
     (key: any) => {
       let route = key;
-      let paramsToPass: {
+      const paramsToPass: {
         imported?: boolean;
         type?: string;
         walletId?: string;
@@ -139,18 +139,18 @@ export default function SettingsSheet() {
           // then show the single screen for that wallet.
         } else {
           if (wallets && nonReadonlyWallets.length === 1) {
-            // Get the primary wallet
-            const primaryWalletId = Object.keys(wallets!).find(
-              (key: string) => wallets![key].primary
+            // Get the non watched wallet
+            const defaultSelectedWalletId = Object.keys(wallets!).find(
+              (key: string) => wallets![key].type !== WalletTypes.readOnly
             );
-            if (primaryWalletId) {
-              if (wallets[primaryWalletId].backedUp) {
+            if (defaultSelectedWalletId) {
+              if (wallets[defaultSelectedWalletId].backedUp) {
                 paramsToPass.type = 'AlreadyBackedUpView';
               }
-              if (wallets[primaryWalletId].imported) {
+              if (wallets[defaultSelectedWalletId].imported) {
                 paramsToPass.imported = true;
               }
-              paramsToPass.walletId = primaryWalletId;
+              paramsToPass.walletId = defaultSelectedWalletId;
             }
           }
           route = 'SettingsBackupView';
@@ -158,7 +158,7 @@ export default function SettingsSheet() {
       }
       return { params: { ...params, ...paramsToPass }, route };
     },
-    [params, selectedWallet.backedUp, selectedWallet.imported, wallets]
+    [params, wallets]
   );
 
   const onPressSection = useCallback(
