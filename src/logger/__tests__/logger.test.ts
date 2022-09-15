@@ -168,28 +168,15 @@ describe('debug contexts', () => {
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Debug, message, {});
   });
 
-  test('by filepaths', () => {
-    const message = nanoid();
-    const logger = new Logger({
-      enabled: true,
-      debug: 'src/components/*',
-    });
-
-    logger.addTransport(mockTransport);
-    logger.debug(message, {}, 'src/components/Divider.js');
-
-    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Debug, message, {});
-  });
-
   test('ignores inactive', () => {
     const message = nanoid();
     const logger = new Logger({
       enabled: true,
-      debug: 'src/components/*',
+      debug: 'namespace:foo:*',
     });
 
     logger.addTransport(mockTransport);
-    logger.debug(message, {}, 'src/utils/*');
+    logger.debug(message, {}, 'namespace:bar:baz');
 
     expect(mockTransport).not.toHaveBeenCalledWith(LogLevel.Debug, message, {});
   });
