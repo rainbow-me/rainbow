@@ -165,7 +165,6 @@ export default function RestoreCloudStep({
 
   const onSubmit = useCallback(async () => {
     try {
-      Keyboard.dismiss();
       setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET);
       let success;
       if (IS_ANDROID) {

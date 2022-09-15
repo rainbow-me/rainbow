@@ -156,7 +156,7 @@ const AvailableNetworksv2 = ({
                   {availableNetworks?.map((network, index) => {
                     return (
                       <Box
-                        background="body"
+                        background="body (Deprecated)"
                         key={`availableNetwork-${network}`}
                         marginLeft="-4px"
                         style={{
@@ -187,7 +187,7 @@ const AvailableNetworksv2 = ({
 
                 <Box paddingLeft="6px">
                   <Text
-                    color="secondary60"
+                    color="secondary60 (Deprecated)"
                     size="14px / 19px (Deprecated)"
                     weight="semibold"
                     numberOfLines={2}
@@ -205,7 +205,7 @@ const AvailableNetworksv2 = ({
               </Inline>
               <Text
                 align="center"
-                color="secondary40"
+                color="secondary40 (Deprecated)"
                 size="14px / 19px (Deprecated)"
                 weight="semibold"
               >

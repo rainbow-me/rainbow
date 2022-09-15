@@ -48,10 +48,10 @@ Ensure you are in the root directory of the `rainbow` repository.
 #### 3. Consume!
 
 ```tsx
-import { ensClient } from '@/graphql'
+import { ensClient } from '@/graphql';
 
 function fetchDomain(id: string) {
-  return ensClient.getDomain({ id })
+  return ensClient.getDomain({ id });
 }
 ```
 
@@ -119,13 +119,9 @@ export const metadataClient = getMetadataSdk(
 #### 5. Consume!
 
 ```tsx
-import { exampleClient } from '@/graphql'
+import { exampleClient } from '@/graphql';
 
 function fetchUsers() {
-  return exampleClient.getUsers()
+  return exampleClient.getUsers();
 }
 ```
-
-
-
-

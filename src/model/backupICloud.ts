@@ -39,9 +39,6 @@ interface BackupUserData {
   wallets: AllRainbowWallets;
 }
 
-const NOOP = () => {};
-const encryptor = new AesEncryptor();
-
 async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allKeys = await keychain.loadAllKeys();
   if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR);
@@ -175,7 +172,7 @@ export async function restoreCloudBackup({
     if (!data) {
       throw new Error('Invalid password');
     }
-    const dataToRestore = {
+    let dataToRestore = {
       ...data.secrets,
     };
 
@@ -245,7 +242,6 @@ async function restoreCurrentBackupIntoKeychain(
         if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
           accessControl = privateAccessControlOptions;
         }
-
         if (typeof value === 'string') {
           return keychain.saveString(key, value, accessControl);
         } else {

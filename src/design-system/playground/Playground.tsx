@@ -11,7 +11,7 @@ import useHideSplashScreen from '../../hooks/useHideSplashScreen';
 import {
   Box,
   DesignSystemProvider,
-  Divider,
+  Separator,
   Heading,
   Inline,
   Inset,
@@ -25,12 +25,12 @@ import boxPlayground from '../components/Box/Box.playground';
 import columnsPlayground from '../components/Columns/Columns.playground';
 import coverPlayground from '../components/Cover/Cover.playground';
 import debugLayoutPlayground from '../components/DebugLayout/DebugLayout.playground';
-import dividerPlayground from '../components/Divider/Divider.playground';
 import headingPlayground from '../components/Heading/Heading.playground';
 import inlinePlayground from '../components/Inline/Inline.playground';
 import insetPlayground from '../components/Inset/Inset.playground';
 import markdownTextPlayground from '../components/MarkdownText/MarkdownText.playground';
 import rowsPlayground from '../components/Rows/Rows.playground';
+import separatorPlayground from '../components/Separator/Separator.playground';
 import stackPlayground from '../components/Stack/Stack.playground';
 import textPlayground from '../components/Text/Text.playground';
 import textLinkPlayground from '../components/TextLink/TextLink.playground';
@@ -44,12 +44,12 @@ const allDocs = [
   columnsPlayground,
   coverPlayground,
   debugLayoutPlayground,
-  dividerPlayground,
   headingPlayground,
   inlinePlayground,
   insetPlayground,
   markdownTextPlayground,
   rowsPlayground,
+  separatorPlayground,
   stackPlayground,
   textPlayground,
   textLinkPlayground,
@@ -90,13 +90,13 @@ const ExamplePreview = ({
   return (
     <Stack space="20px">
       {subTitle ? (
-        <Text size="16px / 22px (Deprecated)" weight="medium">
+        <Text color="label" size="17pt" weight="medium">
           {subTitle}
         </Text>
       ) : (
-        <Heading size="18px / 21px (Deprecated)" weight="bold">
+        <Text color="label" size="17pt" weight="bold">
           {name}
-        </Heading>
+        </Text>
       )}
       {Example && (
         <View
@@ -128,13 +128,13 @@ const DocsRow = ({ meta, examples }: Docs) => {
       >
         <Inline space="6px">
           <View style={styles.docsRowToggle}>
-            <Heading size="20px / 22px (Deprecated)" weight="heavy">
+            <Text color="label" size="20pt" weight="heavy">
               {open ? '-' : '+'}
-            </Heading>
+            </Text>
           </View>
-          <Heading size="20px / 22px (Deprecated)" weight="heavy">
+          <Text color="label" size="20pt" weight="heavy">
             {meta.name}
-          </Heading>
+          </Text>
         </Inline>
       </TouchableOpacity>
       {open
@@ -180,7 +180,7 @@ export const Playground = () => {
     <HideSplashScreen>
       <RainbowContextWrapper>
         <DesignSystemProvider colorMode={colorMode}>
-          <Box background="body" flexGrow={1}>
+          <Box background="body (Deprecated)" flexGrow={1}>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
               {android ? (
                 <View style={{ height: StatusBar.currentHeight }} />
@@ -188,11 +188,11 @@ export const Playground = () => {
               <Inset space="20px">
                 <Stack space="24px">
                   <TouchableOpacity onPress={toggleColorMode}>
-                    <Heading size="20px / 22px (Deprecated)" weight="heavy">
+                    <Text color="label" size="20pt" weight="heavy">
                       Color mode: {colorMode}
-                    </Heading>
+                    </Text>
                   </TouchableOpacity>
-                  <Divider />
+                  <Separator color="separator" />
                   {allDocs.map(({ meta, examples }, index) => (
                     <DocsRow examples={examples} key={index} meta={meta} />
                   ))}
