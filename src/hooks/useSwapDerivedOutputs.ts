@@ -1,10 +1,11 @@
 import {
+  CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  // getQuote,
   getCrosschainQuote,
   getQuote,
   Quote,
   QuoteError,
+  QuoteParams,
   SwapType,
 } from '@rainbow-me/swaps';
 import { useQuery } from '@tanstack/react-query';
@@ -54,7 +55,12 @@ const getInputAmount = async (
   slippage: number,
   source: Source | null,
   fromAddress: EthereumAddress
-) => {
+): Promise<{
+  inputAmount: string | null;
+  inputAmountDisplay: string | null;
+  quoteError?: QuoteError;
+  tradeDetails: Quote | null;
+}> => {
   if (!outputAmount || isZero(outputAmount) || !outputToken) {
     return {
       inputAmount: null,
@@ -88,9 +94,9 @@ const getInputAmount = async (
       convertNumberToString(outputAmount),
       outputToken.decimals
     );
-    const realSource = getSource(source);
+    // const realSource = getSource(source);
     const isCrosschainSwap = inputTokenNetwork !== outputTokenNetwork;
-    const quoteParams = {
+    const quoteParams: QuoteParams = {
       buyAmount,
       buyTokenAddress: outputTokenAddress,
       chainId: Number(outputToken?.chainId),
@@ -98,20 +104,16 @@ const getInputAmount = async (
       sellTokenAddress: inputTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
-      source: realSource,
+      // source: realSource,
       swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(inputToken?.chainId),
     };
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
-    // @ts-ignore About to get quote
-    const quote: Quote = await (isCrosschainSwap
-      ? getCrosschainQuote
-      : getQuote)(quoteParams);
-    // Logger.debug('Got quote', rand, quote);
+    const quote = await getQuote(quoteParams);
 
-    if (!quote || !quote.sellAmount) {
+    if ((quote as QuoteError).error || !quote || !(quote as Quote).sellAmount) {
       const quoteError = (quote as unknown) as QuoteError;
       if (quoteError.error) {
         Logger.log('Quote Error', {
@@ -131,26 +133,26 @@ const getInputAmount = async (
         tradeDetails: null,
       };
     }
-
+    const tradeDetails = quote as Quote;
     const inputAmount = convertRawAmountToDecimalFormat(
-      quote.sellAmount.toString(),
+      tradeDetails.sellAmount.toString(),
       inputToken.decimals
     );
 
-    const inputAmountDisplay =
+    const inputAmountToDisplay =
       inputAmount && inputPrice
         ? updatePrecisionToDisplay(inputAmount, inputPrice)
-        : inputAmount
-        ? quote.buyAmount
         : null;
-
-    quote.inputTokenDecimals = inputToken.decimals;
-    quote.outputTokenDecimals = outputToken.decimals;
+    tradeDetails.inputTokenDecimals = inputToken.decimals;
+    tradeDetails.outputTokenDecimals = outputToken.decimals;
 
     return {
       inputAmount,
-      inputAmountDisplay,
-      tradeDetails: quote,
+      inputAmountDisplay:
+        inputAmountToDisplay || inputAmount
+          ? String(tradeDetails.buyAmount)
+          : null,
+      tradeDetails,
     };
   } catch (e) {
     return {
@@ -169,8 +171,12 @@ const getOutputAmount = async (
   slippage: number,
   source: Source,
   fromAddress: EthereumAddress
-) => {
-  console.log('---- getOutputAmount');
+): Promise<{
+  outputAmount: string | null;
+  outputAmountDisplay: string | null;
+  quoteError?: QuoteError;
+  tradeDetails: Quote | CrosschainQuote | null;
+}> => {
   if (!inputAmount || isZero(inputAmount) || !outputToken) {
     return {
       outputAmount: null,
@@ -187,11 +193,6 @@ const getOutputAmount = async (
     const buyTokenAddress = isNativeAsset(outputToken?.address, outputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
-    console.log(
-      '---- getOutputAmount outputChainId',
-      outputChainId,
-      outputToken
-    );
     const inputChainId = ethereumUtils.getChainIdFromType(
       inputToken?.type || 'token'
     );
@@ -200,15 +201,12 @@ const getOutputAmount = async (
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
 
-    console.log('---- getOutputAmount inputChainId', inputChainId);
     const sellAmount = convertAmountToRawAmount(
       convertNumberToString(inputAmount),
       inputToken.decimals
     );
-    const realSource = getSource(source);
     const isCrosschainSwap = outputNetwork !== inputNetwork;
-    console.log('---- getOutputAmount isCrosschainSwap', isCrosschainSwap);
-    const quoteParams = {
+    const quoteParams: QuoteParams = {
       buyAmount: null || '0',
       buyTokenAddress,
       chainId: Number(inputChainId),
@@ -217,7 +215,7 @@ const getOutputAmount = async (
       sellTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
-      source: realSource,
+      // ...(source !== Source.AggregatorRainbow ? {  } : {source}),
       swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(outputChainId),
       refuel: false,
@@ -225,20 +223,17 @@ const getOutputAmount = async (
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
-    // @ts-ignore About to get quote
-    // const quote: Quote = await getCrosschainQuote(quoteParams);
-    console.log(
-      '----- isCrosschainSwap',
-      isCrosschainSwap,
-      outputNetwork,
-      inputNetwork
-    );
-    const quote: Quote = await (isCrosschainSwap
+    const quote: Quote | QuoteError | null = await (isCrosschainSwap
       ? getCrosschainQuote
       : getQuote)(quoteParams);
+
     Logger.debug('Got quote', rand, quote);
 
-    if (!quote || !quote.buyAmount) {
+    if (
+      (quote as QuoteError)?.error ||
+      !quote ||
+      !(quote as Quote)?.buyAmount
+    ) {
       const quoteError = (quote as unknown) as QuoteError;
       if (quoteError.error) {
         Logger.log('Quote Error', {
@@ -258,8 +253,9 @@ const getOutputAmount = async (
         tradeDetails: null,
       };
     }
+    const tradeDetails = quote as Quote | CrosschainQuote;
     const outputAmount = convertRawAmountToDecimalFormat(
-      quote.buyAmount.toString(),
+      tradeDetails.buyAmount.toString(),
       outputToken.decimals
     );
     const outputAmountDisplay = updatePrecisionToDisplay(
@@ -267,13 +263,13 @@ const getOutputAmount = async (
       outputPrice
     );
 
-    quote.inputTokenDecimals = inputToken.decimals;
-    quote.outputTokenDecimals = outputToken.decimals;
+    tradeDetails.inputTokenDecimals = inputToken.decimals;
+    tradeDetails.outputTokenDecimals = outputToken.decimals;
 
     return {
       outputAmount,
       outputAmountDisplay,
-      tradeDetails: quote,
+      tradeDetails,
     };
   } catch (e) {
     return {
