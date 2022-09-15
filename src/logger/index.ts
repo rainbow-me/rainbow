@@ -1,5 +1,6 @@
 import { LOG_LEVEL, LOG_DEBUG } from 'react-native-dotenv';
 import format from 'date-fns/format';
+import * as Sentry from '@sentry/react-native';
 
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
@@ -10,8 +11,57 @@ export enum LogLevel {
   Warn = 'warn',
   Error = 'error',
 }
-type Transport = (level: LogLevel, message: string, extra: Extra) => void;
-type Extra = Record<string, unknown>;
+
+type Transport = (
+  level: LogLevel,
+  message: string | RainbowError,
+  metadata: Metadata
+) => void;
+
+/**
+ * A union of some of Sentry's breadcrumb properties as well as Sentry's
+ * `captureException` parameter, `CaptureContext`.
+ */
+type Metadata = {
+  /**
+   * Applied as Sentry breadcrumb types. Defaults to `default`.
+   *
+   * @see https://develop.sentry.dev/sdk/event-payloads/breadcrumbs/#breadcrumb-types
+   */
+  type?:
+    | 'default'
+    | 'debug'
+    | 'error'
+    | 'navigation'
+    | 'http'
+    | 'info'
+    | 'query'
+    | 'transaction'
+    | 'ui'
+    | 'user';
+
+  /**
+   * Passed through to `Sentry.captureException`
+   *
+   * @see https://github.com/getsentry/sentry-javascript/blob/903addf9a1a1534a6cb2ba3143654b918a86f6dd/packages/types/src/misc.ts#L65
+   */
+  tags?: {
+    [key: string]:
+      | number
+      | string
+      | boolean
+      | bigint
+      | symbol
+      | null
+      | undefined;
+  };
+
+  /**
+   * Any additional data, passed through to Sentry as `extra` param on
+   * exceptions, or the `data` param on breadcrumbs.
+   */
+  [key: string]: unknown;
+} & Parameters<typeof Sentry.captureException>[1];
 
 const enabledLogLevels: {
   [key in LogLevel]: LogLevel[];
@@ -30,18 +80,50 @@ const enabledLogLevels: {
 /**
  * Used in dev mode to nicely log to the console
  */
-export function defaultTransport(
-  level: LogLevel,
-  message: string,
-  extra: Extra
-) {
+export const consoleTransport: Transport = (level, message, metadata) => {
   const timestamp = format(new Date(), 'HH:mm:ss');
-  const metadata = Object.keys(extra).length
-    ? ' ' + JSON.stringify(extra, null, '  ')
+  const extra = Object.keys(metadata).length
+    ? ' ' + JSON.stringify(metadata, null, '  ')
     : '';
 
-  console.log(`${timestamp} [${level.toUpperCase()}] ${message}${metadata}`);
-}
+  console.log(`${timestamp} [${level.toUpperCase()}] ${message}${extra}`);
+};
+
+export const sentryTransport: Transport = (
+  level,
+  message,
+  { type, tags, ...metadata }
+) => {
+  /**
+   * If a string, report a breadcrumb
+   */
+  if (typeof message === 'string') {
+    const severity = {
+      [LogLevel.Debug]: Sentry.Severity.Debug,
+      [LogLevel.Info]: Sentry.Severity.Info,
+      [LogLevel.Warn]: Sentry.Severity.Warning,
+      [LogLevel.Error]: Sentry.Severity.Error,
+    }[level];
+
+    Sentry.addBreadcrumb({
+      message,
+      data: metadata,
+      type: type || 'default',
+      level: severity,
+      timestamp: Date.now(),
+    });
+  } else {
+    /**
+     * It's otherwise an Error and should be reported as onReady
+     */
+    Sentry.captureException(message, {
+      tags,
+      extra: metadata,
+    });
+  }
+};
+
+export class RainbowError extends Error {}
 
 /**
  * Main class. Defaults are provided in the constructor so that subclasses are
@@ -73,24 +155,30 @@ export class Logger {
     });
   }
 
-  debug(message: string, context?: string) {
+  debug(message: string, metadata: Metadata = {}, context?: string) {
     if (context && !this.debugContextRegexes.find(reg => reg.test(context)))
       return;
-    this.transport(LogLevel.Debug, message, {});
+    this.transport(LogLevel.Debug, message, metadata);
   }
 
-  info(message: string, extra: Extra = {}) {
-    this.transport(LogLevel.Info, message, extra);
+  info(message: string, metadata: Metadata = {}) {
+    this.transport(LogLevel.Info, message, metadata);
   }
 
-  warn(message: string, extra: Extra = {}) {
-    this.transport(LogLevel.Warn, message, extra);
+  warn(message: string, metadata: Metadata = {}) {
+    this.transport(LogLevel.Warn, message, metadata);
   }
 
-  error(error: Error, message: string, extra: Extra = {}) {
-    this.transport(LogLevel.Error, message, extra);
-    if (error.stack && env.IS_DEV)
-      this.transport(LogLevel.Error, error.stack, {});
+  error(error: RainbowError, metadata: Metadata = {}) {
+    if (error instanceof RainbowError) {
+      this.transport(LogLevel.Error, error, metadata);
+    } else {
+      this.transport(
+        LogLevel.Error,
+        new RainbowError(`logger.error was not provided a RainbowError`),
+        metadata
+      );
+    }
   }
 
   addTransport(transport: Transport) {
@@ -100,12 +188,16 @@ export class Logger {
     };
   }
 
-  protected transport(level: LogLevel, message: string, extra: Extra) {
+  protected transport(
+    level: LogLevel,
+    message: string | RainbowError,
+    metadata: Metadata
+  ) {
     if (!this.enabled) return;
     if (!enabledLogLevels[this.level].includes(level)) return;
 
     for (const transport of this.transports) {
-      transport(level, message, extra);
+      transport(level, message, metadata);
     }
   }
 }
@@ -115,15 +207,18 @@ export class Logger {
  *
  * Basic usage:
  *
- *   `logger.debug(message[, debugContext])`
- *   `logger.info(message[, extra])`
- *   `logger.warn(message[, extra])`
- *   `logger.error(error, message[, extra])`
+ *   `logger.debug(message[, metadata, debugContext])`
+ *   `logger.info(message[, metadata])`
+ *   `logger.warn(message[, metadata])`
+ *   `logger.error(error[, metadata])`
  */
 export const logger = new Logger();
 
+/**
+ * Report to console in dev, Sentry in prod, nothing in test.
+ */
 if (env.IS_DEV) {
-  logger.addTransport(defaultTransport);
+  logger.addTransport(consoleTransport);
 } else if (env.IS_PROD) {
-  // TODO sentry
+  logger.addTransport(sentryTransport);
 }

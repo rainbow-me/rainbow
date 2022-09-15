@@ -10,10 +10,10 @@ The basic interface looks like this:
 ```typescript
 import { logger } from '@/logger'
 
-logger.debug(message[, debugContext])
-logger.info(message[, extra])
-logger.warn(message[, extra])
-logger.error(error, message[, extra])
+logger.debug(message[, metadata, debugContext])
+logger.info(message[, metadata])
+logger.warn(message[, metadata])
+logger.error(error[, metadata])
 ```
 
 #### Modes
@@ -88,7 +88,7 @@ information from being sent in these logs.
 logger.info(message)
 ```
 
-`info`, along with `warn` and `error` support an additional parameter, `extra:
+`info`, along with `warn` and `error` support an additional parameter, `metadata:
 Record<string, unknown>`. Use this to provide values to the [Sentry
 breadcrumb](https://docs.sentry.io/platforms/react-native/enriching-events/breadcrumbs/#manual-breadcrumbs).
 The object will also be pretty printed to the console in dev mode if
@@ -111,33 +111,42 @@ used to deprecate code paths, by firing a warning into the local console that
 directs the engineer towards the new recommended codepath.
 
 These logs will also be sent as Sentry breadcrumbs, with a severity level of
-`warning`, and they also support the optional second parameter, `extra`.
+`warning`, and they also support the optional second parameter, `metadata`.
 
 ```typescript
-logger.warn(message, { ...extra })
+logger.warn(message, { ...metadata })
 ```
 
 ### `logger.error`
 
 The `error` level is for... well, errors. These are sent to our reporting
-services in production mode. To prevent accidental exposure of private
-information, we force ourselves to provide a custom message in addition to the
-`Error` that was thrown. The optional `extra` parameter is here as well, but as
-the third argument.
+services in production mode. The optional `metadata` parameter is here as well.
+
+In an effort to avoid leakage of private information, we force ourselves to pass
+our own `RainbowError` subclass here instead of whatever random `Error` was
+thrown.
+
+For example, this exception will be ignored and a separate `RainbowError` will
+be reported instead so that we can track down the incorrect usage.
 
 ```typescript
 try {
   // some async code
 } catch (e) {
-  logger.error(e, 'Descriptive error message', { ...extra })
+  logger.error(e, { ...metadata })
 }
 ```
 
-In some cases, you may want to report something as being an error, but you don't
-have an actual exception `Error` object. In this case, create one, beause the
-stacktrace might still be useful to us.
+The correct way to handle exceptions is to always create a new `RainbowError`
+with a descriptive message of what happened. Be sure to avoid any PII.
 
 ```typescript
-const e = new Error('Descriptive error message')
-logger.error(e, 'Descriptive error message')
+import { RainbowError } from '@/logger'
+
+try {
+   // some async code
+} catch (e) {
+   const error = new RainbowError('Descriptive error message')
+   logger.error(error, { ...metadata })
+}
 ```

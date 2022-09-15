@@ -1,7 +1,19 @@
 import { nanoid } from 'nanoid';
 import { expect, test } from '@jest/globals';
+import * as Sentry from '@sentry/react-native';
 
-import { Logger, LogLevel } from '@/logger';
+import { Logger, LogLevel, RainbowError, sentryTransport } from '@/logger';
+
+jest.mock('@sentry/react-native', () => ({
+  addBreadcrumb: jest.fn(),
+  captureException: jest.fn(),
+  Severity: {
+    Debug: 'debug',
+    Info: 'info',
+    Warning: 'warning',
+    Error: 'error',
+  },
+}));
 
 describe('general functionality', () => {
   test('default params', () => {
@@ -50,6 +62,81 @@ describe('general functionality', () => {
 
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, 'message', extra);
   });
+
+  test('logger.error expects a RainbowError', () => {
+    const logger = new Logger({ enabled: true });
+
+    const mockTransport = jest.fn();
+
+    logger.addTransport(mockTransport);
+
+    logger.error(new Error());
+
+    expect(mockTransport).toHaveBeenCalledWith(
+      LogLevel.Warn,
+      `logger.error was not provided a RainbowError so this exception will be ignored`,
+      {}
+    );
+  });
+
+  test('sentryTransport', () => {
+    jest.useFakeTimers();
+
+    const message = 'message';
+
+    sentryTransport(LogLevel.Debug, message, {});
+
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
+      message,
+      data: {},
+      type: 'default',
+      level: LogLevel.Debug,
+      timestamp: Date.now(),
+    });
+
+    sentryTransport(LogLevel.Info, message, { type: 'info', prop: true });
+
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
+      message,
+      data: { prop: true },
+      type: 'info',
+      level: LogLevel.Info,
+      timestamp: Date.now(),
+    });
+
+    const e = new RainbowError('error');
+    const tags = {
+      prop: 'prop',
+    };
+
+    sentryTransport(LogLevel.Error, e, {
+      tags,
+      prop: true,
+    });
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(e, {
+      tags,
+      extra: {
+        prop: true,
+      },
+    });
+  });
+
+  test('add/remove transport', () => {
+    const logger = new Logger({ enabled: true });
+    const mockTransport = jest.fn();
+
+    const remove = logger.addTransport(mockTransport);
+
+    logger.warn('warn');
+
+    remove();
+
+    logger.warn('warn');
+
+    // only called once bc it was removed
+    expect(mockTransport).toHaveBeenNthCalledWith(1, LogLevel.Warn, 'warn', {});
+  });
 });
 
 describe('debug contexts', () => {
@@ -63,7 +150,7 @@ describe('debug contexts', () => {
     });
 
     logger.addTransport(mockTransport);
-    logger.debug(message, 'specific');
+    logger.debug(message, {}, 'specific');
 
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Debug, message, {});
   });
@@ -76,7 +163,7 @@ describe('debug contexts', () => {
     });
 
     logger.addTransport(mockTransport);
-    logger.debug(message, 'namespace');
+    logger.debug(message, {}, 'namespace');
 
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Debug, message, {});
   });
@@ -89,7 +176,7 @@ describe('debug contexts', () => {
     });
 
     logger.addTransport(mockTransport);
-    logger.debug(message, 'src/components/Divider.js');
+    logger.debug(message, {}, 'src/components/Divider.js');
 
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Debug, message, {});
   });
@@ -102,7 +189,7 @@ describe('debug contexts', () => {
     });
 
     logger.addTransport(mockTransport);
-    logger.debug(message, 'src/utils/*');
+    logger.debug(message, {}, 'src/utils/*');
 
     expect(mockTransport).not.toHaveBeenCalledWith(LogLevel.Debug, message, {});
   });
@@ -128,12 +215,9 @@ describe('supports levels', () => {
     logger.warn(message);
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, message, {});
 
-    logger.error(new Error(message), 'custom message');
-    expect(mockTransport).toHaveBeenCalledWith(
-      LogLevel.Error,
-      'custom message',
-      {}
-    );
+    const e = new RainbowError(message);
+    logger.error(e);
+    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, e, {});
   });
 
   test('info', () => {
@@ -192,11 +276,8 @@ describe('supports levels', () => {
     logger.warn(message);
     expect(mockTransport).not.toHaveBeenCalled();
 
-    logger.error(new Error('original message'), 'custom message');
-    expect(mockTransport).toHaveBeenCalledWith(
-      LogLevel.Error,
-      'custom message',
-      {}
-    );
+    const e = new RainbowError('original message');
+    logger.error(e);
+    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, e, {});
   });
 });
