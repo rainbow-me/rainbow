@@ -184,6 +184,7 @@ const getOutputAmount = async (
       inputToken?.type || 'token'
     );
     const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
+
     const sellTokenAddress = isNativeAsset(inputToken?.address, inputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
@@ -334,7 +335,9 @@ export default function useSwapDerivedOutputs(type: string) {
   }, [dispatch]);
 
   const getTradeDetails = useCallback(async () => {
-    let tradeDetails = null;
+    if (!independentValue) {
+      return resetSwapInputs();
+    }
 
     if (independentValue === '0.') {
       switch (independentField) {
@@ -365,23 +368,19 @@ export default function useSwapDerivedOutputs(type: string) {
       };
     }
 
-    if (!independentValue) {
-      return resetSwapInputs();
-    }
-
+    let tradeDetails = null;
     const slippagePercentage = slippageInBips / 100;
     let quoteError: QuoteError | undefined;
 
     if (independentField === SwapModalField.input) {
-      derivedValues[SwapModalField.input] = independentValue;
-      displayValues[DisplayValue.input] = independentValue;
-
       const nativeValue = inputPrice
         ? convertAmountToNativeAmount(independentValue, inputPrice)
         : null;
-
+      derivedValues[SwapModalField.input] = independentValue;
+      displayValues[DisplayValue.input] = independentValue;
       derivedValues[SwapModalField.native] = nativeValue;
       displayValues[DisplayValue.native] = nativeValue;
+
       if (derivedValues[SwapModalField.input] !== independentValue) return;
 
       const outputAmountData = await getOutputAmount(
@@ -409,9 +408,7 @@ export default function useSwapDerivedOutputs(type: string) {
       tradeDetails = newTradeDetails;
       quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
-      displayValues[DisplayValue.output] = outputAmount
-        ? outputAmountDisplay
-        : null;
+      displayValues[DisplayValue.output] = outputAmountDisplay;
     } else if (independentField === SwapModalField.native) {
       const inputAmount =
         independentValue && inputPrice
@@ -422,15 +419,14 @@ export default function useSwapDerivedOutputs(type: string) {
             )
           : null;
 
-      derivedValues[SwapModalField.native] = independentValue;
-      displayValues[DisplayValue.native] = independentValue;
-      derivedValues[SwapModalField.input] = inputAmount;
-
       const inputAmountDisplay = updatePrecisionToDisplay(
         inputAmount,
         inputPrice,
         true
       );
+      derivedValues[SwapModalField.native] = independentValue;
+      displayValues[DisplayValue.native] = independentValue;
+      derivedValues[SwapModalField.input] = inputAmount;
       displayValues[DisplayValue.input] = inputAmountDisplay;
 
       if (derivedValues[SwapModalField.native] !== independentValue) return;
@@ -475,17 +471,19 @@ export default function useSwapDerivedOutputs(type: string) {
       }
       derivedValues[SwapModalField.output] = independentValue;
       displayValues[DisplayValue.output] = independentValue;
+
       if (derivedValues[SwapModalField.output] !== independentValue) return;
 
       const inputAmountData = await getInputAmount(
         independentValue,
         inputCurrency,
         outputCurrency,
-        inputPrice.toString(),
+        inputPrice,
         slippagePercentage,
         source,
         accountAddress
       );
+
       // if original value changed, ignore new quote
       if (
         derivedValues[SwapModalField.output] !== independentValue ||
@@ -501,15 +499,15 @@ export default function useSwapDerivedOutputs(type: string) {
       } = inputAmountData;
 
       quoteError = newQuoteError;
-
       tradeDetails = newTradeDetails;
-      derivedValues[SwapModalField.input] = inputAmount || '0';
-      displayValues[DisplayValue.input] = inputAmountDisplay;
+
       const nativeValue =
         inputPrice && inputAmount
           ? convertAmountToNativeAmount(inputAmount, inputPrice)
           : null;
 
+      derivedValues[SwapModalField.input] = inputAmount;
+      displayValues[DisplayValue.input] = inputAmountDisplay;
       derivedValues[SwapModalField.native] = nativeValue;
       displayValues[DisplayValue.native] = nativeValue;
     }
@@ -517,7 +515,6 @@ export default function useSwapDerivedOutputs(type: string) {
     const data = {
       derivedValues,
       displayValues,
-      doneLoadingReserves: true,
       quoteError,
       tradeDetails,
     };
@@ -566,9 +563,6 @@ export default function useSwapDerivedOutputs(type: string) {
       'getTradeDetails',
       independentField,
       independentValue,
-      derivedValues[SwapModalField.output],
-      derivedValues[SwapModalField.input],
-      derivedValues[SwapModalField.native],
       inputCurrency,
       outputCurrency,
       inputPrice,
