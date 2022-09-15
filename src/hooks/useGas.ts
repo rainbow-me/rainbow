@@ -10,6 +10,7 @@ import {
   GasFeesBySpeed,
   LegacyGasFee,
   LegacyGasFeeParams,
+  LegacySelectedGasFee,
   ParsedAddressAsset,
   SelectedGasFee,
 } from '@/entities';

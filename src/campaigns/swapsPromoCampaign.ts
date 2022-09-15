@@ -12,8 +12,8 @@ import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { ethereumUtils, logger } from '@/utils';
-import store from '@rainbow-me/redux/store';
-import Routes from '@rainbow-me/routes';
+import store from '@/redux/store';
+import Routes from '@/navigation/routesNames';
 import { STORAGE_IDS } from '@/model/mmkv';
 
 // Rainbow Router
