@@ -541,7 +541,8 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swap-settings-routes-current-0x');
   });
 
-  it('Should show and toggle flashbots on Mainnet', async () => {
+  // skipping until flashbots is enabled again after the merge
+  it.skip('Should show and toggle flashbots on Mainnet', async () => {
     await Helpers.waitAndTap('swap-settings-flashbots-switch-false');
     await Helpers.checkIfVisible('swap-settings-flashbots-switch-true');
     await Helpers.waitAndTap('swap-settings-flashbots-label');
