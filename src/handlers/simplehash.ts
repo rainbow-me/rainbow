@@ -6,6 +6,7 @@ import { parseSimplehashNfts } from '@/parsers';
 import { logger } from '@/utils';
 
 interface SimplehashMarketplace {
+  marketplace_id: string;
   marketplace_name: string;
   marketplace_collection_id: string;
   nft_url: string;

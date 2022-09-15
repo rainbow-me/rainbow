@@ -166,6 +166,7 @@ export const parseAccountUniqueTokens = data => {
             : null,
           lowResUrl,
           marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
+          marketplaceId: 'opensea',
           marketplaceName: 'OpenSea',
           network: Network.mainnet,
           type: AssetTypes.nft,
@@ -248,6 +249,7 @@ export const parseAccountUniqueTokensPolygon = data => {
           : null,
         lowResUrl,
         marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
+        marketplaceId: 'opensea',
         marketplaceName: 'OpenSea',
         network: Network.polygon,
         permalink: asset.permalink,
@@ -322,6 +324,7 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   const marketplace = simplehashNft.collection.marketplace_pages?.[0];
   if (!marketplace) return null;
 
+  const marketplaceId = marketplace.marketplace_id;
   const marketplaceName = marketplace.marketplace_name;
   const collectionId = marketplace.marketplace_collection_id;
   const collectionUrl = marketplace.collection_url;
@@ -330,6 +333,7 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   return {
     collectionId,
     collectionUrl,
+    marketplaceId,
     marketplaceName,
     permalink,
   };
@@ -381,6 +385,7 @@ export const parseSimplehashNfts = nftData => {
       lastSalePaymentToken: simplehashNft.last_sale?.payment_token?.symbol,
       lowResUrl,
       marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
+      marketplaceId: marketplaceInfo?.marketplaceId,
       marketplaceName: marketplaceInfo?.marketplaceName,
       name: simplehashNft.name,
       network: simplehashNft.chain,
