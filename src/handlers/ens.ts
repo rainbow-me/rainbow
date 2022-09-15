@@ -9,7 +9,6 @@ import { debounce, isEmpty, sortBy } from 'lodash';
 import { prefetchENSAddress } from '../hooks/useENSAddress';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
-import { prefetchENSFirstTransactionTimestamp } from '../hooks/useENSFirstTransactionTimestamp';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import {
@@ -39,6 +38,7 @@ import {
 import { labelhash, logger, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
+import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -223,9 +223,7 @@ export const fetchSuggestions = async (
       prefetchENSAddress(ens, { cacheFirst: true });
       prefetchENSCover(ens, { cacheFirst: true });
       prefetchENSRecords(ens, { cacheFirst: true });
-      prefetchENSFirstTransactionTimestamp(ens, {
-        cacheFirst: true,
-      });
+      prefetchFirstTransactionTimestamp({ addressOrName: ens });
       // eslint-disable-next-line no-empty
     } catch (e) {}
     const suggestion = [
@@ -275,8 +273,8 @@ export const fetchSuggestions = async (
                   prefetchENSAddress(domain.name, { cacheFirst: true });
                   prefetchENSCover(domain.name, { cacheFirst: true });
                   prefetchENSRecords(domain.name, { cacheFirst: true });
-                  prefetchENSFirstTransactionTimestamp(domain.name, {
-                    cacheFirst: true,
+                  prefetchFirstTransactionTimestamp({
+                    addressOrName: domain.name,
                   });
                 }
                 return {
@@ -501,7 +499,7 @@ export function prefetchENSIntroData() {
     prefetchENSAvatar(name, { cacheFirst: true });
     prefetchENSCover(name, { cacheFirst: true });
     prefetchENSRecords(name, { cacheFirst: true });
-    prefetchENSFirstTransactionTimestamp(name, { cacheFirst: true });
+    prefetchFirstTransactionTimestamp({ addressOrName: name });
   }
 }
 
