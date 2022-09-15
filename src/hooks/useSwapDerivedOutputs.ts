@@ -78,10 +78,6 @@ const getInputAmount = async (
     const outputTokenNetwork = ethereumUtils.getNetworkFromChainId(
       outputToken?.chainId
     );
-
-    const isCrosschainSwap = inputTokenNetwork !== outputTokenNetwork;
-    if (isCrosschainSwap) return null;
-
     const outputTokenAddress = isNativeAsset(
       outputToken?.address,
       outputTokenNetwork
@@ -89,12 +85,15 @@ const getInputAmount = async (
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
 
+    const isCrosschainSwap = inputTokenNetwork !== outputTokenNetwork;
+    if (isCrosschainSwap) return null;
+
     const buyAmount = convertAmountToRawAmount(
       convertNumberToString(outputAmount),
       outputToken.decimals
     );
-    // const realSource = getSource(source);
 
+    // const realSource = getSource(source);
     const quoteParams: QuoteParams = {
       buyAmount,
       buyTokenAddress: outputTokenAddress,
@@ -112,9 +111,10 @@ const getInputAmount = async (
     Logger.debug('Getting quote ', rand, { quoteParams });
     const quote = await getQuote(quoteParams);
 
-    if ((quote as QuoteError).error || !quote || !(quote as Quote).sellAmount) {
-      const quoteError = (quote as unknown) as QuoteError;
-      if (quoteError.error) {
+    // if no quote, if quote is error or there's no sell amount
+    if (!quote || (quote as QuoteError).error || !(quote as Quote).sellAmount) {
+      if ((quote as QuoteError).error) {
+        const quoteError = (quote as unknown) as QuoteError;
         Logger.log('Quote Error', {
           code: quoteError.error_code,
           msg: quoteError.message,
@@ -217,8 +217,8 @@ const getOutputAmount = async (
     Logger.debug('Got quote', rand, quote);
 
     if (
-      (quote as QuoteError)?.error ||
       !quote ||
+      (quote as QuoteError)?.error ||
       !(quote as Quote)?.buyAmount
     ) {
       const quoteError = quote as QuoteError;
@@ -392,6 +392,8 @@ export default function useSwapDerivedOutputs(type: string) {
         source,
         accountAddress
       );
+
+      // if original value changed, ignore new quote
       if (
         derivedValues[SwapModalField.input] !== independentValue ||
         !outputAmountData
@@ -498,14 +500,13 @@ export default function useSwapDerivedOutputs(type: string) {
         quoteError: newQuoteError,
       } = inputAmountData;
 
-      quoteError = newQuoteError;
-      tradeDetails = newTradeDetails;
-
       const nativeValue =
         inputPrice && inputAmount
           ? convertAmountToNativeAmount(inputAmount, inputPrice)
           : null;
 
+      quoteError = newQuoteError;
+      tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.input] = inputAmount;
       displayValues[DisplayValue.input] = inputAmountDisplay;
       derivedValues[SwapModalField.native] = nativeValue;
