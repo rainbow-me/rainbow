@@ -85,7 +85,7 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';
 import { SwapType } from '@rainbow-me/swaps';
-import { RapActionTypes } from '@/raps/common';
+import { RapActionType, RapActionTypes } from '@/raps/common';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -445,10 +445,12 @@ export default function ExchangeModal({
         tradeDetails,
       };
 
+      const rapTypeByExchangeType = getSwapRapTypeByExchangeType(type);
       const rapType =
+        rapTypeByExchangeType === RapActionType.swap &&
         inputNetwork === outputNetwork
-          ? getSwapRapTypeByExchangeType(type)
-          : SwapType.crossChain;
+          ? RapActionTypes.crosschainSwap
+          : rapTypeByExchangeType;
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
       if (gasLimit) {
         if (currentNetwork === Network.optimism) {
@@ -659,7 +661,7 @@ export default function ExchangeModal({
         return false;
       }
     },
-    [chainId, currentNetwork, debouncedIsHighPriceImpact, flashbots, getNextNonce, inputAmount, inputCurrency?.address, inputCurrency?.name, inputCurrency?.symbol, navigate, outputAmount, outputCurrency?.address, outputCurrency?.name, outputCurrency?.symbol, priceImpactPercentDisplay, selectedGasFee?.gasFee, selectedGasFee?.gasFeeParams, selectedGasFee?.option, setParams, slippageInBips, tradeDetails, type]
+    [chainId, currentNetwork, debouncedIsHighPriceImpact, flashbots, getNextNonce, inputAmount, inputCurrency?.address, inputCurrency?.name, inputCurrency?.symbol, inputNetwork, navigate, outputAmount, outputCurrency?.address, outputCurrency?.name, outputCurrency?.symbol, outputNetwork, priceImpactPercentDisplay, selectedGasFee?.gasFee, selectedGasFee?.gasFeeParams, selectedGasFee?.option, setParams, slippageInBips, tradeDetails, type]
   );
 
   const handleSubmit = useCallback(async () => {
@@ -934,7 +936,7 @@ export default function ExchangeModal({
                 nativeFieldRef={nativeFieldRef}
                 network={inputNetwork}
                 onFocus={handleFocus}
-                onPressMaxBalance={handlePressMaxBalance}
+                onPressMaxBalance={updateMaxInputAmount}
                 onPressSelectInputCurrency={navigateToSelectInputCurrency}
                 setInputAmount={updateInputAmount}
                 setNativeAmount={updateNativeAmount}

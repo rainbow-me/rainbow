@@ -218,7 +218,7 @@ export const getSwapRapTypeByExchangeType = (type: string) => {
 
 const createSwapRapByType = (
   type: keyof typeof RapActionTypes,
-  swapParameters: SwapActionParameters
+  swapParameters: SwapActionParameters | CrosschainSwapActionParameters
 ) => {
   switch (type) {
     case RapActionTypes.depositCompound:
@@ -226,7 +226,9 @@ const createSwapRapByType = (
     case RapActionTypes.withdrawCompound:
       return createWithdrawFromCompoundRap(swapParameters);
     case RapActionTypes.crosschainSwap:
-      return createUnlockAndCrosschainSwapRap(swapParameters);
+      return createUnlockAndCrosschainSwapRap(
+        swapParameters as CrosschainSwapActionParameters
+      );
     default:
       return createUnlockAndSwapRap(swapParameters);
   }
@@ -257,7 +259,6 @@ export const getSwapRapEstimationByType = (
   type: keyof typeof RapActionTypes,
   swapParameters: SwapActionParameters | CrosschainSwapActionParameters
 ) => {
-  console.log('😡😡😡😡😡😡😡😡😡😡😡😡 getSwapRapEstimationByType', type);
   switch (type) {
     case RapActionTypes.depositCompound:
       return estimateSwapAndDepositCompound(swapParameters);

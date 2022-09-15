@@ -14,12 +14,11 @@ import { isNativeAsset } from '@/handlers/assets';
 import store from '@/redux/store';
 import { add } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import { estimateSwapGasLimit } from '@/handlers/swap';
+import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 
 export const estimateUnlockAndCrosschainSwap = async (
   swapParameters: CrosschainSwapActionParameters
 ) => {
-  console.log('😬😬😬😬😬😬 estimateUnlockAndCrosschainSwap');
   const { inputAmount, tradeDetails, chainId } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
 
@@ -27,7 +26,7 @@ export const estimateUnlockAndCrosschainSwap = async (
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   const { accountAddress } = store.getState().settings;
-  // this will probably need refactor
+
   const routeAllowanceTargetAddress =
     tradeDetails?.routes?.[0]?.userTxs?.[0]?.approvalData?.allowanceTarget;
 
@@ -61,7 +60,7 @@ export const estimateUnlockAndCrosschainSwap = async (
     }
   }
 
-  const swapGasLimit = await estimateSwapGasLimit({
+  const swapGasLimit = await estimateCrosschainSwapGasLimit({
     chainId: Number(chainId),
     requiresApprove: swapAssetNeedsUnlocking,
     tradeDetails,
