@@ -1,0 +1,16 @@
+diff --git a/node_modules/@rainbow-me/swaps/.DS_Store b/node_modules/@rainbow-me/swaps/.DS_Store
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/@rainbow-me/swaps/dist/swaps.cjs.development.js b/node_modules/@rainbow-me/swaps/dist/swaps.cjs.development.js
+index 7209da4..2602a59 100644
+--- a/node_modules/@rainbow-me/swaps/dist/swaps.cjs.development.js
++++ b/node_modules/@rainbow-me/swaps/dist/swaps.cjs.development.js
+@@ -1786,7 +1786,7 @@ var buildRainbowCrosschainQuoteUrl = function buildRainbowCrosschainQuoteUrl(_re
+     swapType: exports.SwapType.crossChain,
+     toChainId: String(toChainId)
+   });
+-  return API_BASE_URL + '/quote?' + searchParams.toString();
++  return 'https://swap.s.rainbow.me' + '/quote?' + searchParams.toString();
+ };
+ /**
+  * Function to get a quote from rainbow's swap aggregator backend
