@@ -1,7 +1,4 @@
-import {
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
-  SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
-} from '@rainbow-me/swaps';
+import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR } from '@rainbow-me/swaps';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
   createNewAction,
