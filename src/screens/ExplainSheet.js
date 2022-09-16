@@ -869,6 +869,7 @@ const ExplainSheet = () => {
           colors[explainSheetConfig.button?.textColor] || colors.appleBlue
         }
         weight="heavy"
+        testID={'explainer-sheet-accent'}
       />
     );
     const buttonArray = [secondaryButton, accentCta];
