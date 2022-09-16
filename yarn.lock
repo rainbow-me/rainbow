@@ -4221,7 +4221,6 @@
     "@ethersproject/transactions" "5.6.0"
     "@ethersproject/wallet" "5.6.0"
     "@metamask/eth-sig-util" "4.0.0"
-    caniuse-lite "^1.0.30001390"
     ethereumjs-util "6.2.1"
 
 "@react-native-async-storage/async-storage@1.17.7", "@react-native-async-storage/async-storage@^1.15.15", "@react-native-async-storage/async-storage@^1.15.17":
