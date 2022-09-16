@@ -210,7 +210,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       const { accountAddress, nativeCurrency } = store.getState().settings;
 
       let walletAddress: string | null = accountAddress;
-      if (accountAddress !== data.address) {
+      if (!isLowerCaseMatch(accountAddress, data.address)) {
         walletAddress = await wallets.switchToWalletWithAddress(data.address);
       }
       if (!walletAddress) {
