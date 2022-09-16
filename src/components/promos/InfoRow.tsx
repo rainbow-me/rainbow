@@ -9,7 +9,7 @@ import {
   Heading,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 const InfoRow = ({
   icon,

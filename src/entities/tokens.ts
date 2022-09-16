@@ -78,7 +78,7 @@ export interface ParsedAddressAsset
     value?: number;
   };
   asset_contract?: AssetContract;
-  type?: string;
+  type: string;
   id: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
@@ -91,6 +91,10 @@ export interface SwappableAsset extends ParsedAddressAsset {
       amount?: string;
     };
   };
+  implementations: {
+    [network: string]: { address: EthereumAddress; decimals: number };
+  };
+  network: string;
 }
 
 export interface RainbowToken extends Asset {

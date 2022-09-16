@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { MutableRefObject } from 'react';
+import { TextInput } from 'react-native';
 import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
+import { Network } from '@/helpers';
 import styled from '@/styled-thing';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
@@ -18,6 +20,29 @@ const NativeFieldRow = styled(Row).attrs({
   height: android ? 16 : 32,
   paddingLeft: 19,
 });
+
+interface ExchangeInputFieldProps {
+  disableInputCurrencySelection: boolean;
+  editable: boolean;
+  loading: boolean;
+  nativeAmount: string | null;
+  nativeCurrency: string;
+  nativeFieldRef: MutableRefObject<TextInput | null>;
+  network: Network;
+  onFocus: ({ target }: { target: Element }) => void;
+  onPressMaxBalance: () => void;
+  onPressSelectInputCurrency: (chainId: any) => void;
+  inputAmount: string | null;
+  inputCurrencyAddress: string;
+  inputCurrencyMainnetAddress?: string;
+  inputCurrencyAssetType?: string;
+  inputCurrencySymbol?: string;
+  inputFieldRef: MutableRefObject<TextInput | null>;
+  setInputAmount: (value: string | null) => void;
+  setNativeAmount: (value: string | null) => void;
+  updateAmountOnFocus: boolean;
+  testID: string;
+}
 
 export default function ExchangeInputField({
   disableInputCurrencySelection,
@@ -40,7 +65,7 @@ export default function ExchangeInputField({
   setNativeAmount,
   testID,
   updateAmountOnFocus,
-}) {
+}: ExchangeInputFieldProps) {
   return (
     <Container>
       <ExchangeField

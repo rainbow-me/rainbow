@@ -9,7 +9,7 @@ import {
 import InfoRow from './InfoRow';
 import { CampaignKey } from '@/campaigns/campaignChecks';
 import { ImgixImage } from '@/components/images';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
   Box,
@@ -19,11 +19,11 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import { useTheme } from '@/theme';
 
 const MIN_HEIGHT = 740;
 
