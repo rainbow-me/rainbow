@@ -85,3 +85,20 @@ export async function authenticateWithPIN() {
     });
   });
 }
+
+export async function saveNewAuthenticationPIN() {
+  return new Promise((resolve, reject) => {
+    return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
+      onCancel: reject,
+      onSuccess: async (pin: any) => {
+        try {
+          await savePIN(pin);
+        } catch (e) {
+          reject();
+        }
+        resolve(pin);
+      },
+      validPin: false,
+    });
+  });
+}
