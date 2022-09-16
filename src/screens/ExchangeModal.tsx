@@ -623,12 +623,6 @@ export default function ExchangeModal({
             ? RapActionTypes.crosschainSwap
             : getSwapRapTypeByExchangeType(type);
 
-        // ///////
-        // ///////
-        // ///////
-        // ///////
-        // ///////
-
         await executeRap(wallet, rapType, swapParameters, callback);
         logger.log('[exchange - handle submit] executed rap!');
         const slippage = slippageInBips / 100;
