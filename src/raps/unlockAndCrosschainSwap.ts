@@ -66,8 +66,6 @@ export const estimateUnlockAndCrosschainSwap = async (
     tradeDetails,
   });
 
-  console.log('😬😬😬😬😬😬 swapGasLimit', swapGasLimit);
-
   gasLimits = gasLimits.concat(swapGasLimit);
 
   return gasLimits.reduce((acc, limit) => add(acc, limit), '0');
