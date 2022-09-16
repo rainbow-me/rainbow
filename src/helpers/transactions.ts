@@ -80,7 +80,9 @@ export function hasAddableContact(status: any, type: any) {
  * @param type The transaction type.
  * @returns The confirmed status.
  */
-export const getConfirmedState = (type: TransactionType): TransactionStatus => {
+export const getConfirmedState = (
+  type?: TransactionType
+): TransactionStatus => {
   switch (type) {
     case TransactionTypes.authorize:
       return TransactionStatus.approved;
