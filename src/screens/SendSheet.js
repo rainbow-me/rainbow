@@ -157,6 +157,7 @@ export default function SendSheet(props) {
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
+  const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
@@ -431,22 +432,18 @@ export default function SendSheet(props) {
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
       let realAddress = debouncedRecipient;
-      const isValid = await checkIsValidAddressOrDomain(debouncedRecipient);
+      const isValid = await checkIsValidAddressOrDomainFormat(
+        debouncedRecipient
+      );
       if (isValid) {
         realAddress = await resolveNameOrAddress(debouncedRecipient);
         setToAddress(realAddress);
-        setIsValidAddress(true);
-
-        if (profilesEnabled && isENSAddressFormat(realAddress)) {
-          prefetchENSAvatar(realAddress);
-          prefetchENSCover(realAddress);
-        }
       } else {
         setIsValidAddress(false);
       }
     };
     debouncedRecipient && resolveAddressIfNeeded();
-  }, [debouncedRecipient, profilesEnabled]);
+  }, [debouncedRecipient]);
 
   const updateTxFeeForOptimism = useCallback(
     async updatedGasLimit => {
@@ -820,16 +817,23 @@ export default function SendSheet(props) {
     sendUpdateSelected({});
   }, [sendUpdateSelected]);
 
-  const onChangeInput = useCallback(text => {
-    const isValid = checkIsValidAddressOrDomainFormat(text);
-    if (!isValid) {
-      setIsValidAddress(false);
-    }
-    setToAddress();
-    setCurrentInput(text);
-    setRecipient(text);
-    setNickname(text);
-  }, []);
+  const onChangeInput = useCallback(
+    text => {
+      const isValid = checkIsValidAddressOrDomainFormat(text);
+      if (!isValid) {
+        setIsValidAddress();
+      }
+      setToAddress();
+      setCurrentInput(text);
+      setRecipient(text);
+      setNickname(text);
+      if (profilesEnabled && isENSAddressFormat(text)) {
+        prefetchENSAvatar(text);
+        prefetchENSCover(text);
+      }
+    },
+    [profilesEnabled]
+  );
 
   useEffect(() => {
     updateDefaultGasLimit();
@@ -877,6 +881,10 @@ export default function SendSheet(props) {
     watchedAccounts,
     profilesEnabled,
   ]);
+
+  useEffect(() => {
+    checkAddress(debouncedInput);
+  }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
@@ -962,6 +970,7 @@ export default function SendSheet(props) {
             key={sendContactListDataKey}
             loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient, nickname) => {
+              setIsValidAddress(true);
               setRecipient(recipient);
               setNickname(nickname);
             }}
