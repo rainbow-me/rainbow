@@ -247,7 +247,8 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should restore swap setting defaults on Mainnet', async () => {
     await Helpers.waitAndTap('swap-settings-defaults-button');
     await Helpers.checkIfVisible('swap-settings-routes-current-rainbow');
-    await Helpers.checkIfVisible('swap-settings-flashbots-switch-false');
+    // restore after merge etc.
+    // await Helpers.checkIfVisible('swap-settings-flashbots-switch-false');
     await Helpers.checkIfVisible('swap-slippage-input-2');
 
     await Helpers.swipe('swap-settings-header', 'down', 'fast');
