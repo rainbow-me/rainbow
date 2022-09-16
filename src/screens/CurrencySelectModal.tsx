@@ -148,7 +148,12 @@ export default function CurrencySelectModal() {
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
-  const [toChainId, setToChainId] = useState(chainId);
+  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+
+  const NetworkSwitcher = !crosschainSwapsEnabled
+    ? NetworkSwitcherv1
+    : NetworkSwitcherv2;
+
   useEffect(() => {
     if (chainId && typeof chainId === 'number') {
       setCurrentChainId(chainId);
@@ -511,11 +516,6 @@ export default function CurrencySelectModal() {
       { translateX: (1 - scrollPosition.value) * 8 },
     ],
   }));
-
-  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = !crosschainSwapsEnabled
-    ? NetworkSwitcherv1
-    : NetworkSwitcherv2;
 
   return (
     <Wrapper>
