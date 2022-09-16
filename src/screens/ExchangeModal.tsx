@@ -496,7 +496,6 @@ export default function ExchangeModal({
     inputAmount,
     isCrosschainSwap,
     outputAmount,
-    outputNetwork,
     tradeDetails,
     type,
     updateTxFee,
