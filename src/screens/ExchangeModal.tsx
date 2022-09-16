@@ -1,4 +1,3 @@
-import { Provider } from '@ethersproject/providers';
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual } from 'lodash';
@@ -84,13 +83,11 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';
-import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import {
   CrosschainSwapActionParameters,
-  RapActionType,
-  RapActionTypes,
   SwapActionParameters,
 } from '@/raps/common';
+import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -168,6 +165,8 @@ export default function ExchangeModal({
     name: string;
     params: { inputAsset: SwappableAsset; outputAsset: SwappableAsset };
   }>();
+
+  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
@@ -272,34 +271,35 @@ export default function ExchangeModal({
     updateOutputAmount,
   } = useSwapInputHandlers();
 
-  const chainId = useMemo(() => {
-    if (inputCurrency?.type || outputCurrency?.type) {
-      return ethereumUtils.getChainIdFromType(
-        inputCurrency?.type ?? outputCurrency?.type ?? AssetType.token
-      );
-    }
-
-    return 1;
-  }, [inputCurrency, outputCurrency]);
-
-  const inputNetwork = useMemo(() => {
-    const chainId = ethereumUtils.getChainIdFromType(
-      inputCurrency?.type || AssetType.token
+  const {
+    inputNetwork,
+    outputNetwork,
+    chainId,
+    currentNetwork,
+    isCrosschainSwap,
+  } = useMemo(() => {
+    const inputNetwork = ethereumUtils.getNetworkFromType(inputCurrency?.type);
+    const outputNetwork = ethereumUtils.getNetworkFromType(
+      outputCurrency?.type
     );
-    return ethereumUtils.getNetworkFromChainId(chainId);
-  }, [inputCurrency]);
+    const chainId =
+      inputCurrency?.type || outputCurrency?.type
+        ? ethereumUtils.getChainIdFromType(
+            inputCurrency?.type ?? outputCurrency?.type
+          )
+        : 1;
+    const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
+    const isCrosschainSwap =
+      crosschainSwapsEnabled && inputNetwork !== outputNetwork;
 
-  const outputNetwork = useMemo(() => {
-    const chainId = ethereumUtils.getChainIdFromType(
-      outputCurrency?.type || AssetType.token
-    );
-    return ethereumUtils.getNetworkFromChainId(chainId);
-  }, [outputCurrency]);
-
-  const currentNetwork = useMemo(
-    () => ethereumUtils.getNetworkFromChainId(chainId),
-    [chainId]
-  );
+    return {
+      inputNetwork,
+      outputNetwork,
+      chainId,
+      currentNetwork,
+      isCrosschainSwap,
+    };
+  }, [crosschainSwapsEnabled, inputCurrency?.type, outputCurrency?.type]);
 
   const {
     flipCurrencies,
@@ -307,6 +307,8 @@ export default function ExchangeModal({
     navigateToSelectOutputCurrency,
   } = useSwapCurrencyHandlers({
     currentNetwork,
+    inputNetwork,
+    outputNetwork,
     defaultInputAsset,
     defaultOutputAsset: defaultOutputAssetOverride,
     fromDiscover,
@@ -454,12 +456,7 @@ export default function ExchangeModal({
         tradeDetails: tradeDetails!,
       };
 
-      const rapTypeByExchangeType = getSwapRapTypeByExchangeType(type);
-      const rapType =
-        rapTypeByExchangeType === RapActionType.swap &&
-        inputNetwork === outputNetwork
-          ? RapActionTypes.crosschainSwap
-          : rapTypeByExchangeType;
+      const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
       if (gasLimit) {
         if (currentNetwork === Network.optimism) {
@@ -494,9 +491,8 @@ export default function ExchangeModal({
     currentNetwork,
     defaultGasLimit,
     inputAmount,
-    inputNetwork,
+    isCrosschainSwap,
     outputAmount,
-    outputNetwork,
     tradeDetails,
     type,
     updateTxFee,
@@ -625,11 +621,7 @@ export default function ExchangeModal({
           nonce,
           tradeDetails: tradeDetails!,
         };
-        const rapType =
-          inputNetwork !== outputNetwork
-            ? RapActionTypes.crosschainSwap
-            : getSwapRapTypeByExchangeType(type);
-
+        const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
         logger.log('[exchange - handle submit] executed rap!');
         const slippage = slippageInBips / 100;
@@ -677,13 +669,12 @@ export default function ExchangeModal({
       inputCurrency?.address,
       inputCurrency?.name,
       inputCurrency?.symbol,
-      inputNetwork,
+      isCrosschainSwap,
       navigate,
       outputAmount,
       outputCurrency?.address,
       outputCurrency?.name,
       outputCurrency?.symbol,
-      outputNetwork,
       priceImpactPercentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,
@@ -977,17 +968,20 @@ export default function ExchangeModal({
               {showOutputField && (
                 <ExchangeOutputField
                   editable={
-                    !!outputCurrency && currentNetwork !== Network.arbitrum
+                    !!outputCurrency &&
+                    currentNetwork !== Network.arbitrum &&
+                    !isCrosschainSwap
                   }
                   network={outputNetwork}
                   onFocus={handleFocus}
                   onPressSelectOutputCurrency={() =>
                     navigateToSelectOutputCurrency(chainId)
                   }
-                  {...(currentNetwork === Network.arbitrum &&
-                    !!outputCurrency && {
-                      onTapWhileDisabled: handleTapWhileDisabled,
-                    })}
+                  onTapWhileDisabled={
+                    currentNetwork === Network.arbitrum && !!outputCurrency
+                      ? handleTapWhileDisabled
+                      : NOOP
+                  }
                   loading={loading}
                   outputAmount={outputAmountDisplay}
                   outputCurrencyAddress={outputCurrency?.address}

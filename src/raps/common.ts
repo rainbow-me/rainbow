@@ -205,13 +205,19 @@ export const RapActionTypes = {
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
 
-export const getSwapRapTypeByExchangeType = (type: string) => {
+export const getSwapRapTypeByExchangeType = (
+  type: string,
+  isCrosschainSwap: boolean
+) => {
   switch (type) {
     case ExchangeModalTypes.withdrawal:
       return RapActionTypes.withdrawCompound;
     case ExchangeModalTypes.deposit:
       return RapActionTypes.depositCompound;
     default:
+      if (isCrosschainSwap) {
+        return RapActionTypes.crosschainSwap;
+      }
       return RapActionTypes.swap;
   }
 };
