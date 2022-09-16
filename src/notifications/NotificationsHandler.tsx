@@ -223,10 +223,8 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
           isLowerCaseMatch(ethereumUtils.getHash(tx) ?? '', data.hash)
         );
       if (zerionTransaction) {
-        console.log('NOTIFICATIONS: Getting zerion finished tx data');
         showTransactionDetailsSheet(zerionTransaction, contacts, walletAddress);
       } else {
-        console.log('NOTIFICATIONS: Getting data from RPC');
         const network = ethereumUtils.getNetworkFromChainId(
           parseInt(data.chain, 10)
         );
@@ -280,14 +278,6 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
         }
         const status = receipt?.status || 0;
         if (!isZero(status)) {
-          console.log(
-            'from: ',
-            parsedTransaction?.from,
-            'to: ',
-            parsedTransaction?.to,
-            'account address: ',
-            accountAddress
-          );
           let direction = TransactionDirection.out;
           if (
             parsedTransaction?.from &&
