@@ -384,7 +384,7 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
-      // if (checkForRequiredAssets(item)) return;
+      if (!crosschainEnabled && checkForRequiredAssets(item)) return;
 
       const isMainnet = currentChainId === 1;
       const assetWithType =
@@ -399,27 +399,29 @@ export default function CurrencySelectModal() {
         callback?.();
         onSelectCurrency(assetWithType, handleNavigate);
       };
-      // if (
-      //   checkForSameNetwork(
-      //     assetWithType,
-      //     selectAsset,
-      //     type === CurrencySelectionTypes.output
-      //       ? CurrencySelectionTypes.output
-      //       : CurrencySelectionTypes.input
-      //   )
-      // )
-      //   return;
+      if (
+        !crosschainEnabled &&
+        checkForSameNetwork(
+          assetWithType,
+          selectAsset,
+          type === CurrencySelectionTypes.output
+            ? CurrencySelectionTypes.output
+            : CurrencySelectionTypes.input
+        )
+      )
+        return;
 
       selectAsset();
     },
     [
+      crosschainEnabled,
       checkForRequiredAssets,
+      currentChainId,
+      type,
       checkForSameNetwork,
       dispatch,
-      currentChainId,
       callback,
       onSelectCurrency,
-      type,
       handleNavigate,
     ]
   );
