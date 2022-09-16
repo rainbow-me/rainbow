@@ -30,6 +30,11 @@ const escapeUrl = url => {
   }
 };
 
+beforeAll(async () => {
+  // maybe remove chrome
+  await exec('yarn adb-all uninstall com.android.chrome');
+});
+
 describe('Deeplinks spec', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
