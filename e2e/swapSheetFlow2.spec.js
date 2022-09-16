@@ -149,6 +149,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('explainer-sheet-accent-action-button');
     await Helpers.checkIfVisible(`exchange-modal-input-empty-empty`);
     await Helpers.checkIfVisible(`exchange-modal-output-ETH-optimism`);
+    await Helpers.tap('exchange-modal-input-selection-button');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ETH-token'
+    );
+    await Helpers.checkIfVisible(`exchange-modal-input-ETH-token`);
+    await Helpers.checkIfVisible(`exchange-modal-output-empty-empty`);
     await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
 
