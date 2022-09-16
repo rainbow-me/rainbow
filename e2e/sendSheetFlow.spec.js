@@ -182,11 +182,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('selected-asset-field-input');
     await Helpers.waitAndTap('selected-asset-field-input');
     await Helpers.typeText('selected-asset-field-input', '9999', false);
-    if (device.getPlatform() === 'android') {
-      await Helpers.checkIfElementByTextToExist('Insufficient Funds');
-    } else {
-      await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
-    }
+    await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
   });
 
   it('Should prepend a 0 to quantity field on input of .', async () => {
