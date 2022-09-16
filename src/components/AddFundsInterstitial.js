@@ -258,7 +258,7 @@ const AddFundsInterstitial = ({ network }) => {
             <AmountButton
               amount={200}
               backgroundColor={colors.swapPurple}
-              color={colors.alpha(colors.neonSkyblue, 0.6)}
+              color={colors.neonSkyblue}
               onPress={handlePressAmount}
             />
             <AmountButton
