@@ -23,6 +23,8 @@ const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
 export default function useSwapCurrencyHandlers({
   currentNetwork,
+  inputNetwork,
+  outputNetwork,
   defaultInputAsset,
   defaultOutputAsset,
   fromDiscover,
@@ -138,7 +140,7 @@ export default function useSwapCurrencyHandlers({
   );
 
   const flipCurrencies = useCallback(() => {
-    if (currentNetwork === Network.arbitrum) {
+    if (currentNetwork === Network.arbitrum || inputNetwork !== outputNetwork) {
       updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
@@ -173,15 +175,17 @@ export default function useSwapCurrencyHandlers({
     }
   }, [
     currentNetwork,
+    inputNetwork,
+    outputNetwork,
     nativeFieldRef,
     inputFieldRef,
     outputFieldRef,
     updateOutputAmount,
-    updateInputAmount,
     flipSwapCurrenciesWithTimeout,
     derivedValues?.outputAmount,
     derivedValues?.inputAmount,
     updateNativeAmount,
+    updateInputAmount,
   ]);
 
   const updateInputCurrency = useCallback(
