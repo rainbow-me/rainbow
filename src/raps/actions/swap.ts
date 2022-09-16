@@ -33,10 +33,7 @@ import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
-import {
-  estimateCrosschainSwapGasLimit,
-  estimateSwapGasLimit,
-} from '@/handlers/swap';
+import { estimateSwapGasLimit } from '@/handlers/swap';
 
 const actionName = 'swap';
 
@@ -88,10 +85,10 @@ export const executeSwap = async ({
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
-    gasPrice: gasPrice || undefined,
+    gasPrice,
     // EIP-1559 like networks
-    maxFeePerGas: maxFeePerGas || undefined,
-    maxPriorityFeePerGas: maxPriorityFeePerGas || undefined,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: nonce ? toHex(nonce) : undefined,
   };
 

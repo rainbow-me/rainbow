@@ -79,10 +79,10 @@ export const executeCrosschainSwap = async ({
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
-    gasPrice: gasPrice || undefined,
+    gasPrice,
     // EIP-1559 like networks
-    maxFeePerGas: maxFeePerGas || undefined,
-    maxPriorityFeePerGas: maxPriorityFeePerGas || undefined,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: nonce ? toHex(nonce) : undefined,
   };
 

@@ -1,35 +1,24 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
 import {
   ALLOWS_PERMIT,
   ChainId,
-  CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  fillQuote,
   getCrosschainQuoteExecutionDetails,
   getQuoteExecutionDetails,
   getWrappedAssetMethod,
   PermitSupportedTokenList,
   Quote,
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
-  unwrapNativeAsset,
-  wrapNativeAsset,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { ethers } from 'ethers';
 import { mapKeys, mapValues } from 'lodash';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
-import { loadWallet } from '../model/wallet';
 import {
   estimateGasWithPadding,
-  getFlashbotsProvider,
   getProviderForNetwork,
-  toHex,
   toHexNoLeadingZeros,
 } from './web3';
 import config from '@/model/config';
