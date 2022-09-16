@@ -33,5 +33,3 @@ export function mapNotificationTransactionType(
       return TransactionType.contract_interaction;
   }
 }
-
-// Notification type
