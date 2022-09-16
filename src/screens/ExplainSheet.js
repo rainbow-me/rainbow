@@ -550,6 +550,21 @@ export const explainers = (params, colors) => ({
       </Text>
     ),
   },
+  noRouteFound: {
+    extraHeight: -90,
+    emoji: '🚧',
+    title: lang.t('explain.no_route_found.title'),
+    stillCurious: (
+      <>
+        <Text {...getBodyTextPropsWithColor(colors)}>
+          {lang.t('explain.no_route_found.fragment1')}
+        </Text>
+        <Text {...getBodyTextPropsWithColor(colors)}>
+          {lang.t('explain.no_route_found.fragment2')}
+        </Text>
+      </>
+    ),
+  },
   noQuote: {
     extraHeight: -90,
     emoji: '🏦',
