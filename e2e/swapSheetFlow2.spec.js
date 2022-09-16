@@ -64,7 +64,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('settings-button');
     await Helpers.checkIfVisible('settings-sheet');
     await Helpers.waitAndTap('developer-section');
-    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
+    await Helpers.checkIfVisible('developer-settings-sheet');
+    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
+    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
     await Helpers.tapByText('Crosschain Swaps');
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
@@ -125,7 +127,8 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('settings-button');
     await Helpers.checkIfVisible('settings-sheet');
     await Helpers.waitAndTap('developer-section');
-    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
+    await Helpers.checkIfVisible('developer-settings-sheet');
+    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
     await Helpers.tapByText('Crosschain Swaps');
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -146,12 +149,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('explainer-sheet-accent-action-button');
     await Helpers.checkIfVisible(`exchange-modal-input-empty-empty`);
     await Helpers.checkIfVisible(`exchange-modal-output-ETH-optimism`);
-    await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-ETH-token'
-    );
-    await Helpers.checkIfVisible(`exchange-modal-input-ETH-token`);
-    await Helpers.checkIfVisible(`exchange-modal-output-empty-empty`);
     await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
 
