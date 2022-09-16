@@ -158,7 +158,6 @@ export const registerENSNavigatorConfig = {
       scrollEnabled: true,
       springDamping: 1,
       transitionDuration: 0.3,
-      relevantScrollViewDepth: 2,
     }),
   }),
 };

@@ -4,10 +4,13 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
+  MutableRefObject,
+  Ref,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
@@ -40,6 +43,7 @@ import {
   Bleed,
   Box,
   Cover,
+  DebugLayout,
   Heading,
   Inline,
   Inset,
@@ -78,15 +82,16 @@ import { IS_TEST } from '@/env';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
-const ExtraBottomPadding = 55;
+const ExtraBottomPadding = 55 + 31;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<any>();
   const { colors } = useTheme();
-  const { isSmallPhone } = useDimensions();
+  const { height: deviceHeight, isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const {
     images: { avatarUrl: initialAvatarUrl },
@@ -154,17 +159,14 @@ export default function ENSAssignRecordsSheet() {
         layout: { y },
       },
     }) => {
-      params?.sheetRef.current.scrollTo({ y });
+      scrollViewRef?.current?.scrollTo({ y });
     },
-    [params?.sheetRef]
+    []
   );
 
-  const handleError = useCallback(
-    ({ yOffset }) => {
-      params?.sheetRef.current.scrollTo({ y: yOffset });
-    },
-    [params?.sheetRef]
-  );
+  const handleError = useCallback(({ yOffset }) => {
+    scrollViewRef?.current?.scrollTo({ y: yOffset });
+  }, []);
 
   const [hasSeenExplainSheet, setHasSeenExplainSheet] = useState(false);
 
@@ -187,81 +189,93 @@ export default function ENSAssignRecordsSheet() {
     }
   }, [hasSeenExplainSheet, navigate, setHasSeenExplainSheet]);
 
+  const Scroll = (isInsideBottomSheet
+    ? BottomSheetScrollView
+    : ScrollView) as typeof ScrollView;
+
   return (
     <AccentColorProvider color={accentColor}>
       <Box
-        as={
-          (isInsideBottomSheet
-            ? BottomSheetScrollView
-            : ScrollView) as typeof ScrollView
-        }
         background="body"
-        contentContainerStyle={{
-          paddingBottom: bottomActionHeight + ExtraBottomPadding,
+        height={{
+          custom: deviceHeight - bottomActionHeight,
         }}
-        flexGrow={1}
-        scrollEnabled={true}
-        testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
-        <Stack space="19px (Deprecated)">
-          <RegistrationCover
-            enableNFTs={hasNFTs}
-            hasSeenExplainSheet={hasSeenExplainSheet}
-            onShowExplainSheet={handleFocus}
-          />
-          <Bleed top={{ custom: 38 }}>
-            <Box alignItems="center">
-              <RegistrationAvatar
-                enableNFTs={hasNFTs}
-                hasSeenExplainSheet={hasSeenExplainSheet}
-                onChangeAvatarUrl={setAvatarUrl}
-                onShowExplainSheet={handleFocus}
-              />
-            </Box>
-          </Bleed>
-          <Inset horizontal="19px (Deprecated)">
-            <Stack space="30px (Deprecated)">
-              <Stack alignHorizontal="center" space="15px (Deprecated)">
-                <Heading
-                  align="center"
-                  numberOfLines={1}
-                  size="26px / 30px (Deprecated)"
-                  weight="heavy"
-                >
-                  {abbreviateEnsForDisplay(name, 15)}
-                </Heading>
-                <Text
-                  align="center"
-                  color="accent"
-                  size="16px / 22px (Deprecated)"
-                  weight="heavy"
-                >
-                  {displayTitleLabel
-                    ? lang.t(
-                        `profiles.${
-                          isEmptyProfile &&
-                          params.mode !== REGISTRATION_MODES.EDIT
-                            ? 'create'
-                            : 'edit'
-                        }.label`
-                      )
-                    : ''}
-                </Text>
-              </Stack>
-              <Box flexGrow={1}>
-                <TextRecordsForm
-                  autoFocusKey={params?.autoFocusKey}
-                  key={name}
-                  onAutoFocusLayout={handleAutoFocusLayout}
-                  onError={handleError}
-                  onFocus={handleFocus}
-                  selectionColor={accentColor}
+        {/* <DebugLayout> */}
+        <Scroll
+          contentContainerStyle={{
+            paddingBottom: ExtraBottomPadding,
+          }}
+          ref={scrollViewRef}
+          scrollEnabled={true}
+          testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
+        >
+          <Stack space="19px (Deprecated)">
+            <RegistrationCover
+              enableNFTs={hasNFTs}
+              hasSeenExplainSheet={hasSeenExplainSheet}
+              onShowExplainSheet={handleFocus}
+            />
+            <Bleed top={{ custom: 38 }}>
+              <Box alignItems="center">
+                <RegistrationAvatar
+                  enableNFTs={hasNFTs}
+                  hasSeenExplainSheet={hasSeenExplainSheet}
+                  onChangeAvatarUrl={setAvatarUrl}
+                  onShowExplainSheet={handleFocus}
                 />
               </Box>
-            </Stack>
-          </Inset>
-        </Stack>
+            </Bleed>
+            <Inset horizontal="19px (Deprecated)">
+              <Stack space="30px (Deprecated)">
+                <Stack alignHorizontal="center" space="15px (Deprecated)">
+                  <Heading
+                    align="center"
+                    numberOfLines={1}
+                    size="26px / 30px (Deprecated)"
+                    weight="heavy"
+                  >
+                    {abbreviateEnsForDisplay(name, 15)}
+                  </Heading>
+                  <Text
+                    align="center"
+                    color="accent"
+                    size="16px / 22px (Deprecated)"
+                    weight="heavy"
+                  >
+                    {displayTitleLabel
+                      ? lang.t(
+                          `profiles.${
+                            isEmptyProfile &&
+                            params.mode !== REGISTRATION_MODES.EDIT
+                              ? 'create'
+                              : 'edit'
+                          }.label`
+                        )
+                      : ''}
+                  </Text>
+                </Stack>
+                <Box flexGrow={1}>
+                  <TextRecordsForm
+                    autoFocusKey={params?.autoFocusKey}
+                    key={name}
+                    onAutoFocusLayout={handleAutoFocusLayout}
+                    onError={handleError}
+                    onFocus={handleFocus}
+                    selectionColor={accentColor}
+                  />
+                </Box>
+              </Stack>
+            </Inset>
+          </Stack>
+        </Scroll>
+        {/* </DebugLayout> */}
       </Box>
+      <ENSAssignRecordsBottomActions
+        currentRouteName={Routes.ENS_ASSIGN_RECORDS_SHEET}
+        previousRouteName={Routes.PROFILE_SCREEN}
+        visible={true}
+      />
     </AccentColorProvider>
   );
 }
@@ -297,9 +311,9 @@ export function ENSAssignRecordsBottomActions({
   const { isSuccess } = useENSModifiedRegistration();
   const handlePressBack = useCallback(() => {
     delayNext();
-    navigate(fromRoute);
+    goBack();
     setAccentColor(colors.purple);
-  }, [colors.purple, fromRoute, navigate, setAccentColor]);
+  }, [colors.purple, goBack, setAccentColor]);
 
   const hasBackButton = useMemo(
     () =>

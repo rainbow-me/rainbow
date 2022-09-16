@@ -118,26 +118,21 @@ export async function scrollTo(scrollviewId, edge) {
   await element(by.id(scrollviewId)).scrollTo(edge);
 }
 
-// export async function swipeTo(elementId, direction) {
-//   await Promise.race([
-//     async () =>
-//       waitFor(element(by.id(elementId)))
-//         .toBeVisible()
-//         .withTimeout(DEFAULT_TIMEOUT),
-//     async () => {
-//       while (true) {
-//         await element(by.id('ens-edit-records-sheet')).scroll(50, direction);
-//       }
-//     },
-//   ]);
-// }
-
-// export async function scrollToElement(elementId, direction) {
-//   await waitFor(element(by.id(elementId)))
-//     .toBeVisible()
-//     .whileElement(by.id('ens-edit-records-sheet'))
-//     .swipe(direction, 'slow', 0.15);
-// }
+export async function swipeTo(elementId, scrollElementId, direction = 'up') {
+  let shouldScroll = true;
+  while (shouldScroll) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await waitFor(element(by.id(elementId)))
+        .toBeVisible(25)
+        .withTimeout(100);
+      shouldScroll = false;
+    } catch {
+      // eslint-disable-next-line no-await-in-loop
+      await element(by.id(scrollElementId))?.swipe(direction, 'slow', 0.15);
+    }
+  }
+}
 
 export async function scrollUpTo(elementId, distance, direction) {
   await element(by.id(elementId)).scroll(distance, direction);

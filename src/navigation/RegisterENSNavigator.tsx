@@ -38,7 +38,7 @@ const renderPager = (props: any) => (
 
 const defaultScreenOptions = {
   [Routes.ENS_ASSIGN_RECORDS_SHEET]: {
-    scrollEnabled: true,
+    scrollEnabled: false,
     useAccentAsSheetBackground: true,
   },
   [Routes.ENS_INTRO_SHEET]: {
@@ -149,6 +149,10 @@ export default function RegisterENSNavigator() {
     }
   }, [screenOptions.scrollEnabled]);
 
+  // the ScrollView for ENSAssignRecordsSheet is nested inside the component in order
+  // to create a sticky footer
+  const hasNestedScroll = currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
+
   return (
     <>
       {/* @ts-expect-error JavaScript component */}
@@ -158,7 +162,7 @@ export default function RegisterENSNavigator() {
         height="100%"
         ref={sheetRef}
         removeTopPadding
-        // scrollEnabled
+        scrollEnabled
       >
         <StatusBar barStyle="light-content" />
         <Box
@@ -170,7 +174,7 @@ export default function RegisterENSNavigator() {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
-            pager={renderPager}
+            pager={hasNestedScroll ? undefined : renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}
           >
@@ -221,13 +225,13 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
-      {enableAssignRecordsBottomActions && (
+      {/* {enableAssignRecordsBottomActions && (
         <ENSAssignRecordsBottomActions
           currentRouteName={currentRouteName}
           previousRouteName={previousRouteName}
           visible={isBottomActionsVisible}
         />
-      )}
+      )} */}
     </>
   );
 }
