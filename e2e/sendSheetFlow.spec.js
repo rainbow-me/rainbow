@@ -23,16 +23,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfExists('import-sheet');
   });
 
-  it("Shouldn't do anything when I type jibberish", async () => {
-    await Helpers.waitAndTap('import-sheet-input');
-    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Paste');
-    await Helpers.typeText('import-sheet-input', 'asdajksdlakjsd', false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Import'
-    );
-  });
-
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
@@ -128,13 +118,11 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show show Contact Button & Asset List on valid public address', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
-    await device.disableSynchronization();
     await Helpers.typeText(
       'send-asset-form-field',
       '0xF0f21ab2012731542731df194cfF6c77d29cB31A',
       false
     );
-    await device.enableSynchronization();
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
   });
@@ -142,13 +130,11 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show show Contact Button & Asset List on valid ENS & Unstoppable addresses', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
-    await device.disableSynchronization();
     await Helpers.typeText(
       'send-asset-form-field',
       'neverselling.wallet\n',
       false
     );
-    await device.enableSynchronization();
     await Helpers.checkIfVisible('send-asset-list');
     await Helpers.clearField('send-asset-form-field');
     await device.disableSynchronization();
