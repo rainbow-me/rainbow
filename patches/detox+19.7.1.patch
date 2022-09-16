@@ -1,0 +1,109 @@
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/AnimatedModuleIdlingResource.java b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/AnimatedModuleIdlingResource.java
+index f77f375..8bded22 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/AnimatedModuleIdlingResource.java
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/AnimatedModuleIdlingResource.java
+@@ -74,55 +74,55 @@ public class AnimatedModuleIdlingResource implements DescriptiveIdlingResource,
+ 
+     @Override
+     public boolean isIdleNow() {
+-        Class<?> animModuleClass = null;
+-        try {
+-            animModuleClass = Class.forName(CLASS_ANIMATED_MODULE);
+-        } catch (ClassNotFoundException e) {
+-            Log.e(LOG_TAG, "Animated Module is not on classpath.");
+-            if (callback != null) {
+-                callback.onTransitionToIdle();
+-            }
+-            return true;
+-        }
+-
+-        try {
+-            // reactContext.hasActiveCatalystInstance() should be always true here
+-            // if called right after onReactContextInitialized(...)
+-            if (Reflect.on(reactContext).field(FIELD_CATALYST_INSTANCE).get() == null) {
+-                Log.e(LOG_TAG, "No active CatalystInstance. Should never see this.");
+-                return false;
+-            }
+-
+-            if (!(boolean) Reflect.on(reactContext).call(METHOD_HAS_NATIVE_MODULE, animModuleClass).get()) {
+-                Log.e(LOG_TAG, "Can't find Animated Module.");
+-                if (callback != null) {
+-                    callback.onTransitionToIdle();
+-                }
+-                return true;
+-            }
+-
+-            if (ReactNativeInfo.rnVersion().getMinor() >= 51) {
+-                if(isIdleRN51(animModuleClass)) {
+-                    return true;
+-                }
+-            } else {
+-                if (isIdleRNOld(animModuleClass)) {
+-                    return true;
+-                }
+-            }
+-
+-            Log.i(LOG_TAG, "AnimatedModule is busy.");
+-            Choreographer.getInstance().postFrameCallback(this);
+-            return false;
+-        } catch (ReflectException e) {
+-            Log.e(LOG_TAG, "Couldn't set up RN AnimatedModule listener, old RN version?");
+-            Log.e(LOG_TAG, "Can't set up RN AnimatedModule listener", e.getCause());
+-        }
+-
+-        if (callback != null) {
+-            callback.onTransitionToIdle();
+-        }
+-//        Log.i(LOG_TAG, "AnimatedModule is idle.");
++//         Class<?> animModuleClass = null;
++//         try {
++//             animModuleClass = Class.forName(CLASS_ANIMATED_MODULE);
++//         } catch (ClassNotFoundException e) {
++//             Log.e(LOG_TAG, "Animated Module is not on classpath.");
++//             if (callback != null) {
++//                 callback.onTransitionToIdle();
++//             }
++//             return true;
++//         }
++
++//         try {
++//             // reactContext.hasActiveCatalystInstance() should be always true here
++//             // if called right after onReactContextInitialized(...)
++//             if (Reflect.on(reactContext).field(FIELD_CATALYST_INSTANCE).get() == null) {
++//                 Log.e(LOG_TAG, "No active CatalystInstance. Should never see this.");
++//                 return false;
++//             }
++
++//             if (!(boolean) Reflect.on(reactContext).call(METHOD_HAS_NATIVE_MODULE, animModuleClass).get()) {
++//                 Log.e(LOG_TAG, "Can't find Animated Module.");
++//                 if (callback != null) {
++//                     callback.onTransitionToIdle();
++//                 }
++//                 return true;
++//             }
++
++//             if (ReactNativeInfo.rnVersion().getMinor() >= 51) {
++//                 if(isIdleRN51(animModuleClass)) {
++//                     return true;
++//                 }
++//             } else {
++//                 if (isIdleRNOld(animModuleClass)) {
++//                     return true;
++//                 }
++//             }
++
++//             Log.i(LOG_TAG, "AnimatedModule is busy.");
++//             Choreographer.getInstance().postFrameCallback(this);
++//             return false;
++//         } catch (ReflectException e) {
++//             Log.e(LOG_TAG, "Couldn't set up RN AnimatedModule listener, old RN version?");
++//             Log.e(LOG_TAG, "Can't set up RN AnimatedModule listener", e.getCause());
++//         }
++
++//         if (callback != null) {
++//             callback.onTransitionToIdle();
++//         }
++// //        Log.i(LOG_TAG, "AnimatedModule is idle.");
+         return true;
+     }
+ 
