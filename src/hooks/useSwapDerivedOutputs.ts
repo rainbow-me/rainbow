@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SwappableAsset, Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@/analytics';
-import { EthereumAddress } from '@/entities';
+import { AssetType, EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { AppState } from '@/redux/store';
 import { Source, SwapModalField, updateSwapQuote } from '@/redux/swap';
@@ -50,8 +50,8 @@ const getSource = (source: Source | null) => {
 
 const getInputAmount = async (
   outputAmount: string | null,
-  inputToken: Token,
-  outputToken: Token | null,
+  inputToken: SwappableAsset | null,
+  outputToken: SwappableAsset,
   inputPrice: string | null,
   slippage: number,
   source: Source | null,
@@ -60,32 +60,34 @@ const getInputAmount = async (
   inputAmount: string | null;
   inputAmountDisplay: string | null;
   quoteError?: QuoteError;
-  tradeDetails: Quote | null;
+  tradeDetails: Quote | CrosschainQuote | null;
 } | null> => {
-  if (!outputAmount || isZero(outputAmount) || !outputToken) return null;
+  if (!inputToken || !outputAmount || isZero(outputAmount) || !outputToken)
+    return null;
 
   try {
-    const inputTokenNetwork = ethereumUtils.getNetworkFromChainId(
-      inputToken?.chainId
+    const outputChainId = ethereumUtils.getChainIdFromType(
+      outputToken?.type || 'token'
     );
-    const inputTokenAddress = isNativeAsset(
-      inputToken?.address,
-      inputTokenNetwork
-    )
+    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
+
+    const inputChainId = ethereumUtils.getChainIdFromType(
+      inputToken?.type || 'token'
+    );
+    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
+
+    const inputTokenAddress = isNativeAsset(inputToken?.address, inputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
 
-    const outputTokenNetwork = ethereumUtils.getNetworkFromChainId(
-      outputToken?.chainId
-    );
     const outputTokenAddress = isNativeAsset(
       outputToken?.address,
-      outputTokenNetwork
+      outputNetwork
     )
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
 
-    const isCrosschainSwap = inputTokenNetwork !== outputTokenNetwork;
+    const isCrosschainSwap = inputNetwork !== outputNetwork;
     if (isCrosschainSwap) return null;
 
     const buyAmount = convertAmountToRawAmount(
@@ -97,14 +99,14 @@ const getInputAmount = async (
     const quoteParams: QuoteParams = {
       buyAmount,
       buyTokenAddress: outputTokenAddress,
-      chainId: Number(outputToken?.chainId),
+      chainId: Number(outputChainId),
       fromAddress,
       sellTokenAddress: inputTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       // source: realSource,
       swapType: SwapType.normal,
-      toChainId: Number(inputToken?.chainId),
+      toChainId: Number(inputChainId),
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -174,14 +176,14 @@ const getOutputAmount = async (
 
   try {
     const outputChainId = ethereumUtils.getChainIdFromType(
-      outputToken?.type || 'token'
+      outputToken?.type || AssetType.token
     );
     const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
     const buyTokenAddress = isNativeAsset(outputToken?.address, outputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
     const inputChainId = ethereumUtils.getChainIdFromType(
-      inputToken?.type || 'token'
+      inputToken?.type || AssetType.token
     );
     const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
 

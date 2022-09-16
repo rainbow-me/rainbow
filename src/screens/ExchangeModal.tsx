@@ -84,8 +84,13 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';
-import { SwapType } from '@rainbow-me/swaps';
-import { RapActionType, RapActionTypes } from '@/raps/common';
+import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
+import {
+  CrosschainSwapActionParameters,
+  RapActionType,
+  RapActionTypes,
+  SwapActionParameters,
+} from '@/raps/common';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -270,7 +275,7 @@ export default function ExchangeModal({
   const chainId = useMemo(() => {
     if (inputCurrency?.type || outputCurrency?.type) {
       return ethereumUtils.getChainIdFromType(
-        inputCurrency?.type ?? outputCurrency?.type ??AssetType.token
+        inputCurrency?.type ?? outputCurrency?.type ?? AssetType.token
       );
     }
 
@@ -278,12 +283,16 @@ export default function ExchangeModal({
   }, [inputCurrency, outputCurrency]);
 
   const inputNetwork = useMemo(() => {
-    const chainId = ethereumUtils.getChainIdFromType(inputCurrency?.type ||AssetType.token);
+    const chainId = ethereumUtils.getChainIdFromType(
+      inputCurrency?.type || AssetType.token
+    );
     return ethereumUtils.getNetworkFromChainId(chainId);
   }, [inputCurrency]);
 
   const outputNetwork = useMemo(() => {
-    const chainId = ethereumUtils.getChainIdFromType(outputCurrency?.type || AssetType.token);
+    const chainId = ethereumUtils.getChainIdFromType(
+      outputCurrency?.type || AssetType.token
+    );
     return ethereumUtils.getNetworkFromChainId(chainId);
   }, [outputCurrency]);
 
@@ -435,14 +444,14 @@ export default function ExchangeModal({
   const updateGasLimit = useCallback(async () => {
     try {
       const provider = await getProviderForNetwork(currentNetwork);
-      const swapParams = {
+      const swapParams:
+        | SwapActionParameters
+        | CrosschainSwapActionParameters = {
         chainId,
-        inputAmount,
-        outputAmount,
-        inputNetwork,
-        outputNetwork,
+        inputAmount: inputAmount!,
+        outputAmount: outputAmount!,
         provider,
-        tradeDetails,
+        tradeDetails: tradeDetails!,
       };
 
       const rapTypeByExchangeType = getSwapRapTypeByExchangeType(type);
@@ -456,6 +465,7 @@ export default function ExchangeModal({
         if (currentNetwork === Network.optimism) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+              // @ts-ignore
               {
                 data: tradeDetails.data,
                 from: tradeDetails.from,
@@ -605,12 +615,14 @@ export default function ExchangeModal({
         };
         logger.log('[exchange - handle submit] rap');
         const nonce = await getNextNonce();
-        const swapParameters = {
+        const swapParameters:
+          | SwapActionParameters
+          | CrosschainSwapActionParameters = {
           chainId,
           flashbots,
           inputAmount: inputAmount!,
-          nonce,
           outputAmount: outputAmount!,
+          nonce,
           tradeDetails: tradeDetails!,
         };
         const rapType =
@@ -655,7 +667,32 @@ export default function ExchangeModal({
         return false;
       }
     },
-    [chainId, currentNetwork, debouncedIsHighPriceImpact, flashbots, getNextNonce, inputAmount, inputCurrency?.address, inputCurrency?.name, inputCurrency?.symbol, inputNetwork, navigate, outputAmount, outputCurrency?.address, outputCurrency?.name, outputCurrency?.symbol, outputNetwork, priceImpactPercentDisplay, selectedGasFee?.gasFee, selectedGasFee?.gasFeeParams, selectedGasFee?.option, setParams, slippageInBips, tradeDetails, type]
+    [
+      chainId,
+      currentNetwork,
+      debouncedIsHighPriceImpact,
+      flashbots,
+      getNextNonce,
+      inputAmount,
+      inputCurrency?.address,
+      inputCurrency?.name,
+      inputCurrency?.symbol,
+      inputNetwork,
+      navigate,
+      outputAmount,
+      outputCurrency?.address,
+      outputCurrency?.name,
+      outputCurrency?.symbol,
+      outputNetwork,
+      priceImpactPercentDisplay,
+      selectedGasFee?.gasFee,
+      selectedGasFee?.gasFeeParams,
+      selectedGasFee?.option,
+      setParams,
+      slippageInBips,
+      tradeDetails,
+      type,
+    ]
   );
 
   const handleSubmit = useCallback(async () => {
