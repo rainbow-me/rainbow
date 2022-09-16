@@ -111,7 +111,7 @@ export interface BaseSwapActionParameters {
   outputAmount: string;
   permit?: boolean;
   flashbots?: boolean;
-  provider: Provider;
+  provider?: Provider;
   chainId: number;
   requiresApprove?: boolean;
   swapType?: SwapType;
