@@ -158,7 +158,11 @@ export default React.memo(function FastCurrencySelectionRow({
             </View>
             {showBalance && (
               <View style={[sx.column, sx.balanceColumn]}>
-                <Text align="right" size="16px / 22px (Deprecated)">
+                <Text
+                  align="right"
+                  color="primary (Deprecated)"
+                  size="16px / 22px (Deprecated)"
+                >
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
                 </Text>

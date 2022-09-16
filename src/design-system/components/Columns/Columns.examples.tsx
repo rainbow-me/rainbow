@@ -289,8 +289,12 @@ export const dynamicWidthContent: Example = {
   Example: () =>
     source(
       <Columns space="20px">
-        <Text size="17pt">Lorem</Text>
-        <Text size="17pt">{loremIpsum}</Text>
+        <Text color="label" size="17pt">
+          Lorem
+        </Text>
+        <Text color="label" size="17pt">
+          {loremIpsum}
+        </Text>
       </Columns>
     ),
 };

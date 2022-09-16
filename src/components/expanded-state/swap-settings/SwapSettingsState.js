@@ -131,13 +131,13 @@ export default function SwapSettingsState({ asset }) {
       scrollEnabled={false}
       testID="swap-settings-state"
     >
-      <FloatingPanel radius={android ? 30 : 39} testID="swap-settings">
+      <FloatingPanel borderRadius={android ? 30 : 39} testID="swap-settings">
         <ExchangeHeader testID="swap-settings" />
         <Inset bottom="24px" horizontal="24px" top="10px">
-          <Stack backgroundColor="body" space="24px">
+          <Stack space="24px">
             <Text
               align="center"
-              color="primary"
+              color="primary (Deprecated)"
               size="18px / 27px (Deprecated)"
               weight="bold"
             >
@@ -161,13 +161,13 @@ export default function SwapSettingsState({ asset }) {
                     paddingVertical="12px"
                   >
                     <Text
-                      color="primary"
+                      color="primary (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
                     >
                       {lang.t('exchange.use_flashbots')}
                       <Text
-                        color="secondary30"
+                        color="secondary30 (Deprecated)"
                         size="16px / 22px (Deprecated)"
                         weight="bold"
                       >
@@ -208,7 +208,7 @@ export default function SwapSettingsState({ asset }) {
                 >
                   <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
                     <Text
-                      color="primary"
+                      color="primary (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
                     >
@@ -231,7 +231,7 @@ export default function SwapSettingsState({ asset }) {
                 >
                   <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
                     <Text
-                      color="primary"
+                      color="primary (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
                     >

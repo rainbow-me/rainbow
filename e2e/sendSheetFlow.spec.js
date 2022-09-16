@@ -23,16 +23,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfExists('import-sheet');
   });
 
-  it("Shouldn't do anything when I type jibberish", async () => {
-    await Helpers.waitAndTap('import-sheet-input');
-    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Paste');
-    await Helpers.typeText('import-sheet-input', 'asdajksdlakjsd', false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Import'
-    );
-  });
-
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
@@ -62,17 +52,22 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should connect to hardhat', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
-    await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-sheet');
-    await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-sheet');
-    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
-    await Helpers.waitAndTap('hardhat-section');
+  // it('Should connect to hardhat', async () => {
+  //   await Helpers.swipe('wallet-screen', 'right', 'slow');
+  //   await Helpers.checkIfVisible('profile-screen');
+  //   await Helpers.waitAndTap('settings-button');
+  //   await Helpers.checkIfVisible('settings-sheet');
+  //   await Helpers.waitAndTap('developer-section');
+  //   await Helpers.checkIfVisible('developer-settings-sheet');
+  //   await Helpers.scrollTo('developer-settings-sheet', 'bottom');
+  //   await Helpers.waitAndTap('hardhat-section');
+  //   await Helpers.checkIfVisible('testnet-toast-Hardhat');
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  // });
+
+  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+    await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   // Saving for now in case we want to test iCloud back up sheet
@@ -140,14 +135,15 @@ describe('Send Sheet Interaction Flow', () => {
       'neverselling.wallet\n',
       false
     );
-    await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
     await Helpers.clearField('send-asset-form-field');
+    await device.disableSynchronization();
     await Helpers.typeText(
       'send-asset-form-field',
       'rainbowwallet.eth\n',
       false
     );
+    await device.enableSynchronization();
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
   });
@@ -186,11 +182,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('selected-asset-field-input');
     await Helpers.waitAndTap('selected-asset-field-input');
     await Helpers.typeText('selected-asset-field-input', '9999', false);
-    if (device.getPlatform() === 'android') {
-      await Helpers.checkIfElementByTextToExist('Insufficient Funds');
-    } else {
-      await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
-    }
+    await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
   });
 
   it('Should prepend a 0 to quantity field on input of .', async () => {

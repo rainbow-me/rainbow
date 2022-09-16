@@ -123,9 +123,11 @@ const validatePrimaryName = async name => {
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
-  await exec(
-    'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-  );
+  if (device.getPlatform() === 'ios') {
+    await exec(
+      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
+    );
+  }
 });
 
 describe('Register ENS Flow', () => {

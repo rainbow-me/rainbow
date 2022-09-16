@@ -6,3 +6,6 @@ ios
 patches
 rainbow-scripts
 .type-coverage
+.next
+.vscode
+__generated__

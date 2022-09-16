@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
 const android = device.getPlatform() === 'android';
@@ -64,6 +63,5 @@ describe('Hidden tokens flow', () => {
 
   afterAll(async () => {
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
   });
 });

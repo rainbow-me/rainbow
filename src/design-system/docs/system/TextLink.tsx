@@ -13,7 +13,7 @@ export const TextLink = ({
   <a
     className={classnames([
       sprinkles({
-        color: 'action',
+        color: 'action (Deprecated)',
         textDecoration: { hover: 'underline' },
       }),
     ])}

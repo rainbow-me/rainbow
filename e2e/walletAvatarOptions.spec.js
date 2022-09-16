@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
@@ -9,6 +8,7 @@ const DISMISS_AVATAR_BUILDER_COORDS = { x: 20, y: 90 };
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 const RAINBOW_WALLET = 'rainbowwallet.eth';
 const EMPTY_WALLET = '0x6791da9CCd95405e73d6a1117d02Dc81c4E58775';
+
 const android = device.getPlatform() === 'android';
 
 describe('Wallet avatar options', () => {
@@ -63,13 +63,12 @@ describe('Wallet avatar options', () => {
     await Helpers.checkIfExistsByText('Choose from Library');
     if (android) {
       await Helpers.checkIfExistsByText('Shuffle Emoji');
+      await element(by.text('Shuffle Emoji')).tap();
     } else {
       await Helpers.checkIfExistsByText('Pick an Emoji');
+      await Helpers.tapByText('Pick an Emoji');
+      await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
     }
-    await Helpers.checkIfExistsByText('Create your Profile');
-    await Helpers.tapByText('Create your Profile');
-    await Helpers.checkIfVisible('ens-intro-sheet');
-    await Helpers.swipe('ens-intro-sheet', 'down', 'slow');
   });
 
   it('watch wallet with ENS but without ENS avatar', async () => {
@@ -130,9 +129,6 @@ describe('Wallet avatar options', () => {
     await Helpers.checkIfVisible('profile-sheet');
     await Helpers.waitAndSwipe('profile-sheet', 'down');
     await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-    await Helpers.tapByText('Edit Profile');
-    await Helpers.checkIfExists('ens-edit-records-sheet');
-    await Helpers.swipe('ens-edit-records-sheet', 'down', 'slow');
   });
 
   it('import wallet with ENS avatar', async () => {
@@ -141,6 +137,7 @@ describe('Wallet avatar options', () => {
     await Helpers.typeText('import-sheet-input', RAINBOW_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
   });
 
   it('test watched wallet with ENS avatar', async () => {
@@ -154,6 +151,5 @@ describe('Wallet avatar options', () => {
 
   afterAll(async () => {
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
   });
 });

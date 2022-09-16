@@ -196,7 +196,7 @@ export default function ENSAssignRecordsSheet() {
   return (
     <AccentColorProvider color={accentColor}>
       <Box
-        background="body"
+        background="body (Deprecated)"
         height={{
           custom: deviceHeight - bottomActionHeight,
         }}
@@ -232,6 +232,7 @@ export default function ENSAssignRecordsSheet() {
                   <Heading
                     align="center"
                     numberOfLines={1}
+                    color="primary (Deprecated)"
                     size="26px / 30px (Deprecated)"
                     weight="heavy"
                   >
@@ -387,7 +388,7 @@ export function ENSAssignRecordsBottomActions({
 
       <Box
         as={Animated.View}
-        background="body"
+        background="body (Deprecated)"
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
         testID="ens-assign-records-sheet"
       >
@@ -515,7 +516,7 @@ function HideKeyboardButton({ color }: { color: string }) {
               <Box paddingTop={android ? '4px' : '2px'}>
                 <Text
                   align="center"
-                  color="primary"
+                  color="primary (Deprecated)"
                   size="14px / 19px (Deprecated)"
                   weight="heavy"
                 >
@@ -535,7 +536,7 @@ function Shadow() {
     <>
       <Cover>
         <Box
-          background="body"
+          background="body (Deprecated)"
           height="30px"
           shadow={{
             custom: {
@@ -559,7 +560,7 @@ function Shadow() {
         />
       </Cover>
       <Cover>
-        <Box background="body" height="46px" width="full" />
+        <Box background="body (Deprecated)" height="46px" width="full" />
       </Cover>
     </>
   );

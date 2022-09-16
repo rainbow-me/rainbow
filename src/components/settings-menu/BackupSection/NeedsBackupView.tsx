@@ -15,6 +15,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import WalletTypes from '@/helpers/walletTypes';
+import { RainbowWallet } from '@/model/wallet';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -32,7 +34,26 @@ export default function NeedsBackupView() {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
   const { wallets, selectedWallet } = useWallets();
-  const walletId = (params as any)?.walletId || selectedWallet.id;
+  let walletId = (params as any)?.walletId;
+
+  // This flow only happens when you have one imported or created wallet and 1 or more watch only wallets
+  if (!walletId && wallets) {
+    // We can't use a readonly wallet to back up, so we need to find the primary
+    if (selectedWallet.type === WalletTypes.readOnly) {
+      // Loop through the wallets and find the primary
+      for (let wallet of Object.values(wallets)) {
+        const rainbowWallet = wallet as RainbowWallet;
+        // Found the non watched wallet, take the id and break out of the loop
+        if (rainbowWallet.type !== WalletTypes.readOnly) {
+          walletId = rainbowWallet.id;
+          break;
+        }
+      }
+      // If it's not read only we can just use the selected one
+    } else {
+      walletId = selectedWallet.id;
+    }
+  }
 
   useEffect(() => {
     if (wallets?.[walletId]?.backedUp) {
@@ -90,13 +111,17 @@ export default function NeedsBackupView() {
       >
         <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
         <Stack alignHorizontal="center" space="19px (Deprecated)">
-          <Text size="20px / 24px (Deprecated)" weight="bold">
+          <Text
+            color="primary (Deprecated)"
+            size="20px / 24px (Deprecated)"
+            weight="bold"
+          >
             {lang.t('back_up.needs_backup.back_up_your_wallet')}{' '}
           </Text>
           <Box paddingBottom="24px" paddingHorizontal="42px (Deprecated)">
             <Text
               align="center"
-              color="secondary50"
+              color="secondary50 (Deprecated)"
               size="18px / 27px (Deprecated)"
             >
               {lang.t('back_up.needs_backup.dont_risk')}

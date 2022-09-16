@@ -40,7 +40,14 @@ export async function typeText(elementId, text, focus = true) {
   if (focus) {
     await tap(elementId);
   }
-  return element(by.id(elementId)).typeText(text);
+  // this is way faster now
+  if (device.getPlatform() === 'android') {
+    await device.disableSynchronization();
+  }
+  await element(by.id(elementId)).typeText(text);
+  if (device.getPlatform() === 'android') {
+    await device.enableSynchronization();
+  }
 }
 
 export async function typeNumbers(elementId, text, submitLabel) {

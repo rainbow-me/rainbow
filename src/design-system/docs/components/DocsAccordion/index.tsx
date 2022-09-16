@@ -13,7 +13,7 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
     <Stack space="16px">
       <button
         className={sprinkles({
-          backgroundColor: 'body',
+          backgroundColor: 'body (Deprecated)',
           marginLeft: '-32px',
           paddingVertical: '8px',
           position: 'sticky',
@@ -25,7 +25,7 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
       >
         <div
           className={sprinkles({
-            color: 'action',
+            color: 'action (Deprecated)',
             display: 'flex',
             fontWeight: 'heavy',
           })}
@@ -89,14 +89,14 @@ const ExamplePreview = ({
     <Stack space="24px">
       {subTitle ? (
         <Heading
-          color="secondary60"
+          color="secondary60 (Deprecated)"
           size="20px / 22px (Deprecated)"
           weight="semibold"
         >
           {subTitle}
         </Heading>
       ) : (
-        <Heading color="secondary60" weight="bold">
+        <Heading color="secondary60 (Deprecated)" weight="bold">
           {name}
         </Heading>
       )}
