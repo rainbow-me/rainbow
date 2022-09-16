@@ -24,7 +24,7 @@ import { estimateSwapGasLimit } from '@/handlers/swap';
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
 ) => {
-  const { inputAmount, tradeDetails, chainId, swapType } = swapParameters;
+  const { inputAmount, tradeDetails, chainId } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
 
   if (!inputCurrency || !outputCurrency || !inputAmount) {
