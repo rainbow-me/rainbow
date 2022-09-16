@@ -1312,7 +1312,7 @@ export const dataAddNewTransaction = (
  * @param type The transaction type.
  * @returns The confirmed status.
  */
-const getConfirmedState = (type: TransactionType): TransactionStatus => {
+const getConfirmedState = (type?: TransactionType): TransactionStatus => {
   switch (type) {
     case TransactionTypes.authorize:
       return TransactionStatus.approved;

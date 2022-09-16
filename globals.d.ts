@@ -21,6 +21,7 @@ declare let IS_DEV: boolean;
 
 declare module 'react-native-dotenv' {
   export const IS_TESTING: 'true' | 'false';
+  export const IS_APK_BUILD: 'true' | 'false';
   export const ENABLE_DEV_MODE: '0' | '1';
   export const SENTRY_ENDPOINT: string;
   export const SENTRY_ENVIRONMENT: string;

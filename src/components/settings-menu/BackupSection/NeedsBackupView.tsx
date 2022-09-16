@@ -36,15 +36,15 @@ export default function NeedsBackupView() {
   const { wallets, selectedWallet } = useWallets();
   let walletId = (params as any)?.walletId;
 
-  // This flow oonly happens when you have one imported or created wallet and 1 or more watch only wallets
+  // This flow only happens when you have one imported or created wallet and 1 or more watch only wallets
   if (!walletId && wallets) {
     // We can't use a readonly wallet to back up, so we need to find the primary
     if (selectedWallet.type === WalletTypes.readOnly) {
       // Loop through the wallets and find the primary
       for (let wallet of Object.values(wallets)) {
         const rainbowWallet = wallet as RainbowWallet;
-        // Found the primary, take the id and break out of the loop
-        if (rainbowWallet.primary) {
+        // Found the non watched wallet, take the id and break out of the loop
+        if (rainbowWallet.type !== WalletTypes.readOnly) {
           walletId = rainbowWallet.id;
           break;
         }
