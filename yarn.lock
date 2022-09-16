@@ -4212,9 +4212,10 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@../swap-aggregator/sdk/rainbow-me-swaps-v0.1.14.tgz":
-  version "0.1.14"
-  resolved "../swap-aggregator/sdk/rainbow-me-swaps-v0.1.14.tgz#a19ab1f2780ac27cb8fbe6ac17a12897579a219c"
+"@rainbow-me/swaps@0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.15.tgz#5f9cfc8882191e5a625024e02b2a9d00cbfbfa10"
+  integrity sha512-lMohX0gJ8jA9gfhIzuRuMYf7BANUe9nQigTebGGJF42Luv4Bgvz1UvaaeIVixsj7iHmgyqOEZDkh6Q3fmVA+5Q==
   dependencies:
     "@ethersproject/abi" "5.6.0"
     "@ethersproject/bignumber" "5.6.0"
@@ -4227,7 +4228,6 @@
     "@ethersproject/transactions" "5.6.0"
     "@ethersproject/wallet" "5.6.0"
     "@metamask/eth-sig-util" "4.0.0"
-    caniuse-lite "^1.0.30001390"
     ethereumjs-util "6.2.1"
 
 "@react-native-async-storage/async-storage@1.17.7", "@react-native-async-storage/async-storage@^1.15.15", "@react-native-async-storage/async-storage@^1.15.17":
@@ -7624,11 +7624,6 @@ camelize@^1.0.0:
 caniuse-lite@^1.0.30001274:
   version "1.0.30001274"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001274.tgz#26ca36204d15b17601ba6fc35dbdad950a647cc7"
-
-caniuse-lite@^1.0.30001390:
-  version "1.0.30001390"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001390.tgz#158a43011e7068ef7fc73590e9fd91a7cece5e7f"
-  integrity sha512-sS4CaUM+/+vqQUlCvCJ2WtDlV81aWtHhqeEVkLokVJJa3ViN4zDxAGfq9R8i1m90uGHxo99cy10Od+lvn3hf0g==
 
 caseless@^0.12.0, caseless@~0.12.0:
   version "0.12.0"
