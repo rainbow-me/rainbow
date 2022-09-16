@@ -16,7 +16,7 @@ import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import isTestFlight from '@/helpers/isTestFlight';
 import { useDispatch, useSelector } from 'react-redux';
-import { SwappableAsset, Token } from '../entities/tokens';
+import { SwappableAsset } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@/analytics';
 import { AssetType, EthereumAddress } from '@/entities';
@@ -213,9 +213,26 @@ const getOutputAmount = async (
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
 
-    const quote: Quote | QuoteError | null = await (isCrosschainSwap
-      ? getCrosschainQuote
-      : getQuote)(quoteParams);
+    // WIP until we get error handling from backend
+    let quote: Quote | CrosschainQuote | QuoteError | null;
+    try {
+      quote = await (isCrosschainSwap ? getCrosschainQuote : getQuote)(
+        quoteParams
+      );
+    } catch (e) {
+      Logger.debug('Got quote', e);
+      return {
+        quoteError: {
+          error_code: 503,
+          message: 'No route',
+          error: true,
+        },
+        outputAmount: null,
+        outputAmountDisplay: null,
+        tradeDetails: null,
+      };
+    }
+
     Logger.debug('Got quote', rand, quote);
 
     if (
@@ -400,7 +417,7 @@ export default function useSwapDerivedOutputs(type: string) {
         derivedValues[SwapModalField.input] !== independentValue ||
         !outputAmountData
       )
-        return;
+        return null;
 
       const {
         outputAmount,
@@ -449,7 +466,7 @@ export default function useSwapDerivedOutputs(type: string) {
         derivedValues[SwapModalField.native] !== independentValue ||
         !outputAmountData
       )
-        return;
+        return null;
 
       const {
         outputAmount,
@@ -493,7 +510,7 @@ export default function useSwapDerivedOutputs(type: string) {
         derivedValues[SwapModalField.output] !== independentValue ||
         !inputAmountData
       )
-        return;
+        return null;
 
       const {
         inputAmount,
