@@ -7,7 +7,7 @@ import { useDimensions, useKeyboardHeight } from '@/hooks';
 
 interface KeyboardFixedOpenLayoutProps {
   additionalPadding?: number;
-  keyboardType: KeyboardType;
+  keyboardType?: KeyboardType;
   position?: 'absolute';
   children?: ReactNode;
 }
