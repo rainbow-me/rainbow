@@ -289,7 +289,9 @@ export default function ExchangeModal({
   }, [inputCurrency, outputCurrency]);
 
   const inputNetwork = useMemo(() => {
-    const chainId = ethereumUtils.getChainIdFromType(inputCurrency?.type ||AssetType.token);
+    const chainId = ethereumUtils.getChainIdFromType(
+      inputCurrency?.type || AssetType.token
+    );
     return ethereumUtils.getNetworkFromChainId(chainId);
   }, [inputCurrency]);
 
@@ -463,6 +465,7 @@ export default function ExchangeModal({
         if (currentNetwork === Network.optimism) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+              // @ts-ignore
               {
                 data: tradeDetails.data,
                 from: tradeDetails.from,
