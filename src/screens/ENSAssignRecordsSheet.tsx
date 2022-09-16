@@ -82,7 +82,7 @@ import { IS_TEST } from '@/env';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
-const ExtraBottomPadding = 55 + 31;
+const ExtraBottomPadding = ios ? 81 : 20;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<any>();
@@ -195,19 +195,19 @@ export default function ENSAssignRecordsSheet() {
 
   return (
     <AccentColorProvider color={accentColor}>
-      <Box
-        background="body (Deprecated)"
-        height={{
-          custom: deviceHeight - bottomActionHeight,
-        }}
-      >
-        {/* <DebugLayout> */}
+      <Box background="body (Deprecated)" height="full" width="full">
         <Scroll
           contentContainerStyle={{
             paddingBottom: ExtraBottomPadding,
           }}
+          style={{
+            height: deviceHeight - bottomActionHeight,
+            width: '100%',
+            position: 'absolute',
+            top: 0,
+          }}
           ref={scrollViewRef}
-          scrollEnabled={true}
+          scrollEnabled
           testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
         >
           <Stack space="19px (Deprecated)">
@@ -270,25 +270,16 @@ export default function ENSAssignRecordsSheet() {
             </Inset>
           </Stack>
         </Scroll>
-        {/* </DebugLayout> */}
       </Box>
-      <ENSAssignRecordsBottomActions
-        currentRouteName={Routes.ENS_ASSIGN_RECORDS_SHEET}
-        previousRouteName={Routes.PROFILE_SCREEN}
-        visible={true}
-      />
+      <ENSAssignRecordsBottomActions fromRoute={params?.fromRoute} />
     </AccentColorProvider>
   );
 }
 
 export function ENSAssignRecordsBottomActions({
-  visible: defaultVisible,
-  previousRouteName,
-  currentRouteName,
+  fromRoute,
 }: {
-  visible: boolean;
-  previousRouteName?: string;
-  currentRouteName: string;
+  fromRoute?: string;
 }) {
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
@@ -297,7 +288,7 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
-  const [fromRoute, setFromRoute] = useState(previousRouteName);
+
   const {
     disabled,
     errors,
@@ -309,7 +300,7 @@ export function ENSAssignRecordsBottomActions({
     submit,
     values,
   } = useENSRegistrationForm();
-  const { isSuccess } = useENSModifiedRegistration();
+
   const handlePressBack = useCallback(() => {
     delayNext();
     goBack();
@@ -319,16 +310,9 @@ export function ENSAssignRecordsBottomActions({
   const hasBackButton = useMemo(
     () =>
       fromRoute === Routes.ENS_SEARCH_SHEET ||
-      fromRoute === Routes.ENS_INTRO_SHEET ||
-      fromRoute === Routes.ENS_ASSIGN_RECORDS_SHEET,
+      fromRoute === Routes.ENS_INTRO_SHEET,
     [fromRoute]
   );
-
-  useEffect(() => {
-    if (previousRouteName !== currentRouteName) {
-      setFromRoute(previousRouteName);
-    }
-  }, [currentRouteName, previousRouteName]);
 
   const handlePressContinue = useCallback(() => {
     submit(() => {
@@ -348,22 +332,13 @@ export function ENSAssignRecordsBottomActions({
     navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET, {});
   }, [navigate]);
 
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(isSuccess), 200);
-    } else {
-      setVisible(defaultVisible);
-    }
-  }, [defaultVisible, mode, isSuccess]);
-
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
     : BottomActionHeight;
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withSpring(visible ? 0 : -bottomActionHeight - 10, {
+      bottom: withSpring(0, {
         damping: 40,
         mass: 1,
         stiffness: 420,
@@ -378,18 +353,15 @@ export function ENSAssignRecordsBottomActions({
 
   return (
     <>
-      {visible && (
-        <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
-          <Inset bottom="19px (Deprecated)" right="19px (Deprecated)">
-            <HideKeyboardButton color={accentColor} />
-          </Inset>
-        </Box>
-      )}
-
+      <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
+        <Inset bottom="19px (Deprecated)" right="19px (Deprecated)">
+          <HideKeyboardButton color={accentColor} />
+        </Inset>
+      </Box>
       <Box
         as={Animated.View}
         background="body (Deprecated)"
-        style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+        style={[animatedStyle, { width: '100%', position: 'absolute' }]}
         testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>

@@ -184,14 +184,10 @@ describe('Edit ENS Flow', () => {
 
   it('Should fill & validate the fields', async () => {
     // Fill "Website" field
-    await Helpers.swipe('ens-edit-records-sheet', 'up');
-    await Helpers.swipe('ens-edit-records-sheet', 'up');
-    await Helpers.swipe('ens-edit-records-sheet', 'up');
-    await Helpers.swipe('ens-edit-records-sheet', 'up');
+    await Helpers.swipe('ens-edit-records-sheet', 'up', 'fast', 1);
     await Helpers.swipeTo(
-      'ens-text-record-name',
-      'ens-edit-records-sheet',
-      'down'
+      'ens-text-record-contenthash',
+      'ens-edit-records-sheet'
     );
     await Helpers.swipeTo('ens-text-record-url', 'ens-edit-records-sheet');
     await Helpers.checkIfVisible('ens-text-record-url');

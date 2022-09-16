@@ -206,7 +206,7 @@ export default function RegisterENSNavigator() {
               initialParams={{
                 autoFocusKey: params?.autoFocusKey,
                 mode: params?.mode,
-                sheetRef,
+                fromRoute: currentRouteName,
               }}
               listeners={{
                 focus: () => {

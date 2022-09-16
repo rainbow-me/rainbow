@@ -125,14 +125,17 @@ export async function scrollTo(scrollviewId, edge) {
   await element(by.id(scrollviewId)).scrollTo(edge);
 }
 
-export async function swipeTo(elementId, scrollElementId, direction = 'up') {
+export async function swipeTo(
+  elementId,
+  scrollElementId,
+  action,
+  direction = 'up'
+) {
   let shouldScroll = true;
   while (shouldScroll) {
     try {
       // eslint-disable-next-line no-await-in-loop
-      await waitFor(element(by.id(elementId)))
-        .toBeVisible(25)
-        .withTimeout(100);
+      await action();
       shouldScroll = false;
     } catch {
       // eslint-disable-next-line no-await-in-loop
