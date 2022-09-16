@@ -631,7 +631,7 @@ const genericAssetsFallback = () => async (
 
   if (!isEmpty(prices)) {
     Object.keys(prices).forEach(key => {
-      for (let uniqueAsset of allAssetsUnique) {
+      for (const uniqueAsset of allAssetsUnique) {
         if (uniqueAsset.coingecko_id.toLowerCase() === key.toLowerCase()) {
           uniqueAsset.price = {
             changed_at: prices[key].last_updated_at,
@@ -1008,9 +1008,9 @@ export const transactionsRemoved = (
  */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
-  append: boolean = false,
-  change: boolean = false,
-  removed: boolean = false,
+  append = false,
+  change = false,
+  removed = false,
   assetsNetwork: Network | null = null
 ) => (
   dispatch: ThunkDispatch<
@@ -1131,7 +1131,7 @@ export function scheduleActionOnAssetReceived(
  */
 export const assetPricesReceived = (
   message: AssetPricesReceivedMessage | undefined,
-  fromFallback: boolean = false
+  fromFallback = false
 ) => (
   dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
   getState: AppGetState
@@ -1158,7 +1158,7 @@ export const assetPricesReceived = (
 
     const assetAddresses = Object.keys(parsedAssets);
 
-    for (let address of assetAddresses) {
+    for (const address of assetAddresses) {
       callbacksOnAssetReceived[address.toLowerCase()]?.(parsedAssets[address]);
       callbacksOnAssetReceived[address.toLowerCase()] = undefined;
     }
@@ -1245,7 +1245,7 @@ export const assetPricesChanged = (
 export const dataAddNewTransaction = (
   txDetails: NewTransactionOrAddCashTransaction,
   accountAddressToUpdate: string | null = null,
-  disableTxnWatcher: boolean = false,
+  disableTxnWatcher = false,
   provider: StaticJsonRpcProvider | null = null
 ) => async (
   dispatch: ThunkDispatch<
@@ -1340,7 +1340,7 @@ const getConfirmedState = (type?: TransactionType): TransactionStatus => {
  */
 export const dataWatchPendingTransactions = (
   provider: StaticJsonRpcProvider | null = null,
-  currentNonce: number = -1
+  currentNonce = -1
 ) => async (
   dispatch: ThunkDispatch<
     AppState,

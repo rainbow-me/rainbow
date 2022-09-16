@@ -114,7 +114,6 @@ export const createUnlockAndCrosschainSwapRap = async (
     chainId,
     flashbots,
     inputAmount,
-    permit: swapAssetNeedsUnlocking,
     requiresApprove: swapAssetNeedsUnlocking,
     tradeDetails,
   });
