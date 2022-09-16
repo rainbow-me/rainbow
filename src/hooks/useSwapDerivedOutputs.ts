@@ -363,7 +363,7 @@ export default function useSwapDerivedOutputs(type: string) {
         result: {
           derivedValues,
           displayValues,
-          tradeDetails,
+          tradeDetails: null,
         },
       };
     }

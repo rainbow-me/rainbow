@@ -3,6 +3,7 @@ import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import {
   ALLOWS_PERMIT,
   ChainId,
+  CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getCrosschainQuoteExecutionDetails,
   getQuoteExecutionDetails,
