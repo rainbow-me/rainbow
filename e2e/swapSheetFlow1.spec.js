@@ -75,7 +75,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     // await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
-    await Helpers.delay(2000);
+    await Helpers.delay(ios ? 2000 : 5000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('swaps-details-value-row');
@@ -97,7 +97,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-optimism');
-    await Helpers.delay(2000);
+    await Helpers.delay(ios ? 2000 : 5000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('swaps-details-value-row');
@@ -119,7 +119,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
-    await Helpers.delay(2000);
+    await Helpers.delay(ios ? 2000 : 5000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('swaps-details-value-row');
@@ -141,7 +141,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-arbitrum');
-    await Helpers.delay(2000);
+    await Helpers.delay(ios ? 2000 : 5000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.waitAndTap('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('swaps-details-value-row');
@@ -183,6 +183,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should update input value after tapping Max Button', async () => {
     await Helpers.typeText('currency-select-search-input', 'BAT', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-BAT-token');
+    await Helpers.delay(ios ? 2000 : 5000)
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.waitAndTap('exchange-modal-input-max');
   });
