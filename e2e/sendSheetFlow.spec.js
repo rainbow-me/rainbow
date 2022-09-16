@@ -128,11 +128,13 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show show Contact Button & Asset List on valid public address', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
+    await device.disableSynchronization();
     await Helpers.typeText(
       'send-asset-form-field',
       '0xF0f21ab2012731542731df194cfF6c77d29cB31A',
       false
     );
+    await device.enableSynchronization();
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
   });
@@ -140,19 +142,22 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show show Contact Button & Asset List on valid ENS & Unstoppable addresses', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
+    await device.disableSynchronization();
     await Helpers.typeText(
       'send-asset-form-field',
       'neverselling.wallet\n',
       false
     );
-    await Helpers.checkIfVisible('add-contact-button');
+    await device.enableSynchronization();
     await Helpers.checkIfVisible('send-asset-list');
     await Helpers.clearField('send-asset-form-field');
+    await device.disableSynchronization();
     await Helpers.typeText(
       'send-asset-form-field',
       'rainbowwallet.eth\n',
       false
     );
+    await device.enableSynchronization();
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
   });
