@@ -82,7 +82,7 @@ import { IS_TEST } from '@/env';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
-const ExtraBottomPadding = ios ? 81 : 20;
+const ExtraBottomPadding = ios ? 81 : 50;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<any>();
