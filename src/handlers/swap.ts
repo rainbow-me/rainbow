@@ -388,7 +388,6 @@ export const estimateCrosschainSwapGasLimit = async ({
           logger.debug('Error estimating swap gas limit with approval', e);
           const routeGasLimit =
             tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees.gasLimit;
-          console.log('------ routeGasLimit', routeGasLimit);
           if (routeGasLimit) return routeGasLimit;
         }
       }
@@ -397,12 +396,10 @@ export const estimateCrosschainSwapGasLimit = async ({
     }
 
     const gasLimit = await estimateGas();
-    console.log('------ routeGasLimit 1', gasLimit);
     return gasLimit || getDefaultGasLimitForTrade(tradeDetails, chainId);
   } catch (error) {
     const routeGasLimit =
       tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees.gasLimit;
-    console.log('------ routeGasLimit 2', routeGasLimit);
     if (routeGasLimit) return routeGasLimit;
     return getDefaultGasLimitForTrade(tradeDetails, chainId);
   }
