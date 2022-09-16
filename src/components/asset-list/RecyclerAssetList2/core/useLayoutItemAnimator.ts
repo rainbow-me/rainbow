@@ -1,5 +1,5 @@
 import { MutableRefObject, useMemo } from 'react';
-import { LayoutAnimation } from 'react-native';
+import { LayoutAnimation, LayoutAnimationConfig } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
 import {
@@ -11,7 +11,7 @@ import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { RecyclerListViewRef } from './ViewTypes';
 import { deviceUtils } from '@/utils';
 
-const easingAnimation = {
+const easingAnimation: LayoutAnimationConfig = {
   duration: 250,
   update: {
     delay: 10,
@@ -19,7 +19,7 @@ const easingAnimation = {
   },
 };
 
-const springAnimation = {
+const springAnimation: LayoutAnimationConfig = {
   duration: 200,
   update: {
     initialVelocity: 0,

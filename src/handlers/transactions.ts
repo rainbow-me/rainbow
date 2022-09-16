@@ -129,7 +129,7 @@ export const showTransactionDetailsSheet = (
     divider: isSent
       ? lang.t('account.tx_to_lowercase')
       : lang.t('account.tx_from_lowercase'),
-    type: status.charAt(0).toUpperCase() + status.slice(1),
+    type: status?.charAt(0)?.toUpperCase() ?? '' + status?.slice(1) ?? '',
   };
   const contactAddress = (isSent ? to : from) as string;
   const contact = contacts[contactAddress];
