@@ -2,7 +2,10 @@ import React, { useContext, useMemo } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { AccentColorContext } from '../../color/AccentColorContext';
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';
-import { BackgroundColor } from '../../color/palettes';
+import {
+  BackgroundColor,
+  getDefaultAccentColorForColorMode,
+} from '../../color/palettes';
 
 export type BackgroundProviderProps = {
   color: BackgroundColor | 'accent';
@@ -28,8 +31,10 @@ export function BackgroundProvider({
   children,
   style: styleProp,
 }: BackgroundProviderProps) {
-  const { backgroundColors } = useContext(ColorModeContext);
-  const accentColor = useContext(AccentColorContext);
+  const { backgroundColors, colorMode } = useContext(ColorModeContext);
+  const accentColorContextValue = useContext(AccentColorContext);
+  const accentColor =
+    accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode);
   const background = color === 'accent' ? accentColor : backgroundColors[color];
   const style = useMemo(
     () => [

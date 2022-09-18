@@ -42,7 +42,7 @@ export default function SelectENSSheet() {
     primaryDomain,
   } = useAccountENSDomains();
 
-  const secondary06 = useForegroundColor('secondary06');
+  const secondary06 = useForegroundColor('secondary06 (Deprecated)');
 
   const { goBack } = useNavigation();
   const { params } = useRoute<any>();
@@ -59,9 +59,10 @@ export default function SelectENSSheet() {
   );
 
   const controlledDomains = useMemo(() => {
-    const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) =>
-      a.name > b.name ? 1 : -1
-    );
+    const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) => {
+      if (a.name && b.name) return a.name > b.name ? 1 : -1;
+      return 1;
+    });
 
     if (primaryDomain) sortedNonPrimaryDomains.unshift(primaryDomain);
 
@@ -99,6 +100,7 @@ export default function SelectENSSheet() {
                 <Box paddingLeft="10px">
                   <Text
                     numberOfLines={1}
+                    color="primary (Deprecated)"
                     size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
@@ -121,6 +123,7 @@ export default function SelectENSSheet() {
         <Stack space="24px">
           <Heading
             align="center"
+            color="primary (Deprecated)"
             size="18px / 21px (Deprecated)"
             weight="heavy"
           >

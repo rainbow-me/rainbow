@@ -1,7 +1,7 @@
 import { mapValues } from 'lodash';
 import nativeCurrencyReference from '../references/native-currencies.json';
 
-type NativeCurrencyKey = keyof typeof nativeCurrencyReference;
+export type NativeCurrencyKey = keyof typeof nativeCurrencyReference;
 type NativeCurrencyKeysMap = { [Key in NativeCurrencyKey]: Key };
 
 // We can't dynamically generate an enum from the JSON data, but we can

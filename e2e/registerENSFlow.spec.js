@@ -22,6 +22,8 @@ const RAINBOW_WALLET_NAME = 'rainbowwallet.eth';
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const RECORD_BIO = 'my bio';
 const RECORD_NAME = 'random';
+const RECORD_CONTENTHASH =
+  'ipfs://QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4';
 const RECORD_TWITTER = 'twitter123';
 const RECORD_EMAIL = 'abc@abc.com';
 const RECORD_INSTAGRAM = 'insta123';
@@ -73,9 +75,11 @@ const getRecords = async ensName => {
     publicResolverABI,
     provider
   );
+  const resolver = await provider.getResolver(ensName);
   const hashName = hash(ensName);
   const [
     avatar,
+    contenthash,
     description,
     name,
     url,
@@ -89,6 +93,7 @@ const getRecords = async ensName => {
     reddit,
   ] = await Promise.all([
     publicResolver.text(hashName, 'avatar'),
+    resolver.getContentHash(ensName),
     publicResolver.text(hashName, 'description'),
     publicResolver.text(hashName, 'name'),
     publicResolver.text(hashName, 'url'),
@@ -103,6 +108,7 @@ const getRecords = async ensName => {
   ]);
   return {
     avatar,
+    contenthash,
     description,
     discord,
     email,
@@ -431,7 +437,7 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-selectable-attribute-keywords');
     await Helpers.waitAndTap('ens-selectable-attribute-ltc');
     await Helpers.waitAndTap('ens-selectable-attribute-doge');
-    await Helpers.waitAndTap('ens-selectable-attribute-content');
+    await Helpers.waitAndTap('ens-selectable-attribute-contenthash');
 
     // Dismiss the bottom attribute sheet
     await Helpers.swipe('ens-additional-records-sheet', 'down');
@@ -593,6 +599,23 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('ens-text-record-LTC-error');
+
+    // Fill "Content" field
+    await Helpers.typeText(
+      'ens-text-record-contenthash',
+      RECORD_CONTENTHASH.slice(0, 3),
+      false
+    );
+    await Helpers.waitAndTap('ens-text-record-contenthash-error');
+    await Helpers.checkIfElementByTextToExist('Invalid content hash');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText(
+      'ens-text-record-contenthash',
+      RECORD_CONTENTHASH.slice(3),
+      false
+    );
+    await Helpers.delay(3000);
+    await Helpers.checkIfNotVisible('ens-text-record-contenthash-error');
   });
 
   it('Should unselect a field', async () => {
@@ -616,6 +639,7 @@ describe('Register ENS Flow', () => {
 
   it('Should confirm the update was successful', async () => {
     const {
+      contenthash,
       description,
       discord,
       email,
@@ -644,6 +668,8 @@ describe('Register ENS Flow', () => {
     if (twitter !== RECORD_TWITTER)
       throw new Error('twitter is incorrect.', twitter);
     if (url !== RECORD_URL) throw new Error('url is incorrect.', url);
+    if (contenthash !== RECORD_CONTENTHASH)
+      throw new Error('contenthash is incorrect.', contenthash);
   });
 
   it('Should navigate to the Wallet screen to renew', async () => {

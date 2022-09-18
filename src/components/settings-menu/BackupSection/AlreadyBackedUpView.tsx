@@ -57,9 +57,9 @@ export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
   const { params } = useRoute();
   const { manageCloudBackups } = useManageCloudBackups();
-  const { wallets, selectedWallet } = useWallets();
+  const { wallets } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
-  const walletId = (params as any)?.walletId || selectedWallet.id;
+  const walletId = (params as any)?.walletId;
 
   useEffect(() => {
     analytics.track('Already Backed Up View', {
@@ -69,7 +69,7 @@ export default function AlreadyBackedUpView() {
 
   const walletStatus = useMemo(() => {
     let status = null;
-    if (wallets?.[walletId].backedUp) {
+    if (wallets?.[walletId]?.backedUp) {
       if (wallets?.[walletId].backupType === WalletBackupTypes.manual) {
         status = WalletBackupStatus.MANUAL_BACKUP;
       } else {
@@ -133,7 +133,7 @@ export default function AlreadyBackedUpView() {
 
   const { colors, isDarkMode } = useTheme();
 
-  const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId].type;
+  const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId]?.type;
 
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
@@ -166,7 +166,7 @@ export default function AlreadyBackedUpView() {
     >
       <Box marginTop="-10px">
         <Text
-          color="secondary50"
+          color="secondary50 (Deprecated)"
           size="14px / 19px (Deprecated)"
           weight="medium"
         >
@@ -178,9 +178,13 @@ export default function AlreadyBackedUpView() {
               lang.t('back_up.already_backed_up.imported'))}
         </Text>
       </Box>
-      <Box alignItems="center" marginTop="-42px">
+      <Box alignItems="center" marginTop="-42px (Deprecated)">
         <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
-        <Text size="20px / 24px (Deprecated)" weight="bold">
+        <Text
+          color="primary (Deprecated)"
+          size="20px / 24px (Deprecated)"
+          weight="bold"
+        >
           {(walletStatus === WalletBackupStatus.IMPORTED &&
             lang.t('back_up.already_backed_up.imported_message')) ||
             lang.t('back_up.already_backed_up.backed_up_message')}
@@ -188,7 +192,7 @@ export default function AlreadyBackedUpView() {
         <Box paddingHorizontal="60px" paddingTop="24px">
           <Text
             align="center"
-            color="secondary50"
+            color="secondary50 (Deprecated)"
             size="18px / 27px (Deprecated)"
           >
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
@@ -201,7 +205,7 @@ export default function AlreadyBackedUpView() {
                 lang.t('back_up.explainers.if_lose_imported'))}
           </Text>
         </Box>
-        <Box paddingTop="42px">
+        <Box paddingTop="42px (Deprecated)">
           <AccentColorProvider color={colors.whiteLabel}>
             <ButtonPressAnimation
               onPress={handleViewRecoveryPhrase}
@@ -213,15 +217,15 @@ export default function AlreadyBackedUpView() {
               }
             >
               <Box
-                background="card"
+                background="card (Deprecated)"
                 borderRadius={56}
                 height={{ custom: 48 }}
                 justifyContent="center"
-                paddingHorizontal="19px"
+                paddingHorizontal="19px (Deprecated)"
                 shadow="15px light"
               >
                 <Text
-                  color="secondary"
+                  color="secondary (Deprecated)"
                   containsEmoji
                   size="18px / 27px (Deprecated)"
                   weight="semibold"
@@ -237,11 +241,11 @@ export default function AlreadyBackedUpView() {
           </AccentColorProvider>
         </Box>
       </Box>
-      <Box paddingBottom="42px">
+      <Box paddingBottom="42px (Deprecated)">
         {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
           <ButtonPressAnimation onPress={handleIcloudBackup}>
             <Text
-              color="action"
+              color="action (Deprecated)"
               size="18px / 27px (Deprecated)"
               weight="semibold"
             >
@@ -253,7 +257,7 @@ export default function AlreadyBackedUpView() {
         ) : !hasMultipleWallets ? (
           <ButtonPressAnimation onPress={manageCloudBackups}>
             <Text
-              color="secondary60"
+              color="secondary60 (Deprecated)"
               size="18px / 27px (Deprecated)"
               weight="semibold"
             >

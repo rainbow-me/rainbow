@@ -21,6 +21,10 @@ const parseLastSalePrice = lastSale =>
     : null;
 
 const getCurrentPrice = ({ currentPrice, token }) => {
+  if (!token || !currentPrice) {
+    return null;
+  }
+
   const paymentToken = OpenseaPaymentTokens.find(
     osToken => osToken.address.toLowerCase() === token.toLowerCase()
   );
@@ -87,6 +91,9 @@ export const parseAccountUniqueTokens = data => {
           asset.image_original_url,
           asset.image_preview_url
         );
+
+        const sellOrder = asset.seaport_sell_orders?.[0];
+
         return {
           ...pickShallow(asset, [
             'animation_url',
@@ -120,12 +127,12 @@ export const parseAccountUniqueTokens = data => {
             'twitter_username',
             'wiki_link',
           ]),
-          currentPrice: asset.seaport_sell_orders
+          currentPrice: sellOrder
             ? getCurrentPrice({
-                currentPrice: asset.seaport_sell_orders[0].current_price,
+                currentPrice: sellOrder?.current_price,
                 token:
-                  asset.seaport_sell_orders[0].protocol_data.parameters
-                    .consideration[0].token,
+                  sellOrder?.protocol_data?.parameters?.consideration?.[0]
+                    ?.token,
               })
             : null,
           familyImage: collection.image_url,
@@ -250,13 +257,6 @@ export const parseAccountUniqueTokensPolygon = data => {
       };
     })
     .filter(token => !!token.familyName && token.familyName !== 'POAP');
-
-  //filter out NFTs that are not on our allow list
-  remove(
-    erc721s,
-    nft =>
-      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
-  );
 
   return erc721s;
 };

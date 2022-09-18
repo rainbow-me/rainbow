@@ -124,31 +124,43 @@ export default function SettingsSheet() {
   const getRealRoute = useCallback(
     (key: any) => {
       let route = key;
-      let paramsToPass: { imported?: boolean; type?: string } = {};
+      const paramsToPass: {
+        imported?: boolean;
+        type?: string;
+        walletId?: string;
+      } = {};
+      const nonReadonlyWallets = Object.keys(wallets!).filter(
+        key => wallets![key].type !== WalletTypes.readOnly
+      );
       if (key === SettingsPages.backup.key) {
         const walletId = params?.walletId;
-        if (
-          !walletId &&
-          Object.keys(wallets!).filter(
-            key => wallets![key].type !== WalletTypes.readOnly
-          ).length > 1
-        ) {
+        // Check if we have more than 1 NON readonly wallets, then show the list of wallets
+        if (!walletId && nonReadonlyWallets.length > 1) {
           route = 'BackupSection';
+          // Check if we have one wallet that's not readonly
+          // then show the single screen for that wallet.
         } else {
-          if (
-            wallets &&
-            Object.keys(wallets).length === 1 &&
-            (selectedWallet.imported || selectedWallet.backedUp)
-          ) {
-            paramsToPass.imported = true;
-            paramsToPass.type = 'AlreadyBackedUpView';
+          if (wallets && nonReadonlyWallets.length === 1) {
+            // Get the non watched wallet
+            const defaultSelectedWalletId = Object.keys(wallets!).find(
+              (key: string) => wallets![key].type !== WalletTypes.readOnly
+            );
+            if (defaultSelectedWalletId) {
+              if (wallets[defaultSelectedWalletId].backedUp) {
+                paramsToPass.type = 'AlreadyBackedUpView';
+              }
+              if (wallets[defaultSelectedWalletId].imported) {
+                paramsToPass.imported = true;
+              }
+              paramsToPass.walletId = defaultSelectedWalletId;
+            }
           }
           route = 'SettingsBackupView';
         }
       }
       return { params: { ...params, ...paramsToPass }, route };
     },
-    [params, selectedWallet.backedUp, selectedWallet.imported, wallets]
+    [params, wallets]
   );
 
   const onPressSection = useCallback(
@@ -183,7 +195,7 @@ export default function SettingsSheet() {
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Box
-      background="cardBackdrop"
+      background="cardBackdrop (Deprecated)"
       flexGrow={1}
       testID="settings-sheet"
       {...(android && {
@@ -196,11 +208,7 @@ export default function SettingsSheet() {
         screenOptions={{
           ...memoSettingsOptions,
           headerRight: renderHeaderRight,
-          headerStyle: {
-            ...memoSettingsOptions.headerStyle,
-            // ios MenuContainer scroll fix
-            ...(ios && { backgroundColor: colors.cardBackdrop }),
-          },
+          headerStyle: memoSettingsOptions.headerStyle,
         }}
       >
         <Stack.Screen
@@ -234,6 +242,11 @@ export default function SettingsSheet() {
                 options={{
                   cardStyleInterpolator,
                   title: getTitle(),
+                  headerStyle: {
+                    ...memoSettingsOptions.headerStyle,
+                    // ios MenuContainer scroll fix
+                    ...(ios && { backgroundColor: colors.cardBackdrop }),
+                  },
                 }}
                 // @ts-ignore
                 title={getTitle()}

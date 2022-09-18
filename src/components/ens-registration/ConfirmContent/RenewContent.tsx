@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
-import { Divider, Inset, Stack } from '@/design-system';
+import { Inset, Separator, Stack } from '@/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
 import { useDimensions, useENSRegistrant } from '@/hooks';
 import { timeUnits } from '@/references';
@@ -30,9 +30,9 @@ const RenewContent = ({
   );
 
   return (
-    <Inset vertical={isSmallPhone ? '12px' : '30px'}>
-      <Stack space={isSmallPhone ? '19px' : '30px'}>
-        <Divider color="divider60" />
+    <Inset vertical={isSmallPhone ? '12px' : '30px (Deprecated)'}>
+      <Stack space={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
+        <Separator color="divider60 (Deprecated)" />
         <RegistrationReviewRows
           duration={yearsDuration}
           estimatedCostETH={
@@ -50,7 +50,7 @@ const RenewContent = ({
             registrationCostsData?.estimatedTotalRegistrationCost?.display
           }
         />
-        <Divider color="divider60" />
+        <Separator color="divider60 (Deprecated)" />
       </Stack>
     </Inset>
   );

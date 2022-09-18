@@ -104,13 +104,13 @@ export default function ProfileSheet() {
       <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
         <StatusBar barStyle="light-content" />
         <AccentColorProvider color={accentColor}>
-          <Box background="body" testID="profile-sheet">
+          <Box background="body (Deprecated)" testID="profile-sheet">
             <Box style={wrapperStyle}>
               {!isPreview &&
               (!isAddressSuccess ||
                 !hasListFetched ||
                 !hasFirstTxTimestampFetched) ? (
-                <Stack space="19px">
+                <Stack space="19px (Deprecated)">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
@@ -145,10 +145,10 @@ function AndroidWrapper({ children }: { children: React.ReactElement }) {
 
 function PlaceholderList() {
   return (
-    <Inset horizontal="19px">
+    <Inset horizontal="19px (Deprecated)">
       <Box height="full">
         <Skeleton animated>
-          <Stack space="15px">
+          <Stack space="15px (Deprecated)">
             <PlaceholderRow />
             <PlaceholderRow />
             <PlaceholderRow />
@@ -167,13 +167,13 @@ function PlaceholderRow() {
       <Column width="content">
         <Inline alignVertical="center" space="10px" wrap={false}>
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={15}
             height={{ custom: 30 }}
             width={{ custom: 30 }}
           />
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={15}
             height={{ custom: 20 }}
             width={{ custom: 200 }}

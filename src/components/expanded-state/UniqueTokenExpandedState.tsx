@@ -40,13 +40,13 @@ import {
   Box,
   ColorModeProvider,
   Columns,
-  Divider,
   Heading,
   HeadingProps,
   Inline,
   Inset,
   MarkdownText,
   MarkdownTextProps,
+  Separator,
   Space,
   Stack,
   Text,
@@ -124,7 +124,7 @@ const TextButton = ({
   size?: TextProps['size'];
   weight?: TextProps['weight'];
 }) => {
-  const hitSlop: Space = '19px';
+  const hitSlop: Space = '19px (Deprecated)';
 
   return (
     <Bleed space={hitSlop}>
@@ -141,10 +141,10 @@ const TextButton = ({
 
 const headingSize: HeadingProps['size'] = '18px / 21px (Deprecated)';
 const textSize: TextProps['size'] = '18px / 27px (Deprecated)';
-const textColor: TextProps['color'] = 'secondary50';
-const sectionSpace: Space = '30px';
+const textColor: TextProps['color'] = 'secondary50 (Deprecated)';
+const sectionSpace: Space = '30px (Deprecated)';
 const paragraphSpace: Space = { custom: 22 };
-const listSpace: Space = '19px';
+const listSpace: Space = '19px (Deprecated)';
 
 const Section = ({
   addonComponent,
@@ -177,9 +177,10 @@ const Section = ({
             </Bleed>
           )}
           {titleEmoji && (
-            <Bleed right="1px">
+            <Bleed right="1px (Deprecated)">
               <Heading
                 containsEmoji
+                color="primary (Deprecated)"
                 size={
                   ios ? '23px / 27px (Deprecated)' : '20px / 22px (Deprecated)'
                 }
@@ -190,7 +191,7 @@ const Section = ({
             </Bleed>
           )}
         </Box>
-        <Heading size={headingSize} weight="heavy">
+        <Heading color="primary (Deprecated)" size={headingSize} weight="heavy">
           {title}
         </Heading>
       </Inline>
@@ -506,7 +507,7 @@ const UniqueTokenExpandedState = ({
               <Animated.View style={opacityStyle}>
                 <Inset horizontal="24px" vertical={sectionSpace}>
                   <Stack space={sectionSpace}>
-                    <Stack space="42px">
+                    <Stack space="42px (Deprecated)">
                       <Inline alignHorizontal="justify" wrap={false}>
                         {isActionsEnabled ? (
                           <TextButton onPress={handlePressShowcase}>
@@ -536,7 +537,7 @@ const UniqueTokenExpandedState = ({
                       />
                     </Stack>
                     {isNFT || isENS ? (
-                      <Columns space="15px">
+                      <Columns space="15px (Deprecated)">
                         {hasEditButton ? (
                           <SheetActionButton
                             color={imageColor}
@@ -597,12 +598,12 @@ const UniqueTokenExpandedState = ({
                       />
                     ) : null}
                     <Stack
-                      separator={<Divider color="divider20" />}
+                      separator={<Separator color="divider20 (Deprecated)" />}
                       space={sectionSpace}
                     >
                       {(isNFT || isENS) && isSaleInfoSupported ? (
                         <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
-                          bottom={android ? '15px' : '6px'}
+                          bottom={android ? '15px (Deprecated)' : '6px'}
                           top={android ? '10px' : '4px'}
                         >
                           {isNFT && (
@@ -729,8 +730,10 @@ const UniqueTokenExpandedState = ({
                             <Markdown>{familyDescription}</Markdown>
                             {familyLink ? (
                               <Bleed // Manually crop surrounding space until Link uses design system components
-                                bottom={android ? '15px' : undefined}
-                                top="15px"
+                                bottom={
+                                  android ? '15px (Deprecated)' : undefined
+                                }
+                                top="15px (Deprecated)"
                               >
                                 {/* @ts-expect-error JavaScript component */}
                                 <Link

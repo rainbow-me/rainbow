@@ -1,11 +1,7 @@
 import {
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   PINATA_API_KEY,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   PINATA_API_SECRET,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   PINATA_API_URL,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   PINATA_GATEWAY_URL,
 } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
