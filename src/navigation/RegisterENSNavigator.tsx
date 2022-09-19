@@ -4,9 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
-import ENSAssignRecordsSheet, {
-  ENSAssignRecordsBottomActions,
-} from '../screens/ENSAssignRecordsSheet';
+import ENSAssignRecordsSheet from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
@@ -18,7 +16,6 @@ import {
   useDimensions,
   useENSRegistration,
   useENSRegistrationForm,
-  usePrevious,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -95,7 +92,6 @@ export default function RegisterENSNavigator() {
     return Routes.ENS_INTRO_SHEET;
   }, [params, startRegistration]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
-  const previousRouteName = usePrevious(currentRouteName);
 
   const [wrapperHeight, setWrapperHeight] = useState<number | undefined>(
     contentHeight
@@ -130,11 +126,6 @@ export default function RegisterENSNavigator() {
     ]
   );
 
-  const enableAssignRecordsBottomActions =
-    currentRouteName !== Routes.ENS_INTRO_SHEET;
-  const isBottomActionsVisible =
-    currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
-
   useEffect(() => {
     if (screenOptions.scrollEnabled) {
       setTimeout(() => setWrapperHeight(undefined), 200);
@@ -154,84 +145,68 @@ export default function RegisterENSNavigator() {
   const hasNestedScroll = currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   return (
-    <>
-      {/* @ts-expect-error JavaScript component */}
-      <SlackSheet
-        additionalTopPadding={android ? StatusBar.currentHeight : false}
-        contentHeight={contentHeight}
-        height="100%"
-        ref={sheetRef}
-        removeTopPadding
-        scrollEnabled
+    // @ts-expect-error JavaScript component
+    <SlackSheet
+      additionalTopPadding={android ? StatusBar.currentHeight : false}
+      contentHeight={contentHeight}
+      height="100%"
+      ref={sheetRef}
+      removeTopPadding
+      scrollEnabled
+    >
+      <StatusBar barStyle="light-content" />
+      <Box
+        style={{
+          height: wrapperHeight,
+          overflow: 'hidden',
+        }}
       >
-        <StatusBar barStyle="light-content" />
-        <Box
-          style={{
-            height: wrapperHeight,
-            overflow: 'hidden',
-          }}
+        <Swipe.Navigator
+          initialLayout={deviceUtils.dimensions}
+          initialRouteName={currentRouteName}
+          pager={hasNestedScroll ? undefined : renderPager}
+          swipeEnabled={false}
+          tabBar={renderTabBar}
         >
-          <Swipe.Navigator
-            initialLayout={deviceUtils.dimensions}
-            initialRouteName={currentRouteName}
-            pager={hasNestedScroll ? undefined : renderPager}
-            swipeEnabled={false}
-            tabBar={renderTabBar}
-          >
+          <Swipe.Screen
+            component={ENSIntroSheet}
+            initialParams={{
+              contentHeight,
+              onSearchForNewName: () => setIsSearchEnabled(true),
+              onSelectExistingName: () => setIsSearchEnabled(false),
+            }}
+            listeners={{
+              focus: () => {
+                setCurrentRouteName(Routes.ENS_INTRO_SHEET);
+              },
+            }}
+            name={Routes.ENS_INTRO_SHEET}
+          />
+          {isSearchEnabled && (
             <Swipe.Screen
-              component={ENSIntroSheet}
-              initialParams={{
-                contentHeight,
-                onSearchForNewName: () => setIsSearchEnabled(true),
-                onSelectExistingName: () => setIsSearchEnabled(false),
-              }}
+              component={ENSSearchSheet}
               listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.ENS_INTRO_SHEET);
-                },
+                focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
               }}
-              name={Routes.ENS_INTRO_SHEET}
+              name={Routes.ENS_SEARCH_SHEET}
             />
-            {isSearchEnabled && (
-              <Swipe.Screen
-                component={ENSSearchSheet}
-                listeners={{
-                  focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
-                }}
-                name={Routes.ENS_SEARCH_SHEET}
-              />
-            )}
-            <Swipe.Screen
-              component={ENSAssignRecordsSheet}
-              initialParams={{
-                autoFocusKey: params?.autoFocusKey,
-                mode: params?.mode,
-                fromRoute: currentRouteName,
-              }}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET);
-                },
-              }}
-              name={Routes.ENS_ASSIGN_RECORDS_SHEET}
-            />
-          </Swipe.Navigator>
-        </Box>
-      </SlackSheet>
-
-      {/**
-       * The `ENSAssignRecordsBottomActions` is a component that is external from the ENS navigator and only
-       * appears when the ENSAssignRecordsSheet is active.
-       * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
-       * ScrollView, so this seems like the best workaround.
-       */}
-      {/* {enableAssignRecordsBottomActions && (
-        <ENSAssignRecordsBottomActions
-          currentRouteName={currentRouteName}
-          previousRouteName={previousRouteName}
-          visible={isBottomActionsVisible}
-        />
-      )} */}
-    </>
+          )}
+          <Swipe.Screen
+            component={ENSAssignRecordsSheet}
+            initialParams={{
+              autoFocusKey: params?.autoFocusKey,
+              mode: params?.mode,
+              fromRoute: currentRouteName,
+            }}
+            listeners={{
+              focus: () => {
+                setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET);
+              },
+            }}
+            name={Routes.ENS_ASSIGN_RECORDS_SHEET}
+          />
+        </Swipe.Navigator>
+      </Box>
+    </SlackSheet>
   );
 }
