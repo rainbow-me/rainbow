@@ -169,11 +169,10 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should cycle through token lists', async () => {
-    await Helpers.swipe(
+    await Helpers.swipeUntilVisible(
+      'lists-section-favorites',
       'discover-sheet',
-      'up',
-      'slow',
-      device.getPlatform() === 'ios' ? 0.3 : 0.4
+      'up'
     );
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
@@ -191,11 +190,10 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should cycle through pools lists', async () => {
-    await Helpers.swipe(
+    await Helpers.swipeUntilVisible(
+      'pools-list-liquidity',
       'discover-sheet',
-      'up',
-      'slow',
-      device.getPlatform() === 'ios' ? 0.3 : 0.6
+      'up'
     );
     await Helpers.waitAndTap('pools-list-liquidity');
     await Helpers.checkIfVisible('pools-section-liquidity');
