@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
+import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
 const android = device.getPlatform() === 'android';
