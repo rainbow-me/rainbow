@@ -105,7 +105,7 @@ export default function SecretDisplaySection({
           <Stack space="10px">
             <Text
               align="center"
-              color="secondary"
+              color="secondary (Deprecated)"
               size="18px / 27px (Deprecated)"
               weight="regular"
             >
@@ -135,7 +135,7 @@ export default function SecretDisplaySection({
         >
           <Text
             align="center"
-            color="secondary60"
+            color="secondary60 (Deprecated)"
             size="16px / 22px (Deprecated)"
           >
             {lang.t('back_up.secret.biometrically_secured')}
@@ -150,18 +150,18 @@ export default function SecretDisplaySection({
         <Box
           alignItems="center"
           justifyContent="center"
-          paddingBottom="30px"
+          paddingBottom="30px (Deprecated)"
           paddingHorizontal={{ custom: 46 }}
         >
           {seed ? (
             <>
-              <Box paddingBottom="19px">
+              <Box paddingBottom="19px (Deprecated)">
                 {/* @ts-ignore */}
                 <CopyFloatingEmojis textToCopy={seed}>
                   <Inline alignVertical="center" space="6px">
                     <CopyButtonIcon />
                     <Text
-                      color="action"
+                      color="action (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
                     >
@@ -170,11 +170,12 @@ export default function SecretDisplaySection({
                   </Inline>
                 </CopyFloatingEmojis>
               </Box>
-              <Stack alignHorizontal="center" space="19px">
+              <Stack alignHorizontal="center" space="19px (Deprecated)">
                 {/* @ts-ignore */}
                 <SecretDisplayCard seed={seed} type={type} />
                 <Text
                   containsEmoji
+                  color="primary (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
@@ -182,7 +183,7 @@ export default function SecretDisplaySection({
                 </Text>
                 <Text
                   align="center"
-                  color="secondary60"
+                  color="secondary60 (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="semibold"
                 >

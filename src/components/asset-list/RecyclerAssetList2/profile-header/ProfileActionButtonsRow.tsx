@@ -45,6 +45,7 @@ import { analytics } from '@/analytics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
+import config from '@/model/config';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -310,6 +311,11 @@ function MoreButton() {
   const handlePressAddCash = React.useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
+      return;
+    }
+
+    if (!config.wyre_enabled) {
+      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
       return;
     }
 

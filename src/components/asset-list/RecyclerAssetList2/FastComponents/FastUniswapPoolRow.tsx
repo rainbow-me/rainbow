@@ -50,6 +50,7 @@ export default React.memo(function UniswapCoinRow({
               <View style={sx.row}>
                 <Text
                   numberOfLines={1}
+                  color="primary (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="semibold"
                 >

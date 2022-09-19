@@ -52,14 +52,6 @@ export default function WalletProfileState({
 
   const handleSubmit = useCallback(() => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
-    onCloseModal({
-      color:
-        typeof nameColor === 'string'
-          ? profileUtils.colorHexToIndex(nameColor)
-          : nameColor,
-      image: profileImage,
-      name: nameEmoji ? `${nameEmoji} ${value}` : value,
-    });
     const callback = () => {
       goBack();
       if (actionType === 'Create' && isNewProfile) {
@@ -71,6 +63,14 @@ export default function WalletProfileState({
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
     }
+    onCloseModal({
+      color:
+        typeof nameColor === 'string'
+          ? profileUtils.colorHexToIndex(nameColor)
+          : nameColor,
+      image: profileImage,
+      name: nameEmoji ? `${nameEmoji} ${value}` : value,
+    });
   }, [
     actionType,
     nameColor,

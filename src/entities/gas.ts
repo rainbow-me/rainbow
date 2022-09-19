@@ -35,7 +35,7 @@ export interface LegacyTransactionGasParams {
 }
 
 export interface GasFeeParams {
-  maxFeePerGas: GasFeeParam;
+  maxBaseFee: GasFeeParam;
   maxPriorityFeePerGas: GasFeeParam;
   option: string;
   estimatedTime: { amount: number; display: string };

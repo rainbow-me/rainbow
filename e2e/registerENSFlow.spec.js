@@ -731,12 +731,17 @@ describe('Register ENS Flow', () => {
 
   it('Should check address is the new label on profile screen and change wallet screen', async () => {
     const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
+    const WALLET_ROW_TRUNCATED_ADDRESS = address(
+      RAINBOW_TEST_WALLET_ADDRESS,
+      6,
+      4
+    );
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.checkIfExists(`profile-name-sticky-${TRUNCATED_ADDRESS}`);
     await Helpers.waitAndTap(`profile-name-sticky-${TRUNCATED_ADDRESS}`);
     await Helpers.checkIfVisible(
-      `change-wallet-address-row-address-${RAINBOW_TEST_WALLET_ADDRESS}`
+      `change-wallet-address-row-label-${WALLET_ROW_TRUNCATED_ADDRESS}`
     );
   });
 

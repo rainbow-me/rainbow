@@ -24,6 +24,9 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@/utils';
+import useAccountAsset from './useAccountAsset';
+import { ETH_ADDRESS } from '@/references';
+import { isZero } from '@/helpers/utilities';
 
 type UseOnAvatarPressProps = {
   /** Is the avatar selection being used on the wallet or transaction screen? */
@@ -42,6 +45,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     accountENS,
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const accountAsset = useAccountAsset(ETH_ADDRESS);
+
   const profileEnabled = Boolean(accountENS);
 
   const { isOwner } = useENSOwner(accountENS, {
@@ -165,11 +170,12 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
+  const isZeroETH = isZero(accountAsset.balance.amount);
 
   const callback = useCallback(
     async (buttonIndex: number) => {
       if (isENSProfile) {
-        if (isReadOnly) {
+        if (isReadOnly || isZeroETH) {
           if (buttonIndex === 0) onAvatarViewProfile();
           if (buttonIndex === 1) onAvatarChooseImage();
           if (buttonIndex === 2) ios ? onAvatarPickEmoji() : setNextEmoji();
@@ -180,7 +186,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
           if (buttonIndex === 3) ios ? onAvatarPickEmoji() : setNextEmoji();
         }
       } else {
-        if (isReadOnly) {
+        if (isReadOnly || isZeroETH) {
           if (buttonIndex === 0) onAvatarChooseImage();
           if (buttonIndex === 1) ios ? onAvatarPickEmoji() : setNextEmoji();
         } else {
@@ -193,6 +199,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     [
       isENSProfile,
       isReadOnly,
+      isZeroETH,
       onAvatarChooseImage,
       onAvatarCreateProfile,
       onAvatarEditProfile,
@@ -206,7 +213,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     menuTitle: '',
     menuItems: [
       isENSProfile &&
-        !isReadOnly && {
+        !isReadOnly &&
+        !isZeroETH && {
           actionKey: 'editProfile',
           actionTitle: lang.t('profiles.profile_avatar.edit_profile'),
           icon: {
@@ -223,7 +231,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         },
       },
       !isENSProfile &&
-        !isReadOnly && {
+        !isReadOnly &&
+        !isZeroETH && {
           actionKey: 'createProfile',
           actionTitle: lang.t('profiles.profile_avatar.create_profile'),
           icon: {

@@ -44,13 +44,8 @@ describe('Wallet avatar options', () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
     await Helpers.checkIfExistsByText('Choose from Library');
     await Helpers.checkIfExistsByText('Pick an Emoji');
-    await Helpers.checkIfExistsByText('Create your Profile');
     await Helpers.tapByText('Pick an Emoji');
     await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
-    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-    await Helpers.tapByText('Create your Profile');
-    await Helpers.checkIfVisible('ens-intro-sheet');
-    await Helpers.swipe('ens-intro-sheet', 'down', 'slow');
   });
 
   it('watch wallet with ens but without ens avatar', async () => {

@@ -9,7 +9,7 @@ type Levels = '1' | '2' | '3' | '4';
 
 export const Heading = ({
   children,
-  color = 'primary',
+  color = 'primary (Deprecated)',
   level,
   size = '23px / 27px (Deprecated)',
   weight,
