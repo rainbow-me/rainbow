@@ -329,27 +329,8 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   const marketplaceName = marketplace.marketplace_name;
   const collectionId = marketplace.marketplace_collection_id;
   const collectionUrl = marketplace.collection_url;
-  const tokenId = simplehashNft.token_id;
-  const network = simplehashNft.chain;
-  let permalink = null;
-  switch (marketplaceName) {
-    case 'Quixotic':
-      permalink = `https://quixotic.io/asset/${collectionId}/${tokenId}`;
-      break;
-    case 'Stratos':
-      permalink = `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
-      break;
-    case 'Trove':
-      permalink = `https://trove.treasure.lol/collection/${collectionId}/${tokenId}`;
-      break;
-    case 'Opensea':
-      permalink = `https://opensea.io/assets/${
-        network === Network.polygon ? 'matic' : network
-      }/${collectionId}/${tokenId}`;
-      break;
-    default:
-      permalink = null;
-  }
+  const permalink = marketplace.nft_url;
+
   return {
     collectionId,
     collectionUrl,
