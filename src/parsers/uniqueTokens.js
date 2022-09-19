@@ -166,6 +166,7 @@ export const parseAccountUniqueTokens = data => {
             : null,
           lowResUrl,
           marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
+          marketplaceId: 'opensea',
           marketplaceName: 'OpenSea',
           network: Network.mainnet,
           type: AssetTypes.nft,
@@ -248,6 +249,7 @@ export const parseAccountUniqueTokensPolygon = data => {
           : null,
         lowResUrl,
         marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
+        marketplaceId: 'opensea',
         marketplaceName: 'OpenSea',
         network: Network.polygon,
         permalink: asset.permalink,
@@ -322,27 +324,16 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   const marketplace = simplehashNft.collection.marketplace_pages?.[0];
   if (!marketplace) return null;
 
+  const marketplaceId = marketplace.marketplace_id;
   const marketplaceName = marketplace.marketplace_name;
   const collectionId = marketplace.marketplace_collection_id;
   const collectionUrl = marketplace.collection_url;
-  const tokenId = simplehashNft.token_id;
-  let permalink = null;
-  switch (marketplaceName) {
-    case 'Quixotic':
-      permalink = `https://quixotic.io/asset/${collectionId}/${tokenId}`;
-      break;
-    case 'Stratos':
-      permalink = `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
-      break;
-    case 'Trove':
-      permalink = `https://trove.treasure.lol/collection/${collectionId}/${tokenId}`;
-      break;
-    default:
-      permalink = null;
-  }
+  const permalink = marketplace.nft_url;
+
   return {
     collectionId,
     collectionUrl,
+    marketplaceId,
     marketplaceName,
     permalink,
   };
@@ -394,6 +385,7 @@ export const parseSimplehashNfts = nftData => {
       lastSalePaymentToken: simplehashNft.last_sale?.payment_token?.symbol,
       lowResUrl,
       marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
+      marketplaceId: marketplaceInfo?.marketplaceId,
       marketplaceName: marketplaceInfo?.marketplaceName,
       name: simplehashNft.name,
       network: simplehashNft.chain,

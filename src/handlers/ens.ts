@@ -106,6 +106,7 @@ const buildEnsToken = ({
     lastSalePaymentToken: null,
     lowResUrl,
     marketplaceCollectionUrl: getOpenSeaCollectionUrl(slug),
+    marketplaceId: 'opensea',
     marketplaceName: 'OpenSea',
     name,
     network: Network.mainnet,
