@@ -32,8 +32,10 @@ const escapeUrl = url => {
 };
 
 beforeAll(async () => {
-  // maybe remove chrome
-  await exec('yarn adb-all uninstall com.android.chrome');
+  if (android) {
+    // maybe remove chrome
+    await exec('yarn adb-all uninstall com.android.chrome');
+  }
 });
 
 describe('Deeplinks spec', () => {
