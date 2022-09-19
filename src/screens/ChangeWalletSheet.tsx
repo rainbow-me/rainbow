@@ -483,7 +483,16 @@ export default function ChangeWalletSheet() {
 
                     // If doesn't exist, we need to create a new wallet
                   } else {
-                    await createWallet(null, color, name);
+                    await createWallet(
+                      null,
+                      color,
+                      name,
+                      false,
+                      null,
+                      null,
+                      false,
+                      true
+                    );
                     await dispatch(walletsLoadState(profilesEnabled));
                     // @ts-ignore
                     await initializeWallet();

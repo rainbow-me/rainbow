@@ -5,8 +5,8 @@ import { sprinkles } from './sprinkles.css';
 export const Blockquote = ({ children }: { children: ReactNode }) => (
   <div
     className={sprinkles({
-      backgroundColor: 'actionTint',
-      color: 'actionShade',
+      backgroundColor: 'actionTint (Deprecated)',
+      color: 'actionShade (Deprecated)',
       paddingHorizontal: '24px',
       paddingVertical: '24px',
       position: 'relative',
@@ -15,7 +15,7 @@ export const Blockquote = ({ children }: { children: ReactNode }) => (
     {children}
     <div
       className={sprinkles({
-        backgroundColor: 'action',
+        backgroundColor: 'action (Deprecated)',
         bottom: 'none',
         left: 'none',
         paddingLeft: '4px',

@@ -59,7 +59,7 @@ const UniqueTokenImage = ({
   const { isDarkMode, colors } = useTheme();
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
-  let backgroundColor = givenBackgroundColor;
+  const backgroundColor = givenBackgroundColor;
   const { hiddenTokens } = useHiddenTokens();
   const isHiddenToken = React.useMemo(() => {
     return hiddenTokens.find(token => token === item.fullUniqueId);
@@ -116,7 +116,7 @@ const UniqueTokenImage = ({
           <View style={{ paddingHorizontal: 10 }} zIndex={2}>
             <Text
               align="center"
-              color="secondary60"
+              color="secondary60 (Deprecated)"
               lineHeight="looser"
               size="14px / 19px (Deprecated)"
               weight="semibold"
