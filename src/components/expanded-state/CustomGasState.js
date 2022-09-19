@@ -21,6 +21,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
+import { getKeyboardHeight } from '@/handlers/localstorage/globalSettings';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
@@ -56,7 +57,7 @@ export default function CustomGasState({ asset }) {
   const sheetHeightWithoutKeyboard =
     CONTENT_HEIGHT +
     FOOTER_HEIGHT +
-    (android ? 40 + getSoftMenuBarHeight() : 0);
+    (android ? 30 + getSoftMenuBarHeight() : 0);
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -82,7 +83,7 @@ export default function CustomGasState({ asset }) {
         removeTopPadding: true,
       })}
       backgroundColor={colors.transparent}
-      contentHeight={ios ? longFormHeight : deviceHeight - getStatusBarHeight()}
+      contentHeight={longFormHeight}
       radius={0}
       scrollEnabled={false}
     >
