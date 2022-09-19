@@ -6,6 +6,7 @@ import {
   Quote,
   QuoteError,
   QuoteParams,
+  Source,
   SwapType,
 } from '@rainbow-me/swaps';
 import { useQuery } from '@tanstack/react-query';
@@ -22,7 +23,7 @@ import { analytics } from '@/analytics';
 import { AssetType, EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { AppState } from '@/redux/store';
-import { Source, SwapModalField, updateSwapQuote } from '@/redux/swap';
+import { SwapModalField, updateSwapQuote } from '@/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -43,9 +44,10 @@ enum DisplayValue {
   native = 'nativeAmountDisplay',
 }
 
-const getSource = (source: Source | null) => {
-  if (source === Source.AggregatorRainbow) return null;
-  return source;
+const getSource = (source: Source) => {
+  if (source === Source.Aggregator0x || source === Source.Aggregotor1inch)
+    return source;
+  return null;
 };
 
 const getInputAmount = async (
@@ -54,7 +56,7 @@ const getInputAmount = async (
   outputToken: SwappableAsset,
   inputPrice: string | null,
   slippage: number,
-  source: Source | null,
+  source: Source,
   fromAddress: EthereumAddress
 ): Promise<{
   inputAmount: string | null;
@@ -94,8 +96,7 @@ const getInputAmount = async (
       convertNumberToString(outputAmount),
       outputToken.decimals
     );
-
-    // const realSource = getSource(source);
+    const quoteSource = getSource(source);
     const quoteParams: QuoteParams = {
       buyAmount,
       buyTokenAddress: outputTokenAddress,
@@ -104,7 +105,7 @@ const getInputAmount = async (
       sellTokenAddress: inputTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
-      // source: realSource,
+      ...(quoteSource ? { source } : {}),
       swapType: SwapType.normal,
       toChainId: Number(inputChainId),
     };
@@ -196,6 +197,7 @@ const getOutputAmount = async (
       inputToken.decimals
     );
     const isCrosschainSwap = outputNetwork !== inputNetwork;
+    const quoteSource = getSource(source);
     const quoteParams: QuoteParams = {
       buyTokenAddress,
       chainId: Number(inputChainId),
@@ -204,7 +206,7 @@ const getOutputAmount = async (
       sellTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
-      // ...(source !== Source.AggregatorRainbow ? {  } : {source}),
+      ...(quoteSource ? { source } : {}),
       swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(outputChainId),
       refuel: false,
@@ -213,26 +215,13 @@ const getOutputAmount = async (
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
 
-    // WIP until we get error handling from backend
-    let quote: Quote | CrosschainQuote | QuoteError | null;
-    try {
-      quote = await (isCrosschainSwap ? getCrosschainQuote : getQuote)(
-        quoteParams
-      );
-    } catch (e) {
-      Logger.debug('Got quote', e);
-      return {
-        quoteError: {
-          error_code: 503,
-          message: 'No route',
-          error: true,
-        },
-        outputAmount: null,
-        outputAmountDisplay: null,
-        tradeDetails: null,
-      };
-    }
-
+    const quote:
+      | Quote
+      | CrosschainQuote
+      | QuoteError
+      | null = await (isCrosschainSwap ? getCrosschainQuote : getQuote)(
+      quoteParams
+    );
     Logger.debug('Got quote', rand, quote);
 
     if (
