@@ -125,6 +125,18 @@ export async function scrollTo(scrollviewId, edge) {
   await element(by.id(scrollviewId)).scrollTo(edge);
 }
 
+export async function swipeUntilVisible(elementId, scrollViewId, direction) {
+  let stop = false;
+  while (!stop) {
+    try {
+      await checkIfVisible(elementId, 500);
+      stop = true;
+    } catch {
+      await swipe(scrollViewId, direction, 'slow', 0.5);
+    }
+  }
+}
+
 export async function scrollUpTo(elementId, distance, direction) {
   await element(by.id(elementId)).scroll(distance, direction);
 }
