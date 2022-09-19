@@ -8887,10 +8887,10 @@ detective-typescript@^7.0.0:
     node-source-walk "^4.2.0"
     typescript "^3.9.7"
 
-detox@19.7.1:
-  version "19.7.1"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-19.7.1.tgz#1c4dfebbb024426118dfae97a0189a25021479fa"
-  integrity sha512-V0XwiaFX1LvIjLl+G4tzMZ0M4YqenQXAdTsw9kO2dVo6NC9RuYqOIsmT9M3CRN9PF22TKJ8pFdA6onYhH/zkiQ==
+detox@19.12.1:
+  version "19.12.1"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-19.12.1.tgz#6ad924f93c60dd9188ac62866222233435b53bd2"
+  integrity sha512-sh8xxWLSykJ8zH1zxP2nXV9iIcuwQ4Umn8LKCtkilrLen9K/EJqNN2miMfu7Mue63aTVt6KFLJ6y11yFuZ2LXQ==
   dependencies:
     ajv "^8.6.3"
     bunyan "^1.8.12"
