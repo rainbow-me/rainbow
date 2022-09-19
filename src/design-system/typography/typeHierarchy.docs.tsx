@@ -22,98 +22,98 @@ const docs: DocsType = {
       name: 'Text sizes',
       Example: () =>
         source(
-          <Stack space="34px">
-            <Text size="44pt">
+          <Stack space="36px">
+            <Text color="label" size="44pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="34pt">
+            <Text color="label" size="34pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="30pt">
+            <Text color="label" size="30pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="26pt">
+            <Text color="label" size="26pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="22pt">
+            <Text color="label" size="22pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="20pt">
+            <Text color="label" size="20pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="20pt / 135%">
+            <Text color="label" size="20pt / 135%">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="20pt / 150%">
+            <Text color="label" size="20pt / 150%">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="17pt">
+            <Text color="label" size="17pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="17pt / 135%">
+            <Text color="label" size="17pt / 135%">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="17pt / 150%">
+            <Text color="label" size="17pt / 150%">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="15pt">
+            <Text color="label" size="15pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="15pt / 135%">
+            <Text color="label" size="15pt / 135%">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="15pt / 150%">
+            <Text color="label" size="15pt / 150%">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="13pt">
+            <Text color="label" size="13pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="13pt / 135%">
+            <Text color="label" size="13pt / 135%">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="13pt / 150%">
+            <Text color="label" size="13pt / 150%">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="12pt">
+            <Text color="label" size="12pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit
             </Text>
-            <Text size="11pt">
+            <Text color="label" size="11pt">
               Lorem ipsum dolor sit amet,
               <br />
               consectetur adipiscing elit

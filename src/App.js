@@ -213,12 +213,7 @@ class App extends Component {
           if (IS_TESTING === 'true') {
             return;
           }
-
-          if (ios) {
-            runFeatureAndCampaignChecks();
-          } else {
-            runCampaignChecks();
-          }
+          runFeatureAndCampaignChecks();
         }, 2000);
       });
     }

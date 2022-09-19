@@ -56,12 +56,14 @@ const SearchResultGradientIndicator = ({
       justifyContent="center"
       start={{ x: 0, y: 0.6 }}
     >
-      <Inset horizontal="15px">
+      <Inset horizontal="15px (Deprecated)">
         <AccentColorProvider
           color={isRegistered ? colors.lightOrange : colors.green}
         >
           <Text
-            color={type === 'availability' ? 'accent' : 'secondary80'}
+            color={
+              type === 'availability' ? 'accent' : 'secondary80 (Deprecated)'
+            }
             containsEmoji
             size={
               isSmallPhone

@@ -378,8 +378,8 @@ PODS:
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-change-icon (3.2.0):
-    - React
+  - react-native-change-icon (4.0.0):
+    - React-Core
   - react-native-cloud-fs (2.4.0):
     - React
   - react-native-get-random-values (1.5.0):
@@ -1058,7 +1058,7 @@ SPEC CHECKSUMS:
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-change-icon: 64ebec0bef1b63d5d1a1bccba83e12c2d45eaad7
+  react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: 1e883ec82ff418d320c128f61971dd971b128ca0
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb

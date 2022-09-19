@@ -18,9 +18,9 @@ import {
   Box,
   Column,
   Columns,
-  Divider,
   Heading,
   Inset,
+  Separator,
   Stack,
 } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
@@ -98,7 +98,7 @@ export default function ProfileSheetHeader({
 
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
     >
       <Stack space={{ custom: 18 }}>
@@ -109,7 +109,11 @@ export default function ProfileSheetHeader({
           isFetched={isImagesFetched}
         />
         <Bleed top={{ custom: 38 }}>
-          <Inset left="19px" right="15px" top={{ custom: 1 }}>
+          <Inset
+            left="19px (Deprecated)"
+            right="15px (Deprecated)"
+            top={{ custom: 1 }}
+          >
             <Columns>
               <Column width="content">
                 <ProfileAvatar
@@ -121,7 +125,7 @@ export default function ProfileSheetHeader({
                 />
               </Column>
               {!isLoading && (
-                <Inset top="34px">
+                <Inset top="34px (Deprecated)">
                   <ActionButtons
                     address={profileAddress ?? ''}
                     avatarUrl={avatarUrl}
@@ -132,9 +136,13 @@ export default function ProfileSheetHeader({
             </Columns>
           </Inset>
         </Bleed>
-        <Inset horizontal="19px">
-          <Stack space="19px">
-            <Heading size="23px / 27px (Deprecated)" weight="heavy">
+        <Inset horizontal="19px (Deprecated)">
+          <Stack space="19px (Deprecated)">
+            <Heading
+              color="primary (Deprecated)"
+              size="23px / 27px (Deprecated)"
+              weight="heavy"
+            >
               {abbreviateEnsForDisplay(ensName)}
             </Heading>
             <>
@@ -144,7 +152,7 @@ export default function ProfileSheetHeader({
                 <ProfileDescription description={records?.description} />
               ) : null}
             </>
-            <Bleed horizontal="19px">
+            <Bleed horizontal="19px (Deprecated)">
               {isLoading ? (
                 <RecordTagsPlaceholder />
               ) : (
@@ -183,7 +191,7 @@ export default function ProfileSheetHeader({
             </Bleed>
             {!isPreview && (
               <Inset bottom="6px">
-                <Divider color="divider60" />
+                <Separator color="divider60 (Deprecated)" />
               </Inset>
             )}
           </Stack>
@@ -199,13 +207,13 @@ function DescriptionPlaceholder() {
       <Skeleton animated>
         <Stack space="8px">
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={10}
             height={{ custom: 14 }}
             width="full"
           />
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={10}
             height={{ custom: 14 }}
             width="1/3"

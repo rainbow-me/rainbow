@@ -194,7 +194,7 @@ export default function ENSAssignRecordsSheet() {
             ? BottomSheetScrollView
             : ScrollView) as typeof ScrollView
         }
-        background="body"
+        background="body (Deprecated)"
         contentContainerStyle={{
           paddingBottom: bottomActionHeight + ExtraBottomPadding,
         }}
@@ -202,7 +202,7 @@ export default function ENSAssignRecordsSheet() {
         scrollEnabled={android}
         testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
-        <Stack space="19px">
+        <Stack space="19px (Deprecated)">
           <RegistrationCover
             enableNFTs={hasNFTs}
             hasSeenExplainSheet={hasSeenExplainSheet}
@@ -218,12 +218,13 @@ export default function ENSAssignRecordsSheet() {
               />
             </Box>
           </Bleed>
-          <Inset horizontal="19px">
-            <Stack space="30px">
-              <Stack alignHorizontal="center" space="15px">
+          <Inset horizontal="19px (Deprecated)">
+            <Stack space="30px (Deprecated)">
+              <Stack alignHorizontal="center" space="15px (Deprecated)">
                 <Heading
                   align="center"
                   numberOfLines={1}
+                  color="primary (Deprecated)"
                   size="26px / 30px (Deprecated)"
                   weight="heavy"
                 >
@@ -364,23 +365,29 @@ export function ENSAssignRecordsBottomActions({
     <>
       {visible && (
         <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
-          <Inset bottom="19px" right="19px">
+          <Inset bottom="19px (Deprecated)" right="19px (Deprecated)">
             <HideKeyboardButton color={accentColor} />
           </Inset>
         </Box>
       )}
       <Box
         as={Animated.View}
-        background="body"
+        background="body (Deprecated)"
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
         testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
-          <Box paddingBottom="19px" style={{ height: bottomActionHeight }}>
+          <Box
+            paddingBottom="19px (Deprecated)"
+            style={{ height: bottomActionHeight }}
+          >
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
-                <Inset horizontal="19px" top={isSmallPhone ? '19px' : '30px'}>
+                <Inset
+                  horizontal="19px (Deprecated)"
+                  top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}
+                >
                   <SelectableAttributesButtons
                     navigateToAdditionalRecords={navigateToAdditionalRecords}
                     onAddField={onAddField}
@@ -493,7 +500,7 @@ function HideKeyboardButton({ color }: { color: string }) {
               <Box paddingTop={android ? '4px' : '2px'}>
                 <Text
                   align="center"
-                  color="primary"
+                  color="primary (Deprecated)"
                   size="14px / 19px (Deprecated)"
                   weight="heavy"
                 >
@@ -513,7 +520,7 @@ function Shadow() {
     <>
       <Cover>
         <Box
-          background="body"
+          background="body (Deprecated)"
           height="30px"
           shadow={{
             custom: {
@@ -537,7 +544,7 @@ function Shadow() {
         />
       </Cover>
       <Cover>
-        <Box background="body" height="46px" width="full" />
+        <Box background="body (Deprecated)" height="46px" width="full" />
       </Cover>
     </>
   );
@@ -590,7 +597,7 @@ function SelectableAttributesButtons({
                     ({ id }) => textRecordField.id === id
                   );
                   const fieldToRemove = selectedFields[index];
-                  let newFields = [...selectedFields];
+                  const newFields = [...selectedFields];
                   newFields.splice(index, 1);
                   onRemoveField(fieldToRemove, newFields);
                 } else {
