@@ -24,7 +24,7 @@ export default function handleSwapErrorCodes(
         ...quoteError,
       };
 
-    case 503:
+    case 504:
       return {
         buttonLabel: lang.t('button.confirm_exchange.no_route_found'),
         explainerType: 'noRouteFound',
