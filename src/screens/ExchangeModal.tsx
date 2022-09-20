@@ -550,7 +550,7 @@ export default function ExchangeModal({
     if (
       greaterThan(outputPrice, 0) &&
       greaterThan(gasPrice, outputPrice) &&
-      !(IS_ANDROID && IS_TESTING)
+      !(IS_ANDROID && IS_TESTING === 'true')
     ) {
       const res = new Promise(resolve => {
         Alert.alert(

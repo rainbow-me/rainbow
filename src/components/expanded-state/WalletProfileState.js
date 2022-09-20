@@ -68,7 +68,7 @@ export default function WalletProfileState({
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
     };
-    IS_TESTING && (await delay(2000));
+    IS_TESTING === 'true' && (await delay(2000));
     if (actionType !== 'Create') {
       callback();
     } else {
