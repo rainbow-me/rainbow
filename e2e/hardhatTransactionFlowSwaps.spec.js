@@ -119,7 +119,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('settings-sheet');
   });
 
-  it('Should toggle Dark Mode on and off', async () => {
+  // This shouldn't be in this flow.
+  it.skip('Should toggle Dark Mode on and off', async () => {
     await Helpers.waitAndTap('theme-section-light');
     await Helpers.tapByText('Dark');
     await Helpers.waitAndTap('theme-section-dark');
