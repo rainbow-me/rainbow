@@ -38,6 +38,7 @@ import styled from '@/styled-thing';
 import { position, shadow } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import logger from '@/utils/logger';
+import { IS_ANDROID, IS_TEST } from '@/env';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -350,7 +351,7 @@ export default function WelcomeScreen() {
     <Container testID="welcome-screen">
       <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
       <ContentWrapper style={contentStyle}>
-        {android && IS_TESTING === 'true' ? (
+        {IS_ANDROID && IS_TEST ? (
           // @ts-expect-error JS component
           <RainbowText colors={colors} />
         ) : (

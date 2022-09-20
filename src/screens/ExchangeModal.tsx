@@ -11,7 +11,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
 import equal from 'react-fast-compare';
 import {
   InteractionManager,
@@ -85,8 +84,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from 'logger';
-import { assert } from 'chai';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -550,7 +548,7 @@ export default function ExchangeModal({
     if (
       greaterThan(outputPrice, 0) &&
       greaterThan(gasPrice, outputPrice) &&
-      !(IS_ANDROID && IS_TESTING)
+      !(IS_ANDROID && IS_TEST)
     ) {
       const res = new Promise(resolve => {
         Alert.alert(
