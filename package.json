@@ -86,7 +86,7 @@
     "@ethersproject/solidity": "5.6.1",
     "@ethersproject/transactions": "5.6.2",
     "@ethersproject/units": "5.6.1",
-    "@ethersproject/wallet": "5.6.2",
+    "@ethersproject/wallet": "5.7.0",
     "@gorhom/bottom-sheet": "4.4.3",
     "@lavamoat/preinstall-always-fail": "1.0.0",
     "@metamask/eth-sig-util": "4.0.0",
