@@ -39,36 +39,35 @@ export default function RestoreSheet() {
     analytics.track('Tapped "Restore from cloud"');
     let proceed = false;
     if (android) {
-      const isAvailable = await isCloudBackupAvailable();
-      if (isAvailable) {
-        try {
-          const data = await fetchUserDataFromCloud();
-          if (data?.wallets) {
-            Object.values(data.wallets).forEach(wallet => {
-              if (
-                wallet.backedUp &&
-                wallet.backupType === WalletBackupTypes.cloud
-              ) {
-                proceed = true;
-              }
-            });
+      await RNCloudFs.logout();
 
-            if (proceed) {
-              setParams({ userData: data });
+      try {
+        const data = await fetchUserDataFromCloud();
+        if (data?.wallets) {
+          Object.values(data.wallets).forEach(wallet => {
+            if (
+              wallet.backedUp &&
+              wallet.backupType === WalletBackupTypes.cloud
+            ) {
+              proceed = true;
             }
-          }
+          });
 
-          logger.log(`Downloaded ${cloudPlatform} backup info`);
-        } catch (e) {
-          logger.log(e);
-        } finally {
-          if (!proceed) {
-            Alert.alert(
-              lang.t('back_up.restore_sheet.no_backups_found'),
-              lang.t('back_up.restore_sheet.we_couldnt_find_google_drive')
-            );
-            await RNCloudFs.logout();
+          if (proceed) {
+            setParams({ userData: data });
           }
+        }
+
+        logger.log(`Downloaded ${cloudPlatform} backup info`);
+      } catch (e) {
+        logger.log(e);
+      } finally {
+        if (!proceed) {
+          Alert.alert(
+            lang.t('back_up.restore_sheet.no_backups_found'),
+            lang.t('back_up.restore_sheet.we_couldnt_find_google_drive')
+          );
+          await RNCloudFs.logout();
         }
       }
     } else {
