@@ -84,7 +84,6 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from 'logger';
-import { assert } from 'chai';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -684,14 +683,28 @@ export default function ExchangeModal({
       } else {
         const ethPriceInNativeCurrency =
           genericAssets[ETH_ADDRESS]?.price?.value ?? 0;
-        const tokenPriceInNativeCurrency =
+        const inputTokenPriceInNativeCurrency =
           genericAssets[inputCurrency?.address]?.price?.value ?? 0;
-        const tokensPerEth = divide(
-          tokenPriceInNativeCurrency,
+        const outputTokenPriceInNativeCurrency =
+          genericAssets[outputCurrency?.address]?.price?.value ?? 0;
+        const inputTokensPerEth = divide(
+          inputTokenPriceInNativeCurrency,
           ethPriceInNativeCurrency
         );
-        const inputTokensInEth = multiply(tokensPerEth, inputAmount!);
-        amountInUSD = multiply(priceOfEther, inputTokensInEth);
+        const outputTokensPerEth = divide(
+          outputTokenPriceInNativeCurrency,
+          ethPriceInNativeCurrency
+        );
+        const inputTokensInEth = multiply(inputTokensPerEth, inputAmount!);
+        const outputTokensInEth = multiply(outputTokensPerEth, outputAmount!);
+
+        const availableTokenPrice = inputTokensInEth ?? outputTokensInEth;
+        const maybeResultAmount = multiply(priceOfEther, availableTokenPrice);
+        // We have to use string matching here because the multiply helper will return the value as a string from the helpers
+        // If we pass a empty string value to segment it gets ignored
+        amountInUSD = ['NaN', '0'].includes(maybeResultAmount)
+          ? ''
+          : maybeResultAmount;
       }
     } catch (e) {
       logger.log('error getting the swap amount in USD price', e);
