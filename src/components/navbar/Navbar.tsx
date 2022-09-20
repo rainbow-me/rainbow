@@ -26,7 +26,7 @@ export function Navbar({
       <Box height={{ custom: 48 }} justifyContent="center" alignItems="center">
         <Cover alignVertical="center" alignHorizontal="justify">
           <Box width="full">
-            <Inset horizontal="19px">
+            <Inset horizontal="19px (Deprecated)">
               <Inline alignHorizontal="justify" alignVertical="center">
                 {leftComponent}
                 {rightComponent}
@@ -34,8 +34,8 @@ export function Navbar({
             </Inset>
           </Box>
         </Cover>
-        <Inset top="1px">
-          <Text size="20pt" weight="heavy">
+        <Inset top="1px (Deprecated)">
+          <Text color="label" size="20pt" weight="heavy">
             {title}
           </Text>
         </Inset>

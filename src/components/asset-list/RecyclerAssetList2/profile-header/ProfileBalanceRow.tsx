@@ -27,6 +27,7 @@ export function ProfileBalanceRow({ totalValue }: { totalValue: string }) {
         </Box>
       ) : (
         <Heading
+          color="label"
           numberOfLines={1}
           size={
             totalValue?.length > 14

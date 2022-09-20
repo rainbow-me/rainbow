@@ -9,10 +9,10 @@ export function ProfileStickyHeader() {
   return (
     <StickyHeader name="profile-header" visibleAtYPosition={140}>
       <Box
-        background="body"
+        background="body (Deprecated)"
         justifyContent="center"
         height={{ custom: ProfileStickyHeaderHeight }}
-        paddingHorizontal="19px"
+        paddingHorizontal="19px (Deprecated)"
         width="full"
         testID="profile-sticky-header"
       >

@@ -163,7 +163,7 @@ export function ProfileAvatarRow({
                     <Box height={{ custom: size }} width="full">
                       <Skeleton animated>
                         <Box
-                          background="body"
+                          background="body (Deprecated)"
                           borderRadius={size / 2}
                           height={{ custom: size }}
                           width={{ custom: size }}
