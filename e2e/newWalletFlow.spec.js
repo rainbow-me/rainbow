@@ -12,13 +12,7 @@ describe('New Wallet flow', () => {
   it('go to the wallet screen after pressing "Get a new wallet" button', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('new-wallet-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      // Set the pin
-      await Helpers.authenticatePin('1234');
-      // Confirm it
-      await Helpers.authenticatePin('1234');
-    }
+    await Helpers.setPinOnAndroid();
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
   });

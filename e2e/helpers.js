@@ -36,6 +36,27 @@ export function tapItemAtIndex(elementID, index) {
     .tap();
 }
 
+export async function setPinOnAndroid() {
+  if (device.getPlatform() !== 'android') {
+    return;
+  }
+
+  await checkIfVisible('pin-authentication-screen');
+  // Set the pin.
+  await authenticatePin('1234');
+  // Confirm it.
+  await authenticatePin('1234');
+}
+
+export async function usePinOnAndroid() {
+  if (device.getPlatform() !== 'android') {
+    return;
+  }
+  await Helpers.delay(1000);
+  await checkIfVisible('pin-authentication-screen');
+  await authenticatePin('1234');
+}
+
 export async function typeText(elementId, text, focus = true) {
   if (focus) {
     await tap(elementId);

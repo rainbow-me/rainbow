@@ -38,13 +38,7 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'TKEY', false);
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      // Set the pin
-      await Helpers.authenticatePin('1234');
-      // Confirm it
-      await Helpers.authenticatePin('1234');
-    }
+    await Helpers.setPinOnAndroid();
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
   });

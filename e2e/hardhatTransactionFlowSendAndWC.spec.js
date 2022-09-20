@@ -106,13 +106,7 @@ describe('Hardhat Transaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      // Set the pin
-      await Helpers.authenticatePin('1234');
-      // Confirm it
-      await Helpers.authenticatePin('1234');
-    }
+    await Helpers.setPinOnAndroid();
     await Helpers.checkIfVisible('wallet-screen', 80000);
     await Helpers.enableSynchronization();
   });
@@ -174,11 +168,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('gas-speed-done-button');
     await Helpers.waitAndTap('send-sheet-confirm-action-button', 20000);
     await Helpers.tapAndLongPress('send-confirmation-button');
-    if (android) {
-      await Helpers.delay(1000);
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      await Helpers.authenticatePin('1234');
-    }
+    await Helpers.usePinOnAndroid();
     await Helpers.checkIfVisible('profile-screen');
     const isOwnerRecipient = await isNFTOwner(RAINBOW_WALLET_DOT_ETH);
     if (!isOwnerRecipient) {
@@ -212,11 +202,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
-    if (android) {
-      await Helpers.delay(1000);
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      await Helpers.authenticatePin('1234');
-    }
+    await Helpers.usePinOnAndroid();
     await Helpers.checkIfVisible('profile-screen');
     const postSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
@@ -250,11 +236,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
-    if (android) {
-      await Helpers.delay(1000);
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      await Helpers.authenticatePin('1234');
-    }
+    await Helpers.usePinOnAndroid();
     await Helpers.checkIfVisible('profile-screen');
     const postSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
@@ -325,10 +307,7 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signPersonalMessage(['My msg', account]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      await Helpers.authenticatePin('1234');
-    }
+    await Helpers.usePinOnAndroid();
     if (!result) throw new Error('WC Connection failed');
     const signature = await result;
     if (
@@ -347,10 +326,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
 
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      await Helpers.authenticatePin('1234');
-    }
+    await Helpers.usePinOnAndroid();
 
     if (!result) throw new Error('WC Connection failed');
     const signature = await result;
@@ -419,11 +395,7 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signTypedData([account, JSON.stringify(msg)]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      await Helpers.authenticatePin('1234');
-    }
-
+    await Helpers.usePinOnAndroid();
     const signature = await result;
     if (
       signature !==
@@ -446,13 +418,8 @@ describe('Hardhat Transaction Flow', () => {
       data: '0x',
     });
     await Helpers.checkIfVisible('wc-request-sheet');
-
     await Helpers.waitAndTap('wc-confirm-action-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      await Helpers.authenticatePin('1234');
-    }
-
+    await Helpers.usePinOnAndroid();
     await Helpers.checkIfVisible('profile-screen');
     const hash = await result;
     if (!hash) {
