@@ -1,7 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';
@@ -21,6 +20,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
@@ -56,7 +56,7 @@ export default function CustomGasState({ asset }) {
   const sheetHeightWithoutKeyboard =
     CONTENT_HEIGHT +
     FOOTER_HEIGHT +
-    (android ? 40 + getSoftMenuBarHeight() : 0);
+    (IS_ANDROID ? 20 + getSoftMenuBarHeight() : 0);
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -82,7 +82,7 @@ export default function CustomGasState({ asset }) {
         removeTopPadding: true,
       })}
       backgroundColor={colors.transparent}
-      contentHeight={ios ? longFormHeight : deviceHeight - getStatusBarHeight()}
+      contentHeight={longFormHeight}
       radius={0}
       scrollEnabled={false}
     >
