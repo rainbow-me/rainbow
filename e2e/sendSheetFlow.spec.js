@@ -237,20 +237,20 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('send-asset-form-ETH-token');
   });
 
-  it.skip('Should show Add Contact Screen after tapping Add Contact Button', async () => {
+  it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.waitAndTap('add-contact-button');
     await Helpers.checkIfVisible('wallet-info-input');
   });
 
-  it.skip('Should do nothing on Add Contact cancel', async () => {
+  it('Should do nothing on Add Contact cancel', async () => {
     await Helpers.tapByText('Cancel');
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.waitAndTap('add-contact-button');
     await Helpers.tapByText('Cancel');
   });
 
-  it.skip('Should update address field to show contact name & show edit contact button', async () => {
+  it('Should update address field to show contact name & show edit contact button', async () => {
     await Helpers.waitAndTap('add-contact-button');
     await Helpers.clearField('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'testcoin.test', true);
@@ -259,13 +259,13 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('edit-contact-button');
   });
 
-  it.skip('Should show Asset List & Edit Contact Button on cancel', async () => {
+  it('Should show Asset List & Edit Contact Button on cancel', async () => {
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.waitAndTap('edit-contact-button');
     await Helpers.tapByText('Cancel');
   });
 
-  it.skip('Should updated contact name after edit contact', async () => {
+  it('Should updated contact name after edit contact', async () => {
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.waitAndTap('edit-contact-button');
     await Helpers.tapByText('Edit Contact');
@@ -276,7 +276,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 
-  it.skip('Should load contacts if contacts exist', async () => {
+  it('Should load contacts if contacts exist', async () => {
     if (android) {
       await device.pressBack();
     } else {
@@ -286,7 +286,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 
-  it.skip('Should show Add Contact Button after deleting contact', async () => {
+  it('Should show Add Contact Button after deleting contact', async () => {
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
     await Helpers.tapByText('testcoin.eth');
     await Helpers.checkIfVisible('edit-contact-button');
