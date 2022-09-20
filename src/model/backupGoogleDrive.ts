@@ -1,10 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
-import {
-  getSupportedBiometryType,
-  Options,
-  requestSharedWebCredentials,
-} from 'react-native-keychain';
+import { getSupportedBiometryType, Options } from 'react-native-keychain';
 import {
   CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
@@ -366,7 +362,8 @@ async function restoreCurrentBackupIntoKeychain(
             );
             return keychain.saveString(key, valueWithPINInfo, accessControl);
           }
-        } else if (typeof value === 'string') {
+        }
+        if (typeof value === 'string') {
           return keychain.saveString(key, value, accessControl);
         } else {
           return keychain.saveObject(key, value, accessControl);
