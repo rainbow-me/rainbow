@@ -106,6 +106,7 @@ const buildEnsToken = ({
     lastSalePaymentToken: null,
     lowResUrl,
     marketplaceCollectionUrl: getOpenSeaCollectionUrl(slug),
+    marketplaceId: 'opensea',
     marketplaceName: 'OpenSea',
     name,
     network: Network.mainnet,
@@ -220,7 +221,12 @@ export const fetchSuggestions = async (
       avatar = await fetchENSAvatar(ens, {
         cacheFirst: true,
       });
-      prefetchENSAddress({ name: ens }, { staleTime: Infinity });
+      prefetchENSAddress(
+        { name: ens },
+        {
+          staleTime: 1000 * 60 * 10, // 10 minutes
+        }
+      );
       prefetchENSCover(ens, { cacheFirst: true });
       prefetchENSRecords(ens, { cacheFirst: true });
       prefetchFirstTransactionTimestamp({ addressOrName: ens });
@@ -272,7 +278,9 @@ export const fetchSuggestions = async (
                 if (i === 0) {
                   prefetchENSAddress(
                     { name: domain.name },
-                    { staleTime: Infinity }
+                    {
+                      staleTime: 1000 * 60 * 10, // 10 minutes
+                    }
                   );
                   prefetchENSCover(domain.name, { cacheFirst: true });
                   prefetchENSRecords(domain.name, { cacheFirst: true });
