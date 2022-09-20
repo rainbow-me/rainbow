@@ -5,7 +5,6 @@ import usePrevious from './usePrevious';
 import { useENSRegistration, useInterval } from '.';
 import { RegistrationParameters } from '@/entities';
 import {
-  getHasMerged,
   getProviderForNetwork,
   isHardHat,
   web3Provider,
@@ -31,10 +30,8 @@ const checkRegisterBlockTimestamp = async ({
   isTestingHardhat: boolean;
 }) => {
   try {
-    const { network } = store.getState().settings;
-    const hasMerged = getHasMerged(network);
     const provider = await getProviderForNetwork();
-    const block = await provider.getBlock(hasMerged ? 'safe' : 'latest');
+    const block = await provider.getBlock('safe');
     const msBlockTimestamp = getBlockMsTimestamp(block);
     const secs = differenceInSeconds(
       msBlockTimestamp,

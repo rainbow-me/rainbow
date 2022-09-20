@@ -48,7 +48,7 @@ import {
   LegacyGasFeeParams,
   SwappableAsset,
 } from '@/entities';
-import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
+import { getProviderForNetwork } from '@/handlers/web3';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { divide, greaterThan, multiply } from '@/helpers/utilities';
@@ -378,12 +378,9 @@ export default function ExchangeModal({
     loading
   );
   const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
-  // For a limited period after the merge we need to block the use of flashbots.
-  // This line should be removed after reenabling flashbots in remote config.
-  const hideFlashbotsPostMerge =
-    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const hideFlashbotsWithConfig = !config.flashbots_enabled;
   const swapSupportsFlashbots =
-    currentNetwork === Network.mainnet && !hideFlashbotsPostMerge;
+    currentNetwork === Network.mainnet && !hideFlashbotsWithConfig;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);

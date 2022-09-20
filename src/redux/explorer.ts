@@ -38,11 +38,7 @@ import { AppGetState, AppState } from './store';
 import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
-import {
-  checkForTheMerge,
-  getProviderForNetwork,
-  isHardHat,
-} from '@/handlers/web3';
+import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
@@ -578,7 +574,6 @@ export const explorerInit = () => async (
   // if we're not on mainnnet
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
-  checkForTheMerge(provider, network);
   if (
     isHardHat(providerUrl) ||
     network !== Network.mainnet ||
