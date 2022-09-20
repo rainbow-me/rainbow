@@ -18,7 +18,6 @@ import {
   REGISTRATION_STEPS,
 } from '@/helpers/ens';
 import { updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
-import store from '@/redux/store';
 
 const checkRegisterBlockTimestamp = async ({
   registrationParameters,

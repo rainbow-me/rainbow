@@ -42,7 +42,6 @@ import {
 import { Network } from '@/helpers/networkTypes';
 import { erc20ABI, ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
-import store from '@/redux/store';
 
 export enum Field {
   INPUT = 'INPUT',
