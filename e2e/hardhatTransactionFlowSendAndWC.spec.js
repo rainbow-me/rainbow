@@ -53,24 +53,6 @@ beforeAll(async () => {
   await Helpers.startIosSimulator();
 });
 
-const acceptAlertIfGasPriceIsHigh = async () => {
-  // Depending on current gas prices, we might get an alert
-  // saying that the fees are higher than the swap amount
-  try {
-    if (await Helpers.checkIfElementByTextIsVisible('Proceed Anyway')) {
-      await Helpers.tapAlertWithButton('Proceed Anyway');
-    }
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-};
-
-// eslint-disable-next-line no-unused-vars
-const checkIfSwapCompleted = async (assetName, amount) => {
-  // Disabling this because there's a view blocking (The portal)
-  // await Helpers.checkIfVisible(`Swapped-${assetName}-${amount}`);
-  return true;
-};
-
 describe('Hardhat Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');

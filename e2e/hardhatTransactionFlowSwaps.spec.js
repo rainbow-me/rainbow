@@ -1,52 +1,10 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { Contract } from '@ethersproject/contracts';
-import WalletConnect from '@walletconnect/client';
-import { convertUtf8ToHex } from '@walletconnect/utils';
 import * as Helpers from './helpers';
-import kittiesABI from '@/references/cryptokitties-abi.json';
-import erc20ABI from '@/references/erc20-abi.json';
 
 let connector = null;
-let uri = null;
-let account = null;
-
 const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
-
-const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
-const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
-
-const CRYPTOKITTIES_ADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
-const ETH_ADDRESS = 'eth';
-const BAT_TOKEN_ADDRESS = '0x0d8775f648430679a709e98d2b0cb6250d2887ef';
-
-const isNFTOwner = async address => {
-  const provider = Helpers.getProvider();
-  const kittiesContract = new Contract(
-    CRYPTOKITTIES_ADDRESS,
-    kittiesABI,
-    provider
-  );
-  const ownerAddress = await kittiesContract.ownerOf('1368227');
-  return ownerAddress?.toLowerCase() === address?.toLowerCase();
-};
-
-const getOnchainBalance = async (address, tokenContractAddress) => {
-  const provider = Helpers.getProvider();
-  if (tokenContractAddress === ETH_ADDRESS) {
-    const balance = await provider.getBalance(RAINBOW_WALLET_DOT_ETH);
-    return balance;
-  } else {
-    const tokenContract = new Contract(
-      tokenContractAddress,
-      erc20ABI,
-      provider
-    );
-    const balance = await tokenContract.balanceOf(address);
-    return balance;
-  }
-};
 
 beforeAll(async () => {
   await Helpers.startHardhat();
