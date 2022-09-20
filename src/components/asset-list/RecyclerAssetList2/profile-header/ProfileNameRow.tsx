@@ -30,7 +30,7 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
   // ////////////////////////////////////////////////////
   // Colors
 
-  const iconColor = useForegroundColor('secondary60');
+  const iconColor = useForegroundColor('secondary60 (Deprecated)');
 
   // ////////////////////////////////////////////////////
   // Spacings
@@ -56,6 +56,7 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
           <Inline alignVertical="center" space="4px" wrap={false}>
             <Box style={{ maxWidth }}>
               <Text
+                color="label"
                 numberOfLines={1}
                 size="23px / 27px (Deprecated)"
                 weight="bold"

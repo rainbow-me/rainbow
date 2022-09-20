@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import lang from 'i18n-js';
-// @ts-expect-error - JS module
 import { IS_TESTING } from 'react-native-dotenv';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
@@ -170,12 +169,12 @@ function ActionButton({
           }}
           width={{ custom: 60 }}
         >
-          <Text align="center" size="icon 23px" weight="bold">
+          <Text align="center" color="label" size="icon 23px" weight="bold">
             {icon}
           </Text>
         </Box>
         <Text
-          color="secondary80"
+          color="secondary80 (Deprecated)"
           size="14px / 19px (Deprecated)"
           weight="medium"
         >

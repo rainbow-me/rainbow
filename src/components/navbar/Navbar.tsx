@@ -17,7 +17,7 @@ export function Navbar({ leftComponent, rightComponent }: NavbarProps) {
     <Box>
       <Box height={{ custom: insets.top }} />
       <Box height={{ custom: 48 }} justifyContent="center">
-        <Inset horizontal="19px">
+        <Inset horizontal="19px (Deprecated)">
           <Inline alignHorizontal="justify" alignVertical="center">
             {leftComponent}
             {rightComponent}

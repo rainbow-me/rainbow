@@ -6,6 +6,6 @@ type NavbarIconProps = {
 };
 
 export function NavbarSvgIcon({ icon: Icon }: NavbarIconProps) {
-  const color = useForegroundColor('primary');
+  const color = useForegroundColor('primary (Deprecated)');
   return <Icon color={color} />;
 }
