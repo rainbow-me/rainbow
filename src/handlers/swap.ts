@@ -352,12 +352,6 @@ export const estimateCrosschainSwapGasLimit = async ({
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   try {
-    const { method: estimateGas } = getCrosschainQuoteExecutionDetails(
-      tradeDetails,
-      {},
-      provider
-    );
-
     if (requiresApprove) {
       if (
         CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) &&
@@ -382,11 +376,21 @@ export const estimateCrosschainSwapGasLimit = async ({
         }
       }
 
-      return getDefaultGasLimitForTrade(tradeDetails, chainId);
+      return (
+        tradeDetails?.defaultGasLimit ||
+        getDefaultGasLimitForTrade(tradeDetails, chainId)
+      );
     }
 
-    const gasLimit = await estimateGas();
-    return gasLimit || getDefaultGasLimitForTrade(tradeDetails, chainId);
+    const gasLimit = await provider.estimateGas({
+      data: tradeDetails.data,
+      from: tradeDetails.from,
+      to: tradeDetails.to,
+      value: tradeDetails.value,
+    });
+    return (
+      gasLimit?.toString() || getDefaultGasLimitForTrade(tradeDetails, chainId)
+    );
   } catch (error) {
     const routeGasLimit =
       tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees.gasLimit;
