@@ -586,7 +586,13 @@ describe('Register ENS Flow', () => {
     // Fill "GitHub" field
     await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB, false);
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15, 0.3);
+    await Helpers.swipe(
+      'ens-edit-records-sheet',
+      'up',
+      'slow',
+      0.15,
+      ios ? undefined : 0.3
+    );
   });
 
   it('Should fill & validate the fields 2', async () => {
@@ -610,7 +616,7 @@ describe('Register ENS Flow', () => {
       'up',
       'slow',
       0.15,
-      ios ? 0.15 : 0.3
+      ios ? undefined : 0.3
     );
 
     // Fill "Snapchat" field
@@ -636,7 +642,7 @@ describe('Register ENS Flow', () => {
       'up',
       'slow',
       0.15,
-      ios ? 0.15 : 0.3
+      ios ? undefined : 0.3
     );
 
     // Fill "Reddit" field
@@ -650,7 +656,7 @@ describe('Register ENS Flow', () => {
       'up',
       'slow',
       0.15,
-      ios ? 0.15 : 0.3
+      ios ? undefined : 0.3
     );
 
     // Fill "Notice" field
@@ -664,14 +670,14 @@ describe('Register ENS Flow', () => {
       'up',
       'slow',
       0.15,
-      ios ? 0.15 : 0.3
+      ios ? undefined : 0.3
     );
     await Helpers.swipe(
       'ens-edit-records-sheet',
       'up',
       'slow',
       0.15,
-      ios ? 0.15 : 0.3
+      ios ? undefined : 0.3
     );
   });
 
