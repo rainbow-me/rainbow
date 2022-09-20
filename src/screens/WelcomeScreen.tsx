@@ -2,7 +2,6 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Easing,
   interpolateColor,
@@ -250,7 +249,7 @@ export default function WelcomeScreen() {
         // We need to disable looping animations
         // There's no way to disable sync yet
         // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-        if (IS_TESTING !== 'true') {
+        if (!IS_TEST) {
           createWalletButtonAnimation.value = withDelay(
             initialDuration,
             withTiming(1.02, { duration: 1000 }, () => {
@@ -272,7 +271,7 @@ export default function WelcomeScreen() {
           );
         }
 
-        if (IS_TESTING === 'true') {
+        if (IS_TEST) {
           logger.log(
             'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
           );

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_TEST } from '@/env';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
@@ -68,7 +68,7 @@ export default function WalletProfileState({
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
     };
-    IS_TESTING === 'true' && (await delay(2000));
+    IS_TEST && (await delay(2000));
     if (actionType !== 'Create') {
       callback();
     } else {
