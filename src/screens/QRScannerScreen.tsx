@@ -52,7 +52,8 @@ export default function QRScannerScreen() {
                 <EmulatorPasteUriButton />
               </ScannerHeader>
             )}
-            {!isEmulator && <QRCodeScanner />}
+            {/* {!isEmulator && <QRCodeScanner />} */}
+            <QRCodeScanner />
           </CameraDimmer>
           {ios && (
             <ScannerHeader>

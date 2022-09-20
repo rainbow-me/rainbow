@@ -8,8 +8,8 @@ import { NavbarTextIcon } from './NavbarTextIcon';
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;
-  leftComponent?: React.ReactElement;
-  rightComponent?: React.ReactElement;
+  leftComponent?: React.ReactElement | null;
+  rightComponent?: React.ReactElement | null;
   title?: string;
 };
 

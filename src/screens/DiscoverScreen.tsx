@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ScrollView } from 'react-native';
+import { useFocusEffect, useRoute } from '@react-navigation/core';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
@@ -10,6 +11,9 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 
 export default function DiscoverScreen() {
+  const {
+    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
+  } = useRoute<any>();
   const [isSearchModeEnabled, setIsSearchModeEnabled] = React.useState(false);
 
   const { navigate } = useNavigation();
@@ -17,6 +21,15 @@ export default function DiscoverScreen() {
   const handlePressWallet = React.useCallback(() => {
     navigate(Routes.WALLET_SCREEN);
   }, [navigate]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setIsSearchModeEnabled(false);
+        setViewPagerSwipeEnabled(true);
+      };
+    }, [setViewPagerSwipeEnabled])
+  );
 
   return (
     <DiscoverSheetContext.Provider
@@ -27,9 +40,11 @@ export default function DiscoverScreen() {
         <Navbar
           hasStatusBarInset
           leftComponent={
-            <Navbar.Item onPress={handlePressWallet} testID="wallet-button">
-              <Navbar.SvgIcon icon={CaretLeftIcon} />
-            </Navbar.Item>
+            !isSearchModeEnabled ? (
+              <Navbar.Item onPress={handlePressWallet} testID="wallet-button">
+                <Navbar.SvgIcon icon={CaretLeftIcon} />
+              </Navbar.Item>
+            ) : null
           }
           title={isSearchModeEnabled ? 'Search' : 'Discover'}
         />

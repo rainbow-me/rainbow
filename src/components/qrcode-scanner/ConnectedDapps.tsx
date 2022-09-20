@@ -43,7 +43,7 @@ function ConnectedDapps() {
                   height={{ custom: 28 }}
                   width={{ custom: 28 }}
                 />
-                <Text weight="bold" size="17pt">
+                <Text color="label" weight="bold" size="17pt">
                   {walletConnectorsByDappName.length === 1
                     ? lang.t('wallet.qr.qr_1_app_connected')
                     : lang.t('wallet.qr.qr_multiple_apps_connected', {

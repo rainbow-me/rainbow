@@ -112,7 +112,7 @@ export default function QRCodeScanner() {
     askForPermissions();
   }, [askForPermissions]);
 
-  const secondary80 = useForegroundColor('secondary80');
+  const secondary80 = useForegroundColor('secondary80 (Deprecated)');
 
   return (
     <>
@@ -135,6 +135,7 @@ export default function QRCodeScanner() {
             position="absolute"
           />
         )}
+
         <Rows>
           <Row>
             <Box
@@ -143,11 +144,7 @@ export default function QRCodeScanner() {
             />
           </Row>
           <Row height="content">
-            <Box
-              as={CameraMaskSvg}
-              width={{ custom: deviceWidth }}
-              height={{ custom: deviceWidth }}
-            />
+            <CameraMaskSvg width={deviceWidth} height={deviceWidth} />
             <Cover alignHorizontal="center">
               <Inset top={{ custom: 14 }}>
                 <AccentColorProvider color={secondary80}>
