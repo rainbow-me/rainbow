@@ -2,6 +2,9 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
+const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
+
 describe('Discover Sheet Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
@@ -31,7 +34,7 @@ describe('Discover Sheet Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -97,7 +100,7 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should close expanded state and return to search', async () => {
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       // RNBW-4035
       await Helpers.swipe('expanded-state-header', 'down');
     }

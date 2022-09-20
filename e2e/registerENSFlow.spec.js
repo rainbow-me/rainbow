@@ -40,6 +40,9 @@ const EIP155_FORMATTED_AVATAR_RECORD =
   'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227';
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
 
+const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
+
 const address = (address, start, finish) =>
   [
     address.substring(0, start),
@@ -158,14 +161,12 @@ const validatePrimaryName = async name => {
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
-  if (device.getPlatform() === 'ios') {
+  if (ios) {
     await exec(
       'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
     );
   }
 });
-
-const ios = device.getPlatform() === 'ios';
 
 describe('Register ENS Flow', () => {
   it('Should show the welcome screen', async () => {
@@ -196,7 +197,7 @@ describe('Register ENS Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -292,12 +293,12 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
     await Helpers.checkIfVisible('ens-text-record-name');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.waitAndTap('ens-text-record-name');
       await Helpers.tapByText('Got it');
     }
     await Helpers.typeText('ens-text-record-name', RECORD_NAME, false);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapByText('Got it');
     }
     await Helpers.checkIfVisible('ens-text-record-description');
@@ -320,13 +321,13 @@ describe('Register ENS Flow', () => {
   it('Should go to review registration and start it', async () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-COMMIT');
     }
     await Helpers.delay(3000);
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
@@ -339,7 +340,7 @@ describe('Register ENS Flow', () => {
 
   it('Should see confirm registration screen', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-REGISTER');
@@ -405,7 +406,7 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-SET_NAME');
@@ -542,7 +543,7 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-email-error');
 
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.swipe(
         'ens-edit-records-sheet',
         'up',
@@ -729,7 +730,7 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.checkIfVisible(`ens-transaction-action-EDIT`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-EDIT`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-EDIT');
@@ -787,7 +788,7 @@ describe('Register ENS Flow', () => {
   it('Should renew rainbowtestwallet.eth', async () => {
     await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
     await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-RENEW');
@@ -823,7 +824,7 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('clear-records');
     await Helpers.waitAndTap('set-address');
     await Helpers.waitAndTap('transfer-control');
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`send-confirmation-button`);
     } else {
       await Helpers.tapAndLongPress('send-confirmation-button');

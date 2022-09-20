@@ -218,7 +218,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapByText('Continue');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '0.001', true);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
@@ -226,7 +226,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('swap-details-confirm-button');
 
     await acceptAlertIfGasPriceIsHigh();
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -247,7 +247,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '0.001', true);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
@@ -274,7 +274,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '0.0005', true);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
@@ -282,7 +282,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('swap-details-confirm-button');
 
     await acceptAlertIfGasPriceIsHigh();
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -301,7 +301,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
     await Helpers.typeText('exchange-modal-input', '0.0005', true);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
@@ -309,7 +309,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
 
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -329,7 +329,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
     await Helpers.typeText('exchange-modal-input', '10', true);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
@@ -337,7 +337,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('swap-details-confirm-button');
 
     await acceptAlertIfGasPriceIsHigh();
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -356,7 +356,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.typeText('exchange-modal-input', '4', true);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
@@ -364,7 +364,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('swap-details-confirm-button');
 
     await acceptAlertIfGasPriceIsHigh();
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -384,14 +384,14 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
     await Helpers.typeText('exchange-modal-input', '0.005', true);
     await Helpers.delay(1000);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -410,14 +410,14 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-token');
     await Helpers.typeText('exchange-modal-input', '14', true);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -436,14 +436,14 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.typeText('exchange-modal-input', '10', true);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     } else {
       await Helpers.tap('exchange-modal-confirm-button');
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');

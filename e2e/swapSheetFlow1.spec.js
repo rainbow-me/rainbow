@@ -9,6 +9,7 @@ beforeAll(async () => {
 });
 
 const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
 
 describe('Swap Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
@@ -39,7 +40,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -196,7 +197,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should display Swap Asset List after tapping Input Section Button', async () => {
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await device.pressBack();
       await device.pressBack();
     } else {
@@ -225,7 +226,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible(
       'currency-select-list-exchange-coin-row-ETH-token'
     );
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await device.pressBack();
       await device.pressBack();
     } else {
@@ -250,7 +251,7 @@ describe('Swap Sheet Interaction Flow', () => {
       'Choose Token'
     );
     await Helpers.tap('exchange-modal-output-selection-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await device.pressBack();
     } else {
       await Helpers.waitAndTap('currency-select-header-back-button');
@@ -388,7 +389,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swap-settings-routes-label');
     await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
     await Helpers.swipe('swap-settings-header', 'down', 'slow');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-notch', 'down', 'slow');

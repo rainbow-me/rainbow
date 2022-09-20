@@ -174,7 +174,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('gas-speed-done-button');
     await Helpers.waitAndTap('send-sheet-confirm-action-button', 20000);
     await Helpers.tapAndLongPress('send-confirmation-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -212,7 +212,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -250,7 +250,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.delay(1000);
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
@@ -314,7 +314,7 @@ describe('Hardhat Transaction Flow', () => {
     if (!isConnected) throw new Error('WC Connection failed');
     android && (await Helpers.delay(2137));
     await Helpers.checkIfVisible('wc-redirect-sheet');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await device.pressBack();
     } else {
       await Helpers.swipe('wc-redirect-sheet', 'down', 'fast');
@@ -325,7 +325,7 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signPersonalMessage(['My msg', account]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
@@ -347,7 +347,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
 
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
@@ -419,7 +419,7 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signTypedData([account, JSON.stringify(msg)]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
@@ -448,7 +448,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('wc-request-sheet');
 
     await Helpers.waitAndTap('wc-confirm-action-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }

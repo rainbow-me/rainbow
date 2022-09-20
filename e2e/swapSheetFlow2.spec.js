@@ -9,6 +9,7 @@ beforeAll(async () => {
 });
 
 const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
 
 describe('Swap Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
@@ -39,7 +40,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');

@@ -3,6 +3,8 @@
 import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
+const android = device.getPlatform() === 'android';
+
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
@@ -37,7 +39,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -296,7 +298,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it.skip('Should load contacts if contacts exist', async () => {
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await device.pressBack();
     } else {
       await Helpers.swipe('send-asset-form-field', 'down', 'slow');
