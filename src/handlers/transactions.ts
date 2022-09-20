@@ -28,7 +28,6 @@ import TransactionActions from '@/helpers/transactionActions';
 import Routes from '@rainbow-me/routes';
 import { Navigation } from '@/navigation';
 import { Contact } from '@/redux/contacts';
-import { MinimalTransactionDetails } from '@/entities/transactions/transaction';
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);

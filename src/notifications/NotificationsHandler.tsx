@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useRef } from 'react';
+import { PropsWithChildren, useEffect, useRef } from 'react';
 import { useContacts, usePrevious, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
@@ -36,11 +36,7 @@ import notifee, {
 import { getProviderForNetwork } from '@/handlers/web3';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/transaction';
-import {
-  TransactionDirection,
-  TransactionStatus,
-  TransactionType,
-} from '@/entities';
+import { TransactionDirection, TransactionStatus } from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
 import { isZero } from '@/helpers/utilities';
@@ -209,7 +205,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       const { wallets, contacts } = syncedStateRef.current;
       const { accountAddress, nativeCurrency } = store.getState().settings;
 
-      let walletAddress: string | null = accountAddress;
+      let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
         walletAddress = await wallets.switchToWalletWithAddress(data.address);
       }
