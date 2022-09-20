@@ -14,7 +14,15 @@ const Container = styled(Row).attrs({
   height: 49,
 });
 
-const WalletOption = ({ editMode, label, onPress }) => {
+const WalletOption = ({
+  editMode,
+  label,
+  onPress,
+}: {
+  editMode: boolean;
+  label: string;
+  onPress: () => void;
+}) => {
   const { colors } = useTheme();
   return (
     <Container as={ButtonPressAnimation} disabled={editMode} onPress={onPress}>

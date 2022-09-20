@@ -1,21 +1,27 @@
 import { ChainId } from '@rainbow-me/swaps';
-import { useIsFocused, useRoute } from '@react-navigation/native';
+import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
+  ReactElement,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  Linking,
+  StatusBar,
+  TextInput,
+} from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import { useTheme } from 'styled-components';
 import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
 import {
@@ -24,7 +30,7 @@ import {
   ExchangeSearch,
 } from '../components/exchange';
 import NetworkSwitcherv1 from '../components/exchange/NetworkSwitcher';
-import { Column, KeyboardFixedOpenLayout } from '../components/layout';
+import { KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
@@ -44,11 +50,23 @@ import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
 import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
 import { ethereumUtils, filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import { SwappableAsset } from '@/entities';
+import { Box, Row, Rows } from '@/design-system';
+import { useTheme } from '@/theme';
+
+export interface EnrichedExchangeAsset extends SwappableAsset {
+  ens: boolean;
+  color: string;
+  nickname: string;
+  onPress: (el: ReactElement) => void;
+  testID: string;
+  useGradientText: boolean;
+  title?: string;
+  key: string;
+}
 
 const storage = new MMKV();
 const getHasShownWarning = () =>
@@ -56,14 +74,13 @@ const getHasShownWarning = () =>
 const setHasShownWarning = () =>
   storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
 
-const TabTransitionAnimation = styled(Animated.View)(
-  position.sizeAsObject('100%')
-);
-
-const headerlessSection = data => [{ data, title: '' }];
+const headerlessSection = (data: SwappableAsset[]) => [{ data, title: '' }];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
-const searchWalletCurrencyList = (searchList, query) => {
+const searchWalletCurrencyList = (
+  searchList: SwappableAsset[],
+  query: string
+) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
 
   if (isAddress) {
@@ -76,6 +93,21 @@ const searchWalletCurrencyList = (searchList, query) => {
   return filterList(searchList, query, ['symbol', 'name'], {
     threshold: matchSorter.rankings.CONTAINS,
   });
+};
+
+type ParamList = {
+  Currency: {
+    defaultOutputAsset: SwappableAsset;
+    defaultInputAsset: SwappableAsset;
+    chainId: number;
+    fromDiscover: boolean;
+    onSelectCurrency: (asset: SwappableAsset, cb: (item: any) => void) => void;
+    params: Record<string, unknown>;
+    restoreFocusOnSwapModal: () => void;
+    toggleGestureEnabled: (arg: boolean) => void;
+    type: string;
+    callback: () => void;
+  };
 };
 
 export default function CurrencySelectModal() {
@@ -97,20 +129,22 @@ export default function CurrencySelectModal() {
       type,
       callback,
     },
-  } = useRoute();
+  } = useRoute<RouteProp<ParamList, 'Currency'>>();
 
-  const scrollPosition = usePagerPosition();
+  const scrollPosition = (usePagerPosition() as unknown) as { value: number };
 
-  const searchInputRef = useRef();
+  const searchInputRef = useRef<TextInput>(null);
   const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
 
-  const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
+  const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState<
+    Record<string, unknown>
+  >({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
-  const assetsInWallet = useAssetsInWallet();
+  const assetsInWallet = useAssetsInWallet() as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
@@ -210,13 +244,12 @@ export default function CurrencySelectModal() {
   }, [filteredAssetsInWallet, searchQueryForSearch, type]);
 
   const currencyList = useMemo(() => {
-    let list =
-      type === CurrencySelectionTypes.input
-        ? getWalletCurrencyList()
-        : swapCurrencyList;
+    let list = (type === CurrencySelectionTypes.input
+      ? getWalletCurrencyList()
+      : swapCurrencyList) as { data: EnrichedExchangeAsset[]; title: string }[];
 
     // Remove tokens that show up in two lists and empty sections
-    let uniqueIds = [];
+    let uniqueIds: string[] = [];
     list = list?.map(section => {
       // Remove dupes
       section.data = uniqBy(section?.data, 'uniqueId');
@@ -232,7 +265,7 @@ export default function CurrencySelectModal() {
 
     // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
     if (IS_TESTING === 'true' && type === CurrencySelectionTypes.output) {
-      let symbols = [];
+      let symbols: string[] = [];
       list = list?.map(section => {
         // Remove dupes
         section.data = uniqBy(section?.data, 'symbol');
@@ -269,6 +302,7 @@ export default function CurrencySelectModal() {
   const handleNavigate = useCallback(
     item => {
       delayNext();
+      // @ts-expect-error – updating read-only property
       dangerouslyGetState().index = 1;
       if (fromDiscover) {
         goBack();
@@ -408,7 +442,7 @@ export default function CurrencySelectModal() {
   const handleApplyFavoritesQueue = useCallback(() => {
     const addresses = Object.keys(assetsToFavoriteQueue);
     const [assetsToAdd, assetsToRemove] = addresses.reduce(
-      ([add, remove], current) => {
+      ([add, remove]: string[][], current) => {
         if (assetsToFavoriteQueue[current]) {
           add.push(current);
         } else {
@@ -418,6 +452,8 @@ export default function CurrencySelectModal() {
       },
       [[], []]
     );
+
+    /* @ts-expect-error Can't ascertain correct return type */
     updateFavorites(assetsToAdd, true).then(() =>
       updateFavorites(assetsToRemove, false)
     );
@@ -480,7 +516,8 @@ export default function CurrencySelectModal() {
 
   return (
     <Wrapper>
-      <TabTransitionAnimation style={style}>
+      <Box as={Animated.View} height="full" width="full" style={style}>
+        {/* @ts-expect-error JavaScript component */}
         <Modal
           containerPadding={0}
           fullScreenOnAndroid
@@ -490,31 +527,37 @@ export default function CurrencySelectModal() {
         >
           {isFocusedAndroid && <StatusBar barStyle="light-content" />}
           <GestureBlocker type="top" />
-          <Column flex={1}>
-            <CurrencySelectModalHeader
-              handleBackButton={handleBackButton}
-              showBackButton={!fromDiscover}
-              showHandle={fromDiscover}
-              testID="currency-select-header"
-              type={type}
-            />
-            <ExchangeSearch
-              clearTextOnFocus={false}
-              isFetching={swapCurrencyListLoading}
-              isSearching={swapCurrencyListLoading}
-              onChangeText={setSearchQuery}
-              onFocus={handleFocus}
-              ref={searchInputRef}
-              searchQuery={searchQuery}
-              testID="currency-select-search"
-            />
-            {type === CurrencySelectionTypes.output && (
-              <NetworkSwitcher
-                colors={colors}
-                currentChainId={currentChainId}
-                setCurrentChainId={setCurrentChainId}
-                testID="currency-select-network-switcher"
+          <Rows>
+            <Row height="content">
+              <CurrencySelectModalHeader
+                handleBackButton={handleBackButton}
+                showBackButton={!fromDiscover}
+                showHandle={fromDiscover}
+                testID="currency-select-header"
               />
+            </Row>
+            <Row height="content">
+              <ExchangeSearch
+                clearTextOnFocus={false}
+                isFetching={swapCurrencyListLoading}
+                isSearching={swapCurrencyListLoading}
+                onChangeText={setSearchQuery}
+                onFocus={handleFocus}
+                ref={searchInputRef}
+                searchQuery={searchQuery}
+                testID="currency-select-search"
+              />
+            </Row>
+            {type === CurrencySelectionTypes.output && (
+              <Row height="content">
+                {/* @ts-expect-error JavaScript component */}
+                <NetworkSwitcher
+                  colors={colors}
+                  currentChainId={currentChainId}
+                  setCurrentChainId={setCurrentChainId}
+                  testID="currency-select-network-switcher"
+                />
+              </Row>
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
@@ -525,13 +568,12 @@ export default function CurrencySelectModal() {
                 query={searchQueryForSearch}
                 showList={showList}
                 testID="currency-select-list"
-                type={type}
               />
             )}
-          </Column>
+          </Rows>
           <GestureBlocker type="bottom" />
         </Modal>
-      </TabTransitionAnimation>
+      </Box>
     </Wrapper>
   );
 }
