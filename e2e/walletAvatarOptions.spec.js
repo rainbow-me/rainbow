@@ -35,7 +35,7 @@ describe('Wallet avatar options', () => {
       await element(by.text('Shuffle Emoji')).tap();
     } else {
       await Helpers.checkIfExistsByText('Pick an Emoji');
-      await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+      await Helpers.tapByText('Pick an Emoji');
       await Helpers.checkIfVisible('avatar-builder');
       await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
     }
@@ -73,6 +73,9 @@ describe('Wallet avatar options', () => {
     await Helpers.typeText('import-sheet-input', RAINBOW_TEST_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.relaunchApp();
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
   });
 
   it('test watched wallet with ENS but without ENS avatar', async () => {
@@ -101,11 +104,12 @@ describe('Wallet avatar options', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
+    await Helpers.relaunchApp();
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
   });
 
   it('test imported wallet with ENS but without ENS avatar', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
     await Helpers.checkIfExistsByText('Choose from Library');
     if (android) {
@@ -124,7 +128,6 @@ describe('Wallet avatar options', () => {
     await Helpers.tapByText('View Profile');
     await Helpers.checkIfVisible('profile-sheet');
     await Helpers.waitAndSwipe('profile-sheet', 'down');
-    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
   });
 
   it('import wallet with ENS avatar', async () => {
