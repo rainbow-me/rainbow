@@ -226,7 +226,7 @@ export default function AddressRow({
           contextMenuActions?.remove(walletId, address);
           break;
         case ContextMenuKeys.Notifications:
-          contextMenuActions?.notifications(walletName);
+          contextMenuActions?.notifications(walletName, address);
           break;
         case ContextMenuKeys.Edit:
           contextMenuActions?.edit(walletId, address);
