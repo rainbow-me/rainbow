@@ -2,8 +2,6 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
-const android = device.getPlatform() === 'android';
-
 describe('Import from private key flow', () => {
   it('without 0x - Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');

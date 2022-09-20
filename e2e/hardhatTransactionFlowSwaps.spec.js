@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import { Contract } from '@ethersproject/contracts';
 import WalletConnect from '@walletconnect/client';
 import { convertUtf8ToHex } from '@walletconnect/utils';
@@ -50,13 +49,8 @@ const getOnchainBalance = async (address, tokenContractAddress) => {
 };
 
 beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
-  if (ios) {
-    await exec(
-      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-    );
-  }
+  await Helpers.startHardhat();
+  await Helpers.startIosSimulator();
 });
 
 const acceptAlertIfGasPriceIsHigh = async () => {
@@ -415,6 +409,6 @@ describe('Hardhat Transaction Flow', () => {
     await connector?.killSession();
     connector = null;
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.killHardhat();
   });
 });

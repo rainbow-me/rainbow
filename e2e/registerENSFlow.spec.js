@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
@@ -159,13 +158,8 @@ const validatePrimaryName = async name => {
 };
 
 beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
-  if (ios) {
-    await exec(
-      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-    );
-  }
+  await Helpers.startHardhat();
+  await Helpers.startIosSimulator();
 });
 
 describe('Register ENS Flow', () => {
@@ -847,6 +841,6 @@ describe('Register ENS Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.killHardhat();
   });
 });

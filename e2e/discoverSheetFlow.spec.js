@@ -3,7 +3,6 @@
 import * as Helpers from './helpers';
 
 const ios = device.getPlatform() === 'ios';
-const android = device.getPlatform() === 'android';
 
 describe('Discover Sheet Flow', () => {
   it('Should show the welcome screen', async () => {

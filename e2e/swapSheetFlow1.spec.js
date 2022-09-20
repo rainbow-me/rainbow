@@ -1,11 +1,9 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
 beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
+  await Helpers.startHardhat();
 });
 
 const ios = device.getPlatform() === 'ios';
@@ -393,6 +391,6 @@ describe('Swap Sheet Interaction Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.killHardhat();
   });
 });
