@@ -46,19 +46,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  // it('Should connect to hardhat', async () => {
-  //   await Helpers.swipe('wallet-screen', 'right', 'slow');
-  //   await Helpers.checkIfVisible('profile-screen');
-  //   await Helpers.waitAndTap('settings-button');
-  //   await Helpers.checkIfVisible('settings-sheet');
-  //   await Helpers.waitAndTap('developer-section');
-  //   await Helpers.checkIfVisible('developer-settings-sheet');
-  //   await Helpers.scrollTo('developer-settings-sheet', 'bottom');
-  //   await Helpers.waitAndTap('hardhat-section');
-  //   await Helpers.checkIfVisible('testnet-toast-Hardhat');
-  //   await Helpers.swipe('profile-screen', 'left', 'slow');
-  // });
-
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
