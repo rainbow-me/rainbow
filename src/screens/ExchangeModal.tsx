@@ -84,7 +84,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import logger from 'logger';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_TESTING } from '@/env';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -548,7 +548,7 @@ export default function ExchangeModal({
     if (
       greaterThan(outputPrice, 0) &&
       greaterThan(gasPrice, outputPrice) &&
-      !(IS_ANDROID && IS_TEST)
+      !(IS_ANDROID && IS_TESTING === 'true')
     ) {
       const res = new Promise(resolve => {
         Alert.alert(
