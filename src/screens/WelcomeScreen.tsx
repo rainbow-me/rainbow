@@ -15,7 +15,7 @@ import Reanimated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { ButtonPressAnimation } from '../components/animations';
 import { BaseButtonAnimationProps } from '../components/animations/ButtonPressAnimation/types';
@@ -192,7 +192,7 @@ const animationColors = [
 ];
 
 export default function WelcomeScreen() {
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
   // @ts-expect-error Navigation types
   const { replace, navigate, dangerouslyGetState } = useNavigation();
