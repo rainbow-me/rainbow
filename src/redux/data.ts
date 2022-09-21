@@ -1389,6 +1389,12 @@ export const dataWatchPendingTransactions = (
             updatedPending.title = title;
             updatedPending.pending = pending;
             updatedPending.minedAt = minedAt;
+            if (!pending) {
+              appEvents.emit('transactionConfirmed', {
+                ...txObj,
+                internalType: tx.type,
+              });
+            }
           } else {
             const { title, pending, minedAt } = getPendingTransaction(
               updatedPending,
@@ -1447,7 +1453,7 @@ export const dataWatchPendingTransactions = (
     });
     saveLocalTransactions(updatedTransactions, accountAddress, network);
     dispatch(updatePurchases(updatedTransactions));
-
+    console.log('----- pendingTransactions', pendingTransactions);
     if (!pendingTransactions?.length) {
       return true;
     }
@@ -1541,7 +1547,18 @@ export const checkPendingTransactionsOnInitialize = (
     currentAccountAddress,
     'latest'
   );
-  await dispatch(dataWatchPendingTransactions(provider, currentNonce));
+  const notPendingTxs = await dispatch(
+    dataWatchPendingTransactions(provider, currentNonce)
+  );
+  if (!notPendingTxs) {
+    dispatch(
+      watchPendingTransactions(
+        currentAccountAddress,
+        TXN_WATCHER_MAX_TRIES,
+        provider
+      )
+    );
+  }
 };
 
 /**

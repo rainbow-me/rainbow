@@ -316,10 +316,13 @@ export const getTransactionSocketStatus = async (
   const { swap } = pendingTransaction;
   const txHash = ethereumUtils.getHash(pendingTransaction);
   let pending = true;
-  let status = TransactionStatus.swapping;
+  console.log('----- swap?.isBridge', swap?.isBridge);
+  let status = swap?.isBridge
+    ? TransactionStatus.bridging
+    : TransactionStatus.swapping;
   const minedAt = Math.floor(Date.now() / 1000);
   const socketStatus = await fetch(
-    `https://swap.s.rainbow.me/bridge-status?txHash=${txHash}&fromChainId=${swap.fromChainId}&toChainId=${swap?.toChainId}`
+    `https://swap.s.rainbow.me/bridge-status?txHash=${txHash}&fromChainId=${swap?.fromChainId}&toChainId=${swap?.toChainId}`
   );
   const socketResponse = await socketStatus.json();
   if (socketResponse.success) {
@@ -327,7 +330,16 @@ export const getTransactionSocketStatus = async (
       status = TransactionStatus.bridging;
     }
     if (socketResponse?.result?.DestinationTxStatus === 'COMPLETED') {
-      status = TransactionStatus.swapped;
+      status = swap?.isBridge
+        ? TransactionStatus.bridged
+        : TransactionStatus.swapped;
+      pending = false;
+    }
+    if (
+      socketResponse?.result?.DestinationTxStatus === 'FAILED' ||
+      socketResponse?.result?.sourceTxStatus === 'FAILED'
+    ) {
+      status = TransactionStatus.failed;
       pending = false;
     }
   } else if (socketResponse.error) {
