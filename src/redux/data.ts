@@ -58,6 +58,7 @@ import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
 import {
+  getTitle,
   parseAccountAssets,
   parseAsset,
   parseNewTransaction,
@@ -80,7 +81,9 @@ import {
   getPendingTransaction,
   getTransactionFlashbotStatus,
   getTransactionReceiptStatus,
+  getTransactionSocketStatus,
 } from '@/handlers/transactions';
+import { SwapType } from '@rainbow-me/swaps';
 
 const storage = new MMKV();
 
@@ -1365,18 +1368,36 @@ export const dataWatchPendingTransactions = (
           if (tx?.ensRegistration) {
             fetchWalletENSDataAfterRegistration();
           }
+
           updatedPending.status = await getTransactionReceiptStatus(
             updatedPending,
             nonceAlreadyIncluded,
             txObj
           );
-          const { title, pending, minedAt } = getPendingTransaction(
-            updatedPending,
-            updatedPending.status
-          );
-          updatedPending.title = title;
-          updatedPending.pending = pending;
-          updatedPending.minedAt = minedAt;
+
+          if (
+            updatedPending.swap &&
+            updatedPending.swap.type === SwapType.crossChain
+          ) {
+            const {
+              status,
+              title,
+              pending,
+              minedAt,
+            } = await getTransactionSocketStatus(updatedPending);
+            updatedPending.status = status;
+            updatedPending.title = title;
+            updatedPending.pending = pending;
+            updatedPending.minedAt = minedAt;
+          } else {
+            const { title, pending, minedAt } = getPendingTransaction(
+              updatedPending,
+              updatedPending.status
+            );
+            updatedPending.title = title;
+            updatedPending.pending = pending;
+            updatedPending.minedAt = minedAt;
+          }
           txStatusesDidChange = true;
         } else if (tx.flashbots) {
           const flashbotStatus = await getTransactionFlashbotStatus(txHash);

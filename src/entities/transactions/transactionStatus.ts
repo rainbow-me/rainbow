@@ -1,6 +1,7 @@
 export enum TransactionStatus {
   approved = 'approved',
   approving = 'approving',
+  bridging = 'bridging',
   cancelled = 'cancelled',
   cancelling = 'cancelling',
   contract_interaction = 'contract interaction',
@@ -26,6 +27,7 @@ export enum TransactionStatus {
 export default {
   approved: 'approved',
   approving: 'approving',
+  bridging: 'bridging',
   cancelled: 'cancelled',
   cancelling: 'cancelling',
   contract_interaction: 'contract interaction',
