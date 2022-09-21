@@ -28,6 +28,7 @@ import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
+import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 
 const actionName = 'crosschainSwap';
 
@@ -113,7 +114,7 @@ const crosschainSwap = async (
   } = parameters as CrosschainSwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
-  const { inputCurrency } = store.getState().swap;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   const gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
@@ -177,15 +178,15 @@ const crosschainSwap = async (
 
     // @ts-ignore
     swap = await executeCrosschainSwap(swapParams);
-    // dispatch(
-    //   additionalDataUpdateL2AssetToWatch({
-    //     hash: swap?.hash || '',
-    //     inputCurrency,
-    //     network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-    //     outputCurrency,
-    //     userAddress: accountAddress,
-    //   })
-    // );
+    dispatch(
+      additionalDataUpdateL2AssetToWatch({
+        hash: swap?.hash || '',
+        inputCurrency,
+        network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
+        outputCurrency,
+        userAddress: accountAddress,
+      })
+    );
   } catch (e) {
     logger.sentry('Error', e);
     const fakeError = new Error('Failed to execute swap');
@@ -195,6 +196,17 @@ const crosschainSwap = async (
 
   logger.log(`[${actionName}] response`, swap);
 
+  console.log(
+    '💰💰💰💰💰💰 inputCurrency',
+    inputCurrency,
+    inputCurrency.symbol
+  );
+  console.log(
+    '💰💰💰💰💰💰 outputCurrency',
+    outputCurrency,
+    outputCurrency.symbol
+  );
+  const isBridge = inputCurrency.symbol === outputCurrency.symbol;
   const newTransaction = {
     ...gasParams,
     amount: inputAmount,
@@ -206,15 +218,16 @@ const crosschainSwap = async (
     hash: swap?.hash,
     network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
     nonce: swap?.nonce,
-    protocol: ProtocolType.uniswap,
-    status: TransactionStatus.swapping,
+    protocol: ProtocolType.socket,
+    status: isBridge ? TransactionStatus.bridging : TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
     swap: {
       type: SwapType.crossChain,
-      fromChainId: tradeDetails.fromChainId,
-      toChainId: tradeDetails.toChainId,
+      fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
+      toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+      isBridge,
     },
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);

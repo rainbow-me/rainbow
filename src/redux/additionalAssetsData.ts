@@ -140,17 +140,25 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
     const assetsToUpdate = l2AssetsToWatch?.[id];
     if (!assetsToUpdate) return;
     const { inputCurrency, outputCurrency, userAddress } = assetsToUpdate;
+    console.log(
+      '💰💰💰💰💰💰 inputCurrency network',
+      ethereumUtils.getNetworkFromType(inputCurrency?.type)
+    );
+    console.log(
+      '💰💰💰💰💰💰 outputCurrency network',
+      ethereumUtils.getNetworkFromType(outputCurrency?.type)
+    );
     const updatedAssets = [
       await getUpdatedL2AssetBalance(
         inputCurrency,
         genericAssets,
-        network,
+        ethereumUtils.getNetworkFromType(inputCurrency?.type),
         userAddress
       ),
       await getUpdatedL2AssetBalance(
         outputCurrency,
         genericAssets,
-        network,
+        ethereumUtils.getNetworkFromType(outputCurrency?.type),
         userAddress
       ),
     ];

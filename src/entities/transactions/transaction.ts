@@ -42,6 +42,7 @@ export interface RainbowTransaction {
     type: SwapType;
     toChainId: ChainId;
     fromChainId: ChainId;
+    isBridge: boolean;
   };
   symbol?: string | null;
   timestamp?: number; // for purchases
@@ -82,6 +83,7 @@ export interface NewTransaction {
     type: SwapType;
     fromChainId: ChainId;
     toChainId: ChainId;
+    isBridge: boolean;
   };
 }
 
