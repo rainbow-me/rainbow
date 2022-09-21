@@ -191,6 +191,13 @@ class TransactionListViewCell: TransactionListBaseCell {
         transactionIcon.image = UIImage.init(named: "swapped")
         statusFrame = CGRect(x: 84, y: 9, width: 206, height: 16)
     }
+
+    // Bridge Overrides
+    if transaction.status == "bridged" {
+        transactionIcon.image = UIImage.init(named: "bridged")
+        statusFrame = CGRect(x: 84, y: 9, width: 206, height: 16)
+    }
+
     if transaction.status == "swapping" {
         transactionIcon.image = UIImage.init(named: "swapping")
     }
@@ -213,10 +220,14 @@ class TransactionListViewCell: TransactionListBaseCell {
     if transaction.pending {
       if transaction.status == "swapping" {
         color = transactionColors.swapPurple
+      } else if transaction.status == "bridging" {
+        color = transactionColors.swapPurple
       } else {
         color = transactionColors.appleBlue
       }
     } else if transaction.isSwapped() {
+      color = transactionColors.swapPurple
+    } else if transaction.isBridged() {
       color = transactionColors.swapPurple
     }
     

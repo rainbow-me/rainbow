@@ -617,8 +617,8 @@ export default function ExchangeModal({
           nonce,
           tradeDetails: {
             ...tradeDetails,
-            fromChainId: ethereumUtils.getChainIdFromType(inputCurrency.type),
-            toChainId: ethereumUtils.getChainIdFromType(outputCurrency.type),
+            fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
+            toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
           } as Quote | CrosschainQuote,
         };
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
@@ -669,14 +669,14 @@ export default function ExchangeModal({
       inputCurrency?.address,
       inputCurrency?.name,
       inputCurrency?.symbol,
-      inputCurrency.type,
+      inputCurrency?.type,
       isCrosschainSwap,
       navigate,
       outputAmount,
       outputCurrency?.address,
       outputCurrency?.name,
       outputCurrency?.symbol,
-      outputCurrency.type,
+      outputCurrency?.type,
       priceImpactPercentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,

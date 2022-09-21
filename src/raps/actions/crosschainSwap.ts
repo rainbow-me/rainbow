@@ -196,6 +196,17 @@ const crosschainSwap = async (
 
   logger.log(`[${actionName}] response`, swap);
 
+  console.log(
+    '💰💰💰💰💰💰 inputCurrency',
+    inputCurrency,
+    inputCurrency.symbol
+  );
+  console.log(
+    '💰💰💰💰💰💰 outputCurrency',
+    outputCurrency,
+    outputCurrency.symbol
+  );
+  const isBridge = inputCurrency.symbol === outputCurrency.symbol;
   const newTransaction = {
     ...gasParams,
     amount: inputAmount,
@@ -207,15 +218,16 @@ const crosschainSwap = async (
     hash: swap?.hash,
     network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
     nonce: swap?.nonce,
-    protocol: ProtocolType.uniswap,
-    status: TransactionStatus.swapping,
+    protocol: ProtocolType.socket,
+    status: isBridge ? TransactionStatus.bridging : TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
     swap: {
       type: SwapType.crossChain,
-      fromChainId: tradeDetails.fromChainId,
-      toChainId: tradeDetails.toChainId,
+      fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
+      toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+      isBridge,
     },
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
