@@ -64,6 +64,7 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -290,6 +291,10 @@ function BSNavigator() {
           <BSStack.Screen
             component={RegisterENSNavigator}
             name={Routes.REGISTER_ENS_NAVIGATOR}
+          />
+          <BSStack.Screen
+            component={PairHardwareWalletNavigator}
+            name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
           />
           <BSStack.Screen
             component={ENSAdditionalRecordsSheet}
