@@ -54,16 +54,21 @@ export async function startIosSimulator() {
   }
 }
 
-export async function typeText(elementId, text, focus = true) {
+export async function typeText(
+  elementId,
+  text,
+  focus = true,
+  syncOnAndroid = false
+) {
   if (focus) {
     await tap(elementId);
   }
   // this is way faster now
-  if (device.getPlatform() === 'android') {
+  if (device.getPlatform() === 'android' && !syncOnAndroid) {
     await device.disableSynchronization();
   }
   await element(by.id(elementId)).typeText(text);
-  if (device.getPlatform() === 'android') {
+  if (device.getPlatform() === 'android' && !syncOnAndroid) {
     await device.enableSynchronization();
   }
 }
