@@ -175,6 +175,7 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should cycle through token lists', async () => {
+    android && (await Helpers.swipe('discover-sheet', 'up', 'slow'));
     await Helpers.swipeUntilVisible(
       'lists-section-favorites',
       'discover-sheet',
