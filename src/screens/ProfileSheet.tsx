@@ -18,7 +18,6 @@ import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
-  useENSAddress,
   useENSAvatar,
   useExternalWalletSectionsData,
   usePersistentDominantColorFromImage,
@@ -28,6 +27,7 @@ import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -44,9 +44,9 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress(
-    ensName
-  );
+  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({
+    name: ensName,
+  });
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;

@@ -40,7 +40,6 @@ export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useENSLocalTransactions } from './useENSLocalTransactions';
 export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';
-export { default as useENSAddress, prefetchENSAddress } from './useENSAddress';
 export { default as useENSAvatar, prefetchENSAvatar } from './useENSAvatar';
 export { default as useENSCover, prefetchENSCover } from './useENSCover';
 export { default as useENSProfile, prefetchENSProfile } from './useENSProfile';

@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import PQueue from 'p-queue/dist';
 
-import { fetchENSAddress } from '@/hooks/useENSAddress';
 import {
   createQueryKey,
   queryClient,
@@ -10,6 +9,7 @@ import {
   QueryFunctionResult,
 } from '@/react-query';
 import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
+import { fetchENSAddress } from '../ens/ensAddressQuery';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -46,7 +46,7 @@ export async function firstTransactionTimestampQueryFunction({
 
   let address = addressOrName;
   if (addressOrName.includes('.eth')) {
-    address = (await fetchENSAddress(addressOrName)) ?? '';
+    address = (await fetchENSAddress({ name: addressOrName })) ?? '';
   }
 
   const timestamp = address
