@@ -1,4 +1,7 @@
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import {
+  StaticJsonRpcProvider,
+  TransactionResponse,
+} from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
 import {
   find,
@@ -23,16 +26,13 @@ import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
-import { fetchWalletENSAvatars, fetchWalletNames } from './wallets';
 import {
   AssetTypes,
   NativeCurrencyKeys,
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
   RainbowTransaction,
-  TransactionDirection,
   TransactionStatus,
-  TransactionType,
   TransactionTypes,
   ZerionAsset,
   ZerionAssetFallback,
@@ -58,8 +58,6 @@ import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
 import {
-  getTitle,
-  getTransactionLabel,
   parseAccountAssets,
   parseAsset,
   parseNewTransaction,
@@ -74,9 +72,15 @@ import {
   shitcoins,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { delay, isZero, pickBy } from '@/helpers/utilities';
+import { delay, pickBy } from '@/helpers/utilities';
 import { ethereumUtils, isLowerCaseMatch, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
+import {
+  fetchWalletENSDataAfterRegistration,
+  getPendingTransaction,
+  getTransactionFlashbotStatus,
+  getTransactionReceiptStatus,
+} from '@/handlers/transactions';
 
 const storage = new MMKV();
 
@@ -1306,30 +1310,6 @@ export const dataAddNewTransaction = (
 };
 
 /**
- * Returns the `TransactionStatus` that represents completion for a given
- * transaction type.
- *
- * @param type The transaction type.
- * @returns The confirmed status.
- */
-const getConfirmedState = (type?: TransactionType): TransactionStatus => {
-  switch (type) {
-    case TransactionTypes.authorize:
-      return TransactionStatus.approved;
-    case TransactionTypes.deposit:
-      return TransactionStatus.deposited;
-    case TransactionTypes.withdraw:
-      return TransactionStatus.withdrew;
-    case TransactionTypes.receive:
-      return TransactionStatus.received;
-    case TransactionTypes.purchase:
-      return TransactionStatus.purchased;
-    default:
-      return TransactionStatus.sent;
-  }
-};
-
-/**
  * Watches pending transactions and updates state and account local storage
  * when new data is available.
  *
@@ -1356,16 +1336,23 @@ export const dataWatchPendingTransactions = (
   let txStatusesDidChange = false;
   const updatedPendingTransactions = await Promise.all(
     pending.map(async tx => {
-      const updatedPending = { ...tx };
-      const txHash = ethereumUtils.getHash(tx);
+      const updatedPending: RainbowTransaction = { ...tx };
+      const txHash = ethereumUtils.getHash(tx) || '';
       try {
         logger.log('Checking pending tx with hash', txHash);
         const p =
           provider || (await getProviderForNetwork(updatedPending.network));
-        const txObj = await p.getTransaction(txHash!);
+        const txObj: TransactionResponse | undefined = await p.getTransaction(
+          txHash
+        );
         // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-        const nonceAlreadyIncluded = currentNonce > tx.nonce!;
-        if ((txObj?.blockNumber && txObj?.blockHash) || nonceAlreadyIncluded) {
+        const nonceAlreadyIncluded = tx?.nonce
+          ? currentNonce > tx?.nonce
+          : false;
+        if (
+          (txObj && txObj?.blockNumber && txObj?.blockHash) ||
+          nonceAlreadyIncluded
+        ) {
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
@@ -1376,85 +1363,38 @@ export const dataWatchPendingTransactions = (
             });
           }
           if (tx?.ensRegistration) {
-            const fetchWalletENSData = async () => {
-              await dispatch(fetchWalletENSAvatars());
-              dispatch(fetchWalletNames());
-            };
-            fetchWalletENSData();
+            fetchWalletENSDataAfterRegistration();
           }
-          const minedAt = Math.floor(Date.now() / 1000);
-          txStatusesDidChange = true;
-          let receipt;
-          try {
-            if (txObj) {
-              receipt = await txObj.wait();
-            }
-          } catch (e: any) {
-            // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
-            if (e.transaction) {
-              // if a transaction field exists, it was confirmed but failed
-              updatedPending.status = TransactionStatus.failed;
-            } else {
-              // cancelled or replaced
-              updatedPending.status = TransactionStatus.cancelled;
-            }
-          }
-          const status = receipt?.status || 0;
-          if (!isZero(status)) {
-            const isSelf = tx?.from!.toLowerCase() === tx?.to!.toLowerCase();
-            const newStatus = getTransactionLabel({
-              direction: isSelf
-                ? TransactionDirection.self
-                : TransactionDirection.out,
-              pending: false,
-              protocol: tx?.protocol,
-              status:
-                tx.status === TransactionStatus.cancelling
-                  ? TransactionStatus.cancelled
-                  : getConfirmedState(tx.type),
-              type: tx?.type,
-            });
-            updatedPending.status = newStatus;
-          } else if (nonceAlreadyIncluded) {
-            updatedPending.status = TransactionStatus.unknown;
-          } else {
-            updatedPending.status = TransactionStatus.failed;
-          }
-          const title = getTitle({
-            protocol: tx.protocol,
-            status: updatedPending.status,
-            type: tx.type,
-          });
+          updatedPending.status = await getTransactionReceiptStatus(
+            updatedPending,
+            nonceAlreadyIncluded,
+            txObj
+          );
+          const { title, pending, minedAt } = getPendingTransaction(
+            updatedPending,
+            updatedPending.status
+          );
           updatedPending.title = title;
-          updatedPending.pending = false;
+          updatedPending.pending = pending;
           updatedPending.minedAt = minedAt;
-        } else {
-          if (tx.flashbots) {
-            const fbStatus = await fetch(
-              `https://protect.flashbots.net/tx/${txHash}`
+          txStatusesDidChange = true;
+        } else if (tx.flashbots) {
+          const flashbotStatus = await getTransactionFlashbotStatus(txHash);
+          logger.debug('Flashbots response status', flashbotStatus);
+          // Make sure it wasn't dropped after 25 blocks or never made it
+          if (flashbotStatus === 'FAILED' || flashbotStatus === 'CANCELLED') {
+            updatedPending.status = TransactionStatus.dropped;
+            const { title, pending, minedAt } = getPendingTransaction(
+              updatedPending,
+              updatedPending.status
             );
-            const fbResponse = await fbStatus.json();
-            logger.debug('Flashbots response', fbResponse);
-            // Make sure it wasn't dropped after 25 blocks or never made it
-            if (
-              fbResponse.status === 'FAILED' ||
-              fbResponse.status === 'CANCELLED'
-            ) {
-              txStatusesDidChange = true;
-              updatedPending.status = TransactionStatus.dropped;
-              const title = getTitle({
-                protocol: tx.protocol,
-                status: updatedPending.status,
-                type: tx.type,
-              });
-              updatedPending.title = title;
-              updatedPending.pending = false;
-              const minedAt = Math.floor(Date.now() / 1000);
-              updatedPending.minedAt = minedAt;
-              // decrement the nonce since it was dropped
-              // @ts-ignore-next-line
-              dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
-            }
+            updatedPending.title = title;
+            updatedPending.pending = pending;
+            updatedPending.minedAt = minedAt;
+            txStatusesDidChange = true;
+            // decrement the nonce since it was dropped
+            // @ts-ignore-next-line
+            dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
           }
         }
       } catch (error) {
