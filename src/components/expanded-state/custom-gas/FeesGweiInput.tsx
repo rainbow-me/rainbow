@@ -7,6 +7,7 @@ import { usePrevious } from '@/hooks';
 import { TextInput } from 'react-native';
 import { Box, Inline, Text } from '@/design-system';
 import { colors } from '@/styles';
+import { IS_ANDROID } from '@/env';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
@@ -56,6 +57,7 @@ const GweiStepButton = ({
       useLateHaptic={false}
       padding="4px"
       margin="-4px"
+      marginTop={IS_ANDROID ? '-2px' : undefined}
     >
       <Text
         size="icon 16px"

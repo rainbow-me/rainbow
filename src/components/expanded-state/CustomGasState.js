@@ -20,6 +20,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
@@ -55,7 +56,7 @@ export default function CustomGasState({ asset }) {
   const sheetHeightWithoutKeyboard =
     CONTENT_HEIGHT +
     FOOTER_HEIGHT +
-    (android ? 40 + getSoftMenuBarHeight() : 0);
+    (IS_ANDROID ? 20 + getSoftMenuBarHeight() : 0);
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
