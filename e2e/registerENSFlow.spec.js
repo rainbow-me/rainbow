@@ -375,6 +375,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should use rainbowtestwallet.eth as primary name', async () => {
+    await Helpers.delay(2000);
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
