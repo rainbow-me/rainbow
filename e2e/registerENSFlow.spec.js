@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
@@ -121,13 +120,8 @@ const validatePrimaryName = async name => {
 };
 
 beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
-  if (device.getPlatform() === 'ios') {
-    await exec(
-      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-    );
-  }
+  await Helpers.startHardhat();
+  await Helpers.startIosSimulator();
 });
 
 describe('Register ENS Flow', () => {
@@ -159,7 +153,7 @@ describe('Register ENS Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -174,30 +168,10 @@ describe('Register ENS Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  // it('Should navigate to the Profile screen after swiping right', async () => {
-  //   await Helpers.swipe('wallet-screen', 'right', 'slow');
-  //   await Helpers.checkIfVisible('profile-screen');
-  // });
-  //
-  // it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
-  //   await Helpers.waitAndTap('settings-button');
-  //   await Helpers.checkIfVisible('settings-sheet');
-  // });
-  //
-  // it('Should navigate to Developer Settings after tapping Developer Section', async () => {
-  //   await Helpers.waitAndTap('developer-section');
-  //   await Helpers.checkIfVisible('developer-settings-sheet');
-  // });
-
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
-
-  // it('Should navigate to the Wallet screen after swiping left', async () => {
-  //   await Helpers.swipe('profile-screen', 'left', 'slow');
-  //   await Helpers.checkIfVisible('wallet-screen');
-  // });
 
   it('Should navigate to the Discover sheet screen after tapping Discover Button', async () => {
     await Helpers.waitAndTap('discover-button');
@@ -217,8 +191,6 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should be able to press a profile and continue to the ENS search screen', async () => {
-    // await Helpers.swipe('ens-names-marquee', 'left', 'slow');
-    // await Helpers.swipe('ens-names-marquee', 'right', 'slow');
     await Helpers.waitAndTap(
       'ens-intro-sheet-search-new-name-button-action-button'
     );
@@ -255,12 +227,12 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
     await Helpers.checkIfVisible('ens-text-record-name');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.waitAndTap('ens-text-record-name');
       await Helpers.tapByText('Got it');
     }
     await Helpers.typeText('ens-text-record-name', RECORD_NAME, false);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.tapByText('Got it');
     }
     await Helpers.checkIfVisible('ens-text-record-description');
@@ -283,13 +255,13 @@ describe('Register ENS Flow', () => {
   it('Should go to review registration and start it', async () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-COMMIT');
     }
     await Helpers.delay(3000);
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
@@ -302,7 +274,7 @@ describe('Register ENS Flow', () => {
 
   it('Should see confirm registration screen', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-REGISTER');
@@ -365,10 +337,11 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should use rainbowtestwallet.eth as primary name', async () => {
+    await Helpers.delay(2000);
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-SET_NAME');
@@ -421,6 +394,6 @@ describe('Register ENS Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.killHardhat();
   });
 });

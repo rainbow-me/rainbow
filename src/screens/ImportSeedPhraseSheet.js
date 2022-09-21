@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StatusBar } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
@@ -29,6 +28,7 @@ import { sheetVerticalOffset } from '@/navigation/effects';
 import styled from '@/styled-thing';
 import { borders, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
+import { IS_TEST } from '@/env';
 
 const sheetBottomPadding = 19;
 
@@ -192,7 +192,7 @@ export default function ImportSeedPhraseSheet() {
               onPress={handlePressImportButton}
             >
               <Row>
-                {busy && IS_TESTING !== 'true' ? (
+                {busy && !IS_TEST ? (
                   <LoadingSpinner />
                 ) : (
                   <Text align="center" color="whiteLabel" weight="bold">

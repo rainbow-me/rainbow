@@ -6,8 +6,10 @@ import { parseSimplehashNfts } from '@/parsers';
 import { logger } from '@/utils';
 
 interface SimplehashMarketplace {
+  marketplace_id: string;
   marketplace_name: string;
   marketplace_collection_id: string;
+  nft_url: string;
   collection_url: string;
   verified: boolean;
 }
@@ -101,7 +103,7 @@ export async function getNFTByTokenId({
 export async function getNftsByWalletAddress(walletAddress: string) {
   let rawResponseNfts: SimplehashNft[] = [];
   try {
-    const chainsParam: string = `${Network.arbitrum},${Network.optimism}`;
+    const chainsParam = `${Network.arbitrum},${Network.optimism}`;
 
     let cursor = START_CURSOR;
     while (cursor) {

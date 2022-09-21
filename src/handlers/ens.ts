@@ -6,10 +6,8 @@ import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { prefetchENSAddress } from '../hooks/useENSAddress';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
-import { prefetchENSFirstTransactionTimestamp } from '../hooks/useENSFirstTransactionTimestamp';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import {
@@ -39,6 +37,8 @@ import {
 import { labelhash, logger, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
+import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -106,6 +106,7 @@ const buildEnsToken = ({
     lastSalePaymentToken: null,
     lowResUrl,
     marketplaceCollectionUrl: getOpenSeaCollectionUrl(slug),
+    marketplaceId: 'opensea',
     marketplaceName: 'OpenSea',
     name,
     network: Network.mainnet,
@@ -220,12 +221,15 @@ export const fetchSuggestions = async (
       avatar = await fetchENSAvatar(ens, {
         cacheFirst: true,
       });
-      prefetchENSAddress(ens, { cacheFirst: true });
+      prefetchENSAddress(
+        { name: ens },
+        {
+          staleTime: 1000 * 60 * 10, // 10 minutes
+        }
+      );
       prefetchENSCover(ens, { cacheFirst: true });
       prefetchENSRecords(ens, { cacheFirst: true });
-      prefetchENSFirstTransactionTimestamp(ens, {
-        cacheFirst: true,
-      });
+      prefetchFirstTransactionTimestamp({ addressOrName: ens });
       // eslint-disable-next-line no-empty
     } catch (e) {}
     const suggestion = [
@@ -272,11 +276,16 @@ export const fetchSuggestions = async (
                   cacheFirst: true,
                 });
                 if (i === 0) {
-                  prefetchENSAddress(domain.name, { cacheFirst: true });
+                  prefetchENSAddress(
+                    { name: domain.name },
+                    {
+                      staleTime: 1000 * 60 * 10, // 10 minutes
+                    }
+                  );
                   prefetchENSCover(domain.name, { cacheFirst: true });
                   prefetchENSRecords(domain.name, { cacheFirst: true });
-                  prefetchENSFirstTransactionTimestamp(domain.name, {
-                    cacheFirst: true,
+                  prefetchFirstTransactionTimestamp({
+                    addressOrName: domain.name,
                   });
                 }
                 return {
@@ -497,11 +506,11 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
 
 export function prefetchENSIntroData() {
   for (const name of ensIntroMarqueeNames) {
-    prefetchENSAddress(name, { cacheFirst: true });
+    prefetchENSAddress({ name }, { staleTime: Infinity });
     prefetchENSAvatar(name, { cacheFirst: true });
     prefetchENSCover(name, { cacheFirst: true });
     prefetchENSRecords(name, { cacheFirst: true });
-    prefetchENSFirstTransactionTimestamp(name, { cacheFirst: true });
+    prefetchFirstTransactionTimestamp({ addressOrName: name });
   }
 }
 

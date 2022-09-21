@@ -25,15 +25,15 @@ import {
 } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
 import {
-  useENSAddress,
   useENSAvatar,
   useENSCover,
-  useENSFirstTransactionTimestamp,
   useENSRecords,
   useFetchUniqueTokens,
   useOpenENSNFTHandler,
 } from '@/hooks';
 import { addressHashedEmoji } from '@/utils/profileUtils';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -50,9 +50,12 @@ export default function ProfileSheetHeader({
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const ensName = defaultEnsName || params?.address;
 
-  const { data: profileAddress } = useENSAddress(ensName, {
-    enabled: profilesEnabled,
-  });
+  const { data: profileAddress } = useENSAddress(
+    { name: ensName },
+    {
+      enabled: profilesEnabled,
+    }
+  );
   const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(
     ensName,
     {
@@ -87,9 +90,9 @@ export default function ProfileSheetHeader({
   });
   const enableZoomOnPressCover = enableZoomableImages && !onPressCover;
 
-  const { data: firstTransactionTimestamp } = useENSFirstTransactionTimestamp(
-    ensName
-  );
+  const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({
+    addressOrName: profileAddress ?? '',
+  });
 
   const emoji = useMemo(
     () => (profileAddress ? addressHashedEmoji(profileAddress) : ''),

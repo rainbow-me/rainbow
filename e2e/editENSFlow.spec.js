@@ -111,7 +111,7 @@ describe('Edit ENS Flow', () => {
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS);
+    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
       'Import'
@@ -191,12 +191,12 @@ describe('Edit ENS Flow', () => {
       'down'
     );
     await Helpers.checkIfVisible('ens-text-record-url');
-    await Helpers.typeText('ens-text-record-url', 'abc');
+    await Helpers.typeText('ens-text-record-url', 'abc', false);
     await maybeHideKeyboard();
     await Helpers.waitAndTap('ens-text-record-url-error');
     await Helpers.checkIfElementByTextToExist('Invalid URL');
     await Helpers.tapByText('OK');
-    await Helpers.typeText('ens-text-record-url', '123.com');
+    await Helpers.typeText('ens-text-record-url', '123.com', false);
     await maybeHideKeyboard();
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-url-error');
@@ -207,7 +207,11 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-com.twitter', RECORD_TWITTER);
+    await Helpers.typeText(
+      'ens-text-record-com.twitter',
+      RECORD_TWITTER,
+      false
+    );
     await maybeHideKeyboard();
 
     // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
@@ -218,12 +222,20 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-email', RECORD_EMAIL.slice(0, 3));
+    await Helpers.typeText(
+      'ens-text-record-email',
+      RECORD_EMAIL.slice(0, 3),
+      false
+    );
     await maybeHideKeyboard();
     await Helpers.waitAndTap('ens-text-record-email-error');
     await Helpers.checkIfElementByTextToExist('Invalid email');
     await Helpers.tapByText('OK');
-    await Helpers.typeText('ens-text-record-email', RECORD_EMAIL.slice(3));
+    await Helpers.typeText(
+      'ens-text-record-email',
+      RECORD_EMAIL.slice(3),
+      false
+    );
     await maybeHideKeyboard();
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-email-error');
@@ -234,7 +246,11 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-com.instagram', RECORD_INSTAGRAM);
+    await Helpers.typeText(
+      'ens-text-record-com.instagram',
+      RECORD_INSTAGRAM,
+      false
+    );
     await maybeHideKeyboard();
 
     // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
@@ -247,7 +263,8 @@ describe('Edit ENS Flow', () => {
     );
     await Helpers.typeText(
       'ens-text-record-com.discord',
-      RECORD_DISCORD.slice(0, 3)
+      RECORD_DISCORD.slice(0, 3),
+      false
     );
     await maybeHideKeyboard();
     await Helpers.waitAndTap('ens-text-record-com.discord-error');
@@ -255,7 +272,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.tapByText('OK');
     await Helpers.typeText(
       'ens-text-record-com.discord',
-      RECORD_DISCORD.slice(3)
+      RECORD_DISCORD.slice(3),
+      false
     );
     await maybeHideKeyboard();
     await Helpers.delay(1000);
@@ -267,7 +285,7 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB);
+    await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB, false);
     await maybeHideKeyboard();
 
     // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
@@ -280,14 +298,15 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-BTC', '1F1');
+    await Helpers.typeText('ens-text-record-BTC', '1F1', false);
     await maybeHideKeyboard();
     await Helpers.waitAndTap('ens-text-record-BTC-error');
     await Helpers.checkIfElementByTextToExist('Invalid BTC address');
     await Helpers.tapByText('OK');
     await Helpers.typeText(
       'ens-text-record-BTC',
-      'tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX'
+      'tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX',
+      false
     );
     await maybeHideKeyboard();
     await Helpers.delay(3000);
@@ -301,7 +320,11 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-com.snapchat', RECORD_SNAPCHAT);
+    await Helpers.typeText(
+      'ens-text-record-com.snapchat',
+      RECORD_SNAPCHAT,
+      false
+    );
     await maybeHideKeyboard();
 
     // Fill "Telegram" field
@@ -310,7 +333,11 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-org.telegram', RECORD_TELEGRAM);
+    await Helpers.typeText(
+      'ens-text-record-org.telegram',
+      RECORD_TELEGRAM,
+      false
+    );
     await maybeHideKeyboard();
 
     // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
@@ -321,7 +348,7 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT);
+    await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT, false);
     await maybeHideKeyboard();
 
     // Fill "Pronouns" field
@@ -330,7 +357,7 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS);
+    await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS, false);
     await maybeHideKeyboard();
 
     // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
@@ -341,7 +368,7 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE);
+    await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE, false);
     await maybeHideKeyboard();
 
     // Fill "Keywords" field
@@ -350,7 +377,7 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS);
+    await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS, false);
     await maybeHideKeyboard();
 
     // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
@@ -362,14 +389,15 @@ describe('Edit ENS Flow', () => {
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-LTC', 'MGx');
+    await Helpers.typeText('ens-text-record-LTC', 'MGx', false);
     await maybeHideKeyboard();
     await Helpers.waitAndTap('ens-text-record-LTC-error');
     await Helpers.checkIfElementByTextToExist('Invalid LTC address');
     await Helpers.tapByText('OK');
     await Helpers.typeText(
       'ens-text-record-LTC',
-      'NPPB7eBoWPUaprtX9v9CXJZoD2465zN'
+      'NPPB7eBoWPUaprtX9v9CXJZoD2465zN',
+      false
     );
     await maybeHideKeyboard();
     await Helpers.delay(3000);
@@ -383,7 +411,8 @@ describe('Edit ENS Flow', () => {
     );
     await Helpers.typeText(
       'ens-text-record-contenthash',
-      RECORD_CONTENTHASH.slice(0, 3)
+      RECORD_CONTENTHASH.slice(0, 3),
+      false
     );
     await maybeHideKeyboard();
     await Helpers.waitAndTap('ens-text-record-contenthash-error');
@@ -391,7 +420,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.tapByText('OK');
     await Helpers.typeText(
       'ens-text-record-contenthash',
-      RECORD_CONTENTHASH.slice(3)
+      RECORD_CONTENTHASH.slice(3),
+      false
     );
     await maybeHideKeyboard();
     await Helpers.delay(3000);
@@ -406,7 +436,7 @@ describe('Edit ENS Flow', () => {
   });
 
   it('Should update a field', async () => {
-    await Helpers.typeText('ens-text-record-name', ' Guy');
+    await Helpers.typeText('ens-text-record-name', ' Guy', false);
     await maybeHideKeyboard();
     await Helpers.waitAndTap('hide-keyboard-button');
   });

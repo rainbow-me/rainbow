@@ -32,10 +32,15 @@ describe('Hidden tokens flow', () => {
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
 
-    await waitFor(element(by.text('Hide')))
-      .toBeVisible()
-      .withTimeout(2000);
-    await element(by.text('Hide')).tap();
+    if (android) {
+      await waitFor(element(by.text('Hide')))
+        .toBeVisible()
+        .withTimeout(2000);
+      await element(by.text('Hide')).tap();
+    } else {
+      await waitFor(element(by.label('Hide')).atIndex(1)).toBeVisible();
+      await element(by.label('Hide')).atIndex(1).tap();
+    }
   });
 
   it('NFT shows in Hidden collection', async () => {

@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
+const android = device.getPlatform() === 'android';
+
 beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
+  await Helpers.startHardhat();
 });
 
 describe('Send Sheet Interaction Flow', () => {
@@ -37,7 +37,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -51,19 +51,6 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should send ETH to test wallet"', async () => {
     await Helpers.sendETHtoTestWallet();
   });
-
-  // it('Should connect to hardhat', async () => {
-  //   await Helpers.swipe('wallet-screen', 'right', 'slow');
-  //   await Helpers.checkIfVisible('profile-screen');
-  //   await Helpers.waitAndTap('settings-button');
-  //   await Helpers.checkIfVisible('settings-sheet');
-  //   await Helpers.waitAndTap('developer-section');
-  //   await Helpers.checkIfVisible('developer-settings-sheet');
-  //   await Helpers.scrollTo('developer-settings-sheet', 'bottom');
-  //   await Helpers.waitAndTap('hardhat-section');
-  //   await Helpers.checkIfVisible('testnet-toast-Hardhat');
-  //   await Helpers.swipe('profile-screen', 'left', 'slow');
-  // });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await Helpers.waitAndTap('dev-button-hardhat');
@@ -255,71 +242,9 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('8.12');
     await Helpers.waitAndTap('send-asset-form-ETH-token');
   });
-
-  it.skip('Should show Add Contact Screen after tapping Add Contact Button', async () => {
-    await Helpers.checkIfVisible('add-contact-button');
-    await Helpers.waitAndTap('add-contact-button');
-    await Helpers.checkIfVisible('wallet-info-input');
-  });
-
-  it.skip('Should do nothing on Add Contact cancel', async () => {
-    await Helpers.tapByText('Cancel');
-    await Helpers.checkIfVisible('add-contact-button');
-    await Helpers.waitAndTap('add-contact-button');
-    await Helpers.tapByText('Cancel');
-  });
-
-  it.skip('Should update address field to show contact name & show edit contact button', async () => {
-    await Helpers.waitAndTap('add-contact-button');
-    await Helpers.clearField('wallet-info-input');
-    await Helpers.typeText('wallet-info-input', 'testcoin.test', true);
-    await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfElementByTextIsVisible('testcoin.test');
-    await Helpers.checkIfVisible('edit-contact-button');
-  });
-
-  it.skip('Should show Asset List & Edit Contact Button on cancel', async () => {
-    await Helpers.checkIfVisible('edit-contact-button');
-    await Helpers.waitAndTap('edit-contact-button');
-    await Helpers.tapByText('Cancel');
-  });
-
-  it.skip('Should updated contact name after edit contact', async () => {
-    await Helpers.checkIfVisible('edit-contact-button');
-    await Helpers.waitAndTap('edit-contact-button');
-    await Helpers.tapByText('Edit Contact');
-    await Helpers.clearField('wallet-info-input');
-    await Helpers.typeText('wallet-info-input', 'testcoin.eth', true);
-    await Helpers.waitAndTap('wallet-info-submit-button');
-    // await Helpers.tapByText('Done');
-    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
-  });
-
-  it.skip('Should load contacts if contacts exist', async () => {
-    if (device.getPlatform() === 'android') {
-      await device.pressBack();
-    } else {
-      await Helpers.swipe('send-asset-form-field', 'down', 'slow');
-    }
-    await Helpers.waitAndTap('send-fab');
-    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
-  });
-
-  it.skip('Should show Add Contact Button after deleting contact', async () => {
-    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
-    await Helpers.tapByText('testcoin.eth');
-    await Helpers.checkIfVisible('edit-contact-button');
-    await Helpers.waitAndTap('edit-contact-button');
-    await Helpers.tapByText('Delete Contact');
-    await Helpers.delay(2000);
-    await Helpers.tapByText('Delete Contact');
-    await Helpers.delay(2000);
-    await Helpers.checkIfVisible('add-contact-button');
-  });
-
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.killHardhat();
   });
 });

@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchResolver } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient } from '@/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@/react-query/types';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 import { ensPublicResolverAddress } from '@/references';
 
 export const ensResolverQueryKey = (name: string) => ['ens-resolver', name];
@@ -33,7 +36,7 @@ export async function prefetchENSResolver(name: string) {
 
 export default function useENSResolver(
   name: string,
-  config?: QueryConfig<typeof fetchENSResolver>
+  config?: QueryConfigDeprecated<typeof fetchENSResolver>
 ) {
   return useQuery<UseQueryData<typeof fetchENSResolver>>(
     ensResolverQueryKey(name),

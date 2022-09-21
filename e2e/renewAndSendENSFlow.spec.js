@@ -4,41 +4,17 @@ import { exec } from 'child_process';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
-import registrarABI from '@/references/ens/ENSETHRegistrarController.json';
 import publicResolverABI from '@/references/ens/ENSPublicResolver.json';
 import registryWithFallbackABI from '@/references/ens/ENSRegistryWithFallback.json';
 
-const ensETHRegistrarControllerAddress =
-  '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 const ensPublicResolverAddress = '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41';
 const ensRegistryAddress = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
 
-const RANDOM_NAME = 'randomname321';
-const RANDOM_NAME_ETH = RANDOM_NAME + '.eth';
 const RAINBOW_TEST_WALLET_NAME = 'rainbowtestwallet.eth';
 const RAINBOW_TEST_WALLET_ADDRESS =
   '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 const RAINBOW_WALLET_NAME = 'rainbowwallet.eth';
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
-const RECORD_BIO = 'my bio';
-const RECORD_NAME = 'random';
-const RECORD_CONTENTHASH =
-  'ipfs://QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4';
-const RECORD_TWITTER = 'twitter123';
-const RECORD_EMAIL = 'abc@abc.com';
-const RECORD_INSTAGRAM = 'insta123';
-const RECORD_DISCORD = 'abc#8133';
-const RECORD_GITHUB = 'github123';
-const RECORD_SNAPCHAT = 'snapchat123';
-const RECORD_TELEGRAM = 'telegram123';
-const RECORD_REDDIT = 'reddit123';
-const RECORD_PRONOUNS = 'they/them';
-const RECORD_NOTICE = 'notice123';
-const RECORD_KEYWORDS = 'keywords123';
-const RECORD_URL = 'abc123.com';
-const EIP155_FORMATTED_AVATAR_RECORD =
-  'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227';
-const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
 
 const address = (address, start, finish) =>
   [
@@ -144,7 +120,7 @@ describe('Renew + Send ENS Flow', () => {
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS);
+    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
       'Import'
@@ -208,7 +184,11 @@ describe('Renew + Send ENS Flow', () => {
   });
 
   it('Should go to review send ENS', async () => {
-    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth\n');
+    await Helpers.typeText(
+      'send-asset-form-field',
+      'rainbowwallet.eth\n',
+      false
+    );
     await Helpers.waitAndTap('gas-speed-custom');
     await Helpers.waitAndTap('speed-pill-urgent');
     await Helpers.waitAndTap('gas-speed-done-button');

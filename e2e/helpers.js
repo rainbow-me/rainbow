@@ -1,3 +1,4 @@
+import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect } from 'detox';
@@ -6,6 +7,15 @@ import { ethers } from 'ethers';
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 const DEFAULT_TIMEOUT = 8000;
+
+export async function startHardhat() {
+  await exec('yarn hardhat');
+}
+
+export async function killHardhat() {
+  await exec('kill $(lsof -t -i:8545)');
+}
+
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-undef */
 export async function waitAndTap(elementId, timeout) {
@@ -36,16 +46,29 @@ export function tapItemAtIndex(elementID, index) {
     .tap();
 }
 
-export async function typeText(elementId, text, focus = true) {
+export async function startIosSimulator() {
+  if (device.getPlatform() === 'ios') {
+    await exec(
+      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
+    );
+  }
+}
+
+export async function typeText(
+  elementId,
+  text,
+  focus = true,
+  syncOnAndroid = false
+) {
   if (focus) {
     await tap(elementId);
   }
   // this is way faster now
-  if (device.getPlatform() === 'android') {
+  if (device.getPlatform() === 'android' && !syncOnAndroid) {
     await device.disableSynchronization();
   }
   await element(by.id(elementId)).typeText(text);
-  if (device.getPlatform() === 'android') {
+  if (device.getPlatform() === 'android' && !syncOnAndroid) {
     await device.enableSynchronization();
   }
 }

@@ -91,10 +91,10 @@ export interface SwappableAsset extends ParsedAddressAsset {
       amount?: string;
     };
   };
-  implementations: {
+  implementations?: {
     [network: string]: { address: EthereumAddress; decimals: number };
   };
-  network: string;
+  network?: string;
 }
 
 export interface RainbowToken extends Asset {

@@ -33,7 +33,10 @@ const escapeUrl = url => {
 
 beforeAll(async () => {
   if (android) {
-    // maybe remove chrome
+    // When opening deeplink to rainbow, Android asks if we want to do it in
+    // Chrome or the app. Detox is only able to control tapping within the app,
+    // so this blocks our tests. The only way we found to bypass this is to
+    // uninstall Chrome before.
     await exec('yarn adb-all uninstall com.android.chrome');
   }
 });
@@ -66,7 +69,7 @@ describe('Deeplinks spec', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');

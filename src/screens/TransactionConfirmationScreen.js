@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
-import { IS_TESTING } from '@/env';
+import { IS_TESTING } from 'react-native-dotenv';
 import React, {
   Fragment,
   useCallback,

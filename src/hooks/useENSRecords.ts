@@ -7,8 +7,11 @@ import {
 } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
-import { queryClient } from '@/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@/react-query/types';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 
 export const ensRecordsQueryKey = ({
   name,
@@ -69,7 +72,9 @@ export default function useENSRecords(
   {
     supportedOnly = true,
     ...config
-  }: QueryConfig<typeof fetchENSRecords> & { supportedOnly?: boolean } = {}
+  }: QueryConfigDeprecated<typeof fetchENSRecords> & {
+    supportedOnly?: boolean;
+  } = {}
 ) {
   return useQuery<UseQueryData<typeof fetchENSRecords>>(
     ensRecordsQueryKey({ name, supportedOnly }),
