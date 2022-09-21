@@ -24,7 +24,7 @@ export function PairHardwareWalletIntroSheet() {
           <Inset horizontal="44px">
             <Stack alignHorizontal="center" space="20px">
               <Text align="center" color="label" weight="bold" size="26pt">
-                {lang.t('hardware_wallets.intro.pair_your_nano')}
+                {lang.t('hardware_wallets.pair_your_nano')}
               </Text>
               <Stack space="10px">
                 <Text
@@ -33,7 +33,7 @@ export function PairHardwareWalletIntroSheet() {
                   weight="semibold"
                   size="15pt / 135%"
                 >
-                  {lang.t('hardware_wallets.intro.connect_your_ledger')}
+                  {lang.t('hardware_wallets.connect_your_ledger')}
                 </Text>
                 <Text
                   align="center"
@@ -41,7 +41,7 @@ export function PairHardwareWalletIntroSheet() {
                   weight="semibold"
                   size="15pt / 135%"
                 >
-                  {lang.t('hardware_wallets.intro.learn_more_about_ledger')}
+                  {lang.t('hardware_wallets.learn_more_about_ledger')}
                 </Text>
               </Stack>
             </Stack>
@@ -52,7 +52,7 @@ export function PairHardwareWalletIntroSheet() {
             <SheetActionButton
               color={buttonColor}
               // @ts-expect-error JavaScript component
-              label={lang.t('hardware_wallets.intro.pair_a_new_ledger')}
+              label={lang.t('hardware_wallets.pair_a_new_ledger')}
               lightShadows
               onPress={handleNavigateToSearch}
               // @ts-expect-error - JS component

@@ -1344,16 +1344,12 @@
       "invalid_paste": "You can't paste that here"
     },
     "hardware_wallets": {
-      "intro": {
-        "pair_your_nano": "Pair your Nano X",
-        "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
-        "learn_more_about_ledger": "Learn more about Ledger",
-        "pair_a_new_ledger": "Pair a new Ledger"
-      },
-      "search": {
-        "looking_for_devices": "Looking for devices",
-        "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
-      }
+      "pair_your_nano": "Pair your Nano X",
+      "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
+      "learn_more_about_ledger": "Learn more about Ledger",
+      "pair_a_new_ledger": "Pair a new Ledger",
+      "looking_for_devices": "Looking for devices",
+      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
     },
     "wallet": {
       "action": {

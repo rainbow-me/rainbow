@@ -155,7 +155,7 @@ export const pairHardwareWalletNavigatorConfig = {
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
-      scrollEnabled: false,
+      scrollEnabled: true,
       springDamping: 1,
       transitionDuration: 0.2,
     }),

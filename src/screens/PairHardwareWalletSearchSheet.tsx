@@ -18,7 +18,7 @@ export function PairHardwareWalletSearchSheet() {
           <Inset horizontal="44px">
             <Stack alignHorizontal="center" space="20px">
               <Text align="center" color="label" weight="bold" size="26pt">
-                {lang.t('hardware_wallets.search.looking_for_devices')}
+                {lang.t('hardware_wallets.looking_for_devices')}
               </Text>
               <Text
                 align="center"
@@ -26,7 +26,7 @@ export function PairHardwareWalletSearchSheet() {
                 weight="semibold"
                 size="15pt / 135%"
               >
-                {lang.t('hardware_wallets.search.make_sure_bluetooth_enabled')}
+                {lang.t('hardware_wallets.make_sure_bluetooth_enabled')}
               </Text>
             </Stack>
           </Inset>
