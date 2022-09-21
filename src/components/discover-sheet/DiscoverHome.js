@@ -10,21 +10,26 @@ import PulseIndex from './PulseIndexSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Columns, Inset, Stack } from '@rainbow-me/design-system';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { Columns, Inset, Stack } from '@/design-system';
+import { useAccountAsset, useAccountSettings } from '@/hooks';
+import { ETH_ADDRESS } from '@/references';
+import { isZero } from '@/helpers/utilities';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();
+  const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const testNetwork = isTestnetNetwork(network);
   return (
     <React.Fragment>
       <Inset top={{ custom: 16 }}>
-        <Stack space="30px">
-          {profilesEnabled && !testNetwork ? (
-            <Inset horizontal={ios && '19px'}>
-              <Stack space={ios && '19px'}>
-                <Columns space={ios && '19px'}>
+        <Stack space="30px (Deprecated)">
+          {profilesEnabled &&
+          !testNetwork &&
+          !isZero(accountAsset.balance.amount) ? (
+            <Inset horizontal={ios && '19px (Deprecated)'}>
+              <Stack space={ios && '19px (Deprecated)'}>
+                <Columns space={ios && '19px (Deprecated)'}>
                   <GasCard />
                   <ENSSearchCard />
                 </Columns>
@@ -38,7 +43,7 @@ export default function DiscoverHome() {
               <PulseIndex />
             </Stack>
           )}
-          <Stack space="30px">
+          <Stack space="30px (Deprecated)">
             <Lists />
             {accountAddress ? <UniswapPools /> : null}
           </Stack>

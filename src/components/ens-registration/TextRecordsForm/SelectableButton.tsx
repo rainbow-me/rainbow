@@ -5,7 +5,7 @@ import {
   Box,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 type SelectableButtonProps = {
   children: ReactNode;
@@ -20,8 +20,8 @@ export default function SelectableButton({
   isSelected,
   testID,
 }: SelectableButtonProps) {
-  const secondary06 = useForegroundColor('secondary06');
-  const secondary30 = useForegroundColor('secondary30');
+  const secondary06 = useForegroundColor('secondary06 (Deprecated)');
+  const secondary30 = useForegroundColor('secondary30 (Deprecated)');
   const accent = useForegroundColor('accent');
   const borderColor = isSelected ? accent : secondary06;
   const textColor = isSelected ? accent : secondary30;
@@ -48,7 +48,12 @@ export default function SelectableButton({
             paddingBottom: android ? 2 : 0,
           }}
         >
-          <Text align="center" color="accent" size="16px" weight="heavy">
+          <Text
+            align="center"
+            color="accent"
+            size="16px / 22px (Deprecated)"
+            weight="heavy"
+          >
             {children}
           </Text>
         </Box>

@@ -33,7 +33,7 @@ import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 import {
   useCoinListEdited,
   useOpenFamilies,
@@ -42,9 +42,9 @@ import {
   useOpenSmallBalances,
   usePrevious,
   useRefreshAccountData,
-} from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import styled from '@/styled-thing';
+import { deviceUtils } from '@/utils';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -677,7 +677,7 @@ function RecyclerAssetList({
         }
       });
 
-      let balancesRows = [];
+      const balancesRows = [];
       let coinDividerHeight = 0;
 
       balances?.data?.forEach(element => {
@@ -692,7 +692,7 @@ function RecyclerAssetList({
         }
       });
       const balancesHeight = balancesRows.length * CoinRowHeight;
-      //-3 for pixel perfection
+      // -3 for pixel perfection
       const smallBalancesHeight =
         ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
           isCoinListEdited: isCoinListEdited,

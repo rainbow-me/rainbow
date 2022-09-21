@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AssetType } from '@rainbow-me/entities';
-import { useForceUpdate } from '@rainbow-me/hooks';
-import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
-import { ThemeContextProps } from '@rainbow-me/theme';
-import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
+import { AssetType } from '@/entities';
+import { useForceUpdate } from '@/hooks';
+import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
+import { ThemeContextProps } from '@/theme';
+import { getUrlForTrustIconFallback } from '@/utils';
 
 const ImageState = {
   ERROR: 'ERROR',

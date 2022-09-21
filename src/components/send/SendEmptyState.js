@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { useTheme } from '@rainbow-me/theme';
+import { useTheme } from '@/theme';
 
 const SendEmptyState = () => {
   const { colors } = useTheme();

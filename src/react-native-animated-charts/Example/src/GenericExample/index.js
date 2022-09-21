@@ -16,7 +16,7 @@ import {
   ChartYLabel,
   monotoneCubicInterpolation,
   simplifyData,
-} from '@rainbow-me/animated-charts';
+} from '@/react-native-animated-charts/src';
 
 export const {width: SIZE} = Dimensions.get('window');
 

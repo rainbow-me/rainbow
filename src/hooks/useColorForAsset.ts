@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
-import { AssetType, ParsedAddressAsset } from '@rainbow-me/entities';
+import { AssetType, ParsedAddressAsset } from '@/entities';
 import {
   getTokenMetadata,
   getUrlForTrustIconFallback,
   isETH,
   pseudoRandomArrayItemFromString,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},
-  fallbackColor: any = undefined,
+  fallbackColor: string | undefined = undefined,
   forceLightMode = false,
   forceETHColor = false
 ) {

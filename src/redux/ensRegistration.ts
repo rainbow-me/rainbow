@@ -7,14 +7,14 @@ import {
   Records,
   RegistrationParameters,
   TransactionRegistrationParameters,
-} from '@rainbow-me/entities';
+} from '@/entities';
 import {
   getLocalENSRegistrations,
   saveLocalENSRegistrations,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
-import { NetworkTypes } from '@rainbow-me/helpers';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { omitFlatten } from '@rainbow-me/helpers/utilities';
+} from '@/handlers/localstorage/accountLocal';
+import { NetworkTypes } from '@/helpers';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
+import { omitFlatten } from '@/helpers/utilities';
 
 const ENS_REGISTRATION_SET_CHANGED_RECORDS =
   'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';

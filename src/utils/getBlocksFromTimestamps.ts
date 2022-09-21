@@ -1,8 +1,8 @@
 import { ApolloClient } from '@apollo/client';
 import { DocumentNode } from 'graphql';
-import { blockClient } from '@rainbow-me/apollo/client';
-import { GET_BLOCKS_QUERY } from '@rainbow-me/apollo/queries';
-import logger from 'logger';
+import { blockClientDeprecated } from '@/apollo/client';
+import { GET_BLOCKS_QUERY } from '@/apollo/queries';
+import logger from '@/utils/logger';
 
 async function splitQuery(
   query: DocumentNode,
@@ -59,7 +59,7 @@ export default async function getBlocksFromTimestamps(
   const fetchedData = await splitQuery(
     // @ts-expect-error ts-migrate(100007) FIXME: Remove this comment to see the full error message
     GET_BLOCKS_QUERY,
-    blockClient,
+    blockClientDeprecated,
     [],
     timestamps,
     skipCount

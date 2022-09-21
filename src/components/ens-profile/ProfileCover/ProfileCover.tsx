@@ -4,10 +4,10 @@ import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
-import { Box, useForegroundColor } from '@rainbow-me/design-system';
-import { useFadeImage } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
+import { Box, useForegroundColor } from '@/design-system';
+import { useFadeImage } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
 
@@ -37,7 +37,7 @@ export default function ProfileCover({
       {showSkeleton && (
         <Box height="126px" position="absolute" top="0px" width="full">
           <Skeleton animated>
-            <Box background="body" height="126px" width="full" />
+            <Box background="body (Deprecated)" height="126px" width="full" />
           </Skeleton>
         </Box>
       )}
@@ -58,7 +58,7 @@ export default function ProfileCover({
                   ? {}
                   : coverUrl
                   ? {
-                      background: 'body',
+                      background: 'body (Deprecated)',
                     }
                   : {
                       style: { backgroundColor: accentColor },

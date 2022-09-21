@@ -3,9 +3,9 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
 const KeyboardButtonContent = styled(Centered)({
   height: ({ height }) => height,

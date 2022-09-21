@@ -6,7 +6,7 @@ import {
 } from 'recyclerlistview';
 import ViewDimensions from './ViewDimensions';
 import { BaseCellType, CellType } from './ViewTypes';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
   if (indices.includes(index)) {

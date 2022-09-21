@@ -1,9 +1,12 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
-import { fetchOwner } from '@rainbow-me/handlers/ens';
-import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { fetchOwner } from '@/handlers/ens';
+import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 
 export const ensOwnerQueryKey = (name: string) => ['ens-owner', name];
 
@@ -29,7 +32,7 @@ export async function prefetchENSOwner(name: string) {
 
 export default function useENSOwner(
   name: string,
-  config?: QueryConfig<typeof fetchENSOwner>
+  config?: QueryConfigDeprecated<typeof fetchENSOwner>
 ) {
   const { accountAddress } = useAccountSettings();
 

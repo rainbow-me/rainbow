@@ -3,7 +3,7 @@ import React from 'react';
 import { web3Provider } from '../../handlers/web3';
 import networkTypes from '../../helpers/networkTypes';
 import Toast from './Toast';
-import { useAccountSettings, useInternetStatus } from '@rainbow-me/hooks';
+import { useAccountSettings, useInternetStatus } from '@/hooks';
 
 const OfflineToast = () => {
   const isConnected = useInternetStatus();

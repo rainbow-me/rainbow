@@ -1,5 +1,5 @@
 import { TruncatedText } from '../text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const CoinName = styled(TruncatedText).attrs(
   ({ color, size, theme: { colors } }) => ({

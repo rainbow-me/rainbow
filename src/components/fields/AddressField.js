@@ -5,9 +5,9 @@ import { isHexString } from '../../handlers/web3';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
-import { useClipboard, useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { abbreviations, addressUtils } from '@rainbow-me/utils';
+import { useClipboard, useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { abbreviations, addressUtils } from '@/utils';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',

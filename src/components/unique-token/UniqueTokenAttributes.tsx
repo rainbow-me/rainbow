@@ -2,15 +2,16 @@ import React, { useMemo } from 'react';
 import { sortList } from '../../helpers/sortList';
 import { magicMemo } from '../../utils';
 import Tag from './Tag';
-import { Inline } from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import isHttpUrl from '@rainbow-me/helpers/isHttpUrl';
-import transformUniqueAssetTraitsForPresentation from '@rainbow-me/helpers/transformUniqueAssetTraitsForPresentation';
-import uniqueAssetTraitDisplayTypeCompareFunction from '@rainbow-me/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
+import { Inline } from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import isHttpUrl from '@/helpers/isHttpUrl';
+import transformUniqueAssetTraitsForPresentation from '@/helpers/transformUniqueAssetTraitsForPresentation';
+import uniqueAssetTraitDisplayTypeCompareFunction from '@/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
 
 interface UniqueTokenAttributesProps {
   color: string;
   hideNftMarketplaceAction: boolean;
+  marketplaceId?: string | null;
   marketplaceName?: string | null;
   slug: string;
   traits: UniqueAsset['traits'];
@@ -19,6 +20,7 @@ interface UniqueTokenAttributesProps {
 const UniqueTokenAttributes = ({
   color,
   hideNftMarketplaceAction,
+  marketplaceId,
   marketplaceName,
   slug,
   traits,
@@ -62,6 +64,7 @@ const UniqueTokenAttributes = ({
             hideNftMarketplaceAction={hideNftMarketplaceAction}
             key={`${type}${originalValue}`}
             lowercase={lowercase}
+            marketplaceId={marketplaceId}
             marketplaceName={marketplaceName}
             maxValue={maxValue}
             originalValue={originalValue}
@@ -78,6 +81,7 @@ const UniqueTokenAttributes = ({
 export default magicMemo(UniqueTokenAttributes, [
   'color',
   'slug',
+  'marketplaceId',
   'marketplaceName',
   'traits',
 ]);

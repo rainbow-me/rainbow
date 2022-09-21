@@ -5,12 +5,12 @@ import RNExitApp from 'react-native-exit-app';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
-import logger from 'logger';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
+import logger from '@/utils/logger';
 
 // @ts-ignore
-const Spacer = styled(View)<{ height: Number }>({
+const Spacer = styled(View)<{ height: number }>({
   // @ts-ignore
   height: ({ height }) => height,
 });

@@ -1,8 +1,11 @@
-import { useQuery } from 'react-query';
-import { fetchImage } from '@rainbow-me/handlers/ens';
-import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { useQuery } from '@tanstack/react-query';
+import { fetchImage } from '@/handlers/ens';
+import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 
 export const ensAvatarQueryKey = (name: string) => ['ens-avatar', name];
 
@@ -43,7 +46,7 @@ export async function prefetchENSAvatar(
 
 export default function useENSAvatar(
   name: string,
-  config?: QueryConfig<typeof fetchENSAvatar>
+  config?: QueryConfigDeprecated<typeof fetchENSAvatar>
 ) {
   return useQuery<UseQueryData<typeof fetchENSAvatar>>(
     ensAvatarQueryKey(name),

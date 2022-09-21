@@ -1,9 +1,13 @@
+// @ts-ignore
 import { changeIcon } from 'react-native-change-icon';
+import lang from 'i18n-js';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
-import { analytics } from '@rainbow-me/analytics';
-import { NativeCurrencyKeys } from '@rainbow-me/entities';
+import { analytics } from '@/analytics';
+import { NativeCurrencyKeys } from '@/entities';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+
 import {
   getAppIcon,
   getFlashbotsEnabled,
@@ -17,15 +21,15 @@ import {
   saveNativeCurrency,
   saveNetwork,
   saveTestnetsEnabled,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
-import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { dataResetState } from '@rainbow-me/redux/data';
-import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
-import { AppState } from '@rainbow-me/redux/store';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/localstorage/globalSettings';
+import { web3SetHttpProvider } from '@/handlers/web3';
+import { Network } from '@/helpers/networkTypes';
+import { dataResetState } from '@/redux/data';
+import { explorerClearState, explorerInit } from '@/redux/explorer';
+import { AppState } from '@/redux/store';
+import { supportedNativeCurrencies } from '@/references';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
@@ -195,20 +199,41 @@ export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
   saveTestnetsEnabled(testnetsEnabled);
 };
 
-export const settingsChangeAppIcon = (appIcon: string) => async (
+export const settingsChangeAppIcon = (appIcon: string) => (
   dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>
 ) => {
-  logger.log('changing app icon to', appIcon);
-  try {
-    await changeIcon(appIcon);
-    logger.log('icon changed to ', appIcon);
-    saveAppIcon(appIcon);
-    dispatch({
-      payload: appIcon,
-      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
-    });
-  } catch (error) {
-    logger.log('Error changing app icon', error);
+  const callback = async () => {
+    logger.log('changing app icon to', appIcon);
+    try {
+      await changeIcon(appIcon);
+      logger.log('icon changed to ', appIcon);
+      saveAppIcon(appIcon);
+      dispatch({
+        payload: appIcon,
+        type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+      });
+    } catch (error) {
+      logger.log('Error changing app icon', error);
+    }
+  };
+
+  if (android) {
+    Alert.alert(
+      lang.t('settings.icon_change.title'),
+      lang.t('settings.icon_change.warning'),
+      [
+        {
+          onPress: () => {},
+          text: lang.t('settings.icon_change.cancel'),
+        },
+        {
+          onPress: callback,
+          text: lang.t('settings.icon_change.confirm'),
+        },
+      ]
+    );
+  } else {
+    callback();
   }
 };
 

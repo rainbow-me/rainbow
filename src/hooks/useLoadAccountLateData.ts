@@ -3,7 +3,7 @@ import { promiseUtils } from '../utils';
 import { prefetchAccountENSDomains } from './useAccountENSDomains';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
-import logger from 'logger';
+import logger from '@/utils/logger';
 
 export default function useLoadAccountLateData() {
   const { accountAddress } = useAccountSettings();

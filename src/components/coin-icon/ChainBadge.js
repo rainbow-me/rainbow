@@ -13,9 +13,9 @@ import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
 import PolygonBadgeLarge from '../../assets/badges/polygonBadgeLarge.png';
 import PolygonBadgeLargeDark from '../../assets/badges/polygonBadgeLargeDark.png';
 import { Centered } from '../layout';
-import { AssetType } from '@rainbow-me/entities';
-import styled from '@rainbow-me/styled-components';
-import { position as positions } from '@rainbow-me/styles';
+import { AssetType } from '@/entities';
+import styled from '@/styled-thing';
+import { position as positions } from '@/styles';
 
 const sizeConfigs = {
   large: {
@@ -31,8 +31,8 @@ const sizeConfigs = {
     iconSize: 20,
   },
   tiny: {
-    containerSize: 22,
-    iconSize: 10,
+    containerSize: 30,
+    iconSize: 14,
   },
 };
 

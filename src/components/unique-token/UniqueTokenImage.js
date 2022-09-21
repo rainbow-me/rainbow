@@ -6,14 +6,14 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
-import { Text } from '@rainbow-me/design-system';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { useHiddenTokens } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import isSVGImage from '@rainbow-me/utils/isSVG';
+import { Text } from '@/design-system';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { useHiddenTokens } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import isSVGImage from '@/utils/isSVG';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -59,7 +59,7 @@ const UniqueTokenImage = ({
   const { isDarkMode, colors } = useTheme();
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
-  let backgroundColor = givenBackgroundColor;
+  const backgroundColor = givenBackgroundColor;
   const { hiddenTokens } = useHiddenTokens();
   const isHiddenToken = React.useMemo(() => {
     return hiddenTokens.find(token => token === item.fullUniqueId);
@@ -116,9 +116,9 @@ const UniqueTokenImage = ({
           <View style={{ paddingHorizontal: 10 }} zIndex={2}>
             <Text
               align="center"
-              color="secondary60"
+              color="secondary60 (Deprecated)"
               lineHeight="looser"
-              size="14px"
+              size="14px / 19px (Deprecated)"
               weight="semibold"
             >
               {`${item.familyName} #${item.id}`}

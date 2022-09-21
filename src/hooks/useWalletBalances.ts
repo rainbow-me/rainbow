@@ -1,19 +1,19 @@
 import { Contract } from '@ethersproject/contracts';
+import { useQuery } from '@tanstack/react-query';
 import { isEmpty, keys } from 'lodash';
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
-} from '@rainbow-me/handlers/localstorage/walletBalances';
-import { web3Provider } from '@rainbow-me/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { AllRainbowWallets } from '@rainbow-me/model/wallet';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { balanceCheckerContractAbi } from '@rainbow-me/references';
-import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
-import logger from 'logger';
+} from '@/handlers/localstorage/walletBalances';
+import { web3Provider } from '@/handlers/web3';
+import networkInfo from '@/helpers/networkInfo';
+import { AllRainbowWallets } from '@/model/wallet';
+import { queryClient } from '@/react-query';
+import { balanceCheckerContractAbi } from '@/references';
+import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
+import logger from '@/utils/logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -62,7 +62,7 @@ const useWalletBalances = (wallets: AllRainbowWallets) => {
 
   const resultFromStorage = queryClient.getQueryData<{
     [address: string]: string;
-  }>(WALLET_BALANCES_FROM_STORAGE);
+  }>([WALLET_BALANCES_FROM_STORAGE]);
 
   if (isEmpty(data) && !isEmpty(resultFromStorage)) {
     return resultFromStorage;

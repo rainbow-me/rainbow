@@ -22,11 +22,11 @@ import {
   Text,
   useColorMode,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import { add } from '@rainbow-me/helpers/utilities';
-import { useDimensions, useGas } from '@rainbow-me/hooks';
-import { useTheme } from '@rainbow-me/theme';
-import { gasUtils } from '@rainbow-me/utils';
+} from '@/design-system';
+import { add } from '@/helpers/utilities';
+import { useDimensions, useGas } from '@/hooks';
+import { useTheme } from '@/theme';
+import { gasUtils } from '@/utils';
 
 type AnimationConfigOptions = {
   duration: number;
@@ -119,7 +119,7 @@ export default function GasCard() {
             : Math.round(Number(lastKnownGwei)) || '􀖇'
           : animatedNumber;
       return (
-        <Heading color="accent" size="44px" weight="bold">
+        <Heading color="accent" size="44px / 53px (Deprecated)" weight="bold">
           {priceText}
         </Heading>
       );
@@ -160,7 +160,7 @@ export default function GasCard() {
       light: '#FFFFFF',
     },
   });
-  const grey = useForegroundColor('secondary60');
+  const grey = useForegroundColor('secondary60 (Deprecated)');
   const green = useForegroundColor({
     custom: {
       dark: colors.green,
@@ -325,7 +325,11 @@ export default function GasCard() {
                         timing={(t: number) => 1 - --t * t * t * t}
                         value={currentGwei || lastKnownGwei}
                       />
-                      <Text color="accent" size="18px" weight="bold">
+                      <Text
+                        color="accent"
+                        size="18px / 27px (Deprecated)"
+                        weight="bold"
+                      >
                         {!isCurrentGweiLoaded && !lastKnownGwei
                           ? ''
                           : lang.t('discover.gas.gwei')}
@@ -334,16 +338,20 @@ export default function GasCard() {
                   </Stack>
                   <Box bottom="0px" position="absolute">
                     <Stack space={{ custom: 11 }}>
-                      <Text color="secondary60" size="14px" weight="bold">
+                      <Text
+                        color="secondary60 (Deprecated)"
+                        size="14px / 19px (Deprecated)"
+                        weight="bold"
+                      >
                         {lang.t('discover.gas.network_fees')}
                       </Text>
                       <Text
                         color={
                           !isCurrentGweiLoaded && !lastKnownGwei
-                            ? 'secondary60'
-                            : 'secondary80'
+                            ? 'secondary60 (Deprecated)'
+                            : 'secondary80 (Deprecated)'
                         }
-                        size="18px"
+                        size="18px / 27px (Deprecated)"
                         weight="bold"
                       >
                         {getCurrentPriceComparison(currentGwei, lastKnownGwei)}

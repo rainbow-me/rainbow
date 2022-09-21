@@ -1,15 +1,15 @@
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
 import { Row } from '../components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '../components/sheet';
 import WalletConnectListItem, {
   WalletConnectListItemHeight,
 } from '../components/walletconnect-list/WalletConnectListItem';
-import { useWalletConnectConnections } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
+import { useWalletConnectConnections } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
 
 const MAX_VISIBLE_DAPPS = 7;
 
@@ -26,7 +26,7 @@ const SheetTitleWithPadding = styled(SheetTitle)({
 export default function ConnectedDappsSheet() {
   const { mostRecentWalletConnectors } = useWalletConnectConnections();
   const { goBack } = useNavigation();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   useEffect(() => {

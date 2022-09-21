@@ -23,20 +23,20 @@ import {
   ZerionTransaction,
   ZerionTransactionChange,
   ZerionTransactionStatus,
-} from '@rainbow-me/entities';
-import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/entities';
+import { getTransactionMethodName } from '@/handlers/transactions';
+import { isL2Network } from '@/handlers/web3';
+import { Network } from '@/helpers/networkTypes';
 import {
   ETH_ADDRESS,
   savingsAssetsList,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
-} from '@rainbow-me/utilities';
-import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethereumUtils, getTokenMetadata } from '@/utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -299,7 +299,7 @@ const parseTransactionWithEmptyChanges = async (
       description: methodName || 'Signed',
       from: txn.address_from,
       hash: `${txn.hash}-${0}`,
-      minedAt: txn.mined_at || txn.signed_at!,
+      minedAt: txn.mined_at,
       name: methodName || 'Signed',
       native: nativeDisplay,
       network,
@@ -384,7 +384,7 @@ const parseTransaction = async (
           description,
           from: internalTxn.address_from ?? txn.address_from,
           hash: `${txn.hash}-${index}`,
-          minedAt: txn.mined_at || txn.signed_at!,
+          minedAt: txn.mined_at,
           name: updatedAsset.name,
           native: isL2Network(network)
             ? { amount: '', display: '' }
@@ -418,7 +418,7 @@ export const getTitle = ({
 }: {
   protocol: ProtocolType | null | undefined;
   status: TransactionStatus;
-  type: TransactionType;
+  type?: TransactionType;
 }) => {
   if (
     protocol &&
@@ -476,7 +476,7 @@ export const getTransactionLabel = ({
   pending: boolean;
   protocol: ProtocolType | null | undefined;
   status: ZerionTransactionStatus | TransactionStatus;
-  type: TransactionType;
+  type?: TransactionType;
 }) => {
   if (status === TransactionStatus.cancelling)
     return TransactionStatus.cancelling;

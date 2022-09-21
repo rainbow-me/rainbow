@@ -1,13 +1,11 @@
 import { captureException } from '@sentry/react-native';
 import {
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   COVALENT_ANDROID_API_KEY,
-  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   COVALENT_IOS_API_KEY,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import { EthereumAddress } from '@rainbow-me/entities';
-import Logger from 'logger';
+import { EthereumAddress } from '@/entities';
+import Logger from '@/utils/logger';
 
 // A response from Covalent for the address balance API.
 // See https://www.covalenthq.com/docs/api/#/0/Get%20historical%20portfolio%20value%20over%20time/USD/1.
@@ -36,7 +34,7 @@ interface CovalentAddressBalanceResponseData {
 }
 
 export const getAssetsFromCovalent = async (
-  chainId: Number,
+  chainId: number,
   accountAddress: EthereumAddress,
   currency: string
 ): Promise<CovalentAddressBalanceResponseData | null> => {
