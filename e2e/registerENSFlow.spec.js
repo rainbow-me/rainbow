@@ -191,7 +191,13 @@ describe('Register ENS Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.setPinOnAndroid();
+    if (android) {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.checkIfVisible('wallet-screen', 80000);
     await Helpers.enableSynchronization();
   });
@@ -293,7 +299,10 @@ describe('Register ENS Flow', () => {
       await Helpers.tapAndLongPress('ens-transaction-action-COMMIT');
     }
     await Helpers.delay(3000);
-    await Helpers.usePinOnAndroid();
+    if (android) {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(2000);
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
@@ -307,7 +316,9 @@ describe('Register ENS Flow', () => {
       await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-REGISTER');
-      await Helpers.setPinOnAndroid();
+      await Helpers.delay(2000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
     }
   });
 
@@ -371,7 +382,9 @@ describe('Register ENS Flow', () => {
       await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-SET_NAME');
-      await Helpers.usePinOnAndroid();
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
     }
   });
 
@@ -667,7 +680,9 @@ describe('Register ENS Flow', () => {
       await Helpers.waitAndTap(`ens-transaction-action-EDIT`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-EDIT');
-      await Helpers.usePinOnAndroid();
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
     }
   });
 
@@ -723,7 +738,9 @@ describe('Register ENS Flow', () => {
       await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-RENEW');
-      await Helpers.usePinOnAndroid();
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
     }
   });
 
@@ -757,7 +774,9 @@ describe('Register ENS Flow', () => {
       await Helpers.waitAndTap(`send-confirmation-button`);
     } else {
       await Helpers.tapAndLongPress('send-confirmation-button');
-      await Helpers.usePinOnAndroid();
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
     }
   });
 

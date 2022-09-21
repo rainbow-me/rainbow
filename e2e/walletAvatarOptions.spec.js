@@ -45,7 +45,11 @@ describe('Wallet avatar options', () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
     await Helpers.tapByText('􀁍 Create a new wallet');
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.setPinOnAndroid();
+    if (android) {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+      await Helpers.authenticatePin('1234');
+    }
     // Remove this once https://github.com/rainbow-me/rainbow/pull/4115 is merged.
     await Helpers.relaunchApp();
     await Helpers.swipe('wallet-screen', 'right', 'slow');

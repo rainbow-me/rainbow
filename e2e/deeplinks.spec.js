@@ -69,7 +69,13 @@ describe('Deeplinks spec', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.setPinOnAndroid();
+    if (android) {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
   });

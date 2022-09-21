@@ -13,7 +13,13 @@ describe('Hidden tokens flow', () => {
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.setPinOnAndroid();
+    if (android) {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.checkIfVisible('wallet-screen', 80000);
     await Helpers.enableSynchronization();
   });

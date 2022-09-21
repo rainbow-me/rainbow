@@ -58,7 +58,13 @@ describe('Hardhat Transaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.setPinOnAndroid();
+    if (android) {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.checkIfVisible('wallet-screen', 80000);
     await Helpers.enableSynchronization();
   });
@@ -171,8 +177,14 @@ describe('Hardhat Transaction Flow', () => {
       await Helpers.tap('exchange-modal-confirm-button');
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
+
     await acceptAlertIfGasPriceIsHigh();
-    await Helpers.usePinOnAndroid();
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
+
     await checkIfSwapCompleted('Ethereum', '0.001 ETH');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -198,7 +210,8 @@ describe('Hardhat Transaction Flow', () => {
     await acceptAlertIfGasPriceIsHigh();
     if (android) {
       await Helpers.delay(3000);
-      await Helpers.usePinOnAndroid();
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
     }
     await checkIfSwapCompleted('Ethereum', '0.001 ETH');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -222,7 +235,11 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('swap-details-confirm-button');
 
     await acceptAlertIfGasPriceIsHigh();
-    await Helpers.usePinOnAndroid();
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await checkIfSwapCompleted('Wrapper Ether', '0.0005 WETH');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -244,7 +261,12 @@ describe('Hardhat Transaction Flow', () => {
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await Helpers.usePinOnAndroid();
+
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await checkIfSwapCompleted('Wrapper Ether', '0.0005 WETH');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -268,7 +290,11 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('swap-details-confirm-button');
 
     await acceptAlertIfGasPriceIsHigh();
-    await Helpers.usePinOnAndroid();
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await checkIfSwapCompleted('DAI', '4 DAI');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -289,8 +315,13 @@ describe('Hardhat Transaction Flow', () => {
       await Helpers.tap('exchange-modal-confirm-button');
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
+
     await acceptAlertIfGasPriceIsHigh();
-    await Helpers.usePinOnAndroid();
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await checkIfSwapCompleted('DAI', '4 DAI');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -313,7 +344,11 @@ describe('Hardhat Transaction Flow', () => {
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await Helpers.usePinOnAndroid();
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await checkIfSwapCompleted('Ethereum', '0.005 ETH');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -335,7 +370,11 @@ describe('Hardhat Transaction Flow', () => {
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await Helpers.usePinOnAndroid();
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await checkIfSwapCompleted('USD Coin', '25 USDC');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -357,7 +396,11 @@ describe('Hardhat Transaction Flow', () => {
     }
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await Helpers.usePinOnAndroid();
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
     await checkIfSwapCompleted('USD Coin', '20 USDC');
     await acceptAlertIfGasPriceIsHigh();
     await Helpers.swipe('profile-screen', 'left', 'slow');
