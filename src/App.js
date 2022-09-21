@@ -1,13 +1,13 @@
 import './languages';
 import messaging from '@react-native-firebase/messaging';
 import * as Sentry from '@sentry/react-native';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
 import {
   AppRegistry,
   AppState,
+  Dimensions,
   InteractionManager,
   Linking,
   LogBox,
@@ -59,7 +59,11 @@ import RoutesComponent from './navigation/Routes';
 import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
-import { queryClient } from './react-query/queryClient';
+import {
+  PersistQueryClientProvider,
+  persistOptions,
+  queryClient,
+} from './react-query';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
@@ -212,12 +216,7 @@ class App extends Component {
           if (IS_TESTING === 'true') {
             return;
           }
-
-          if (ios) {
-            runFeatureAndCampaignChecks();
-          } else {
-            runCampaignChecks();
-          }
+          runFeatureAndCampaignChecks();
         }, 2000);
       });
     }
@@ -280,6 +279,15 @@ class App extends Component {
       mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, true);
     } else if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
       mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
+      // track device dimensions
+      const screenWidth = Dimensions.get('screen').width;
+      const screenHeight = Dimensions.get('screen').height;
+      const screenScale = Dimensions.get('screen').scale;
+      analytics.identify(storedIdentifier, {
+        screenHeight,
+        screenWidth,
+        screenScale,
+      });
     }
   };
 
@@ -341,7 +349,10 @@ class App extends Component {
         <ErrorBoundary>
           <Portal>
             <SafeAreaProvider>
-              <QueryClientProvider client={queryClient}>
+              <PersistQueryClientProvider
+                client={queryClient}
+                persistOptions={persistOptions}
+              >
                 <Provider store={store}>
                   <RecoilRoot>
                     <SharedValuesProvider>
@@ -363,7 +374,7 @@ class App extends Component {
                     </SharedValuesProvider>
                   </RecoilRoot>
                 </Provider>
-              </QueryClientProvider>
+              </PersistQueryClientProvider>
             </SafeAreaProvider>
           </Portal>
         </ErrorBoundary>

@@ -1,9 +1,9 @@
 import chroma from 'chroma-js';
 import React, { createContext, ReactNode, useMemo } from 'react';
-import { BackgroundColorValue, defaultAccentColor } from './palettes';
+import { BackgroundColorValue } from './palettes';
 
-export const AccentColorContext = createContext<BackgroundColorValue>(
-  defaultAccentColor
+export const AccentColorContext = createContext<BackgroundColorValue | null>(
+  null
 );
 
 export interface AccentColorProviderProps {

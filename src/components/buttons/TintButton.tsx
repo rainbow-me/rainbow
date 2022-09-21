@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { ButtonProps } from 'react-native';
-import { TextColor } from '../../design-system/typography/typography';
+import { TextColor } from '../../design-system/color/palettes';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import {
   AccentColorProvider,
@@ -14,7 +14,7 @@ const TintButton = ({
   children,
   disabled,
   onPress,
-  color = 'secondary80',
+  color = 'secondary80 (Deprecated)',
   testID,
 }: {
   children: ReactNode;
@@ -23,7 +23,7 @@ const TintButton = ({
   color?: TextColor;
   testID?: string;
 }) => {
-  const secondary06 = useForegroundColor('secondary06');
+  const secondary06 = useForegroundColor('secondary06 (Deprecated)');
 
   const height = 56;
 

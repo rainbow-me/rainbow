@@ -16,7 +16,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { Records } from '@/entities';
-import { ENS_RECORDS } from '@/helpers/ens';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
 import { useENSRecordDisplayProperties } from '@/hooks';
 import { useTheme } from '@/theme';
 
@@ -36,17 +36,29 @@ export default function RecordTags({
   records,
   show,
 }: {
-  firstTransactionTimestamp?: number;
+  firstTransactionTimestamp?: number | null;
   records: Partial<Records>;
   show: ENS_RECORDS[];
 }) {
   const recordsToShow = useMemo(
     () =>
-      show.map(key => ({
-        key,
-        type: getRecordType(key),
-        value: records[key],
-      })) as {
+      show
+        .map(key => {
+          // If a deprecated record exists with it's updated counterpart
+          // (e.g. `me.rainbow.displayName` & `name` exists) then omit
+          // the deprecated record.
+          if (
+            deprecatedTextRecordFields[key] &&
+            records[deprecatedTextRecordFields[key]]
+          )
+            return null;
+          return {
+            key,
+            type: getRecordType(key),
+            value: records[key],
+          };
+        })
+        .filter(Boolean) as {
         key: string;
         value: string;
         type: 'address' | 'record';
@@ -56,7 +68,7 @@ export default function RecordTags({
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <Inset horizontal="19px">
+      <Inset horizontal="19px (Deprecated)">
         <Inline space="10px">
           {recordsToShow?.map(({ key: recordKey, value: recordValue, type }) =>
             recordValue ? (
@@ -109,16 +121,16 @@ function Tag({
     grey: colors.gradients.lightGreyTransparent,
   };
 
-  const action = useForegroundColor('action');
-  const secondary80 = useForegroundColor('secondary80');
+  const action = useForegroundColor('action (Deprecated)');
+  const secondary80 = useForegroundColor('secondary80 (Deprecated)');
   const iconColors = {
     appleBlue: action,
     grey: secondary80,
   } as const;
 
   const textColors = {
-    appleBlue: 'action',
-    grey: 'secondary80',
+    appleBlue: 'action (Deprecated)',
+    grey: 'secondary80 (Deprecated)',
   } as const;
 
   return (
@@ -189,7 +201,7 @@ export function Placeholder() {
   return (
     <Box height={{ custom: 30 }}>
       <Skeleton animated>
-        <Inset horizontal="19px">
+        <Inset horizontal="19px (Deprecated)">
           <Inline space="8px" wrap={false}>
             <PlaceholderItem />
             <PlaceholderItem />
@@ -205,7 +217,7 @@ export function Placeholder() {
 export function PlaceholderItem() {
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       borderRadius={30}
       height={{ custom: 30 }}
       width={{ custom: 140 }}

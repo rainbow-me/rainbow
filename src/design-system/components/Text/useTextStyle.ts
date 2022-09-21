@@ -1,15 +1,12 @@
 import { useMemo } from 'react';
+import { textColors } from '../../color/palettes';
 import { useForegroundColor } from '../../color/useForegroundColor';
-import {
-  textColors,
-  textSizes,
-  textWeights,
-} from '../../typography/typography';
+import { textSizes, textWeights } from '../../typography/typography';
 import { TextProps } from './Text';
 
 export function useTextStyle({
   align: textAlign,
-  color = 'primary',
+  color,
   size,
   weight = 'regular',
   tabularNumbers = false,
@@ -40,7 +37,7 @@ export function useTextStyle({
     }
   }
 
-  const colorValue = useForegroundColor(color);
+  const colorValue = useForegroundColor(color ?? 'label'); // Fallback for JS consumers
   const sizeStyles = textSizes[size];
   const weightStyles = textWeights[weight];
 

@@ -22,6 +22,8 @@ const RAINBOW_WALLET_NAME = 'rainbowwallet.eth';
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const RECORD_BIO = 'my bio';
 const RECORD_NAME = 'random';
+const RECORD_CONTENTHASH =
+  'ipfs://QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4';
 const RECORD_TWITTER = 'twitter123';
 const RECORD_EMAIL = 'abc@abc.com';
 const RECORD_INSTAGRAM = 'insta123';
@@ -73,11 +75,13 @@ const getRecords = async ensName => {
     publicResolverABI,
     provider
   );
+  const resolver = await provider.getResolver(ensName);
   const hashName = hash(ensName);
   const [
     avatar,
+    contenthash,
     description,
-    displayName,
+    name,
     url,
     twitter,
     email,
@@ -89,8 +93,9 @@ const getRecords = async ensName => {
     reddit,
   ] = await Promise.all([
     publicResolver.text(hashName, 'avatar'),
+    resolver.getContentHash(ensName),
     publicResolver.text(hashName, 'description'),
-    publicResolver.text(hashName, 'me.rainbow.displayName'),
+    publicResolver.text(hashName, 'name'),
     publicResolver.text(hashName, 'url'),
     publicResolver.text(hashName, 'com.twitter'),
     publicResolver.text(hashName, 'email'),
@@ -103,12 +108,13 @@ const getRecords = async ensName => {
   ]);
   return {
     avatar,
+    contenthash,
     description,
     discord,
-    displayName,
     email,
     github,
     instagram,
+    name,
     reddit,
     snapchat,
     telegram,
@@ -281,16 +287,12 @@ describe('Register ENS Flow', () => {
   it('Should go to view to set records', async () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
-    await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
-    await Helpers.typeText(
-      'ens-text-record-me.rainbow.displayName',
-      RECORD_NAME,
-      false
-    );
+    await Helpers.checkIfVisible('ens-text-record-name');
+    await Helpers.typeText('ens-text-record-name', RECORD_NAME, false);
     await Helpers.tapByText('Got it');
     await Helpers.checkIfVisible('ens-text-record-description');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
-    await Helpers.clearField('ens-text-record-me.rainbow.displayName');
+    await Helpers.clearField('ens-text-record-name');
     await Helpers.waitAndTap('use-select-image-avatar');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
@@ -326,12 +328,9 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the bio record is set', async () => {
-    const { description, displayName, avatar } = await getRecords(
-      RANDOM_NAME_ETH
-    );
+    const { description, name, avatar } = await getRecords(RANDOM_NAME_ETH);
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
-    if (displayName === RECORD_NAME)
-      throw new Error('ENS displayName is wrong');
+    if (name === RECORD_NAME) throw new Error('ENS name is wrong');
     if (avatar !== EIP155_FORMATTED_AVATAR_RECORD)
       throw new Error('ENS avatar is wrong');
   });
@@ -438,7 +437,7 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-selectable-attribute-keywords');
     await Helpers.waitAndTap('ens-selectable-attribute-ltc');
     await Helpers.waitAndTap('ens-selectable-attribute-doge');
-    await Helpers.waitAndTap('ens-selectable-attribute-content');
+    await Helpers.waitAndTap('ens-selectable-attribute-contenthash');
 
     // Dismiss the bottom attribute sheet
     await Helpers.swipe('ens-additional-records-sheet', 'down');
@@ -600,6 +599,23 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('ens-text-record-LTC-error');
+
+    // Fill "Content" field
+    await Helpers.typeText(
+      'ens-text-record-contenthash',
+      RECORD_CONTENTHASH.slice(0, 3),
+      false
+    );
+    await Helpers.waitAndTap('ens-text-record-contenthash-error');
+    await Helpers.checkIfElementByTextToExist('Invalid content hash');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText(
+      'ens-text-record-contenthash',
+      RECORD_CONTENTHASH.slice(3),
+      false
+    );
+    await Helpers.delay(3000);
+    await Helpers.checkIfNotVisible('ens-text-record-contenthash-error');
   });
 
   it('Should unselect a field', async () => {
@@ -610,11 +626,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should update a field', async () => {
-    await Helpers.typeText(
-      'ens-text-record-me.rainbow.displayName',
-      ' Guy',
-      false
-    );
+    await Helpers.typeText('ens-text-record-name', ' Guy', false);
     await Helpers.waitAndTap('hide-keyboard-button');
   });
 
@@ -627,6 +639,7 @@ describe('Register ENS Flow', () => {
 
   it('Should confirm the update was successful', async () => {
     const {
+      contenthash,
       description,
       discord,
       email,
@@ -655,6 +668,8 @@ describe('Register ENS Flow', () => {
     if (twitter !== RECORD_TWITTER)
       throw new Error('twitter is incorrect.', twitter);
     if (url !== RECORD_URL) throw new Error('url is incorrect.', url);
+    if (contenthash !== RECORD_CONTENTHASH)
+      throw new Error('contenthash is incorrect.', contenthash);
   });
 
   it('Should navigate to the Wallet screen to renew', async () => {
@@ -704,7 +719,7 @@ describe('Register ENS Flow', () => {
 
   it('Should confirm the ENS was sent correctly', async () => {
     await Helpers.delay(1000);
-    const { displayName } = await getRecords(RAINBOW_TEST_WALLET_NAME);
+    const { name } = await getRecords(RAINBOW_TEST_WALLET_NAME);
     const { address, primaryName } = await resolveName(
       RAINBOW_TEST_WALLET_NAME
     );
@@ -713,13 +728,18 @@ describe('Register ENS Flow', () => {
       throw new Error('Resolved address is wrong');
     if (primaryName !== RAINBOW_WALLET_NAME)
       throw new Error('Resolved primary name is wrong');
-    if (displayName) throw new Error('me.rainbow.displayName name is wrong');
+    if (name) throw new Error('name is wrong');
     if (owner !== RAINBOW_WALLET_ADDRESS)
       throw new Error('Owner not set correctly');
   });
 
   it('Should check address is the new label on profile screen and change wallet screen', async () => {
     const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
+    const WALLET_ROW_TRUNCATED_ADDRESS = address(
+      RAINBOW_TEST_WALLET_ADDRESS,
+      6,
+      4
+    );
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.checkIfVisible(
@@ -727,7 +747,7 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.waitAndTap(`wallet-screen-account-name-${TRUNCATED_ADDRESS}`);
     await Helpers.checkIfVisible(
-      `change-wallet-address-row-address-${RAINBOW_TEST_WALLET_ADDRESS}`
+      `change-wallet-address-row-label-${WALLET_ROW_TRUNCATED_ADDRESS}`
     );
   });
 

@@ -4,13 +4,11 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { Box, Inset } from '@/design-system';
-import { times } from '@rainbow-me/helpers/utilities';
-import WalletTypes, {
-  EthereumWalletType,
-} from '@rainbow-me/helpers/walletTypes';
-import styled from '@rainbow-me/styled-components';
-import { fonts } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { times } from '@/helpers/utilities';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import styled from '@/styled-thing';
+import { fonts } from '@/styles';
+import { useTheme } from '@/theme';
 
 const GridItem = styled(Row).attrs({
   align: 'center',
@@ -81,11 +79,11 @@ export default function SecretDisplayCard({
     <Centered>
       <Inset vertical="10px">
         <Box
-          background="card"
+          background="card (Deprecated)"
           borderRadius={25}
           height={{ custom: 240 }}
-          paddingHorizontal="30px"
-          paddingVertical="19px"
+          paddingHorizontal="30px (Deprecated)"
+          paddingVertical="19px (Deprecated)"
           shadow="21px light"
         >
           <CopyTooltip

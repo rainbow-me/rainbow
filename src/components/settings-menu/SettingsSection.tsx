@@ -367,22 +367,18 @@ const SettingsSection = ({
             }
           />
         )}
-        {ios && (
-          <MenuItem
-            hasRightArrow
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? AppIconIconDark : AppIconIcon}
-              />
-            }
-            onPress={onPressAppIcon}
-            size={60}
-            testID="app-icon-section"
-            titleComponent={
-              <MenuItem.Title text={lang.t('settings.app_icon')} />
-            }
-          />
-        )}
+        <MenuItem
+          hasRightArrow
+          leftComponent={
+            <MenuItem.ImageIcon
+              source={isDarkMode ? AppIconIconDark : AppIconIcon}
+            />
+          }
+          onPress={onPressAppIcon}
+          size={60}
+          testID="app-icon-section"
+          titleComponent={<MenuItem.Title text={lang.t('settings.app_icon')} />}
+        />
       </Menu>
       <Menu>
         <MenuItem

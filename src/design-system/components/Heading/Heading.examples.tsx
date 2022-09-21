@@ -23,11 +23,16 @@ export const sizes: Example[] = (Object.keys(
         <Stack space="10px">
           <View>
             <Guide />
-            <Heading size={size} weight="bold">
+            <Heading color="primary (Deprecated)" size={size} weight="bold">
               {loremIpsum}
             </Heading>
             <Guide />
-            <Heading numberOfLines={1} size={size} weight="bold">
+            <Heading
+              numberOfLines={1}
+              color="primary (Deprecated)"
+              size={size}
+              weight="bold"
+            >
               Truncated text truncated text truncated text truncated text
               truncated text truncated text
             </Heading>
@@ -35,12 +40,12 @@ export const sizes: Example[] = (Object.keys(
           </View>
           <Inline alignVertical="center" space="10px">
             <View style={{ backgroundColor: 'rgba(255,0,0,0.2)' }}>
-              <Heading size={size} weight="bold">
+              <Heading color="primary (Deprecated)" size={size} weight="bold">
                 Bounding Box
               </Heading>
             </View>
             <View style={{ position: 'relative' }}>
-              <Heading size={size} weight="bold">
+              <Heading color="primary (Deprecated)" size={size} weight="bold">
                 Bounding Box
               </Heading>
               <View
@@ -67,7 +72,12 @@ export const withEmoji: Example = {
     source(
       <View>
         <Guide />
-        <Heading containsEmoji size="20px / 22px (Deprecated)" weight="heavy">
+        <Heading
+          containsEmoji
+          color="primary (Deprecated)"
+          size="20px / 22px (Deprecated)"
+          weight="heavy"
+        >
           Heading with emoji 🌈
         </Heading>
         <Guide />
@@ -83,6 +93,7 @@ export const withTruncation: Example = {
         <Guide />
         <Heading
           numberOfLines={1}
+          color="primary (Deprecated)"
           size="20px / 22px (Deprecated)"
           weight="heavy"
         >
@@ -101,18 +112,27 @@ export const withColor: Example = {
       <View>
         <View
           style={{
-            backgroundColor: palettes.dark.backgroundColors.body.color,
+            backgroundColor:
+              palettes.dark.backgroundColors['body (Deprecated)'].color,
             padding: 24,
           }}
         >
           <Stack space="24px">
             <ColorModeProvider value="dark">
-              <Heading size="20px / 22px (Deprecated)" weight="heavy">
+              <Heading
+                color="primary (Deprecated)"
+                size="20px / 22px (Deprecated)"
+                weight="heavy"
+              >
                 Dark mode
               </Heading>
             </ColorModeProvider>
             <ColorModeProvider value="darkTinted">
-              <Heading size="20px / 22px (Deprecated)" weight="heavy">
+              <Heading
+                color="primary (Deprecated)"
+                size="20px / 22px (Deprecated)"
+                weight="heavy"
+              >
                 Dark tinted mode
               </Heading>
             </ColorModeProvider>

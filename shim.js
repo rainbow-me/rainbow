@@ -5,8 +5,10 @@ import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
+import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
 import toLocaleStringPolyfill from '@/helpers/toLocaleStringPolyfill';
 import logger from '@/utils/logger';
+import 'fast-text-encoding';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 
@@ -36,9 +38,10 @@ ReactNative.Platform.OS === 'ios' &&
 
 const storage = new Storage({
   defaultExpires: null,
-  enableCache: ReactNative.Platform.OS === 'ios',
   size: 10000,
-  storageBackend: AsyncStorage,
+  // TODO (RNBW-3969): Migrate to mmkv on iOS too
+  storageBackend:
+    ReactNative.Platform.OS === 'ios' ? AsyncStorage : mmkvStorageBackend,
 });
 
 if (ReactNative.Platform.OS === 'android') {

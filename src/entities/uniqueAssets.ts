@@ -47,6 +47,7 @@ export interface UniqueAsset {
   lastSalePaymentToken: string | undefined | null;
   lowResUrl: string | null;
   marketplaceCollectionUrl?: string | null;
+  marketplaceId: string | null;
   marketplaceName: string | null;
   type: AssetType;
   uniqueId: string;

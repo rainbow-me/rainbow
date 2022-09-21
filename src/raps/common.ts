@@ -46,6 +46,7 @@ const {
   multicallENS,
   setAddrENS,
   reclaimENS,
+  setContenthashENS,
   setTextENS,
   setNameENS,
   renewENS,
@@ -62,6 +63,7 @@ export enum RapActionType {
   renewENS = 'renewENS',
   setAddrENS = 'setAddrENS',
   reclaimENS = 'reclaimENS',
+  setContenthashENS = 'setContenthashENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
 }
@@ -99,12 +101,12 @@ export interface UnlockActionParameters {
 
 export interface SwapActionParameters {
   inputAmount: string;
-  nonce: number;
+  nonce?: number;
   outputAmount: string;
   tradeDetails: Quote;
   permit?: boolean;
   flashbots?: boolean;
-  provider: Provider;
+  provider?: Provider;
   chainId?: number;
   requiresApprove?: boolean;
 }
@@ -177,6 +179,7 @@ export const RapActionTypes = {
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
   renewENS: 'renewENS' as RapActionType,
   setAddrENS: 'setAddrENS' as RapActionType,
+  setContenthashENS: 'setContenthashENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
@@ -296,6 +299,8 @@ const findENSActionByType = (type: RapActionType) => {
       return multicallENS;
     case RapActionTypes.setAddrENS:
       return setAddrENS;
+    case RapActionTypes.setContenthashENS:
+      return setContenthashENS;
     case RapActionTypes.setTextENS:
       return setTextENS;
     case RapActionTypes.setNameENS:
@@ -395,6 +400,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.setNameENS:
     case RapActionTypes.setAddrENS:
     case RapActionTypes.reclaimENS:
+    case RapActionTypes.setContenthashENS:
     case RapActionTypes.setTextENS:
     case RapActionTypes.setRecordsENS:
     case RapActionTypes.transferENS:

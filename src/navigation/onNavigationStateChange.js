@@ -136,8 +136,6 @@ export function onNavigationStateChange(currentState) {
     }
 
     sentryUtils.addNavBreadcrumb(memPrevRouteName, routeName, paramsToTrack);
-    return android
-      ? paramsToTrack && analytics.screen(routeName, paramsToTrack)
-      : analytics.screen(routeName, paramsToTrack);
+    return analytics.screen(routeName, paramsToTrack);
   }
 }

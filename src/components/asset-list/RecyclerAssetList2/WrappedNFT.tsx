@@ -58,11 +58,11 @@ export default React.memo(function WrappedNFT({
     placement === 'left'
       ? {
           alignItems: 'flex-start',
-          paddingLeft: '19px',
+          paddingLeft: '19px (Deprecated)',
         }
       : {
           alignItems: 'flex-end',
-          paddingRight: '19px',
+          paddingRight: '19px (Deprecated)',
         };
   return (
     <Box

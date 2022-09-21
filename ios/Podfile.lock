@@ -378,8 +378,8 @@ PODS:
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-change-icon (3.2.0):
-    - React
+  - react-native-change-icon (4.0.0):
+    - React-Core
   - react-native-cloud-fs (2.4.0):
     - React
   - react-native-get-random-values (1.5.0):
@@ -408,8 +408,12 @@ PODS:
     - React
   - react-native-restart (0.0.22):
     - React-Core
-  - react-native-safe-area-context (0.5.0):
+  - react-native-safe-area-context (4.3.1):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
     - React
+    - ReactCommon/turbomodule/core
   - react-native-splash-screen (3.2.0):
     - React
   - react-native-text-input-mask (2.0.0):
@@ -1058,7 +1062,7 @@ SPEC CHECKSUMS:
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-change-icon: 64ebec0bef1b63d5d1a1bccba83e12c2d45eaad7
+  react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: 1e883ec82ff418d320c128f61971dd971b128ca0
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb
@@ -1072,7 +1076,7 @@ SPEC CHECKSUMS:
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
-  react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
+  react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf

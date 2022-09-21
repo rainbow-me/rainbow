@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchImage } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient } from '@/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@/react-query/types';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 
 export const ensCoverQueryKey = (name: string) => ['ens-header', name];
 
@@ -35,7 +38,7 @@ export async function prefetchENSCover(
 
 export default function useENSCover(
   name: string,
-  config?: QueryConfig<typeof fetchENSCover>
+  config?: QueryConfigDeprecated<typeof fetchENSCover>
 ) {
   return useQuery<UseQueryData<typeof fetchENSCover>>(
     ensCoverQueryKey(name),

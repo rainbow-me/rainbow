@@ -151,7 +151,11 @@ const MemoizedBalanceCoinRow = React.memo(
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
               <View style={sx.row}>
                 <View style={sx.textWrapper}>
-                  <Text numberOfLines={1} size="16px / 22px (Deprecated)">
+                  <Text
+                    numberOfLines={1}
+                    color="primary (Deprecated)"
+                    size="16px / 22px (Deprecated)"
+                  >
                     {item.name}
                   </Text>
                 </View>

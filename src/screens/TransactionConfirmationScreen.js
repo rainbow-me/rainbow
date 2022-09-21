@@ -147,7 +147,7 @@ const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 const SwitchText = ({ children, ...props }) => {
   return (
     <Text
-      color="secondary40"
+      color="secondary40 (Deprecated)"
       size="14px / 19px (Deprecated)"
       weight="semibold"
       {...props}
@@ -163,7 +163,7 @@ const WalletText = ({ balanceTooLow, children }) => {
       color={
         balanceTooLow
           ? { custom: lightModeThemeColors.avatarColor[7] }
-          : 'secondary80'
+          : 'secondary80 (Deprecated)'
       }
       numberOfLines={1}
       size="18px / 27px (Deprecated)"
@@ -1106,7 +1106,7 @@ export default function TransactionConfirmationScreen() {
                   <Row marginBottom={android ? 16 : 8} marginHorizontal={32}>
                     <Text
                       align="center"
-                      color="secondary80"
+                      color="secondary80 (Deprecated)"
                       numberOfLines={1}
                       size="18px / 27px (Deprecated)"
                       weight="bold"
@@ -1121,7 +1121,11 @@ export default function TransactionConfirmationScreen() {
                 >
                   <Text
                     align="center"
-                    color={methodName ? 'primary' : { custom: 'transparent' }}
+                    color={
+                      methodName
+                        ? 'primary (Deprecated)'
+                        : { custom: 'transparent' }
+                    }
                     size="18px / 27px (Deprecated)"
                     weight="heavy"
                   >

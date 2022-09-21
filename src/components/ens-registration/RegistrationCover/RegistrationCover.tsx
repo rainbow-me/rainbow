@@ -145,7 +145,7 @@ const RegistrationCover = ({
     return (
       <Box height="126px">
         <Skeleton animated>
-          <Box background="body" height="126px" />
+          <Box background="body (Deprecated)" height="126px" />
         </Skeleton>
       </Box>
     );
