@@ -92,6 +92,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should navigate to Developer Settings after tapping Developer Section', async () => {
+    await Helpers.swipe('settings-sheet', 'up', 'fast', 0.4);
     await Helpers.waitAndTap('developer-section');
     await Helpers.checkIfVisible('developer-settings-sheet');
   });
