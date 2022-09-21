@@ -78,7 +78,7 @@ import { ethereumUtils, isLowerCaseMatch, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 import {
   fetchWalletENSDataAfterRegistration,
-  getPendingTransaction,
+  getPendingTransactionData,
   getTransactionFlashbotStatus,
   getTransactionReceiptStatus,
   getTransactionSocketStatus,
@@ -1339,19 +1339,29 @@ export const dataWatchPendingTransactions = (
   let txStatusesDidChange = false;
   const updatedPendingTransactions = await Promise.all(
     pending.map(async tx => {
-      const updatedPending: RainbowTransaction = { ...tx };
+      const updatedPendingTransaction: RainbowTransaction = { ...tx };
       const txHash = ethereumUtils.getHash(tx) || '';
+      let pendingTransactionData: {
+        title: string;
+        minedAt: number | undefined;
+        pending: boolean;
+        status: TransactionStatus;
+      } = {
+        status: TransactionStatus.sending,
+        title: '',
+        minedAt: undefined,
+        pending: true,
+      };
       try {
         logger.log('Checking pending tx with hash', txHash);
         const p =
-          provider || (await getProviderForNetwork(updatedPending.network));
+          (await getProviderForNetwork(updatedPendingTransaction.network)) ||
+          provider;
         const txObj: TransactionResponse | undefined = await p.getTransaction(
           txHash
         );
         // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-        const nonceAlreadyIncluded = tx?.nonce
-          ? currentNonce > tx?.nonce
-          : false;
+        const nonceAlreadyIncluded = currentNonce > (tx?.nonce ?? txObj.nonce);
         if (
           (txObj && txObj?.blockNumber && txObj?.blockHash) ||
           nonceAlreadyIncluded
@@ -1368,66 +1378,56 @@ export const dataWatchPendingTransactions = (
           if (tx?.ensRegistration) {
             fetchWalletENSDataAfterRegistration();
           }
-
-          updatedPending.status = await getTransactionReceiptStatus(
-            updatedPending,
+          const transactionStatus = await getTransactionReceiptStatus(
+            updatedPendingTransaction,
             nonceAlreadyIncluded,
             txObj
           );
 
-          if (
-            updatedPending.swap &&
-            updatedPending.swap.type === SwapType.crossChain
-          ) {
-            const {
-              status,
-              title,
-              pending,
-              minedAt,
-            } = await getTransactionSocketStatus(updatedPending);
-            updatedPending.status = status;
-            updatedPending.title = title;
-            updatedPending.pending = pending;
-            updatedPending.minedAt = minedAt;
-            if (!pending) {
+          if (updatedPendingTransaction?.swap?.type === SwapType.crossChain) {
+            pendingTransactionData = await getTransactionSocketStatus(
+              updatedPendingTransaction
+            );
+            if (!pendingTransactionData.pending) {
               appEvents.emit('transactionConfirmed', {
                 ...txObj,
                 internalType: tx.type,
               });
             }
+            txStatusesDidChange = true;
           } else {
-            const { title, pending, minedAt } = getPendingTransaction(
-              updatedPending,
-              updatedPending.status
+            pendingTransactionData = getPendingTransactionData(
+              updatedPendingTransaction,
+              transactionStatus
             );
-            updatedPending.title = title;
-            updatedPending.pending = pending;
-            updatedPending.minedAt = minedAt;
+            txStatusesDidChange = true;
           }
-          txStatusesDidChange = true;
         } else if (tx.flashbots) {
           const flashbotStatus = await getTransactionFlashbotStatus(txHash);
           logger.debug('Flashbots response status', flashbotStatus);
           // Make sure it wasn't dropped after 25 blocks or never made it
           if (flashbotStatus === 'FAILED' || flashbotStatus === 'CANCELLED') {
-            updatedPending.status = TransactionStatus.dropped;
-            const { title, pending, minedAt } = getPendingTransaction(
-              updatedPending,
-              updatedPending.status
+            const transactionStatus = TransactionStatus.dropped;
+            pendingTransactionData = getPendingTransactionData(
+              updatedPendingTransaction,
+              transactionStatus
             );
-            updatedPending.title = title;
-            updatedPending.pending = pending;
-            updatedPending.minedAt = minedAt;
             txStatusesDidChange = true;
             // decrement the nonce since it was dropped
             // @ts-ignore-next-line
             dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
           }
         }
+        if (pendingTransactionData) {
+          updatedPendingTransaction.title = pendingTransactionData.title;
+          updatedPendingTransaction.status = pendingTransactionData.status;
+          updatedPendingTransaction.pending = pendingTransactionData.pending;
+          updatedPendingTransaction.minedAt = pendingTransactionData.minedAt;
+        }
       } catch (error) {
         logger.log('Error watching pending txn', error);
       }
-      return updatedPending;
+      return updatedPendingTransaction;
     })
   );
 
@@ -1453,7 +1453,6 @@ export const dataWatchPendingTransactions = (
     });
     saveLocalTransactions(updatedTransactions, accountAddress, network);
     dispatch(updatePurchases(updatedTransactions));
-    console.log('----- pendingTransactions', pendingTransactions);
     if (!pendingTransactions?.length) {
       return true;
     }
@@ -1555,7 +1554,7 @@ export const checkPendingTransactionsOnInitialize = (
       watchPendingTransactions(
         currentAccountAddress,
         TXN_WATCHER_MAX_TRIES,
-        provider
+        null
       )
     );
   }

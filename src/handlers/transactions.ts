@@ -316,7 +316,6 @@ export const getTransactionSocketStatus = async (
   const { swap } = pendingTransaction;
   const txHash = ethereumUtils.getHash(pendingTransaction);
   let pending = true;
-  console.log('----- swap?.isBridge', swap?.isBridge);
   let status = swap?.isBridge
     ? TransactionStatus.bridging
     : TransactionStatus.swapping;
@@ -327,7 +326,9 @@ export const getTransactionSocketStatus = async (
   const socketResponse = await socketStatus.json();
   if (socketResponse.success) {
     if (socketResponse?.result?.sourceTxStatus === 'COMPLETED') {
-      status = TransactionStatus.bridging;
+      status = swap?.isBridge
+        ? TransactionStatus.bridging
+        : TransactionStatus.swapping;
     }
     if (socketResponse?.result?.DestinationTxStatus === 'COMPLETED') {
       status = swap?.isBridge
@@ -356,21 +357,17 @@ export const getTransactionSocketStatus = async (
   return { status, minedAt: pending ? undefined : minedAt, pending, title };
 };
 
-export const getPendingTransaction = (
+export const getPendingTransactionData = (
   transaction: RainbowTransaction,
-  status: TransactionStatus
+  transactionStatus: TransactionStatus
 ) => {
-  const updatedPending = { ...transaction };
   const minedAt = Math.floor(Date.now() / 1000);
   const title = getTitle({
     protocol: transaction.protocol,
-    status,
+    status: transactionStatus,
     type: transaction.type,
   });
-  updatedPending.title = title;
-  updatedPending.pending = false;
-  updatedPending.minedAt = minedAt;
-  return updatedPending;
+  return { title, minedAt, pending: false, status: transactionStatus };
 };
 
 export const fetchWalletENSDataAfterRegistration = async () => {
