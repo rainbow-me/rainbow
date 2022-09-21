@@ -62,7 +62,7 @@ export default function WatchButton({
       )}
     >
       <ActionButton
-        color="action"
+        color="action (Deprecated)"
         onPress={!optimisticIsWatching ? handlePressWatch : () => null}
         paddingHorizontal={isWatching ? { custom: 11.25 } : undefined}
         testID="profile-sheet-watch-button"

@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react-native';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import AesEncryptor from '../handlers/aesEncryption';
 import * as keychain from '../model/keychain';
@@ -57,23 +56,6 @@ export async function authenticateWithPINAndCreateIfNeeded() {
         resolve(pin);
       },
       validPin,
-    });
-  });
-}
-
-export async function saveNewAuthenticationPIN() {
-  return new Promise((resolve, reject) => {
-    return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
-      onCancel: reject,
-      onSuccess: async (pin: any) => {
-        try {
-          await savePIN(pin);
-        } catch (e) {
-          reject();
-        }
-        resolve(pin);
-      },
-      validPin: false,
     });
   });
 }

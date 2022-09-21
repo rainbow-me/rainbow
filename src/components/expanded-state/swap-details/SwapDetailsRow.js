@@ -3,7 +3,10 @@ import { ButtonPressAnimation } from '../../animations';
 import { Row } from '../../layout';
 import { Text } from '@/design-system';
 
-export const SwapDetailsLabel = ({ children, color = 'secondary60' }) => {
+export const SwapDetailsLabel = ({
+  children,
+  color = 'secondary60 (Deprecated)',
+}) => {
   return (
     <Text color={color} size="14px / 19px (Deprecated)" weight="semibold">
       {children}
@@ -11,7 +14,10 @@ export const SwapDetailsLabel = ({ children, color = 'secondary60' }) => {
   );
 };
 
-export const SwapDetailsValue = ({ children, color = 'secondary80' }) => {
+export const SwapDetailsValue = ({
+  children,
+  color = 'secondary80 (Deprecated)',
+}) => {
   return (
     <Text color={color} size="14px / 19px (Deprecated)" weight="bold">
       {children}

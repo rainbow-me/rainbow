@@ -5,11 +5,11 @@ import { CampaignKey } from '@/campaigns/campaignChecks';
 import { PromoSheet } from '@/components/promos';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
-import SwapsPromoBackground from '@rainbow-me/assets/swapsPromoBackground.png';
-import SwapsPromoHeader from '@rainbow-me/assets/swapsPromoHeader.png';
-import { delay } from '@rainbow-me/helpers/utilities';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
+import SwapsPromoBackground from '@/assets/swapsPromoBackground.png';
+import SwapsPromoHeader from '@/assets/swapsPromoHeader.png';
+import { delay } from '@/helpers/utilities';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 const HEADER_HEIGHT = 285;
 const HEADER_WIDTH = 390;

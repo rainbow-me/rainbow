@@ -11,6 +11,7 @@ import uniqueAssetTraitDisplayTypeCompareFunction from '@/helpers/uniqueAssetTra
 interface UniqueTokenAttributesProps {
   color: string;
   hideNftMarketplaceAction: boolean;
+  marketplaceId?: string | null;
   marketplaceName?: string | null;
   slug: string;
   traits: UniqueAsset['traits'];
@@ -19,6 +20,7 @@ interface UniqueTokenAttributesProps {
 const UniqueTokenAttributes = ({
   color,
   hideNftMarketplaceAction,
+  marketplaceId,
   marketplaceName,
   slug,
   traits,
@@ -62,6 +64,7 @@ const UniqueTokenAttributes = ({
             hideNftMarketplaceAction={hideNftMarketplaceAction}
             key={`${type}${originalValue}`}
             lowercase={lowercase}
+            marketplaceId={marketplaceId}
             marketplaceName={marketplaceName}
             maxValue={maxValue}
             originalValue={originalValue}
@@ -78,6 +81,7 @@ const UniqueTokenAttributes = ({
 export default magicMemo(UniqueTokenAttributes, [
   'color',
   'slug',
+  'marketplaceId',
   'marketplaceName',
   'traits',
 ]);

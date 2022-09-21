@@ -1,9 +1,13 @@
+// @ts-ignore
 import { changeIcon } from 'react-native-change-icon';
+import lang from 'i18n-js';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
 import { analytics } from '@/analytics';
 import { NativeCurrencyKeys } from '@/entities';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+
 import {
   getAppIcon,
   getFlashbotsEnabled,
@@ -195,20 +199,41 @@ export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
   saveTestnetsEnabled(testnetsEnabled);
 };
 
-export const settingsChangeAppIcon = (appIcon: string) => async (
+export const settingsChangeAppIcon = (appIcon: string) => (
   dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>
 ) => {
-  logger.log('changing app icon to', appIcon);
-  try {
-    await changeIcon(appIcon);
-    logger.log('icon changed to ', appIcon);
-    saveAppIcon(appIcon);
-    dispatch({
-      payload: appIcon,
-      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
-    });
-  } catch (error) {
-    logger.log('Error changing app icon', error);
+  const callback = async () => {
+    logger.log('changing app icon to', appIcon);
+    try {
+      await changeIcon(appIcon);
+      logger.log('icon changed to ', appIcon);
+      saveAppIcon(appIcon);
+      dispatch({
+        payload: appIcon,
+        type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+      });
+    } catch (error) {
+      logger.log('Error changing app icon', error);
+    }
+  };
+
+  if (android) {
+    Alert.alert(
+      lang.t('settings.icon_change.title'),
+      lang.t('settings.icon_change.warning'),
+      [
+        {
+          onPress: () => {},
+          text: lang.t('settings.icon_change.cancel'),
+        },
+        {
+          onPress: callback,
+          text: lang.t('settings.icon_change.confirm'),
+        },
+      ]
+    );
+  } else {
+    callback();
   }
 };
 

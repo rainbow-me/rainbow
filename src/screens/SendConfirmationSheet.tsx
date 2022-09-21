@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -97,7 +97,10 @@ export type Checkbox = {
 };
 
 const hasClearProfileInfo = (ensProfile?: ENSProfile) =>
-  isEmpty({ ...ensProfile?.data?.records, ...ensProfile?.data?.coinAddresses });
+  isEmpty({
+    ...ensProfile?.data?.records,
+    ...ensProfile?.data?.coinAddresses,
+  }) && !ensProfile?.data?.contenthash;
 const doesNamePointToRecipient = (
   ensProfile?: ENSProfile,
   recipientAddress?: string
@@ -232,7 +235,7 @@ export default function SendConfirmationSheet() {
     width: deviceWidth,
   } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { contacts } = useContacts();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -330,6 +333,9 @@ export default function SendConfirmationSheet() {
 
       if (sendENSOptions['clear-records']) {
         let records = Object.keys({
+          ...(ensProfile?.data?.contenthash
+            ? { contenthash: ensProfile?.data?.contenthash }
+            : {}),
           ...(ensProfile?.data?.coinAddresses ?? {}),
           ...(ensProfile?.data?.records ?? {}),
         }).reduce((records, recordKey) => {
@@ -384,6 +390,7 @@ export default function SendConfirmationSheet() {
     asset,
     checkboxes,
     ensProfile?.data?.coinAddresses,
+    ensProfile?.data?.contenthash,
     ensProfile?.data?.records,
     isENS,
     toAddress,
@@ -546,6 +553,7 @@ export default function SendConfirmationSheet() {
               <Column justify="center" width={deviceWidth - 117}>
                 <Heading
                   numberOfLines={1}
+                  color="primary (Deprecated)"
                   size="26px / 30px (Deprecated)"
                   weight="heavy"
                 >
@@ -618,6 +626,7 @@ export default function SendConfirmationSheet() {
                 <Row width={android ? '80%' : '90%'}>
                   <Heading
                     numberOfLines={1}
+                    color="primary (Deprecated)"
                     size="26px / 30px (Deprecated)"
                     weight="heavy"
                   >
@@ -677,8 +686,8 @@ export default function SendConfirmationSheet() {
             <Divider color={colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {(isL2 || isENS || shouldShowChecks) && (
-            <Inset bottom="30px" horizontal="19px">
-              <Stack space="19px">
+            <Inset bottom="30px (Deprecated)" horizontal="19px (Deprecated)">
+              <Stack space="19px (Deprecated)">
                 {isL2 && (
                   <Fragment>
                     {/* @ts-expect-error JavaScript component */}
@@ -703,7 +712,7 @@ export default function SendConfirmationSheet() {
                     <Callout
                       after={
                         <Text
-                          color="secondary30"
+                          color="secondary30 (Deprecated)"
                           size="16px / 22px (Deprecated)"
                           weight="heavy"
                         >
