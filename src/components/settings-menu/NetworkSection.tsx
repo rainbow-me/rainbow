@@ -8,7 +8,7 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { analytics } from '@/analytics';
-import { Divider, Stack } from '@/design-system';
+import { Separator, Stack } from '@/design-system';
 import {
   useAccountSettings,
   useInitializeAccountData,
@@ -65,7 +65,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
 
   return inDevSection ? (
-    <Stack separator={<Divider color="divider60" />}>
+    <Stack separator={<Separator color="divider60 (Deprecated)" />}>
       {renderNetworkList()}
     </Stack>
   ) : (

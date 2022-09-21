@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import {
-  getSupportedBiometryType,
   Options,
   requestSharedWebCredentials,
   setSharedWebCredentials,
@@ -25,9 +24,8 @@ import {
   createWallet,
   RainbowWallet,
 } from './wallet';
-import AesEncryptor from '@/handlers/aesEncryption';
-import { saveNewAuthenticationPIN } from '@/handlers/authentication';
 import { analytics } from '@/analytics';
+
 import logger from '@/utils/logger';
 
 type BackupPassword = string;
@@ -39,9 +37,6 @@ interface BackedUpData {
 interface BackupUserData {
   wallets: AllRainbowWallets;
 }
-
-const NOOP = () => {};
-const encryptor = new AesEncryptor();
 
 async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allKeys = await keychain.loadAllKeys();
@@ -145,19 +140,11 @@ export function findLatestBackUp(
   return filename;
 }
 
-export async function restoreCloudBackup({
-  password,
-  userData,
-  backupSelected,
-  onBeforePINCreated = NOOP,
-  onAfterPINCreated = NOOP,
-}: {
-  password: BackupPassword;
-  userData: BackupUserData | null;
-  backupSelected: string | null;
-  onBeforePINCreated: () => void;
-  onAfterPINCreated: () => void;
-}): Promise<boolean> {
+export async function restoreCloudBackup(
+  password: BackupPassword,
+  userData: BackupUserData | null,
+  backupSelected: string | null
+): Promise<boolean> {
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
@@ -199,11 +186,7 @@ export async function restoreCloudBackup({
         version: allWalletsVersion,
         wallets: walletsToRestore,
       };
-      return restoreCurrentBackupIntoKeychain(
-        dataToRestore,
-        onBeforePINCreated,
-        onAfterPINCreated
-      );
+      return restoreCurrentBackupIntoKeychain(dataToRestore);
     } else {
       return restoreSpecificBackupIntoKeychain(dataToRestore);
     }
@@ -235,9 +218,7 @@ async function restoreSpecificBackupIntoKeychain(
 }
 
 async function restoreCurrentBackupIntoKeychain(
-  backedUpData: BackedUpData,
-  onBeforePINCreated = NOOP,
-  onAfterPINCreated = NOOP
+  backedUpData: BackedUpData
 ): Promise<boolean> {
   try {
     // Access control config per each type of key
@@ -251,37 +232,7 @@ async function restoreCurrentBackupIntoKeychain(
           accessControl = privateAccessControlOptions;
         }
 
-        const hasBiometricsEnabled = await getSupportedBiometryType();
-
-        if (!hasBiometricsEnabled && android && key.endsWith(seedPhraseKey)) {
-          const parsedValue = JSON.parse(value);
-          const { seedphrase } = parsedValue;
-
-          const wasBackupSavedWithPIN =
-            seedphrase?.includes('salt') && seedphrase?.includes('cipher');
-
-          if (!wasBackupSavedWithPIN) {
-            // interrupt loader
-            onBeforePINCreated();
-            const userPIN = await saveNewAuthenticationPIN();
-            onAfterPINCreated();
-
-            const encryptedSeed = await encryptor.encrypt(userPIN, seedphrase);
-
-            if (encryptedSeed) {
-              // in the PIN flow, we must manually encrypt the seedphrase with PIN
-              const valueWithPINInfo = JSON.stringify({
-                ...parsedValue,
-                seedphrase: encryptedSeed,
-              });
-
-              logger.sentry(
-                'This wallet was backuped with faceId and now we replace it by seed with PIN '
-              );
-              return keychain.saveString(key, valueWithPINInfo, accessControl);
-            }
-          }
-        } else if (typeof value === 'string') {
+        if (typeof value === 'string') {
           return keychain.saveString(key, value, accessControl);
         } else {
           return keychain.saveObject(key, value, accessControl);

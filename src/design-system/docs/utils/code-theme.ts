@@ -1,7 +1,7 @@
 import { palettes } from '../../color/palettes';
 
 const tag = 'rgb(96, 165, 255)';
-const attribute = palettes.dark.foregroundColors.secondary;
+const attribute = palettes.dark.foregroundColors['secondary (Deprecated)'];
 const value = 'rgb(144, 147, 255)';
 const punctuation = 'rgb(96, 165, 255)';
 const plainText = 'white';

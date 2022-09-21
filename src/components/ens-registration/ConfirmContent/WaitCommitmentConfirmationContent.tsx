@@ -29,11 +29,12 @@ const WaitCommitmentConfirmationContent = ({
         <Row>
           <Box flexGrow={1} justifyContent="center">
             <Inset horizontal="12px">
-              <Stack space={isSmallPhone ? '24px' : '34px'}>
+              <Stack space={isSmallPhone ? '24px' : '34px (Deprecated)'}>
                 <HourglassAnimation />
-                <Stack alignHorizontal="center" space="19px">
+                <Stack alignHorizontal="center" space="19px (Deprecated)">
                   <Heading
                     align="center"
+                    color="primary (Deprecated)"
                     size="23px / 27px (Deprecated)"
                     weight="heavy"
                   >
@@ -41,7 +42,7 @@ const WaitCommitmentConfirmationContent = ({
                   </Heading>
                   <Text
                     align="center"
-                    color="secondary60"
+                    color="secondary60 (Deprecated)"
                     size="16px / 22px (Deprecated)"
                     weight="semibold"
                   >
@@ -53,7 +54,7 @@ const WaitCommitmentConfirmationContent = ({
           </Box>
         </Row>
       </Rows>
-      <Inset bottom={isSmallPhone ? '30px' : undefined}>
+      <Inset bottom={isSmallPhone ? '30px (Deprecated)' : undefined}>
         <ButtonPressAnimation onPress={speedUpEnabled ? action : () => null}>
           <Text
             align="center"
