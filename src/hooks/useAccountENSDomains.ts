@@ -5,7 +5,7 @@ import useAccountProfile from './useAccountProfile';
 import { prefetchENSAvatar } from './useENSAvatar';
 import { fetchAccountDomains } from '@/handlers/ens';
 import { getENSDomains, setENSDomains } from '@/handlers/localstorage/ens';
-import { queryClient } from '@/react-query/queryClient';
+import { queryClient } from '@/react-query';
 import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [
