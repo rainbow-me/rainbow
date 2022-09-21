@@ -104,18 +104,16 @@ export default function RainbowContextWrapper({ children }: any) {
     dispatch(explorerInit());
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
 
-    if (IS_TESTING === 'true') {
-      const { accountAddress } = store.getState().settings;
-      const provider = await getProviderForNetwork(Network.mainnet);
-      const ethAsset = ethereumUtils.getAccountAsset(ETH_ADDRESS);
-      updateAssetOnchainBalanceIfNeeded(
-        ethAsset,
-        accountAddress,
-        Network.mainnet,
-        provider,
-        () => {}
-      );
-    }
+    const { accountAddress } = store.getState().settings;
+    const provider = await getProviderForNetwork(Network.mainnet);
+    const ethAsset = ethereumUtils.getAccountAsset(ETH_ADDRESS);
+    updateAssetOnchainBalanceIfNeeded(
+      ethAsset,
+      accountAddress,
+      Network.mainnet,
+      provider,
+      () => {}
+    );
   }, [dispatch, updateAssetOnchainBalanceIfNeeded]);
 
   return (
