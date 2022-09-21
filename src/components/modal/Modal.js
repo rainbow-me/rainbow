@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
@@ -42,7 +42,7 @@ export default function Modal({
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
-  const { top: insetTop } = useSafeArea();
+  const { top: insetTop } = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
