@@ -7,6 +7,7 @@ beforeAll(async () => {
 });
 
 const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
 
 describe('Swap Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
