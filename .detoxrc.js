@@ -46,7 +46,7 @@ module.exports = {
       binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
       build:
         'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
-      name: 'Pixel_5_API_31',
+      name: 'Pixel_3_API_29',
     },
   },
 };
