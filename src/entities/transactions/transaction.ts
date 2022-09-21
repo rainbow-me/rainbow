@@ -6,6 +6,7 @@ import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
 import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
+import { ChainId, SwapType } from '@rainbow-me/swaps';
 
 export interface RainbowTransaction {
   address?: string;
@@ -37,6 +38,11 @@ export interface RainbowTransaction {
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
   status?: TransactionStatus;
+  swap?: {
+    type: SwapType;
+    toChainId: ChainId;
+    fromChainId: ChainId;
+  };
   symbol?: string | null;
   timestamp?: number; // for purchases
   title?: string;
@@ -72,6 +78,11 @@ export interface NewTransaction {
   type?: TransactionType;
   value?: BigNumberish;
   txTo?: EthereumAddress | null;
+  swap?: {
+    type: SwapType;
+    fromChainId: ChainId;
+    toChainId: ChainId;
+  };
 }
 
 export interface NewTransactionOrAddCashTransaction
