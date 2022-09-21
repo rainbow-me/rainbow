@@ -17,7 +17,6 @@ import {
 import { sendRpcCall } from '../handlers/web3';
 import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
-import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
@@ -32,6 +31,7 @@ import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheet
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import logger from '@/utils/logger';
+import { getFCMToken } from '@/notifications/tokens';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
