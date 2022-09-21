@@ -88,6 +88,7 @@ import {
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -619,7 +620,11 @@ export default function ExchangeModal({
           inputAmount: inputAmount!,
           outputAmount: outputAmount!,
           nonce,
-          tradeDetails: tradeDetails!,
+          tradeDetails: {
+            ...tradeDetails,
+            fromChainId: ethereumUtils.getChainIdFromType(inputCurrency.type),
+            toChainId: ethereumUtils.getChainIdFromType(outputCurrency.type),
+          } as Quote | CrosschainQuote,
         };
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
@@ -669,12 +674,14 @@ export default function ExchangeModal({
       inputCurrency?.address,
       inputCurrency?.name,
       inputCurrency?.symbol,
+      inputCurrency.type,
       isCrosschainSwap,
       navigate,
       outputAmount,
       outputCurrency?.address,
       outputCurrency?.name,
       outputCurrency?.symbol,
+      outputCurrency.type,
       priceImpactPercentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,

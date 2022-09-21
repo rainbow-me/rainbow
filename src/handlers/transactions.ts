@@ -18,7 +18,7 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { getTitle, getTransactionLabel } from '@/parsers';
 import { isZero } from '@/helpers/utilities';
 import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
-import { isLowerCaseMatch } from '@/utils';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);
@@ -167,6 +167,40 @@ export const getTransactionFlashbotStatus = async (txHash: string) => {
   const fbStatus = await fetch(`https://protect.flashbots.net/tx/${txHash}`);
   const fbResponse = await fbStatus.json();
   return fbResponse.status;
+};
+
+export const getTransactionSocketStatus = async (
+  pendingTransaction: RainbowTransaction
+) => {
+  const { swap } = pendingTransaction;
+  const txHash = ethereumUtils.getHash(pendingTransaction);
+  let pending = true;
+  let status = TransactionStatus.swapping;
+  const minedAt = Math.floor(Date.now() / 1000);
+  const socketStatus = await fetch(
+    `https://swap.s.rainbow.me/bridge-status?txHash=${txHash}&fromChainId=${swap.fromChainId}&toChainId=${swap?.toChainId}`
+  );
+  const socketResponse = await socketStatus.json();
+  if (socketResponse.success) {
+    if (socketResponse?.result?.sourceTxStatus === 'COMPLETED') {
+      status = TransactionStatus.bridging;
+    }
+    if (socketResponse?.result?.DestinationTxStatus === 'COMPLETED') {
+      status = TransactionStatus.swapped;
+      pending = false;
+    }
+  } else if (socketResponse.error) {
+    status = TransactionStatus.failed;
+    pending = false;
+  }
+
+  const title = getTitle({
+    protocol: pendingTransaction.protocol,
+    status,
+    type: pendingTransaction.type,
+  });
+
+  return { status, minedAt: pending ? undefined : minedAt, pending, title };
 };
 
 export const getPendingTransaction = (
