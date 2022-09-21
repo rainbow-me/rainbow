@@ -75,7 +75,6 @@ import {
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { IS_TEST } from '@/env';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
@@ -176,7 +175,7 @@ export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
 
   const handleFocus = useCallback(() => {
-    if (!hasSeenExplainSheet && !IS_TEST) {
+    if (!hasSeenExplainSheet) {
       android && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',

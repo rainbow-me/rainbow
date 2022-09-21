@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
@@ -24,6 +23,9 @@ const RECORD_NOTICE = 'notice123';
 const RECORD_KEYWORDS = 'keywords123';
 const RECORD_URL = 'abc123.com';
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
+
+const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
 
 const getRecords = async ensName => {
   const provider = Helpers.getProvider();
@@ -80,18 +82,9 @@ const getRecords = async ensName => {
   };
 };
 
-const maybeHideKeyboard = async () => {
-  if (device.getPlatform() === 'android') {
-    await Helpers.waitAndTap('hide-keyboard-button');
-  }
-};
-
 beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
-  await exec(
-    'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-  );
+  await Helpers.startHardhat();
+  await Helpers.startIosSimulator();
 });
 
 describe('Edit ENS Flow', () => {
@@ -123,7 +116,7 @@ describe('Edit ENS Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -183,149 +176,85 @@ describe('Edit ENS Flow', () => {
   });
 
   it('Should fill & validate the fields', async () => {
-    // Fill "Website" field
+    await Helpers.delay(2000);
     await Helpers.swipe('ens-edit-records-sheet', 'up', 'fast', 1);
-    await Helpers.swipeUntilVisible(
-      'ens-text-record-url',
-      'ens-edit-records-sheet',
-      'down'
-    );
-    await Helpers.checkIfVisible('ens-text-record-url');
-    await Helpers.typeText('ens-text-record-url', 'abc', false);
-    await maybeHideKeyboard();
-    await Helpers.waitAndTap('ens-text-record-url-error');
-    await Helpers.checkIfElementByTextToExist('Invalid URL');
-    await Helpers.tapByText('OK');
-    await Helpers.typeText('ens-text-record-url', '123.com', false);
-    await maybeHideKeyboard();
-    await Helpers.delay(1000);
-    await Helpers.checkIfNotVisible('ens-text-record-url-error');
 
-    // Fill "Twitter" field
-    await Helpers.swipeUntilVisible(
-      'ens-text-record-com.twitter',
-      'ens-edit-records-sheet',
-      'down'
-    );
+    // Fill "Content" field
+    await Helpers.checkIfVisible('ens-text-record-contenthash');
+    if (android) {
+      await Helpers.waitAndTap('ens-text-record-contenthash');
+      await Helpers.tapByText('Got it');
+    }
     await Helpers.typeText(
-      'ens-text-record-com.twitter',
-      RECORD_TWITTER,
+      'ens-text-record-contenthash',
+      RECORD_CONTENTHASH.slice(0, 3),
       false
     );
-    await maybeHideKeyboard();
-
-    // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-
-    // Fill "Email" field
-    await Helpers.swipeUntilVisible(
-      'ens-text-record-email',
-      'ens-edit-records-sheet',
-      'down'
-    );
-    await Helpers.typeText(
-      'ens-text-record-email',
-      RECORD_EMAIL.slice(0, 3),
-      false
-    );
-    await maybeHideKeyboard();
-    await Helpers.waitAndTap('ens-text-record-email-error');
-    await Helpers.checkIfElementByTextToExist('Invalid email');
+    if (ios) {
+      await Helpers.tapByText('Got it');
+    }
+    await Helpers.waitAndTap('ens-text-record-contenthash-error');
+    await Helpers.checkIfElementByTextToExist('Invalid content hash');
     await Helpers.tapByText('OK');
     await Helpers.typeText(
-      'ens-text-record-email',
-      RECORD_EMAIL.slice(3),
+      'ens-text-record-contenthash',
+      RECORD_CONTENTHASH.slice(3),
       false
     );
-    await maybeHideKeyboard();
-    await Helpers.delay(1000);
-    await Helpers.checkIfNotVisible('ens-text-record-email-error');
+    await Helpers.delay(3000);
+    await Helpers.checkIfNotVisible('ens-text-record-contenthash-error');
 
-    // Fill "Instagram" field
+    // Fill "Litecoin" field
     await Helpers.swipeUntilVisible(
-      'ens-text-record-com.instagram',
+      'ens-text-record-LTC',
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText(
-      'ens-text-record-com.instagram',
-      RECORD_INSTAGRAM,
-      false
-    );
-    await maybeHideKeyboard();
-
-    // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-
-    // Fill "Discord" field
-    await Helpers.swipeUntilVisible(
-      'ens-text-record-com.discord',
-      'ens-edit-records-sheet',
-      'down'
-    );
-    await Helpers.typeText(
-      'ens-text-record-com.discord',
-      RECORD_DISCORD.slice(0, 3),
-      false
-    );
-    await maybeHideKeyboard();
-    await Helpers.waitAndTap('ens-text-record-com.discord-error');
-    await Helpers.checkIfElementByTextToExist('Invalid Discord username');
+    await Helpers.typeText('ens-text-record-LTC', 'MGx', false);
+    await Helpers.waitAndTap('ens-text-record-LTC-error');
+    await Helpers.checkIfElementByTextToExist('Invalid LTC address');
     await Helpers.tapByText('OK');
     await Helpers.typeText(
-      'ens-text-record-com.discord',
-      RECORD_DISCORD.slice(3),
+      'ens-text-record-LTC',
+      'NPPB7eBoWPUaprtX9v9CXJZoD2465zN',
       false
     );
-    await maybeHideKeyboard();
-    await Helpers.delay(1000);
-    await Helpers.checkIfNotVisible('ens-text-record-com.discord-error');
-
-    // Fill "GitHub" field
-    await Helpers.swipeUntilVisible(
-      'ens-text-record-com.github',
-      'ens-edit-records-sheet',
-      'down'
-    );
-    await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB, false);
-    await maybeHideKeyboard();
-
-    // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.delay(3000);
+    await Helpers.checkIfNotVisible('ens-text-record-LTC-error');
   });
 
   it('Should fill & validate the fields 2', async () => {
-    // Fill "Bitcoin" field
+    // Fill "Keywords" field
     await Helpers.swipeUntilVisible(
-      'ens-text-record-BTC',
+      'ens-text-record-keywords',
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-BTC', '1F1', false);
-    await maybeHideKeyboard();
-    await Helpers.waitAndTap('ens-text-record-BTC-error');
-    await Helpers.checkIfElementByTextToExist('Invalid BTC address');
-    await Helpers.tapByText('OK');
-    await Helpers.typeText(
-      'ens-text-record-BTC',
-      'tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX',
-      false
-    );
-    await maybeHideKeyboard();
-    await Helpers.delay(3000);
-    await Helpers.checkIfNotVisible('ens-text-record-BTC-error');
+    await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS, false);
 
-    // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-
-    // Fill "Snapchat" field
+    // Fill "Notice" field
     await Helpers.swipeUntilVisible(
-      'ens-text-record-com.snapchat',
+      'ens-text-record-notice',
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText(
-      'ens-text-record-com.snapchat',
-      RECORD_SNAPCHAT,
-      false
+    await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE, false);
+
+    // Fill "Pronouns" field
+    await Helpers.swipeUntilVisible(
+      'ens-text-record-pronouns',
+      'ens-edit-records-sheet',
+      'down'
     );
-    await maybeHideKeyboard();
+    await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS, false);
+
+    // Fill "Reddit" field
+    await Helpers.swipeUntilVisible(
+      'ens-text-record-com.reddit',
+      'ens-edit-records-sheet',
+      'down'
+    );
+    await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT, false);
 
     // Fill "Telegram" field
     await Helpers.swipeUntilVisible(
@@ -338,98 +267,133 @@ describe('Edit ENS Flow', () => {
       RECORD_TELEGRAM,
       false
     );
-    await maybeHideKeyboard();
 
-    // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-
-    // Fill "Reddit" field
+    // Fill "Snapchat" field
     await Helpers.swipeUntilVisible(
-      'ens-text-record-com.reddit',
+      'ens-text-record-com.snapchat',
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT, false);
-    await maybeHideKeyboard();
+    await Helpers.typeText(
+      'ens-text-record-com.snapchat',
+      RECORD_SNAPCHAT,
+      false
+    );
+  });
 
-    // Fill "Pronouns" field
+  it('Should fill & validate the fields 3', async () => {
+    // Fill "Bitcoin" field
     await Helpers.swipeUntilVisible(
-      'ens-text-record-pronouns',
+      'ens-text-record-BTC',
       'ens-edit-records-sheet',
       'down'
     );
-    await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS, false);
-    await maybeHideKeyboard();
-
-    // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-
-    // Fill "Notice" field
-    await Helpers.swipeUntilVisible(
-      'ens-text-record-notice',
-      'ens-edit-records-sheet',
-      'down'
-    );
-    await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE, false);
-    await maybeHideKeyboard();
-
-    // Fill "Keywords" field
-    await Helpers.swipeUntilVisible(
-      'ens-text-record-keywords',
-      'ens-edit-records-sheet',
-      'down'
-    );
-    await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS, false);
-    await maybeHideKeyboard();
-
-    // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    // await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-
-    // Fill "Litecoin" field
-    await Helpers.swipeUntilVisible(
-      'ens-text-record-LTC',
-      'ens-edit-records-sheet',
-      'down'
-    );
-    await Helpers.typeText('ens-text-record-LTC', 'MGx', false);
-    await maybeHideKeyboard();
-    await Helpers.waitAndTap('ens-text-record-LTC-error');
-    await Helpers.checkIfElementByTextToExist('Invalid LTC address');
+    await Helpers.typeText('ens-text-record-BTC', '1F1', false);
+    await Helpers.waitAndTap('ens-text-record-BTC-error');
+    await Helpers.checkIfElementByTextToExist('Invalid BTC address');
     await Helpers.tapByText('OK');
     await Helpers.typeText(
-      'ens-text-record-LTC',
-      'NPPB7eBoWPUaprtX9v9CXJZoD2465zN',
+      'ens-text-record-BTC',
+      'tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX',
       false
     );
-    await maybeHideKeyboard();
     await Helpers.delay(3000);
-    await Helpers.checkIfNotVisible('ens-text-record-LTC-error');
+    await Helpers.checkIfNotVisible('ens-text-record-BTC-error');
+  });
 
-    // Fill "Content" field
+  it('Should fill & validate the fields 4', async () => {
+    // Fill "GitHub" field
     await Helpers.swipeUntilVisible(
-      'ens-text-record-contenthash',
+      'ens-text-record-com.github',
+      'ens-edit-records-sheet',
+      'down'
+    );
+    await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB, false);
+
+    // Fill "Discord" field
+    await Helpers.swipeUntilVisible(
+      'ens-text-record-com.discord',
       'ens-edit-records-sheet',
       'down'
     );
     await Helpers.typeText(
-      'ens-text-record-contenthash',
-      RECORD_CONTENTHASH.slice(0, 3),
+      'ens-text-record-com.discord',
+      RECORD_DISCORD.slice(0, 3),
       false
     );
-    await maybeHideKeyboard();
-    await Helpers.waitAndTap('ens-text-record-contenthash-error');
-    await Helpers.checkIfElementByTextToExist('Invalid content hash');
+    await Helpers.waitAndTap('ens-text-record-com.discord-error');
+    await Helpers.checkIfElementByTextToExist('Invalid Discord username');
     await Helpers.tapByText('OK');
     await Helpers.typeText(
-      'ens-text-record-contenthash',
-      RECORD_CONTENTHASH.slice(3),
+      'ens-text-record-com.discord',
+      RECORD_DISCORD.slice(3),
       false
     );
-    await maybeHideKeyboard();
-    await Helpers.delay(3000);
-    await Helpers.checkIfNotVisible('ens-text-record-contenthash-error');
+    await Helpers.delay(1000);
+    await Helpers.checkIfNotVisible('ens-text-record-com.discord-error');
+
+    // Fill "Instagram" field
+    await Helpers.swipeUntilVisible(
+      'ens-text-record-com.instagram',
+      'ens-edit-records-sheet',
+      'down'
+    );
+    await Helpers.typeText(
+      'ens-text-record-com.instagram',
+      RECORD_INSTAGRAM,
+      false
+    );
+
+    // Fill "Email" field
+    await Helpers.swipeUntilVisible(
+      'ens-text-record-email',
+      'ens-edit-records-sheet',
+      'down'
+    );
+    await Helpers.typeText(
+      'ens-text-record-email',
+      RECORD_EMAIL.slice(0, 3),
+      false
+    );
+    await Helpers.waitAndTap('ens-text-record-email-error');
+    await Helpers.checkIfElementByTextToExist('Invalid email');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText(
+      'ens-text-record-email',
+      RECORD_EMAIL.slice(3),
+      false
+    );
+    await Helpers.delay(1000);
+    await Helpers.checkIfNotVisible('ens-text-record-email-error');
+
+    // Fill "Twitter" field
+    await Helpers.swipeUntilVisible(
+      'ens-text-record-com.twitter',
+      'ens-edit-records-sheet',
+      'down'
+    );
+    await Helpers.typeText(
+      'ens-text-record-com.twitter',
+      RECORD_TWITTER,
+      false
+    );
+
+    // Fill "Website" field
+    await Helpers.swipeUntilVisible(
+      'ens-text-record-url',
+      'ens-edit-records-sheet',
+      'down'
+    );
+    await Helpers.typeText('ens-text-record-url', 'abc', false);
+    await Helpers.waitAndTap('ens-text-record-url-error');
+    await Helpers.checkIfElementByTextToExist('Invalid URL');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText('ens-text-record-url', '123.com', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfNotVisible('ens-text-record-url-error');
   });
 
   it('Should unselect a field', async () => {
-    await Helpers.swipe('ens-edit-records-sheet', 'down');
     await Helpers.waitAndTap('hide-keyboard-button');
     await Helpers.waitAndTap('ens-selectable-attribute-bio');
     await Helpers.checkIfNotVisible('ens-text-record-description');
@@ -437,7 +401,6 @@ describe('Edit ENS Flow', () => {
 
   it('Should update a field', async () => {
     await Helpers.typeText('ens-text-record-name', ' Guy', false);
-    await maybeHideKeyboard();
     await Helpers.waitAndTap('hide-keyboard-button');
   });
 
@@ -445,7 +408,7 @@ describe('Edit ENS Flow', () => {
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.checkIfVisible(`ens-transaction-action-EDIT`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-EDIT`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-EDIT');
@@ -493,6 +456,6 @@ describe('Edit ENS Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.killHardhat();
   });
 });

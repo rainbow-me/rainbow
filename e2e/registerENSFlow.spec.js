@@ -21,6 +21,9 @@ const EIP155_FORMATTED_AVATAR_RECORD =
   'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227';
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
 
+const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
+
 const nameIsAvailable = async name => {
   const provider = Helpers.getProvider();
   const registrarContract = new Contract(
@@ -185,7 +188,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to ENS flow pressing the ENS banner', async () => {
-    device.getPlatform() === 'android' && (await Helpers.delay(2000));
+    android && (await Helpers.delay(2000));
     await Helpers.waitAndTap('ens-create-profile-card');
     await Helpers.checkIfVisible('ens-intro-sheet');
   });

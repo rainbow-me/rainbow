@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
@@ -15,6 +14,9 @@ const RAINBOW_TEST_WALLET_ADDRESS =
   '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 const RAINBOW_WALLET_NAME = 'rainbowwallet.eth';
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
+
+const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
 
 const address = (address, start, finish) =>
   [
@@ -96,11 +98,8 @@ const resolveName = async ensName => {
 };
 
 beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
-  await exec(
-    'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-  );
+  await Helpers.startHardhat();
+  await Helpers.startIosSimulator();
 });
 
 describe('Renew + Send ENS Flow', () => {
@@ -132,7 +131,7 @@ describe('Renew + Send ENS Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -162,7 +161,7 @@ describe('Renew + Send ENS Flow', () => {
   it('Should renew rainbowtestwallet.eth', async () => {
     await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
     await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
     } else {
       await Helpers.tapAndLongPress('ens-transaction-action-RENEW');
@@ -199,7 +198,7 @@ describe('Renew + Send ENS Flow', () => {
     await Helpers.waitAndTap('clear-records');
     await Helpers.waitAndTap('set-address');
     await Helpers.waitAndTap('transfer-control');
-    if (device.getPlatform() === 'ios') {
+    if (ios) {
       await Helpers.waitAndTap(`send-confirmation-button`);
     } else {
       await Helpers.tapAndLongPress('send-confirmation-button');
@@ -227,6 +226,11 @@ describe('Renew + Send ENS Flow', () => {
 
   it('Should check address is the new label on profile screen and change wallet screen', async () => {
     const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
+    const WALLET_ROW_TRUNCATED_ADDRESS = address(
+      RAINBOW_TEST_WALLET_ADDRESS,
+      6,
+      4
+    );
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.checkIfVisible(
@@ -234,13 +238,13 @@ describe('Renew + Send ENS Flow', () => {
     );
     await Helpers.waitAndTap(`wallet-screen-account-name-${TRUNCATED_ADDRESS}`);
     await Helpers.checkIfVisible(
-      `change-wallet-address-row-address-${RAINBOW_TEST_WALLET_ADDRESS}`
+      `change-wallet-address-row-label-${WALLET_ROW_TRUNCATED_ADDRESS}`
     );
   });
 
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.killHardhat();
   });
 });
