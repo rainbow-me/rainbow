@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 
 import { Example } from '../../docs/types';
@@ -12,7 +11,7 @@ export const basicUsage: Example = {
   wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Rows space="19px">
+      <Rows space="20px">
         <Placeholder height="100%" />
         <Placeholder height="100%" />
         <Placeholder height="100%" />
@@ -38,7 +37,7 @@ export const customHeights: Example = {
   wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Rows space="19px">
+      <Rows space="20px">
         <Row height="1/4">
           <Placeholder height="100%" />
         </Row>
@@ -100,7 +99,7 @@ export const nestedRowsWithExplicitHeightsContent: Example = {
   wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Rows space="19px">
+      <Rows space="20px">
         <Placeholder height="100%" />
         <Row height="content">
           <Rows space="6px">
@@ -121,7 +120,7 @@ export const centerAlignedVertically: Example = {
   wrapper: children => <Box height={{ custom: 300 }}>{children}</Box>,
   Example: () =>
     source(
-      <Rows alignVertical="center" space="19px">
+      <Rows alignVertical="center" space="20px">
         <Row height="1/2">
           <Placeholder height="100%" />
         </Row>
@@ -137,7 +136,7 @@ export const bottomAlignedVertically: Example = {
   wrapper: children => <Box height={{ custom: 300 }}>{children}</Box>,
   Example: () =>
     source(
-      <Rows alignVertical="bottom" space="19px">
+      <Rows alignVertical="bottom" space="20px">
         <Row height="1/2">
           <Placeholder height="100%" />
         </Row>
@@ -153,7 +152,7 @@ export const centerAlignedHorizontally: Example = {
   wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Rows alignHorizontal="center" space="19px">
+      <Rows alignHorizontal="center" space="20px">
         <Placeholder height="100%" width={30} />
         <Placeholder height="100%" width={60} />
         <Placeholder height="100%" width={20} />
@@ -166,7 +165,7 @@ export const rightAlignedHorizontally: Example = {
   wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Rows alignHorizontal="right" space="19px">
+      <Rows alignHorizontal="right" space="20px">
         <Placeholder height="100%" width={30} />
         <Placeholder height="100%" width={60} />
         <Placeholder height="100%" width={20} />

@@ -6,13 +6,13 @@ import OneInchExchange from '../../../assets/exchanges/oneinch.png';
 import ZeroXExchange from '../../../assets/exchanges/zerox.png';
 import { ButtonPressAnimation } from '../../animations';
 import { ContextMenuButton } from '../../context-menu';
-import { Box, Column, Columns, Inline, Text } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import { Source } from '@rainbow-me/redux/swap';
-import Routes from '@rainbow-me/routes';
+import { Box, Column, Columns, Inline, Text } from '@/design-system';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import { Source } from '@/redux/swap';
+import Routes from '@/navigation/routesNames';
 
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { showActionSheetWithOptions } from '@/utils';
 
 const sourceMenuItems = () => {
   return Object.values(Source).map(source => ({
@@ -91,9 +91,17 @@ export default function SourcePicker({ onSelect, currentSource }) {
           paddingVertical="12px"
           testID="swap-settings-routes-label"
         >
-          <Text size="16px" weight="bold">
+          <Text
+            color="primary (Deprecated)"
+            size="16px / 22px (Deprecated)"
+            weight="bold"
+          >
             {lang.t('exchange.source_picker')}
-            <Text color="secondary30" size="16px" weight="bold">
+            <Text
+              color="secondary30 (Deprecated)"
+              size="16px / 22px (Deprecated)"
+              weight="bold"
+            >
               {' 􀅵'}
             </Text>
           </Text>
@@ -107,7 +115,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
           onPressMenuItem={handleOnPressMenuItem}
         >
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={40}
             paddingHorizontal="10px"
             paddingVertical="6px"
@@ -125,7 +133,8 @@ export default function SourcePicker({ onSelect, currentSource }) {
                 width={20}
               />
               <Text
-                size="18px"
+                color="primary (Deprecated)"
+                size="18px / 27px (Deprecated)"
                 testID={`swap-settings-routes-current-${currentSource}`}
                 weight="bold"
               >

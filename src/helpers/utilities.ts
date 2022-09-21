@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
 import { isNil } from 'lodash';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { supportedNativeCurrencies } from '@/references';
 
 type BigNumberish = number | string | BigNumber;
 interface Dictionary<T> {
@@ -159,9 +159,12 @@ export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
   new BigNumber(numberOne).plus(numberTwo).toFixed();
 
 export const addDisplay = (numberOne: string, numberTwo: string): string => {
-  const template = numberOne.split(/^(\D*)(.*)/);
-  const display = currency(numberOne, { symbol: '' }).add(numberTwo).format();
-  return [template[1], display].join('');
+  const unit = numberOne.replace(/[\d.-]/g, '');
+  const leftAlignedUnit = numberOne.indexOf(unit) === 0;
+  return currency(0, { symbol: unit, pattern: leftAlignedUnit ? '!#' : '#!' })
+    .add(numberOne)
+    .add(numberTwo)
+    .format();
 };
 
 export const multiply = (
@@ -375,9 +378,12 @@ export const convertAmountToPercentageDisplayWithThreshold = (
  * @desc convert from bips amount to percentage format
  */
 export const convertBipsToPercentage = (
-  value: BigNumberish,
+  value: BigNumberish | null,
   decimals: number = 2
-): string => new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
+): string => {
+  if (value === null) return '0';
+  return new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
+};
 
 /**
  * @desc convert from amount value to display formatted string

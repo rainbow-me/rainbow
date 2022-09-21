@@ -7,10 +7,10 @@ import { CoinIcon } from './coin-icon';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
-import { isL2Asset } from '@rainbow-me/handlers/assets';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
-import { padding, position } from '@rainbow-me/styles';
-import { darkModeThemeColors } from '@rainbow-me/styles/colors';
+import { isL2Asset } from '@/handlers/assets';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import { padding, position } from '@/styles';
+import { darkModeThemeColors } from '@/styles/colors';
 
 const L2Disclaimer = ({
   assetType,

@@ -4,10 +4,7 @@ import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
 import { isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -26,20 +23,15 @@ import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import {
-  convertHexToString,
-  delay,
-  omitBy,
-  pickBy,
-} from '@rainbow-me/helpers/utilities';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
-import logger from 'logger';
+import { analytics } from '@/analytics';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
+import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils, watchingAlert } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -383,7 +375,7 @@ export const walletConnectOnSessionRequest = (
         },
         receivedTimestamp,
       };
-
+      // @ts-ignore
       walletConnector?.on('session_request', (error, payload) => {
         clearTimeout(timeout!);
         if (error) {
@@ -499,6 +491,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
   dispatch: ThunkDispatch<StoreAppState, unknown, never>,
   getState: AppGetState
 ) => {
+  // @ts-ignore
   walletConnector.on('call_request', async (error, payload) => {
     logger.log('WC Request!', error, payload);
     if (error) {
@@ -527,8 +520,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       );
       const supportedChains = [
         networkTypes.mainnet,
-        networkTypes.ropsten,
-        networkTypes.kovan,
         networkTypes.goerli,
         networkTypes.polygon,
         networkTypes.optimism,
@@ -643,6 +634,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       }
     }
   });
+  // @ts-ignore
   walletConnector.on('disconnect', error => {
     if (error) {
       throw error;
@@ -856,7 +848,7 @@ export const walletConnectUpdateSessionConnectorByDappUrl = (
     saveWalletConnectSession(connector.peerId, connector.session);
   });
   dispatch({
-    payload: Object.assign({}, walletConnectors),
+    payload: { ...walletConnectors },
     type: WALLETCONNECT_UPDATE_CONNECTORS,
   });
 };

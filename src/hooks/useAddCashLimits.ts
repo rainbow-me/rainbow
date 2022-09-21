@@ -1,8 +1,8 @@
 import { differenceInDays, differenceInYears } from 'date-fns';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { AppState } from '@rainbow-me/redux/store';
+import { TransactionStatusTypes } from '@/entities';
+import { AppState } from '@/redux/store';
 
 const DEFAULT_WEEKLY_LIMIT = 500;
 const DEFAULT_YEARLY_LIMIT = 5000;

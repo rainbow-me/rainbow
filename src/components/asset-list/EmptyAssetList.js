@@ -1,16 +1,16 @@
 import ConditionalWrap from 'conditional-wrap';
 import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
-import { times } from '@rainbow-me/helpers/utilities';
-import { useRefreshAccountData } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { times } from '@/helpers/utilities';
+import { useRefreshAccountData } from '@/hooks';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 const Container = styled(Column)(position.sizeAsObject('100%'));
 
@@ -23,7 +23,7 @@ const EmptyAssetList = ({
   title,
   ...props
 }) => {
-  const { bottom: bottomInset } = useSafeArea();
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   const interstitialOffset = useMemo(() => {
     let offset = bottomInset + FabWrapperBottomPosition;

@@ -13,9 +13,11 @@ const trustedDomains = [
   'instagram.com',
   'opensea.io',
   'quixotic.io',
+  'qx.app',
   'rainbow.me',
   'rarible.com',
   'stratosnft.io',
+  'trove.treasure.lol',
   'twitter.com',
   'zora.co',
 ];

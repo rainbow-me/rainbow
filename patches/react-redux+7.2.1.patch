@@ -6,7 +6,7 @@ index c93b377..347b366 100644
  exports.createSelectorHook = createSelectorHook;
  exports.useSelector = void 0;
  
-+import isEqual from "react-fast-compare"
++const isEqual = require("react-fast-compare");
 +
  var _react = require("react");
  

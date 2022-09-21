@@ -3,17 +3,10 @@ import React from 'react';
 import { Source } from 'react-native-fast-image';
 import brain from '../../../assets/brain.png';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
-import {
-  Box,
-  Divider,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useDimensions } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useDimensions } from '@/hooks';
+import { ImgixImage } from '@/components/images';
 
 const CommitContent = ({
   duration,
@@ -27,9 +20,9 @@ const CommitContent = ({
   const { isSmallPhone } = useDimensions();
 
   return (
-    <Inset vertical={isSmallPhone ? '24px' : '30px'}>
-      <Stack space={isSmallPhone ? '19px' : '30px'}>
-        <Divider color="divider60" />
+    <Inset vertical={isSmallPhone ? '24px' : '30px (Deprecated)'}>
+      <Stack space={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
+        <Separator color="divider60 (Deprecated)" />
         <Inline
           alignHorizontal="center"
           alignVertical="center"
@@ -42,7 +35,12 @@ const CommitContent = ({
               style={{ height: 20, width: 20 }}
             />
           </Box>
-          <Text align="center" color="secondary50" size="14px" weight="bold">
+          <Text
+            align="center"
+            color="secondary50 (Deprecated)"
+            size="14px / 19px (Deprecated)"
+            weight="bold"
+          >
             {lang.t('profiles.confirm.suggestion')}
           </Text>
         </Inline>
@@ -62,7 +60,7 @@ const CommitContent = ({
             registrationCostsData?.estimatedTotalRegistrationCost?.display
           }
         />
-        <Divider color="divider60" />
+        <Separator color="divider60 (Deprecated)" />
       </Stack>
     </Inset>
   );

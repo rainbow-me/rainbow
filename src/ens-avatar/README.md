@@ -7,6 +7,7 @@ Avatar resolver library for ~both nodejs and browser~ REACT NATIVE! (a Rainbow f
 ## Getting started
 
 ### Prerequisites
+
 - Have your web3 provider ready (web3.js, ethers.js)
 - [Only for node env] Have jsdom installed.
 
@@ -52,10 +53,12 @@ async function getAvatarMetadata() {
 ## Supported avatar specs
 
 ### NFTs
+
 - ERC721
 - ERC1155
 
 ### URIs
+
 - HTTP
 - Base64
 - IPFS
@@ -63,25 +66,30 @@ async function getAvatarMetadata() {
 ## Options
 
 ### Cache _(Default: Disabled)_
+
 ```js
 const avt = new AvatarResolver(provider, { ttl: 300 }); // 5 min response cache in memory
 ```
 
 ### Custom IPFS Gateway _(Default: https://ipfs.io)_
+
 ```js
 const avt = new AvatarResolver(provider, { ipfs: 'https://dweb.link' });
 ```
 
 ## Demo
+
 - Create .env file with INFURA_KEY env variable
 - Build the library
 
 - Node example
+
 ```bash
 node example/node.js ENS_NAME
 ```
 
 - Browser example
+
 ```bash
 yarn build:demo
 http-server example

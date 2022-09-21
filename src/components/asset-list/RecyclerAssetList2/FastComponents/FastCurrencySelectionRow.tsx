@@ -12,12 +12,12 @@ import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import FastCoinIcon from './FastCoinIcon';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Text } from '@rainbow-me/design-system';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-import { Network } from '@rainbow-me/helpers';
-import { useAccountAsset } from '@rainbow-me/hooks';
-import { colors, fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import { Text } from '@/design-system';
+import { isNativeAsset } from '@/handlers/assets';
+import { Network } from '@/helpers';
+import { useAccountAsset } from '@/hooks';
+import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
+import { deviceUtils, ethereumUtils } from '@/utils';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? View
@@ -158,14 +158,18 @@ export default React.memo(function FastCurrencySelectionRow({
             </View>
             {showBalance && (
               <View style={[sx.column, sx.balanceColumn]}>
-                <Text align="right" size="16px">
+                <Text
+                  align="right"
+                  color="primary (Deprecated)"
+                  size="16px / 22px (Deprecated)"
+                >
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
                 </Text>
                 <Text
                   align="right"
                   color={{ custom: theme.colors.blueGreyDark50 }}
-                  size="14px"
+                  size="14px / 19px (Deprecated)"
                 >
                   {item?.balance?.display ?? ''}
                 </Text>
@@ -190,6 +194,7 @@ export default React.memo(function FastCurrencySelectionRow({
                 >
                   <Text
                     color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }}
+                    size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
                     􀅳

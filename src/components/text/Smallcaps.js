@@ -1,5 +1,5 @@
 import Text from './Text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Smallcaps = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.8),

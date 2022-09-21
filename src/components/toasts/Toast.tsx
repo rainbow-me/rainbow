@@ -7,14 +7,14 @@ import Animated, {
   withSpring,
   WithSpringConfig,
 } from 'react-native-reanimated';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding, position, shadow } from '@rainbow-me/styles';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
+import { padding, position, shadow } from '@/styles';
 
 const springConfig: WithSpringConfig = {
   damping: 14,
@@ -72,7 +72,7 @@ export default function Toast({
 }: Props) {
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const animation = useSharedValue(isVisible ? 1 : 0);
 
   useLayoutEffect(() => {

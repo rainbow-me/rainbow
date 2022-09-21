@@ -1,7 +1,6 @@
 import { verifyMessage, Wallet } from '@ethersproject/wallet';
 import { generateMnemonic } from 'bip39';
 import { default as LibWallet } from 'ethereumjs-wallet';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import {
   loadString,
@@ -13,10 +12,10 @@ import {
   signingWalletAddress,
   signingWallet as signingWalletKeychain,
 } from '../utils/keychainConstants';
-import { EthereumAddress } from '@rainbow-me/entities';
-import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
-import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { EthereumAddress } from '@/entities';
+import AesEncryptor from '@/handlers/aesEncryption';
+import { addHexPrefix } from '@/handlers/web3';
+import { ethereumUtils, logger } from '@/utils';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);

@@ -1,4 +1,4 @@
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 export const UniqueTokenCardMargin = 15;
 export const UniqueTokenRowPadding = 19;

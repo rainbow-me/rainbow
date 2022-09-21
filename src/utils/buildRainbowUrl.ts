@@ -1,5 +1,5 @@
-import { EthereumAddress, UniqueAsset } from '@rainbow-me/entities';
-import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
+import { EthereumAddress, UniqueAsset } from '@/entities';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 
 export default function buildRainbowUrl(
   asset: UniqueAsset | null,

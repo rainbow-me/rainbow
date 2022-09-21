@@ -3,9 +3,9 @@ import React, { useCallback, useContext, useEffect } from 'react';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { Box } from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { useWalletSectionsData } from '@rainbow-me/hooks';
+import { Box } from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { useWalletSectionsData } from '@/hooks';
 
 export default function SelectUniqueTokenSheet() {
   const { params } = useRoute<any>();
@@ -29,9 +29,9 @@ export default function SelectUniqueTokenSheet() {
 
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       height="full"
-      paddingTop={android ? undefined : '34px'}
+      paddingTop={android ? undefined : '34px (Deprecated)'}
       {...(android && { borderTopRadius: 30 })}
     >
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">

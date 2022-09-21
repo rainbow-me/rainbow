@@ -1,14 +1,9 @@
 import lang from 'i18n-js';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  AccentColorProvider,
-  Box,
-  Inset,
-  Text,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
-import { useTheme } from '@rainbow-me/theme';
+import { AccentColorProvider, Box, Inset, Text } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { useTheme } from '@/theme';
 
 type Props = {
   type: 'availability' | 'expiration' | 'price';
@@ -61,14 +56,20 @@ const SearchResultGradientIndicator = ({
       justifyContent="center"
       start={{ x: 0, y: 0.6 }}
     >
-      <Inset horizontal="15px">
+      <Inset horizontal="15px (Deprecated)">
         <AccentColorProvider
           color={isRegistered ? colors.lightOrange : colors.green}
         >
           <Text
-            color={type === 'availability' ? 'accent' : 'secondary80'}
+            color={
+              type === 'availability' ? 'accent' : 'secondary80 (Deprecated)'
+            }
             containsEmoji
-            size={isSmallPhone ? '18px' : '20px'}
+            size={
+              isSmallPhone
+                ? '18px / 27px (Deprecated)'
+                : '20px / 24px (Deprecated)'
+            }
             testID={testID}
             weight="heavy"
           >

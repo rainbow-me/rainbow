@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 export default function SendButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();
@@ -23,5 +23,11 @@ export default function SendButton({ ensName }: { ensName?: string }) {
     }
   }, [ensName, navigate]);
 
-  return <ActionButton color="action" icon="􀈠" onPress={handlePressSend} />;
+  return (
+    <ActionButton
+      color="action (Deprecated)"
+      icon="􀈠"
+      onPress={handlePressSend}
+    />
+  );
 }

@@ -1,9 +1,12 @@
-import { useQuery } from 'react-query';
-import { fetchResolver } from '@rainbow-me/handlers/ens';
-import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
-import { ensPublicResolverAddress } from '@rainbow-me/references';
+import { useQuery } from '@tanstack/react-query';
+import { fetchResolver } from '@/handlers/ens';
+import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
+import { ensPublicResolverAddress } from '@/references';
 
 export const ensResolverQueryKey = (name: string) => ['ens-resolver', name];
 
@@ -33,7 +36,7 @@ export async function prefetchENSResolver(name: string) {
 
 export default function useENSResolver(
   name: string,
-  config?: QueryConfig<typeof fetchENSResolver>
+  config?: QueryConfigDeprecated<typeof fetchENSResolver>
 ) {
   return useQuery<UseQueryData<typeof fetchENSResolver>>(
     ensResolverQueryKey(name),

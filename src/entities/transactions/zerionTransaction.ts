@@ -41,7 +41,6 @@ export interface ZerionTransaction {
   id: string;
   meta: ZerionTransactionMeta | null;
   mined_at: number;
-  signed_at?: number; // L2
   nonce: number | null;
   protocol: ProtocolType;
   status: ZerionTransactionStatus;

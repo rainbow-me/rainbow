@@ -7,14 +7,14 @@ import { settingsUpdateNetwork } from '../../redux/settings';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { analytics } from '@rainbow-me/analytics';
-import { Divider, Stack } from '@rainbow-me/design-system';
+import { analytics } from '@/analytics';
+import { Separator, Stack } from '@/design-system';
 import {
   useAccountSettings,
   useInitializeAccountData,
   useLoadAccountData,
   useResetAccountState,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 
 const networks = values(networkInfo).filter(network => !network.layer2);
 
@@ -65,7 +65,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
 
   return inDevSection ? (
-    <Stack separator={<Divider color="divider60" />}>
+    <Stack separator={<Separator color="divider60 (Deprecated)" />}>
       {renderNetworkList()}
     </Stack>
   ) : (

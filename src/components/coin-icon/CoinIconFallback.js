@@ -2,18 +2,18 @@ import React, { useMemo } from 'react';
 import { Image } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
-import EthIcon from '@rainbow-me/assets/eth-icon.png';
-import { AssetTypes } from '@rainbow-me/entities';
-import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
-import { ImageWithCachedMetadata } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { borders, fonts, position, shadow } from '@rainbow-me/styles';
+import EthIcon from '@/assets/eth-icon.png';
+import { AssetTypes } from '@/entities';
+import { useBooleanState, useColorForAsset } from '@/hooks';
+import { ImageWithCachedMetadata } from '@/components/images';
+import styled from '@/styled-thing';
+import { borders, fonts, position, shadow } from '@/styles';
 import {
   FallbackIcon,
   getUrlForTrustIconFallback,
   isETH,
   magicMemo,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

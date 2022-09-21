@@ -103,6 +103,16 @@ describe('Discover Sheet Flow', () => {
     );
   });
 
+  it('Should display search results in the correct order', async () => {
+    await Helpers.waitAndTap('discover-search-clear-input');
+    await Helpers.typeText('discover-search-input', 'bitcoin', true);
+    await Helpers.delay(3000);
+    await Helpers.checkIfVisible('favorites-0');
+    await Helpers.checkIfVisible('verified-1');
+    await Helpers.checkIfVisible('profiles-2');
+    await Helpers.checkIfVisible('highLiquidity-3');
+  });
+
   it('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.typeText(

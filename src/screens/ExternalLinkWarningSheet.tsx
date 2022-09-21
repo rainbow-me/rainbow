@@ -2,16 +2,16 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import { useDimensions } from '@rainbow-me/hooks';
-import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
-import { formatURLForDisplay } from '@rainbow-me/utils';
+import { useDimensions } from '@/hooks';
+import { fonts, fontWithWidth, position } from '@/styles';
+import { useTheme } from '@/theme';
+import { formatURLForDisplay } from '@/utils';
 
 export const ExternalLinkWarningSheetHeight = 380 + (android ? 20 : 0);
 
@@ -24,7 +24,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
 
 const ExternalLinkWarningSheet = () => {
   const { height: deviceHeight } = useDimensions();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   // @ts-expect-error
   const { params: { url, onClose } = {} } = useRoute();
   const { colors } = useTheme();

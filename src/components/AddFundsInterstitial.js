@@ -13,16 +13,13 @@ import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
-import { analytics } from '@rainbow-me/analytics';
-import {
-  useAccountSettings,
-  useDimensions,
-  useWallets,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import { analytics } from '@/analytics';
+import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
+import config from '@/model/config';
 
 const ContainerWidth = 261;
 
@@ -195,6 +192,12 @@ const AddFundsInterstitial = ({ network }) => {
         captureMessage('Damaged wallet preventing add cash');
         return;
       }
+
+      if (!config.wyre_enabled) {
+        navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
+        return;
+      }
+
       if (ios) {
         navigate(Routes.ADD_CASH_FLOW, {
           params: !isNaN(amount) ? { amount } : null,

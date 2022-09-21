@@ -14,17 +14,17 @@ import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
-import EditAction from '@rainbow-me/helpers/EditAction';
+import EditAction from '@/helpers/EditAction';
 import {
   useAccountSettings,
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
   useDimensions,
   useOpenSmallBalances,
-} from '@rainbow-me/hooks';
-import { emitChartsRequest } from '@rainbow-me/redux/explorer';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+} from '@/hooks';
+import { emitChartsRequest } from '@/redux/explorer';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;

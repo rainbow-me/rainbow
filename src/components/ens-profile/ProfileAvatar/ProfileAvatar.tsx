@@ -4,10 +4,10 @@ import Animated from 'react-native-reanimated';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
-import { BackgroundProvider, Box, Cover } from '@rainbow-me/design-system';
-import { useFadeImage } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
+import { BackgroundProvider, Box, Cover } from '@/design-system';
+import { useFadeImage } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
 const size = 70;
@@ -36,7 +36,7 @@ export default function ProfileAvatar({
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
-        <BackgroundProvider color="body">
+        <BackgroundProvider color="body (Deprecated)">
           {({ backgroundColor }) => (
             <AvatarCoverPhotoMaskSvg backgroundColor={backgroundColor as any} />
           )}
@@ -44,7 +44,7 @@ export default function ProfileAvatar({
       </Cover>
       <Box
         alignItems="center"
-        background={showAccentBackground ? 'accent' : 'body'}
+        background={showAccentBackground ? 'accent' : 'body (Deprecated)'}
         borderRadius={size / 2}
         justifyContent="center"
         shadow="15px light"
@@ -69,7 +69,7 @@ export default function ProfileAvatar({
                 <Box height={{ custom: size }} width="full">
                   <Skeleton animated>
                     <Box
-                      background="body"
+                      background="body (Deprecated)"
                       borderRadius={size / 2}
                       height={{ custom: size }}
                       width={{ custom: size }}

@@ -18,7 +18,8 @@ const GradientText = ({
 }) => {
   const textElement =
     Array.isArray(children) || typeof children === 'string'
-      ? createElement(renderer, { ...props, children })
+      ? // eslint-disable-next-line react/no-children-prop
+        createElement(renderer, { ...props, children })
       : children;
 
   return (

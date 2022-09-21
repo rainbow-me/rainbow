@@ -378,8 +378,8 @@ PODS:
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-change-icon (3.2.0):
-    - React
+  - react-native-change-icon (4.0.0):
+    - React-Core
   - react-native-cloud-fs (2.4.0):
     - React
   - react-native-get-random-values (1.5.0):
@@ -408,8 +408,12 @@ PODS:
     - React
   - react-native-restart (0.0.22):
     - React-Core
-  - react-native-safe-area-context (0.5.0):
+  - react-native-safe-area-context (4.3.1):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
     - React
+    - ReactCommon/turbomodule/core
   - react-native-splash-screen (3.2.0):
     - React
   - react-native-text-input-mask (2.0.0):
@@ -604,14 +608,14 @@ PODS:
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - segment-analytics-react-native (2.3.2):
+  - segment-analytics-react-native (2.7.0):
     - React-Core
     - sovran-react-native
   - Sentry (7.11.0):
     - Sentry/Core (= 7.11.0)
   - Sentry/Core (7.11.0)
   - Shimmer (1.0.2)
-  - sovran-react-native (0.2.8):
+  - sovran-react-native (0.4.3):
     - React-Core
   - SRSRadialGradient (1.0.9):
     - React
@@ -1058,7 +1062,7 @@ SPEC CHECKSUMS:
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-change-icon: 64ebec0bef1b63d5d1a1bccba83e12c2d45eaad7
+  react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: 1e883ec82ff418d320c128f61971dd971b128ca0
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb
@@ -1072,7 +1076,7 @@ SPEC CHECKSUMS:
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
-  react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
+  react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
@@ -1125,10 +1129,10 @@ SPEC CHECKSUMS:
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
-  segment-analytics-react-native: 7018cfede6a609175bd4f7ee70b65e170ca41875
+  segment-analytics-react-native: e4be824133efd888616f6e6654a2cd4b1b8a3102
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
-  sovran-react-native: e4064b633fd8232055d003460d5816dff87ba8cc
+  sovran-react-native: d9adc84c3666579aacd5d96e315e399cd52241ac
   SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c

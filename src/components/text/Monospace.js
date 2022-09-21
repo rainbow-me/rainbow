@@ -1,5 +1,5 @@
 import Text from './Text';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
 const Monospace = styled(Text).attrs({ family: 'SFMono' })({});
 export default Monospace;

@@ -11,44 +11,34 @@ import AppVersionStamp from '../AppVersionStamp';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import AppIconIcon from '@rainbow-me/assets/settingsAppIcon.png';
-import AppIconIconDark from '@rainbow-me/assets/settingsAppIconDark.png';
-import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
-import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
-import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
-import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
-import DarkModeIcon from '@rainbow-me/assets/settingsDarkMode.png';
-import DarkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
-import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
-import LanguageIconDark from '@rainbow-me/assets/settingsLanguageDark.png';
-import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
-import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
-import NotificationsIcon from '@rainbow-me/assets/settingsNotifications.png';
-import NotificationsIconDark from '@rainbow-me/assets/settingsNotificationsDark.png';
-import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
-import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
+import AppIconIcon from '@/assets/settingsAppIcon.png';
+import AppIconIconDark from '@/assets/settingsAppIconDark.png';
+import BackupIcon from '@/assets/settingsBackup.png';
+import BackupIconDark from '@/assets/settingsBackupDark.png';
+import CurrencyIcon from '@/assets/settingsCurrency.png';
+import CurrencyIconDark from '@/assets/settingsCurrencyDark.png';
+import DarkModeIcon from '@/assets/settingsDarkMode.png';
+import DarkModeIconDark from '@/assets/settingsDarkModeDark.png';
+import LanguageIcon from '@/assets/settingsLanguage.png';
+import LanguageIconDark from '@/assets/settingsLanguageDark.png';
+import NetworkIcon from '@/assets/settingsNetwork.png';
+import NetworkIconDark from '@/assets/settingsNetworkDark.png';
+import NotificationsIcon from '@/assets/settingsNotifications.png';
+import NotificationsIconDark from '@/assets/settingsNotificationsDark.png';
+import PrivacyIcon from '@/assets/settingsPrivacy.png';
+import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,
-} from '@rainbow-me/config/experimentalHooks';
-import { Box } from '@rainbow-me/design-system';
-import {
-  isCustomBuild,
-  setOriginalDeploymentKey,
-} from '@rainbow-me/handlers/fedora';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import {
-  useAccountSettings,
-  useSendFeedback,
-  useWallets,
-} from '@rainbow-me/hooks';
-import { Themes, useTheme } from '@rainbow-me/theme';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
-import {
-  AppleReviewAddress,
-  REVIEW_DONE_KEY,
-} from '@rainbow-me/utils/reviewAlert';
+} from '@/config/experimentalHooks';
+import { Box } from '@/design-system';
+import { isCustomBuild, setOriginalDeploymentKey } from '@/handlers/fedora';
+import networkInfo from '@/helpers/networkInfo';
+import WalletTypes from '@/helpers/walletTypes';
+import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
+import { Themes, useTheme } from '@/theme';
+import { showActionSheetWithOptions } from '@/utils';
+import { AppleReviewAddress, REVIEW_DONE_KEY } from '@/utils/reviewAlert';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
@@ -377,22 +367,18 @@ const SettingsSection = ({
             }
           />
         )}
-        {ios && (
-          <MenuItem
-            hasRightArrow
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? AppIconIconDark : AppIconIcon}
-              />
-            }
-            onPress={onPressAppIcon}
-            size={60}
-            testID="app-icon-section"
-            titleComponent={
-              <MenuItem.Title text={lang.t('settings.app_icon')} />
-            }
-          />
-        )}
+        <MenuItem
+          hasRightArrow
+          leftComponent={
+            <MenuItem.ImageIcon
+              source={isDarkMode ? AppIconIconDark : AppIconIcon}
+            />
+          }
+          onPress={onPressAppIcon}
+          size={60}
+          testID="app-icon-section"
+          titleComponent={<MenuItem.Title text={lang.t('settings.app_icon')} />}
+        />
       </Menu>
       <Menu>
         <MenuItem
