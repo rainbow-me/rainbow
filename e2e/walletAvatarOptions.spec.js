@@ -139,9 +139,10 @@ describe('Wallet avatar options', () => {
     await Helpers.tapByText('􀂍 Add an existing wallet');
     await Helpers.typeText('import-sheet-input', RAINBOW_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
-    await Helpers.relaunchApp();
     await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.relaunchApp();
     await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
   });
 
   it('test watched wallet with ENS avatar', async () => {
