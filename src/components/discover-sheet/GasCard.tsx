@@ -160,7 +160,7 @@ export default function GasCard() {
       light: '#FFFFFF',
     },
   });
-  const grey = useForegroundColor('secondary60');
+  const grey = useForegroundColor('secondary60 (Deprecated)');
   const green = useForegroundColor({
     custom: {
       dark: colors.green,
@@ -339,7 +339,7 @@ export default function GasCard() {
                   <Box bottom="0px" position="absolute">
                     <Stack space={{ custom: 11 }}>
                       <Text
-                        color="secondary60"
+                        color="secondary60 (Deprecated)"
                         size="14px / 19px (Deprecated)"
                         weight="bold"
                       >
@@ -348,8 +348,8 @@ export default function GasCard() {
                       <Text
                         color={
                           !isCurrentGweiLoaded && !lastKnownGwei
-                            ? 'secondary60'
-                            : 'secondary80'
+                            ? 'secondary60 (Deprecated)'
+                            : 'secondary80 (Deprecated)'
                         }
                         size="18px / 27px (Deprecated)"
                         weight="bold"

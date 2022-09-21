@@ -86,7 +86,11 @@ export default function useENSModifiedRegistration({
     enabled: fetchEnabled,
   });
   const {
-    data: { coinAddresses: fetchedCoinAddresses, records: fetchedRecords } = {},
+    data: {
+      coinAddresses: fetchedCoinAddresses,
+      contenthash: fetchedContenthash,
+      records: fetchedRecords,
+    } = {},
     isSuccess: isRecordsSuccess,
   } = useENSRecords(name, {
     enabled: fetchEnabled,
@@ -101,6 +105,7 @@ export default function useENSModifiedRegistration({
       isSuccess
     ) {
       const initialRecords = {
+        contenthash: fetchedContenthash,
         ...fetchedRecords,
         ...fetchedCoinAddresses,
       } as Records;
@@ -113,6 +118,7 @@ export default function useENSModifiedRegistration({
     fetchedRecords,
     isSuccess,
     setInitialRecordsWhenInEditMode,
+    fetchedContenthash,
   ]);
 
   // Derive the records that should be added or removed from the profile

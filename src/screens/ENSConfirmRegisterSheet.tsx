@@ -310,10 +310,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.RENEW]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => {
-            action();
-            goToProfileScreen();
-          }}
+          action={() => action(goToProfileScreen)}
           isSufficientGas={Boolean(
             registrationCostsData?.isSufficientGasForRegistration &&
               registrationCostsData?.isSufficientGasForStep
@@ -401,9 +398,9 @@ export default function ENSConfirmRegisterSheet() {
     >
       <AccentColorProvider color={accentColor}>
         <Box
-          background="body"
-          paddingTop="19px"
-          paddingVertical="30px"
+          background="body (Deprecated)"
+          paddingTop="19px (Deprecated)"
+          paddingVertical="30px (Deprecated)"
           style={{
             height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
           }}
@@ -413,10 +410,10 @@ export default function ENSConfirmRegisterSheet() {
             <Row height="content">
               {/* @ts-expect-error JavaScript component */}
               <Box horizontal="30px">
-                <Stack alignHorizontal="center" space="15px">
+                <Stack alignHorizontal="center" space="15px (Deprecated)">
                   {avatarUrl && (
                     <Box
-                      background="body"
+                      background="body (Deprecated)"
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
                       shadow="15px light"
@@ -431,10 +428,11 @@ export default function ENSConfirmRegisterSheet() {
                       />
                     </Box>
                   )}
-                  <Inset horizontal="30px">
+                  <Inset horizontal="30px (Deprecated)">
                     <Heading
                       align="center"
                       numberOfLines={1}
+                      color="primary (Deprecated)"
                       size="26px / 30px (Deprecated)"
                       weight="heavy"
                     >
@@ -455,7 +453,7 @@ export default function ENSConfirmRegisterSheet() {
             <Row>
               <Box
                 flexGrow={1}
-                paddingHorizontal={isSmallPhone ? '24px' : '30px'}
+                paddingHorizontal={isSmallPhone ? '24px' : '30px (Deprecated)'}
               >
                 {stepContent[step]}
               </Box>

@@ -9,7 +9,7 @@ import {
 import InfoRow from './InfoRow';
 import { CampaignKey } from '@/campaigns/campaignChecks';
 import { ImgixImage } from '@/components/images';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
   Box,
@@ -19,11 +19,11 @@ import {
   Rows,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import { useTheme } from '@/theme';
 
 const MIN_HEIGHT = 740;
 
@@ -138,13 +138,17 @@ const PromoSheet = ({
                     </Box>
                     <Stack alignHorizontal="center" space={{ custom: 13 }}>
                       <Text
-                        color="secondary60"
+                        color="secondary60 (Deprecated)"
                         size="15px / 21px (Deprecated)"
                         weight="heavy"
                       >
                         {lang.t(`promos.${campaignKey}.subheader`)}
                       </Text>
-                      <Heading size="30px / 34px (Deprecated)" weight="heavy">
+                      <Heading
+                        color="primary (Deprecated)"
+                        size="30px / 34px (Deprecated)"
+                        weight="heavy"
+                      >
                         {lang.t(`promos.${campaignKey}.header`)}
                       </Heading>
                     </Stack>
@@ -181,8 +185,8 @@ const PromoSheet = ({
               </Row>
               <Row height="content">
                 <Inset
-                  bottom={isSmallPhone && ios ? '24px' : '42px'}
-                  horizontal="19px"
+                  bottom={isSmallPhone && ios ? '24px' : '42px (Deprecated)'}
+                  horizontal="19px (Deprecated)"
                 >
                   <Stack space="12px">
                     <SheetActionButton

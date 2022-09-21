@@ -541,7 +541,8 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swap-settings-routes-current-0x');
   });
 
-  it('Should show and toggle flashbots on Mainnet', async () => {
+  // skipping until flashbots is enabled again after the merge
+  it.skip('Should show and toggle flashbots on Mainnet', async () => {
     await Helpers.waitAndTap('swap-settings-flashbots-switch-false');
     await Helpers.checkIfVisible('swap-settings-flashbots-switch-true');
     await Helpers.waitAndTap('swap-settings-flashbots-label');
@@ -561,7 +562,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should restore swap setting defaults on Mainnet', async () => {
     await Helpers.waitAndTap('swap-settings-defaults-button');
     await Helpers.checkIfVisible('swap-settings-routes-current-rainbow');
-    await Helpers.checkIfVisible('swap-settings-flashbots-switch-false');
+    // await Helpers.checkIfVisible('swap-settings-flashbots-switch-false');
     await Helpers.checkIfVisible('swap-slippage-input-2');
 
     await Helpers.swipe('swap-settings-header', 'down', 'slow');
