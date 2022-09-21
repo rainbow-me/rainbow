@@ -242,68 +242,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('8.12');
     await Helpers.waitAndTap('send-asset-form-ETH-token');
   });
-
-  it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
-    await Helpers.checkIfVisible('add-contact-button');
-    await Helpers.waitAndTap('add-contact-button');
-    await Helpers.checkIfVisible('wallet-info-input');
-  });
-
-  it('Should do nothing on Add Contact cancel', async () => {
-    await Helpers.tapByText('Cancel');
-    await Helpers.checkIfVisible('add-contact-button');
-    await Helpers.waitAndTap('add-contact-button');
-    await Helpers.tapByText('Cancel');
-  });
-
-  it('Should update address field to show contact name & show edit contact button', async () => {
-    await Helpers.waitAndTap('add-contact-button');
-    await Helpers.clearField('wallet-info-input');
-    await Helpers.typeText('wallet-info-input', 'testcoin.test', true);
-    await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfElementByTextIsVisible('testcoin.test');
-    await Helpers.checkIfVisible('edit-contact-button');
-  });
-
-  it('Should show Asset List & Edit Contact Button on cancel', async () => {
-    await Helpers.checkIfVisible('edit-contact-button');
-    await Helpers.waitAndTap('edit-contact-button');
-    await Helpers.tapByText('Cancel');
-  });
-
-  it('Should updated contact name after edit contact', async () => {
-    await Helpers.checkIfVisible('edit-contact-button');
-    await Helpers.waitAndTap('edit-contact-button');
-    await Helpers.tapByText('Edit Contact');
-    await Helpers.clearField('wallet-info-input');
-    await Helpers.typeText('wallet-info-input', 'testcoin.eth', true);
-    await Helpers.waitAndTap('wallet-info-submit-button');
-    // await Helpers.tapByText('Done');
-    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
-  });
-
-  it('Should load contacts if contacts exist', async () => {
-    if (android) {
-      await device.pressBack();
-    } else {
-      await Helpers.swipe('send-asset-form-field', 'down', 'slow');
-    }
-    await Helpers.waitAndTap('send-fab');
-    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
-  });
-
-  it('Should show Add Contact Button after deleting contact', async () => {
-    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
-    await Helpers.tapByText('testcoin.eth');
-    await Helpers.checkIfVisible('edit-contact-button');
-    await Helpers.waitAndTap('edit-contact-button');
-    await Helpers.tapByText('Delete Contact');
-    await Helpers.delay(2000);
-    await Helpers.tapByText('Delete Contact');
-    await Helpers.delay(2000);
-    await Helpers.checkIfVisible('add-contact-button');
-  });
-
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
