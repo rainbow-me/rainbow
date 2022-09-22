@@ -263,7 +263,7 @@ export default function ENSAssignRecordsSheet() {
           </Inset>
         </Stack>
       </Box>
-      {/* <ENSAssignRecordsBottomActions fromRoute={params?.fromRoute} /> */}
+      <ENSAssignRecordsBottomActions fromRoute={params?.fromRoute} />
     </AccentColorProvider>
   );
 }
@@ -292,6 +292,8 @@ export function ENSAssignRecordsBottomActions({
     submit,
     values,
   } = useENSRegistrationForm();
+
+  const { isSuccess } = useENSModifiedRegistration();
 
   const handlePressBack = useCallback(() => {
     delayNext();
@@ -324,13 +326,22 @@ export function ENSAssignRecordsBottomActions({
     navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET, {});
   }, [navigate]);
 
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (mode === REGISTRATION_MODES.EDIT) {
+      setTimeout(() => setVisible(isSuccess), 200);
+    } else {
+      setVisible(true);
+    }
+  }, [mode, isSuccess]);
+
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
     : BottomActionHeight;
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withSpring(0, {
+      bottom: withSpring(visible ? 0 : -bottomActionHeight - 10, {
         damping: 40,
         mass: 1,
         stiffness: 420,
@@ -345,11 +356,13 @@ export function ENSAssignRecordsBottomActions({
 
   return (
     <>
-      <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
-        <Inset bottom="19px (Deprecated)" right="19px (Deprecated)">
-          <HideKeyboardButton color={accentColor} />
-        </Inset>
-      </Box>
+      {visible && (
+        <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
+          <Inset bottom="19px (Deprecated)" right="19px (Deprecated)">
+            <HideKeyboardButton color={accentColor} />
+          </Inset>
+        </Box>
+      )}
       <Box
         as={Animated.View}
         background="body (Deprecated)"
