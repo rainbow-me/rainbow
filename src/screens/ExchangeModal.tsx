@@ -463,7 +463,6 @@ export default function ExchangeModal({
         if (currentNetwork === Network.optimism) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-              // @ts-ignore
               {
                 data: tradeDetails.data,
                 from: tradeDetails.from,

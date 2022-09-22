@@ -4,7 +4,6 @@ import {
   ETH_ADDRESS,
   fillQuote,
   Quote,
-  CrosschainQuote,
   unwrapNativeAsset,
   wrapNativeAsset,
   WRAPPED_ASSET,
@@ -279,7 +278,7 @@ const swap = async (
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider as any
+      wallet?.provider
     )
   );
   return swap?.nonce;
