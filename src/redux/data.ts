@@ -1346,7 +1346,7 @@ export const dataWatchPendingTransactions = (
         minedAt: number | null;
         pending: boolean;
         status: TransactionStatus;
-      } = {
+      } | null = {
         status: TransactionStatus.sending,
         title: '',
         minedAt: null,
@@ -1403,15 +1403,11 @@ export const dataWatchPendingTransactions = (
             txStatusesDidChange = true;
           }
         } else if (tx.flashbots) {
-          const flashbotStatus = await getTransactionFlashbotStatus(txHash);
-          logger.debug('Flashbots response status', flashbotStatus);
-          // Make sure it wasn't dropped after 25 blocks or never made it
-          if (flashbotStatus === 'FAILED' || flashbotStatus === 'CANCELLED') {
-            const transactionStatus = TransactionStatus.dropped;
-            pendingTransactionData = getPendingTransactionData(
-              updatedPendingTransaction,
-              transactionStatus
-            );
+          pendingTransactionData = await getTransactionFlashbotStatus(
+            updatedPendingTransaction,
+            txHash
+          );
+          if (pendingTransactionData && !pendingTransactionData.pending) {
             txStatusesDidChange = true;
             // decrement the nonce since it was dropped
             // @ts-ignore-next-line
