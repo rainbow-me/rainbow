@@ -171,22 +171,23 @@ const crosschainSwap = async (
       flashbots: !!parameters.flashbots,
       gasLimit,
       nonce,
-      permit: !!permit,
       tradeDetails,
       wallet,
     };
 
     // @ts-ignore
     swap = await executeCrosschainSwap(swapParams);
-    dispatch(
-      additionalDataUpdateL2AssetToWatch({
-        hash: swap?.hash || '',
-        inputCurrency,
-        network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-        outputCurrency,
-        userAddress: accountAddress,
-      })
-    );
+    if (swap?.hash) {
+      dispatch(
+        additionalDataUpdateL2AssetToWatch({
+          hash: swap?.hash,
+          inputCurrency,
+          network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
+          outputCurrency,
+          userAddress: accountAddress,
+        })
+      );
+    }
 
     if (permit) {
       // Clear the allowance
@@ -230,7 +231,7 @@ const crosschainSwap = async (
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider as any
+      wallet?.provider
     )
   );
   return swap?.nonce;

@@ -252,22 +252,12 @@ export const assetNeedsUnlocking = async (
 
   const cacheKey = `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
 
-  // Check on cache first
-  // if (AllowancesCache.cache[cacheKey]) {
-  //   allowance = AllowancesCache.cache[cacheKey];
-  // } else {
   const allowance = await getRawAllowance(
     accountAddress,
     assetToUnlock,
     contractAddress,
     chainId
   );
-
-  // Cache that value
-  // if (!isNull(allowance)) {
-  //   AllowancesCache.cache[cacheKey] = allowance;
-  // }
-  // }
 
   logger.log('raw allowance', allowance.toString());
   // Cache that value
