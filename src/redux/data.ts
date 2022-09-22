@@ -1343,13 +1343,13 @@ export const dataWatchPendingTransactions = (
       const txHash = ethereumUtils.getHash(tx) || '';
       let pendingTransactionData: {
         title: string;
-        minedAt: number | undefined;
+        minedAt: number | null;
         pending: boolean;
         status: TransactionStatus;
       } = {
         status: TransactionStatus.sending,
         title: '',
-        minedAt: undefined,
+        minedAt: null,
         pending: true,
       };
       try {
