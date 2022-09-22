@@ -220,6 +220,25 @@ describe('Hardhat Transaction Flow', () => {
     await acceptAlertIfGasPriceIsHigh();
   });
 
+  it('Should be able to do a bridge', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'USDC', true);
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-USDC-token'
+    );
+    await Helpers.waitAndTap('exchange-modal-output-selection-button');
+    await Helpers.waitAndTap('currency-select-network-switcher-optimism');
+    await Helpers.typeText('currency-select-search-input', 'USDC', true);
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-USDC-optimism'
+    );
+    await Helpers.typeText('exchange-modal-input', '0.01', true);
+    await Helpers.tapAndLongPress('exchange-modal-confirm-button');
+    await Helpers.tapAndLongPress('swap-details-confirm-button');
+    await acceptAlertIfGasPriceIsHigh();
+  });
+
   it('Should go to settings and disable cross chain swaps', async () => {
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.waitAndTap('settings-button');
