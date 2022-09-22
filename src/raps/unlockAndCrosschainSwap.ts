@@ -51,7 +51,8 @@ export const estimateUnlockAndCrosschainSwap = async (
         accountAddress,
         inputCurrency.address,
         routeAllowanceTargetAddress,
-        chainId
+        chainId,
+        false
       );
       gasLimits = gasLimits.concat(unlockGasLimit);
     }
