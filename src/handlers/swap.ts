@@ -5,7 +5,6 @@ import {
   ChainId,
   CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  getCrosschainQuoteExecutionDetails,
   getQuoteExecutionDetails,
   getWrappedAssetMethod,
   PermitSupportedTokenList,
@@ -98,6 +97,9 @@ async function getClosestGasEstimate(
     }
   }
 }
+
+const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) =>
+  tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
 export const getDefaultGasLimitForTrade = (
   tradeDetails: Quote,
@@ -370,32 +372,33 @@ export const estimateCrosschainSwapGasLimit = async ({
           return gasLimitWithFakeApproval;
         } catch (e) {
           logger.debug('Error estimating swap gas limit with approval', e);
-          const routeGasLimit =
-            tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees.gasLimit;
+          const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
           if (routeGasLimit) return routeGasLimit;
         }
       }
 
       return (
-        tradeDetails?.defaultGasLimit ||
+        getCrosschainSwapDefaultGasLimit(tradeDetails) ||
         getDefaultGasLimitForTrade(tradeDetails, chainId)
       );
     }
 
-    const gasLimit = await provider.estimateGas({
-      data: tradeDetails.data,
-      from: tradeDetails.from,
-      to: tradeDetails.to,
-      value: tradeDetails.value,
-    });
-    return (
-      gasLimit?.toString() || getDefaultGasLimitForTrade(tradeDetails, chainId)
+    const gasLimit = await estimateGasWithPadding(
+      {
+        data: tradeDetails.data,
+        from: tradeDetails.from,
+        to: tradeDetails.to,
+        value: tradeDetails.value,
+      },
+      null,
+      null,
+      provider,
+      SWAP_GAS_PADDING
     );
+
+    return gasLimit || getCrosschainSwapDefaultGasLimit(tradeDetails);
   } catch (error) {
-    const routeGasLimit =
-      tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees.gasLimit;
-    if (routeGasLimit) return routeGasLimit;
-    return getDefaultGasLimitForTrade(tradeDetails, chainId);
+    return getCrosschainSwapDefaultGasLimit(tradeDetails);
   }
 };
 
