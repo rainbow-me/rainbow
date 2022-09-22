@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useContacts, usePrevious, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
@@ -16,7 +16,7 @@ import {
   saveFCMToken,
 } from '@/notifications/tokens';
 import { WALLETCONNECT_SYNC_DELAY } from '@/notifications/constants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { requestsForTopic } from '@/redux/requests';
 import { ThunkDispatch } from 'redux-thunk';
 import store, { AppState } from '@/redux/store';
@@ -45,9 +45,11 @@ import { mapNotificationTransactionType } from '@/notifications/mapTransactionsT
 
 type Callback = () => void;
 
-type Props = PropsWithChildren<{ walletReady: boolean }>;
-
-export const NotificationsHandler = ({ children, walletReady }: Props) => {
+export const NotificationsHandler = () => {
+  const { walletReady } = useSelector(state => ({
+    // @ts-expect-error
+    walletReady: state.appState.walletReady,
+  })) as { walletReady: boolean };
   const wallets = useWallets();
   const { contacts } = useContacts();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
@@ -323,5 +325,5 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     }
   };
 
-  return children;
+  return null;
 };

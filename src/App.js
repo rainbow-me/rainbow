@@ -311,25 +311,22 @@ class App extends Component {
                 <Provider store={store}>
                   <RecoilRoot>
                     <SharedValuesProvider>
-                      <NotificationsHandler
-                        walletReady={this.props.walletReady}
-                      >
-                        <View style={containerStyle}>
-                          {this.state.initialRoute && (
-                            <InitialRouteContext.Provider
-                              value={this.state.initialRoute}
-                            >
-                              <RoutesComponent
-                                onReady={this.handleSentryNavigationIntegration}
-                                ref={this.handleNavigatorRef}
-                              />
-                              <PortalConsumer />
-                            </InitialRouteContext.Provider>
-                          )}
-                          <OfflineToast />
-                          <FedoraToast ref={FedoraToastRef} />
-                        </View>
-                      </NotificationsHandler>
+                      <NotificationsHandler />
+                      <View style={containerStyle}>
+                        {this.state.initialRoute && (
+                          <InitialRouteContext.Provider
+                            value={this.state.initialRoute}
+                          >
+                            <RoutesComponent
+                              onReady={this.handleSentryNavigationIntegration}
+                              ref={this.handleNavigatorRef}
+                            />
+                            <PortalConsumer />
+                          </InitialRouteContext.Provider>
+                        )}
+                        <OfflineToast />
+                        <FedoraToast ref={FedoraToastRef} />
+                      </View>
                     </SharedValuesProvider>
                   </RecoilRoot>
                 </Provider>
