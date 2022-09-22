@@ -19,6 +19,16 @@ import { getTitle, getTransactionLabel } from '@/parsers';
 import { isZero } from '@/helpers/utilities';
 import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { RainbowFetchClient } from '@/rainbow-fetch';
+import { IS_TEST } from '@/env';
+
+const flashbotsApi = new RainbowFetchClient({
+  baseURL: 'https://protect.flashbots.net',
+});
+
+const rainbowSwapsApi = new RainbowFetchClient({
+  baseURL: 'https://swap.s.rainbow.me',
+});
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);
@@ -167,19 +177,22 @@ export const getTransactionFlashbotStatus = async (
   transaction: RainbowTransaction,
   txHash: string
 ) => {
-  const fbStatus = await fetch(`https://protect.flashbots.net/tx/${txHash}`);
-  const fbResponse = await fbStatus.json();
-  const flashbotStatus = fbResponse.status;
-  // Make sure it wasn't dropped after 25 blocks or never made it
-  if (flashbotStatus === 'FAILED' || flashbotStatus === 'CANCELLED') {
-    const transactionStatus = TransactionStatus.dropped;
-    const minedAt = Math.floor(Date.now() / 1000);
-    const title = getTitle({
-      protocol: transaction.protocol,
-      status: transactionStatus,
-      type: transaction.type,
-    });
-    return { status: transactionStatus, minedAt, pending: false, title };
+  try {
+    const fbStatus = await flashbotsApi.get(`/${txHash}`);
+    const flashbotStatus = fbStatus.data.status;
+    // Make sure it wasn't dropped after 25 blocks or never made it
+    if (flashbotStatus === 'FAILED' || flashbotStatus === 'CANCELLED') {
+      const transactionStatus = TransactionStatus.dropped;
+      const minedAt = Math.floor(Date.now() / 1000);
+      const title = getTitle({
+        protocol: transaction.protocol,
+        status: transactionStatus,
+        type: transaction.type,
+      });
+      return { status: transactionStatus, minedAt, pending: false, title };
+    }
+  } catch (e) {
+    //
   }
   return null;
 };
@@ -194,32 +207,48 @@ export const getTransactionSocketStatus = async (
     ? TransactionStatus.bridging
     : TransactionStatus.swapping;
   const minedAt = Math.floor(Date.now() / 1000);
-  const socketStatus = await fetch(
-    `https://swap.s.rainbow.me/bridge-status?txHash=${txHash}&fromChainId=${swap?.fromChainId}&toChainId=${swap?.toChainId}`
-  );
-  const socketResponse = await socketStatus.json();
-  if (socketResponse.success) {
-    if (socketResponse?.result?.sourceTxStatus === 'COMPLETED') {
-      status = swap?.isBridge
-        ? TransactionStatus.bridging
-        : TransactionStatus.swapping;
+  try {
+    const socketStatus = await rainbowSwapsApi.get('/bridge-status', {
+      params: {
+        txHash: txHash || '',
+        fromChainId: String(swap?.fromChainId),
+        toChainId: String(swap?.toChainId),
+      },
+    });
+    const socketResponse = socketStatus.data;
+    if (socketResponse.success) {
+      if (socketResponse?.result?.sourceTxStatus === 'COMPLETED') {
+        status = swap?.isBridge
+          ? TransactionStatus.bridging
+          : TransactionStatus.swapping;
+      }
+      if (socketResponse?.result?.DestinationTxStatus === 'COMPLETED') {
+        status = swap?.isBridge
+          ? TransactionStatus.bridged
+          : TransactionStatus.swapped;
+        pending = false;
+      }
+      if (
+        socketResponse?.result?.DestinationTxStatus === 'FAILED' ||
+        socketResponse?.result?.sourceTxStatus === 'FAILED'
+      ) {
+        status = TransactionStatus.failed;
+        pending = false;
+      }
+    } else if (socketResponse.error) {
+      status = TransactionStatus.failed;
+      pending = false;
     }
-    if (socketResponse?.result?.DestinationTxStatus === 'COMPLETED') {
+  } catch (e) {
+    if (IS_TEST) {
       status = swap?.isBridge
         ? TransactionStatus.bridged
         : TransactionStatus.swapped;
       pending = false;
-    }
-    if (
-      socketResponse?.result?.DestinationTxStatus === 'FAILED' ||
-      socketResponse?.result?.sourceTxStatus === 'FAILED'
-    ) {
+    } else {
       status = TransactionStatus.failed;
       pending = false;
     }
-  } else if (socketResponse.error) {
-    status = TransactionStatus.failed;
-    pending = false;
   }
 
   const title = getTitle({
