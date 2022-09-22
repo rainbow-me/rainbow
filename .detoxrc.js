@@ -39,14 +39,14 @@ module.exports = {
       build:
         'cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..',
       type: 'android.emulator',
-      name: 'Pixel_5_API_32',
+      name: 'Pixel_5_API_31',
     },
     'android.emu.release': {
       type: 'android.emulator',
       binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
       build:
         'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
-      name: 'Pixel_5_API_32',
+      name: 'Pixel_5_API_31',
     },
   },
 };
