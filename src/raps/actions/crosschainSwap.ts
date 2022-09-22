@@ -196,16 +196,6 @@ const crosschainSwap = async (
 
   logger.log(`[${actionName}] response`, swap);
 
-  console.log(
-    '💰💰💰💰💰💰 inputCurrency',
-    inputCurrency,
-    inputCurrency.symbol
-  );
-  console.log(
-    '💰💰💰💰💰💰 outputCurrency',
-    outputCurrency,
-    outputCurrency.symbol
-  );
   const isBridge = inputCurrency.symbol === outputCurrency.symbol;
   const newTransaction = {
     ...gasParams,
