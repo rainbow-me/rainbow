@@ -304,9 +304,11 @@ describe('Register ENS Flow', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.delay(2000);
-    await Helpers.checkIfVisible(
-      `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
-    );
+    if (ios) {
+      await Helpers.checkIfVisible(
+        `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
+      );
+    }
     await Helpers.delay(65000);
   });
 
