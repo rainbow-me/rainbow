@@ -19,17 +19,17 @@ logger.error(error[, metadata])
 #### Usage Heuristics
 
 - Use `logger.error` for all exceptions, and always pass it a descriptive
-`RainbowError`.
+  `RainbowError`.
 - Use `logger.warn` for anything that might be an exception now or in the future,
-or something we _need_ to know about, but isn't critical at the moment.
+  or something we _need_ to know about, but isn't critical at the moment.
 - Use `logger.info` for anything you think would be helpful when tracing errors in
-Sentry. Think about what your coworkers might find helpful, and use these
-frequently.
+  Sentry. Think about what your coworkers might find helpful, and use these
+  frequently.
 - Use `logger.debug` for noisy lower-level stuff that's only helpful locally when
-developing or debugging. We have the option to send these to Sentry, but by
-default they aren't, so use these frequently as you see fit.
+  developing or debugging. We have the option to send these to Sentry, but by
+  default they aren't, so use these frequently as you see fit.
 - Use `console.log` _locally only_. We strip these out when building for
-production.
+  production.
 
 #### Modes
 
