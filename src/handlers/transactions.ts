@@ -333,10 +333,10 @@ export const getTransactionSocketStatus = async (
   const { swap } = pendingTransaction;
   const txHash = ethereumUtils.getHash(pendingTransaction);
   let pending = true;
+  let minedAt: number | null = Math.floor(Date.now() / 1000);
   let status = swap?.isBridge
     ? TransactionStatus.bridging
     : TransactionStatus.swapping;
-  const minedAt = Math.floor(Date.now() / 1000);
   try {
     const socketStatus = await rainbowSwapsApi.get('/bridge-status', {
       params: {
@@ -364,10 +364,12 @@ export const getTransactionSocketStatus = async (
       ) {
         status = TransactionStatus.failed;
         pending = false;
+        minedAt = null;
       }
     } else if (socketResponse.error) {
       status = TransactionStatus.failed;
       pending = false;
+      minedAt = null;
     }
   } catch (e) {
     if (IS_TEST) {
@@ -378,6 +380,7 @@ export const getTransactionSocketStatus = async (
     } else {
       status = TransactionStatus.failed;
       pending = false;
+      minedAt = null;
     }
   }
 
@@ -387,7 +390,7 @@ export const getTransactionSocketStatus = async (
     type: pendingTransaction.type,
   });
 
-  return { status, minedAt: pending ? null : minedAt, pending, title };
+  return { status, minedAt, pending, title };
 };
 
 export const getPendingTransactionData = (
