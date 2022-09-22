@@ -304,10 +304,25 @@ export const getTransactionReceiptStatus = async (
   return status;
 };
 
-export const getTransactionFlashbotStatus = async (txHash: string) => {
+export const getTransactionFlashbotStatus = async (
+  transaction: RainbowTransaction,
+  txHash: string
+) => {
   const fbStatus = await fetch(`https://protect.flashbots.net/tx/${txHash}`);
   const fbResponse = await fbStatus.json();
-  return fbResponse.status;
+  const flashbotStatus = fbResponse.status;
+  // Make sure it wasn't dropped after 25 blocks or never made it
+  if (flashbotStatus === 'FAILED' || flashbotStatus === 'CANCELLED') {
+    const transactionStatus = TransactionStatus.dropped;
+    const minedAt = Math.floor(Date.now() / 1000);
+    const title = getTitle({
+      protocol: transaction.protocol,
+      status: transactionStatus,
+      type: transaction.type,
+    });
+    return { status: transactionStatus, minedAt, pending: false, title };
+  }
+  return null;
 };
 
 export const getTransactionSocketStatus = async (
