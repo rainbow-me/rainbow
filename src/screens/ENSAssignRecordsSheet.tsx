@@ -185,89 +185,85 @@ export default function ENSAssignRecordsSheet() {
     }
   }, [hasSeenExplainSheet, navigate, setHasSeenExplainSheet]);
 
-  const Scroll = (isInsideBottomSheet
-    ? BottomSheetScrollView
-    : ScrollView) as typeof ScrollView;
-
   return (
     <AccentColorProvider color={accentColor}>
-      <Box background="body (Deprecated)" height="full" width="full">
-        <Scroll
-          contentContainerStyle={{
-            paddingBottom: ExtraBottomPadding,
-          }}
-          style={{
-            height: deviceHeight - bottomActionHeight,
-            width: '100%',
-            position: 'absolute',
-            top: 0,
-          }}
-          ref={scrollViewRef}
-          scrollEnabled
-          testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
-        >
-          <Stack space="19px (Deprecated)">
-            <RegistrationCover
-              enableNFTs={hasNFTs}
-              hasSeenExplainSheet={hasSeenExplainSheet}
-              onShowExplainSheet={handleFocus}
-            />
-            <Bleed top={{ custom: 38 }}>
-              <Box alignItems="center">
-                <RegistrationAvatar
-                  enableNFTs={hasNFTs}
-                  hasSeenExplainSheet={hasSeenExplainSheet}
-                  onChangeAvatarUrl={setAvatarUrl}
-                  onShowExplainSheet={handleFocus}
+      <Box
+        as={
+          (isInsideBottomSheet
+            ? BottomSheetScrollView
+            : ScrollView) as typeof ScrollView
+        }
+        background="body (Deprecated)"
+        contentContainerStyle={{
+          paddingBottom: ExtraBottomPadding,
+        }}
+        height={{ custom: deviceHeight - bottomActionHeight }}
+        // @ts-expect-error ts unhappy with ref prop
+        ref={scrollViewRef}
+        scrollEnabled
+        testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
+      >
+        <Stack space="19px (Deprecated)">
+          <RegistrationCover
+            enableNFTs={hasNFTs}
+            hasSeenExplainSheet={hasSeenExplainSheet}
+            onShowExplainSheet={handleFocus}
+          />
+          <Bleed top={{ custom: 38 }}>
+            <Box alignItems="center">
+              <RegistrationAvatar
+                enableNFTs={hasNFTs}
+                hasSeenExplainSheet={hasSeenExplainSheet}
+                onChangeAvatarUrl={setAvatarUrl}
+                onShowExplainSheet={handleFocus}
+              />
+            </Box>
+          </Bleed>
+          <Inset horizontal="19px (Deprecated)">
+            <Stack space="30px (Deprecated)">
+              <Stack alignHorizontal="center" space="15px (Deprecated)">
+                <Heading
+                  align="center"
+                  numberOfLines={1}
+                  color="primary (Deprecated)"
+                  size="26px / 30px (Deprecated)"
+                  weight="heavy"
+                >
+                  {abbreviateEnsForDisplay(name, 15)}
+                </Heading>
+                <Text
+                  align="center"
+                  color="accent"
+                  size="16px / 22px (Deprecated)"
+                  weight="heavy"
+                >
+                  {displayTitleLabel
+                    ? lang.t(
+                        `profiles.${
+                          isEmptyProfile &&
+                          params.mode !== REGISTRATION_MODES.EDIT
+                            ? 'create'
+                            : 'edit'
+                        }.label`
+                      )
+                    : ''}
+                </Text>
+              </Stack>
+              <Box flexGrow={1}>
+                <TextRecordsForm
+                  autoFocusKey={params?.autoFocusKey}
+                  key={name}
+                  onAutoFocusLayout={handleAutoFocusLayout}
+                  onError={handleError}
+                  onFocus={handleFocus}
+                  selectionColor={accentColor}
                 />
               </Box>
-            </Bleed>
-            <Inset horizontal="19px (Deprecated)">
-              <Stack space="30px (Deprecated)">
-                <Stack alignHorizontal="center" space="15px (Deprecated)">
-                  <Heading
-                    align="center"
-                    numberOfLines={1}
-                    color="primary (Deprecated)"
-                    size="26px / 30px (Deprecated)"
-                    weight="heavy"
-                  >
-                    {abbreviateEnsForDisplay(name, 15)}
-                  </Heading>
-                  <Text
-                    align="center"
-                    color="accent"
-                    size="16px / 22px (Deprecated)"
-                    weight="heavy"
-                  >
-                    {displayTitleLabel
-                      ? lang.t(
-                          `profiles.${
-                            isEmptyProfile &&
-                            params.mode !== REGISTRATION_MODES.EDIT
-                              ? 'create'
-                              : 'edit'
-                          }.label`
-                        )
-                      : ''}
-                  </Text>
-                </Stack>
-                <Box flexGrow={1}>
-                  <TextRecordsForm
-                    autoFocusKey={params?.autoFocusKey}
-                    key={name}
-                    onAutoFocusLayout={handleAutoFocusLayout}
-                    onError={handleError}
-                    onFocus={handleFocus}
-                    selectionColor={accentColor}
-                  />
-                </Box>
-              </Stack>
-            </Inset>
-          </Stack>
-        </Scroll>
+            </Stack>
+          </Inset>
+        </Stack>
       </Box>
-      <ENSAssignRecordsBottomActions fromRoute={params?.fromRoute} />
+      {/* <ENSAssignRecordsBottomActions fromRoute={params?.fromRoute} /> */}
     </AccentColorProvider>
   );
 }

@@ -408,6 +408,7 @@ export type ForegroundColor =
   | 'buttonStrokeSecondary'
   | 'shadow'
   | 'action (Deprecated)'
+  | 'body (Deprecated)'
   | 'divider20 (Deprecated)'
   | 'divider40 (Deprecated)'
   | 'divider60 (Deprecated)'

@@ -10,7 +10,7 @@ import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
-import { Box } from '@/design-system';
+import { Box, useForegroundColor } from '@/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useDimensions,
@@ -144,6 +144,8 @@ export default function RegisterENSNavigator() {
   // to create a sticky footer
   const hasNestedScroll = currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
+  const bodyColor = useForegroundColor('body (Deprecated)');
+
   return (
     // @ts-expect-error JavaScript component
     <SlackSheet
@@ -167,6 +169,9 @@ export default function RegisterENSNavigator() {
           pager={hasNestedScroll ? undefined : renderPager}
           swipeEnabled={false}
           tabBar={renderTabBar}
+          sceneContainerStyle={{
+            backgroundColor: bodyColor,
+          }}
         >
           <Swipe.Screen
             component={ENSIntroSheet}
