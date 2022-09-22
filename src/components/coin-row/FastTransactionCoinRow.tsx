@@ -129,7 +129,10 @@ export default React.memo(function TransactionCoinRow({
         onPress={ios ? onPressIOSCallback : noop}
         scaleTo={0.96}
       >
-        <View style={sx.wholeRow}>
+        <View
+          style={sx.wholeRow}
+          testID={`${item.title}-${item.description}-${item.balance?.display}`}
+        >
           <View style={sx.icon}>
             <FastCoinIcon
               address={mainnetAddress || item.address}

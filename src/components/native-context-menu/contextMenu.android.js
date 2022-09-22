@@ -9,6 +9,7 @@ export default function ContextMenuAndroid({
   onPressMenuItem,
   shouldOpenOnLongPress,
   style,
+  testID,
 }) {
   const actions = useMemo(() => {
     const items = [];
@@ -49,6 +50,7 @@ export default function ContextMenuAndroid({
       onPressAction={onPressAction}
       shouldOpenOnLongPress={shouldOpenOnLongPress}
       style={style}
+      testID={testID}
     >
       {children}
     </MenuView>

@@ -300,15 +300,15 @@ class App extends Component {
 
   render = () => (
     <MainThemeProvider>
-      <RainbowContextWrapper>
-        <ErrorBoundary>
-          <Portal>
-            <SafeAreaProvider>
-              <PersistQueryClientProvider
-                client={queryClient}
-                persistOptions={persistOptions}
-              >
-                <Provider store={store}>
+      <Provider store={store}>
+        <RainbowContextWrapper>
+          <ErrorBoundary>
+            <Portal>
+              <SafeAreaProvider>
+                <PersistQueryClientProvider
+                  client={queryClient}
+                  persistOptions={persistOptions}
+                >
                   <RecoilRoot>
                     <SharedValuesProvider>
                       <NotificationsHandler
@@ -332,12 +332,12 @@ class App extends Component {
                       </NotificationsHandler>
                     </SharedValuesProvider>
                   </RecoilRoot>
-                </Provider>
-              </PersistQueryClientProvider>
-            </SafeAreaProvider>
-          </Portal>
-        </ErrorBoundary>
-      </RainbowContextWrapper>
+                </PersistQueryClientProvider>
+              </SafeAreaProvider>
+            </Portal>
+          </ErrorBoundary>
+        </RainbowContextWrapper>
+      </Provider>
     </MainThemeProvider>
   );
 }
