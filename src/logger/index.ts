@@ -78,6 +78,37 @@ const enabledLogLevels: {
 };
 
 /**
+ * Color handling copied from Kleur
+ *
+ * @see https://github.com/lukeed/kleur/blob/fa3454483899ddab550d08c18c028e6db1aab0e5/colors.mjs#L13
+ */
+const colors: {
+  [key: string]: [number, number];
+} = {
+  default: [0, 0],
+  green: [32, 39],
+  magenta: [35, 39],
+  red: [31, 39],
+  yellow: [33, 39],
+};
+
+function withColor([x, y]: [number, number]) {
+  const rgx = new RegExp(`\\x1b\\[${y}m`, 'g');
+  const open = `\x1b[${x}m`,
+    close = `\x1b[${y}m`;
+
+  return function (txt: string) {
+    if (txt == null) return txt;
+    // eslint-disable-next-line no-extra-boolean-cast
+    return (
+      open +
+      (~('' + txt).indexOf(close) ? txt.replace(rgx, close + open) : txt) +
+      close
+    );
+  };
+}
+
+/**
  * Used in dev mode to nicely log to the console
  */
 export const consoleTransport: Transport = (level, message, metadata) => {
@@ -85,8 +116,20 @@ export const consoleTransport: Transport = (level, message, metadata) => {
   const extra = Object.keys(metadata).length
     ? ' ' + JSON.stringify(metadata, null, '  ')
     : '';
+  const color = {
+    [LogLevel.Debug]: colors.magenta,
+    [LogLevel.Info]: colors.default,
+    [LogLevel.Warn]: colors.yellow,
+    [LogLevel.Error]: colors.red,
+  }[level];
+  // needed for stacktrace formatting
+  const log = level === LogLevel.Error ? console.error : console.log;
 
-  console.log(`${timestamp} [${level.toUpperCase()}] ${message}${extra}`);
+  log(
+    `${timestamp} ${withColor(color)(
+      `[${level.toUpperCase()}]`
+    )} ${message.toString()}${extra}`
+  );
 };
 
 export const sentryTransport: Transport = (
