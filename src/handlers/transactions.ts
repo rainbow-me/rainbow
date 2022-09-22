@@ -354,7 +354,7 @@ export const getTransactionSocketStatus = async (
     type: pendingTransaction.type,
   });
 
-  return { status, minedAt: pending ? undefined : minedAt, pending, title };
+  return { status, minedAt: pending ? null : minedAt, pending, title };
 };
 
 export const getPendingTransactionData = (
