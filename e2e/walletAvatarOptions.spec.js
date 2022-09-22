@@ -73,7 +73,14 @@ describe('Wallet avatar options', () => {
 
   it('watch wallet with ENS but without ENS avatar', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
-    await Helpers.tapByText('􀂍 Add an existing wallet');
+    if (android) {
+      await Helpers.tapByText('􀂍 Add an existing wallet', undefined, {
+        x: 30,
+        y: 0,
+      });
+    } else {
+      await Helpers.tapByText('􀂍 Add an existing wallet');
+    }
     await Helpers.typeText('import-sheet-input', RAINBOW_TEST_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
@@ -104,7 +111,14 @@ describe('Wallet avatar options', () => {
 
   it('import wallet with ENS but without ENS avatar', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
-    await Helpers.tapByText('􀂍 Add an existing wallet');
+    if (android) {
+      await Helpers.tapByText('􀂍 Add an existing wallet', undefined, {
+        x: 30,
+        y: 0,
+      });
+    } else {
+      await Helpers.tapByText('􀂍 Add an existing wallet');
+    }
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
@@ -136,7 +150,14 @@ describe('Wallet avatar options', () => {
 
   it('import wallet with ENS avatar', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
-    await Helpers.tapByText('􀂍 Add an existing wallet');
+    if (android) {
+      await Helpers.tapByText('􀂍 Add an existing wallet', undefined, {
+        x: 30,
+        y: 0,
+      });
+    } else {
+      await Helpers.tapByText('􀂍 Add an existing wallet');
+    }
     await Helpers.typeText('import-sheet-input', RAINBOW_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
