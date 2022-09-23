@@ -14,6 +14,7 @@ module.exports.transform = function applyRainbowTransform({
         globalScopeFilter: {
           '@react-native-community/clipboard': {},
           'react-native-keychain': {},
+          'react-native-keychain-new': {},
           'react-native-video': {},
           'react-native-webview': {},
         },
