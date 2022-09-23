@@ -1150,7 +1150,7 @@
         "no_watched_wallets": "You are not watching any wallets. :)",
         "no_owned_wallets": "You do not have any wallets in Rainbow. Create a wallet or import one with your secret phrase. :)",
         "open_system_settings": "Open System Settings :)",
-        "unsupported_network": "Notifications are only available on Ethereum Mainnet at this time. :)"
+        "unsupported_network": "Notifications are only available for Ethereum Mainnet transactions at this time. :)"
       },
       "privacy": "Privacy :)",
       "privacy_section": {

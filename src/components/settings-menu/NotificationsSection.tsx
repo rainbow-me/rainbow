@@ -284,7 +284,7 @@ const NotificationsSection = () => {
               </Menu>
             )}
 
-            {notMainnet && (
+            {notMainnet ? (
               <Menu
                 header={lang.t(
                   'settings.notifications_section.unsupported_network'
@@ -304,76 +304,84 @@ const NotificationsSection = () => {
                   onPress={openNetworkSettings}
                 />
               </Menu>
+            ) : (
+              <>
+                <Menu
+                  description={
+                    noOwnedWallets
+                      ? lang.t(
+                          'settings.notifications_section.no_owned_wallets'
+                        )
+                      : ''
+                  }
+                >
+                  <MenuItem
+                    disabled
+                    rightComponent={
+                      <Switch
+                        disabled={noOwnedWallets || notMainnet}
+                        onValueChange={toggleAllOwnedNotifications}
+                        value={ownerEnabled}
+                      />
+                    }
+                    size={52}
+                    titleComponent={
+                      <MenuItem.Title
+                        text={lang.t(
+                          'settings.notifications_section.my_wallets'
+                        )}
+                        weight="bold"
+                      />
+                    }
+                  />
+                  {ownedWallets.map(wallet => (
+                    <WalletRow
+                      key={wallet.address}
+                      wallet={wallet}
+                      groupOff={!ownerEnabled}
+                      notMainnet={notMainnet}
+                    />
+                  ))}
+                </Menu>
+                <Menu
+                  description={
+                    noWatchedWallets
+                      ? lang.t(
+                          'settings.notifications_section.no_watched_wallets'
+                        )
+                      : ''
+                  }
+                >
+                  <MenuItem
+                    disabled
+                    rightComponent={
+                      <Switch
+                        disabled={noWatchedWallets || notMainnet}
+                        onValueChange={toggleAllWatchedNotifications}
+                        value={watcherEnabled}
+                      />
+                    }
+                    size={52}
+                    titleComponent={
+                      <MenuItem.Title
+                        text={lang.t(
+                          'settings.notifications_section.watched_wallets'
+                        )}
+                        weight="bold"
+                      />
+                    }
+                  />
+                  {watchedWallets.map(wallet => (
+                    <WalletRow
+                      key={wallet.address}
+                      wallet={wallet}
+                      groupOff={!watcherEnabled}
+                      notMainnet={notMainnet}
+                    />
+                  ))}
+                </Menu>
+              </>
             )}
-
-            <Menu
-              description={
-                noOwnedWallets
-                  ? lang.t('settings.notifications_section.no_owned_wallets')
-                  : ''
-              }
-            >
-              <MenuItem
-                disabled
-                rightComponent={
-                  <Switch
-                    disabled={noOwnedWallets || notMainnet}
-                    onValueChange={toggleAllOwnedNotifications}
-                    value={ownerEnabled}
-                  />
-                }
-                size={52}
-                titleComponent={
-                  <MenuItem.Title
-                    text={lang.t('settings.notifications_section.my_wallets')}
-                    weight="bold"
-                  />
-                }
-              />
-              {ownedWallets.map(wallet => (
-                <WalletRow
-                  key={wallet.address}
-                  wallet={wallet}
-                  groupOff={!ownerEnabled}
-                  notMainnet={notMainnet}
-                />
-              ))}
-            </Menu>
-            <Menu
-              description={
-                noWatchedWallets
-                  ? lang.t('settings.notifications_section.no_watched_wallets')
-                  : ''
-              }
-            >
-              <MenuItem
-                disabled
-                rightComponent={
-                  <Switch
-                    disabled={noWatchedWallets || notMainnet}
-                    onValueChange={toggleAllWatchedNotifications}
-                    value={watcherEnabled}
-                  />
-                }
-                size={52}
-                titleComponent={
-                  <MenuItem.Title
-                    text={lang.t(
-                      'settings.notifications_section.watched_wallets'
-                    )}
-                    weight="bold"
-                  />
-                }
-              />
-              {watchedWallets.map(wallet => (
-                <WalletRow
-                  key={wallet.address}
-                  wallet={wallet}
-                  groupOff={!watcherEnabled}
-                  notMainnet={notMainnet}
-                />
-              ))}
-            </Menu>
           </MenuContainer>
         </Animated.View>
       ) : (
