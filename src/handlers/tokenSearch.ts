@@ -40,16 +40,12 @@ const tokenSearch = async (searchParams: {
   if (searchParams.fromChainId) {
     queryParams.fromChainId = searchParams.fromChainId;
   }
-  // if (searchParams.query) {
-  //   queryParams.query = searchParams.query;
-  // }
   try {
     if (isAddress(searchParams.query) && !searchParams.fromChainId) {
       // @ts-ignore
       params.keys = `networks.${params.chainId}.address`;
     }
     const url = `/${searchParams.chainId}/?${qs.stringify(queryParams)}`;
-    logger.debug('URL: ', url);
     const tokenSearch = await tokenSearchApi.get(url);
     return tokenSearch.data?.data;
   } catch (e) {
