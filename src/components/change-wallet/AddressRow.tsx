@@ -162,7 +162,7 @@ export default function AddressRow({
   );
 
   const displayAddress = useMemo(
-    () => abbreviations.address(toChecksumAddress(address) || '', 4, 6),
+    () => abbreviations.address(toChecksumAddress(address) || address, 4, 6),
     [address]
   );
 
