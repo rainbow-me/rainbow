@@ -280,11 +280,11 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
-  const { name: routeName } = useRoute();
 
   const {
     disabled,
     errors,
+    isLoading,
     isValidating,
     isEmpty: isEmptyForm,
     selectedFields,
@@ -293,8 +293,6 @@ export function ENSAssignRecordsBottomActions({
     submit,
     values,
   } = useENSRegistrationForm();
-
-  const { isSuccess } = useENSModifiedRegistration();
 
   const handlePressBack = useCallback(() => {
     delayNext();
@@ -327,19 +325,15 @@ export function ENSAssignRecordsBottomActions({
     navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET, {});
   }, [navigate]);
 
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    setVisible(false);
-  }, []);
+  const [visible, setVisible] = useState(
+    mode === REGISTRATION_MODES.CREATE || !isLoading
+  );
 
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(isSuccess), 200);
-    } else {
-      setVisible(true);
+      setVisible(!isLoading);
     }
-  }, [mode, isSuccess]);
+  }, [mode, isLoading]);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
