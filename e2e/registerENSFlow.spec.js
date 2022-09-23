@@ -230,10 +230,6 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
     await Helpers.checkIfVisible('ens-text-record-name');
-    if (android) {
-      await Helpers.waitAndTap('ens-text-record-name');
-      await Helpers.tapByText('Got it');
-    }
     await Helpers.typeText('ens-text-record-name', RECORD_NAME, false);
     await Helpers.checkIfVisible('ens-text-record-description');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
