@@ -8,8 +8,11 @@ import useAccountSettings from './useAccountSettings';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import walletTypes from '@/helpers/walletTypes';
 import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
+import { useDispatch } from 'react-redux';
+import { notificationsSubscription } from '@/redux/explorer';
 
 export default function useUserAccounts() {
+  const dispatch = useDispatch();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
@@ -29,6 +32,7 @@ export default function useUserAccounts() {
         });
 
         if (isNotificationsEnabled) {
+          dispatch(notificationsSubscription(account.address));
           addDefaultNotificationSettingsForWallet(
             account.address,
             NotificationRelationship.OWNER
@@ -37,7 +41,7 @@ export default function useUserAccounts() {
       });
     });
     return addresses;
-  }, [isNotificationsEnabled, network, walletsWithBalancesAndNames]);
+  }, [dispatch, isNotificationsEnabled, network, walletsWithBalancesAndNames]);
 
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const watchedAccounts = useMemo(() => {
@@ -53,6 +57,7 @@ export default function useUserAccounts() {
         });
 
         if (isNotificationsEnabled) {
+          dispatch(notificationsSubscription(account.address));
           addDefaultNotificationSettingsForWallet(
             account.address,
             NotificationRelationship.WATCHER
@@ -61,7 +66,7 @@ export default function useUserAccounts() {
       });
     });
     return addresses;
-  }, [isNotificationsEnabled, network, walletsWithBalancesAndNames]);
+  }, [dispatch, isNotificationsEnabled, network, walletsWithBalancesAndNames]);
 
   return {
     userAccounts,

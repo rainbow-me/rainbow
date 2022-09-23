@@ -31,7 +31,7 @@ export type WalletNotificationSettingsType = {
 
 const WALLET_TOPICS_STORAGE_KEY = 'notificationSettings';
 const WALLET_GROUPS_STORAGE_KEY = 'notificationGroupToggle';
-export const NOTIFICATIONS_DEFAULT_CHAIN_ID = 1; // hardcoded mainnet for now
+export const NOTIFICATIONS_DEFAULT_CHAIN_ID = 1; // hardcoded mainnet until we get multi-chain support
 
 const storage = new MMKV({
   id: STORAGE_IDS.NOTIFICATIONS,
@@ -118,8 +118,6 @@ export const addDefaultNotificationSettingsForWallet = (
       NOTIFICATIONS_DEFAULT_CHAIN_ID,
       address
     );
-
-    // TODO: send wallet address to refraction
   } else {
     const settings = getAllNotificationSettingsFromStorage();
     const settingsForWallet = settings.find(
