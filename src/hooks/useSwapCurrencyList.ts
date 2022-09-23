@@ -13,6 +13,7 @@ import {
   AssetType,
   RainbowToken,
   RainbowToken as RT,
+  SwappableAsset,
   TokenSearchTokenListId,
 } from '@/entities';
 import tokenSearch from '@/handlers/tokenSearch';
@@ -28,7 +29,6 @@ import {
   WETH_ADDRESS,
 } from '@/references';
 import { ethereumUtils, filterList, logger } from '@/utils';
-
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -36,7 +36,8 @@ type swapCurrencyListType =
   | 'lowLiquidityAssets'
   | 'favoriteAssets'
   | 'curatedAssets'
-  | 'importedAssets';
+  | 'importedAssets'
+  | 'bridgeAssets';
 const uniswapCuratedTokensSelector = (state: AppState) => state.uniswap.pairs;
 const uniswapFavoriteMetadataSelector = (state: AppState) =>
   state.uniswap.favoritesMeta;
@@ -88,6 +89,7 @@ const useSwapCurrencyList = (
   const favoriteAddresses = useSelector(uniswapFavoritesSelector);
 
   const [loading, setLoading] = useState(true);
+  const [bridgeAssets, setBridgeAssets] = useState<RT[]>([]);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
   const [importedAssets, setImportedAssets] = useState<RT[]>([]);
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
@@ -225,6 +227,8 @@ const useSwapCurrencyList = (
   const getResultsForAssetType = useCallback(
     async (assetType: swapCurrencyListType) => {
       switch (assetType) {
+        case 'bridgeAssets':
+          break;
         case 'verifiedAssets':
           setVerifiedAssets(
             handleSearchResponse(
@@ -261,19 +265,20 @@ const useSwapCurrencyList = (
         }
       }
     },
-    [getFavorites, getImportedAsset, handleSearchResponse, searchQuery, chainId]
+    [handleSearchResponse, searchQuery, chainId, getFavorites, getImportedAsset]
   );
 
   const search = useCallback(async () => {
     const categories: swapCurrencyListType[] =
       chainId === MAINNET_CHAINID
         ? [
+            'bridgeAssets',
             'favoriteAssets',
             'highLiquidityAssets',
             'verifiedAssets',
             'importedAssets',
           ]
-        : ['verifiedAssets', 'importedAssets'];
+        : ['bridgeAssets', 'verifiedAssets', 'importedAssets'];
     setLoading(true);
     await Promise.all(
       categories.map(assetType => getResultsForAssetType(assetType))
@@ -292,6 +297,7 @@ const useSwapCurrencyList = (
 
   const clearSearch = useCallback(() => {
     getResultsForAssetType('curatedAssets');
+    setBridgeAssets([]);
     setLowLiquidityAssets([]);
     setHighLiquidityAssets([]);
     setVerifiedAssets([]);
@@ -362,6 +368,15 @@ const useSwapCurrencyList = (
             ];
           }
         }
+      }
+      if (bridgeAssets?.length) {
+        list.push({
+          color:
+            colors.networkColors[ethereumUtils.getNetworkFromChainId(chainId)],
+          data: abcSort(bridgeAssets, 'name'),
+          key: 'bridge',
+          title: tokenSectionTypes.bridgeTokenSection,
+        });
       }
       if (favoriteAssets?.length && chainId === MAINNET_CHAINID) {
         list.push({
