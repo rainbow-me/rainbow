@@ -12,6 +12,7 @@ import {
   AssetType,
   RainbowToken,
   RainbowToken as RT,
+  SwappableAsset,
   TokenSearchTokenListId,
 } from '@/entities';
 import { tokenSearch } from '@/handlers/tokenSearch';
@@ -39,7 +40,8 @@ type swapCurrencyListType =
   | 'lowLiquidityAssets'
   | 'favoriteAssets'
   | 'curatedAssets'
-  | 'importedAssets';
+  | 'importedAssets'
+  | 'bridgeAssets';
 const uniswapCuratedTokensSelector = (state: AppState) => state.uniswap.pairs;
 const uniswapFavoriteMetadataSelector = (state: AppState) =>
   state.uniswap.favoritesMeta;
@@ -100,6 +102,7 @@ const useSwapCurrencyList = (
   const favoriteAddresses = useSelector(uniswapFavoritesSelector);
 
   const [loading, setLoading] = useState(true);
+  const [bridgeAssets, setBridgeAssets] = useState<RT[]>([]);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
   const [importedAssets, setImportedAssets] = useState<RT[]>([]);
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
@@ -260,6 +263,8 @@ const useSwapCurrencyList = (
   const getResultsForAssetType = useCallback(
     async (assetType: swapCurrencyListType) => {
       switch (assetType) {
+        case 'bridgeAssets':
+          break;
         case 'verifiedAssets':
           setVerifiedAssets(
             handleSearchResponse(
@@ -326,12 +331,13 @@ const useSwapCurrencyList = (
     const categories: swapCurrencyListType[] =
       searchChainId === MAINNET_CHAINID
         ? [
+            'bridgeAssets',
             'favoriteAssets',
             'highLiquidityAssets',
             'verifiedAssets',
             'importedAssets',
           ]
-        : ['verifiedAssets', 'importedAssets'];
+        : ['bridgeAssets', 'verifiedAssets', 'importedAssets'];
     setLoading(true);
     await Promise.all(
       categories.map(assetType => getResultsForAssetType(assetType))
@@ -350,6 +356,7 @@ const useSwapCurrencyList = (
 
   const clearSearch = useCallback(() => {
     getResultsForAssetType('curatedAssets');
+    setBridgeAssets([]);
     setLowLiquidityAssets([]);
     setHighLiquidityAssets([]);
     setVerifiedAssets([]);
