@@ -28,6 +28,8 @@ import {
   WETH_ADDRESS,
 } from '@/references';
 import { ethereumUtils, filterList, logger } from '@/utils';
+import useSwapCurrencies from '@/hooks/useSwapCurrencies';
+import { Network } from '@/helpers';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -49,11 +51,13 @@ const abcSort = (list: any[], key?: string) => {
   });
 };
 
-const searchCurrencyList = async (
-  searchList: RT[] | TokenSearchTokenListId,
-  query: string,
-  chainId: number
-) => {
+const searchCurrencyList = async (searchParams: {
+  chainId: number;
+  fromChainId?: number | '';
+  searchList: RT[] | TokenSearchTokenListId;
+  query: string;
+}) => {
+  const { searchList, query, chainId, fromChainId } = searchParams;
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
   const keys: (keyof RT)[] = isAddress ? ['address'] : ['symbol', 'name'];
   const formattedQuery = isAddress ? addHexPrefix(query).toLowerCase() : query;
@@ -62,7 +66,14 @@ const searchCurrencyList = async (
     if (chainId === MAINNET_CHAINID && !formattedQuery) {
       return [];
     }
-    return tokenSearch(searchList, formattedQuery, chainId, keys, threshold);
+    return tokenSearch({
+      chainId,
+      fromChainId,
+      keys,
+      list: searchList,
+      threshold,
+      query: formattedQuery,
+    });
   } else {
     return filterList(searchList, formattedQuery, keys, {
       threshold: isAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
@@ -93,6 +104,16 @@ const useSwapCurrencyList = (
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
+
+  const { inputCurrency } = useSwapCurrencies();
+  const inputChainId =
+    inputCurrency?.network &&
+    ethereumUtils.getChainIdFromNetwork(inputCurrency?.network as Network);
+  const isCrosschainSearch = useMemo(() => {
+    if (inputChainId && inputChainId !== chainId) {
+      return true;
+    }
+  }, [chainId, inputChainId]);
 
   const isFavorite = useCallback(
     (address: EthereumAddress) =>
@@ -164,7 +185,11 @@ const useSwapCurrencyList = (
 
   const getFavorites = useCallback(async () => {
     return searching
-      ? await searchCurrencyList(unfilteredFavorites, searchQuery, chainId)
+      ? await searchCurrencyList({
+          searchList: unfilteredFavorites as RainbowToken[],
+          query: searchQuery,
+          chainId,
+        })
       : unfilteredFavorites;
   }, [chainId, searchQuery, searching, unfilteredFavorites]);
 
@@ -228,21 +253,36 @@ const useSwapCurrencyList = (
         case 'verifiedAssets':
           setVerifiedAssets(
             handleSearchResponse(
-              await searchCurrencyList(assetType, searchQuery, chainId)
+              await searchCurrencyList({
+                searchList: assetType,
+                query: searchQuery,
+                chainId,
+                fromChainId: isCrosschainSearch && inputChainId,
+              })
             )
           );
           break;
         case 'highLiquidityAssets':
           setHighLiquidityAssets(
             handleSearchResponse(
-              await searchCurrencyList(assetType, searchQuery, chainId)
+              await searchCurrencyList({
+                searchList: assetType,
+                query: searchQuery,
+                chainId,
+                fromChainId: isCrosschainSearch && inputChainId,
+              })
             )
           );
           break;
         case 'lowLiquidityAssets':
           setLowLiquidityAssets(
             handleSearchResponse(
-              await searchCurrencyList(assetType, searchQuery, chainId)
+              await searchCurrencyList({
+                searchList: assetType,
+                query: searchQuery,
+                chainId,
+                fromChainId: isCrosschainSearch && inputChainId,
+              })
             )
           );
           break;
@@ -261,7 +301,15 @@ const useSwapCurrencyList = (
         }
       }
     },
-    [getFavorites, getImportedAsset, handleSearchResponse, searchQuery, chainId]
+    [
+      getFavorites,
+      getImportedAsset,
+      handleSearchResponse,
+      searchQuery,
+      chainId,
+      inputChainId,
+      isCrosschainSearch,
+    ]
   );
 
   const search = useCallback(async () => {
@@ -321,7 +369,7 @@ const useSwapCurrencyList = (
     };
     doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searching, searchQuery, chainId]);
+  }, [searching, searchQuery, chainId, isCrosschainSearch]);
 
   const { colors } = useTheme();
 
@@ -376,7 +424,7 @@ const useSwapCurrencyList = (
           data: verifiedAssetsWithImport,
           key: 'verified',
           title: tokenSectionTypes.verifiedTokenSection,
-          useGradientText: IS_TESTING === 'true' ? false : true,
+          useGradientText: IS_TESTING !== 'true',
         });
       }
       if (highLiquidityAssetsWithImport?.length) {
@@ -409,7 +457,7 @@ const useSwapCurrencyList = (
             data: curatedAssets,
             key: 'curated',
             title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
+            useGradientText: IS_TESTING !== 'true',
           });
         }
       }
