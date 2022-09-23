@@ -176,6 +176,10 @@ export default function ExchangeModal({
   const title = getInputHeaderTitle(type, defaultInputAsset);
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
+  const [
+    hasDestinationNativeTokenBalance,
+    setHasDestinationNativeTokenBalance,
+  ] = useState(false);
   const genericAssets = useSelector<
     { data: { genericAssets: { [address: string]: SwappableAsset } } },
     { [address: string]: SwappableAsset }
@@ -350,6 +354,22 @@ export default function ExchangeModal({
     }
   }, [currentNetwork, prevTxNetwork]);
 
+  useEffect(() => {
+    const getNativeAsset = async () => {
+      console.log(outputNetwork, accountAddress);
+      if (!outputNetwork || !accountAddress) return;
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
+        outputNetwork,
+        accountAddress
+      );
+
+      const balance = Number(nativeAsset?.balance?.amount);
+      const hasNon0Balance = balance > 0;
+      setHasDestinationNativeTokenBalance(hasNon0Balance);
+    };
+    getNativeAsset();
+  }, [outputNetwork, accountAddress]);
+
   const defaultGasLimit = useMemo(() => {
     const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
     if (isDeposit) return ethUnits.basic_deposit;
@@ -370,6 +390,7 @@ export default function ExchangeModal({
     },
     loading,
     resetSwapInputs,
+    setRefuel,
     quoteError,
   } = useSwapDerivedOutputs(type);
 
@@ -918,6 +939,46 @@ export default function ExchangeModal({
     type,
   ]);
 
+  const navigateToRefuelModal = useCallback(() => {
+    const getNetworkDetails = (network: Network) => {
+      switch (network) {
+        case Network.arbitrum:
+          return {
+            gasToken: 'Arbitrum ETH',
+            name: 'Arbitrum',
+          };
+        case Network.optimism:
+          return {
+            gasToken: 'Optimism ETH',
+            name: 'Optimism',
+          };
+        case Network.polygon:
+          return {
+            gasToken: 'Polygon Matic',
+            name: 'Polygon',
+          };
+      }
+    };
+
+    const networkDetails = getNetworkDetails(outputNetwork);
+
+    navigate(Routes.EXPLAIN_SHEET, {
+      network: outputNetwork,
+      networkName: networkDetails?.name,
+      gasToken: networkDetails?.gasToken,
+      onRefuel: (navigate, goBack, handleClose) => {
+        setRefuel(true);
+        handleClose();
+        navigateToSwapDetailsModal();
+      },
+      onContinue: (navigate, goBack, handleClose) => {
+        handleClose();
+        navigateToSwapDetailsModal();
+      },
+      type: 'swap_refuel_add',
+    });
+  }, [outputNetwork, navigate, navigateToSwapDetailsModal, setRefuel]);
+
   const handleTapWhileDisabled = useCallback(() => {
     const lastFocusedInput = (lastFocusedInputHandle?.current as unknown) as TextInput;
     lastFocusedInput?.blur();
@@ -945,6 +1006,27 @@ export default function ExchangeModal({
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
+
+  const handleConfirmExchangePress = useCallback(() => {
+    const showRefuelAddSheet =
+      isCrosschainSwap && !hasDestinationNativeTokenBalance;
+
+    if (loading) {
+      return NOOP;
+    }
+
+    if (showRefuelAddSheet) {
+      return navigateToRefuelModal();
+    }
+
+    return navigateToSwapDetailsModal();
+  }, [
+    loading,
+    hasDestinationNativeTokenBalance,
+    isCrosschainSwap,
+    navigateToRefuelModal,
+    navigateToSwapDetailsModal,
+  ]);
 
   return (
     <Wrapper keyboardType={KeyboardType.numpad}>
@@ -1055,9 +1137,7 @@ export default function ExchangeModal({
               {showConfirmButton && (
                 <ConfirmExchangeButton
                   {...confirmButtonProps}
-                  onPressViewDetails={
-                    loading ? NOOP : navigateToSwapDetailsModal
-                  }
+                  onPressViewDetails={handleConfirmExchangePress}
                   testID={`${testID}-confirm-button`}
                 />
               )}
