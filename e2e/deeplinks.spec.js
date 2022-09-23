@@ -37,7 +37,7 @@ beforeAll(async () => {
     // Chrome or the app. Detox is only able to control tapping within the app,
     // so this blocks our tests. The only way we found to bypass this is to
     // uninstall Chrome before.
-    await exec('yarn adb-all uninstall com.android.chrome');
+    await exec('yarn adb-all shell pm disable-user com.android.chrome');
   }
 });
 

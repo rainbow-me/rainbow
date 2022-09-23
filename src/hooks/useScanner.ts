@@ -6,7 +6,6 @@ import { InteractionManager } from 'react-native';
 import URL from 'url-parse';
 import { Alert } from '../components/alerts';
 import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
-import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
@@ -21,6 +20,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
+import { checkPushNotificationPermissions } from '@/notifications/permissions';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate } = useNavigation();

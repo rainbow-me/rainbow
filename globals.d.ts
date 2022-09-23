@@ -76,4 +76,6 @@ declare module 'react-native-dotenv' {
   export const TEST_SEEDS: string;
   export const DEV_PKEY: string;
   export const RAINBOW_TOKEN_LIST_URL: string;
+  export const LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error';
+  export const LOG_DEBUG: string;
 }

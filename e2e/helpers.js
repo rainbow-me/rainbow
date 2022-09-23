@@ -238,9 +238,11 @@ export async function checkIfDisabled(elementId) {
 
 export async function authenticatePin(pin) {
   const digits = pin.split('');
+  await device.disableSynchronization();
   for (let i = 0; i < digits.length; i++) {
     await tap(`numpad-button-${digits[i]}`);
   }
+  await device.enableSynchronization();
   return Promise.resolve();
 }
 

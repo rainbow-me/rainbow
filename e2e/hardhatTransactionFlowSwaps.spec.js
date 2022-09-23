@@ -73,48 +73,9 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should navigate to the Profile screen after swiping right', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
-  });
-
-  it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
-    await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-sheet');
-  });
-
-  // This shouldn't be in this flow.
-  it.skip('Should toggle Dark Mode on and off', async () => {
-    await Helpers.waitAndTap('theme-section-light');
-    await Helpers.tapByText('Dark');
-    await Helpers.waitAndTap('theme-section-dark');
-    await Helpers.tapByText('Light');
-  });
-
-  it('Should navigate to Developer Settings after tapping Developer Section', async () => {
-    await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-sheet');
-  });
-
-  if (ios) {
-    it('Should show Applied alert after pressing Alert', async () => {
-      await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
-      await Helpers.waitAndTap('alert-section');
-      await Helpers.checkIfElementByTextIsVisible('APPLIED');
-      await Helpers.tapAlertWithButton('OK');
-      await Helpers.checkIfVisible('developer-settings-sheet');
-    });
-  }
-
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
-    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
-  });
-
-  it('Should navigate to the Wallet screen after swiping left', async () => {
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.checkIfVisible('wallet-screen');
   });
 
   // eslint-disable-next-line jest/no-disabled-tests

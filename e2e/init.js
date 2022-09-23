@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 // eslint-disable-next-line import/no-commonjs
+import { exec } from 'child_process';
+
 require('dotenv').config({ path: '.env' });
 
 beforeAll(async () => {
@@ -8,6 +10,11 @@ beforeAll(async () => {
     await device.reverseTcpPort(8081);
     // connecting to hardhat
     await device.reverseTcpPort(8545); //TODO: WIP for android connecting in dev
+
+    // make sure we don't have gesture navigation what might cause collisions
+    await exec(
+      'yarn adb-all shell cmd overlay enable com.android.internal.systemui.navbar.threebutton'
+    );
   }
   await device.clearKeychain();
 

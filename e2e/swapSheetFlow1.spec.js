@@ -316,7 +316,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swap-settings-header');
     await Helpers.checkIfVisible('swap-settings-routes-label');
     await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
-    await Helpers.swipe('swap-settings-header', 'down', 'slow');
+    await Helpers.swipe('swap-settings-header', 'down', 'fast');
     await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
 
@@ -343,7 +343,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swap-settings-header');
     await Helpers.checkIfNotVisible('swap-settings-routes-label');
     await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
-    await Helpers.swipe('swap-settings-header', 'down', 'slow');
+    await Helpers.swipe('swap-settings-header', 'down', 'fast');
     await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
 
@@ -373,12 +373,8 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('swap-settings-header');
     await Helpers.checkIfVisible('swap-settings-routes-label');
     await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
-    await Helpers.swipe('swap-settings-header', 'down', 'slow');
-    if (android) {
-      await device.pressBack();
-    } else {
-      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
-    }
+    await Helpers.swipe('swap-settings-header', 'down', 'fast');
+    await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
 
   afterAll(async () => {
