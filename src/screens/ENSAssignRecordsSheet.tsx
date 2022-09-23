@@ -75,10 +75,11 @@ import {
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
+import { IS_TEST } from '@/env';
 
-const BottomActionHeight = ios ? 281 : 250;
-const BottomActionHeightSmall = 215;
-const ExtraBottomPadding = ios ? 81 : 50;
+const BottomActionHeight = ios ? 321 : 250;
+const BottomActionHeightSmall = 255;
+const ExtraBottomPadding = 50;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<any>();
@@ -175,7 +176,7 @@ export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
 
   const handleFocus = useCallback(() => {
-    if (!hasSeenExplainSheet) {
+    if (!hasSeenExplainSheet && !IS_TEST) {
       android && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',
@@ -193,7 +194,6 @@ export default function ENSAssignRecordsSheet() {
             ? BottomSheetScrollView
             : ScrollView) as typeof ScrollView
         }
-        background="body (Deprecated)"
         contentContainerStyle={{
           paddingBottom: ExtraBottomPadding,
         }}
@@ -280,6 +280,7 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
+  const { name: routeName } = useRoute();
 
   const {
     disabled,
@@ -327,6 +328,11 @@ export function ENSAssignRecordsBottomActions({
   }, [navigate]);
 
   const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    setVisible(false);
+  }, []);
+
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
       setTimeout(() => setVisible(isSuccess), 200);
@@ -365,18 +371,14 @@ export function ENSAssignRecordsBottomActions({
       )}
       <Box
         as={Animated.View}
-        background="body (Deprecated)"
-        style={[animatedStyle, { width: '100%', position: 'absolute' }]}
+        style={[animatedStyle, { width: '100%' }]}
         testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
-          <Box
-            paddingBottom="19px (Deprecated)"
-            style={{ height: bottomActionHeight }}
-          >
+          <Box paddingBottom="19px (Deprecated)">
             {ios ? <Shadow /> : null}
             <Rows>
-              <Row>
+              <Row height="content">
                 <Inset
                   horizontal="19px (Deprecated)"
                   top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}

@@ -177,22 +177,22 @@ describe('Edit ENS Flow', () => {
 
   it('Should fill & validate the fields', async () => {
     await Helpers.delay(2000);
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'fast', 1);
+    await Helpers.swipeUntilVisible(
+      'ens-text-record-contenthash',
+      'ens-edit-records-sheet',
+      'up'
+    );
+    if (android) {
+      await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 1);
+    }
 
     // Fill "Content" field
     await Helpers.checkIfVisible('ens-text-record-contenthash');
-    if (android) {
-      await Helpers.waitAndTap('ens-text-record-contenthash');
-      await Helpers.tapByText('Got it');
-    }
     await Helpers.typeText(
       'ens-text-record-contenthash',
       RECORD_CONTENTHASH.slice(0, 3),
       false
     );
-    if (ios) {
-      await Helpers.tapByText('Got it');
-    }
     await Helpers.waitAndTap('ens-text-record-contenthash-error');
     await Helpers.checkIfElementByTextToExist('Invalid content hash');
     await Helpers.tapByText('OK');
@@ -208,7 +208,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-LTC',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText('ens-text-record-LTC', 'MGx', false);
     await Helpers.waitAndTap('ens-text-record-LTC-error');
@@ -228,7 +229,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-keywords',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS, false);
 
@@ -236,7 +238,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-notice',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE, false);
 
@@ -244,7 +247,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-pronouns',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS, false);
 
@@ -252,7 +256,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-com.reddit',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT, false);
 
@@ -260,7 +265,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-org.telegram',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText(
       'ens-text-record-org.telegram',
@@ -272,7 +278,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-com.snapchat',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText(
       'ens-text-record-com.snapchat',
@@ -286,7 +293,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-BTC',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText('ens-text-record-BTC', '1F1', false);
     await Helpers.waitAndTap('ens-text-record-BTC-error');
@@ -306,7 +314,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-com.github',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB, false);
 
@@ -314,7 +323,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-com.discord',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText(
       'ens-text-record-com.discord',
@@ -336,7 +346,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-com.instagram',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText(
       'ens-text-record-com.instagram',
@@ -348,7 +359,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-email',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText(
       'ens-text-record-email',
@@ -370,7 +382,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-com.twitter',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText(
       'ens-text-record-com.twitter',
@@ -382,7 +395,8 @@ describe('Edit ENS Flow', () => {
     await Helpers.swipeUntilVisible(
       'ens-text-record-url',
       'ens-edit-records-sheet',
-      'down'
+      'down',
+      100
     );
     await Helpers.typeText('ens-text-record-url', 'abc', false);
     await Helpers.waitAndTap('ens-text-record-url-error');
