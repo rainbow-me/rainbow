@@ -241,6 +241,7 @@
       "learn_more": "Learn more",
       "less": "Less",
       "loading": "Loading",
+      "no_thanks": "No thanks",
       "notify_me": "Get notified",
       "offline": "Offline",
       "ok": "OK",
@@ -713,6 +714,11 @@
           "fragment2": "Read more",
           "fragment3": " about Flashbots and the protection it offers."
         }
+      },
+      "swap_refuel": {
+        "title": "No %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
+        "button": "Add $3 of %{gasToken}"
       }
     },
     "fedora": {
