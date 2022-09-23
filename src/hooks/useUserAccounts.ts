@@ -1,15 +1,18 @@
+import { values } from 'lodash';
 import {
   addDefaultNotificationSettingsForWallet,
   NotificationRelationship,
-} from '@/utils/notifications';
-import { values } from 'lodash';
+} from '@/notifications/settings';
 
 import useAccountSettings from './useAccountSettings';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import walletTypes from '@/helpers/walletTypes';
+import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 
 export default function useUserAccounts() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
+
   const { network } = useAccountSettings();
 
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
@@ -25,14 +28,16 @@ export default function useUserAccounts() {
           network,
         });
 
-        addDefaultNotificationSettingsForWallet(
-          account.address,
-          NotificationRelationship.OWNER
-        );
+        if (isNotificationsEnabled) {
+          addDefaultNotificationSettingsForWallet(
+            account.address,
+            NotificationRelationship.OWNER
+          );
+        }
       });
     });
     return addresses;
-  }, [network, walletsWithBalancesAndNames]);
+  }, [isNotificationsEnabled, network, walletsWithBalancesAndNames]);
 
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const watchedAccounts = useMemo(() => {
@@ -47,14 +52,16 @@ export default function useUserAccounts() {
           network,
         });
 
-        addDefaultNotificationSettingsForWallet(
-          account.address,
-          NotificationRelationship.WATCHER
-        );
+        if (isNotificationsEnabled) {
+          addDefaultNotificationSettingsForWallet(
+            account.address,
+            NotificationRelationship.WATCHER
+          );
+        }
       });
     });
     return addresses;
-  }, [network, walletsWithBalancesAndNames]);
+  }, [isNotificationsEnabled, network, walletsWithBalancesAndNames]);
 
   return {
     userAccounts,

@@ -16,7 +16,7 @@ import {
   toggleGroupNotifications,
   toggleTopicForWallet,
   useNotificationSettings,
-} from '@/utils/notifications';
+} from '@/notifications/settings';
 
 type RouteParams = {
   WalletNotificationsSettings: {
