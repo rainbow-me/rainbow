@@ -96,6 +96,7 @@ export const addDefaultNotificationSettingsForWallet = (
   const existingSettings = walletHasNotificationSettings(address);
   const defaultTopicSettings = {};
   Object.values(NotificationTopic).forEach(
+    // looping through topics and setting them all as true by default
     // @ts-expect-error: Object.values() returns a string[]
     topic => (defaultTopicSettings[topic] = true)
   );
@@ -120,11 +121,38 @@ export const addDefaultNotificationSettingsForWallet = (
 
     // TODO: send wallet address to refraction
   } else {
-    console.log(
-      `================== ${address}, ${relationship} ==================`
+    const settings = getAllNotificationSettingsFromStorage();
+    const settingsForWallet = settings.find(
+      (wallet: WalletNotificationSettingsType) => wallet.address === address
     );
-    // TODO: check if wallet relationship matches existing settings
-    // unsub from watcher topics if owner and re-sub as owner
+
+    if (settingsForWallet.type !== relationship) {
+      Logger.log(
+        `Notifications: unsubscribing ${address} from all [${settingsForWallet.type}] notifications and subscribing to all notifications as [${relationship}]`
+      );
+
+      const settingsIndex = settings.findIndex(
+        (wallet: WalletNotificationSettingsType) => wallet.address === address
+      );
+
+      // update config for this wallet with new relationship and all topics enabled by default
+      settings[settingsIndex].type = relationship;
+      settings[settingsIndex].enabled = true;
+      settings[settingsIndex].topics = defaultTopicSettings;
+
+      storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(settings));
+
+      unsubscribeWalletFromAllNotificationTopics(
+        settingsForWallet.type,
+        NOTIFICATIONS_DEFAULT_CHAIN_ID,
+        address
+      );
+      subscribeWalletToAllNotificationTopics(
+        relationship,
+        NOTIFICATIONS_DEFAULT_CHAIN_ID,
+        address
+      );
+    }
   }
 };
 
