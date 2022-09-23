@@ -8,6 +8,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
@@ -74,18 +75,20 @@ import {
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
+import { IS_TEST } from '@/env';
 
-const BottomActionHeight = ios ? 281 : 250;
-const BottomActionHeightSmall = 215;
-const ExtraBottomPadding = 55;
+const BottomActionHeight = ios ? 321 : 250;
+const BottomActionHeightSmall = 255;
+const ExtraBottomPadding = 50;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<any>();
   const { colors } = useTheme();
-  const { isSmallPhone } = useDimensions();
+  const { height: deviceHeight, isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const {
     images: { avatarUrl: initialAvatarUrl },
@@ -153,17 +156,14 @@ export default function ENSAssignRecordsSheet() {
         layout: { y },
       },
     }) => {
-      params?.sheetRef.current.scrollTo({ y });
+      scrollViewRef?.current?.scrollTo({ y });
     },
-    [params?.sheetRef]
+    []
   );
 
-  const handleError = useCallback(
-    ({ yOffset }) => {
-      params?.sheetRef.current.scrollTo({ y: yOffset });
-    },
-    [params?.sheetRef]
-  );
+  const handleError = useCallback(({ yOffset }) => {
+    scrollViewRef?.current?.scrollTo({ y: yOffset });
+  }, []);
 
   const [hasSeenExplainSheet, setHasSeenExplainSheet] = useState(false);
 
@@ -176,7 +176,7 @@ export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
 
   const handleFocus = useCallback(() => {
-    if (!hasSeenExplainSheet) {
+    if (!hasSeenExplainSheet && !IS_TEST) {
       android && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',
@@ -194,12 +194,13 @@ export default function ENSAssignRecordsSheet() {
             ? BottomSheetScrollView
             : ScrollView) as typeof ScrollView
         }
-        background="body (Deprecated)"
         contentContainerStyle={{
-          paddingBottom: bottomActionHeight + ExtraBottomPadding,
+          paddingBottom: ExtraBottomPadding,
         }}
-        flexGrow={1}
-        scrollEnabled={android}
+        height={{ custom: deviceHeight - bottomActionHeight }}
+        // @ts-expect-error ts unhappy with ref prop
+        ref={scrollViewRef}
+        scrollEnabled
         testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
         <Stack space="19px (Deprecated)">
@@ -262,18 +263,15 @@ export default function ENSAssignRecordsSheet() {
           </Inset>
         </Stack>
       </Box>
+      <ENSAssignRecordsBottomActions fromRoute={params?.fromRoute} />
     </AccentColorProvider>
   );
 }
 
 export function ENSAssignRecordsBottomActions({
-  visible: defaultVisible,
-  previousRouteName,
-  currentRouteName,
+  fromRoute,
 }: {
-  visible: boolean;
-  previousRouteName?: string;
-  currentRouteName: string;
+  fromRoute?: string;
 }) {
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
@@ -282,10 +280,11 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
-  const [fromRoute, setFromRoute] = useState(previousRouteName);
+
   const {
     disabled,
     errors,
+    isLoading,
     isValidating,
     isEmpty: isEmptyForm,
     selectedFields,
@@ -294,26 +293,19 @@ export function ENSAssignRecordsBottomActions({
     submit,
     values,
   } = useENSRegistrationForm();
-  const { isSuccess } = useENSModifiedRegistration();
+
   const handlePressBack = useCallback(() => {
     delayNext();
-    navigate(fromRoute);
+    goBack();
     setAccentColor(colors.purple);
-  }, [colors.purple, fromRoute, navigate, setAccentColor]);
+  }, [colors.purple, goBack, setAccentColor]);
 
   const hasBackButton = useMemo(
     () =>
       fromRoute === Routes.ENS_SEARCH_SHEET ||
-      fromRoute === Routes.ENS_INTRO_SHEET ||
-      fromRoute === Routes.ENS_ASSIGN_RECORDS_SHEET,
+      fromRoute === Routes.ENS_INTRO_SHEET,
     [fromRoute]
   );
-
-  useEffect(() => {
-    if (previousRouteName !== currentRouteName) {
-      setFromRoute(previousRouteName);
-    }
-  }, [currentRouteName, previousRouteName]);
 
   const handlePressContinue = useCallback(() => {
     submit(() => {
@@ -333,14 +325,15 @@ export function ENSAssignRecordsBottomActions({
     navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET, {});
   }, [navigate]);
 
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(
+    mode === REGISTRATION_MODES.CREATE || !isLoading
+  );
+
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(isSuccess), 200);
-    } else {
-      setVisible(defaultVisible);
+      setVisible(!isLoading);
     }
-  }, [defaultVisible, mode, isSuccess]);
+  }, [mode, isLoading]);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
@@ -372,18 +365,14 @@ export function ENSAssignRecordsBottomActions({
       )}
       <Box
         as={Animated.View}
-        background="body (Deprecated)"
-        style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+        style={[animatedStyle, { width: '100%' }]}
         testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
-          <Box
-            paddingBottom="19px (Deprecated)"
-            style={{ height: bottomActionHeight }}
-          >
+          <Box paddingBottom="19px (Deprecated)">
             {ios ? <Shadow /> : null}
             <Rows>
-              <Row>
+              <Row height="content">
                 <Inset
                   horizontal="19px (Deprecated)"
                   top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}

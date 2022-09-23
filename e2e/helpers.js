@@ -148,14 +148,23 @@ export async function scrollTo(scrollviewId, edge) {
   await element(by.id(scrollviewId)).scrollTo(edge);
 }
 
-export async function swipeUntilVisible(elementId, scrollViewId, direction) {
+export async function swipeUntilVisible(
+  elementId,
+  scrollViewId,
+  direction,
+  threshold = 75
+) {
   let stop = false;
   while (!stop) {
     try {
-      await checkIfVisible(elementId, 500);
+      // eslint-disable-next-line no-await-in-loop
+      await waitFor(element(by.id(elementId)))
+        .toBeVisible(threshold)
+        .withTimeout(500);
       stop = true;
     } catch {
-      await swipe(scrollViewId, direction, 'slow', 0.5);
+      // eslint-disable-next-line no-await-in-loop
+      await swipe(scrollViewId, direction, 'slow', 0.15);
     }
   }
 }

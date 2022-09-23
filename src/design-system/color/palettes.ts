@@ -408,6 +408,7 @@ export type ForegroundColor =
   | 'buttonStrokeSecondary'
   | 'shadow'
   | 'action (Deprecated)'
+  | 'body (Deprecated)'
   | 'divider20 (Deprecated)'
   | 'divider40 (Deprecated)'
   | 'divider60 (Deprecated)'
@@ -506,6 +507,12 @@ export const foregroundColors: Record<
   'action (Deprecated)': {
     dark: deprecatedColors.appleBlueLight,
     light: deprecatedColors.appleBlue,
+  },
+  'body (Deprecated)': {
+    dark: deprecatedColors.blackTint,
+    darkTinted: deprecatedColors.blackTint,
+    light: deprecatedColors.white,
+    lightTinted: deprecatedColors.white,
   },
   'divider100 (Deprecated)': {
     dark: 'rgba(60, 66, 82, 0.6)',
