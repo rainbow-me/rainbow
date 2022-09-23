@@ -11,7 +11,7 @@ import { useNavigationState } from '@react-navigation/native';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWallets } from '@/hooks';
+import { useAccountSettings, useWallets } from '@/hooks';
 import profileUtils from '@/utils/profileUtils';
 import {
   getAllNotificationSettingsFromStorage,
@@ -33,6 +33,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 
 type WalletRowProps = {
   groupOff: boolean;
+  notMainnet: boolean;
   wallet: {
     address: string;
     color?: string;
@@ -97,7 +98,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
   return <MenuItem.Label text={composedLabel()} />;
 };
 
-const WalletRow = ({ wallet, groupOff }: WalletRowProps) => {
+const WalletRow = ({ wallet, groupOff, notMainnet }: WalletRowProps) => {
   const index = useNavigationState(state => state.index);
   const { navigate } = useNavigation();
   const { notifications } = useNotificationSettings(wallet.address);
@@ -136,8 +137,9 @@ const WalletRow = ({ wallet, groupOff }: WalletRowProps) => {
 
   return (
     <MenuItem
+      disabled={notMainnet}
       key={wallet.address}
-      hasRightArrow
+      hasRightArrow={!notMainnet}
       labelComponent={
         <WalletRowLabel
           notifications={notificationSettings}
@@ -169,7 +171,10 @@ const WalletRow = ({ wallet, groupOff }: WalletRowProps) => {
 };
 
 const NotificationsSection = () => {
+  const { navigate } = useNavigation();
   const { colors } = useTheme();
+  const { chainId } = useAccountSettings();
+  const notMainnet = chainId !== 1;
   const { wallets } = useWallets();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const walletIDs = Object.keys(wallets!);
@@ -231,6 +236,10 @@ const NotificationsSection = () => {
     Linking.openSettings();
   };
 
+  const openNetworkSettings = () => {
+    navigate(Routes.NETWORK_SWITCHER);
+  };
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: withDelay(
@@ -275,6 +284,28 @@ const NotificationsSection = () => {
               </Menu>
             )}
 
+            {notMainnet && (
+              <Menu
+                header={lang.t(
+                  'settings.notifications_section.unsupported_network'
+                )}
+              >
+                <MenuItem
+                  hasSfSymbol
+                  size={52}
+                  leftComponent={<MenuItem.TextIcon icon="􀍟" isLink />}
+                  titleComponent={
+                    <MenuItem.Title
+                      text={'Change your Network'}
+                      weight="bold"
+                      isLink
+                    />
+                  }
+                  onPress={openNetworkSettings}
+                />
+              </Menu>
+            )}
+
             <Menu
               description={
                 noOwnedWallets
@@ -286,7 +317,7 @@ const NotificationsSection = () => {
                 disabled
                 rightComponent={
                   <Switch
-                    disabled={noOwnedWallets}
+                    disabled={noOwnedWallets || notMainnet}
                     onValueChange={toggleAllOwnedNotifications}
                     value={ownerEnabled}
                   />
@@ -304,6 +335,7 @@ const NotificationsSection = () => {
                   key={wallet.address}
                   wallet={wallet}
                   groupOff={!ownerEnabled}
+                  notMainnet={notMainnet}
                 />
               ))}
             </Menu>
@@ -318,7 +350,7 @@ const NotificationsSection = () => {
                 disabled
                 rightComponent={
                   <Switch
-                    disabled={noWatchedWallets}
+                    disabled={noWatchedWallets || notMainnet}
                     onValueChange={toggleAllWatchedNotifications}
                     value={watcherEnabled}
                   />
@@ -338,6 +370,7 @@ const NotificationsSection = () => {
                   key={wallet.address}
                   wallet={wallet}
                   groupOff={!watcherEnabled}
+                  notMainnet={notMainnet}
                 />
               ))}
             </Menu>
