@@ -221,6 +221,7 @@
     "react-native-ios11-devicecheck": "0.0.3",
     "react-native-keyboard-area": "1.0.5",
     "react-native-keychain": "8.0.0",
+    "react-native-keychain-new": "perunt/react-native-keychain-new#273ba768f90b8d61f42d0d5c7bf7cd47eb71d75b",
     "react-native-languages": "3.0.2",
     "react-native-level-fs": "3.0.1",
     "react-native-linear-gradient": "2.5.6",
