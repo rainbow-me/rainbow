@@ -120,6 +120,9 @@ export const addDefaultNotificationSettingsForWallet = (
 
     // TODO: send wallet address to refraction
   } else {
+    console.log(
+      `================== ${address}, ${relationship} ==================`
+    );
     // TODO: check if wallet relationship matches existing settings
     // unsub from watcher topics if owner and re-sub as owner
   }

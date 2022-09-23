@@ -19,8 +19,8 @@ import {
   useNotificationSettings,
   useWalletGroupNotificationSettings,
   WalletNotificationSettingsType,
-} from '@/utils/notifications';
-import { deviceUtils } from '@/utils';
+} from '@/notifications/settings';
+import { abbreviations, deviceUtils } from '@/utils';
 import Animated, {
   useAnimatedStyle,
   withDelay,
@@ -29,6 +29,7 @@ import Animated, {
 import { Box } from '@/design-system';
 import Spinner from '../Spinner';
 import { useTheme } from '@/theme';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 
 type WalletRowProps = {
   groupOff: boolean;
@@ -104,6 +105,17 @@ const WalletRow = ({ wallet, groupOff }: WalletRowProps) => {
     notifications
   );
 
+  const cleanedUpLabel = useMemo(
+    () => removeFirstEmojiFromString(wallet.label),
+    [wallet]
+  );
+
+  const displayAddress = useMemo(() => {
+    return abbreviations.address(wallet.address, 4, 6);
+  }, [wallet]);
+
+  const walletName = cleanedUpLabel || displayAddress || '';
+
   useEffect(() => {
     const data = getAllNotificationSettingsFromStorage();
     const updatedSettings = data.find(
@@ -149,9 +161,9 @@ const WalletRow = ({ wallet, groupOff }: WalletRowProps) => {
           )}
         </Box>
       }
-      onPress={() => navigateToWalletSettings(wallet.label, wallet.address)}
+      onPress={() => navigateToWalletSettings(walletName, wallet.address)}
       size={52}
-      titleComponent={<MenuItem.Title text={wallet.label} />}
+      titleComponent={<MenuItem.Title text={walletName} />}
     />
   );
 };

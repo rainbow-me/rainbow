@@ -6,7 +6,7 @@ import { getKey } from './common';
 import { uniswapAccountLocalKeys } from './uniswap';
 import { walletConnectAccountLocalKeys } from './walletconnectRequests';
 import logger from '@/utils/logger';
-import { removeNotificationSettingsForWallet } from '@/utils/notifications';
+import { removeNotificationSettingsForWallet } from '@/notifications/settings';
 
 export const removeWalletData = async (accountAddress: any) => {
   logger.log('[remove wallet]', accountAddress);
