@@ -90,7 +90,7 @@ const Shadow = styled(ShadowView)(
 const RainbowButton = ({
   disabled,
   height = 56,
-  label = 'Press me',
+  label = 'Mint',
   onPress,
   strokeWidth = 1,
   type,

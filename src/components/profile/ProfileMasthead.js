@@ -61,6 +61,15 @@ const AccountName = styled(TruncatedText).attrs({
   paddingRight: 6,
 });
 
+const MintButton = styled(RainbowButton).attrs({
+  overflowMargin: 30,
+  skipTopMargin: true,
+  type: 'small',
+  width: 150,
+})({
+  marginTop: 16,
+});
+
 const AddCashButton = styled(RainbowButton).attrs({
   overflowMargin: 30,
   skipTopMargin: true,
@@ -126,6 +135,10 @@ export default function ProfileMasthead({
     }
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate, isDamaged]);
+
+  const handlePressMint = useCallback(() => {
+    console.log('Mint function :)');
+  }, []);
 
   const handlePressAddCash = useCallback(() => {
     if (isDamaged) {
@@ -228,7 +241,7 @@ export default function ProfileMasthead({
           }}
         />
       </RowWithMargins>
-      {addCashAvailable && <AddCashButton onPress={handlePressAddCash} />}
+      <MintButton onPress={handlePressMint}></MintButton>
       {showBottomDivider && <ProfileMastheadDivider />}
     </Column>
   );

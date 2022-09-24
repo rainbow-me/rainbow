@@ -156,10 +156,10 @@ class App extends Component {
       rainbowTokenList.update();
     });
     AppState.addEventListener('change', this.handleAppStateChange);
-    rainbowTokenList.on('update', this.handleTokenListUpdate);
+    // rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
-    this.branchListener = branchListener(this.handleOpenLinkingURL);
+    // this.branchListener = branchListener(this.handleOpenLinkingURL);
     // Walletconnect uses direct deeplinks
     if (android) {
       try {
