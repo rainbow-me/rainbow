@@ -1,6 +1,6 @@
-## Setup
+# Project Setup Guide
 
-### Node
+## Node
 The project dependencies require a specific version of Node. We recommend using NVM to manage the node version we want to use in the project. 
 1. touch ~/.zshrc (Mac only)
 2. curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
@@ -9,13 +9,13 @@ The project dependencies require a specific version of Node. We recommend using 
 
 Please review the [NVM github page](https://github.com/creationix/nvm) for more info. 
 
-### Development Environment
+## Development Environment
 React native creates native iOS and Android components. We recommend using the standard development environment where possible. 
 
 1. Install the [latest version of Android Studio](https://developer.android.com/studio).
 2. Install the [latest version of XCode](https://developer.apple.com/xcode/). (Mac only)
 
-### MacOS Project Dependencies
+## MacOS Project Dependencies
 
 1. Install Watchman:
 
@@ -24,7 +24,6 @@ React native creates native iOS and Android components. We recommend using the s
    ```
 
 2. Install CocoaPods:
-
    ```shell
    sudo gem install cocoapods
    ```
@@ -41,10 +40,10 @@ React native creates native iOS and Android components. We recommend using the s
 <img src="https://i.stack.imgur.com/YkCR4.png" alt="drawing" width="400"/>
 <img src="https://i.stack.imgur.com/bEKl7.png" alt="drawing" width="400"/>
 
-### Project API Keys
+## Project API Keys
 The project requires a variety of API keys to compile. Please review the API keys document](https://drive.google.com/drive/u/1/folders/1VmZTl-kZHcWAjKdJSch-ekyidG8jaRLB) to add the required info. 
 
-### Package Buidling
+## Package Buidling
 Yarn is used to manage javascript packages for the project. Please follow the steps below to install dependencies. 
 
 1. Install yarn (If yarn is not installed): 
@@ -57,7 +56,7 @@ Yarn is used to manage javascript packages for the project. Please follow the st
    yarn install-bundle && yarn install-pods
    ```
 
-### Android Studio Setup
+## Android Studio Setup
 Running the project on Android Studio requires us to create an emulator. Review [these instructions](https://developer.android.com/studio/run/managing-avds) for the basic steps. Please make sure your emulator satisfies the following requirements:
 1. API Level: 28
 2. RAM: 4048 MB
@@ -65,13 +64,13 @@ Running the project on Android Studio requires us to create an emulator. Review 
 4. Internal Storage: 4048 MB 
 5. SD card (Studio-Managed): 512 MB 
 
-### Running the project
+## Running the project
 1. Open the Android or iOS subfolder using it's corresponding IDE.
 2. Run the project using the selected simulator.
 3. Run `yarn start` in the comment line to get the dynamic JavaScript content. 
 
-### Wallet Creation (Issue)
+## Wallet Creation (Issue)
 The program isn't working as expected due to some missing API keys. The program gets stuck trying to store the created wallet remotely. Restarting the program by pressing the play button will allow you to access the wallet info stored locally and sign in. 
 
-### iOS Project (Issue)
+## iOS Project (Issue)
 Please test the functionality using the Android project. The iOS project compiles but has some minor issues I may need to fix. 
