@@ -1,11 +1,15 @@
 import { isNil } from 'lodash';
 import { useEffect, useState } from 'react';
 import { isPinOrFingerprintSet } from 'react-native-device-info';
-import * as Keychain from 'react-native-keychain';
+import * as KeychainOld from 'react-native-keychain';
+import * as KeychainNew from 'react-native-keychain-new';
 import useAppState from './useAppState';
 import useIsMounted from './useIsMounted';
 import usePrevious from './usePrevious';
 import { BiometryTypes } from '@/helpers';
+import { IS_SDK_HIGHER_THAN_23 } from '@/env';
+
+const Keychain = IS_SDK_HIGHER_THAN_23 ? KeychainNew : KeychainOld;
 
 export default function useBiometryType() {
   const { justBecameActive } = useAppState();
