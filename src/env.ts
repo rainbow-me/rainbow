@@ -1,4 +1,4 @@
-import ReactNative from 'react-native';
+import ReactNative, { Platform } from 'react-native';
 import { ENABLE_DEV_MODE, IS_TESTING } from 'react-native-dotenv';
 
 /**
@@ -21,3 +21,5 @@ export const IS_DEV =
   (typeof __DEV__ === 'boolean' && __DEV__) || !!Number(ENABLE_DEV_MODE);
 export const IS_TEST = IS_TESTING === 'true';
 export const IS_PROD = !IS_DEV && !IS_TEST;
+
+export const IS_SDK_HIGHER_THAN_23 = Platform.Version >= 24 && IS_ANDROID;
