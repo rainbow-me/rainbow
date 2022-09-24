@@ -78,3 +78,9 @@ tsconfig.json @brunobar79 @osdnk @estebanmino @nickbytes
 
 # SECURITY / APP INFRA
 yarn.lock @brunobar79 @estebanmino @nickbytes
+
+# APP / NOTIFICATIONS
+src/notifications @jkadamczyk
+src/notifications/settings.ts @pugson
+src/components/settings-menu/NotificationsSection.tsx @pugson
+src/components/settings-menu/WalletNotificationsSettings.tsx @pugson
