@@ -12,6 +12,9 @@
 
 ## Setup
 
+### Condenced Instructions
+
+
 ### General
 
 - Install NVM or Node.js 14: https://github.com/creationix/nvm
@@ -27,7 +30,7 @@
    brew install watchman
    ```
 
-3. Install CocoaPods:
+2. Install CocoaPods:
 
    ```shell
    sudo gem install cocoapods
