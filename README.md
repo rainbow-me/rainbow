@@ -12,8 +12,8 @@
 
 ## Setup
 
-### Condenced Instructions
-
+### Short Instructions
+Life is too short! I created a [project setup guide](Project-setup-guide.md) with short instructions to setup your system :) I hope it helps! 
 
 ### General
 
@@ -30,7 +30,7 @@
    brew install watchman
    ```
 
-2. Install CocoaPods:
+3. Install CocoaPods:
 
    ```shell
    sudo gem install cocoapods
