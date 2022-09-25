@@ -10,7 +10,7 @@ import {
 import { web3Provider } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
 import { AllRainbowWallets } from '@/model/wallet';
-import { queryClient } from '@/react-query/queryClient';
+import { queryClient } from '@/react-query';
 import { balanceCheckerContractAbi } from '@/references';
 import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
 import logger from '@/utils/logger';

@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
@@ -66,7 +66,7 @@ export default function AddTokenSheet() {
   const { height: deviceHeight } = useDimensions();
   const { network } = useAccountSettings();
   const { favorites, lists, updateList } = useUserLists();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const {
     params: { item, isL2 },
   } = useRoute();

@@ -9,7 +9,6 @@ import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import {
   useAccountSettings,
-  useENSAddress,
   useFetchUniqueTokens,
   useOpenENSNFTHandler,
 } from '@/hooks';
@@ -25,6 +24,7 @@ import {
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
+import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -219,7 +219,7 @@ function ImageValue({
 }) {
   const { accountAddress } = useAccountSettings();
 
-  const { data: address } = useENSAddress(ensName || '');
+  const { data: address } = useENSAddress({ name: ensName || '' });
 
   const uniqueTokensAccount = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens

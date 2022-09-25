@@ -2,8 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
 import { fetchOwner } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient } from '@/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@/react-query/types';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 
 export const ensOwnerQueryKey = (name: string) => ['ens-owner', name];
 
@@ -29,7 +32,7 @@ export async function prefetchENSOwner(name: string) {
 
 export default function useENSOwner(
   name: string,
-  config?: QueryConfig<typeof fetchENSOwner>
+  config?: QueryConfigDeprecated<typeof fetchENSOwner>
 ) {
   const { accountAddress } = useAccountSettings();
 

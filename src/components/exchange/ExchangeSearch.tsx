@@ -30,6 +30,7 @@ import { TextInput } from 'react-native';
 import { useTheme } from '@/theme';
 import { Box, Text } from '@/design-system';
 import { Source } from 'react-native-fast-image';
+import { IS_TEST } from '@/env';
 
 export const ExchangeSearchHeight = 40;
 const DoneButtonWidth = 52;
@@ -217,7 +218,7 @@ const ExchangeSearch: ForwardRefRenderFunction<
       >
         <BackgroundGradient />
 
-        {isSearchModeEnabled && (
+        {isSearchModeEnabled && !IS_TEST && (
           <>
             <Box
               as={Animated.View}

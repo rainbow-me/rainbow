@@ -28,6 +28,7 @@ import { sheetVerticalOffset } from '@/navigation/effects';
 import styled from '@/styled-thing';
 import { borders, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
+import { IS_TEST } from '@/env';
 
 const sheetBottomPadding = 19;
 
@@ -191,7 +192,7 @@ export default function ImportSeedPhraseSheet() {
               onPress={handlePressImportButton}
             >
               <Row>
-                {busy ? (
+                {busy && !IS_TEST ? (
                   <LoadingSpinner />
                 ) : (
                   <Text align="center" color="whiteLabel" weight="bold">
