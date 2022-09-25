@@ -49,7 +49,6 @@ export function PairHardwareWalletNavigator() {
         >
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
-            // initialRouteName={currentRouteName}
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}
