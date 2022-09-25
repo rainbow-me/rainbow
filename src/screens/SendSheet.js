@@ -436,7 +436,9 @@ export default function SendSheet(props) {
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
       let realAddress = debouncedRecipient;
-      const isValid = await checkIsValidAddressOrDomain(debouncedRecipient);
+      const isValid = await checkIsValidAddressOrDomainFormat(
+        debouncedRecipient
+      );
       if (isValid) {
         realAddress = await resolveNameOrAddress(debouncedRecipient);
         setToAddress(realAddress);

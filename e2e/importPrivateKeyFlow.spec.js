@@ -2,6 +2,8 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
+const android = device.getPlatform() === 'android';
+
 describe('Import from private key flow', () => {
   it('without 0x - Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
@@ -36,7 +38,7 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'TKEY', false);
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
