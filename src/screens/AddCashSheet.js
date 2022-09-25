@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AddCashForm, AddCashStatus } from '../components/add-cash';
 import { Column, ColumnWithMargins, FlexItem } from '../components/layout';
@@ -11,7 +10,7 @@ import {
   SheetTitle,
 } from '../components/sheet';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { deviceUtils } from '../utils';
+import { deviceUtils, safeAreaInsetValues } from '../utils';
 import {
   useAddCashLimits,
   useDimensions,
@@ -24,7 +23,7 @@ import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const statusBarHeight = getStatusBarHeight(true);
+const statusBarHeight = safeAreaInsetValues.top;
 const sheetHeight =
   deviceHeight -
   statusBarHeight -
