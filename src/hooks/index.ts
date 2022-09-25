@@ -40,7 +40,6 @@ export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useENSLocalTransactions } from './useENSLocalTransactions';
 export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';
-export { default as useENSAddress, prefetchENSAddress } from './useENSAddress';
 export { default as useENSAvatar, prefetchENSAvatar } from './useENSAvatar';
 export { default as useENSCover, prefetchENSCover } from './useENSCover';
 export { default as useENSProfile, prefetchENSProfile } from './useENSProfile';
@@ -73,7 +72,6 @@ export { default as useExpandedStateNavigation } from './useExpandedStateNavigat
 export { default as useExternalWalletSectionsData } from './useExternalWalletSectionsData';
 export { default as useFetchHiddenTokens } from './useFetchHiddenTokens';
 export { default as useFetchUniqueTokens } from './useFetchUniqueTokens';
-export { default as useENSFirstTransactionTimestamp } from './useENSFirstTransactionTimestamp';
 export { default as useGas } from './useGas';
 export { default as useGenericAsset } from './useGenericAsset';
 export { default as useHeight } from './useHeight';

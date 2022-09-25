@@ -36,7 +36,7 @@ export default function RecordTags({
   records,
   show,
 }: {
-  firstTransactionTimestamp?: number;
+  firstTransactionTimestamp?: number | null;
   records: Partial<Records>;
   show: ENS_RECORDS[];
 }) {

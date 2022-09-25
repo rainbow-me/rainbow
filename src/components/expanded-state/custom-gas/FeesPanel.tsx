@@ -37,6 +37,7 @@ import { gweiToWei, parseGasFeeParam } from '@/parsers';
 import Routes from '@/navigation/routesNames';
 import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -212,21 +213,22 @@ export default function FeesPanel({
           marginVertical="-8px"
           // @ts-expect-error
           onPress={openHelper}
+          backgroundColor="accent"
         >
-          <Text
-            color="primary (Deprecated)"
-            size="14px / 19px (Deprecated)"
-            weight="heavy"
-          >
-            {`${label} `}
+          <Inline horizontalSpace="4px" alignVertical="center">
             <Text
-              size="14px / 19px (Deprecated)"
-              color={{ custom: color }}
-              weight="bold"
+              color="primary (Deprecated)"
+              size="16px / 22px (Deprecated)"
+              weight="heavy"
             >
-              {text}
+              {label}
             </Text>
-          </Text>
+            <Box marginBottom={IS_ANDROID ? '-4px' : undefined}>
+              <Text size="icon 16px" color={{ custom: color }} weight="bold">
+                {text}
+              </Text>
+            </Box>
+          </Inline>
         </Box>
       );
     },
@@ -411,13 +413,13 @@ export default function FeesPanel({
           <Box paddingTop="8px">
             <Text
               color={{ custom: colors.red }}
-              size="14px / 19px (Deprecated)"
+              size="16px / 22px (Deprecated)"
               weight="heavy"
             >
               {errorPrefix}
               <Text
                 color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
-                size="14px / 19px (Deprecated)"
+                size="16px / 22px (Deprecated)"
                 weight="bold"
               >
                 {errorSuffix}
@@ -429,13 +431,13 @@ export default function FeesPanel({
           <Box paddingTop="8px">
             <Text
               color={{ custom: colors.yellowFavorite }}
-              size="14px / 19px (Deprecated)"
+              size="16px / 22px (Deprecated)"
               weight="heavy"
             >
               {warningPrefix}
               <Text
                 color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
-                size="14px / 19px (Deprecated)"
+                size="16px / 22px (Deprecated)"
                 weight="heavy"
               >
                 {warningSuffix}
@@ -711,7 +713,7 @@ export default function FeesPanel({
             scaleTo={1}
           >
             <Text
-              size="14px / 19px (Deprecated)"
+              size="16px / 22px (Deprecated)"
               weight="heavy"
               color={{
                 custom: GAS_TRENDS[currentGasTrend]?.color || colors.appleBlue,
@@ -737,7 +739,7 @@ export default function FeesPanel({
               >
                 <Text
                   color="primary (Deprecated)"
-                  size="14px / 19px (Deprecated)"
+                  size="16px / 22px (Deprecated)"
                   weight="heavy"
                 >
                   {formattedBaseFee}
@@ -812,14 +814,14 @@ export default function FeesPanel({
             <Inline alignVertical="center" alignHorizontal="justify">
               <Text
                 color="primary (Deprecated)"
-                size="14px / 19px (Deprecated)"
+                size="16px / 22px (Deprecated)"
                 weight="heavy"
               >
                 {lang.t('gas.max_transaction_fee')}
               </Text>
               <Text
                 color="primary (Deprecated)"
-                size="14px / 19px (Deprecated)"
+                size="16px / 22px (Deprecated)"
                 weight="heavy"
               >
                 {maxFee}

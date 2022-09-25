@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
   runOnJS,
@@ -104,7 +105,7 @@ const DiscoverSheet = (_, forwardedRef) => {
   return (
     <AndroidWrapper
       style={{
-        bottom: -24,
+        bottom: -StatusBar.currentHeight,
       }}
     >
       <DiscoverSheetContext.Provider value={value}>
@@ -129,6 +130,7 @@ const DiscoverSheet = (_, forwardedRef) => {
         >
           <DiscoverSheetHeader yPosition={yPosition} />
           <BottomSheetScrollView
+            testID="discover-sheet"
             onScrollWorklet={scrollHandler}
             ref={sheet}
             removeClippedSubviews

@@ -1,4 +1,6 @@
 import { Alert, AlertButton, AlertOptions, ToastAndroid } from 'react-native';
+// @ts-ignore
+import { IS_TESTING } from 'react-native-dotenv';
 
 const WrappedAlert = {
   ...Alert,
@@ -8,7 +10,7 @@ const WrappedAlert = {
     buttons?: AlertButton[],
     options?: AlertOptions
   ) => {
-    if (android && !buttons && !options) {
+    if (android && !buttons && !options && IS_TESTING === 'false') {
       const text = message ? `${title}\n${message}` : title;
       ToastAndroid.show(text, ToastAndroid.SHORT);
     } else {
