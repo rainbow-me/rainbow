@@ -48,7 +48,7 @@ jobs:
       - name: Lint
         run: yarn lint:ci
 
-      - name: Jest
+      - name: Unit tests
         run: yarn test
 
       - name: Install Pods
