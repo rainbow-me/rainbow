@@ -233,13 +233,11 @@ const NotificationsSection = () => {
     [updateGroupSettings, watcherEnabled]
   );
 
-  const openSystemSettings = () => {
-    Linking.openSettings();
-  };
-
-  const openNetworkSettings = () => {
-    navigate(Routes.NETWORK_SWITCHER);
-  };
+  const openSystemSettings = Linking.openSettings;
+  const openNetworkSettings = useCallback(
+    () => navigate(Routes.NETWORK_SWITCHER),
+    [navigate]
+  );
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -297,7 +295,9 @@ const NotificationsSection = () => {
                   leftComponent={<MenuItem.TextIcon icon="􀍟" isLink />}
                   titleComponent={
                     <MenuItem.Title
-                      text={'Change your Network'}
+                      text={lang.t(
+                        'settings.notifications_section.change_network'
+                      )}
                       weight="bold"
                       isLink
                     />
