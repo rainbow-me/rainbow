@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import uts46 from 'idna-uts46-hx';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { UniqueAsset } from '@/entities';
 
 const supportedTLDs = ['eth'];
 
@@ -87,18 +87,18 @@ export function stringifyENSNFTRecord({
   return `eip155:1/${standard.toLowerCase()}:${contractAddress}/${tokenId}`;
 }
 
-const SPECIAL_CHARACTERS = [`’`];
+const SPECIAL_CHARACTERS = [`’`, '‘'];
 const validateSpecialCharacters = (domainName: string) => {
   try {
     uts46.toUnicode(domainName, { useStd3ASCII: true });
   } catch (err) {
     return false;
   }
-  return SPECIAL_CHARACTERS.some(element => {
+  return !SPECIAL_CHARACTERS.some(element => {
     if (domainName.includes(element)) {
-      return false;
+      return true;
     }
-    return true;
+    return false;
   });
 };
 

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { fonts } from '@rainbow-me/styles';
+import { fonts } from '@/styles';
 
 export const avatarBuilderStyles = StyleSheet.create({
   sectionHeader: {

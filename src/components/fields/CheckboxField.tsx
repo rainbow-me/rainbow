@@ -7,7 +7,7 @@ import {
   Inset,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 export default function CheckboxField({
   color: customColor,
@@ -22,8 +22,8 @@ export default function CheckboxField({
   onPress: () => void;
   testID: string;
 }) {
-  const secondary15 = useForegroundColor('secondary15');
-  const action = useForegroundColor('action');
+  const secondary15 = useForegroundColor('secondary15 (Deprecated)');
+  const action = useForegroundColor('action (Deprecated)');
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.925} testID={testID}>
@@ -40,13 +40,19 @@ export default function CheckboxField({
           }}
           width={{ custom: 20 }}
           {...(!customColor && {
-            background: !isChecked ? 'action' : 'body',
+            background: !isChecked
+              ? 'action (Deprecated)'
+              : 'body (Deprecated)',
           })}
         >
           {isChecked && (
-            <Inset left="1px">
+            <Inset left="1px (Deprecated)">
               <AccentColorProvider color="white">
-                <Text color="accent" size="12px" weight="bold">
+                <Text
+                  color="accent"
+                  size="12px / 14px (Deprecated)"
+                  weight="bold"
+                >
                   􀆅
                 </Text>
               </AccentColorProvider>
@@ -56,8 +62,8 @@ export default function CheckboxField({
         <Box flexShrink={1}>
           <AccentColorProvider color={customColor || action}>
             <Text
-              color={isChecked ? 'accent' : 'secondary80'}
-              size="16px"
+              color={isChecked ? 'accent' : 'secondary80 (Deprecated)'}
+              size="16px / 22px (Deprecated)"
               weight="bold"
             >
               {label}

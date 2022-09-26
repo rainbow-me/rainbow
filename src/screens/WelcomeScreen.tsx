@@ -2,7 +2,6 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Easing,
@@ -16,7 +15,7 @@ import Reanimated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { ButtonPressAnimation } from '../components/animations';
 import { BaseButtonAnimationProps } from '../components/animations/ButtonPressAnimation/types';
@@ -30,15 +29,15 @@ import {
   syncCloud,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 
-import { useHideSplashScreen } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position, shadow } from '@rainbow-me/styles';
-import { ThemeContextProps, useTheme } from '@rainbow-me/theme';
-import logger from 'logger';
+import { useHideSplashScreen } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position, shadow } from '@/styles';
+import { ThemeContextProps, useTheme } from '@/theme';
+import logger from '@/utils/logger';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -193,7 +192,7 @@ const animationColors = [
 ];
 
 export default function WelcomeScreen() {
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
   // @ts-expect-error Navigation types
   const { replace, navigate, dangerouslyGetState } = useNavigation();

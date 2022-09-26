@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
@@ -21,20 +21,16 @@ import {
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
-import { analytics } from '@rainbow-me/analytics';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
-import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
-import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import {
-  useAccountSettings,
-  useDimensions,
-  useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { watchingAlert } from '@rainbow-me/utils';
+import { analytics } from '@/analytics';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { isSymbolStablecoin } from '@/helpers/savings';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { watchingAlert } from '@/utils';
 
 export const SavingsSheetEmptyHeight = 313;
 export const SavingsSheetHeight = android
@@ -53,7 +49,7 @@ const SavingsSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
   const { params } = useRoute();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { isReadOnlyWallet } = useWallets();
   const { nativeCurrency } = useAccountSettings();
   const cTokenBalance = params['cTokenBalance'];

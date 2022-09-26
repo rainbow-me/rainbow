@@ -2,17 +2,10 @@ import lang from 'i18n-js';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  Divider,
-  Inline,
-  Inset,
-  Row,
-  Rows,
-  Text,
-} from '@rainbow-me/design-system';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { Inline, Inset, Row, Rows, Separator, Text } from '@/design-system';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 
 const EditContent = ({
   accentColor,
@@ -34,25 +27,33 @@ const EditContent = ({
     return (
       <Rows alignVertical="bottom">
         <Row height="content">
-          <Divider />
+          <Separator color="divider80 (Deprecated)" />
         </Row>
       </Rows>
     );
   return (
     <Rows alignVertical="bottom">
       <Row height="content">
-        <Divider />
-        <Inset top="19px">
+        <Separator color="divider80 (Deprecated)" />
+        <Inset top="19px (Deprecated)">
           <Inline alignHorizontal="justify" alignVertical="center">
             <Inline>
-              <Text color="secondary80" size="16px" weight="bold">
+              <Text
+                color="secondary80 (Deprecated)"
+                size="16px / 22px (Deprecated)"
+                weight="bold"
+              >
                 {`${lang.t('profiles.confirm.set_ens_name')} `}
               </Text>
               <ButtonPressAnimation
                 onPress={openPrimaryENSNameHelper}
                 scaleTo={0.9}
               >
-                <Text color="secondary30" size="16px" weight="bold">
+                <Text
+                  color="secondary30 (Deprecated)"
+                  size="16px / 22px (Deprecated)"
+                  weight="bold"
+                >
                   􀅵
                 </Text>
               </ButtonPressAnimation>

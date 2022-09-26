@@ -29,21 +29,17 @@ import {
   toHexNoLeadingZeros,
 } from './web3';
 import config from '@/model/config';
-import { Asset } from '@rainbow-me/entities';
+import { Asset } from '@/entities';
 import {
   add,
   convertRawAmountToDecimalFormat,
   divide,
   multiply,
   subtract,
-} from '@rainbow-me/helpers/utilities';
-import { Network } from '@rainbow-me/networkTypes';
-import {
-  erc20ABI,
-  ethUnits,
-  UNISWAP_TESTNET_TOKEN_LIST,
-} from '@rainbow-me/references';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { Network } from '@/helpers/networkTypes';
+import { erc20ABI, ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@/references';
+import { ethereumUtils, logger } from '@/utils';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -55,7 +51,9 @@ const EXTRA_GAS_PADDING = 1.5;
 const SWAP_GAS_PADDING = 1.1;
 const CHAIN_IDS_WITH_TRACE_SUPPORT = [ChainId.mainnet];
 
-async function getClosestGasEstimate(estimationFn: Function) {
+async function getClosestGasEstimate(
+  estimationFn: (gasEstimate: number) => Promise<boolean>
+) {
   // From 200k to 1M
   const gasEstimates = Array.from(Array(21).keys())
     .filter(x => x > 3)

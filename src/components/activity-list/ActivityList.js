@@ -13,8 +13,8 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
-import styled from '@rainbow-me/styled-components';
-import { useTheme } from '@rainbow-me/theme';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -114,52 +114,58 @@ const ActivityList = ({
     [colors]
   );
 
-  return network === networkTypes.mainnet || sections.length ? (
-    recyclerListView ? (
-      <RecyclerActivityList
-        addCashAvailable={addCashAvailable}
-        header={header}
-        isEmpty={isEmpty}
-        isLoading={isLoading}
-        navigation={navigation}
-        sections={sections}
-      />
-    ) : isEmpty ? (
-      <ActivityListEmptyState>{header}</ActivityListEmptyState>
-    ) : (
-      <SectionList
-        ListFooterComponent={() =>
-          remainingItemsLabel && (
-            <ListFooterComponent
-              label={remainingItemsLabel}
-              onPress={nextPage}
-            />
-          )
-        }
-        ListHeaderComponent={header}
-        alwaysBounceVertical={false}
-        contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
-        extraData={{
-          hasPendingTransaction,
-          nativeCurrency,
-          pendingTransactionsCount,
-        }}
-        getItemLayout={getItemLayout}
-        initialNumToRender={12}
-        keyExtractor={keyExtractor}
-        removeClippedSubviews
-        renderSectionHeader={renderSectionHeaderWithTheme}
-        sections={sections}
-      />
-    )
-  ) : (
-    <ActivityListEmptyState
-      emoji="👻"
-      label={lang.t('activity_list.empty_state.testnet_label')}
-    >
-      {header}
-    </ActivityListEmptyState>
-  );
+  if (network === networkTypes.mainnet || sections.length) {
+    if (recyclerListView) {
+      return (
+        <RecyclerActivityList
+          addCashAvailable={addCashAvailable}
+          header={header}
+          isEmpty={isEmpty}
+          isLoading={isLoading}
+          navigation={navigation}
+          sections={sections}
+        />
+      );
+    } else if (isEmpty) {
+      return <ActivityListEmptyState>{header}</ActivityListEmptyState>;
+    } else {
+      return (
+        <SectionList
+          ListFooterComponent={() =>
+            remainingItemsLabel && (
+              <ListFooterComponent
+                label={remainingItemsLabel}
+                onPress={nextPage}
+              />
+            )
+          }
+          ListHeaderComponent={header}
+          alwaysBounceVertical={false}
+          contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
+          extraData={{
+            hasPendingTransaction,
+            nativeCurrency,
+            pendingTransactionsCount,
+          }}
+          getItemLayout={getItemLayout}
+          initialNumToRender={12}
+          keyExtractor={keyExtractor}
+          removeClippedSubviews
+          renderSectionHeader={renderSectionHeaderWithTheme}
+          sections={sections}
+        />
+      );
+    }
+  } else {
+    return (
+      <ActivityListEmptyState
+        emoji="👻"
+        label={lang.t('activity_list.empty_state.testnet_label')}
+      >
+        {header}
+      </ActivityListEmptyState>
+    );
+  }
 };
 
 export default ActivityList;

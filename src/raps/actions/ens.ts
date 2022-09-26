@@ -6,26 +6,27 @@ import {
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { analytics } from '@/analytics';
-import { ENSRegistrationRecords } from '@rainbow-me/entities';
+import { ENSRegistrationRecords } from '@/entities';
 import {
   estimateENSTransactionGasLimit,
   formatRecordsForTransaction,
-} from '@rainbow-me/handlers/ens';
-import { toHex } from '@rainbow-me/handlers/web3';
-import { NetworkTypes } from '@rainbow-me/helpers';
+} from '@/handlers/ens';
+import { toHex } from '@/handlers/web3';
+import { NetworkTypes } from '@/helpers';
 import {
   ENSRegistrationTransactionType,
   getENSExecutionDetails,
   REGISTRATION_MODES,
-} from '@rainbow-me/helpers/ens';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+} from '@/helpers/ens';
+import { dataAddNewTransaction } from '@/redux/data';
 import {
   saveCommitRegistrationParameters,
   updateTransactionRegistrationParameters,
-} from '@rainbow-me/redux/ensRegistration';
-import store from '@rainbow-me/redux/store';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/redux/ensRegistration';
+import store from '@/redux/store';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
+import { parseGasParamsForTransaction } from '@/parsers';
 const executeCommit = async (
   name?: string,
   duration?: number,
@@ -220,6 +221,36 @@ const executeSetAddr = async (
   );
 };
 
+const executeSetContenthash = async (
+  name?: string,
+  records?: ENSRegistrationRecords,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    name,
+    records,
+    type: ENSRegistrationTransactionType.SET_CONTENTHASH,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.setContenthash(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
 const executeSetText = async (
   name?: string,
   records?: ENSRegistrationRecords,
@@ -294,6 +325,7 @@ const ensAction = async (
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
+
   const {
     name,
     duration,
@@ -345,9 +377,9 @@ const ensAction = async (
   let maxFeePerGas;
   let maxPriorityFeePerGas;
   try {
-    maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-    maxPriorityFeePerGas =
-      selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
+    maxFeePerGas = gasParams.maxFeePerGas;
+    maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
     logger.sentry(`[${actionName}] about to ${type}`, {
       ...parameters,
@@ -369,7 +401,6 @@ const ensAction = async (
           nonce
         );
         dispatch(
-          // @ts-ignore
           saveCommitRegistrationParameters({
             commitTransactionHash: tx?.hash,
             duration,
@@ -412,7 +443,6 @@ const ensAction = async (
           nonce
         );
         dispatch(
-          // @ts-ignore
           updateTransactionRegistrationParameters({
             registerTransactionHash: tx?.hash,
           })
@@ -439,6 +469,20 @@ const ensAction = async (
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+        });
+        break;
+      case ENSRegistrationTransactionType.SET_CONTENTHASH:
+        tx = await executeSetContenthash(
           name,
           ensRegistrationRecords,
           gasLimit,
@@ -665,6 +709,23 @@ const setTextENS = async (
   );
 };
 
+const setContenthashENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setContenthashENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_CONTENTHASH,
+    baseNonce
+  );
+};
+
 export default {
   commitENS,
   multicallENS,
@@ -672,6 +733,7 @@ export default {
   registerWithConfig,
   renewENS,
   setAddrENS,
+  setContenthashENS,
   setNameENS,
   setTextENS,
 };

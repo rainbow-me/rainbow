@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
 
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
-import { useDimensions } from '@rainbow-me/hooks';
-import { borders } from '@rainbow-me/styles';
+import { useDimensions } from '@/hooks';
+import { borders } from '@/styles';
 
 const Sheet = ({
   borderRadius,
@@ -20,7 +20,7 @@ const Sheet = ({
 }) => {
   const { width } = useDimensions();
   const { goBack } = useNavigation();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (

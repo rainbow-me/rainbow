@@ -31,26 +31,26 @@ import {
   removeRegistrationByName,
   saveCommitRegistrationParameters,
 } from '@/redux/ensRegistration';
-import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
+import { GasFeeTypes, TransactionStatusTypes } from '@/entities';
 import {
   getFlashbotsProvider,
   getProviderForNetwork,
   isL2Network,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
-import { greaterThan } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
-import { sendTransaction } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import { getTitle } from '@rainbow-me/parsers';
-import { dataUpdateTransaction } from '@rainbow-me/redux/data';
-import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
-import { ethUnits } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { greaterThan } from '@/helpers/utilities';
+import { useAccountSettings, useDimensions, useGas } from '@/hooks';
+import { sendTransaction } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import { getTitle, parseGasParamsForTransaction } from '@/parsers';
+import { dataUpdateTransaction } from '@/redux/data';
+import { updateGasFeeForSpeed } from '@/redux/gas';
+import { ethUnits } from '@/references';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { gasUtils, safeAreaInsetValues } from '@/utils';
+import logger from '@/utils/logger';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -161,11 +161,10 @@ export default function SpeedUpAndCancelSheet() {
   const isL2 = isL2Network(tx.network);
 
   const getNewTransactionGasParams = useCallback(() => {
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
     if (txType === GasFeeTypes.eip1559) {
-      const rawMaxPriorityFeePerGas =
-        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
-      const rawMaxFeePerGas =
-        selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+      const rawMaxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
+      const rawMaxFeePerGas = gasParams.maxFeePerGas;
 
       const maxPriorityFeePerGas = greaterThan(
         rawMaxPriorityFeePerGas,
@@ -179,7 +178,7 @@ export default function SpeedUpAndCancelSheet() {
         : toHex(minMaxFeePerGas);
       return { maxFeePerGas, maxPriorityFeePerGas };
     } else {
-      const rawGasPrice = selectedGasFee?.gasFeeParams?.gasPrice?.amount;
+      const rawGasPrice = gasParams.gasPrice;
       return {
         gasPrice: greaterThan(rawGasPrice, minGasPrice)
           ? toHex(rawGasPrice)

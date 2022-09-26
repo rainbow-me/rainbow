@@ -6,9 +6,9 @@ import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useLatestCallback } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
-import { Text } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
-import { ThemeContextProps } from '@rainbow-me/theme';
+import { Text } from '@/design-system';
+import { ImgixImage } from '@/components/images';
+import { ThemeContextProps } from '@/theme';
 
 export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;
@@ -145,7 +145,11 @@ const TokenFamilyHeader = ({
       >
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
-            <Text containsEmoji size="16px">
+            <Text
+              containsEmoji
+              color="primary (Deprecated)"
+              size="16px / 22px (Deprecated)"
+            >
               {emoji}
             </Text>
           ) : (
@@ -159,10 +163,12 @@ const TokenFamilyHeader = ({
         <View style={[sx.title, { paddingLeft: 10 }]}>
           <Text
             color={
-              title === lang.t('button.hidden') ? 'secondary60' : 'primary'
+              title === lang.t('button.hidden')
+                ? 'secondary60 (Deprecated)'
+                : 'primary (Deprecated)'
             }
             numberOfLines={1}
-            size="18px"
+            size="18px / 27px (Deprecated)"
             weight="heavy"
           >
             {title}
@@ -173,9 +179,11 @@ const TokenFamilyHeader = ({
             <Text
               align="right"
               color={
-                title === lang.t('button.hidden') ? 'secondary60' : 'primary'
+                title === lang.t('button.hidden')
+                  ? 'secondary60 (Deprecated)'
+                  : 'primary (Deprecated)'
               }
-              size="18px"
+              size="18px / 27px (Deprecated)"
             >
               {childrenAmount}
             </Text>

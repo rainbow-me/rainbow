@@ -7,16 +7,18 @@ import {
   NFT_API_URL,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import NetworkTypes, { Network } from '@rainbow-me/networkTypes';
+import NetworkTypes, { Network } from '@/helpers/networkTypes';
 import {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
-} from '@rainbow-me/parsers';
-import { handleSignificantDecimals } from '@rainbow-me/utilities';
-import logger from 'logger';
+} from '@/parsers';
+import { handleSignificantDecimals } from '@/helpers/utilities';
+import logger from '@/utils/logger';
+import { queryClient } from '@/react-query/queryClient';
+import { UniqueAsset } from '@/entities';
 
-export const UNIQUE_TOKENS_LIMIT_PER_PAGE: number = 50;
-export const UNIQUE_TOKENS_LIMIT_TOTAL: number = 2000;
+export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
+export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
 // limiting our opensea api requests to 10/sec so we don't max out
 const queue = new PQueue({ interval: 1000, intervalCap: 10 });
@@ -41,6 +43,7 @@ export const apiGetAccountUniqueTokens = async (
           },
           method: 'get',
           params: {
+            include_orders: 'true',
             // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
             limit: UNIQUE_TOKENS_LIMIT_PER_PAGE,
             // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
@@ -57,11 +60,36 @@ export const apiGetAccountUniqueTokens = async (
           timeout: 10000, // 10 secs
         })
     );
-    return isPolygon
-      ? parseAccountUniqueTokensPolygon(data)
-      : parseAccountUniqueTokens(data);
+
+    let tokens;
+    if (isPolygon) {
+      // TODO(jxom): migrate this to Async State RFC architecture once it's merged in.
+      const polygonAllowlist = await queryClient.fetchQuery(
+        ['polygon-allowlist'],
+        async () => {
+          return (
+            await rainbowFetch(
+              'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+              { method: 'get' }
+            )
+          ).data.data.addresses;
+        },
+        {
+          staleTime: 1000 * 60 * 10, // 10 minutes
+        }
+      );
+      tokens = parseAccountUniqueTokensPolygon(
+        data
+      ).filter((token: UniqueAsset) =>
+        polygonAllowlist.includes(token.asset_contract?.address?.toLowerCase())
+      );
+    } else {
+      tokens = parseAccountUniqueTokens(data);
+    }
+
+    return tokens;
   } catch (error: any) {
-    //opensea gives us an error if the account has no tokens on the network, we want to ignore this error
+    // opensea gives us an error if the account has no tokens on the network, we want to ignore this error
     if (
       error.responseBody[0]?.includes('does not exist for chain identifier')
     ) {

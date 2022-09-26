@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ContactProfileState,
@@ -8,9 +8,9 @@ import {
   WalletProfileState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
+import { useNavigation } from '@/navigation';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
 
 const ModalTypes = {
   contact_profile: ContactProfileState,
@@ -26,7 +26,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
 );
 
 export default function ModalScreen(props) {
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { goBack } = useNavigation();
   const { params } = useRoute();
 

@@ -10,23 +10,19 @@ import {
   RapExchangeActionParameters,
   UnlockActionParameters,
 } from '../common';
-import {
-  Asset,
-  TransactionStatus,
-  TransactionType,
-} from '@rainbow-me/entities';
+import { Asset, TransactionStatus, TransactionType } from '@/entities';
 import {
   getProviderForNetwork,
   isHexStringIgnorePrefix,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
-import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
-import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
-import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/web3';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
+import { erc20ABI, ETH_ADDRESS, ethUnits } from '@/references';
+import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
+import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 export const estimateApprove = async (
   owner: string,
@@ -72,7 +68,7 @@ const getRawAllowance = async (
   owner: string,
   token: Asset,
   spender: string,
-  chainId: number = 1
+  chainId = 1
 ) => {
   try {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
@@ -103,17 +99,18 @@ const executeApprove = async (
         maxPriorityFeePerGas: string;
         gasPrice?: undefined;
       },
-  wallet: Signer,
-  nonce: number | null = null
+  wallet: Wallet,
+  nonce: number | null = null,
+  chainId = 1
 ) => {
   const exchange = new Contract(tokenAddress, erc20ABI, wallet);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
-    gasPrice: gasParams.gasPrice || undefined,
+    gasPrice: gasParams.gasPrice,
     // EIP-1559 like networks
-    maxFeePerGas: gasParams.maxFeePerGas || undefined,
-    maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas || undefined,
+    maxFeePerGas: gasParams.maxFeePerGas,
+    maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas,
     nonce: nonce ? toHex(nonce) : undefined,
   });
 };
@@ -164,7 +161,7 @@ const unlock = async (
     throw e;
   }
   let approval;
-  let gasParams = parseGasParamsForTransaction(selectedGasFee);
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (
     !gasParams.maxFeePerGas ||
@@ -256,12 +253,11 @@ export const assetNeedsUnlocking = async (
 
   const cacheKey = `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
 
-  let allowance;
   // Check on cache first
   // if (AllowancesCache.cache[cacheKey]) {
   //   allowance = AllowancesCache.cache[cacheKey];
   // } else {
-  allowance = await getRawAllowance(
+  const allowance = await getRawAllowance(
     accountAddress,
     assetToUnlock,
     contractAddress,
@@ -272,7 +268,6 @@ export const assetNeedsUnlocking = async (
   // if (!isNull(allowance)) {
   //   AllowancesCache.cache[cacheKey] = allowance;
   // }
-  //}
 
   logger.log('raw allowance', allowance.toString());
   // Cache that value

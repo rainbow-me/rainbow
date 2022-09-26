@@ -7,9 +7,9 @@ import { BottomRowText, CoinRow } from '../coin-row';
 import BalanceText from '../coin-row/BalanceText';
 import CoinName from '../coin-row/CoinName';
 import { FlexItem, Row } from '../layout';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 
 const formatPercentageString = percentString =>
   percentString ? percentString.toString().split('-').join('- ') : '-';

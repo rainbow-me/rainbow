@@ -1,5 +1,5 @@
 import { checkIsValidAddressOrDomain } from '../helpers/validators';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities';
 
 /**
  * @desc get ethereum address from raw QR Code data

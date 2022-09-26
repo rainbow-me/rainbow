@@ -11,23 +11,20 @@ import {
 } from '../redux/walletconnect';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { defaultConfig } from '@rainbow-me/config/experimental';
-import { PROFILES } from '@rainbow-me/config/experimentalHooks';
-import { setDeploymentKey } from '@rainbow-me/handlers/fedora';
-import { delay } from '@rainbow-me/helpers/utilities';
+import { defaultConfig } from '@/config/experimental';
+import { PROFILES } from '@/config/experimentalHooks';
+import { setDeploymentKey } from '@/handlers/fedora';
+import { delay } from '@/helpers/utilities';
 import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
-import { Navigation } from '@rainbow-me/navigation';
-import { scheduleActionOnAssetReceived } from '@rainbow-me/redux/data';
-import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@rainbow-me/redux/explorer';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/helpers/validators';
+import { Navigation } from '@/navigation';
+import { scheduleActionOnAssetReceived } from '@/redux/data';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
 
 export default async function handleDeeplink(
   url: any,

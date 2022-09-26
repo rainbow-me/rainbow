@@ -1,5 +1,10 @@
 import { format } from 'date-fns';
-import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+import {
+  TransactionStatus,
+  TransactionStatusTypes,
+  TransactionType,
+  TransactionTypes,
+} from '@/entities';
 
 export const buildTransactionUniqueIdentifier = ({
   hash,
@@ -7,37 +12,37 @@ export const buildTransactionUniqueIdentifier = ({
 }: any) => hash || displayDetails?.timestampInMs;
 
 export const calculateTimestampOfToday = () => {
-  var d = new Date();
+  const d = new Date();
   d.setHours(0, 0, 0, 0);
   return d.getTime();
 };
 
 export const calculateTimestampOfYesterday = () => {
-  var d = new Date();
+  const d = new Date();
   d.setDate(d.getDate() - 1);
   d.setHours(0, 0, 0, 0);
   return d.getTime();
 };
 
 export const calculateTimestampOfThisMonth = () => {
-  var d = new Date();
+  const d = new Date();
   d.setDate(0);
   d.setHours(0, 0, 0, 0);
   return d.getTime();
 };
 
 export const calculateTimestampOfThisYear = () => {
-  var d = new Date();
+  const d = new Date();
   d.setFullYear(d.getFullYear(), 0, 1);
   d.setHours(0, 0, 0, 0);
   return d.getTime();
 };
 
-export let timestampsCalculation = new Date();
-export let todayTimestamp = calculateTimestampOfToday();
-export let yesterdayTimestamp = calculateTimestampOfYesterday();
-export let thisMonthTimestamp = calculateTimestampOfThisMonth();
-export let thisYearTimestamp = calculateTimestampOfThisYear();
+export const timestampsCalculation = new Date();
+export const todayTimestamp = calculateTimestampOfToday();
+export const yesterdayTimestamp = calculateTimestampOfYesterday();
+export const thisMonthTimestamp = calculateTimestampOfThisMonth();
+export const thisYearTimestamp = calculateTimestampOfThisYear();
 
 export function getHumanReadableDate(date: any) {
   const timestamp = new Date(date * 1000);
@@ -67,3 +72,29 @@ export function hasAddableContact(status: any, type: any) {
   }
   return false;
 }
+
+/**
+ * Returns the `TransactionStatus` that represents completion for a given
+ * transaction type.
+ *
+ * @param type The transaction type.
+ * @returns The confirmed status.
+ */
+export const getConfirmedState = (
+  type?: TransactionType
+): TransactionStatus => {
+  switch (type) {
+    case TransactionTypes.authorize:
+      return TransactionStatus.approved;
+    case TransactionTypes.deposit:
+      return TransactionStatus.deposited;
+    case TransactionTypes.withdraw:
+      return TransactionStatus.withdrew;
+    case TransactionTypes.receive:
+      return TransactionStatus.received;
+    case TransactionTypes.purchase:
+      return TransactionStatus.purchased;
+    default:
+      return TransactionStatus.sent;
+  }
+};

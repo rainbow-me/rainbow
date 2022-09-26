@@ -16,17 +16,17 @@ import {
   Cover,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
+} from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { UploadImageReturnData } from '@/handlers/pinata';
 import {
   useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -136,10 +136,12 @@ const RegistrationAvatar = ({
     onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'avatar' });
-      setAvatarUrl('');
       onChangeAvatarUrl('');
       setAvatarMetadata(undefined);
       setDisabled(false);
+      setTimeout(() => {
+        setAvatarUrl('');
+      }, 100);
     },
     onUploadError: () => {
       onBlurField({ key: 'avatar', value: '' });
@@ -158,7 +160,7 @@ const RegistrationAvatar = ({
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
-        <BackgroundProvider color="body">
+        <BackgroundProvider color="body (Deprecated)">
           {({ backgroundColor }) => (
             <AvatarCoverPhotoMaskSvg backgroundColor={backgroundColor as any} />
           )}
@@ -167,7 +169,7 @@ const RegistrationAvatar = ({
       {isLoading ? (
         <Skeleton animated>
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={size / 2}
             height={{ custom: size }}
             width={{ custom: size }}
@@ -195,7 +197,7 @@ const RegistrationAvatar = ({
             <AccentColorProvider color={accentColor + '10'}>
               <Box
                 alignItems="center"
-                background={avatarUrl ? 'body' : 'accent'}
+                background={avatarUrl ? 'body (Deprecated)' : 'accent'}
                 borderRadius={size / 2}
                 height={{ custom: size }}
                 justifyContent="center"
@@ -212,7 +214,11 @@ const RegistrationAvatar = ({
                   />
                 ) : (
                   <AccentColorProvider color={accentColor}>
-                    <Text color="accent" size="18px" weight="heavy">
+                    <Text
+                      color="accent"
+                      size="18px / 27px (Deprecated)"
+                      weight="heavy"
+                    >
                       {` 􀣵 `}
                     </Text>
                   </AccentColorProvider>

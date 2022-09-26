@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Text } from 'react-native';
 import { Centered, Page } from '../components/layout';
 import { darkModeThemeColors } from '../styles/colors';
-import { position } from '@rainbow-me/styles';
+import { position } from '@/styles';
 
 class ExampleScreen extends PureComponent {
   render = () => (

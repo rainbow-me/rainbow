@@ -4,25 +4,21 @@ import {
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
+// DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
-import { useQuery } from 'react-query';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import isTestFlight from '@/helpers/isTestFlight';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@/analytics';
-import { EthereumAddress } from '@rainbow-me/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
-import { AppState } from '@rainbow-me/redux/store';
-import {
-  Source,
-  SwapModalField,
-  updateSwapQuote,
-} from '@rainbow-me/redux/swap';
+import { EthereumAddress } from '@/entities';
+import { isNativeAsset } from '@/handlers/assets';
+import { AppState } from '@/redux/store';
+import { Source, SwapModalField, updateSwapQuote } from '@/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -31,9 +27,9 @@ import {
   convertRawAmountToDecimalFormat,
   isZero,
   updatePrecisionToDisplay,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
-import Logger from '@rainbow-me/utils/logger';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
+import Logger from '@/utils/logger';
 
 const SWAP_POLLING_INTERVAL = 5000;
 enum DisplayValue {
@@ -103,19 +99,12 @@ const getInputAmount = async (
           code: quoteError.error_code,
           msg: quoteError.message,
         });
-        if (
-          // insufficient liquidity
-          quoteError.error_code === 502 ||
-          // Unsupported Token
-          quoteError.error_code === 501
-        ) {
-          return {
-            inputAmount: null,
-            inputAmountDisplay: null,
-            noLiquidity: true,
-            tradeDetails: null,
-          };
-        }
+        return {
+          inputAmount: null,
+          inputAmountDisplay: null,
+          quoteError: quoteError,
+          tradeDetails: null,
+        };
       }
       return {
         inputAmount: null,
@@ -210,19 +199,12 @@ const getOutputAmount = async (
           code: quoteError.error_code,
           msg: quoteError.message,
         });
-        if (
-          // insufficient liquidity
-          quoteError.error_code === 502 ||
-          // Unsupported Token
-          quoteError.error_code === 501
-        ) {
-          return {
-            noLiquidity: true,
-            outputAmount: null,
-            outputAmountDisplay: null,
-            tradeDetails: null,
-          };
-        }
+        return {
+          outputAmount: null,
+          outputAmountDisplay: null,
+          quoteError,
+          tradeDetails: null,
+        };
       }
       return {
         outputAmount: null,
@@ -319,11 +301,12 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       updateSwapQuote({
         derivedValues,
         displayValues,
+        quoteError: null,
         tradeDetails: null,
       })
     );
     return {
-      insufficientLiquidity: false,
+      quoteError: null,
       result: { derivedValues, displayValues, tradeDetails: null },
     };
   }, [dispatch]);
@@ -351,10 +334,11 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       }
 
       return {
-        insufficientLiquidity: false,
+        quoteError: null,
         result: {
           derivedValues,
           displayValues,
+          tradeDetails,
         },
       };
     }
@@ -366,7 +350,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     const inputToken = inputCurrency;
     const outputToken = outputCurrency;
     const slippagePercentage = slippageInBips / 100;
-    let insufficientLiquidity = false;
+    let quoteError: QuoteError | undefined;
 
     if (independentField === SwapModalField.input) {
       derivedValues[SwapModalField.input] = independentValue;
@@ -385,7 +369,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
-        noLiquidity,
+        quoteError: newQuoteError,
       } = await getOutputAmount(
         independentValue,
         inputToken,
@@ -399,8 +383,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       // if original value changed, ignore new quote
       if (derivedValues[SwapModalField.input] !== independentValue) return;
 
-      insufficientLiquidity = !!noLiquidity;
       tradeDetails = newTradeDetails;
+      quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
       // @ts-ignore next-line
       displayValues[DisplayValue.output] = outputAmount
@@ -434,6 +418,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
+        quoteError: newQuoteError,
       } = await getOutputAmount(
         inputAmount,
         inputToken,
@@ -448,13 +433,14 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       if (derivedValues[SwapModalField.native] !== independentValue) return;
 
       tradeDetails = newTradeDetails;
+      quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
       displayValues[DisplayValue.output] =
         outputAmountDisplay?.toString() || null;
     } else {
       if (!outputToken || !inputToken) {
         return {
-          insufficientLiquidity: false,
+          quoteError: null,
           result: {
             derivedValues,
             displayValues,
@@ -470,7 +456,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         inputAmount,
         inputAmountDisplay,
         tradeDetails: newTradeDetails,
-        noLiquidity,
+        quoteError: newQuoteError,
       } = await getInputAmount(
         independentValue,
         inputToken,
@@ -483,8 +469,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       );
       // if original value changed, ignore new quote
       if (derivedValues[SwapModalField.output] !== independentValue) return;
+      quoteError = newQuoteError;
 
-      insufficientLiquidity = !!noLiquidity;
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.input] = inputAmount || '0';
       // @ts-ignore next-line
@@ -502,6 +488,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       derivedValues,
       displayValues,
       doneLoadingReserves: true,
+      quoteError,
       tradeDetails,
     };
 
@@ -527,7 +514,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       type,
     });
 
-    return { insufficientLiquidity, result: data };
+    return { quoteError, result: data };
   }, [
     accountAddress,
     chainId,
@@ -566,8 +553,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   });
 
   return {
-    insufficientLiquidity: data?.insufficientLiquidity || false,
     loading: isLoading && Boolean(independentValue),
+    quoteError: data?.quoteError || null,
     resetSwapInputs,
     result: data?.result || {
       derivedValues,

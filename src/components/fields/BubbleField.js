@@ -3,21 +3,14 @@ import { useTheme } from '../../theme/ThemeContext';
 import { MiniButton } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
+import { useDimensions } from '@/hooks';
+import styled from '@/styled-thing';
 
 const BubbleInput = styled(ExchangeInput).attrs(
   ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
     disableTabularNums: true,
     keyboardAppearance: isDarkMode ? 'dark' : 'light',
     letterSpacing: 'roundedTightest',
-    lineHeight: android
-      ? isTinyPhone
-        ? 27
-        : android || isSmallPhone
-        ? 31
-        : 38
-      : undefined,
     size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
     weight: 'semibold',
   })

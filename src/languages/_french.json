@@ -78,6 +78,13 @@
       }
     },
     "back_up": {
+      "already_backed_up": {
+        "backed_up": "Backed up :)",
+        "backed_up_manually": "Backed up manually :)",
+        "backed_up_message": "Your wallet is backed up :)",
+        "imported": "Imported :)",
+        "imported_message": "Your wallet was imported :)"
+      },
       "backup_deleted_successfully": "Backups Deleted Successfully :)",
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
@@ -165,6 +172,7 @@
       },
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet! :)",
+        "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings. :)",
         "copy_to_clipboard": "Copy to clipboard :)",
         "for_your_eyes_only": "For your eyes only :)",
         "private_key_title": "Private Key :)",
@@ -197,6 +205,7 @@
         "invalid_fee": "Frais Non Valides",
         "invalid_fee_lowercase": "Frais non valides",
         "loading": "Loading... :)",
+        "no_quote_available": "􀅵 No Quote Available :)",
         "review": "Review :)",
         "submitting": "Submitting :)",
         "swap": "Tenir pour Swap",
@@ -290,9 +299,11 @@
       "clear_async_storage": "Clear async storage :)",
       "clear_image_cache": "Clear Image Cache :)",
       "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
+      "clear_local_storage": "Clear local storage :)",
       "clear_mmkv_storage": "Clear MMKV storage :)",
       "connect_to_hardhat": "Connect to hardhat :)",
       "crash_app_render_error": "Crash app (render error) :)",
+      "enable_testnets": "Enable Testnets :)",
       "installing_update": "Installing update :)",
       "no_update": "No update :)",
       "not_applied": "NOT APPLIED :)",
@@ -300,9 +311,9 @@
       "remove_all_backups": "Remove all backups :)",
       "reset_keychain": "Reset Keychain :)",
       "restart_app": "Restart app :)",
-      "restore_default_experimental_config": "Restore default experimental config :)",
+      "reset_experimental_config": "Reset experimental config :)",
       "status": "Status :)",
-      "sync_codepush": "Sync codepush, current: %{codePushVersion} :)"
+      "sync_codepush": "Sync codepush :)"
     },
     "discover": {
       "dpi": {
@@ -415,6 +426,7 @@
         "read_more_button": "Read more :)",
         "available_networks": "Available on %{availableNetworks} networks :)",
         "available_network": "Available on the %{availableNetwork} network :)",
+        "available_networkv2": "Available on the %{availableNetwork} network :)",
         "social": {
           "facebook": "Facebook :)",
           "homepage": "Homepage :)",
@@ -493,6 +505,15 @@
           "message": "You have insufficient %{symbol} to cover the fees to swap the maximum amount. :)"
         }
       },
+      "wyre_degradation": {
+        "text": "Because of the ongoing Ethereum upgrade known as \"The Merge\", our partners have temporarily paused crypto purchasing to ensure safety of user funds. :)",
+        "title": "It's happening \nThe Merge is underway :)",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Learn more",
+          "fragment3": " about \"The Merge\". :)"
+        }
+      },
       "swap_details": {
         "exchange_rate": "Exchange rate :)",
         "rainbow_fee": "Included Rainbow fee :)",
@@ -562,9 +583,10 @@
       }
     },
     "explain": {
-      "optimism_app_icon": {
-        "title": "You've unlocked\nRainbow 􀆄 Optimism :)",
-        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+      "icon_unlock": {
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon! :)",
+        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "title": "You've unlocked\nRainbow 􀆄 %{partner} :)",
         "button": "Snag the icon :)"
       },
       "output_disabled": {
@@ -576,11 +598,6 @@
         "text": "%{tokenSymbol} is also available on %{networks}. To get %{tokenSymbol} on these networks, use a Bridge like Hop. :)",
         "title_plural": "Available on %{length} Networks :)",
         "title_singular": "Available on the %{network} Network :)"
-      },
-      "optimism_app_icon": {
-        "title": "You've unlocked\nRainbow 􀆄 Optimism :)",
-        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
-        "button": "Snag the icon :)"
       },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum. :)",
@@ -640,6 +657,10 @@
         "fragment3": " about AMMs and token liquidity. :)",
         "title": "Insufficient Liquidity :)"
       },
+      "no_quote": {
+        "title": "No quote available",
+        "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
+      },
       "unverified": {
         "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
         "fragment2": "token contract :)",
@@ -668,7 +689,23 @@
       }
     },
     "gas": {
-      "network_fee": "Frais de réseau"
+      "network_fee": "Frais de réseau",
+      "current_base_fee": "Current base fee :)",
+      "max_base_fee": "Max base fee :)",
+      "miner_tip": "Miner tip :)",
+      "max_transaction_fee": "Max transaction fee :)",
+      "warning_separator": "·",
+      "lower_than_suggested": "Low · may get stuck :)",
+      "higher_than_suggested": "High · overpaying :)",
+      "max_base_fee_too_low_error": "Low · likely to fail :)",
+      "tip_too_low_error": "Low · likely to fail :)",
+      "alert_message_higher_miner_tip_needed": "Setting a higher miner tip is recommended to avoid issues. :)",
+      "alert_message_higher_max_base_fee_needed": "Setting a higher max base fee is recommended to avoid issues. :)",
+      "alert_message_lower": "Double check that you entered the correct amount—you’re likely paying more than you need to! :)",
+      "alert_title_higher_max_base_fee_needed": "Low max base fee–transaction may get stuck! :)",
+      "alert_title_higher_miner_tip_needed": "Low miner tip–transaction may get stuck! :)",
+      "alert_title_lower_max_base_fee_needed": "High max base fee! :)",
+      "alert_title_lower_miner_tip_needed": "High miner tip! :)"
     },
     "homepage": {
       "coming_soon": "À venir.",
@@ -1015,6 +1052,26 @@
         "since": "Since :)"
       }
     },
+    "promos": {
+      "swaps_launch": {
+        "primary_button": "􀖅 Try a swap :)",
+        "secondary_button": "Maybe later :)",
+        "info_row_1": {
+          "title": "Swap all your favorite tokens :)",
+          "description": "Rainbow searches everywhere to find the best rate for your trade. :)"
+        },
+        "info_row_2": {
+          "title": "Swap directly on L2 :)",
+          "description": "Fast and cheap swaps on Arbitrum, Optimism and Polygon. :)"
+        },
+        "info_row_3": {
+          "title": "Flashbots protection :)",
+          "description": "Price protection, plus no fees on failed swaps. Enable in swap settings. :)"
+        },
+        "header": "Swaps on Rainbow :)",
+        "subheader": "REINTRODUCING :)"
+      }
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Are you enjoying Rainbow? 🥰 :)",
@@ -1065,7 +1122,7 @@
       "done": "Terminé",
       "feedback_and_reports": "Feedback & Bug Reports :)",
       "feedback_and_support": "Feedback & Support :)",
-      "follow_twitter": "Follow Us on Twitter :)",
+      "follow_twitter": "Follow us on Twitter :)",
       "follow_us_on_twitter": "Follow Us on Twitter :)",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️ :)",
       "label": "Réglages",
@@ -1073,11 +1130,31 @@
       "learn": "Learn about Rainbow and Ethereum :)",
       "learn_short": "Learn about Rainbow :)",
       "network": "Réseau",
+      "notifications": "Notifications :)",
+      "notifications_section": {
+        "my_wallets": "My Wallets :)",
+        "watched_wallets": "Watched Wallets :)",
+        "allow_notifications": "Allow Notifications :)",
+        "sent": "Sent :)",
+        "received": "Received :)",
+        "purchased": "Purchased :)",
+        "sold": "Sold :)",
+        "minted": "Minted :)",
+        "swapped": "Swapped :)",
+        "approvals": "Approvals :)",
+        "contracts_and_more": "Contracts & More :)",
+        "all": "All :)",
+        "off": "Off :)",
+        "plus_n_more": "+ %{n} more :)"
+      },
       "privacy": "Privacy :)",
       "privacy_section": {
         "public_showcase": "Public Showcase :)",
-        "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at :)"
+        "when_public": "When public, your NFT Showcase will be visible on your Rainbow profile! :)",
+        "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at :)",
+        "view_profile": "View your profile :)"
       },
+      "restore": "Restore to original deployment :)",
       "review": "Review Rainbow :)",
       "share": "Share Rainbow:)",
       "share_rainbow": "Share Rainbow :)",
@@ -1221,9 +1298,12 @@
         "edit": "Moadifier le Portefeuille",
         "hide": "Hide :)",
         "import_wallet": "Importer un portefeuille",
+        "notifications": "Notification Settings :)",
         "paste": "Coller",
         "pin": "Pin :)",
         "reject": "Refuser",
+        "remove": "Remove Wallet :)",
+        "remove_confirm": "Are you sure you want to remove this wallet? :)",
         "send": "Envoyer",
         "to": "À",
         "unhide": "Unhide :)",

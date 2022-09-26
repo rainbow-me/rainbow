@@ -14,16 +14,14 @@ import { AddressField } from '../fields';
 import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import { useClipboard, useDimensions } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { useClipboard, useDimensions } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { profileUtils, showActionSheetWithOptions } from '@/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({

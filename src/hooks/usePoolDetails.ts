@@ -1,33 +1,27 @@
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { uniswapClient } from '../apollo/client';
-import {
-  UNISWAP_ADDITIONAL_POOL_DATA,
-  UNISWAP_PAIR_DATA_QUERY_VOLUME,
-} from '../apollo/queries';
+import { uniswapClientDeprecated } from '../apollo/client';
+import { UNISWAP_PAIR_DATA_QUERY_VOLUME } from '../apollo/queries';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { getOneDayVolume } from './useUniswapPools';
-import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
-import { ethereumUtils, getBlocksFromTimestamps } from '@rainbow-me/utils';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { AppDispatch, AppState } from '@/redux/store';
+import { setPoolsDetails } from '@/redux/uniswapLiquidity';
+import { ethereumUtils, getBlocksFromTimestamps } from '@/utils';
+import { uniswapClient } from '@/graphql';
 
-function cutIfOver10000(value: any) {
+function cutIfOver10000(value: number) {
   return value > 10000 ? Math.round(value) : value;
 }
 
-async function fetchPoolDetails(address: any, dispatch: any) {
-  const result = await uniswapClient.query({
-    query: UNISWAP_ADDITIONAL_POOL_DATA,
-    variables: {
-      address,
-    },
-  });
+async function fetchPoolDetails(address: string, dispatch: AppDispatch) {
+  const result = await uniswapClient.getAdditionalPoolData({ address });
 
   // uniswap v2 graph for the volume
 
-  const pair = result?.data?.pairs?.[0];
+  const pair = result?.pairs?.[0];
 
   if (pair) {
     const partialData = {
@@ -37,7 +31,8 @@ async function fetchPoolDetails(address: any, dispatch: any) {
     const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
     const [{ number: b1 }] = await getBlocksFromTimestamps([t1]);
 
-    const oneDayResult = await uniswapClient.query({
+    // TODO(jxom): migrate this to React Query's `fetchQuery` w/ cacheTime=Infinite.
+    const oneDayResult = await uniswapClientDeprecated.query({
       fetchPolicy: 'cache-first',
       query: UNISWAP_PAIR_DATA_QUERY_VOLUME(address, b1),
     });
@@ -67,7 +62,7 @@ async function fetchPoolDetails(address: any, dispatch: any) {
   }
 }
 
-export default function usePoolDetails(address: any) {
+export default function usePoolDetails(address: string) {
   const { nativeCurrency } = useAccountSettings();
   const rate = useNativeCurrencyToUSD();
 
@@ -79,8 +74,9 @@ export default function usePoolDetails(address: any) {
     [nativeCurrency]
   );
 
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'uniswapLiquidity' does not exist on type... Remove this comment to see the full error message
-  const poolDetails = useSelector(state => state.uniswapLiquidity.poolsDetails);
+  const poolDetails = useSelector(
+    (state: AppState) => state.uniswapLiquidity.poolsDetails
+  );
 
   const data = poolDetails[address];
   const dispatch = useDispatch();

@@ -1,6 +1,6 @@
 import { differenceInMinutes } from 'date-fns';
 import { getAccountLocal, saveAccountLocal } from './common';
-import { pickBy } from '@rainbow-me/helpers/utilities';
+import { pickBy } from '@/helpers/utilities';
 
 const REQUESTS = 'requests';
 

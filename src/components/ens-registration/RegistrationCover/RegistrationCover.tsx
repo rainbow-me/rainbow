@@ -7,22 +7,17 @@ import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
-import {
-  Box,
-  Cover,
-  Text,
-  useForegroundColor,
-} from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
+import { Box, Cover, Text, useForegroundColor } from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { UploadImageReturnData } from '@/handlers/pinata';
 import {
   useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -120,9 +115,11 @@ const RegistrationCover = ({
     onChangeImage: onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'header' });
-      setCoverUrl('');
       setCoverMetadata(undefined);
       setDisabled(false);
+      setTimeout(() => {
+        setCoverUrl('');
+      }, 100);
     },
     onUploadError: () => {
       onBlurField({ key: 'header', value: '' });
@@ -148,7 +145,7 @@ const RegistrationCover = ({
     return (
       <Box height="126px">
         <Skeleton animated>
-          <Box background="body" height="126px" />
+          <Box background="body (Deprecated)" height="126px" />
         </Skeleton>
       </Box>
     );
@@ -183,7 +180,12 @@ const RegistrationCover = ({
               })}
         >
           {(!coverUrl || isUploading || isLoadingImage) && (
-            <Text align="center" color="accent" size="18px" weight="heavy">
+            <Text
+              align="center"
+              color="accent"
+              size="18px / 27px (Deprecated)"
+              weight="heavy"
+            >
               􀣵{' '}
               {isUploading || isLoadingImage
                 ? lang.t('profiles.create.uploading')
@@ -191,7 +193,7 @@ const RegistrationCover = ({
             </Text>
           )}
         </Box>
-        {coverUrl && !isUploading && (
+        {!!coverUrl && !isUploading && (
           <Cover>
             <Box
               as={ImgixImage}

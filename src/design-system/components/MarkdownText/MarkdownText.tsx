@@ -31,9 +31,9 @@ const defaultProps: {
   paragraphSpace: Space;
   size: NonNullable<TextProps['size']>;
 } = {
-  listSpace: '19px',
-  paragraphSpace: '30px',
-  size: '16px',
+  listSpace: '19px (Deprecated)',
+  paragraphSpace: '30px (Deprecated)',
+  size: '16px / 22px (Deprecated)',
 };
 
 interface MarkdownStackContextObject {
@@ -118,7 +118,7 @@ function isNativeText(child: ReactNode) {
 export type MarkdownTextProps = {
   children: string;
   size?: TextProps['size'];
-  color?: TextProps['color'];
+  color: TextProps['color'];
   heading1Color?: TextProps['color'];
   heading2Color?: TextProps['color'];
   paragraphSpace: Space;

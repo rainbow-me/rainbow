@@ -7,10 +7,10 @@ import ChainBadge from '../coin-icon/ChainBadge';
 import { ContextMenuButton } from '../context-menu';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
-import { padding, position } from '@rainbow-me/styles';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import networkInfo from '@/helpers/networkInfo';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import { padding, position } from '@/styles';
+import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 
 const networkMenuItems = () => {
   return Object.values(networkInfo)
@@ -32,13 +32,14 @@ const androidNetworkMenuItems = () => {
     .map(netInfo => netInfo.name);
 };
 
-const NetworkSwitcher = ({
+const NetworkSwitcherv1 = ({
   colors,
   hideDivider,
   marginVertical = 12,
   marginHorizontal = 19,
   currentChainId,
   setCurrentChainId,
+  testID,
   prominent,
 }) => {
   const radialGradientProps = {
@@ -81,6 +82,7 @@ const NetworkSwitcher = ({
         menuTitle=""
         onPressAndroid={onPressAndroid}
         onPressMenuItem={handleOnPressMenuItem}
+        testID={`${testID}-${currentChainId}`}
       >
         <Row
           borderRadius={16}
@@ -119,7 +121,7 @@ const NetworkSwitcher = ({
                 network:
                   networkInfo[
                     ethereumUtils.getNetworkFromChainId(currentChainId)
-                  ].name,
+                  ]?.name,
               })}
             </Text>
           </Column>
@@ -140,4 +142,4 @@ const NetworkSwitcher = ({
   );
 };
 
-export default NetworkSwitcher;
+export default NetworkSwitcherv1;

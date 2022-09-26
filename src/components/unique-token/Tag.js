@@ -7,10 +7,10 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Inline } from '@rainbow-me/design-system';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
-import { magicMemo, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { Inline } from '@/design-system';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { magicMemo, showActionSheetWithOptions } from '@/utils';
 
 const HairlineSpace = '\u200a';
 
@@ -79,16 +79,18 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
 });
 
 const getNftTraitUrl = (
-  marketplaceName,
+  marketplaceId,
   collectionId,
   traitTitle,
   traitValue
 ) => {
-  switch (marketplaceName) {
-    case 'Stratos':
+  switch (marketplaceId) {
+    case 'stratos':
       return `https://stratosnft.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
-    case 'Quixotic':
-      return `https://quixotic.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
+    case 'quixotic':
+      return `https://qx.app/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
+    case 'trove':
+      return `https://trove.treasure.lol/collection/${collectionId}?trait%5B%5D=${traitTitle}%3A${traitValue}`;
     default:
       return `https://opensea.io/collection/${collectionId}?search[stringTraits][0][name]=${traitTitle}&search[stringTraits][0][values][0]=${traitValue}`;
   }
@@ -100,6 +102,7 @@ const Tag = ({
   slug,
   text,
   title,
+  marketplaceId,
   marketplaceName,
   maxValue,
   originalValue,
@@ -120,7 +123,7 @@ const Tag = ({
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnNftMarketplace) {
         const nftTraitUrl = getNftTraitUrl(
-          marketplaceName,
+          marketplaceId,
           slug,
           title,
           originalValue
@@ -130,7 +133,7 @@ const Tag = ({
         Linking.openURL(originalValue);
       }
     },
-    [slug, originalValue, marketplaceName, title]
+    [slug, originalValue, marketplaceId, title]
   );
 
   const onPressAndroid = useCallback(() => {
@@ -156,7 +159,7 @@ const Tag = ({
           viewTraitOnNftMarketplaceAction.actionTitle
         ) {
           const nftTraitUrl = getNftTraitUrl(
-            marketplaceName,
+            marketplaceId,
             slug,
             title,
             originalValue
@@ -176,7 +179,7 @@ const Tag = ({
     slug,
     title,
     originalValue,
-    marketplaceName,
+    marketplaceId,
     viewTraitOnNftMarketplaceAction.actionTitle,
   ]);
 
@@ -251,6 +254,7 @@ export default magicMemo(Tag, [
   'slug',
   'text',
   'title',
+  'marketplaceId',
   'marketplaceName',
   'maxValue',
   'originalValue',

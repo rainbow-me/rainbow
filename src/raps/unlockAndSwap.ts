@@ -12,12 +12,12 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
-import store from '@rainbow-me/redux/store';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import { add } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { isNativeAsset } from '@/handlers/assets';
+import { estimateSwapGasLimit } from '@/handlers/uniswap';
+import store from '@/redux/store';
+import { ETH_ADDRESS } from '@/references';
+import { add } from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters

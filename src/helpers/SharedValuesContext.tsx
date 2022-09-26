@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import { useCoinListEdited } from '@rainbow-me/hooks';
+import { useCoinListEdited } from '@/hooks';
 
 const Context = React.createContext<
   | {

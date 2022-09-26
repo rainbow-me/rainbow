@@ -3,9 +3,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
 
-interface CustomBackgroundProps extends BottomSheetBackgroundProps {}
-
-const CustomBackground: React.FC<CustomBackgroundProps> = ({ style }) => {
+const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({ style }) => {
   const { colors } = useTheme();
   const containerStyle = useMemo(
     () => [

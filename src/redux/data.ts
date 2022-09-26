@@ -37,8 +37,8 @@ import {
   ZerionAsset,
   ZerionAssetFallback,
   ZerionTransaction,
-} from '@rainbow-me/entities';
-import appEvents from '@rainbow-me/handlers/appEvents';
+} from '@/entities';
+import appEvents from '@/handlers/appEvents';
 import {
   getAccountAssetsData,
   getLocalPendingTransactions,
@@ -47,16 +47,16 @@ import {
   saveAccountEmptyState,
   saveLocalPendingTransactions,
   saveLocalTransactions,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import {
   getProviderForNetwork,
   isL2Network,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { Navigation } from '@rainbow-me/navigation';
-import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
-import { Network } from '@rainbow-me/networkTypes';
+} from '@/handlers/web3';
+import WalletTypes from '@/helpers/walletTypes';
+import { Navigation } from '@/navigation';
+import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
+import { Network } from '@/helpers/networkTypes';
 import {
   getTitle,
   getTransactionLabel,
@@ -64,23 +64,21 @@ import {
   parseAsset,
   parseNewTransaction,
   parseTransactions,
-} from '@rainbow-me/parsers';
-import { setHiddenCoins } from '@rainbow-me/redux/editOptions';
+} from '@/parsers';
+import { setHiddenCoins } from '@/redux/editOptions';
 import {
   coingeckoIdsFallback,
   DPI_ADDRESS,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   shitcoins,
-} from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { delay, isZero, pickBy } from '@rainbow-me/utilities';
-import {
-  ethereumUtils,
-  isLowerCaseMatch,
-  TokensListenedCache,
-} from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/references';
+import Routes from '@/navigation/routesNames';
+import { delay, isZero, pickBy } from '@/helpers/utilities';
+import { ethereumUtils, isLowerCaseMatch, TokensListenedCache } from '@/utils';
+import logger from '@/utils/logger';
+import { TransactionNotificationData } from '@/notifications/types';
+import { getConfirmedState } from '@/helpers/transactions';
 
 const storage = new MMKV();
 
@@ -635,7 +633,7 @@ const genericAssetsFallback = () => async (
 
   if (!isEmpty(prices)) {
     Object.keys(prices).forEach(key => {
-      for (let uniqueAsset of allAssetsUnique) {
+      for (const uniqueAsset of allAssetsUnique) {
         if (uniqueAsset.coingecko_id.toLowerCase() === key.toLowerCase()) {
           uniqueAsset.price = {
             changed_at: prices[key].last_updated_at,
@@ -1012,9 +1010,9 @@ export const transactionsRemoved = (
  */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
-  append: boolean = false,
-  change: boolean = false,
-  removed: boolean = false,
+  append = false,
+  change = false,
+  removed = false,
   assetsNetwork: Network | null = null
 ) => (
   dispatch: ThunkDispatch<
@@ -1135,7 +1133,7 @@ export function scheduleActionOnAssetReceived(
  */
 export const assetPricesReceived = (
   message: AssetPricesReceivedMessage | undefined,
-  fromFallback: boolean = false
+  fromFallback = false
 ) => (
   dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
   getState: AppGetState
@@ -1162,7 +1160,7 @@ export const assetPricesReceived = (
 
     const assetAddresses = Object.keys(parsedAssets);
 
-    for (let address of assetAddresses) {
+    for (const address of assetAddresses) {
       callbacksOnAssetReceived[address.toLowerCase()]?.(parsedAssets[address]);
       callbacksOnAssetReceived[address.toLowerCase()] = undefined;
     }
@@ -1249,7 +1247,7 @@ export const assetPricesChanged = (
 export const dataAddNewTransaction = (
   txDetails: NewTransactionOrAddCashTransaction,
   accountAddressToUpdate: string | null = null,
-  disableTxnWatcher: boolean = false,
+  disableTxnWatcher = false,
   provider: StaticJsonRpcProvider | null = null
 ) => async (
   dispatch: ThunkDispatch<
@@ -1310,30 +1308,6 @@ export const dataAddNewTransaction = (
 };
 
 /**
- * Returns the `TransactionStatus` that represents completion for a given
- * transaction type.
- *
- * @param type The transaction type.
- * @returns The confirmed status.
- */
-const getConfirmedState = (type: TransactionType): TransactionStatus => {
-  switch (type) {
-    case TransactionTypes.authorize:
-      return TransactionStatus.approved;
-    case TransactionTypes.deposit:
-      return TransactionStatus.deposited;
-    case TransactionTypes.withdraw:
-      return TransactionStatus.withdrew;
-    case TransactionTypes.receive:
-      return TransactionStatus.received;
-    case TransactionTypes.purchase:
-      return TransactionStatus.purchased;
-    default:
-      return TransactionStatus.sent;
-  }
-};
-
-/**
  * Watches pending transactions and updates state and account local storage
  * when new data is available.
  *
@@ -1344,7 +1318,7 @@ const getConfirmedState = (type: TransactionType): TransactionStatus => {
  */
 export const dataWatchPendingTransactions = (
   provider: StaticJsonRpcProvider | null = null,
-  currentNonce: number = -1
+  currentNonce = -1
 ) => async (
   dispatch: ThunkDispatch<
     AppState,

@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { EthereumAddress } from '@rainbow-me/entities';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { AppState } from '@rainbow-me/redux/store';
-import logger from 'logger';
+import { EthereumAddress } from '@/entities';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { Network } from '@/helpers/networkTypes';
+import { AppState } from '@/redux/store';
+import logger from '@/utils/logger';
 
 export default function useCurrentNonce(
   accountAddress: EthereumAddress,

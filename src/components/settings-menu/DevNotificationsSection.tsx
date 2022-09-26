@@ -1,60 +1,28 @@
-import messaging from '@react-native-firebase/messaging';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { MiniButton } from '../buttons';
 import { ListFooter } from '../list';
-import { Box, Columns, Text } from '@rainbow-me/design-system';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
-import { useTheme } from '@rainbow-me/theme';
-import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
-
-const topics = [
-  'sent',
-  'received',
-  'purchased',
-  'sold',
-  'minted',
-  'swapped',
-  'approvals',
-  'other',
-];
-
-const firebaseSubscribeTopics = async (
-  type: string,
-  chainId: number,
-  address: string
-) => {
-  topics.forEach(topic => {
-    messaging().subscribeToTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
-  });
-};
-
-const firebaseUnsubscribeTopics = async (
-  type: string,
-  chainId: number,
-  address: string
-) => {
-  topics.forEach(topic => {
-    messaging().unsubscribeFromTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
-  });
-};
+import {
+  subscribeToTransactionTopics,
+  unsubscribeFromTransactionTopics,
+} from '@/notifications/subscriptions';
+import { Box, Columns, Text } from '@/design-system';
+import { useAccountSettings, useWallets } from '@/hooks';
+import { useTheme } from '@/theme';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 const DevNotificationsSection = () => {
   const { colors } = useTheme();
   const { wallets } = useWallets();
   const { chainId } = useAccountSettings();
   const [loading, setLoading] = useState<boolean>(true);
-  const walletIDs = Object.keys(wallets);
-  let allWallets: any[] = useMemo(() => [], []);
+  const walletIDs = Object.keys(wallets!);
+  const allWallets: any[] = useMemo(() => [], []);
   const [notificationState, setNotificationState] = useState<any>({});
 
   useEffect(() => {
     walletIDs.forEach(key => {
-      const wallet = wallets[key];
+      const wallet = wallets![key];
 
       wallet.addresses.forEach((item: { address: string }) => {
         allWallets.push(item);
@@ -78,8 +46,8 @@ const DevNotificationsSection = () => {
       [address]: { subscription: 'off', tx: state[address].tx },
     }));
 
-    firebaseUnsubscribeTopics('watcher', chainId, address);
-    firebaseUnsubscribeTopics('owner', chainId, address);
+    unsubscribeFromTransactionTopics('watcher', chainId, address);
+    unsubscribeFromTransactionTopics('owner', chainId, address);
   };
 
   const unsubscribeAll = async (type: string) => {
@@ -89,7 +57,7 @@ const DevNotificationsSection = () => {
         [wallet.address]: { subscription: 'off', tx: state[wallet.address].tx },
       }));
 
-      firebaseUnsubscribeTopics(type, chainId, wallet.address);
+      unsubscribeFromTransactionTopics(type, chainId, wallet.address);
     });
   };
 
@@ -100,11 +68,11 @@ const DevNotificationsSection = () => {
     }));
 
     if (type === 'owner') {
-      firebaseUnsubscribeTopics('watcher', chainId, address);
-      firebaseSubscribeTopics('owner', chainId, address);
+      unsubscribeFromTransactionTopics('watcher', chainId, address);
+      subscribeToTransactionTopics('owner', chainId, address);
     } else {
-      firebaseUnsubscribeTopics('owner', chainId, address);
-      firebaseSubscribeTopics('watcher', chainId, address);
+      unsubscribeFromTransactionTopics('owner', chainId, address);
+      subscribeToTransactionTopics('watcher', chainId, address);
     }
   };
 
@@ -119,20 +87,24 @@ const DevNotificationsSection = () => {
       }));
 
       if (type === 'owner') {
-        firebaseUnsubscribeTopics('watcher', chainId, wallet.address);
-        firebaseSubscribeTopics('owner', chainId, wallet.address);
+        unsubscribeFromTransactionTopics('watcher', chainId, wallet.address);
+        subscribeToTransactionTopics('owner', chainId, wallet.address);
       } else {
-        firebaseUnsubscribeTopics('owner', chainId, wallet.address);
-        firebaseSubscribeTopics('watcher', chainId, wallet.address);
+        unsubscribeFromTransactionTopics('owner', chainId, wallet.address);
+        subscribeToTransactionTopics('watcher', chainId, wallet.address);
       }
     });
   };
 
   return (
     <ScrollView>
-      <Box paddingHorizontal="19px" paddingTop="19px">
-        <Box paddingBottom="19px">
-          <Text size="20px" weight="bold">
+      <Box paddingHorizontal="19px (Deprecated)" paddingTop="19px (Deprecated)">
+        <Box paddingBottom="19px (Deprecated)">
+          <Text
+            color="primary (Deprecated)"
+            size="20px / 24px (Deprecated)"
+            weight="bold"
+          >
             Notifications Debug
           </Text>
         </Box>
@@ -142,7 +114,7 @@ const DevNotificationsSection = () => {
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
-              color="secondary60"
+              color="dark"
               hideShadow
               onPress={unsubscribeAll}
             >
@@ -152,7 +124,7 @@ const DevNotificationsSection = () => {
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
-              color="secondary60"
+              color="dark"
               hideShadow
               onPress={() => subscribeAll('watcher')}
             >
@@ -162,7 +134,7 @@ const DevNotificationsSection = () => {
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
-              color="secondary60"
+              color="dark"
               hideShadow
               onPress={() => subscribeAll('owner')}
             >
@@ -171,7 +143,10 @@ const DevNotificationsSection = () => {
           </Columns>
         )}
       </Box>
-      <Box paddingBottom="19px" paddingHorizontal="19px">
+      <Box
+        paddingBottom="19px (Deprecated)"
+        paddingHorizontal="19px (Deprecated)"
+      >
         {!loading &&
           allWallets.map(wallet => {
             const isOff =
@@ -196,16 +171,23 @@ const DevNotificationsSection = () => {
                   />
                 </Box>
                 <Box>
-                  <Text size="18px" weight="bold">
+                  <Text
+                    color="primary (Deprecated)"
+                    size="18px / 27px (Deprecated)"
+                    weight="bold"
+                  >
                     {wallet.label || wallet.color}
                   </Text>
                 </Box>
-                <Box paddingTop="15px">
-                  <Text color="secondary60" size="16px">
+                <Box paddingTop="15px (Deprecated)">
+                  <Text
+                    color="secondary60 (Deprecated)"
+                    size="16px / 22px (Deprecated)"
+                  >
                     {formatAddressForDisplay(wallet.address)}
                   </Text>
                 </Box>
-                <Box paddingTop="15px">
+                <Box paddingTop="15px (Deprecated)">
                   <Columns space="8px">
                     {/*
                     // @ts-expect-error */}
@@ -213,7 +195,7 @@ const DevNotificationsSection = () => {
                       backgroundColor={
                         isOff ? colors.appleBlue : colors.blueGreyDark30
                       }
-                      color={isOff ? 'white' : 'secondary60'}
+                      color={isOff ? 'white' : 'dark'}
                       hideShadow
                       onPress={() => unsubscribe(wallet.address)}
                     >
@@ -225,7 +207,7 @@ const DevNotificationsSection = () => {
                       backgroundColor={
                         isWatcher ? colors.appleBlue : colors.blueGreyDark30
                       }
-                      color={isWatcher ? 'white' : 'secondary60'}
+                      color={isWatcher ? 'white' : 'dark'}
                       hideShadow
                       onPress={() => subscribe('watcher', wallet.address)}
                     >
@@ -237,7 +219,7 @@ const DevNotificationsSection = () => {
                       backgroundColor={
                         isOwner ? colors.appleBlue : colors.blueGreyDark30
                       }
-                      color={isOwner ? 'white' : 'secondary60'}
+                      color={isOwner ? 'white' : 'dark'}
                       hideShadow
                       onPress={() => subscribe('owner', wallet.address)}
                     >

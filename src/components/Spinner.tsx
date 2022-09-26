@@ -1,13 +1,12 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../theme/ThemeContext';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
-import { ImgixImage } from '@rainbow-me/images';
-import { position } from '@rainbow-me/styles';
+import { ImgixImage } from '@/components/images';
+import { position } from '@/styles';
 
 type SpinnerProps = {
   color?: string;

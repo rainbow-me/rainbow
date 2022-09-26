@@ -1,18 +1,15 @@
 import { useFocusEffect } from '@react-navigation/native';
+import { useMutation } from '@tanstack/react-query';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import { useMutation } from 'react-query';
 import { useImagePicker } from '.';
-import { UniqueAsset } from '@rainbow-me/entities';
-import {
-  uploadImage,
-  UploadImageReturnData,
-} from '@rainbow-me/handlers/pinata';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { UniqueAsset } from '@/entities';
+import { uploadImage, UploadImageReturnData } from '@/handlers/pinata';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { showActionSheetWithOptions } from '@/utils';
 
 type Action = 'library' | 'nft';
 
@@ -89,7 +86,7 @@ export default function useSelectImageMenu({
   const { navigate, dangerouslyGetParent } = useNavigation();
   const { openPicker } = useImagePicker();
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(
-    'ensImageUpload',
+    ['ensImageUpload'],
     uploadImage
   );
 
@@ -167,7 +164,7 @@ export default function useSelectImageMenu({
 
   const handleSelectNFT = useCallback(() => {
     navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
-      onSelect: (asset: any) => onChangeImage?.({ asset }),
+      onSelect: (asset: UniqueAsset) => onChangeImage?.({ asset }),
       springDamping: 1,
       topOffset: 0,
     });
@@ -176,6 +173,7 @@ export default function useSelectImageMenu({
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'library') {
+        isRemoved.current = false;
         handleSelectImage();
       }
       if (actionKey === 'nft') {
@@ -192,14 +190,15 @@ export default function useSelectImageMenu({
   const handleAndroidPress = useCallback(() => {
     const actionSheetOptions = menuItems
       .map(item => items[item]?.actionTitle)
-      .filter(Boolean) as any;
+      .filter(Boolean);
 
     showActionSheetWithOptions(
       {
         options: actionSheetOptions,
       },
-      async (buttonIndex: Number) => {
+      async (buttonIndex: number) => {
         if (buttonIndex === 0) {
+          isRemoved.current = false;
           handleSelectImage();
         } else if (buttonIndex === 1) {
           handleSelectNFT();

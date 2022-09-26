@@ -29,17 +29,17 @@ import {
 } from './withdrawFromCompound';
 import { analytics } from '@/analytics';
 import { isHexStringIgnorePrefix } from '@/handlers/web3';
-import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
+import { Asset, EthereumAddress, Records } from '@/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
   estimateENSRenewGasLimit,
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
-} from '@rainbow-me/handlers/ens';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import logger from 'logger';
+} from '@/handlers/ens';
+import { ExchangeModalTypes } from '@/helpers';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import logger from '@/utils/logger';
 
 const {
   commitENS,
@@ -47,6 +47,7 @@ const {
   multicallENS,
   setAddrENS,
   reclaimENS,
+  setContenthashENS,
   setTextENS,
   setNameENS,
   renewENS,
@@ -63,6 +64,7 @@ export enum RapActionType {
   renewENS = 'renewENS',
   setAddrENS = 'setAddrENS',
   reclaimENS = 'reclaimENS',
+  setContenthashENS = 'setContenthashENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
 }
@@ -100,12 +102,12 @@ export interface UnlockActionParameters {
 
 export interface SwapActionParameters {
   inputAmount: string;
-  nonce: number;
+  nonce?: number;
   outputAmount: string;
   tradeDetails: Quote;
   permit?: boolean;
   flashbots?: boolean;
-  provider: Provider;
+  provider?: Provider;
   chainId?: number;
   requiresApprove?: boolean;
 }
@@ -178,6 +180,7 @@ export const RapActionTypes = {
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
   renewENS: 'renewENS' as RapActionType,
   setAddrENS: 'setAddrENS' as RapActionType,
+  setContenthashENS: 'setContenthashENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
@@ -297,6 +300,8 @@ const findENSActionByType = (type: RapActionType) => {
       return multicallENS;
     case RapActionTypes.setAddrENS:
       return setAddrENS;
+    case RapActionTypes.setContenthashENS:
+      return setContenthashENS;
     case RapActionTypes.setTextENS:
       return setTextENS;
     case RapActionTypes.setNameENS:
@@ -395,6 +400,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.setNameENS:
     case RapActionTypes.setAddrENS:
     case RapActionTypes.reclaimENS:
+    case RapActionTypes.setContenthashENS:
     case RapActionTypes.setTextENS:
     case RapActionTypes.setRecordsENS:
     case RapActionTypes.transferENS:

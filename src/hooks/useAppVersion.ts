@@ -1,7 +1,10 @@
-import codePush from 'react-native-code-push';
+import codePush, { LocalPackage } from 'react-native-code-push';
 import VersionNumber from 'react-native-version-number';
 
-function formatAppVersion(appVersion = VersionNumber.appVersion, update: any) {
+function formatAppVersion(
+  appVersion = VersionNumber.appVersion,
+  update: LocalPackage
+) {
   let version = `${appVersion} (${VersionNumber.buildVersion})`;
   if (update) {
     version = version + ` rev.${update.label.substring(1)}`;

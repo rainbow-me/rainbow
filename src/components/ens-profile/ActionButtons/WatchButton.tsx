@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
 import ActionButton from './ActionButton';
-import { useWatchWallet } from '@rainbow-me/hooks';
+import { useWatchWallet } from '@/hooks';
 
 export default function WatchButton({
   address,
@@ -62,7 +62,7 @@ export default function WatchButton({
       )}
     >
       <ActionButton
-        color="action"
+        color="action (Deprecated)"
         onPress={!optimisticIsWatching ? handlePressWatch : () => null}
         paddingHorizontal={isWatching ? { custom: 11.25 } : undefined}
         testID="profile-sheet-watch-button"

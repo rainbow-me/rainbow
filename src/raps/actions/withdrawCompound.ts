@@ -6,25 +6,22 @@ import {
   RapExchangeActionParameters,
   SwapActionParameters,
 } from '../common';
-import {
-  ProtocolType,
-  TransactionStatus,
-  TransactionType,
-} from '@rainbow-me/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
-import { TypeSpecificParameters } from '@rainbow-me/redux/swap';
+import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
+import { toHex } from '@/handlers/web3';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
+import { TypeSpecificParameters } from '@/redux/swap';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
   ETH_ADDRESS,
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '@rainbow-me/references';
-import { convertAmountToRawAmount, isEqual } from '@rainbow-me/utilities';
-import { gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/references';
+import { convertAmountToRawAmount, isEqual } from '@/helpers/utilities';
+import { gasUtils } from '@/utils';
+import logger from '@/utils/logger';
+import { parseGasParamsForTransaction } from '@/parsers';
 
 const CTOKEN_DECIMALS = 8;
 
@@ -57,9 +54,9 @@ const withdrawCompound = async (
   logger.log(`[${actionName}] is max`, isMax);
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-  let maxPriorityFeePerGas =
-    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
+  let maxFeePerGas = gasParams.maxFeePerGas;
+  let maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
   if (!maxFeePerGas) {
     maxFeePerGas = gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
@@ -84,8 +81,8 @@ const withdrawCompound = async (
 
   const transactionParams = {
     gasLimit: ethUnits.basic_withdrawal,
-    maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
 

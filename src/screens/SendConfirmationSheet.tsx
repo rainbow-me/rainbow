@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -29,38 +29,30 @@ import ENSCircleIcon from '../components/icons/svg/ENSCircleIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
-import { Text as OldText, TruncatedText } from '../components/text';
+import { Text as OldText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
 import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
-import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { Box, Heading, Inset, Stack, Text } from '@/design-system';
+import { AssetTypes } from '@/entities';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
-} from '@rainbow-me/handlers/ens';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { estimateGasLimit } from '@rainbow-me/handlers/web3';
+} from '@/handlers/ens';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
-import {
-  add,
-  convertAmountToNativeDisplay,
-} from '@rainbow-me/helpers/utilities';
-import {
-  isENSAddressFormat,
-  isValidDomainFormat,
-} from '@rainbow-me/helpers/validators';
+} from '@/helpers/emojiHandler';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -71,14 +63,14 @@ import {
   useGas,
   useUserAccounts,
   useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
-import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -105,7 +97,10 @@ export type Checkbox = {
 };
 
 const hasClearProfileInfo = (ensProfile?: ENSProfile) =>
-  isEmpty({ ...ensProfile?.data?.records, ...ensProfile?.data?.coinAddresses });
+  isEmpty({
+    ...ensProfile?.data?.records,
+    ...ensProfile?.data?.coinAddresses,
+  }) && !ensProfile?.data?.contenthash;
 const doesNamePointToRecipient = (
   ensProfile?: ENSProfile,
   recipientAddress?: string
@@ -116,7 +111,7 @@ const isRegistrant = (ensProfile?: ENSProfile) => ensProfile?.isRegistrant;
 const gasOffset = 120;
 const checkboxOffset = 44;
 
-function getDefaultCheckboxes({
+export function getDefaultCheckboxes({
   isENS,
   ensProfile,
   network,
@@ -176,41 +171,22 @@ function getDefaultCheckboxes({
 }
 
 export function getSheetHeight({
-  asset,
-  ensProfile,
-  profilesEnabled,
   shouldShowChecks,
   isL2,
-  toAddress,
+  isENS,
+  checkboxes,
 }: {
-  asset?: UniqueAsset;
-  ensProfile?: ENSProfile;
-  profilesEnabled: boolean;
   shouldShowChecks: boolean;
   isL2: boolean;
-  toAddress: string;
+  isENS: boolean;
+  checkboxes: Checkbox[];
 }) {
-  let height = android ? 440 : 377;
-  if (shouldShowChecks) height = height + 104;
-  if (isL2) height = height + 59;
-  if (profilesEnabled && asset && getUniqueTokenType(asset) === 'ENS') {
-    height = height + gasOffset;
-    if (!hasClearProfileInfo(ensProfile) && ensProfile?.isOwner) {
-      height = height + checkboxOffset;
-    }
-    if (
-      !doesNamePointToRecipient(ensProfile, toAddress) &&
-      ensProfile?.isOwner
-    ) {
-      height = height + checkboxOffset;
-    }
-    if (
-      isRegistrant(ensProfile) &&
-      ensProfile?.data?.owner?.address?.toLowerCase() !==
-        toAddress.toLowerCase()
-    ) {
-      height = height + checkboxOffset;
-    }
+  let height = android ? 400 : 377;
+  if (isL2) height = height + 70;
+  if (shouldShowChecks) height = height + 80;
+  if (isENS) {
+    height = height + gasOffset + 20;
+    height = height + checkboxes?.length * checkboxOffset || 0;
   }
   return height;
 }
@@ -259,7 +235,7 @@ export default function SendConfirmationSheet() {
     width: deviceWidth,
   } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { contacts } = useContacts();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -307,7 +283,6 @@ export default function SendConfirmationSheet() {
     if (!isSendingToUserAccount) {
       let sends = 0;
       let sendsCurrentNetwork = 0;
-      // @ts-expect-error From JavaScript hook
       transactions.forEach(tx => {
         if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
           sends++;
@@ -358,6 +333,9 @@ export default function SendConfirmationSheet() {
 
       if (sendENSOptions['clear-records']) {
         let records = Object.keys({
+          ...(ensProfile?.data?.contenthash
+            ? { contenthash: ensProfile?.data?.contenthash }
+            : {}),
           ...(ensProfile?.data?.coinAddresses ?? {}),
           ...(ensProfile?.data?.records ?? {}),
         }).reduce((records, recordKey) => {
@@ -412,6 +390,7 @@ export default function SendConfirmationSheet() {
     asset,
     checkboxes,
     ensProfile?.data?.coinAddresses,
+    ensProfile?.data?.contenthash,
     ensProfile?.data?.records,
     isENS,
     toAddress,
@@ -545,20 +524,12 @@ export default function SendConfirmationSheet() {
     true
   );
 
-  let contentHeight =
-    getSheetHeight({
-      ensProfile,
-      isL2,
-      profilesEnabled,
-      shouldShowChecks,
-      toAddress,
-    }) - 30;
-  if (shouldShowChecks) contentHeight = contentHeight + 150;
-  if (isL2) contentHeight = contentHeight + 60;
-  if (isENS) {
-    contentHeight =
-      contentHeight + checkboxes.length * checkboxOffset + gasOffset;
-  }
+  const contentHeight = getSheetHeight({
+    checkboxes,
+    isENS,
+    isL2,
+    shouldShowChecks,
+  });
 
   return (
     <Container
@@ -579,28 +550,29 @@ export default function SendConfirmationSheet() {
         <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
-              <Column width={deviceWidth - 117}>
-                <TruncatedText
-                  letterSpacing="roundedTightest"
-                  size="bigger"
+              <Column justify="center" width={deviceWidth - 117}>
+                <Heading
+                  numberOfLines={1}
+                  color="primary (Deprecated)"
+                  size="26px / 30px (Deprecated)"
                   weight="heavy"
                 >
                   {isNft ? asset?.name : nativeDisplayAmount}
-                </TruncatedText>
-
-                <Row marginTop={android ? -16 : 0} paddingTop={3}>
-                  <OldText
-                    color={
-                      isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color
-                    }
-                    letterSpacing="roundedMedium"
-                    size="lmedium"
+                </Heading>
+                <Row marginTop={12}>
+                  <Text
+                    color={{
+                      custom: isNft
+                        ? colors.alpha(colors.blueGreyDark, 0.6)
+                        : color,
+                    }}
+                    size="16px / 22px (Deprecated)"
                     weight={isNft ? 'bold' : 'heavy'}
                   >
                     {isNft
                       ? asset.familyName
                       : `${amountDetails.assetAmount} ${asset.symbol}`}
-                  </OldText>
+                  </Text>
                 </Row>
               </Column>
               <Column align="end" flex={1} justify="center">
@@ -650,16 +622,17 @@ export default function SendConfirmationSheet() {
               </Column>
             </Row>
             <Row marginBottom={android ? 15 : 30}>
-              <Column flex={1}>
+              <Column flex={1} justify="center">
                 <Row width={android ? '80%' : '90%'}>
-                  <TruncatedText
-                    letterSpacing="roundedTight"
-                    size="bigger"
+                  <Heading
+                    numberOfLines={1}
+                    color="primary (Deprecated)"
+                    size="26px / 30px (Deprecated)"
                     weight="heavy"
                   >
                     {avatarName}
-                  </TruncatedText>
-                  <Centered marginTop={android ? 8 : 0}>
+                  </Heading>
+                  <Centered marginLeft={4}>
                     <ContactRowInfoButton
                       item={{
                         address: toAddress,
@@ -668,24 +641,25 @@ export default function SendConfirmationSheet() {
                       network={network}
                       scaleTo={0.75}
                     >
-                      <OldText
-                        color={colors.alpha(
-                          colors.blueGreyDark,
-                          isDarkMode ? 0.5 : 0.6
-                        )}
-                        lineHeight={31}
-                        size="larger"
+                      <Text
+                        color={{
+                          custom: colors.alpha(
+                            colors.blueGreyDark,
+                            isDarkMode ? 0.5 : 0.6
+                          ),
+                        }}
+                        size="20px / 24px (Deprecated)"
                         weight="heavy"
                       >
-                        {' 􀍡'}
-                      </OldText>
+                        􀍡
+                      </Text>
                     </ContactRowInfoButton>
                   </Centered>
                 </Row>
-                <Row marginTop={android ? -18 : 0} paddingTop={3}>
-                  <OldText
-                    color={colors.alpha(colors.blueGreyDark, 0.6)}
-                    size="lmedium"
+                <Row marginTop={12}>
+                  <Text
+                    color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
+                    size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
                     {isSendingToUserAccount
@@ -693,7 +667,7 @@ export default function SendConfirmationSheet() {
                       : alreadySentTransactionsTotal === 0
                       ? `First time send`
                       : `${alreadySentTransactionsTotal} previous sends`}
-                  </OldText>
+                  </Text>
                 </Row>
               </Column>
               <Column align="end" justify="center">
@@ -712,8 +686,8 @@ export default function SendConfirmationSheet() {
             <Divider color={colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {(isL2 || isENS || shouldShowChecks) && (
-            <Inset bottom="30px" horizontal="19px">
-              <Stack space="19px">
+            <Inset bottom="30px (Deprecated)" horizontal="19px (Deprecated)">
+              <Stack space="19px (Deprecated)">
                 {isL2 && (
                   <Fragment>
                     {/* @ts-expect-error JavaScript component */}
@@ -737,7 +711,11 @@ export default function SendConfirmationSheet() {
                   >
                     <Callout
                       after={
-                        <Text color="secondary30" weight="heavy">
+                        <Text
+                          color="secondary30 (Deprecated)"
+                          size="16px / 22px (Deprecated)"
+                          weight="heavy"
+                        >
                           􀅵
                         </Text>
                       }

@@ -6,18 +6,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountSettings from './useAccountSettings';
 import { useGenericAssets } from './useGenericAsset';
-import { compoundClient } from '@rainbow-me/apollo/client';
-import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
-import { AssetTypes } from '@rainbow-me/entities';
-import { multiply } from '@rainbow-me/helpers/utilities';
-import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
-import {
-  CDAI_CONTRACT,
-  DAI_ADDRESS,
-  ETH_ADDRESS,
-} from '@rainbow-me/references';
-import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
+import { compoundClientDeprecated } from '@/apollo/client';
+import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@/apollo/queries';
+import { AssetTypes } from '@/entities';
+import { multiply } from '@/helpers/utilities';
+import { parseAssetName, parseAssetSymbol } from '@/parsers';
+import { emitAssetRequest } from '@/redux/explorer';
+import { AppState } from '@/redux/store';
+import { CDAI_CONTRACT, DAI_ADDRESS, ETH_ADDRESS } from '@/references';
+import { ethereumUtils, getTokenMetadata } from '@/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
 
@@ -94,7 +91,7 @@ function usePersistentBackupSavings(accountAddress: any, network: any) {
   return useMMKVObject('savings-' + accountAddress + network);
 }
 
-export default function useSavingsAccount(includeDefaultDai: any) {
+export default function useSavingsAccount(includeDefaultDai: boolean) {
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
@@ -105,14 +102,13 @@ export default function useSavingsAccount(includeDefaultDai: any) {
   const hasAccountAddress = !!accountAddress;
 
   const shouldRefetchSavings = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-    ({ data: { shouldRefetchSavings } }) => shouldRefetchSavings
+    ({ data: { shouldRefetchSavings } }: AppState) => shouldRefetchSavings
   );
 
   const { data, error, loading, refetch: refetchSavings } = useQuery(
     COMPOUND_ACCOUNT_AND_MARKET_QUERY,
     {
-      client: compoundClient,
+      client: compoundClientDeprecated,
       pollInterval: COMPOUND_QUERY_INTERVAL,
       skip: !hasAccountAddress,
       variables: { id: accountAddress?.toLowerCase() },

@@ -37,14 +37,14 @@ import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { EthereumAddress } from '@rainbow-me/entities';
-import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
+import { EthereumAddress } from '@/entities';
+import AesEncryptor from '@/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   authenticateWithPINAndCreateIfNeeded,
   getExistingPIN,
-} from '@rainbow-me/handlers/authentication';
-import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/authentication';
+import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
@@ -52,16 +52,16 @@ import {
   isValidBluetoothDeviceId,
   isValidMnemonic,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import { createSignature } from '@rainbow-me/helpers/signingWallet';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
-import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import store from '@rainbow-me/redux/store';
-import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/handlers/web3';
+import { createSignature } from '@/helpers/signingWallet';
+import showWalletErrorAlert from '@/helpers/support';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { EthereumWalletType } from '@/helpers/walletTypes';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import store from '@/redux/store';
+import { setIsWalletLoading } from '@/redux/wallets';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 const encryptor = new AesEncryptor();
 
@@ -591,18 +591,23 @@ export const createWallet = async (
   seed: null | EthereumSeed = null,
   color: null | number = null,
   name: null | string = null,
-  overwrite: boolean = false,
+  overwrite = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent: boolean = false
+  silent: boolean = false,
+  clearCallbackOnStartCreation: boolean = false
 ): Promise<null | EthereumWallet> => {
+  if (clearCallbackOnStartCreation) {
+    callbackAfterSeeds?.();
+    callbackAfterSeeds = null;
+  }
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
   if (!seed) {
     logger.sentry('Generating a new seed phrase');
   }
   const walletSeed = seed || generateMnemonic();
-  let addresses: RainbowAccount[] = [];
+  const addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
 
@@ -788,9 +793,9 @@ export const createWallet = async (
       logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
       let lookup = true;
-      // Starting on index 1, we are gonna hit etherscan API and check the tx history
+      // Starting on index 1, we are gonna hit an API and check the tx history
       // for each account. If there's history we add it to the wallet.
-      //(We stop once we find the first one with no history)
+      // (We stop once we find the first one with no history)
       while (lookup) {
         let nextWallet: any = null;
         if (isHardwareWallet) {
@@ -1304,7 +1309,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     }
 
     const selectedWalletData = await getSelectedWallet();
-    let wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
+    const wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
     if (!wallet) {
       return null;
     }

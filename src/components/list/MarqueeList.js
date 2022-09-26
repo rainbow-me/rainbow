@@ -15,7 +15,7 @@ import Animated, {
   useSharedValue,
   withDecay,
 } from 'react-native-reanimated';
-import { withSpeed } from '@rainbow-me/utils';
+import { withSpeed } from '@/utils';
 
 const DECCELERATION = 0.998;
 

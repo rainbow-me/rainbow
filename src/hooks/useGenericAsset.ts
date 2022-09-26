@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { AppState } from '@/redux/store';
 
-const genericAssetsSelector = (state: any) => state.data.genericAssets;
-const addressSelector = (_: any, address: any) => address;
-const addressesSelector = (_: any, addresses: any) => addresses;
+const genericAssetsSelector = (state: AppState) => state.data.genericAssets;
+const addressSelector = (_: any, address: string) => address;
+const addressesSelector = (_: any, addresses: string[]) => addresses;
 
 const makeGenericAssetSelector = () =>
   createSelector(
@@ -25,12 +26,14 @@ const genericManyAssetsSelector = createSelector(
 
 export default function useGenericAsset(address: any) {
   const selectGenericAsset = useMemo(makeGenericAssetSelector, []);
-  const asset = useSelector(state => selectGenericAsset(state, address));
+  const asset = useSelector((state: AppState) =>
+    selectGenericAsset(state, address)
+  );
   return asset;
 }
 
 export function useGenericAssets(addresses: any) {
-  const assets = useSelector(state =>
+  const assets = useSelector((state: AppState) =>
     genericManyAssetsSelector(state, addresses)
   );
   return assets;
