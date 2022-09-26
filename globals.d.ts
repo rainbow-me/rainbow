@@ -73,6 +73,7 @@ declare module 'react-native-dotenv' {
   export const SIMPLEHASH_API_KEY: string;
   export const RAINBOW_MASTER_KEY: string;
   export const REACT_APP_SEGMENT_API_WRITE_KEY: string;
+  export const REACT_APP_SEGMENT_API_DEV_WRITE_KEY: string;
   export const TEST_SEEDS: string;
   export const DEV_PKEY: string;
   export const RAINBOW_TOKEN_LIST_URL: string;

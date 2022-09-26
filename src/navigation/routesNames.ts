@@ -77,7 +77,7 @@ const Routes = {
   WELCOME_SCREEN: 'WelcomeScreen',
   WYRE_WEBVIEW: 'WyreWebview',
   WYRE_WEBVIEW_NAVIGATOR: 'WyreWebviewNavigator',
-};
+} as const;
 
 export const NATIVE_ROUTES = [
   Routes.RECEIVE_MODAL,
@@ -111,6 +111,6 @@ const RoutesWithNativeStackAvailability = {
     isNativeStackAvailable || android
       ? Routes.SEND_SHEET_NAVIGATOR
       : Routes.SEND_SHEET,
-};
+} as const;
 
 export default RoutesWithNativeStackAvailability;
