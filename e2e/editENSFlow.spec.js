@@ -430,6 +430,7 @@ describe('Edit ENS Flow', () => {
       await Helpers.checkIfVisible('pin-authentication-screen');
       await Helpers.authenticatePin('1234');
     }
+    android && (await Helpers.delay(2000));
   });
 
   it('Should confirm the update was successful', async () => {
