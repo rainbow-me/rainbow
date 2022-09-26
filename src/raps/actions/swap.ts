@@ -274,6 +274,7 @@ const swap = async (
 
   dispatch(
     dataAddNewTransaction(
+      // @ts-ignore
       newTransaction,
       accountAddress,
       false,
