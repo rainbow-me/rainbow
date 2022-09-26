@@ -8,46 +8,139 @@ on: [ workflow_dispatch]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   clear-cache-ci-1:
-    runs-on: ["self-hosted", "CI-1"]
+    runs-on: ["CI-1"]
     steps:
-      - uses: ./.github/actions/clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache
   clear-cache-ci-2:
-    runs-on: ["self-hosted", "CI-2"]
+    runs-on: ["CI-2"]
     steps:
-      - uses: ./.github/actions/clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache
   clear-cache-ci-3:
-    runs-on: ["self-hosted", "CI-3"]
+    runs-on: ["CI-3"]
     steps:
-      - uses: ./.github/actions/clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache
   clear-cache-ci-4:
-    runs-on: ["self-hosted", "CI-4"]
+    runs-on: ["CI-4"]
     steps:
-      - uses: ./.github/actions/clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache
   clear-cache-ci-5:
-    runs-on: ["self-hosted", "CI-5"]
+    runs-on: ["CI-5"]
     steps:
-      - uses: ./.github/actions/clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache
   # WE SHOULD ENABLE THESE ONCE THE NEW MACHINES ARE UP AND RUNNING
   # clear-cache-ci-6:
-  #   runs-on: ["self-hosted", "CI-6"]
+  #   runs-on: ["CI-6"]
   #   steps:
-  #     - uses: ./.github/actions/clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache
   # clear-cache-ci-7:
-  #   runs-on: ["self-hosted", "CI-7"]
+  #   runs-on: ["CI-7"]
   #   steps:
-  #     - uses: ./.github/actions/clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache
   # clear-cache-ci-8:
-  #   runs-on: ["self-hosted", "CI-8"]
+  #   runs-on: ["CI-8"]
   #   steps:
-  #     - uses: ./.github/actions/clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache
   # clear-cache-ci-9:
-  #   runs-on: ["self-hosted", "CI-9"]
+  #   runs-on: ["CI-9"]
   #   steps:
-  #     - uses: ./.github/actions/clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache
   # clear-cache-ci-10:
-  #   runs-on: ["self-hosted", "CI-10"]
+  #   runs-on: ["CI-10"]
   #   steps:
-  #     - uses: ./.github/actions/clear-cache-single-instance
-  
+  #     - uses: ./.github/actions/clear-cache
+        - name: Send success message to slack
+            id: slack-success-msg
+            uses: slackapi/slack-github-action@v1.21.0
+            if: ${{ job.status == 'success' }}
+            with:
+              # This data can be any valid JSON from a previous step in the GitHub Action
+              payload: |
+                {
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus: ✅  ${{ job.status }}"
+                      }
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                          {
+                              "type": "button",
+                              "text": {
+                                  "type": "plain_text",
+                                  "text": "View Pull Request",
+                                  "emoji": true
+                              },
+                              "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                          },
+                          {
+                              "type": "button",
+                              "text": {
+                                  "type": "plain_text",
+                                  "text": "View Build",
+                                  "emoji": true
+                              },
+                              "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                          }
+                      ]
+                    }
+                  ]
+                }
+            env:
+              SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+              SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          - name: Send error message to slack
+            id: slack-error-msg
+            uses: slackapi/slack-github-action@v1.21.0
+            if: ${{ job.status != 'success' }}
+            with:
+              # This data can be any valid JSON from a previous step in the GitHub Action
+              payload: |
+                {
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ 'github.event.pull_request.title' }}\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
+                      }
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                          {
+                              "type": "button",
+                              "text": {
+                                  "type": "plain_text",
+                                  "text": "View Pull Request",
+                                  "emoji": true
+                              },
+                              "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                          },
+                          {
+                              "type": "button",
+                              "text": {
+                                  "type": "plain_text",
+                                  "text": "View Build",
+                                  "emoji": true
+                              },
+                              "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                          }
+                      ]
+                    }
+                  ]
+                }
+            env:
+              SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+              SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
     

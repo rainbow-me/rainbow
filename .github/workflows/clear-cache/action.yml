@@ -1,0 +1,25 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Clear macstadium cache (Single instance)
+
+# Controls when the workflow will run
+on: [ workflow_dispatch]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "clear-cache"
+  clear-cache:
+    runs:
+      using: "composite"
+      steps:
+        - uses: actions/checkout@v3
+
+        - name: Set up github keys
+          run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+
+        - name: Clean cache
+          run: yarn nuke
+
+        - name: Rebuild detox framework cache
+          run: detox clean-framework-cache && detox build-framework-cache
+
