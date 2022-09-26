@@ -1208,10 +1208,10 @@
         "all": "All",
         "off": "Off",
         "plus_n_more": "+ %{n} more",
-        "no_permissions": "Looks like your notification permissions are disabled. Please enable them in System Settings to receive notifications from Rainbow.",
+        "no_permissions": "Looks like your notification permissions are disabled. Please enable them in Settings to receive notifications from Rainbow.",
         "no_watched_wallets": "You are not watching any wallets.",
         "no_owned_wallets": "You do not have any wallets in Rainbow. Create a wallet or import one with your secret phrase.",
-        "open_system_settings": "Open System Settings",
+        "open_system_settings": "Open Settings",
         "unsupported_network": "Notifications are only available for Ethereum Mainnet transactions at this time.",
         "change_network": "Change your Network"
       },
