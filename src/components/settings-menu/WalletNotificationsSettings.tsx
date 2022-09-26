@@ -63,8 +63,8 @@ const WalletNotificationsSettings = () => {
     [notifications, updateSettings]
   );
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
+  const animatedStyle = useAnimatedStyle(
+    () => ({
       opacity: withTiming(notifications.enabled ? 1 : 0, {
         duration: 150,
       }),
@@ -76,8 +76,9 @@ const WalletNotificationsSettings = () => {
           }),
         },
       ],
-    };
-  });
+    }),
+    [notifications.enabled]
+  );
 
   return (
     <MenuContainer>
