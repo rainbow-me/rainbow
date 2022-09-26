@@ -45,6 +45,7 @@ import {
   GasFee,
   LegacyGasFee,
   LegacyGasFeeParams,
+  ParsedAddressAsset,
   SwappableAsset,
 } from '@/entities';
 import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
@@ -80,7 +81,7 @@ import {
 } from '@/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, gasUtils } from '@/utils';
+import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
@@ -89,6 +90,7 @@ import {
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import networkInfo from '@/helpers/networkInfo';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -177,9 +179,9 @@ export default function ExchangeModal({
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
   const [
-    hasDestinationNativeTokenBalance,
-    setHasDestinationNativeTokenBalance,
-  ] = useState(false);
+    outputNetworkDetails,
+    setOutputNetworkDetails,
+  ] = useState<ParsedAddressAsset>();
   const genericAssets = useSelector<
     { data: { genericAssets: { [address: string]: SwappableAsset } } },
     { [address: string]: SwappableAsset }
@@ -356,16 +358,12 @@ export default function ExchangeModal({
 
   useEffect(() => {
     const getNativeAsset = async () => {
-      console.log(outputNetwork, accountAddress);
       if (!outputNetwork || !accountAddress) return;
       const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
         outputNetwork,
         accountAddress
       );
-
-      const balance = Number(nativeAsset?.balance?.amount);
-      const hasNon0Balance = balance > 0;
-      setHasDestinationNativeTokenBalance(hasNon0Balance);
+      setOutputNetworkDetails(nativeAsset);
     };
     getNativeAsset();
   }, [outputNetwork, accountAddress]);
@@ -962,10 +960,20 @@ export default function ExchangeModal({
 
     const networkDetails = getNetworkDetails(outputNetwork);
 
+    console.log(
+      '...........',
+      getTokenMetadata(outputNetworkDetails?.mainnet_address)
+    );
+
     navigate(Routes.EXPLAIN_SHEET, {
       network: outputNetwork,
       networkName: networkDetails?.name,
       gasToken: networkDetails?.gasToken,
+      nativeAsset: {
+        mainnet_address: outputNetworkDetails?.mainnet_address,
+        type: outputNetworkDetails?.type,
+        symbol: outputNetworkDetails?.symbol,
+      },
       onRefuel: (navigate, goBack, handleClose) => {
         setRefuel(true);
         handleClose();
@@ -977,7 +985,13 @@ export default function ExchangeModal({
       },
       type: 'swap_refuel_add',
     });
-  }, [outputNetwork, navigate, navigateToSwapDetailsModal, setRefuel]);
+  }, [
+    outputNetwork,
+    navigate,
+    navigateToSwapDetailsModal,
+    setRefuel,
+    outputNetworkDetails,
+  ]);
 
   const handleTapWhileDisabled = useCallback(() => {
     const lastFocusedInput = (lastFocusedInputHandle?.current as unknown) as TextInput;
@@ -1008,8 +1022,10 @@ export default function ExchangeModal({
     : !!inputCurrency && !!outputCurrency;
 
   const handleConfirmExchangePress = useCallback(() => {
-    const showRefuelAddSheet =
-      isCrosschainSwap && !hasDestinationNativeTokenBalance;
+    const balance = Number(outputNetworkDetails?.balance?.amount);
+    const hasZeroBalance = balance === 0;
+
+    const showRefuelAddSheet = isCrosschainSwap && hasZeroBalance;
 
     if (loading) {
       return NOOP;
@@ -1022,10 +1038,10 @@ export default function ExchangeModal({
     return navigateToSwapDetailsModal();
   }, [
     loading,
-    hasDestinationNativeTokenBalance,
     isCrosschainSwap,
     navigateToRefuelModal,
     navigateToSwapDetailsModal,
+    outputNetworkDetails,
   ]);
 
   return (

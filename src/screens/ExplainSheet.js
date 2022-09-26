@@ -28,7 +28,12 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { deviceUtils, ethereumUtils, gasUtils } from '@/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  gasUtils,
+  getTokenMetadata,
+} from '@/utils';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 
@@ -784,12 +789,25 @@ export const explainers = (params, colors) => ({
   },
   swap_refuel_add: {
     logo: (
-      <ChainBadge
-        assetType={params?.network}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
     ),
     title: lang.t('explain.swap_refuel.title', {
       gasToken: params.gasToken,
