@@ -1,3 +1,4 @@
+import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect } from 'detox';
@@ -6,6 +7,15 @@ import { ethers } from 'ethers';
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 const DEFAULT_TIMEOUT = 8000;
+
+export async function startHardhat() {
+  await exec('yarn hardhat');
+}
+
+export async function killHardhat() {
+  await exec('kill $(lsof -t -i:8545)');
+}
+
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-undef */
 export async function waitAndTap(elementId, timeout) {
@@ -36,11 +46,31 @@ export function tapItemAtIndex(elementID, index) {
     .tap();
 }
 
-export async function typeText(elementId, text, focus = true) {
+export async function startIosSimulator() {
+  if (device.getPlatform() === 'ios') {
+    await exec(
+      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
+    );
+  }
+}
+
+export async function typeText(
+  elementId,
+  text,
+  focus = true,
+  syncOnAndroid = false
+) {
   if (focus) {
     await tap(elementId);
   }
-  return element(by.id(elementId)).typeText(text);
+  // this is way faster now
+  if (device.getPlatform() === 'android' && !syncOnAndroid) {
+    await device.disableSynchronization();
+  }
+  await element(by.id(elementId)).typeText(text);
+  if (device.getPlatform() === 'android' && !syncOnAndroid) {
+    await device.enableSynchronization();
+  }
 }
 
 export async function typeNumbers(elementId, text, submitLabel) {
@@ -102,13 +132,32 @@ export async function swipe(
   elementId,
   direction,
   speed = 'fast',
-  percentage = 0.75
+  percentage = 0.75,
+  normalizedStartingPointY = NaN
 ) {
-  await element(by.id(elementId))?.swipe(direction, speed, percentage);
+  await element(by.id(elementId))?.swipe(
+    direction,
+    speed,
+    percentage,
+    NaN,
+    normalizedStartingPointY
+  );
 }
 
 export async function scrollTo(scrollviewId, edge) {
   await element(by.id(scrollviewId)).scrollTo(edge);
+}
+
+export async function swipeUntilVisible(elementId, scrollViewId, direction) {
+  let stop = false;
+  while (!stop) {
+    try {
+      await checkIfVisible(elementId, 500);
+      stop = true;
+    } catch {
+      await swipe(scrollViewId, direction, 'slow', 0.5);
+    }
+  }
 }
 
 export async function scrollUpTo(elementId, distance, direction) {
@@ -136,7 +185,7 @@ export function checkIfExists(elementId) {
 }
 
 export function checkIfExistsByText(text) {
-  return expect(element(by.text(text))).toExist();
+  return expect(element(by.text(text)).atIndex(0)).toExist();
 }
 
 export function checkIfElementByTextIsVisible(text, timeout) {
@@ -180,9 +229,11 @@ export async function checkIfDisabled(elementId) {
 
 export async function authenticatePin(pin) {
   const digits = pin.split('');
+  await device.disableSynchronization();
   for (let i = 0; i < digits.length; i++) {
     await tap(`numpad-button-${digits[i]}`);
   }
+  await device.enableSynchronization();
   return Promise.resolve();
 }
 

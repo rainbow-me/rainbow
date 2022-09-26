@@ -1,4 +1,4 @@
-import { LayoutAnimation } from 'react-native';
+import { LayoutAnimation, LayoutAnimationConfig } from 'react-native';
 import { BaseItemAnimator, RecyclerListView } from 'recyclerlistview';
 import {
   RecyclerListViewProps,
@@ -12,7 +12,7 @@ type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewState
 >;
 
-const easingAnimation = {
+const easingAnimation: LayoutAnimationConfig = {
   duration: 250,
   update: {
     delay: 10,
@@ -20,7 +20,7 @@ const easingAnimation = {
   },
 };
 
-const springAnimation = {
+const springAnimation: LayoutAnimationConfig = {
   duration: 200,
   update: {
     initialVelocity: 0,

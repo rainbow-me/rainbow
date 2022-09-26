@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchPrimary } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient } from '@/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@/react-query/types';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 
 export const ensAddressQueryKey = (name: string) => ['ens-address', name];
 
@@ -36,7 +39,7 @@ export async function prefetchENSAddress(
 
 export default function useENSAddress(
   name: string,
-  config?: QueryConfig<typeof fetchENSAddress>
+  config?: QueryConfigDeprecated<typeof fetchENSAddress>
 ) {
   return useQuery<UseQueryData<typeof fetchENSAddress>>(
     ensAddressQueryKey(name),

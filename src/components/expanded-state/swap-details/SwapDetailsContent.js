@@ -7,7 +7,7 @@ import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
-import { AccentColorProvider, Box, Divider, Rows } from '@/design-system';
+import { AccentColorProvider, Box, Rows, Separator } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import {
   useColorForAsset,
@@ -107,7 +107,7 @@ export default function SwapDetailsContent({
           )}
           {detailsExpanded && (
             <Rows space="24px">
-              <Divider />
+              <Separator color="divider80 (Deprecated)" />
               <SwapDetailsPriceRow
                 testID="swaps-details-price-row"
                 tradeDetails={tradeDetails}

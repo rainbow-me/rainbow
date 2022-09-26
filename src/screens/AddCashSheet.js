@@ -1,8 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AddCashForm, AddCashStatus } from '../components/add-cash';
 import { Column, ColumnWithMargins, FlexItem } from '../components/layout';
 import {
@@ -11,7 +10,7 @@ import {
   SheetTitle,
 } from '../components/sheet';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { deviceUtils } from '../utils';
+import { deviceUtils, safeAreaInsetValues } from '../utils';
 import {
   useAddCashLimits,
   useDimensions,
@@ -24,7 +23,7 @@ import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const statusBarHeight = getStatusBarHeight(true);
+const statusBarHeight = safeAreaInsetValues.top;
 const sheetHeight =
   deviceHeight -
   statusBarHeight -
@@ -43,7 +42,7 @@ const SheetContainer = styled(Column)({
 export default function AddCashSheet() {
   const { colors } = useTheme();
   const { isNarrowPhone } = useDimensions();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
 
   const [errorAnimation, onShake] = useShakeAnimation();
   const [startErrorTimeout, stopErrorTimeout] = useTimeout();

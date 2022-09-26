@@ -10,7 +10,6 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
@@ -79,11 +78,16 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  getUniqueTokenType,
+  safeAreaInsetValues,
+} from '@/utils';
 import logger from '@/utils/logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
-const statusBarHeight = getStatusBarHeight(true);
+const statusBarHeight = safeAreaInsetValues.top;
 
 const Container = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
@@ -432,7 +436,9 @@ export default function SendSheet(props) {
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
       let realAddress = debouncedRecipient;
-      const isValid = await checkIsValidAddressOrDomain(debouncedRecipient);
+      const isValid = await checkIsValidAddressOrDomainFormat(
+        debouncedRecipient
+      );
       if (isValid) {
         realAddress = await resolveNameOrAddress(debouncedRecipient);
         setToAddress(realAddress);

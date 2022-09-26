@@ -18,22 +18,22 @@ import {
   Box,
   Column,
   Columns,
-  Divider,
   Heading,
   Inset,
+  Separator,
   Stack,
 } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
 import {
-  useENSAddress,
   useENSAvatar,
   useENSCover,
-  useENSFirstTransactionTimestamp,
   useENSRecords,
   useFetchUniqueTokens,
   useOpenENSNFTHandler,
 } from '@/hooks';
 import { addressHashedEmoji } from '@/utils/profileUtils';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -50,9 +50,12 @@ export default function ProfileSheetHeader({
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const ensName = defaultEnsName || params?.address;
 
-  const { data: profileAddress } = useENSAddress(ensName, {
-    enabled: profilesEnabled,
-  });
+  const { data: profileAddress } = useENSAddress(
+    { name: ensName },
+    {
+      enabled: profilesEnabled,
+    }
+  );
   const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(
     ensName,
     {
@@ -87,9 +90,9 @@ export default function ProfileSheetHeader({
   });
   const enableZoomOnPressCover = enableZoomableImages && !onPressCover;
 
-  const { data: firstTransactionTimestamp } = useENSFirstTransactionTimestamp(
-    ensName
-  );
+  const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({
+    addressOrName: profileAddress ?? '',
+  });
 
   const emoji = useMemo(
     () => (profileAddress ? addressHashedEmoji(profileAddress) : ''),
@@ -98,7 +101,7 @@ export default function ProfileSheetHeader({
 
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
     >
       <Stack space={{ custom: 18 }}>
@@ -138,7 +141,11 @@ export default function ProfileSheetHeader({
         </Bleed>
         <Inset horizontal="19px (Deprecated)">
           <Stack space="19px (Deprecated)">
-            <Heading size="23px / 27px (Deprecated)" weight="heavy">
+            <Heading
+              color="primary (Deprecated)"
+              size="23px / 27px (Deprecated)"
+              weight="heavy"
+            >
               {abbreviateEnsForDisplay(ensName)}
             </Heading>
             <>
@@ -187,7 +194,7 @@ export default function ProfileSheetHeader({
             </Bleed>
             {!isPreview && (
               <Inset bottom="6px">
-                <Divider color="divider60" />
+                <Separator color="divider60 (Deprecated)" />
               </Inset>
             )}
           </Stack>
@@ -203,13 +210,13 @@ function DescriptionPlaceholder() {
       <Skeleton animated>
         <Stack space="8px">
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={10}
             height={{ custom: 14 }}
             width="full"
           />
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={10}
             height={{ custom: 14 }}
             width="1/3"

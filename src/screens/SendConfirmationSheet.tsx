@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -235,7 +235,7 @@ export default function SendConfirmationSheet() {
     width: deviceWidth,
   } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { contacts } = useContacts();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -553,6 +553,7 @@ export default function SendConfirmationSheet() {
               <Column justify="center" width={deviceWidth - 117}>
                 <Heading
                   numberOfLines={1}
+                  color="primary (Deprecated)"
                   size="26px / 30px (Deprecated)"
                   weight="heavy"
                 >
@@ -625,6 +626,7 @@ export default function SendConfirmationSheet() {
                 <Row width={android ? '80%' : '90%'}>
                   <Heading
                     numberOfLines={1}
+                    color="primary (Deprecated)"
                     size="26px / 30px (Deprecated)"
                     weight="heavy"
                   >
@@ -710,7 +712,7 @@ export default function SendConfirmationSheet() {
                     <Callout
                       after={
                         <Text
-                          color="secondary30"
+                          color="secondary30 (Deprecated)"
                           size="16px / 22px (Deprecated)"
                           weight="heavy"
                         >

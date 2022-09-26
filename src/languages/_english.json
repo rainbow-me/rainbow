@@ -687,7 +687,7 @@
         "still_curious": {
           "fragment1": "This is a precautionary step to ensure accurate pricing and the safety of user funds. Still curious? ",
           "fragment2": "Learn more",
-          "fragment3": "" 
+          "fragment3": ""
         }
       },
       "slippage": {
@@ -723,7 +723,26 @@
       }
     },
     "gas": {
-      "network_fee": "Est. network fee"
+      "network_fee": "Est. network fee",
+      "current_base_fee": "Current base fee",
+      "max_base_fee": "Max base fee",
+      "miner_tip": "Miner tip",
+      "max_transaction_fee": "Max transaction fee",
+      "warning_separator": "·",
+      "lower_than_suggested": "Low · may get stuck",
+      "higher_than_suggested": "High · overpaying",
+      "max_base_fee_too_low_error": "Low · likely to fail",
+      "tip_too_low_error": "Low · likely to fail",
+      "alert_message_higher_miner_tip_needed": "Setting a higher miner tip is recommended to avoid issues.",
+      "alert_message_higher_max_base_fee_needed": "Setting a higher max base fee is recommended to avoid issues.",
+      "alert_message_lower": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
+      "alert_title_higher_max_base_fee_needed": "Low max base fee–transaction may get stuck!",
+      "alert_title_higher_miner_tip_needed": "Low miner tip–transaction may get stuck!",
+      "alert_title_lower_max_base_fee_needed": "High max base fee!",
+      "alert_title_lower_miner_tip_needed": "High miner tip!",
+      "proceed_anyway": "Proceed Anyway",
+      "edit_max_bass_fee": "Edit Max Base Fee",
+      "edit_miner_tip": "Edit Miner Tip"
     },
     "homepage": {
       "back": "Back to rainbow.me",
@@ -1324,6 +1343,14 @@
       "copied": "Copied \"%{copiedText}\"",
       "invalid_paste": "You can't paste that here"
     },
+    "hardware_wallets": {
+      "pair_your_nano": "Pair your Nano X",
+      "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
+      "learn_more_about_ledger": "Learn more about Ledger",
+      "pair_a_new_ledger": "Pair a new Ledger",
+      "looking_for_devices": "Looking for devices",
+      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
+    },
     "wallet": {
       "action": {
         "add_existing": "Add an existing wallet",
@@ -1336,9 +1363,13 @@
         "hide": "Hide",
         "import_wallet": "Add Wallet",
         "input": "Transaction Input",
+        "notifications": "Notification Settings",
+        "pair_hardware_wallet": "Pair a hardware wallet",
         "paste": "Paste",
         "pin": "Pin",
         "reject": "Reject",
+        "remove": "Remove Wallet",
+        "remove_confirm": "Are you sure you want to remove this wallet?",
         "send": "Send",
         "to": "To",
         "unhide": "Unhide",

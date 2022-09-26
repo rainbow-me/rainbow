@@ -9,7 +9,6 @@ import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import {
   useAccountSettings,
-  useENSAddress,
   useFetchUniqueTokens,
   useOpenENSNFTHandler,
 } from '@/hooks';
@@ -25,6 +24,7 @@ import {
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
+import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -107,7 +107,11 @@ export default function InfoRow({
 
   const explainer = explainSheetType ? (
     <ButtonPressAnimation onPress={handlePressExplain}>
-      <Text color="secondary25" size="16px / 22px (Deprecated)" weight="bold">
+      <Text
+        color="secondary25 (Deprecated)"
+        size="16px / 22px (Deprecated)"
+        weight="bold"
+      >
         􀅵
       </Text>
     </ButtonPressAnimation>
@@ -119,7 +123,7 @@ export default function InfoRow({
         <Inset top={isMultiline ? '15px (Deprecated)' : '10px'}>
           <Inline space="4px">
             <Text
-              color="secondary60"
+              color="secondary60 (Deprecated)"
               size="16px / 22px (Deprecated)"
               weight="bold"
             >
@@ -176,7 +180,7 @@ export default function InfoRow({
               {value ? (
                 <Text
                   align={isMultiline ? 'left' : 'center'}
-                  color={useAccentColor ? 'accent' : undefined}
+                  color={useAccentColor ? 'accent' : 'primary (Deprecated)'}
                   containsEmoji
                   size="16px / 22px (Deprecated)"
                   weight={isMultiline ? 'semibold' : 'bold'}
@@ -215,7 +219,7 @@ function ImageValue({
 }) {
   const { accountAddress } = useAccountSettings();
 
-  const { data: address } = useENSAddress(ensName || '');
+  const { data: address } = useENSAddress({ name: ensName || '' });
 
   const uniqueTokensAccount = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens

@@ -64,7 +64,9 @@ export const MaxToleranceInput = forwardRef(
         slippageRef?.current?.blur();
       },
       reset: () => {
-        const slippage = getDefaultSlippageFromConfig(currentNetwork);
+        const slippage = (getDefaultSlippageFromConfig(
+          currentNetwork
+        ) as unknown) as number;
         onSlippageChange(convertBipsToPercent(slippage));
       },
     }));
@@ -117,11 +119,15 @@ export const MaxToleranceInput = forwardRef(
               testID="swap-slippage-label"
             >
               <Inline alignVertical="center">
-                <Text size="16px / 22px (Deprecated)" weight="bold">
+                <Text
+                  color="primary (Deprecated)"
+                  size="16px / 22px (Deprecated)"
+                  weight="bold"
+                >
                   {`${lang.t('exchange.slippage_tolerance')} `}
                   {!hasPriceImpact && (
                     <Text
-                      color="secondary30"
+                      color="secondary30 (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
                     >
@@ -139,6 +145,7 @@ export const MaxToleranceInput = forwardRef(
             {hasPriceImpact && (
               <Box>
                 <Text
+                  color="primary (Deprecated)"
                   size={
                     android
                       ? '12px / 14px (Deprecated)'
@@ -159,7 +166,7 @@ export const MaxToleranceInput = forwardRef(
                     </Text>
                   </AccentColorProvider>
                   <Text
-                    color="secondary50"
+                    color="secondary50 (Deprecated)"
                     size={
                       android
                         ? '12px / 14px (Deprecated)'

@@ -1,5 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
+import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
@@ -16,11 +17,11 @@ import {
   Box,
   Column,
   Columns,
-  Divider,
   Heading,
   Inset,
   Row,
   Rows,
+  Separator,
   Stack,
   Text,
 } from '@/design-system';
@@ -106,7 +107,9 @@ export default function ENSIntroSheet() {
   );
 
   const handleSelectUniqueDomain = useCallback(() => {
-    !!uniqueDomain && navigateToAssignRecords(uniqueDomain?.name);
+    if (uniqueDomain?.name) {
+      navigateToAssignRecords(uniqueDomain?.name);
+    }
   }, [navigateToAssignRecords, uniqueDomain]);
 
   const handleSelectExistingName = useCallback(() => {
@@ -154,7 +157,7 @@ export default function ENSIntroSheet() {
 
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       paddingTop={{ custom: topPadding }}
       style={{ height: contentHeight }}
       testID="ens-intro-sheet"
@@ -167,6 +170,7 @@ export default function ENSIntroSheet() {
                 <Stack alignHorizontal="center" space={{ custom: 17 }}>
                   <Heading
                     align="center"
+                    color="primary (Deprecated)"
                     size="34px / 41px (Deprecated)"
                     weight="heavy"
                   >
@@ -174,7 +178,7 @@ export default function ENSIntroSheet() {
                   </Heading>
                   <Heading
                     align="center"
-                    color="action"
+                    color="action (Deprecated)"
                     size="34px / 41px (Deprecated)"
                     weight="heavy"
                   >
@@ -183,10 +187,12 @@ export default function ENSIntroSheet() {
                 </Stack>
                 <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
                   <Bleed left="10px">
-                    <IntroMarquee isSmallPhone={isSmallPhone} />
+                    {IS_TESTING !== 'true' && (
+                      <IntroMarquee isSmallPhone={isSmallPhone} />
+                    )}
                   </Bleed>
                   <Inset horizontal="34px (Deprecated)">
-                    <Divider color="divider60" />
+                    <Separator color="divider60 (Deprecated)" />
                   </Inset>
                 </Stack>
                 <Stack alignHorizontal="center">
@@ -258,7 +264,7 @@ export default function ENSIntroSheet() {
                         </Inset>
                       ) : (
                         <Stack space="12px">
-                          {uniqueDomain ? (
+                          {uniqueDomain?.name ? (
                             <SheetActionButton
                               color={colors.appleBlue}
                               // @ts-expect-error JavaScript component
@@ -358,7 +364,7 @@ function InfoRow({
             >
               <Heading
                 align="center"
-                color="action"
+                color="action (Deprecated)"
                 size="28px / 33px (Deprecated)"
                 weight="bold"
               >
@@ -381,11 +387,15 @@ function InfoRow({
       </Column>
       <Bleed top="3px">
         <Stack space="12px">
-          <Text size="16px / 22px (Deprecated)" weight="bold">
+          <Text
+            color="primary (Deprecated)"
+            size="16px / 22px (Deprecated)"
+            weight="bold"
+          >
             {title}
           </Text>
           <Text
-            color="secondary60"
+            color="secondary60 (Deprecated)"
             size="14px / 19px (Deprecated)"
             weight="medium"
           >

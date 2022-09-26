@@ -46,19 +46,19 @@ export const sizes: Example[] = (Object.keys(typeHierarchy.text) as TextSize[])
         <Stack space="10px">
           <View>
             <Guide />
-            <Text size={size} weight="bold">
+            <Text color="label" size={size} weight="bold">
               {loremIpsum}
             </Text>
             <Guide />
           </View>
           <Inline alignVertical="center" space="10px">
             <View style={{ backgroundColor: 'rgba(255,0,0,0.2)' }}>
-              <Text size={size} weight="bold">
+              <Text color="label" size={size} weight="bold">
                 Bounding Box
               </Text>
             </View>
             <View style={{ position: 'relative' }}>
-              <Text size={size} weight="bold">
+              <Text color="label" size={size} weight="bold">
                 Bounding Box
               </Text>
               <View
@@ -84,7 +84,7 @@ export const withEmoji: Example = {
     source(
       <View>
         <Guide />
-        <Text containsEmoji size="17pt">
+        <Text color="label" containsEmoji size="17pt">
           Text with emoji 🌈
         </Text>
         <Guide />
@@ -98,7 +98,7 @@ export const withTruncation: Example = {
     source(
       <View>
         <Guide />
-        <Text size="17pt" weight="bold">
+        <Text color="label" size="17pt" weight="bold">
           Truncated text truncated text truncated text truncated text truncated
           text truncated text Truncated text truncated text truncated text
           truncated text truncated text truncated text
@@ -116,6 +116,7 @@ export const withWeight: Example = {
         {Object.entries(fontWeights).map(([name, value]) => (
           <Text
             key={value}
+            color="label"
             size="17pt"
             weight={name as keyof typeof fontWeights}
           >
@@ -131,10 +132,10 @@ export const withColor: Example = {
   Example: () =>
     source(
       <Stack space="12px">
-        <Text color="secondary50" size="17pt">
+        <Text color="label" size="17pt">
           Default mode
         </Text>
-        <Text color="action" size="17pt">
+        <Text color="action (Deprecated)" size="17pt">
           Action color
         </Text>
         <Text color="accent" size="17pt">
@@ -151,14 +152,14 @@ export const withColor: Example = {
         <View>
           <View
             style={{
-              backgroundColor: palettes.dark.backgroundColors.body.color,
+              backgroundColor: palettes.dark.backgroundColors['surface'].color,
               padding: 24,
             }}
           >
             <Stack space="24px">
               <ColorModeProvider value="dark">
                 <Stack space="12px">
-                  <Text color="secondary50" size="17pt">
+                  <Text color="label" size="17pt">
                     Dark mode
                   </Text>
                   <Text color={customTextColor} size="17pt">
@@ -169,7 +170,7 @@ export const withColor: Example = {
 
               <ColorModeProvider value="darkTinted">
                 <Stack space="12px">
-                  <Text color="secondary50" size="17pt">
+                  <Text color="label" size="17pt">
                     Dark tinted mode
                   </Text>
                   <Text color={customTextColor} size="17pt">
