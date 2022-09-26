@@ -7,15 +7,10 @@ on: [ workflow_dispatch]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "ios-e2e"
+  # This workflow contains a single job called "clear-cache"
   clear-cache:
     # The type of runner that the job will run on
     runs-on: ["self-hosted"]
-    # Cancel current builds if there's a newer commit on the same branch
-    concurrency: 
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -90,7 +85,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ 'github.event.pull_request.title' }}\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
+                    "text": "Cache cleaning job }\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
                   }
                 },
                 {
