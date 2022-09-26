@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.7.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.7)
+
+### Changed
+
+- Update Polygon allowlist
+- Gas fee bug fixes
+- Bug fixes in create new wallet modal
+
 ## [1.7.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.6)
 
 ### Changed
