@@ -50,6 +50,7 @@ import {
   externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  pairHardwareWalletNavigatorConfig,
   profileConfig,
   profilePreviewConfig,
   qrScannerConfig,
@@ -78,6 +79,7 @@ import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
+import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -422,6 +424,11 @@ function NativeStackNavigator() {
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
         {...qrScannerConfig}
+      />
+      <NativeStack.Screen
+        component={PairHardwareWalletNavigator}
+        name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
+        {...pairHardwareWalletNavigatorConfig}
       />
 
       {profilesEnabled && (
