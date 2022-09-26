@@ -1,37 +1,9 @@
 import messaging from '@react-native-firebase/messaging';
-import lang from 'i18n-js';
 import { requestNotifications } from 'react-native-permissions';
-import { Alert } from '../components/alerts';
-import { getLocal, saveLocal } from '../handlers/localstorage/common';
-import logger from '@/utils/logger';
-
-export const getFCMToken = async () => {
-  const fcmTokenLocal = await getLocal('rainbowFcmToken');
-
-  const fcmToken = fcmTokenLocal?.data ?? null;
-
-  if (!fcmToken) {
-    throw new Error('Push notification token unavailable.');
-  }
-  return fcmToken;
-};
-
-export const saveFCMToken = async () => {
-  try {
-    const permissionStatus = await getPermissionStatus();
-    if (
-      permissionStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      permissionStatus === messaging.AuthorizationStatus.PROVISIONAL
-    ) {
-      const fcmToken = await messaging().getToken();
-      if (fcmToken) {
-        saveLocal('rainbowFcmToken', { data: fcmToken });
-      }
-    }
-  } catch (error) {
-    logger.log('error while getting & saving FCM token', error);
-  }
-};
+import logger from 'logger';
+import { Alert } from '@/components/alerts';
+import lang from 'i18n-js';
+import { saveFCMToken } from '@/notifications/tokens';
 
 export const getPermissionStatus = () => messaging().hasPermission();
 
@@ -92,8 +64,3 @@ export const checkPushNotificationPermissions = async () => {
     }
   });
 };
-
-export const registerTokenRefreshListener = () =>
-  messaging().onTokenRefresh(fcmToken => {
-    saveLocal('rainbowFcmToken', { data: fcmToken });
-  });

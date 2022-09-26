@@ -2,7 +2,6 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Easing,
   interpolateColor,
@@ -38,6 +37,7 @@ import styled from '@/styled-thing';
 import { position, shadow } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import logger from '@/utils/logger';
+import { IS_ANDROID, IS_TEST } from '@/env';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -249,7 +249,7 @@ export default function WelcomeScreen() {
         // We need to disable looping animations
         // There's no way to disable sync yet
         // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-        if (IS_TESTING !== 'true') {
+        if (!IS_TEST) {
           createWalletButtonAnimation.value = withDelay(
             initialDuration,
             withTiming(1.02, { duration: 1000 }, () => {
@@ -271,7 +271,7 @@ export default function WelcomeScreen() {
           );
         }
 
-        if (IS_TESTING === 'true') {
+        if (IS_TEST) {
           logger.log(
             'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
           );
@@ -350,7 +350,7 @@ export default function WelcomeScreen() {
     <Container testID="welcome-screen">
       <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
       <ContentWrapper style={contentStyle}>
-        {android && IS_TESTING === 'true' ? (
+        {IS_ANDROID && IS_TEST ? (
           // @ts-expect-error JS component
           <RainbowText colors={colors} />
         ) : (

@@ -49,6 +49,7 @@ import {
   externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  pairHardwareWalletNavigatorConfig,
   profileConfig,
   profilePreviewConfig,
   registerENSNavigatorConfig,
@@ -75,6 +76,7 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
+import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -405,6 +407,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.SWAP_SETTINGS_SHEET}
         {...customGasSheetConfig}
+      />
+      <NativeStack.Screen
+        component={PairHardwareWalletNavigator}
+        name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
+        {...pairHardwareWalletNavigatorConfig}
       />
 
       {profilesEnabled && (

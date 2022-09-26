@@ -10,6 +10,7 @@ export const forceFallbackProvider = false;
 export const alwaysRequireApprove = false;
 export const showReloadButton = false;
 export const showSwitchModeButton = false;
+export const showConnectToHardhatButton = false;
 export const parseAllTxnsOnReceive = false;
 export const reactNativeDisableYellowBox = true;
 export const showNetworkRequests = false;
