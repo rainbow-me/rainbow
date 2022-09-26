@@ -8,6 +8,6 @@ runs:
     - id: clean
       shell: bash
       run: |
-        detox clean-framework-cache && detox build-framework-cache
+        yarn detox clean-framework-cache && yarn detox build-framework-cache
         yarn nuke
 
