@@ -3,31 +3,14 @@ import {
   JsonMap,
   SegmentClient,
 } from '@segment/analytics-react-native';
+import * as env from '@/env';
 import {
   REACT_APP_SEGMENT_API_WRITE_KEY,
   REACT_APP_SEGMENT_API_DEV_WRITE_KEY,
 } from 'react-native-dotenv';
-import { TrackingEventProperties, TrackingEvents } from './trackingEvents';
+import { TrackingEventProperties } from './trackingEvents';
 import { UserProperties } from './userProperties';
 import Routes from '@/navigation/routesNames';
-
-// we can move this to a centralized config file after migrating state
-const enableAnalyticsTesting = false;
-
-const productionClient = createClient({
-  debug: enableAnalyticsTesting,
-  trackAppLifecycleEvents: true,
-  trackDeepLinks: true,
-  writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
-});
-
-const devClient = createClient({
-  debug: true,
-  trackAppLifecycleEvents: true,
-  trackDeepLinks: true,
-  // TODO: add dev write key to team env
-  writeKey: REACT_APP_SEGMENT_API_DEV_WRITE_KEY,
-});
 
 // TODO: we only use route properties for 1 sheet, we need to collect all possibles and lay out the same as we do for event properties
 // this should live in navigation once we type that
@@ -39,32 +22,55 @@ class analyticsInstance {
   deviceId?: string;
   addressHash?: string;
 
-  constructor() {
-    this.client = enableAnalyticsTesting ? devClient : productionClient;
+  constructor({
+    debug = false,
+    deviceId,
+    addressHash,
+  }: {
+    debug?: boolean;
+    deviceId?: string;
+    addressHash?: string;
+  } = {}) {
+    this.client = createClient({
+      debug: debug,
+      trackAppLifecycleEvents: true,
+      trackDeepLinks: true,
+      // TODO: add dev write key to team env
+      writeKey: debug
+        ? REACT_APP_SEGMENT_API_DEV_WRITE_KEY
+        : REACT_APP_SEGMENT_API_WRITE_KEY,
+    });
     // TODO: load identifier, addressHash and call identify
+    this.deviceId = deviceId;
+    this.addressHash = addressHash;
   }
 
   identify(properties: UserProperties) {
     // wipe any PII here ( we need to develop a strategy for this )
-    productionClient.identify(this.deviceId, properties as JsonMap);
+    this.client.identify(this.deviceId, properties as JsonMap);
   }
 
   screen(routeName: RouteNames, params?: Record<string, any>): void {
     // wipe any PII here ( we need to develop a strategy for this )
-    productionClient.screen(routeName, params);
+    this.client.screen(routeName, params);
   }
 
   track<T extends keyof TrackingEventProperties>(
     event: T,
     params: TrackingEventProperties[typeof event]
   ) {
-    productionClient.track(event, params);
+    this.client.track(event, params);
   }
 }
 
 // export both analytics for now
 export const analyticsV2 = new analyticsInstance();
-export const analytics = productionClient;
+export const analytics = createClient({
+  debug: false,
+  trackAppLifecycleEvents: true,
+  trackDeepLinks: true,
+  writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
+});
 
 /*
 // Identify Type Checking
