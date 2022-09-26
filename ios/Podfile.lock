@@ -507,7 +507,7 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNBootSplash (4.1.0):
+  - RNBootSplash (4.3.2):
     - React-Core
   - RNCAsyncStorage (1.17.7):
     - React-Core
@@ -1012,7 +1012,7 @@ SPEC CHECKSUMS:
   CodePush: b51b7ac64c07d4eacfc8cc5750a1dd28adbf2528
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: 2c76493a346ef8cacf1f442926a39f805fffec1f
-  FBReactNativeSpec: 371350f24afa87b6aba606972ec959dcd4a95c9a
+  FBReactNativeSpec: c2b772efb458c250245c5fe17d12b7c216ac990f
   Firebase: 7e8fe528c161b9271d365217a74c16aaf834578e
   FirebaseABTesting: aaa0e096c9fc9972ce6806d596e8fcc077d4371f
   FirebaseCore: b84a44ee7ba999e0f9f76d198a9c7f60a797b848
@@ -1100,7 +1100,7 @@ SPEC CHECKSUMS:
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNBootSplash: 605c94f76180e3f8e5832bcafbe52ff5194a51d0
+  RNBootSplash: 5f346163977573d6b2aeba1b25df9d2245c0d73c
   RNCAsyncStorage: d81ee5c3db1060afd49ea7045ad460eff82d2b7d
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
