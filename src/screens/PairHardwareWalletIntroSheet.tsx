@@ -18,7 +18,7 @@ export function PairHardwareWalletIntroSheet() {
   }, [navigate]);
 
   return (
-    <Box background="surfaceTertiary" height="full">
+    <Box background="surfaceSecondary" height="full">
       <Layout
         header={
           <Inset horizontal="44px">

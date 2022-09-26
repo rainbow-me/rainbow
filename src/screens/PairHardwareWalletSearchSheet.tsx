@@ -12,7 +12,7 @@ export function PairHardwareWalletSearchSheet() {
   const { dangerouslyGetParent } = useNavigation();
 
   return (
-    <Box background="surfaceTertiary" height="full">
+    <Box background="surfaceSecondary" height="full">
       <Layout
         header={
           <Inset horizontal="44px">
