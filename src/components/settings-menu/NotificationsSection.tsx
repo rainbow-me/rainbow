@@ -239,22 +239,20 @@ const NotificationsSection = () => {
     [navigate]
   );
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: withDelay(
-        250,
-        withTiming(walletsLoaded ? 1 : 0, { duration: 150 })
-      ),
-      transform: [
-        {
-          translateY: withDelay(
-            250,
-            withTiming(walletsLoaded ? 0 : 20, { duration: 150 })
-          ),
-        },
-      ],
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: withDelay(
+      250,
+      withTiming(walletsLoaded ? 1 : 0, { duration: 150 })
+    ),
+    transform: [
+      {
+        translateY: withDelay(
+          250,
+          withTiming(walletsLoaded ? 0 : 20, { duration: 150 })
+        ),
+      },
+    ],
+  }));
 
   return (
     <Box>
