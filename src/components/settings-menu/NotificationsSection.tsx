@@ -21,14 +21,7 @@ import {
   WalletNotificationSettingsType,
 } from '@/notifications/settings';
 import { abbreviations, deviceUtils } from '@/utils';
-import Animated, {
-  useAnimatedStyle,
-  withDelay,
-  withTiming,
-} from 'react-native-reanimated';
 import { Box } from '@/design-system';
-import Spinner from '../Spinner';
-import { useTheme } from '@/theme';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
@@ -169,29 +162,16 @@ const WalletRow = ({ wallet, groupOff, isTestnet }: WalletRowProps) => {
 
 const NotificationsSection = () => {
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
   const { network } = useAccountSettings();
   const isTestnet = isTestnetNetwork(network);
   const { wallets } = useWallets();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const walletIDs = Object.keys(wallets!);
-  const ownedWallets: RainbowAccount[] = useMemo(() => [], []);
-  const watchedWallets: RainbowAccount[] = useMemo(() => [], []);
-  const [walletsLoaded, setWalletsLoaded] = useState(false);
-  const {
-    ownerEnabled,
-    watcherEnabled,
-    updateGroupSettings,
-  } = useWalletGroupNotificationSettings();
-  const noOwnedWallets = walletsLoaded && !ownedWallets.length;
-  const noWatchedWallets = walletsLoaded && !watchedWallets.length;
-  const [permissionStatus, setPermissionStatus] = useState<string | boolean>(
-    false
-  );
-  const noPermissions = permissionStatus !== RESULTS.GRANTED;
 
-  useEffect(() => {
-    // group wallets by relationship if the arrays are empty on first load
+  const { ownedWallets, watchedWallets } = useMemo(() => {
+    const ownedWallets: RainbowAccount[] = [];
+    const watchedWallets: RainbowAccount[] = [];
+    // group wallets by relationship if the arrays are empty
     if (watchedWallets.length === 0 && ownedWallets.length === 0) {
       walletIDs.forEach(key => {
         const wallet = wallets?.[key];
@@ -204,8 +184,22 @@ const NotificationsSection = () => {
       });
     }
 
-    setWalletsLoaded(true);
+    return { ownedWallets, watchedWallets };
+  }, [walletIDs, wallets]);
 
+  const noOwnedWallets = !ownedWallets.length;
+  const noWatchedWallets = !watchedWallets.length;
+  const {
+    ownerEnabled,
+    watcherEnabled,
+    updateGroupSettings,
+  } = useWalletGroupNotificationSettings();
+  const [permissionStatus, setPermissionStatus] = useState<string | boolean>(
+    false
+  );
+  const noPermissions = permissionStatus !== RESULTS.GRANTED;
+
+  useEffect(() => {
     checkNotifications().then(({ status }) => {
       setPermissionStatus(status);
     });
@@ -233,164 +227,124 @@ const NotificationsSection = () => {
     [navigate]
   );
 
-  const animatedStyle = useAnimatedStyle(
-    () => ({
-      opacity: withDelay(
-        250,
-        withTiming(walletsLoaded ? 1 : 0, { duration: 150 })
-      ),
-      transform: [
-        {
-          translateY: withDelay(
-            250,
-            withTiming(walletsLoaded ? 0 : 20, { duration: 150 })
-          ),
-        },
-      ],
-    }),
-    [walletsLoaded]
-  );
-
   return (
     <Box>
-      {walletsLoaded ? (
-        <Animated.View style={animatedStyle}>
-          <MenuContainer>
-            {noPermissions && (
-              <Menu
-                header={lang.t('settings.notifications_section.no_permissions')}
-              >
-                <MenuItem
-                  hasSfSymbol
-                  size={52}
-                  leftComponent={<MenuItem.TextIcon icon="􀍟" isLink />}
-                  titleComponent={
-                    <MenuItem.Title
-                      text={lang.t(
-                        'settings.notifications_section.open_system_settings'
-                      )}
-                      weight="bold"
-                      isLink
-                    />
-                  }
-                  onPress={openSystemSettings}
+      <MenuContainer>
+        {noPermissions && (
+          <Menu
+            header={lang.t('settings.notifications_section.no_permissions')}
+          >
+            <MenuItem
+              hasSfSymbol
+              size={52}
+              leftComponent={<MenuItem.TextIcon icon="􀍟" isLink />}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t(
+                    'settings.notifications_section.open_system_settings'
+                  )}
+                  weight="bold"
+                  isLink
                 />
-              </Menu>
-            )}
+              }
+              onPress={openSystemSettings}
+            />
+          </Menu>
+        )}
 
-            {isTestnet ? (
-              <Menu
-                header={lang.t(
-                  'settings.notifications_section.unsupported_network'
-                )}
-              >
-                <MenuItem
-                  hasSfSymbol
-                  size={52}
-                  leftComponent={<MenuItem.TextIcon icon="􀍟" isLink />}
-                  titleComponent={
-                    <MenuItem.Title
-                      text={lang.t(
-                        'settings.notifications_section.change_network'
-                      )}
-                      weight="bold"
-                      isLink
-                    />
-                  }
-                  onPress={openNetworkSettings}
-                />
-              </Menu>
-            ) : (
-              <>
-                <Menu
-                  description={
-                    noOwnedWallets
-                      ? lang.t(
-                          'settings.notifications_section.no_owned_wallets'
-                        )
-                      : ''
-                  }
-                >
-                  <MenuItem
-                    disabled
-                    rightComponent={
-                      <Switch
-                        disabled={noOwnedWallets || isTestnet}
-                        onValueChange={toggleAllOwnedNotifications}
-                        value={ownerEnabled}
-                      />
-                    }
-                    size={52}
-                    titleComponent={
-                      <MenuItem.Title
-                        text={lang.t(
-                          'settings.notifications_section.my_wallets'
-                        )}
-                        weight="bold"
-                      />
-                    }
-                  />
-                  {ownedWallets.map(wallet => (
-                    <WalletRow
-                      key={wallet.address}
-                      wallet={wallet}
-                      groupOff={!ownerEnabled}
-                      isTestnet={isTestnet}
-                    />
-                  ))}
-                </Menu>
-                <Menu
-                  description={
-                    noWatchedWallets
-                      ? lang.t(
-                          'settings.notifications_section.no_watched_wallets'
-                        )
-                      : ''
-                  }
-                >
-                  <MenuItem
-                    disabled
-                    rightComponent={
-                      <Switch
-                        disabled={noWatchedWallets || isTestnet}
-                        onValueChange={toggleAllWatchedNotifications}
-                        value={watcherEnabled}
-                      />
-                    }
-                    size={52}
-                    titleComponent={
-                      <MenuItem.Title
-                        text={lang.t(
-                          'settings.notifications_section.watched_wallets'
-                        )}
-                        weight="bold"
-                      />
-                    }
-                  />
-                  {watchedWallets.map(wallet => (
-                    <WalletRow
-                      key={wallet.address}
-                      wallet={wallet}
-                      groupOff={!watcherEnabled}
-                      isTestnet={isTestnet}
-                    />
-                  ))}
-                </Menu>
-              </>
+        {isTestnet ? (
+          <Menu
+            header={lang.t(
+              'settings.notifications_section.unsupported_network'
             )}
-          </MenuContainer>
-        </Animated.View>
-      ) : (
-        <Box height={'full'} alignItems="center" justifyContent="center">
-          <Spinner
-            color={colors.appleBlue}
-            size={30}
-            style={{
-              marginTop: -32,
-            }}
-          />
-        </Box>
-      )}
+          >
+            <MenuItem
+              hasSfSymbol
+              size={52}
+              leftComponent={<MenuItem.TextIcon icon="􀍟" isLink />}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('settings.notifications_section.change_network')}
+                  weight="bold"
+                  isLink
+                />
+              }
+              onPress={openNetworkSettings}
+            />
+          </Menu>
+        ) : (
+          <>
+            <Menu
+              description={
+                noOwnedWallets
+                  ? lang.t('settings.notifications_section.no_owned_wallets')
+                  : ''
+              }
+            >
+              <MenuItem
+                disabled
+                rightComponent={
+                  <Switch
+                    disabled={noOwnedWallets || isTestnet}
+                    onValueChange={toggleAllOwnedNotifications}
+                    value={ownerEnabled}
+                  />
+                }
+                size={52}
+                titleComponent={
+                  <MenuItem.Title
+                    text={lang.t('settings.notifications_section.my_wallets')}
+                    weight="bold"
+                  />
+                }
+              />
+              {ownedWallets.map(wallet => (
+                <WalletRow
+                  key={wallet.address}
+                  wallet={wallet}
+                  groupOff={!ownerEnabled}
+                  isTestnet={isTestnet}
+                />
+              ))}
+            </Menu>
+            <Menu
+              description={
+                noWatchedWallets
+                  ? lang.t('settings.notifications_section.no_watched_wallets')
+                  : ''
+              }
+            >
+              <MenuItem
+                disabled
+                rightComponent={
+                  <Switch
+                    disabled={noWatchedWallets || isTestnet}
+                    onValueChange={toggleAllWatchedNotifications}
+                    value={watcherEnabled}
+                  />
+                }
+                size={52}
+                titleComponent={
+                  <MenuItem.Title
+                    text={lang.t(
+                      'settings.notifications_section.watched_wallets'
+                    )}
+                    weight="bold"
+                  />
+                }
+              />
+              {watchedWallets.map(wallet => (
+                <WalletRow
+                  key={wallet.address}
+                  wallet={wallet}
+                  groupOff={!watcherEnabled}
+                  isTestnet={isTestnet}
+                />
+              ))}
+            </Menu>
+          </>
+        )}
+      </MenuContainer>
     </Box>
   );
 };
