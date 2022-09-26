@@ -3,7 +3,7 @@
 name: Clear macstadium cache (All instances)
 
 # Controls when the workflow will run
-on: [ workflow_dispatch, pull_request]
+on: [ workflow_dispatch]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -32,109 +32,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/clear-cache
-  post-to-slack:
-    runs-on: ["self-hosted"]
-    needs: [
-      clear-cache-ci-1, 
-      clear-cache-ci-2, 
-      clear-cache-ci-3, 
-      clear-cache-ci-4, 
-      clear-cache-ci-5
-    ]
-    steps:
-      - name: Send success message to slack
-        id: slack-success-msg
-        uses: slackapi/slack-github-action@v1.21.0
-        if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}          
-        with:
-          # This data can be any valid JSON from a previous step in the GitHub Action
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus: ✅  ${{ job.status }}"
-                  }
-                },
-                {
-                  "type": "divider"
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                      {
-                          "type": "button",
-                          "text": {
-                              "type": "plain_text",
-                              "text": "View Pull Request",
-                              "emoji": true
-                          },
-                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                      },
-                      {
-                          "type": "button",
-                          "text": {
-                              "type": "plain_text",
-                              "text": "View Build",
-                              "emoji": true
-                          },
-                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                      }
-                  ]
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      - name: Send error message to slack
-        id: slack-error-msg
-        uses: slackapi/slack-github-action@v1.21.0
-        if: ${{ always() && !contains(join(needs.*.result, ','), 'success') }}
-        with:
-          # This data can be any valid JSON from a previous step in the GitHub Action
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ 'github.event.pull_request.title' }}\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
-                  }
-                },
-                {
-                  "type": "divider"
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                      {
-                          "type": "button",
-                          "text": {
-                              "type": "plain_text",
-                              "text": "View Pull Request",
-                              "emoji": true
-                          },
-                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                      },
-                      {
-                          "type": "button",
-                          "text": {
-                              "type": "plain_text",
-                              "text": "View Build",
-                              "emoji": true
-                          },
-                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                      }
-                  ]
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
     
