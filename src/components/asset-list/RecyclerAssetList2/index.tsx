@@ -52,7 +52,7 @@ function RecyclerAssetList({
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       {type === 'wallet' && <NavbarOverlay position={position} />}
-      <StickyHeaderManager yOffset={navbarHeightWithInset}>
+      <StickyHeaderManager yOffset={navbarHeightWithInset - 8}>
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
