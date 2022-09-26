@@ -8,7 +8,10 @@ import { AssetListItemSkeletonHeight } from '../../AssetListItemSkeleton';
 import { CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
 import { ProfileActionButtonsRowHeight } from '../profile-header/ProfileActionButtonsRow';
-import { ProfileAvatarRowHeight } from '../profile-header/ProfileAvatarRow';
+import {
+  ProfileAvatarRowHeight,
+  ProfileAvatarRowTopInset,
+} from '../profile-header/ProfileAvatarRow';
 import { ProfileNameRowHeight } from '../profile-header/ProfileNameRow';
 import { ProfileBalanceRowHeight } from '../profile-header/ProfileBalanceRow';
 import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader';
@@ -31,7 +34,9 @@ const ViewDimensions: Record<CellType, Dim> = {
   },
   [CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER]: { height: 24 },
   [CellType.PROFILE_AVATAR_ROW]: { height: ProfileAvatarRowHeight },
-  [CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE]: { height: 8 },
+  [CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE]: {
+    height: ProfileAvatarRowTopInset,
+  },
   [CellType.PROFILE_AVATAR_ROW_SPACE_AFTER]: { height: 15 },
   [CellType.PROFILE_NAME_ROW]: { height: ProfileNameRowHeight },
   [CellType.PROFILE_NAME_ROW_SPACE_AFTER]: { height: 19 },

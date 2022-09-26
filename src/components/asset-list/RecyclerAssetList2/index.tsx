@@ -1,11 +1,16 @@
 import React, { useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMemoOne } from 'use-memo-one';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
 import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { UniqueAsset } from '@/entities';
+import {
+  navbarHeight,
+  navbarHeightWithInset,
+} from '@/components/navbar/Navbar';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -32,7 +37,12 @@ function RecyclerAssetList({
     type,
   });
 
-  const position = useMemoOne(() => new RNAnimated.Value(0), []);
+  const insets = useSafeAreaInsets();
+
+  const position = useMemoOne(
+    () => new RNAnimated.Value(type === 'wallet' ? -insets.top : 0),
+    []
+  );
 
   const extendedState = useMemo(
     () => ({ additionalData, externalAddress, onPressUniqueToken }),
@@ -41,7 +51,8 @@ function RecyclerAssetList({
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
-      <StickyHeaderManager>
+      {type === 'wallet' && <NavbarOverlay position={position} />}
+      <StickyHeaderManager yOffset={navbarHeightWithInset}>
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
@@ -54,3 +65,34 @@ function RecyclerAssetList({
 }
 
 export default React.memo(RecyclerAssetList);
+
+// //////////////////////////////////////////////////////////
+
+function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
+  const yOffset = 32;
+  const animatedStyle = useMemo(
+    () => ({
+      opacity: position!.interpolate({
+        inputRange: [0, navbarHeight - yOffset, navbarHeight - yOffset + 4],
+        outputRange: [0, 0, 1],
+      }),
+    }),
+    [position]
+  );
+
+  return (
+    <RNAnimated.View
+      style={[
+        {
+          backgroundColor: 'white',
+          height: navbarHeightWithInset,
+          width: '95%',
+          position: 'absolute',
+          top: 0,
+          zIndex: 1,
+        },
+        animatedStyle,
+      ]}
+    />
+  );
+}

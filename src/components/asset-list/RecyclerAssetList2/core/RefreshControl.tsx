@@ -19,7 +19,7 @@ export default function RefreshControlWrapped(
     <RefreshControl
       {...props}
       onRefresh={onRefresh}
-      progressViewOffset={android ? 30 : 0}
+      progressViewOffset={60}
       refreshing={isRefreshing}
       tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
     />

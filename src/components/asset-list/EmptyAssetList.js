@@ -11,8 +11,12 @@ import { times } from '@/helpers/utilities';
 import { useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { navbarHeightWithInset } from '../navbar/Navbar';
 
-const Container = styled(Column)(position.sizeAsObject('100%'));
+const Container = styled(Column)({
+  ...position.sizeAsObject('100%'),
+  paddingTop: navbarHeightWithInset,
+});
 
 const EmptyAssetList = ({
   descendingOpacity,
@@ -44,7 +48,11 @@ const EmptyAssetList = ({
         <ScrollView
           contentContainerStyle={{ height: '100%' }}
           refreshControl={
-            <RefreshControl onRefresh={refresh} refreshing={isRefreshing} />
+            <RefreshControl
+              onRefresh={refresh}
+              progressViewOffset={60}
+              refreshing={isRefreshing}
+            />
           }
         >
           {children}

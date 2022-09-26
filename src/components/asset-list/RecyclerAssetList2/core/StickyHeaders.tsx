@@ -24,6 +24,7 @@ const Context = React.createContext<
         height: number | undefined,
         name: string
       ) => void;
+      yOffset: number;
     }
   | undefined
 >(undefined);
@@ -44,7 +45,8 @@ function StickyHeaderInternal({
     return children;
   }
   const { setMeasures, interpolationsRanges, scrollViewRef } = context;
-  const { range, last } = interpolationsRanges[name] || {};
+  const { range: range_, last } = interpolationsRanges[name] || {};
+  const range = range_?.map(r => r - context.yOffset);
 
   const position = useRecyclerAssetListPosition();
   const animatedStyle = useMemo(
@@ -105,7 +107,13 @@ function StickyHeaderInternal({
   );
 }
 
-export function StickyHeaderManager({ children }: { children: ReactElement }) {
+export function StickyHeaderManager({
+  children,
+  yOffset = 0,
+}: {
+  children: ReactElement;
+  yOffset?: number;
+}) {
   const [positions, setPositions] = useState<
     Record<string, { height: number; position: number; name: string }>
   >({});
@@ -155,11 +163,12 @@ export function StickyHeaderManager({ children }: { children: ReactElement }) {
   );
   const value = useMemo(
     () => ({
+      yOffset,
       interpolationsRanges,
       scrollViewRef,
       setMeasures,
     }),
-    [interpolationsRanges, setMeasures]
+    [yOffset, interpolationsRanges, setMeasures]
   );
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

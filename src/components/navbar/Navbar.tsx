@@ -1,10 +1,10 @@
 import React from 'react';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { Box, Cover, Inline, Inset, Text } from '@/design-system';
 
 import { NavbarSvgIcon } from './NavbarSvgIcon';
 import { NavbarItem } from './NavbarItem';
 import { NavbarTextIcon } from './NavbarTextIcon';
+import { safeAreaInsetValues } from '@/utils';
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;
@@ -13,17 +13,25 @@ type NavbarProps = {
   title?: string;
 };
 
+export const navbarHeight = 48;
+export const navbarHeightWithInset = navbarHeight + safeAreaInsetValues.top;
+
 export function Navbar({
   hasStatusBarInset = false,
   leftComponent = <Box />,
   rightComponent = <Box />,
   title,
 }: NavbarProps) {
-  const insets = useSafeArea();
   return (
     <Box>
-      {hasStatusBarInset && <Box height={{ custom: insets.top }} />}
-      <Box height={{ custom: 48 }} justifyContent="center" alignItems="center">
+      {hasStatusBarInset && (
+        <Box height={{ custom: safeAreaInsetValues.top }} />
+      )}
+      <Box
+        height={{ custom: navbarHeight }}
+        justifyContent="center"
+        alignItems="center"
+      >
         <Cover alignVertical="center" alignHorizontal="justify">
           <Box width="full">
             <Inset horizontal="19px (Deprecated)">

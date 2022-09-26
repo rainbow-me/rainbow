@@ -11,8 +11,8 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import { Navbar } from '@/components/navbar/Navbar';
-import { Inline } from '@/design-system';
+import { Navbar, navbarHeightWithInset } from '@/components/navbar/Navbar';
+import { Box, Inline } from '@/design-system';
 import {
   useAccountEmptyState,
   useAccountSettings,
@@ -37,6 +37,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { atom, useRecoilValue } from 'recoil';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const addressCopiedToastAtom = atom({
   default: false,
@@ -80,6 +81,7 @@ export default function WalletScreen() {
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
+  const insets = useSafeAreaInsets();
 
   const revertToMainnet = useCallback(async () => {
     await resetAccountState();
@@ -273,14 +275,16 @@ export default function WalletScreen() {
           }
         />
       </HeaderOpacityToggler>
-      <AssetList
-        disableRefreshControl={isLoadingAssets}
-        isEmpty={isAccountEmpty || !!params?.emptyWallet}
-        isLoading={android && isLoadingAssets}
-        isWalletEthZero={isWalletEthZero}
-        network={currentNetwork}
-        walletBriefSectionsData={walletBriefSectionsData}
-      />
+      <Box style={{ flex: 1, marginTop: -navbarHeightWithInset }}>
+        <AssetList
+          disableRefreshControl={isLoadingAssets}
+          isEmpty={isAccountEmpty || !!params?.emptyWallet}
+          isLoading={android && isLoadingAssets}
+          isWalletEthZero={isWalletEthZero}
+          network={currentNetwork}
+          walletBriefSectionsData={walletBriefSectionsData}
+        />
+      </Box>
       <ToastPositionContainer>
         <Toast
           isVisible={isAddressCopiedToastActive}

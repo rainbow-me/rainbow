@@ -7,7 +7,7 @@ export const ProfileStickyHeaderHeight = 52;
 
 export function ProfileStickyHeader() {
   return (
-    <StickyHeader name="profile-header" visibleAtYPosition={140}>
+    <StickyHeader name="profile-header" visibleAtYPosition={44}>
       <Box
         background="body (Deprecated)"
         justifyContent="center"
