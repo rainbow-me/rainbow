@@ -232,7 +232,9 @@ const NotificationsSection = () => {
       <MenuContainer>
         {noPermissions && (
           <Menu
-            header={lang.t('settings.notifications_section.no_permissions')}
+            description={lang.t(
+              'settings.notifications_section.no_permissions'
+            )}
           >
             <MenuItem
               hasSfSymbol
@@ -254,7 +256,7 @@ const NotificationsSection = () => {
 
         {isTestnet ? (
           <Menu
-            header={lang.t(
+            description={lang.t(
               'settings.notifications_section.unsupported_network'
             )}
           >
