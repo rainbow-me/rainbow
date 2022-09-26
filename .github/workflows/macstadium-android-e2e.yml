@@ -45,6 +45,9 @@ jobs:
       - name: Install deps via Yarn
         run: yarn setup-ci
 
+      - name: Rebuild detox cache
+        run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
+
       - name: Build the app in Release mode
         run: ./node_modules/.bin/detox build --configuration android.emu.release
 
