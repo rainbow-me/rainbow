@@ -192,11 +192,6 @@ export default function QRCodeScanner() {
             />
           </Row>
         </Rows>
-        <Cover alignHorizontal="center" alignVertical="bottom">
-          <Inset bottom={{ custom: 54 }}>
-            <ConnectedDapps />
-          </Inset>
-        </Cover>
       </Box>
     </>
   );

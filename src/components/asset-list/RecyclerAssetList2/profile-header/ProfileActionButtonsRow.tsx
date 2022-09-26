@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import lang from 'i18n-js';
-import { IS_TESTING } from 'react-native-dotenv';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
 import Animated, {
@@ -21,16 +20,12 @@ import {
   useColorMode,
 } from '@/design-system';
 import { maybeSignUri } from '@/handlers/imgix';
-import {
-  CurrencySelectionTypes,
-  ExchangeModalTypes,
-  NetworkTypes,
-} from '@/helpers';
+import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
-  useAccountSettings,
   usePersistentDominantColorFromImage,
   useSwapCurrencyHandlers,
+  useWalletConnectConnections,
   useWallets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
@@ -38,7 +33,6 @@ import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
-import { FloatingEmojis } from '@/components/floating-emojis';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -292,7 +286,21 @@ function MoreButton() {
   // ////////////////////////////////////////////////////
   // Handlers
 
+  const [isToastActive, setToastActive] = useRecoilState(
+    addressCopiedToastAtom
+  );
+  const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
+
+  const handlePressCopy = React.useCallback(() => {
+    if (!isToastActive) {
+      setToastActive(true);
+      setTimeout(() => {
+        setToastActive(false);
+      }, 2000);
+    }
+    Clipboard.setString(accountAddress);
+  }, [accountAddress, isToastActive, setToastActive]);
 
   const handlePressQRCode = React.useCallback(() => {
     analytics.track('Tapped "My QR Code"', {
@@ -302,14 +310,14 @@ function MoreButton() {
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);
 
+  const handlePressConnectedApps = React.useCallback(() => {
+    navigate(Routes.CONNECTED_DAPPS);
+  }, [navigate]);
+
   // ////////////////////////////////////////////////////
   // Context Menu
 
-  const { accountAddress } = useAccountProfile();
-
-  const [isToastActive, setToastActive] = useRecoilState(
-    addressCopiedToastAtom
-  );
+  const { mostRecentWalletConnectors } = useWalletConnectConnections();
 
   const menuConfig = React.useMemo(
     () => ({
@@ -324,28 +332,32 @@ function MoreButton() {
           actionTitle: lang.t('button.my_qr_code'),
           icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
         },
-      ].filter(x => x),
+        mostRecentWalletConnectors.length > 0
+          ? {
+              actionKey: 'connectedApps',
+              actionTitle: lang.t('wallet.connected_apps'),
+              icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+            }
+          : {},
+      ].filter(Boolean),
       ...(ios ? { menuTitle: '' } : {}),
     }),
-    []
+    [mostRecentWalletConnectors.length]
   );
 
   const handlePressMenuItem = React.useCallback(
     e => {
       if (e.nativeEvent.actionKey === 'copy') {
-        if (!isToastActive) {
-          setToastActive(true);
-          setTimeout(() => {
-            setToastActive(false);
-          }, 2000);
-        }
-        Clipboard.setString(accountAddress);
+        handlePressCopy();
       }
       if (e.nativeEvent.actionKey === 'qrCode') {
         handlePressQRCode();
       }
+      if (e.nativeEvent.actionKey === 'connectedApps') {
+        handlePressConnectedApps();
+      }
     },
-    [accountAddress, handlePressQRCode, isToastActive, setToastActive]
+    [handlePressConnectedApps, handlePressCopy, handlePressQRCode]
   );
 
   return (

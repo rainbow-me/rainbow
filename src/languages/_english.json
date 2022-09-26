@@ -1427,6 +1427,7 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching"
       },
+      "connected_apps": "Connected Apps",
       "copy": "Copy",
       "copy_address": "Copy Address",
       "diagnostics": {
