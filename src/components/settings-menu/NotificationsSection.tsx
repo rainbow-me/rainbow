@@ -64,7 +64,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
     topic => notifications.topics[topic]
   );
 
-  const composedLabel = () => {
+  const composedLabel = useCallback(() => {
     if (allTopicsDisabled) {
       return lang.t('settings.notifications_section.off');
     }
@@ -94,7 +94,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
     } else {
       return lang.t('settings.notifications_section.off');
     }
-  };
+  }, [allTopicsDisabled, allTopicsEnabled, enabledTopics, notifications]);
 
   return <MenuItem.Label text={composedLabel()} />;
 };
@@ -198,7 +198,7 @@ const NotificationsSection = () => {
 
   useEffect(() => {
     // group wallets by relationship if the arrays are empty on first load
-    if (watchedWallets.length < 1 && ownedWallets.length < 1) {
+    if (watchedWallets.length === 0 && ownedWallets.length === 0) {
       walletIDs.forEach(key => {
         const wallet = wallets?.[key];
 
