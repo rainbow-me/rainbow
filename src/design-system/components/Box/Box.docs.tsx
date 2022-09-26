@@ -37,7 +37,7 @@ const docs: DocsType = {
           </Docs.Text>
           <Docs.Text>
             Below, you can see that the text color of{' '}
-            <Docs.Code>surface</Docs.Code> is dark, however, for{' '}
+            <Docs.Code>surfacePrimary</Docs.Code> is dark, however, for{' '}
             <Docs.Code>accent</Docs.Code> it is light.
           </Docs.Text>
         </>
