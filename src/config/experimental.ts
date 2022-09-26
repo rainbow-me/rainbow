@@ -7,6 +7,7 @@ import { STORAGE_IDS } from '@/model/mmkv';
  * keeping in mind that they should never be broken
  */
 
+export const HARDWARE_WALLETS = 'Hardware Wallets';
 export const LANGUAGE_SETTINGS = 'languageSettings';
 export const NOTIFICATIONS = 'Notifications';
 export const REVIEW_ANDROID = 'reviewAndroid';
@@ -18,6 +19,7 @@ export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const defaultConfig = {
   // this flag is not reactive. We use this in a static context
   [FLASHBOTS_WC]: { settings: true, value: false },
+  [HARDWARE_WALLETS]: { settings: true, value: false },
   [L2_TXS]: { needsRestart: true, settings: true, value: false },
   [LANGUAGE_SETTINGS]: { settings: false, value: false },
   [NOTIFICATIONS]: { needsRestart: true, settings: true, value: false },

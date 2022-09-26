@@ -28,6 +28,7 @@ import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
+import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -111,6 +112,7 @@ interface Props {
   ) => void;
   onPressAddAccount: () => void;
   onPressImportSeedPhrase: () => void;
+  onPressPairHardwareWallet: () => void;
   scrollEnabled: boolean;
   showDividers: boolean;
   watchOnly: boolean;
@@ -126,6 +128,7 @@ export default function WalletList({
   onChangeAccount,
   onPressAddAccount,
   onPressImportSeedPhrase,
+  onPressPairHardwareWallet,
   scrollEnabled,
   showDividers,
   watchOnly,
@@ -136,6 +139,7 @@ export default function WalletList({
   const { network } = useAccountSettings();
   const opacityAnimation = useSharedValue(0);
   const emptyOpacityAnimation = useSharedValue(1);
+  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -278,6 +282,13 @@ export default function WalletList({
               label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
               onPress={onPressImportSeedPhrase}
             />
+            {hardwareWalletsEnabled && (
+              <WalletOption
+                editMode={editMode}
+                label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
+                onPress={onPressPairHardwareWallet}
+              />
+            )}
           </WalletListFooter>
         )}
       </WalletsContainer>
