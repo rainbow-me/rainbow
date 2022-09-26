@@ -1272,6 +1272,13 @@
       "copied": "Copied \"%{copiedText}\" :)",
       "invalid_paste": "You can't paste that here :)"
     },
+    "hardware_wallets": {
+      "pair_your_nano": "Pair your Nano X",
+      "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
+      "learn_more_about_ledger": "Learn more about Ledger",
+      "title": "Looking for devices",
+      "subtitle": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
+    },
     "wallet": {
       "action": {
         "add_existing": "Ajouter un portefeuille existant",
@@ -1284,6 +1291,7 @@
         "hide": "Hide :)",
         "import_wallet": "Importer un portefeuille",
         "notifications": "Notification Settings :)",
+        "pair_hardware_wallet": "Pair a hardware wallet",
         "paste": "Coller",
         "pin": "Pin :)",
         "reject": "Refuser",

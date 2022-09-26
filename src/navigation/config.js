@@ -150,6 +150,18 @@ export const settingsSheetConfig = {
   }),
 };
 
+export const pairHardwareWalletNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.2,
+    }),
+  }),
+};
+
 export const registerENSNavigatorConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

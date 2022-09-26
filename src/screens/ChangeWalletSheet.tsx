@@ -27,7 +27,12 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 import { analytics } from '@/analytics';
-import { PROFILES, useExperimentalFlag } from '@/config';
+import {
+  getExperimetalFlag,
+  HARDWARE_WALLETS,
+  PROFILES,
+  useExperimentalFlag,
+} from '@/config';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import {
@@ -49,7 +54,7 @@ import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const footerHeight = 111;
+const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 164 : 111;
 const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
@@ -540,6 +545,14 @@ export default function ChangeWalletSheet() {
     navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [navigate]);
 
+  const onPressPairHardwareWallet = useCallback(() => {
+    analytics.track('Tapped "Pair Hardware Wallet"');
+    goBack();
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+    });
+  }, [goBack, navigate]);
+
   const onPressEditMode = useCallback(() => {
     analytics.track('Tapped "Edit"');
     setEditMode(e => !e);
@@ -586,6 +599,7 @@ export default function ChangeWalletSheet() {
         onChangeAccount={onChangeAccount}
         onPressAddAccount={onPressAddAccount}
         onPressImportSeedPhrase={onPressImportSeedPhrase}
+        onPressPairHardwareWallet={onPressPairHardwareWallet}
         scrollEnabled={scrollEnabled}
         showDividers={showDividers}
         watchOnly={watchOnly}
