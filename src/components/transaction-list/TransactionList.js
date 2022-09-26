@@ -1,21 +1,12 @@
 import Clipboard from '@react-native-community/clipboard';
-import lang from 'i18n-js';
-import startCase from 'lodash/startCase';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import { analytics } from '@/analytics';
-import { TransactionStatusTypes } from '@/entities';
 import showWalletErrorAlert from '@/helpers/support';
-import TransactionActions from '@/helpers/transactionActions';
-import {
-  getHumanReadableDate,
-  hasAddableContact,
-} from '@/helpers/transactions';
+
 import { pickShallow } from '@/helpers/utilities';
-import { isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,
@@ -26,11 +17,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import { removeRequest } from '@/redux/requests';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import {
-  abbreviations,
-  ethereumUtils,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import config from '@/model/config';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
@@ -137,110 +124,7 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, minedAt, network, pending, to, status, type } = item;
-
-      const date = getHumanReadableDate(minedAt);
-
-      const isSent =
-        status === TransactionStatusTypes.sending ||
-        status === TransactionStatusTypes.sent;
-      const showContactInfo = hasAddableContact(status, type);
-
-      const headerInfo = {
-        address: '',
-        divider: isSent
-          ? lang.t('account.tx_to_lowercase')
-          : lang.t('account.tx_from_lowercase'),
-        type: status.charAt(0).toUpperCase() + status.slice(1),
-      };
-
-      const contactAddress = isSent ? to : from;
-      const contact = contacts[contactAddress];
-      let contactColor = 0;
-
-      if (contact) {
-        headerInfo.address = contact.nickname;
-        contactColor = contact.color;
-      } else {
-        headerInfo.address = isValidDomainFormat(contactAddress)
-          ? contactAddress
-          : abbreviations.address(contactAddress, 4, 10);
-        contactColor = getRandomColor();
-      }
-
-      const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
-      const canBeResubmitted = isOutgoing && !minedAt;
-      const canBeCancelled =
-        canBeResubmitted && status !== TransactionStatusTypes.cancelling;
-
-      const blockExplorerAction = lang.t('wallet.action.view_on', {
-        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
-      });
-
-      if (hash) {
-        let buttons = [
-          ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
-          ...(canBeCancelled ? [TransactionActions.cancel] : []),
-          blockExplorerAction,
-          ...(ios ? [TransactionActions.close] : []),
-        ];
-        if (showContactInfo) {
-          buttons.unshift(
-            contact
-              ? TransactionActions.viewContact
-              : TransactionActions.addToContacts
-          );
-        }
-
-        showActionSheetWithOptions(
-          {
-            cancelButtonIndex: buttons.length - 1,
-            options: buttons,
-            title: pending
-              ? `${headerInfo.type}${
-                  showContactInfo
-                    ? ' ' + headerInfo.divider + ' ' + headerInfo.address
-                    : ''
-                }`
-              : showContactInfo
-              ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
-              : `${headerInfo.type} ${date}`,
-          },
-          buttonIndex => {
-            const action = buttons[buttonIndex];
-            switch (action) {
-              case TransactionActions.viewContact:
-              case TransactionActions.addToContacts:
-                navigate(Routes.MODAL_SCREEN, {
-                  address: contactAddress,
-                  asset: item,
-                  color: contactColor,
-                  contact,
-                  type: 'contact_profile',
-                });
-                break;
-              case TransactionActions.speedUp:
-                navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-                  tx: item,
-                  type: 'speed_up',
-                });
-                break;
-              case TransactionActions.cancel:
-                navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-                  tx: item,
-                  type: 'cancel',
-                });
-                break;
-              case blockExplorerAction:
-                ethereumUtils.openTransactionInBlockExplorer(hash, network);
-                break;
-              default: {
-                return;
-              }
-            }
-          }
-        );
-      }
+      showTransactionDetailsSheet(item, contacts, accountAddress);
     },
     [accountAddress, contacts, navigate, transactions]
   );

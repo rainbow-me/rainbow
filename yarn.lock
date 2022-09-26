@@ -4162,6 +4162,11 @@
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
 
+"@notifee/react-native@5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-5.6.0.tgz#a34998c98ad93482e4452b4d2cfb405b4f5f59ce"
+  integrity sha512-MBV863fQx5qFDXKQ+3i9EkVeFAGVERmOOpk4gADx17WpZJSLNhVCnXRA1CEP0bJ4B39G6Z2SiadRl19E5GeWiQ==
+
 "@npmcli/node-gyp@^1.0.2":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@npmcli/node-gyp/-/node-gyp-1.0.3.tgz#a912e637418ffc5f2db375e93b85837691a43a33"
@@ -5279,11 +5284,12 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-native@0.63.25":
-  version "0.63.25"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.63.25.tgz#a08bbe17a75cce993f52655a8fe75f30bf77e965"
+"@types/react-native@0.68.4":
+  version "0.68.4"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.68.4.tgz#2495a94ae5949511e85beb64792ebeb722c56ce6"
+  integrity sha512-rPz7HRMNhwPMrzaMtG5QtFpKuIH4XlBkrVSZICqCtHTbaixdtStSyAp9GxkBJAQmmK2McO28mmqDiyqKOoOL5Q==
   dependencies:
-    "@types/react" "*"
+    "@types/react" "^17"
 
 "@types/react-redux@7.1.9":
   version "7.1.9"
@@ -5313,6 +5319,15 @@
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.52.tgz#c46c72d1a1d8d9d666f4dd2066c0e22600ccfde1"
   dependencies:
     "@types/prop-types" "*"
+    csstype "^3.0.2"
+
+"@types/react@^17":
+  version "17.0.49"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.49.tgz#df87ba4ca8b7942209c3dc655846724539dc1049"
+  integrity sha512-CCBPMZaPhcKkYUTqFs/hOWqKjPxhTEmnZWjlHHgIMop67DsXywf9B5Os9Hz8KSacjNOgIdnZVJamwl232uxoPg==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
     csstype "^3.0.2"
 
 "@types/resolve@^0.0.8":
@@ -11446,10 +11461,6 @@ hmac-drbg@^1.0.1:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-hoist-non-react-statics@^2.3.1:
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
-
 hoist-non-react-statics@^3.0.0, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
@@ -16333,10 +16344,6 @@ react-native-ios11-devicecheck@0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/react-native-ios11-devicecheck/-/react-native-ios11-devicecheck-0.0.3.tgz#2a9156a35f4aef8d5e196f9e49ceb89fce7f2a52"
 
-react-native-iphone-x-helper@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.0.tgz#84fd13e6b89cc3aa4daa80ec514bf15cb724d86d"
-
 react-native-iphone-x-helper@^1.2.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
@@ -16449,16 +16456,10 @@ react-native-restart@0.0.22:
   version "0.0.22"
   resolved "https://registry.yarnpkg.com/react-native-restart/-/react-native-restart-0.0.22.tgz#81fcb7f31e35951d85410c68b9556acf3ab88705"
 
-react-native-safe-area-context@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-0.5.0.tgz#2185519ad6296dd7bd4ecc79864c02ca3a7f40b5"
-  integrity sha512-ukg9gO9jCdQIkYYwQf0/mp+67XiFSJH7BOxthoBbJq0x3f61Q/6U6E2v5MkcHO0vJg1Ul4/Pq77V+nR5eY/9fA==
-
-react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
-  version "0.11.0"
-  resolved "https://codeload.github.com/mikedemarais/react-native-safe-area-view/tar.gz/a543897214519c700fab160a03388cef5a70ec3c"
-  dependencies:
-    hoist-non-react-statics "^2.3.1"
+react-native-safe-area-context@4.3.3:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.3.3.tgz#a0f1e3116ded39efc1b78a46a6d89c71169827e4"
+  integrity sha512-xwsloGLDUzeTN40TIh4Te/zRePSnBAuWlLIiEW3RYE9gHHYslqQWpfK7N24SdAQEH3tHZ+huoYNjo2GQJO/vnQ==
 
 react-native-safe-modules@^1.0.3:
   version "1.0.3"

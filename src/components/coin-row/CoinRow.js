@@ -78,7 +78,7 @@ export default function CoinRow({
             ...props,
           })}
         </Row>
-        <Row align="center" marginBottom={0.5}>
+        <Row align="center" marginBottom={0.5} testID={testID}>
           {bottomRowRender({
             nativeCurrency,
             nativeCurrencySymbol,
