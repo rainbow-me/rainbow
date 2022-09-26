@@ -31,7 +31,7 @@ jobs:
       - uses: ./.github/actions/clear-cache
   post-to-slack:
     runs-on: ["self-hosted"]
-    - steps:
+    steps:
       - name: Send success message to slack
           id: slack-success-msg
           uses: slackapi/slack-github-action@v1.21.0
