@@ -322,7 +322,7 @@
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
     "chai": "4.2.0",
-    "detox": "19.7.1",
+    "detox": "19.12.1",
     "dotenv": "8.2.0",
     "eslint": "8.22.0",
     "eslint-config-rainbow": "4.2.0",
