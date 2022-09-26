@@ -42,7 +42,7 @@ type WalletRowLabelProps = {
   groupOff: boolean;
   notifications: {
     enabled: boolean;
-    topics: object;
+    topics: string[];
   };
 };
 
@@ -56,8 +56,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
   const allTopicsDisabled =
     groupOff || Object.values(notifications.topics).every(topic => !topic);
   const enabledTopics = Object.keys(notifications.topics).filter(
-    // @ts-expect-error: why are you yelling
-    topic => notifications.topics[topic]
+    topic => notifications.topics[(topic as unknown) as number]
   );
 
   const composedLabel = useMemo(() => {
