@@ -50,9 +50,10 @@ type WalletRowLabelProps = {
   };
 };
 
+const DEVICE_WIDTH = deviceUtils.dimensions.width;
+const AMOUNT_OF_TOPICS_TO_DISPLAY = DEVICE_WIDTH > 400 ? 3 : 2;
+
 const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
-  const deviceWidth = deviceUtils.dimensions.width;
-  const AMOUNT_OF_TOPICS_TO_DISPLAY = deviceWidth > 400 ? 3 : 2;
   const allTopicsEnabled = Object.values(notifications.topics).every(
     topic => topic
   );
