@@ -10,44 +10,44 @@ jobs:
   clear-cache-ci-1:
     runs-on: ["self-hosted", "CI-1"]
     steps:
-      - uses: ./.github/actions/macstadium-clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache-single-instance
   clear-cache-ci-2:
     runs-on: ["self-hosted", "CI-2"]
     steps:
-      - uses: ./.github/actions/macstadium-clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache-single-instance
   clear-cache-ci-3:
     runs-on: ["self-hosted", "CI-3"]
     steps:
-      - uses: ./.github/actions/macstadium-clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache-single-instance
   clear-cache-ci-4:
     runs-on: ["self-hosted", "CI-4"]
     steps:
-      - uses: ./.github/actions/macstadium-clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache-single-instance
   clear-cache-ci-5:
     runs-on: ["self-hosted", "CI-5"]
     steps:
-      - uses: ./.github/actions/macstadium-clear-cache-single-instance
+      - uses: ./.github/actions/clear-cache-single-instance
   # WE SHOULD ENABLE THESE ONCE THE NEW MACHINES ARE UP AND RUNNING
   # clear-cache-ci-6:
   #   runs-on: ["self-hosted", "CI-6"]
   #   steps:
-  #     - uses: ./.github/actions/macstadium-clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache-single-instance
   # clear-cache-ci-7:
   #   runs-on: ["self-hosted", "CI-7"]
   #   steps:
-  #     - uses: ./.github/actions/macstadium-clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache-single-instance
   # clear-cache-ci-8:
   #   runs-on: ["self-hosted", "CI-8"]
   #   steps:
-  #     - uses: ./.github/actions/macstadium-clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache-single-instance
   # clear-cache-ci-9:
   #   runs-on: ["self-hosted", "CI-9"]
   #   steps:
-  #     - uses: ./.github/actions/macstadium-clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache-single-instance
   # clear-cache-ci-10:
   #   runs-on: ["self-hosted", "CI-10"]
   #   steps:
-  #     - uses: ./.github/actions/macstadium-clear-cache-single-instance
+  #     - uses: ./.github/actions/clear-cache-single-instance
   
 
     
