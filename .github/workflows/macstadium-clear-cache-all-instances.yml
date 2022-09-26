@@ -31,11 +31,11 @@ jobs:
       - uses: ./.github/actions/clear-cache
   post-to-slack:
     runs-on: ["self-hosted"]
+    needs: [clear-cache-ci-1, clear-cache-ci-2, clear-cache-ci-3, clear-cache-ci-4, clear-cache-ci-5]
     steps:
       - name: Send success message to slack
         id: slack-success-msg
         uses: slackapi/slack-github-action@v1.21.0
-        needs: [clear-cache-ci-1, clear-cache-ci-2, clear-cache-ci-3, clear-cache-ci-4, clear-cache-ci-5]
         if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}          
         with:
           # This data can be any valid JSON from a previous step in the GitHub Action
@@ -83,7 +83,6 @@ jobs:
       - name: Send error message to slack
         id: slack-error-msg
         uses: slackapi/slack-github-action@v1.21.0
-        needs: [clear-cache-ci-1, clear-cache-ci-2, clear-cache-ci-3, clear-cache-ci-4, clear-cache-ci-5]
         if: ${{ always() && !contains(join(needs.*.result, ','), 'success') }}
         with:
           # This data can be any valid JSON from a previous step in the GitHub Action
