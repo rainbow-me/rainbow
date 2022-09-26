@@ -40,8 +40,9 @@ export default function ProfileSheet() {
   const { colors } = useTheme();
   const { accountAddress } = useAccountSettings();
 
-  const { height: deviceHeight } = useDimensions();
-  const contentHeight = deviceHeight - sharedCoolModalTopOffset;
+  const { height: deviceHeight, isSmallPhone } = useDimensions();
+  const contentHeight =
+    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const ensName = params?.address;
   const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({
