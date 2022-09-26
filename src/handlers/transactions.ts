@@ -25,7 +25,7 @@ import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-  isLowerCaseMatch
+  isLowerCaseMatch,
 } from '@/utils';
 import { getRandomColor } from '@/styles/colors';
 import startCase from 'lodash/startCase';
@@ -238,7 +238,7 @@ export const showTransactionDetailsSheet = (
       }
     );
   }
-}
+};
 
 /**
  * Returns the `TransactionStatus` that represents completion for a given

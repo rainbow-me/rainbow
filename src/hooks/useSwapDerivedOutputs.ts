@@ -216,8 +216,8 @@ const getOutputAmount = async (
       | CrosschainQuote
       | QuoteError
       | null = await (isCrosschainSwap ? getCrosschainQuote : getQuote)(
-        quoteParams
-      );
+      quoteParams
+    );
     Logger.debug('Got quote', rand, quote);
 
     if (
@@ -419,10 +419,10 @@ export default function useSwapDerivedOutputs(type: string) {
       const inputAmount =
         independentValue && inputPrice
           ? convertAmountFromNativeValue(
-            independentValue,
-            inputPrice,
-            inputCurrency.decimals
-          )
+              independentValue,
+              inputPrice,
+              inputCurrency.decimals
+            )
           : null;
 
       const inputAmountDisplay = updatePrecisionToDisplay(

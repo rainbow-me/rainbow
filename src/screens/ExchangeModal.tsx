@@ -488,7 +488,17 @@ export default function ExchangeModal({
     } catch (error) {
       updateTxFee(defaultGasLimit, null);
     }
-  }, [chainId, currentNetwork, defaultGasLimit, inputAmount, isCrosschainSwap, outputAmount, tradeDetails, type, updateTxFee]);
+  }, [
+    chainId,
+    currentNetwork,
+    defaultGasLimit,
+    inputAmount,
+    isCrosschainSwap,
+    outputAmount,
+    tradeDetails,
+    type,
+    updateTxFee,
+  ]);
 
   useEffect(() => {
     if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {
