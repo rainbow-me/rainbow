@@ -8,6 +8,5 @@ runs:
     - id: clean
       shell: bash
       run: |
-        yarn detox clean-framework-cache && yarn detox build-framework-cache
         yarn nuke
 
