@@ -299,60 +299,59 @@ class App extends Component {
   };
 
   render = () => (
-    <MainThemeProvider>
-      <ReduxProvider store={store}>
-        <RainbowContextWrapper>
-          <ErrorBoundary>
-            <Portal>
-              <SafeAreaProvider>
-                <PersistQueryClientProvider
-                  client={queryClient}
-                  persistOptions={persistOptions}
-                >
-                  <RecoilRoot>
-                    <SharedValuesProvider>
-                      <NotificationsHandler
-                        walletReady={this.props.walletReady}
-                      >
-                        <View style={containerStyle}>
-                          {this.state.initialRoute && (
-                            <InitialRouteContext.Provider
-                              value={this.state.initialRoute}
-                            >
-                              <RoutesComponent
-                                onReady={this.handleSentryNavigationIntegration}
-                                ref={this.handleNavigatorRef}
-                              />
-                              <PortalConsumer />
-                            </InitialRouteContext.Provider>
-                          )}
-                          <OfflineToast />
-                          <FedoraToast ref={FedoraToastRef} />
-                        </View>
-                      </NotificationsHandler>
-                    </SharedValuesProvider>
-                  </RecoilRoot>
-                </PersistQueryClientProvider>
-              </SafeAreaProvider>
-            </Portal>
-          </ErrorBoundary>
-        </RainbowContextWrapper>
-      </ReduxProvider>
-    </MainThemeProvider>
+    <Portal>
+      <NotificationsHandler walletReady={this.props.walletReady}>
+        <View style={containerStyle}>
+          {this.state.initialRoute && (
+            <InitialRouteContext.Provider value={this.state.initialRoute}>
+              <RoutesComponent
+                onReady={this.handleSentryNavigationIntegration}
+                ref={this.handleNavigatorRef}
+              />
+              <PortalConsumer />
+            </InitialRouteContext.Provider>
+          )}
+          <OfflineToast />
+          <FedoraToast ref={FedoraToastRef} />
+        </View>
+      </NotificationsHandler>
+    </Portal>
   );
 }
 
-const AppWithRedux = connect(({ appState: { walletReady } }) => ({
-  walletReady,
+const AppWithRedux = connect(state => ({
+  walletReady: state.appState.walletReady,
 }))(App);
 
-const AppWithReduxStore = () => <AppWithRedux store={store} />;
+function Root() {
+  return (
+    <ReduxProvider store={store}>
+      <RecoilRoot>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={persistOptions}
+        >
+          <SafeAreaProvider>
+            <MainThemeProvider>
+              <RainbowContextWrapper>
+                <SharedValuesProvider>
+                  <ErrorBoundary>
+                    <AppWithRedux />
+                  </ErrorBoundary>
+                </SharedValuesProvider>
+              </RainbowContextWrapper>
+            </MainThemeProvider>
+          </SafeAreaProvider>
+        </PersistQueryClientProvider>
+      </RecoilRoot>
+    </ReduxProvider>
+  );
+}
 
-const AppWithSentry = Sentry.wrap(AppWithReduxStore);
-
-const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
-
-const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
+const RootWithSentry = Sentry.wrap(Root);
+const RootWithCodePush = codePush({
+  checkFrequency: codePush.CheckFrequency.MANUAL,
+})(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>
@@ -361,5 +360,5 @@ const PlaygroundWithReduxStore = () => (
 );
 
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : AppWithCodePush
+  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush
 );
