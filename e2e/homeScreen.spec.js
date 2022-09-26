@@ -37,7 +37,7 @@ describe('Home Screen', () => {
     await Helpers.checkIfExists(`profile-name-${RAINBOW_TEST_WALLET}`);
     await Helpers.checkIfExistsByText(RAINBOW_TEST_WALLET);
     await Helpers.checkIfVisible('balance-text');
-    await Helpers.checkIfVisible('copy-button');
+    await Helpers.checkIfVisible('buy-button');
     await Helpers.checkIfVisible('swap-button');
     await Helpers.checkIfVisible('send-button');
     await Helpers.checkIfVisible('more-button');
@@ -48,11 +48,6 @@ describe('Home Screen', () => {
     await Helpers.checkIfVisible('profile-sticky-header');
     await Helpers.checkIfExistsByText(RAINBOW_TEST_WALLET);
     await Helpers.swipe('wallet-screen', 'down');
-  });
-
-  it('tapping "Copy" copies the address', async () => {
-    await Helpers.waitAndTap('copy-button');
-    await Helpers.checkIfVisible('address-copied-toast');
   });
 
   it('tapping "Swap" opens the swap screen', async () => {

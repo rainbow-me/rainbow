@@ -97,7 +97,7 @@ export function ProfileActionButtonsRow() {
           <Columns>
             <Column>
               <Animated.View style={[expandStyle]}>
-                <CopyButton />
+                <BuyButton />
               </Animated.View>
             </Column>
             <Column>
@@ -184,53 +184,42 @@ function ActionButton({
   );
 }
 
-function CopyButton() {
+function BuyButton() {
   const { accountAddress } = useAccountProfile();
-
-  const [isToastActive, setToastActive] = useRecoilState(
-    addressCopiedToastAtom
-  );
-
-  const onNewEmoji = React.useRef<() => void>();
-
+  const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
 
   const handlePress = React.useCallback(() => {
-    if (isDamaged) showWalletErrorAlert();
+    if (isDamaged) {
+      showWalletErrorAlert();
+      return;
+    }
 
-    analytics.track('Tapped "Copy"', {
+    if (!config.wyre_enabled) {
+      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
+      return;
+    }
+
+    analytics.track('Tapped "Add Cash"', {
       category: 'home screen',
     });
 
-    let timeout: NodeJS.Timeout;
-    if (!isToastActive) {
-      setToastActive(true);
-      timeout = setTimeout(() => {
-        setToastActive(false);
-      }, 2000);
+    if (ios) {
+      navigate(Routes.ADD_CASH_FLOW);
+    } else {
+      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
+        params: {
+          address: accountAddress,
+        },
+        screen: Routes.WYRE_WEBVIEW,
+      });
     }
-
-    onNewEmoji?.current && onNewEmoji.current();
-    Clipboard.setString(accountAddress);
-
-    return () => clearTimeout(timeout);
-  }, [accountAddress, isDamaged, isToastActive, setToastActive]);
+  }, [accountAddress, isDamaged, navigate]);
 
   return (
     <Box>
-      {/* @ts-expect-error – JS component */}
-      <FloatingEmojis
-        distance={150}
-        duration={500}
-        fadeOut={false}
-        scaleTo={0}
-        size={50}
-        wiggleFactor={0}
-        // @ts-expect-error – JS component
-        setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
-      />
-      <ActionButton icon="􀐅" onPress={handlePress} testID="copy-button">
-        {lang.t('wallet.copy')}
+      <ActionButton icon="􀁌" onPress={handlePress} testID="buy-button">
+        {lang.t('wallet.buy')}
       </ActionButton>
     </Box>
   );
@@ -303,36 +292,7 @@ function MoreButton() {
   // ////////////////////////////////////////////////////
   // Handlers
 
-  const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
-  const { isDamaged } = useWallets();
-
-  const handlePressAddCash = React.useCallback(() => {
-    if (isDamaged) {
-      showWalletErrorAlert();
-      return;
-    }
-
-    if (!config.wyre_enabled) {
-      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
-      return;
-    }
-
-    analytics.track('Tapped "Add Cash"', {
-      category: 'home screen',
-    });
-
-    if (ios) {
-      navigate(Routes.ADD_CASH_FLOW);
-    } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
-        params: {
-          address: accountAddress,
-        },
-        screen: Routes.WYRE_WEBVIEW,
-      });
-    }
-  }, [accountAddress, isDamaged, navigate]);
 
   const handlePressQRCode = React.useCallback(() => {
     analytics.track('Tapped "My QR Code"', {
@@ -345,21 +305,20 @@ function MoreButton() {
   // ////////////////////////////////////////////////////
   // Context Menu
 
-  const { network } = useAccountSettings();
+  const { accountAddress } = useAccountProfile();
 
-  const isAddCashAvailable =
-    IS_TESTING === 'true' || network === NetworkTypes.mainnet;
+  const [isToastActive, setToastActive] = useRecoilState(
+    addressCopiedToastAtom
+  );
 
   const menuConfig = React.useMemo(
     () => ({
       menuItems: [
-        isAddCashAvailable
-          ? {
-              actionKey: 'addCash',
-              actionTitle: lang.t('button.add_cash'),
-              icon: { iconType: 'SYSTEM', iconValue: 'dollarsign.circle' },
-            }
-          : null,
+        {
+          actionKey: 'copy',
+          actionTitle: lang.t('wallet.copy_address'),
+          icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
+        },
         {
           actionKey: 'qrCode',
           actionTitle: lang.t('button.my_qr_code'),
@@ -368,19 +327,25 @@ function MoreButton() {
       ].filter(x => x),
       ...(ios ? { menuTitle: '' } : {}),
     }),
-    [isAddCashAvailable]
+    []
   );
 
   const handlePressMenuItem = React.useCallback(
     e => {
-      if (e.nativeEvent.actionKey === 'addCash') {
-        handlePressAddCash();
+      if (e.nativeEvent.actionKey === 'copy') {
+        if (!isToastActive) {
+          setToastActive(true);
+          setTimeout(() => {
+            setToastActive(false);
+          }, 2000);
+        }
+        Clipboard.setString(accountAddress);
       }
       if (e.nativeEvent.actionKey === 'qrCode') {
         handlePressQRCode();
       }
     },
-    [handlePressAddCash, handlePressQRCode]
+    [accountAddress, handlePressQRCode, isToastActive, setToastActive]
   );
 
   return (

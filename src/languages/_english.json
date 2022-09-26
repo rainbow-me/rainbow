@@ -1422,6 +1422,7 @@
         "imported": "Imported"
       },
       "balance_title": "Balance",
+      "buy": "Buy",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching"
