@@ -29,36 +29,12 @@ jobs:
     runs-on: ["CI-5"]
     steps:
       - uses: ./.github/actions/clear-cache
-  # WE SHOULD ENABLE THESE ONCE THE NEW MACHINES ARE UP AND RUNNING
-  # ALSO CHECK LINE 57 and 107
-  # clear-cache-ci-6:
-  #   runs-on: ["CI-6"]
-  #   steps:
-  #     - uses: ./.github/actions/clear-cache
-  # clear-cache-ci-7:
-  #   runs-on: ["CI-7"]
-  #   steps:
-  #     - uses: ./.github/actions/clear-cache
-  # clear-cache-ci-8:
-  #   runs-on: ["CI-8"]
-  #   steps:
-  #     - uses: ./.github/actions/clear-cache
-  # clear-cache-ci-9:
-  #   runs-on: ["CI-9"]
-  #   steps:
-  #     - uses: ./.github/actions/clear-cache
-  # clear-cache-ci-10:
-  #   runs-on: ["CI-10"]
-  #   steps:
-  #     - uses: ./.github/actions/clear-cache
   post-to-slack:
     runs-on: ["self-hosted"]
     - steps:
       - name: Send success message to slack
           id: slack-success-msg
           uses: slackapi/slack-github-action@v1.21.0
-          # Uncomment these once the new machines are up and running and comment line 59
-          # needs: [clear-cache-ci-1, clear-cache-ci-2, clear-cache-ci-3, clear-cache-ci-4, clear-cache-ci-5, clear-cache-ci-6, clear-cache-ci-7, clear-cache-ci-8, clear-cache-ci-9, clear-cache-ci-10]
           needs: [clear-cache-ci-1, clear-cache-ci-2, clear-cache-ci-3, clear-cache-ci-4, clear-cache-ci-5]
           if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}          
           with:
@@ -107,8 +83,6 @@ jobs:
         - name: Send error message to slack
           id: slack-error-msg
           uses: slackapi/slack-github-action@v1.21.0
-          # Uncomment these once the new machines are up and running and comment line 110
-          # needs: [clear-cache-ci-1, clear-cache-ci-2, clear-cache-ci-3, clear-cache-ci-4, clear-cache-ci-5, clear-cache-ci-6, clear-cache-ci-7, clear-cache-ci-8, clear-cache-ci-9, clear-cache-ci-10]
           needs: [clear-cache-ci-1, clear-cache-ci-2, clear-cache-ci-3, clear-cache-ci-4, clear-cache-ci-5]
           if: ${{ always() && !contains(join(needs.*.result, ','), 'success') }}
           with:
