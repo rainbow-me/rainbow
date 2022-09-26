@@ -31,10 +31,11 @@ import Spinner from '../Spinner';
 import { useTheme } from '@/theme';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { RainbowAccount } from '@/model/wallet';
+import { isTestnetNetwork } from '@/handlers/web3';
 
 type WalletRowProps = {
   groupOff: boolean;
-  notMainnet: boolean;
+  isTestnet: boolean;
   wallet: RainbowAccount;
 };
 
@@ -94,7 +95,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
   return <MenuItem.Label text={composedLabel} />;
 };
 
-const WalletRow = ({ wallet, groupOff, notMainnet }: WalletRowProps) => {
+const WalletRow = ({ wallet, groupOff, isTestnet }: WalletRowProps) => {
   const index = useNavigationState(state => state.index);
   const { navigate } = useNavigation();
   const { notifications } = useNotificationSettings(wallet.address);
@@ -133,9 +134,9 @@ const WalletRow = ({ wallet, groupOff, notMainnet }: WalletRowProps) => {
 
   return (
     <MenuItem
-      disabled={notMainnet}
+      disabled={isTestnet}
       key={wallet.address}
-      hasRightArrow={!notMainnet}
+      hasRightArrow={!isTestnet}
       labelComponent={
         <WalletRowLabel
           notifications={notificationSettings}
@@ -169,8 +170,8 @@ const WalletRow = ({ wallet, groupOff, notMainnet }: WalletRowProps) => {
 const NotificationsSection = () => {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-  const { chainId } = useAccountSettings();
-  const notMainnet = chainId !== 1;
+  const { network } = useAccountSettings();
+  const isTestnet = isTestnetNetwork(network);
   const { wallets } = useWallets();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const walletIDs = Object.keys(wallets!);
@@ -277,7 +278,7 @@ const NotificationsSection = () => {
               </Menu>
             )}
 
-            {notMainnet ? (
+            {isTestnet ? (
               <Menu
                 header={lang.t(
                   'settings.notifications_section.unsupported_network'
@@ -314,7 +315,7 @@ const NotificationsSection = () => {
                     disabled
                     rightComponent={
                       <Switch
-                        disabled={noOwnedWallets || notMainnet}
+                        disabled={noOwnedWallets || isTestnet}
                         onValueChange={toggleAllOwnedNotifications}
                         value={ownerEnabled}
                       />
@@ -334,7 +335,7 @@ const NotificationsSection = () => {
                       key={wallet.address}
                       wallet={wallet}
                       groupOff={!ownerEnabled}
-                      notMainnet={notMainnet}
+                      isTestnet={isTestnet}
                     />
                   ))}
                 </Menu>
@@ -351,7 +352,7 @@ const NotificationsSection = () => {
                     disabled
                     rightComponent={
                       <Switch
-                        disabled={noWatchedWallets || notMainnet}
+                        disabled={noWatchedWallets || isTestnet}
                         onValueChange={toggleAllWatchedNotifications}
                         value={watcherEnabled}
                       />
@@ -371,7 +372,7 @@ const NotificationsSection = () => {
                       key={wallet.address}
                       wallet={wallet}
                       groupOff={!watcherEnabled}
-                      notMainnet={notMainnet}
+                      isTestnet={isTestnet}
                     />
                   ))}
                 </Menu>
