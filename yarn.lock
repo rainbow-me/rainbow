@@ -16567,9 +16567,9 @@ react-native-widgetkit@1.0.9:
   resolved "https://registry.yarnpkg.com/react-native-widgetkit/-/react-native-widgetkit-1.0.9.tgz#aded1c12f7c7cfd18912b947228aac433c05ddc2"
   integrity sha512-WBwdUbcOzyL0LiqhRyd7gS9A1D0X5A/m2h0fAKTbxUAbp3r2D2pdjyPnVW/6q0otpq7RIyZFo6Ln1EDJ9gfhEg==
 
-react-native@rainbow-me/react-native#b77b0f685c1076c99effae4255a4353eddea2419:
+react-native@rainbow-me/react-native#d6858416ff69b7835f0c25aee58409f1dc6c81ef:
   version "0.68.1"
-  resolved "https://codeload.github.com/rainbow-me/react-native/tar.gz/b77b0f685c1076c99effae4255a4353eddea2419"
+  resolved "https://codeload.github.com/rainbow-me/react-native/tar.gz/d6858416ff69b7835f0c25aee58409f1dc6c81ef"
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^7.0.3"
