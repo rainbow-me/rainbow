@@ -136,7 +136,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
-  
+
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip('Should withdraw DAI (via Compound)', async () => {
     await Helpers.waitAndTap('savings-list-row-DAI');
