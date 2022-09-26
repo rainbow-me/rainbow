@@ -30,16 +30,12 @@ import { Box } from '@/design-system';
 import Spinner from '../Spinner';
 import { useTheme } from '@/theme';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { RainbowAccount } from '@/model/wallet';
 
 type WalletRowProps = {
   groupOff: boolean;
   notMainnet: boolean;
-  wallet: {
-    address: string;
-    color?: string;
-    image?: string;
-    label: string;
-  };
+  wallet: RainbowAccount;
 };
 
 type WalletRowLabelProps = {
@@ -179,10 +175,8 @@ const NotificationsSection = () => {
   const { wallets } = useWallets();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const walletIDs = Object.keys(wallets!);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ownedWallets: any[] = useMemo(() => [], []);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const watchedWallets: any[] = useMemo(() => [], []);
+  const ownedWallets: RainbowAccount[] = useMemo(() => [], []);
+  const watchedWallets: RainbowAccount[] = useMemo(() => [], []);
   const [walletsLoaded, setWalletsLoaded] = useState(false);
   const {
     ownerEnabled,
@@ -239,20 +233,23 @@ const NotificationsSection = () => {
     [navigate]
   );
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: withDelay(
-      250,
-      withTiming(walletsLoaded ? 1 : 0, { duration: 150 })
-    ),
-    transform: [
-      {
-        translateY: withDelay(
-          250,
-          withTiming(walletsLoaded ? 0 : 20, { duration: 150 })
-        ),
-      },
-    ],
-  }));
+  const animatedStyle = useAnimatedStyle(
+    () => ({
+      opacity: withDelay(
+        250,
+        withTiming(walletsLoaded ? 1 : 0, { duration: 150 })
+      ),
+      transform: [
+        {
+          translateY: withDelay(
+            250,
+            withTiming(walletsLoaded ? 0 : 20, { duration: 150 })
+          ),
+        },
+      ],
+    }),
+    [walletsLoaded]
+  );
 
   return (
     <Box>
