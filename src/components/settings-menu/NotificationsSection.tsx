@@ -64,7 +64,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
     topic => notifications.topics[topic]
   );
 
-  const composedLabel = useCallback(() => {
+  const composedLabel = useMemo(() => {
     if (allTopicsDisabled) {
       return lang.t('settings.notifications_section.off');
     }
@@ -96,7 +96,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
     }
   }, [allTopicsDisabled, allTopicsEnabled, enabledTopics, notifications]);
 
-  return <MenuItem.Label text={composedLabel()} />;
+  return <MenuItem.Label text={composedLabel} />;
 };
 
 const WalletRow = ({ wallet, groupOff, notMainnet }: WalletRowProps) => {
