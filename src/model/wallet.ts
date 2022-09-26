@@ -493,7 +493,7 @@ const loadPrivateKey = async (
       // this delay is a bit helpful. Potentially It appears when performing
       // ECDH KeyAgreement that operational slots are not being released after
       // the key agreement has finished.
-      !IS_SDK_HIGHER_THAN_23 && (await delay(500));
+      !IS_SDK_HIGHER_THAN_23 && (await delay(700));
 
       const privateKeyData = await getPrivateKey(addressToUse);
       if (privateKeyData === -1) {
