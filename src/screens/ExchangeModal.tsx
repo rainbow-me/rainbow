@@ -854,6 +854,20 @@ export default function ExchangeModal({
     const internalNavigate = () => {
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
+
+      navigate(Routes.EXPLAIN_SHEET, {
+        outputCurrency,
+        onClose: () => {
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(() => {
+              //lastFocusedInput?.focus();
+            }, 250);
+          });
+        },
+        outputToken: outputCurrency?.symbol,
+        type: 'longWaitSwap',
+      });
+      return;
       navigate(Routes.SWAP_DETAILS_SHEET, {
         confirmButtonProps,
         currentNetwork,

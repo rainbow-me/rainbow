@@ -661,6 +661,12 @@
         "title": "No quote available",
         "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
+      "long_wait": {
+        "title": "Long wait to swap :)",
+        "text": "This swap may take a very long time to complete. This is usually due to problems with a cross-chain bridge. :)",
+        "button": "Continue anyway :)",
+        "secondary_button": "Cancel :)"
+      },
       "unverified": {
         "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
         "fragment2": "token contract :)",

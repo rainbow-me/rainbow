@@ -15,7 +15,7 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
-import { Box } from '@/design-system';
+import { Box, Inset } from '@/design-system';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import TheMergePng from '@/assets/theMerge.png';
@@ -563,6 +563,31 @@ export const explainers = (params, colors) => ({
       </RowWithMargins>
     ),
   },
+  longWaitSwap: {
+    extraHeight: -40,
+    button: {
+      label: lang.t('explain.long_wait.secondary_button'),
+      bgColor: colors?.transparent,
+      textColor: colors?.blueGreyDark80,
+    },
+    secondaryButton: {
+      label: lang.t('explain.long_wait.button'),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.clearBlue,
+    },
+    title: lang.t('explain.long_wait.title'),
+    text: lang.t('explain.long_wait.text'),
+    logo: (
+      <RowWithMargins justify="center" margin={0} marginBottom={10}>
+        <CoinIcon size={40} {...params?.outputCurrency} />
+        <Box style={{ position: 'absolute', top: 18, left: 28 }}>
+          <Text size={20} color={colors?.orange}>
+            􀇿
+          </Text>
+        </Box>
+      </RowWithMargins>
+    ),
+  },
   availableNetworks: {
     buttonText: `Go to Hop`,
     extraHeight: -90,
@@ -839,7 +864,7 @@ const ExplainSheet = () => {
     const accentCta = (
       <SheetActionButton
         color={
-          colors[explainSheetConfig.button?.bgColor] ||
+          explainSheetConfig.button?.bgColor ||
           colors.alpha(colors.appleBlue, 0.04)
         }
         isTransparent
@@ -850,9 +875,7 @@ const ExplainSheet = () => {
             : handleClose
         }
         size="big"
-        textColor={
-          colors[explainSheetConfig.button?.textColor] || colors.appleBlue
-        }
+        textColor={explainSheetConfig.button?.textColor ?? colors.appleBlue}
         weight="heavy"
       />
     );
