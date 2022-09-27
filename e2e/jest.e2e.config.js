@@ -3,7 +3,7 @@ const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('../tsconfig');
 
 module.exports = {
-  maxWorkers: 4,
+  maxWorkers: 1,
   setupFilesAfterEnv: ['./init.js'],
   testEnvironment: './environment',
   testTimeout: 240000,
