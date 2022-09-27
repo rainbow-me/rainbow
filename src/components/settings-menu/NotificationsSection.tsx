@@ -127,10 +127,9 @@ const WalletRow = ({
         title: name,
         address,
         toggleNotifications,
-        groupDisabled: groupOff,
       });
     },
-    [groupOff, navigate, toggleNotifications]
+    [navigate, toggleNotifications]
   );
 
   return (
