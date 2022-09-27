@@ -275,7 +275,7 @@ const NotificationsSection = () => {
             <MenuItem
               hasSfSymbol
               size={52}
-              leftComponent={<MenuItem.TextIcon icon="􀍟" isLink />}
+              leftComponent={<MenuItem.TextIcon icon="􀇂" isLink />}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('settings.notifications_section.change_network')}
