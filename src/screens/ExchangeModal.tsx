@@ -995,11 +995,10 @@ export default function ExchangeModal({
                   onPressSelectOutputCurrency={() =>
                     navigateToSelectOutputCurrency(chainId)
                   }
-                  onTapWhileDisabled={
-                    currentNetwork === Network.arbitrum && !!outputCurrency
-                      ? handleTapWhileDisabled
-                      : NOOP
-                  }
+                  {...(currentNetwork === Network.arbitrum &&
+                    !!outputCurrency && {
+                      onTapWhileDisabled: handleTapWhileDisabled,
+                    })}
                   loading={loading}
                   outputAmount={outputAmountDisplay}
                   outputCurrencyAddress={outputCurrency?.address}
