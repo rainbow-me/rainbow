@@ -30,6 +30,7 @@ import {
 import { ethereumUtils, filterList, logger } from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
+import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -106,14 +107,18 @@ const useSwapCurrencyList = (
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
 
   const { inputCurrency } = useSwapCurrencies();
-  const inputChainId =
-    inputCurrency?.network &&
-    ethereumUtils.getChainIdFromNetwork(inputCurrency?.network as Network);
+  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+  const inputChainId = useMemo(
+    () =>
+      inputCurrency?.network &&
+      ethereumUtils.getChainIdFromNetwork(inputCurrency?.network as Network),
+    [inputCurrency?.network]
+  );
   const isCrosschainSearch = useMemo(() => {
-    if (inputChainId && inputChainId !== chainId) {
+    if (inputChainId && inputChainId !== chainId && crosschainSwapsEnabled) {
       return true;
     }
-  }, [chainId, inputChainId]);
+  }, [chainId, inputChainId, crosschainSwapsEnabled]);
 
   const isFavorite = useCallback(
     (address: EthereumAddress) =>
