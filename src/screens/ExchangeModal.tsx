@@ -967,12 +967,20 @@ export default function ExchangeModal({
         type: outputNetworkDetails?.type,
         symbol: outputNetworkDetails?.symbol,
       },
-      onRefuel: (navigate, goBack, handleClose) => {
+      onRefuel: (
+        navigate: () => void,
+        goBack: () => void,
+        handleClose: () => void
+      ) => {
         setRefuel(true);
         handleClose();
         navigateToSwapDetailsModal();
       },
-      onContinue: (navigate, goBack, handleClose) => {
+      onContinue: (
+        navigate: () => void,
+        goBack: () => void,
+        handleClose: () => void
+      ) => {
         handleClose();
         navigateToSwapDetailsModal();
       },

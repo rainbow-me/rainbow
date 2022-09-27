@@ -21,7 +21,14 @@ const maskElement = (
   </Svg>
 );
 
-export default function DashedWrapper(props) {
+interface DashedWrapperProps {
+  children: React.ReactElement;
+  size: number;
+  childXPosition: number;
+  colors: string[];
+}
+
+export default function DashedWrapper(props: DashedWrapperProps) {
   const { children, size, childXPosition, colors } = props;
 
   return (
