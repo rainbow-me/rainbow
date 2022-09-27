@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Switch } from 'react-native';
 import Animated, {
   Easing,
@@ -12,15 +12,19 @@ import MenuItem from './components/MenuItem';
 import { useTheme } from '@/theme';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import {
+  NotificationRelationship,
   NotificationTopic,
   toggleGroupNotifications,
   toggleTopicForWallet,
   useNotificationSettings,
+  useWalletGroupNotificationSettings,
 } from '@/notifications/settings';
 
 type RouteParams = {
   WalletNotificationsSettings: {
     address: string;
+    groupDisabled: boolean;
+    toggleNotifications: () => void;
   };
 };
 
@@ -29,13 +33,31 @@ const WalletNotificationsSettings = () => {
   const route = useRoute<
     RouteProp<RouteParams, 'WalletNotificationsSettings'>
   >();
-  const { address } = route.params;
+  const { address, toggleNotifications, groupDisabled } = route.params;
   const { notifications, updateSettings } = useNotificationSettings(address);
+
+  const {
+    ownerEnabled,
+    watcherEnabled,
+    updateGroupSettings,
+  } = useWalletGroupNotificationSettings();
+
+  const notificationEnabled = useMemo(
+    () => notifications.enabled && ownerEnabled,
+    [notifications.enabled, ownerEnabled]
+  );
 
   const toggleAllowNotifications = useCallback(() => {
     updateSettings({
       enabled: !notifications.enabled,
     });
+    if (!notifications.enabled) {
+      console.log(
+        '---😬😬😬😬😬😬😬😬😬 notifications.enabled',
+        notifications.enabled
+      );
+      toggleNotifications();
+    }
     toggleGroupNotifications(
       // @ts-expect-error: sending an array with a single wallet
       [notifications],
@@ -43,7 +65,7 @@ const WalletNotificationsSettings = () => {
       !notifications.enabled,
       true
     );
-  }, [notifications, updateSettings]);
+  }, [notifications, toggleNotifications, updateSettings, groupDisabled]);
 
   const toggleTopic = useCallback(
     (topic: string) => {
@@ -79,6 +101,12 @@ const WalletNotificationsSettings = () => {
     }),
     [notifications.enabled]
   );
+
+  useEffect(() => {
+    if (!ownerEnabled) {
+      toggleAllowNotifications();
+    }
+  }, []);
 
   return (
     <MenuContainer>
