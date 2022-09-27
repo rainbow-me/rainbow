@@ -210,7 +210,7 @@ index 75c0d5c..e84bdfa 100644
 +  RNKeychainManager: RNKeychainManagerOld
 +} = NativeModules;
 +
-+const RNKeychainManager = Platform.Version >= 24 ? RNKeychainManagerNew : RNKeychainManagerOld
++const RNKeychainManager = Platform?.Version >= 24 ? RNKeychainManagerNew : RNKeychainManagerOld
  
  export const SECURITY_LEVEL: {
    ANY: string,
