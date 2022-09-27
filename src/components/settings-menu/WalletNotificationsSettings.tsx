@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Switch } from 'react-native';
 import Animated, {
   Easing,
@@ -23,7 +23,6 @@ import {
 type RouteParams = {
   WalletNotificationsSettings: {
     address: string;
-    groupDisabled: boolean;
     toggleNotifications: () => void;
   };
 };
@@ -33,7 +32,7 @@ const WalletNotificationsSettings = () => {
   const route = useRoute<
     RouteProp<RouteParams, 'WalletNotificationsSettings'>
   >();
-  const { address, toggleNotifications, groupDisabled } = route.params;
+  const { address, toggleNotifications } = route.params;
   const { notifications, updateSettings } = useNotificationSettings(address);
 
   const {
@@ -42,30 +41,43 @@ const WalletNotificationsSettings = () => {
     updateGroupSettings,
   } = useWalletGroupNotificationSettings();
 
-  const notificationEnabled = useMemo(
-    () => notifications.enabled && ownerEnabled,
-    [notifications.enabled, ownerEnabled]
-  );
+  const { notificationsEnabled, notificationsSectionEnabled } = useMemo(() => {
+    const ownedWallet = notifications.type === NotificationRelationship.OWNER;
+    const notificationsSectionEnabled = ownedWallet
+      ? ownerEnabled
+      : watcherEnabled;
+    return {
+      notificationsEnabled:
+        notificationsSectionEnabled && notifications.enabled,
+      notificationsSectionEnabled,
+    };
+  }, [notifications.type, notifications.enabled, ownerEnabled, watcherEnabled]);
 
   const toggleAllowNotifications = useCallback(() => {
-    updateSettings({
-      enabled: !notifications.enabled,
-    });
-    if (!notifications.enabled) {
-      console.log(
-        '---😬😬😬😬😬😬😬😬😬 notifications.enabled',
-        notifications.enabled
-      );
+    if (!notificationsSectionEnabled) {
       toggleNotifications();
+      updateGroupSettings({
+        [notifications.type]: !notificationsEnabled,
+      });
     }
+    updateSettings({
+      enabled: !notificationsEnabled,
+    });
     toggleGroupNotifications(
       // @ts-expect-error: sending an array with a single wallet
       [notifications],
       notifications.type,
-      !notifications.enabled,
+      !notificationsEnabled,
       true
     );
-  }, [notifications, toggleNotifications, updateSettings, groupDisabled]);
+  }, [
+    notificationsSectionEnabled,
+    updateSettings,
+    notificationsEnabled,
+    notifications,
+    toggleNotifications,
+    updateGroupSettings,
+  ]);
 
   const toggleTopic = useCallback(
     (topic: string) => {
@@ -87,26 +99,20 @@ const WalletNotificationsSettings = () => {
 
   const animatedStyle = useAnimatedStyle(
     () => ({
-      opacity: withTiming(notifications.enabled ? 1 : 0, {
+      opacity: withTiming(notificationsEnabled ? 1 : 0, {
         duration: 150,
       }),
       transform: [
         {
-          translateY: withTiming(notifications.enabled ? 0 : -20, {
+          translateY: withTiming(notificationsEnabled ? 0 : -20, {
             duration: 150,
             easing: Easing.bezier(0.4, 0, 0.22, 1),
           }),
         },
       ],
     }),
-    [notifications.enabled]
+    [notificationsEnabled]
   );
-
-  useEffect(() => {
-    if (!ownerEnabled) {
-      toggleAllowNotifications();
-    }
-  }, []);
 
   return (
     <MenuContainer>
@@ -116,7 +122,7 @@ const WalletNotificationsSettings = () => {
           rightComponent={
             <Switch
               onValueChange={toggleAllowNotifications}
-              value={notifications.enabled}
+              value={notificationsEnabled}
             />
           }
           size={52}
