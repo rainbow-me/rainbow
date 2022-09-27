@@ -9,6 +9,7 @@ import { buildTextStyles, margin, padding } from '@/styles';
 import { useTheme } from '@/theme';
 import { TextInput } from 'react-native';
 import { Box, Inline, Inset, Text } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
@@ -37,6 +38,8 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     weight: 'heavy',
     maxWidth: 80,
     minWidth: 12,
+    height: IS_ANDROID ? 32 : undefined,
+    top: IS_ANDROID ? 1 : undefined,
   })
 )(
   // @ts-expect-error

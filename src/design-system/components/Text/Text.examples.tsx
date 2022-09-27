@@ -152,7 +152,8 @@ export const withColor: Example = {
         <View>
           <View
             style={{
-              backgroundColor: palettes.dark.backgroundColors['surface'].color,
+              backgroundColor:
+                palettes.dark.backgroundColors['surfacePrimary'].color,
               padding: 24,
             }}
           >

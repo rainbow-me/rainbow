@@ -172,12 +172,12 @@ export type ContextualColorValue<Value> = {
 };
 
 export type BackgroundColor =
-  | 'surface'
+  | 'surfacePrimary'
+  | 'surfacePrimaryElevated'
   | 'surfaceSecondary'
-  | 'surfaceTertiary'
+  | 'surfaceSecondaryElevated'
   | 'fill'
   | 'fillSecondary'
-  | 'fillTertiary'
   | 'blue'
   | 'green'
   | 'red'
@@ -200,7 +200,7 @@ export const backgroundColors: Record<
   BackgroundColor,
   BackgroundColorValue | ContextualColorValue<BackgroundColorValue>
 > = {
-  'surface': {
+  'surfacePrimary': {
     light: {
       color: globalColors.white100,
       mode: 'light',
@@ -210,7 +210,7 @@ export const backgroundColors: Record<
       mode: 'dark',
     },
   },
-  'surfaceSecondary': {
+  'surfacePrimaryElevated': {
     light: {
       color: globalColors.white100,
       mode: 'light',
@@ -220,13 +220,23 @@ export const backgroundColors: Record<
       mode: 'dark',
     },
   },
-  'surfaceTertiary': {
+  'surfaceSecondary': {
     light: {
       color: '#F0F1F5',
       mode: 'light',
     },
     dark: {
       color: globalColors.white10,
+      mode: 'dark',
+    },
+  },
+  'surfaceSecondaryElevated': {
+    light: {
+      color: globalColors.white100,
+      mode: 'light',
+    },
+    dark: {
+      color: globalColors.blueGrey100,
       mode: 'dark',
     },
   },
@@ -247,16 +257,6 @@ export const backgroundColors: Record<
     },
     dark: {
       color: globalColors.white20,
-      mode: 'dark',
-    },
-  },
-  'fillTertiary': {
-    light: {
-      color: globalColors.white100,
-      mode: 'light',
-    },
-    dark: {
-      color: globalColors.blueGrey100,
       mode: 'dark',
     },
   },
@@ -398,7 +398,6 @@ export type ForegroundColor =
   | 'yellow'
   | 'fill'
   | 'fillSecondary'
-  | 'fillTertiary'
   | 'scrim'
   | 'scrimSecondary'
   | 'scrimTertiary'
@@ -474,7 +473,6 @@ export const foregroundColors: Record<
   'yellow': selectBackgroundAsForeground('yellow'),
   'fill': selectBackgroundAsForeground('fill'),
   'fillSecondary': selectBackgroundAsForeground('fillSecondary'),
-  'fillTertiary': selectBackgroundAsForeground('fillTertiary'),
   'scrim': {
     light: 'rgba(0, 0, 0, 0.2)',
     dark: 'rgba(0, 0, 0, 0.4)',

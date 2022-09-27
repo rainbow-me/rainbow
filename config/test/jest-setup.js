@@ -2,6 +2,12 @@
 // needed to set up global translations
 import '../../src/languages';
 
+jest.mock('@/env', () => ({
+  IS_DEV: false,
+  IS_TEST: true,
+  IS_PROD: false,
+}));
+
 jest.mock('react-native-device-info', () => ({
   identify: () => null,
   reset: () => null,

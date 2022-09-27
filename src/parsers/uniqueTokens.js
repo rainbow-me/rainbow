@@ -166,6 +166,7 @@ export const parseAccountUniqueTokens = data => {
             : null,
           lowResUrl,
           marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
+          marketplaceId: 'opensea',
           marketplaceName: 'OpenSea',
           network: Network.mainnet,
           type: AssetTypes.nft,
@@ -190,6 +191,8 @@ export const parseAccountUniqueTokensPolygon = data => {
         metadata.image_original_url,
         metadata.image_preview_url
       );
+
+      const sellOrder = asset.seaport_sell_orders?.[0];
       return {
         ...pickShallow(metadata, [
           'animation_url',
@@ -219,12 +222,11 @@ export const parseAccountUniqueTokensPolygon = data => {
           'twitter_username',
           'wiki_link',
         ]),
-        currentPrice: asset.seaport_sell_orders
+        currentPrice: sellOrder
           ? getCurrentPrice({
-              currentPrice: asset.seaport_sell_orders[0].current_price,
+              currentPrice: sellOrder?.current_price,
               token:
-                asset.seaport_sell_orders[0].protocol_data.parameters
-                  .consideration[0].token,
+                sellOrder?.protocol_data?.parameters?.consideration?.[0]?.token,
             })
           : null,
         familyImage: collection.image_url,
@@ -248,6 +250,7 @@ export const parseAccountUniqueTokensPolygon = data => {
           : null,
         lowResUrl,
         marketplaceCollectionUrl: getOpenSeaCollectionUrl(collection.slug),
+        marketplaceId: 'opensea',
         marketplaceName: 'OpenSea',
         network: Network.polygon,
         permalink: asset.permalink,
@@ -322,27 +325,16 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   const marketplace = simplehashNft.collection.marketplace_pages?.[0];
   if (!marketplace) return null;
 
+  const marketplaceId = marketplace.marketplace_id;
   const marketplaceName = marketplace.marketplace_name;
   const collectionId = marketplace.marketplace_collection_id;
   const collectionUrl = marketplace.collection_url;
-  const tokenId = simplehashNft.token_id;
-  let permalink = null;
-  switch (marketplaceName) {
-    case 'Quixotic':
-      permalink = `https://quixotic.io/asset/${collectionId}/${tokenId}`;
-      break;
-    case 'Stratos':
-      permalink = `https://stratosnft.io/asset/${collectionId}/${tokenId}`;
-      break;
-    case 'Trove':
-      permalink = `https://trove.treasure.lol/collection/${collectionId}/${tokenId}`;
-      break;
-    default:
-      permalink = null;
-  }
+  const permalink = marketplace.nft_url;
+
   return {
     collectionId,
     collectionUrl,
+    marketplaceId,
     marketplaceName,
     permalink,
   };
@@ -394,6 +386,7 @@ export const parseSimplehashNfts = nftData => {
       lastSalePaymentToken: simplehashNft.last_sale?.payment_token?.symbol,
       lowResUrl,
       marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
+      marketplaceId: marketplaceInfo?.marketplaceId,
       marketplaceName: marketplaceInfo?.marketplaceName,
       name: simplehashNft.name,
       network: simplehashNft.chain,

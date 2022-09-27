@@ -6,6 +6,7 @@ import { colors } from '@/styles';
 import { gasUtils } from '@/utils';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { useTheme } from '@/theme';
+import { IS_ANDROID } from '@/env';
 
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 
@@ -65,7 +66,7 @@ const TabPill = ({
             elevation: 5,
           }}
         >
-          <Inset vertical={{ custom: 8 }}>
+          <Inset vertical={{ custom: IS_ANDROID ? 8 : 9 }}>
             <Text
               size="16px / 22px (Deprecated)"
               color={{

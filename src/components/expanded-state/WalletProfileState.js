@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { IS_TEST } from '@/env';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
@@ -10,6 +11,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
+import { delay } from '@rainbow-me/helpers/utilities';
 
 export default function WalletProfileState({
   actionType,
@@ -50,19 +52,8 @@ export default function WalletProfileState({
     }
   }, [actionType, goBack, navigate]);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
-    const callback = () => {
-      goBack();
-      if (actionType === 'Create' && isNewProfile) {
-        navigate(Routes.CHANGE_WALLET_SHEET);
-      }
-    };
-    if (actionType !== 'Create') {
-      callback();
-    } else {
-      setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
-    }
     onCloseModal({
       color:
         typeof nameColor === 'string'
@@ -71,6 +62,18 @@ export default function WalletProfileState({
       image: profileImage,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
+    const callback = async () => {
+      goBack();
+      if (actionType === 'Create' && isNewProfile) {
+        navigate(Routes.CHANGE_WALLET_SHEET);
+      }
+    };
+    IS_TEST && (await delay(2000));
+    if (actionType !== 'Create') {
+      callback();
+    } else {
+      setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
+    }
   }, [
     actionType,
     nameColor,

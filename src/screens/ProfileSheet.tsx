@@ -18,9 +18,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
-  useENSAddress,
   useENSAvatar,
-  useENSFirstTransactionTimestamp,
   useExternalWalletSectionsData,
   usePersistentDominantColorFromImage,
 } from '@/hooks';
@@ -28,6 +26,8 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -40,13 +40,14 @@ export default function ProfileSheet() {
   const { colors } = useTheme();
   const { accountAddress } = useAccountSettings();
 
-  const { height: deviceHeight } = useDimensions();
-  const contentHeight = deviceHeight - sharedCoolModalTopOffset;
+  const { height: deviceHeight, isSmallPhone } = useDimensions();
+  const contentHeight =
+    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const ensName = params?.address;
-  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress(
-    ensName
-  );
+  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({
+    name: ensName,
+  });
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
@@ -54,7 +55,7 @@ export default function ProfileSheet() {
   // Prefetch first transaction timestamp unless already fetched for intro marquee
   const {
     isSuccess: hasFirstTxTimestampFetched,
-  } = useENSFirstTransactionTimestamp(name, { enabled: !isPreview });
+  } = useFirstTransactionTimestamp({ addressOrName: ensName });
 
   // Prefetch asset list
   const {

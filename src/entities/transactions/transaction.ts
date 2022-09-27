@@ -89,3 +89,8 @@ export interface NewTransactionOrAddCashTransaction
     | (Partial<ParsedAddressAsset> & AddCashCurrencyAsset)
     | null;
 }
+
+export type MinimalTransactionDetails = Pick<
+  RainbowTransaction,
+  'minedAt' | 'hash' | 'type' | 'network' | 'from' | 'pending' | 'to' | 'status'
+>;

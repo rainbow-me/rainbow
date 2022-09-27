@@ -1,6 +1,8 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
+  ForwardRefRenderFunction,
+  MutableRefObject,
   useCallback,
   useContext,
   useEffect,
@@ -18,32 +20,28 @@ import Animated, {
 import Spinner from '../../assets/chartSpinner.png';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
-import { Row } from '../layout';
-import { Text } from '../text';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import { colors, margin, padding } from '@/styles';
+import { margin, Colors } from '@/styles';
 import { deviceUtils } from '@/utils';
 import ShadowStack from '@/react-native-shadow-stack';
+import { TextInput } from 'react-native';
+import { useTheme } from '@/theme';
+import { Box, Text } from '@/design-system';
+import { Source } from 'react-native-fast-image';
+import { IS_TEST } from '@/env';
 
 export const ExchangeSearchHeight = 40;
 const DoneButtonWidth = 52;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 40;
-
-const Container = styled(Row)(({ isSearchModeEnabled }) => ({
-  ...(isSearchModeEnabled ? padding.object(0, 37, 0, 12) : padding.object(0)),
-  backgroundColor: colors.transparent,
-  borderRadius: ExchangeSearchHeight / 2,
-  height: ExchangeSearchHeight,
-}));
 
 const ShadowContainer = styled(ShadowStack)(() => ({
   ...margin.object(0, 20, 20, 20),
 }));
 
 const BackgroundGradient = styled(LinearGradient).attrs(
-  ({ theme: { colors } }) => ({
+  ({ theme: { colors } }: { theme: { colors: Colors } }) => ({
     colors: colors.gradients.offWhite,
     end: { x: 0.5, y: 1 },
     start: { x: 0.5, y: 0 },
@@ -59,18 +57,16 @@ const BackgroundGradient = styled(LinearGradient).attrs(
   width: ExchangeSearchWidth,
 });
 
-const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  size: 'large',
-  weight: 'semibold',
-}))({});
-
-const SearchIconWrapper = styled(Animated.View)({
-  marginTop: android ? 6 : 9,
-});
-
 const SearchInput = styled(Input).attrs(
-  ({ theme: { colors }, isSearchModeEnabled, clearTextOnFocus }) => ({
+  ({
+    theme: { colors },
+    isSearchModeEnabled,
+    clearTextOnFocus,
+  }: {
+    theme: { colors: Colors };
+    isSearchModeEnabled: boolean;
+    clearTextOnFocus: boolean;
+  }) => ({
     blurOnSubmit: false,
     clearTextOnFocus,
     color: colors.alpha(colors.blueGreyDark, 0.8),
@@ -90,26 +86,10 @@ const SearchInput = styled(Input).attrs(
   flex: 1,
   height: ios ? 39 : 56,
   marginBottom: 1,
-  marginLeft: ({ isSearchModeEnabled }) => (isSearchModeEnabled ? 4 : 0),
-  textAlign: ({ isSearchModeEnabled }) =>
+  marginLeft: ({ isSearchModeEnabled }: { isSearchModeEnabled: boolean }) =>
+    isSearchModeEnabled ? 4 : 0,
+  textAlign: ({ isSearchModeEnabled }: { isSearchModeEnabled: boolean }) =>
     isSearchModeEnabled ? 'left' : 'center',
-});
-
-const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: Spinner,
-  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-}))({
-  height: 20,
-  width: 20,
-});
-
-const SearchSpinnerWrapper = styled(Animated.View)({
-  height: 20,
-  left: 12,
-  position: 'absolute',
-  top: 10,
-  width: 20,
 });
 
 const rotationConfig = {
@@ -121,12 +101,27 @@ const timingConfig = {
   duration: 300,
 };
 
-const ExchangeSearchShadowsFactory = colors => [
-  [0, 7, 21, colors.shadow, 0.15],
-  [0, 3.5, 10.5, colors.shadow, 0.04],
+const ExchangeSearchShadowsFactory = (c: Colors) => [
+  [0, 7, 21, c.shadow, 0.15],
+  [0, 3.5, 10.5, c.shadow, 0.04],
 ];
 
-const ExchangeSearch = (
+interface ExchangeSearchProps {
+  isDiscover?: boolean;
+  isFetching: boolean;
+  isSearching: boolean;
+  onChangeText: (arg: string) => void;
+  onFocus: ({ target }: any) => void;
+  searchQuery: string;
+  testID: string;
+  placeholderText?: string;
+  clearTextOnFocus: boolean;
+}
+
+const ExchangeSearch: ForwardRefRenderFunction<
+  TextInput,
+  ExchangeSearchProps
+> = (
   {
     isDiscover,
     isFetching,
@@ -140,6 +135,7 @@ const ExchangeSearch = (
   },
   ref
 ) => {
+  const inputRef = ref as MutableRefObject<TextInput>;
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
       analytics.track('Search Query', {
@@ -148,9 +144,9 @@ const ExchangeSearch = (
         query: searchQuery,
       });
     }
-    ref?.current?.clear();
+    inputRef?.current?.clear();
     onChangeText?.('');
-  }, [isDiscover, searchQuery, ref, onChangeText]);
+  }, [isDiscover, searchQuery, inputRef, onChangeText]);
 
   const ExchangeSearchWidthFocused = isDiscover
     ? ExchangeSearchWidth - DoneButtonWidth
@@ -158,15 +154,17 @@ const ExchangeSearch = (
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
-  const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) || {};
+  const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) ?? {
+    isSearchModeEnabled: true,
+  };
 
-  const spinnerTimeout = useRef();
+  const spinnerTimeout = useRef<NodeJS.Timeout>();
   const { colors } = useTheme();
   const shadows = useMemo(() => ExchangeSearchShadowsFactory(colors), [colors]);
 
   useEffect(() => {
     if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
-      clearTimeout(spinnerTimeout.current);
+      clearTimeout(spinnerTimeout.current as NodeJS.Timeout);
       spinnerRotation.value = 0;
       spinnerRotation.value = withRepeat(
         withTiming(360, rotationConfig),
@@ -206,22 +204,52 @@ const ExchangeSearch = (
       backgroundColor={colors.white}
       borderRadius={ExchangeSearchHeight / 2}
       height={ExchangeSearchHeight}
-      isSearchModeEnabled={isSearchModeEnabled}
       shadows={shadows}
       width={
         isSearchModeEnabled ? ExchangeSearchWidthFocused : ExchangeSearchWidth
       }
     >
-      <Container isSearchModeEnabled={isSearchModeEnabled}>
+      <Box
+        flexDirection="row"
+        borderRadius={ExchangeSearchHeight / 2}
+        height={{ custom: ExchangeSearchHeight }}
+        paddingLeft={isSearchModeEnabled ? '12px' : undefined}
+        paddingRight={isSearchModeEnabled ? '36px' : undefined}
+      >
         <BackgroundGradient />
-        {isSearchModeEnabled && (
+
+        {isSearchModeEnabled && !IS_TEST && (
           <>
-            <SearchIconWrapper style={searchIconStyle}>
-              <SearchIcon>􀊫</SearchIcon>
-            </SearchIconWrapper>
-            <SearchSpinnerWrapper style={spinnerStyle}>
-              <SearchSpinner />
-            </SearchSpinnerWrapper>
+            <Box
+              as={Animated.View}
+              paddingTop={{ custom: 14 }}
+              style={searchIconStyle}
+            >
+              <Text
+                weight="semibold"
+                size="17pt"
+                color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
+              >
+                􀊫
+              </Text>
+            </Box>
+
+            <Box
+              as={Animated.View}
+              height={{ custom: 20 }}
+              width={{ custom: 20 }}
+              position="absolute"
+              left={{ custom: 12 }}
+              top={{ custom: 10 }}
+              style={spinnerStyle}
+            >
+              <ImgixImage
+                resizeMode={ImgixImage.resizeMode.contain}
+                source={Spinner as Source}
+                tintColor={colors.alpha(colors.blueGreyDark, 0.6)}
+                style={{ height: 20, width: 20 }}
+              />
+            </Box>
           </>
         )}
         <SearchInput
@@ -230,7 +258,7 @@ const ExchangeSearch = (
           onChangeText={onChangeText}
           onFocus={onFocus}
           placeholder={placeholderText}
-          ref={ref}
+          ref={inputRef}
           testID={testID + '-input'}
           value={searchQuery}
         />
@@ -240,7 +268,7 @@ const ExchangeSearch = (
           onPress={handleClearInput}
           testID={testID + '-clear-input'}
         />
-      </Container>
+      </Box>
     </ShadowContainer>
   );
 };

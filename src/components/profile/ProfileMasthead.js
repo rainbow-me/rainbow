@@ -189,7 +189,12 @@ export default function ProfileMasthead({
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
         <Row>
-          <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
+          <AccountName
+            testID={`profileAddress-${accountName}`}
+            deviceWidth={deviceWidth}
+          >
+            {accountName}
+          </AccountName>
           <DropdownArrow>
             <Icon color={colors.dark} direction="down" name="caret" />
           </DropdownArrow>

@@ -9,7 +9,7 @@ export function BackgroundDemo() {
   const { backgroundColors } = useColorMode();
 
   return (
-    <Box background="surface">
+    <Box background="surfacePrimary">
       {(Object.keys(backgroundColors) as (keyof typeof backgroundColors)[]).map(
         color => (
           <Box background={color} key={color}>
