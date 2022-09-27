@@ -6,6 +6,7 @@ import SwapDetailsContractRow from './SwapDetailsContractRow';
 import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
+import SwapDetailsRefuelRow from './SwapDetailsRefuelRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { AccentColorProvider, Box, Rows, Separator } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
@@ -62,6 +63,14 @@ export default function SwapDetailsContent({
               {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
             </SwapDetailsValue>
           </SwapDetailsRow>
+
+          {tradeDetails.refuel && (
+            <SwapDetailsRefuelRow
+              testID="swaps-details-refuel-row"
+              tradeDetails={tradeDetails}
+            />
+          )}
+
           {tradeDetails?.protocols && (
             <SwapDetailsExchangeRow
               protocols={tradeDetails?.protocols}

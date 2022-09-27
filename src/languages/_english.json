@@ -510,6 +510,7 @@
       "swap_details": {
         "exchange_rate": "Exchange rate",
         "rainbow_fee": "Included Rainbow fee",
+        "refuel": "Extra network tokens",
         "review": "Review",
         "show_details": "More details",
         "hide_details": "Hide details",
