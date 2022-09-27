@@ -8,7 +8,6 @@ import { Box } from '@/design-system';
 export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
   const fromAsset = tradeDetails?.refuel?.fromAsset;
   const toAsset = tradeDetails?.refuel?.toAsset;
-  console.log(tradeDetails?.refuel?.toAmount);
   const toAmount = convertRawAmountToBalance(tradeDetails?.refuel?.toAmount, {
     decimals: 18,
   });
