@@ -18,8 +18,7 @@ import {
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { getSupportedBiometryType as getSupportedBiometryTypeOld } from 'react-native-keychain';
-import { getSupportedBiometryType as getSupportedBiometryTypeNew } from 'react-native-keychain-new';
+import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -61,13 +60,10 @@ import store from '@/redux/store';
 import { setIsWalletLoading } from '@/redux/wallets';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
-import { IS_SDK_HIGHER_THAN_23 } from '@/env';
 import delay from 'delay';
+import { Platform } from 'react-native';
 
 const encryptor = new AesEncryptor();
-const getSupportedBiometryType = IS_SDK_HIGHER_THAN_23
-  ? getSupportedBiometryTypeNew
-  : getSupportedBiometryTypeOld;
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -493,7 +489,7 @@ const loadPrivateKey = async (
       // this delay is a bit helpful. Potentially It appears when performing
       // ECDH KeyAgreement that operational slots are not being released after
       // the key agreement has finished.
-      !IS_SDK_HIGHER_THAN_23 && (await delay(700));
+      Platform.Version < 24 && (await delay(700));
 
       const privateKeyData = await getPrivateKey(addressToUse);
       if (privateKeyData === -1) {
@@ -561,8 +557,8 @@ export const createWallet = async (
   overwrite = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent: boolean = false,
-  clearCallbackOnStartCreation: boolean = false
+  silent = false,
+  clearCallbackOnStartCreation = false
 ): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();

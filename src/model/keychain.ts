@@ -3,35 +3,22 @@ import isNil from 'lodash/isNil';
 import DeviceInfo from 'react-native-device-info';
 import { IS_TESTING } from 'react-native-dotenv';
 import {
-  ACCESS_CONTROL as ACCESS_CONTROLOld,
-  ACCESSIBLE as ACCESSIBLEOld,
-  AUTHENTICATION_TYPE as AUTHENTICATION_TYPEOld,
-  canImplyAuthentication as canImplyAuthenticationOld,
-  getAllInternetCredentials as getAllInternetCredentialsOld,
-  getInternetCredentials as getInternetCredentialsOld,
-  getSupportedBiometryType as getSupportedBiometryTypeOld,
-  hasInternetCredentials as hasInternetCredentialsOld,
+  ACCESS_CONTROL,
+  ACCESSIBLE,
+  AUTHENTICATION_TYPE,
+  canImplyAuthentication,
+  getAllInternetCredentials,
+  getInternetCredentials,
+  getSupportedBiometryType,
+  hasInternetCredentials,
   Options,
-  resetInternetCredentials as resetInternetCredentialsOld,
+  resetInternetCredentials,
   Result,
-  setInternetCredentials as setInternetCredentialsOld,
+  setInternetCredentials,
   UserCredentials,
 } from 'react-native-keychain';
-import {
-  ACCESS_CONTROL as ACCESS_CONTROLNew,
-  ACCESSIBLE as ACCESSIBLENew,
-  AUTHENTICATION_TYPE as AUTHENTICATION_TYPENew,
-  canImplyAuthentication as canImplyAuthenticationNew,
-  getAllInternetCredentials as getAllInternetCredentialsNew,
-  getInternetCredentials as getInternetCredentialsNew,
-  getSupportedBiometryType as getSupportedBiometryTypeNew,
-  hasInternetCredentials as hasInternetCredentialsNew,
-  resetInternetCredentials as resetInternetCredentialsNew,
-  setInternetCredentials as setInternetCredentialsNew,
-} from 'react-native-keychain-new';
 import { delay } from '../helpers/utilities';
 import logger from '@/utils/logger';
-import { IS_SDK_HIGHER_THAN_23 } from '@/env';
 
 interface AnonymousKey {
   length: number;
@@ -42,35 +29,6 @@ interface AnonymousKey {
 interface AnonymousKeyData {
   [key: string]: AnonymousKey;
 }
-
-const ACCESS_CONTROL = IS_SDK_HIGHER_THAN_23
-  ? ACCESS_CONTROLNew
-  : ACCESS_CONTROLOld;
-const ACCESSIBLE = IS_SDK_HIGHER_THAN_23 ? ACCESSIBLENew : ACCESSIBLEOld;
-const AUTHENTICATION_TYPE = IS_SDK_HIGHER_THAN_23
-  ? AUTHENTICATION_TYPENew
-  : AUTHENTICATION_TYPEOld;
-const canImplyAuthentication = IS_SDK_HIGHER_THAN_23
-  ? canImplyAuthenticationNew
-  : canImplyAuthenticationOld;
-const getAllInternetCredentials = IS_SDK_HIGHER_THAN_23
-  ? getAllInternetCredentialsNew
-  : getAllInternetCredentialsOld;
-const getInternetCredentials = IS_SDK_HIGHER_THAN_23
-  ? getInternetCredentialsNew
-  : getInternetCredentialsOld;
-const getSupportedBiometryType = IS_SDK_HIGHER_THAN_23
-  ? getSupportedBiometryTypeNew
-  : getSupportedBiometryTypeOld;
-const hasInternetCredentials = IS_SDK_HIGHER_THAN_23
-  ? hasInternetCredentialsNew
-  : hasInternetCredentialsOld;
-const resetInternetCredentials = IS_SDK_HIGHER_THAN_23
-  ? resetInternetCredentialsNew
-  : resetInternetCredentialsOld;
-const setInternetCredentials = IS_SDK_HIGHER_THAN_23
-  ? setInternetCredentialsNew
-  : setInternetCredentialsOld;
 
 export async function saveString(
   key: string,

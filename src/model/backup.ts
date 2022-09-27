@@ -2,13 +2,9 @@ import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import {
   Options,
-  requestSharedWebCredentials as requestSharedWebCredentialsOld,
-  setSharedWebCredentials as setSharedWebCredentialsOld,
+  requestSharedWebCredentials,
+  setSharedWebCredentials,
 } from 'react-native-keychain';
-import {
-  requestSharedWebCredentials as requestSharedWebCredentialsNew,
-  setSharedWebCredentials as setSharedWebCredentialsNew,
-} from 'react-native-keychain-new';
 import {
   CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
@@ -31,7 +27,6 @@ import {
 } from './wallet';
 import { analytics } from '@/analytics';
 import logger from '@/utils/logger';
-import { IS_SDK_HIGHER_THAN_23 } from '@/env';
 
 type BackupPassword = string;
 
@@ -42,13 +37,6 @@ interface BackedUpData {
 interface BackupUserData {
   wallets: AllRainbowWallets;
 }
-
-const requestSharedWebCredentials = IS_SDK_HIGHER_THAN_23
-  ? requestSharedWebCredentialsNew
-  : requestSharedWebCredentialsOld;
-const setSharedWebCredentials = IS_SDK_HIGHER_THAN_23
-  ? setSharedWebCredentialsNew
-  : setSharedWebCredentialsOld;
 
 async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allKeys = await keychain.loadAllKeys();
