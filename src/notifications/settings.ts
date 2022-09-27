@@ -24,7 +24,7 @@ export const NotificationRelationship = {
 
 export type WalletNotificationSettingsType = {
   address: string;
-  topics: ValueOf<typeof NotificationTopic>[];
+  topics: { [key: ValueOf<typeof NotificationTopic>]: boolean };
   enabled: boolean;
   type: ValueOf<typeof NotificationRelationship>;
 };
@@ -222,10 +222,15 @@ export const useWalletGroupNotificationSettings = () => {
     // @ts-expect-error: MMKV
     storage.getString(WALLET_GROUPS_STORAGE_KEY)
   );
+
   const allWallets = getAllNotificationSettingsFromStorage();
+
   const ownedWallets = allWallets.filter(
     (wallet: WalletNotificationSettingsType) =>
       wallet.type === NotificationRelationship.OWNER
+  );
+  const enabledOwnedWallets = allWallets.find(
+    (wallet: WalletNotificationSettingsType) => Boolean(wallet.enabled)
   );
   const watchedWallets = allWallets.filter(
     (wallet: WalletNotificationSettingsType) =>
@@ -288,15 +293,19 @@ export function toggleGroupNotifications(
   singleWallet?: boolean
 ) {
   if (enableNotifications) {
+    const updatedSettingsData = getAllNotificationSettingsFromStorage();
     // loop through all owned wallets, loop through their topics, subscribe to enabled topics
     wallets.forEach((wallet: WalletNotificationSettingsType) => {
       const { topics, address, enabled } = wallet;
       // when toggling a whole group, check if notifications
       // are specifically enabled for this wallet
       if (enabled || singleWallet) {
+        console.log(
+          '😬😬😬😬😬😬😬😬😬 updatedSettingsData',
+          updatedSettingsData
+        );
         Object.keys(topics).forEach(
           (topic: ValueOf<typeof NotificationTopic>) => {
-            // @ts-expect-error: topics[topic] is a boolean
             if (topics[topic]) {
               subscribeWalletToSingleNotificationTopic(
                 relationship,

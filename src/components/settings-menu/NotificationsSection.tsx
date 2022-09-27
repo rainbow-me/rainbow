@@ -30,6 +30,7 @@ type WalletRowProps = {
   groupOff: boolean;
   isTestnet: boolean;
   wallet: RainbowAccount;
+  toggleNotifications: () => void;
 };
 
 type WalletRowLabelProps = {
@@ -88,7 +89,12 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
   return <MenuItem.Label text={composedLabel} />;
 };
 
-const WalletRow = ({ wallet, groupOff, isTestnet }: WalletRowProps) => {
+const WalletRow = ({
+  wallet,
+  groupOff,
+  isTestnet,
+  toggleNotifications,
+}: WalletRowProps) => {
   const index = useNavigationState(state => state.index);
   const { navigate } = useNavigation();
   const { notifications } = useNotificationSettings(wallet.address);
@@ -120,9 +126,11 @@ const WalletRow = ({ wallet, groupOff, isTestnet }: WalletRowProps) => {
       navigate(Routes.WALLET_NOTIFICATIONS_SETTINGS, {
         title: name,
         address,
+        toggleNotifications,
+        groupDisabled: groupOff,
       });
     },
-    [navigate]
+    [groupOff, navigate, toggleNotifications]
   );
 
   return (
@@ -306,6 +314,7 @@ const NotificationsSection = () => {
                   wallet={wallet}
                   groupOff={!ownerEnabled}
                   isTestnet={isTestnet}
+                  toggleNotifications={toggleAllOwnedNotifications}
                 />
               ))}
             </Menu>
@@ -341,6 +350,7 @@ const NotificationsSection = () => {
                   wallet={wallet}
                   groupOff={!watcherEnabled}
                   isTestnet={isTestnet}
+                  toggleNotifications={toggleAllWatchedNotifications}
                 />
               ))}
             </Menu>
