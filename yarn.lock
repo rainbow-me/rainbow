@@ -8887,10 +8887,10 @@ detective-typescript@^7.0.0:
     node-source-walk "^4.2.0"
     typescript "^3.9.7"
 
-detox@19.7.1:
-  version "19.7.1"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-19.7.1.tgz#1c4dfebbb024426118dfae97a0189a25021479fa"
-  integrity sha512-V0XwiaFX1LvIjLl+G4tzMZ0M4YqenQXAdTsw9kO2dVo6NC9RuYqOIsmT9M3CRN9PF22TKJ8pFdA6onYhH/zkiQ==
+detox@19.12.1:
+  version "19.12.1"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-19.12.1.tgz#6ad924f93c60dd9188ac62866222233435b53bd2"
+  integrity sha512-sh8xxWLSykJ8zH1zxP2nXV9iIcuwQ4Umn8LKCtkilrLen9K/EJqNN2miMfu7Mue63aTVt6KFLJ6y11yFuZ2LXQ==
   dependencies:
     ajv "^8.6.3"
     bunyan "^1.8.12"
@@ -10768,10 +10768,10 @@ fs-extra@^1.0.0:
     jsonfile "^2.1.0"
     klaw "^1.0.0"
 
-fs-extra@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.0.0.tgz#9ff61b655dde53fb34a82df84bb214ce802e17c1"
-  integrity sha512-C5owb14u9eJwizKGdchcDUQeFtlSHHthBk8pbX9Vc1PFZrLombudjDnNns88aYslCyF6IY5SUw3Roz6xShcEIQ==
+fs-extra@^10.1.0:
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.1.0.tgz#02873cfbc4084dde127eaa5f9905eef2325d1abf"
+  integrity sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==
   dependencies:
     graceful-fs "^4.2.0"
     jsonfile "^6.0.1"
@@ -16172,14 +16172,14 @@ react-native-android-keyboard-adjust@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-android-keyboard-adjust/-/react-native-android-keyboard-adjust-1.2.0.tgz#7988b1258482c08548ce972401b2ae03a674fcb4"
 
-react-native-bootsplash@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-bootsplash/-/react-native-bootsplash-4.1.0.tgz#2d11f855f914116a268f7b263832747d974702ce"
-  integrity sha512-otFBLou7+zlKNN0ikGH7lEDk5NgBpWinjukwEYt+ysBYjH5YGodMe1kB5tRjcULwHha1Y2Z4WZc9TqnNGReuLA==
+react-native-bootsplash@4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-bootsplash/-/react-native-bootsplash-4.3.2.tgz#347b024975dc344310ee4d95cb3be56b0b39e381"
+  integrity sha512-HzXl6AKk4sRjEtV+1C7q4gSXP5kYMhpzGaB4DllZNObdZ8oVH8Ac7Y9ShKZ8wLQLJaG/TtzyGHKIDaNi0oNGJA==
   dependencies:
-    chalk "^4.1.2"
-    fs-extra "^10.0.0"
+    fs-extra "^10.1.0"
     jimp "^0.16.1"
+    picocolors "^1.0.0"
 
 react-native-branch@5.3.1:
   version "5.3.1"
@@ -16567,10 +16567,9 @@ react-native-widgetkit@1.0.9:
   resolved "https://registry.yarnpkg.com/react-native-widgetkit/-/react-native-widgetkit-1.0.9.tgz#aded1c12f7c7cfd18912b947228aac433c05ddc2"
   integrity sha512-WBwdUbcOzyL0LiqhRyd7gS9A1D0X5A/m2h0fAKTbxUAbp3r2D2pdjyPnVW/6q0otpq7RIyZFo6Ln1EDJ9gfhEg==
 
-react-native@0.68.1:
+react-native@rainbow-me/react-native#d6858416ff69b7835f0c25aee58409f1dc6c81ef:
   version "0.68.1"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.68.1.tgz#c3d92f89028cdc2453fe7cd2d532b3f68d1c27c8"
-  integrity sha512-5gfvslo5NO2Ece2k/q41eVOK3ca4u1QAOf+qM+auvOiUA4/QR5Yr0WfSGbRpUr2GaFgv7qP11F4+elCravg7uQ==
+  resolved "https://codeload.github.com/rainbow-me/react-native/tar.gz/d6858416ff69b7835f0c25aee58409f1dc6c81ef"
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^7.0.3"

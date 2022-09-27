@@ -11,13 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  InteractionManager,
-  Keyboard,
-  Linking,
-  StatusBar,
-  TextInput,
-} from 'react-native';
+import { InteractionManager, Keyboard, Linking, TextInput } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -491,8 +485,6 @@ export default function CurrencySelectModal() {
     fromDiscover,
   ]);
 
-  const isFocusedAndroid = useIsFocused() && android;
-
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
     setCurrentChainId(chainId);
@@ -528,7 +520,6 @@ export default function CurrencySelectModal() {
           overflow="hidden"
           radius={30}
         >
-          {isFocusedAndroid && <StatusBar barStyle="light-content" />}
           <GestureBlocker type="top" />
           <Rows>
             <Row height="content">

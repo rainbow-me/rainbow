@@ -25,7 +25,7 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
-import { connect, Provider } from 'react-redux';
+import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
@@ -300,7 +300,7 @@ class App extends Component {
 
   render = () => (
     <MainThemeProvider>
-      <Provider store={store}>
+      <ReduxProvider store={store}>
         <RainbowContextWrapper>
           <ErrorBoundary>
             <Portal>
@@ -337,7 +337,7 @@ class App extends Component {
             </Portal>
           </ErrorBoundary>
         </RainbowContextWrapper>
-      </Provider>
+      </ReduxProvider>
     </MainThemeProvider>
   );
 }
@@ -354,6 +354,12 @@ const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
 
 const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
 
+const PlaygroundWithReduxStore = () => (
+  <ReduxProvider store={store}>
+    <Playground />
+  </ReduxProvider>
+);
+
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? Playground : AppWithCodePush
+  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : AppWithCodePush
 );

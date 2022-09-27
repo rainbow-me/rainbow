@@ -12,7 +12,7 @@ import { PoolValue } from './PoolValue';
 import { analytics } from '@/analytics';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 import { useAccountSettings, useGenericAsset } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -58,6 +58,8 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useCallback(() => {
+    const isFromWalletScreen = Navigation.getActiveRoute().params
+      ?.isFromWalletScreen;
     let poolAsset = uniswap.find(pool => pool.address === item.address);
     if (!poolAsset) {
       poolAsset = parseAssetNative(
@@ -79,6 +81,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
       asset: poolAsset,
       dpi: true,
       fromDiscover: true,
+      isFromWalletScreen,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });

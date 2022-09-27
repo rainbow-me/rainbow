@@ -7,7 +7,7 @@ import { BottomRowText, CoinRow } from '../coin-row';
 import BalanceText from '../coin-row/BalanceText';
 import CoinName from '../coin-row/CoinName';
 import { FlexItem, Row } from '../layout';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 
@@ -89,9 +89,12 @@ export default function UniswapInvestmentRow({ assetType, item, ...props }) {
   const { navigate } = useNavigation();
 
   const handleOpenExpandedState = useCallback(() => {
+    const isFromWalletScreen =
+      Navigation.getActiveRouteName() === Routes.WALLET_SCREEN;
     navigate(Routes.EXPANDED_ASSET_SHEET_POOLS, {
       asset: item,
       cornerRadius: 39,
+      isFromWalletScreen,
       type: assetType,
     });
   }, [assetType, item, navigate]);
