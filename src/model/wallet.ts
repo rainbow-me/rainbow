@@ -485,10 +485,12 @@ const loadPrivateKey = async (
         return null;
       }
 
-      // Fix for SDK>=24 is react-native-keychain-new. For SDK<24,
-      // this delay is a bit helpful. Potentially It appears when performing
-      // ECDH KeyAgreement that operational slots are not being released after
-      // the key agreement has finished.
+      // TODO: (https://github.com/rainbow-me/rainbow/pull/4025):
+      // Use the official version of keychain instead of the fork
+      // This is a fix for Android when SDK 21-23.
+      // This delay sometimes helps avoid race conditions when performing ECDH KeyAgreement.
+      // Sometimes it's executed during the animation. It created a deadlock.
+      // For SDK 24+ we use a fork of keychain where it's fixed.
       Platform.Version < 24 && (await delay(700));
 
       const privateKeyData = await getPrivateKey(addressToUse);
