@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Box } from '@/design-system';
+import { navbarHeight } from '@/components/navbar/Navbar';
 import { StickyHeader } from '../core/StickyHeaders';
 import { ProfileNameRow } from './ProfileNameRow';
 
@@ -7,7 +8,7 @@ export const ProfileStickyHeaderHeight = 52;
 
 export function ProfileStickyHeader() {
   return (
-    <StickyHeader name="profile-header" visibleAtYPosition={44}>
+    <StickyHeader name="profile-header" visibleAtYPosition={navbarHeight}>
       <Box
         background="body (Deprecated)"
         justifyContent="center"

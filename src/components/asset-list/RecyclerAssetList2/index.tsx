@@ -7,10 +7,8 @@ import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { UniqueAsset } from '@/entities';
-import {
-  navbarHeight,
-  navbarHeightWithInset,
-} from '@/components/navbar/Navbar';
+import { navbarHeightWithInset } from '@/components/navbar/Navbar';
+import { Box } from '@/design-system';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -69,11 +67,11 @@ export default React.memo(RecyclerAssetList);
 // //////////////////////////////////////////////////////////
 
 function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
-  const yOffset = 32;
+  const yOffset = 10;
   const animatedStyle = useMemo(
     () => ({
       opacity: position!.interpolate({
-        inputRange: [0, navbarHeight - yOffset, navbarHeight - yOffset + 4],
+        inputRange: [0, yOffset, yOffset + 4],
         outputRange: [0, 0, 1],
       }),
     }),
@@ -81,12 +79,13 @@ function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
   );
 
   return (
-    <RNAnimated.View
+    <Box
+      as={RNAnimated.View}
+      background="body (Deprecated)"
       style={[
         {
-          backgroundColor: 'white',
           height: navbarHeightWithInset,
-          width: '95%',
+          width: '100%',
           position: 'absolute',
           top: 0,
           zIndex: 1,

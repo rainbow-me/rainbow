@@ -82,7 +82,6 @@ export function ProfileAvatarRow({
   const position = useRecyclerAssetListPosition();
   const animatedStyle = React.useMemo(
     () => ({
-      backgroundColor: 'white',
       opacity: position!.interpolate({
         inputRange: [-insets.top, -insets.top + 1, navbarHeight],
         outputRange: [1, 1, 0],

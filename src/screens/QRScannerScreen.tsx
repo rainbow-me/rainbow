@@ -12,6 +12,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, ColorModeProvider } from '@/design-system';
+import { SheetHandle } from '@/components/sheet';
 
 const Background = styled(View)({
   backgroundColor: 'black',
@@ -42,7 +43,10 @@ export default function QRScannerScreen() {
     <View pointerEvents="box-none">
       <ColorModeProvider value="darkTinted">
         <Box position="absolute" top="0px" width="full" style={{ zIndex: 1 }}>
-          <Navbar hasStatusBarInset={android} title="Scan QR Code" />
+          <Box alignItems="center" paddingTop="8px" height={{ custom: 16 }}>
+            <SheetHandle color="rgba(245, 248, 255, 0.4)" showBlur={false} />
+          </Box>
+          <Navbar hasStatusBarInset={android} title="Scan to Connect" />
         </Box>
         <ScannerContainer>
           <Background />

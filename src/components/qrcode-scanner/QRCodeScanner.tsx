@@ -9,19 +9,10 @@ import {
   RESULTS,
 } from 'react-native-permissions';
 import { ErrorText } from '../text';
-import ConnectedDapps from './ConnectedDapps';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import { useHardwareBack, useScanner } from '@/hooks';
 import { deviceUtils } from '@/utils';
-import {
-  AccentColorProvider,
-  Box,
-  Cover,
-  Inset,
-  Rows,
-  Row,
-  useForegroundColor,
-} from '@/design-system';
+import { Box, Cover, Rows, Row } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 
@@ -112,8 +103,6 @@ export default function QRCodeScanner() {
     askForPermissions();
   }, [askForPermissions]);
 
-  const secondary80 = useForegroundColor('secondary80 (Deprecated)');
-
   return (
     <>
       <Box
@@ -144,35 +133,26 @@ export default function QRCodeScanner() {
             />
           </Row>
           <Row height="content">
-            <CameraMaskSvg width={deviceWidth} height={deviceWidth} />
-            <Cover alignHorizontal="center">
-              <Inset top={{ custom: 14 }}>
-                <AccentColorProvider color={secondary80}>
-                  <Box
-                    background="accent"
-                    borderRadius={3}
-                    height={{ custom: 5 }}
-                    width={{ custom: 36 }}
-                  />
-                </AccentColorProvider>
-              </Inset>
+            <Box alignItems="center">
+              <CameraMaskSvg
+                width={deviceWidth - 32}
+                height={deviceWidth - 32}
+              />
+            </Box>
+            <Cover alignHorizontal="left">
+              <Box
+                height="full"
+                width={{ custom: 16 }}
+                style={{ backgroundColor: 'black', opacity: 0.9 }}
+              />
             </Cover>
-            {ios && (
-              <Cover>
-                <Box
-                  borderRadius={40}
-                  width={{ custom: deviceWidth }}
-                  height={{ custom: deviceWidth }}
-                  style={{
-                    // TODO: replace with new colors
-                    borderColor: 'rgba(245, 248, 255, 0.12)',
-                    borderStyle: 'solid',
-                    borderWidth: 2,
-                    zIndex: 2,
-                  }}
-                />
-              </Cover>
-            )}
+            <Cover alignHorizontal="right">
+              <Box
+                height="full"
+                width={{ custom: 16 }}
+                style={{ backgroundColor: 'black', opacity: 0.9 }}
+              />
+            </Cover>
             <Cover alignHorizontal="center" alignVertical="center">
               {cameraState === CameraState.Error && (
                 // @ts-expect-error – JS component
