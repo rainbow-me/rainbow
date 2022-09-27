@@ -57,8 +57,6 @@ export const estimateUnlockAndCrosschainSwap = async (
       gasLimits = gasLimits.concat(unlockGasLimit);
     }
   }
-  }
-  console.log('------ swapAssetNeedsUnlocking', swapAssetNeedsUnlocking);
 
   const swapGasLimit = await estimateCrosschainSwapGasLimit({
     chainId: Number(chainId),
@@ -76,7 +74,6 @@ export const createUnlockAndCrosschainSwapRap = async (
 ) => {
   let actions: RapAction[] = [];
 
-  console.log('😬😬😬😬 ------ createUnlockAndCrosschainSwapRap');
   const { inputAmount, tradeDetails, flashbots, chainId } = swapParameters;
   const { inputCurrency } = store.getState().swap;
   const { accountAddress } = store.getState().settings;
@@ -86,7 +83,6 @@ export const createUnlockAndCrosschainSwapRap = async (
     tradeDetails?.routes?.[0]?.userTxs?.[0]?.approvalData?.allowanceTarget;
 
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-  console.log('😬😬😬😬 ------ nativeAsset 1');
   const nativeAsset =
     ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
       inputCurrency?.address?.toLowerCase() ||
@@ -114,11 +110,6 @@ export const createUnlockAndCrosschainSwapRap = async (
       actions = actions.concat(unlock);
     }
   }
-  }
-  console.log(
-    '😬😬😬😬------ swapAssetNeedsUnlocking',
-    swapAssetNeedsUnlocking
-  );
 
   const crosschainSwap = createNewAction(RapActionTypes.crosschainSwap, {
     chainId,

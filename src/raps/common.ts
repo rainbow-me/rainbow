@@ -226,7 +226,6 @@ const createSwapRapByType = (
   type: keyof typeof RapActionTypes,
   swapParameters: SwapActionParameters | CrosschainSwapActionParameters
 ) => {
-  console.log('😡😡😡 createSwapRapByType', type);
   switch (type) {
     case RapActionTypes.depositCompound:
       return createSwapAndDepositCompoundRap(swapParameters);
@@ -418,14 +417,12 @@ const executeAction = async (
 };
 
 const getRapTypeFromActionType = (actionType: RapActionType) => {
-  console.log('--- getRapTypeFromActionType', actionType);
   switch (actionType) {
     case RapActionTypes.swap:
     case RapActionTypes.crosschainSwap:
     case RapActionTypes.unlock:
     case RapActionTypes.depositCompound:
     case RapActionTypes.withdrawCompound:
-      console.log('--- returning ', RAP_TYPE.EXCHANGE);
       return RAP_TYPE.EXCHANGE;
     case RapActionTypes.commitENS:
     case RapActionTypes.registerENS:
@@ -441,7 +438,6 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.transferENS:
       return RAP_TYPE.ENS;
   }
-  console.log('--- returning ', '');
   return '';
 };
 
