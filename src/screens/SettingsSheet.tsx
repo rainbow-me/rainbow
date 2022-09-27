@@ -274,7 +274,7 @@ export default function SettingsSheet() {
               ...memoSettingsOptions.headerStyle,
               // only do this if sheet needs a header subtitle AND is not scrollable
               // if it's scrollable we need a better fix
-              ...(ios && { backgroundColor: 'transparent' }),
+              ...{ backgroundColor: 'transparent' },
             },
           })}
         />
