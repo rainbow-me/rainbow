@@ -524,6 +524,7 @@ export const getTransactionLabel = ({
 
   if (type === TransactionType.authorize) return TransactionStatus.approved;
   if (type === TransactionType.purchase) return TransactionStatus.purchased;
+  if (type === TransactionType.cancel) return TransactionStatus.cancelled;
 
   if (type === TransactionType.deposit) {
     if (protocol === ProtocolType.compound) {

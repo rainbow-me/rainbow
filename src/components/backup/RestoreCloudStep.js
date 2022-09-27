@@ -212,7 +212,8 @@ export default function RestoreCloudStep({
                   setWalletBackedUp(
                     walletId,
                     walletBackupTypes.cloud,
-                    backupSelected?.name
+                    backupSelected?.name,
+                    false
                   )
                 );
               })

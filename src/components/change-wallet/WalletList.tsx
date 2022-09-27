@@ -23,9 +23,12 @@ import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
+import { EthereumAddress } from '@rainbow-me/entities';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
+import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -36,7 +39,7 @@ const RowTypes = {
   EMPTY: 2,
 };
 
-const getItemLayout = (data, index) => {
+const getItemLayout = (data: any, index: number) => {
   const { height } = data[index];
   return {
     index,
@@ -45,10 +48,11 @@ const getItemLayout = (data, index) => {
   };
 };
 
-const keyExtractor = item => `${item.walletId}-${item?.id}`;
+const keyExtractor = (item: any) => `${item.walletId}-${item?.id}`;
 
+// @ts-ignore
 const Container = styled.View({
-  height: ({ height }) => height,
+  height: ({ height }: { height: number }) => height,
   marginTop: -2,
 });
 
@@ -61,27 +65,31 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })({
   ...position.coverAsObject,
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }: any) => colors.white,
   paddingTop: listTopPadding,
 });
 
-const WalletFlatList = styled(FlatList).attrs(({ showDividers }) => ({
-  contentContainerStyle: {
-    paddingBottom: showDividers ? 9.5 : 0,
-    paddingTop: listTopPadding,
-  },
-  getItemLayout,
-  keyExtractor,
-  removeClippedSubviews: true,
-}))({
+const WalletFlatList = styled(FlatList).attrs(
+  ({ showDividers }: { showDividers: boolean }) => ({
+    contentContainerStyle: {
+      paddingBottom: showDividers ? 9.5 : 0,
+      paddingTop: listTopPadding,
+    },
+    getItemLayout,
+    keyExtractor,
+    removeClippedSubviews: true,
+  })
+)({
   flex: 1,
   minHeight: 1,
 });
 
-const WalletListDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
-  color: colors.rowDividerExtraLight,
-  inset: [0, 15],
-}))({
+const WalletListDivider = styled(Divider).attrs(
+  ({ theme: { colors } }: any) => ({
+    color: colors.rowDividerExtraLight,
+    inset: [0, 15],
+  })
+)({
   marginBottom: 1,
   marginTop: -1,
 });
@@ -91,42 +99,62 @@ const WalletListFooter = styled(Column)({
   paddingTop: 4,
 });
 
+interface Props {
+  accountAddress: EthereumAddress;
+  allWallets: any;
+  contextMenuActions: EditWalletContextMenuActions;
+  currentWallet: any;
+  editMode: boolean;
+  height: number;
+  onChangeAccount: (
+    walletId: string,
+    address: EthereumAddress | undefined
+  ) => void;
+  onPressAddAccount: () => void;
+  onPressImportSeedPhrase: () => void;
+  onPressPairHardwareWallet: () => void;
+  scrollEnabled: boolean;
+  showDividers: boolean;
+  watchOnly: boolean;
+}
+
 export default function WalletList({
   accountAddress,
   allWallets,
+  contextMenuActions,
   currentWallet,
   editMode,
-  getEditMenuItems,
-  getOnMenuItemPress,
   height,
   onChangeAccount,
   onPressAddAccount,
   onPressImportSeedPhrase,
+  onPressPairHardwareWallet,
   scrollEnabled,
   showDividers,
   watchOnly,
-}) {
-  const [rows, setRows] = useState([]);
+}: Props) {
+  const [rows, setRows] = useState<any[]>([]);
   const [ready, setReady] = useState(false);
   const scrollView = useRef(null);
   const { network } = useAccountSettings();
   const opacityAnimation = useSharedValue(0);
   const emptyOpacityAnimation = useSharedValue(1);
+  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
 
   // Update the rows when allWallets changes
   useEffect(() => {
-    const seedRows = [];
-    const privateKeyRows = [];
-    const readOnlyRows = [];
+    const seedRows: any[] = [];
+    const privateKeyRows: any[] = [];
+    const readOnlyRows: any[] = [];
 
     if (isEmpty(allWallets)) return;
     const sortedKeys = Object.keys(allWallets).sort();
     sortedKeys.forEach(key => {
       const wallet = allWallets[key];
       const filteredAccounts = wallet.addresses.filter(
-        account => account.visible
+        (account: any) => account.visible
       );
-      filteredAccounts.forEach(account => {
+      filteredAccounts.forEach((account: any) => {
         const row = {
           ...account,
           editMode,
@@ -167,17 +195,16 @@ export default function WalletList({
   }, [
     accountAddress,
     allWallets,
-    currentWallet,
+    currentWallet?.id,
     editMode,
     network,
     onChangeAccount,
-    onPressAddAccount,
     watchOnly,
   ]);
 
   // Update the data provider when rows change
   useEffect(() => {
-    if (rows && rows.length && !ready) {
+    if (rows?.length && !ready) {
       setTimeout(() => {
         setReady(true);
         emptyOpacityAnimation.value = withTiming(0, {
@@ -186,7 +213,7 @@ export default function WalletList({
         });
       }, 50);
     }
-  }, [rows, ready]);
+  }, [rows, ready, emptyOpacityAnimation]);
 
   useLayoutEffect(() => {
     if (ready) {
@@ -214,12 +241,10 @@ export default function WalletList({
           return (
             <Column height={item.height}>
               <AddressRow
+                contextMenuActions={contextMenuActions}
                 data={item}
                 editMode={editMode}
-                getEditMenuItems={getEditMenuItems}
-                getOnMenuItemPress={getOnMenuItemPress}
                 onPress={item.onPress}
-                watchOnly={watchOnly}
               />
             </Column>
           );
@@ -227,7 +252,7 @@ export default function WalletList({
           return null;
       }
     },
-    [editMode, getEditMenuItems, getOnMenuItemPress, watchOnly]
+    [contextMenuActions, editMode]
   );
 
   return (
@@ -249,16 +274,21 @@ export default function WalletList({
           <WalletListFooter>
             <WalletOption
               editMode={editMode}
-              icon="arrowBack"
               label={`􀁍 ${lang.t('wallet.action.create_new')}`}
               onPress={onPressAddAccount}
             />
             <WalletOption
               editMode={editMode}
-              icon="arrowBack"
               label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
               onPress={onPressImportSeedPhrase}
             />
+            {hardwareWalletsEnabled && (
+              <WalletOption
+                editMode={editMode}
+                label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
+                onPress={onPressPairHardwareWallet}
+              />
+            )}
           </WalletListFooter>
         )}
       </WalletsContainer>

@@ -27,7 +27,12 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 import { analytics } from '@/analytics';
-import { PROFILES, useExperimentalFlag } from '@/config';
+import {
+  getExperimetalFlag,
+  HARDWARE_WALLETS,
+  PROFILES,
+  useExperimentalFlag,
+} from '@/config';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import {
@@ -40,26 +45,28 @@ import {
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import {
-  abbreviations,
   deviceUtils,
   doesWalletsContainAddress,
   showActionSheetWithOptions,
 } from '@/utils';
-
 import logger from '@/utils/logger';
+import { useTheme } from '@/theme';
+import { EthereumAddress } from '@/entities';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const footerHeight = 111;
+const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 164 : 111;
 const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
-const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
-  scaleTo: 0.96,
-  wrapperStyle: {
-    width: editMode ? 70 : 58,
-  },
-}))(
+const EditButton = styled(ButtonPressAnimation).attrs(
+  ({ editMode }: { editMode: boolean }) => ({
+    scaleTo: 0.96,
+    wrapperStyle: {
+      width: editMode ? 70 : 58,
+    },
+  })
+)(
   ios
     ? {
         position: 'absolute',
@@ -75,7 +82,7 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
 );
 
 const EditButtonLabel = styled(Text).attrs(
-  ({ theme: { colors }, editMode }) => ({
+  ({ theme: { colors }, editMode }: { theme: any; editMode: boolean }) => ({
     align: 'right',
     color: colors.appleBlue,
     letterSpacing: 'roundedMedium',
@@ -86,27 +93,35 @@ const EditButtonLabel = styled(Text).attrs(
   height: 40,
 });
 
+// @ts-ignore
 const Whitespace = styled.View({
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }: any) => colors.white,
   bottom: -398,
   height: 400,
   position: 'absolute',
   width: '100%',
 });
 
-const getWalletRowCount = wallets => {
+const getWalletRowCount = (wallets: any) => {
   let count = 0;
   if (wallets) {
     Object.keys(wallets).forEach(key => {
       // Addresses
-      count += wallets[key].addresses.filter(account => account.visible).length;
+      count += wallets[key].addresses.filter((account: any) => account.visible)
+        .length;
     });
   }
   return count;
 };
 
+export type EditWalletContextMenuActions = {
+  edit: (walletId: string, address: EthereumAddress) => void;
+  notifications: (walletName: string) => void;
+  remove: (walletId: string, address: EthereumAddress) => void;
+};
+
 export default function ChangeWalletSheet() {
-  const { params = {} } = useRoute();
+  const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const {
     isDamaged,
@@ -122,7 +137,7 @@ export default function ChangeWalletSheet() {
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
-  const creatingWallet = useRef();
+  const creatingWallet = useRef<boolean>();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const [editMode, setEditMode] = useState(false);
@@ -151,7 +166,8 @@ export default function ChangeWalletSheet() {
   const onChangeAccount = useCallback(
     async (walletId, address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
-      const wallet = wallets[walletId];
+      const wallet = wallets?.[walletId];
+      if (!wallet) return;
       if (watchOnly) {
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
@@ -165,7 +181,7 @@ export default function ChangeWalletSheet() {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
-
+        // @ts-ignore
         initializeWallet(null, null, null, false, false, null, true);
         if (!fromDeletion) {
           goBack();
@@ -199,8 +215,8 @@ export default function ChangeWalletSheet() {
       const newWallets = {
         ...wallets,
         [walletId]: {
-          ...wallets[walletId],
-          addresses: wallets[walletId].addresses.map(account =>
+          ...wallets?.[walletId],
+          addresses: wallets?.[walletId].addresses.map(account =>
             account.address.toLowerCase() === address.toLowerCase()
               ? { ...account, visible: false }
               : account
@@ -209,11 +225,12 @@ export default function ChangeWalletSheet() {
       };
       // If there are no visible wallets
       // then delete the wallet
-      const visibleAddresses = newWallets[walletId].addresses.filter(
-        account => account.visible
+      const visibleAddresses = (newWallets as any)[walletId].addresses.filter(
+        (account: any) => account.visible
       );
       if (visibleAddresses.length === 0) {
-        delete newWallets[walletId];
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete (newWallets as any)[walletId];
         await dispatch(walletsUpdate(newWallets));
       } else {
         await dispatch(walletsUpdate(newWallets));
@@ -225,7 +242,8 @@ export default function ChangeWalletSheet() {
 
   const renameWallet = useCallback(
     (walletId, address) => {
-      const wallet = wallets[walletId];
+      const wallet = wallets?.[walletId];
+      if (!wallet) return;
       const account = wallet.addresses.find(
         account => account.address === address
       );
@@ -239,7 +257,7 @@ export default function ChangeWalletSheet() {
           navigate(Routes.MODAL_SCREEN, {
             address,
             asset: [],
-            onCloseModal: async args => {
+            onCloseModal: async (args: any) => {
               if (args) {
                 if ('name' in args) {
                   analytics.track('Tapped "Done" after editing wallet', {
@@ -289,9 +307,9 @@ export default function ChangeWalletSheet() {
               }
             },
             profile: {
-              color: account.color,
-              image: account.image || ``,
-              name: account.label || ``,
+              color: account?.color,
+              image: account?.image || ``,
+              name: account?.label || ``,
             },
             type: 'wallet_profile',
           });
@@ -309,54 +327,52 @@ export default function ChangeWalletSheet() {
     ]
   );
 
-  const getEditMenuItems = () => {
-    const buttons = [lang.t('wallet.action.edit')];
-    buttons.push(lang.t('wallet.action.delete'));
-
-    if (ios) {
-      buttons.push(lang.t('button.cancel'));
-    }
-
-    return {
-      menuItems: buttons.map(button => ({
-        actionKey: button,
-        actionTitle: button,
-      })),
-    };
-  };
-
-  const getOnMenuItemPress = (walletId, address, label) => buttonIndex => {
-    // If there's more than 1 account
-    // it's deletable
-    let isLastAvailableWallet = false;
-    for (let i = 0; i < Object.keys(wallets).length; i++) {
-      const key = Object.keys(wallets)[i];
-      const someWallet = wallets[key];
-      const otherAccount = someWallet.addresses.find(
-        account => account.visible && account.address !== address
-      );
-      if (otherAccount) {
-        isLastAvailableWallet = true;
-        break;
-      }
-    }
-
-    if (buttonIndex === 0) {
-      // Edit wallet
+  const onPressEdit = useCallback(
+    (walletId, address) => {
       analytics.track('Tapped "Edit Wallet"');
       renameWallet(walletId, address);
-    } else if (buttonIndex === 1) {
+    },
+    [renameWallet]
+  );
+
+  const onPressNotifications = useCallback(
+    walletName => {
+      analytics.track('Tapped "Notification Settings"');
+      navigate(Routes.SETTINGS_SHEET, {
+        params: { title: walletName },
+        screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
+      });
+    },
+    [navigate]
+  );
+
+  const onPressRemove = useCallback(
+    (walletId, address) => {
       analytics.track('Tapped "Delete Wallet"');
+      // If there's more than 1 account
+      // it's deletable
+      let isLastAvailableWallet = false;
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
+      for (let i = 0; i < Object.keys(wallets as any).length; i++) {
+        const key = Object.keys(wallets as any)[i];
+        const someWallet = wallets?.[key];
+        const otherAccount = someWallet?.addresses.find(
+          account => account.visible && account.address !== address
+        );
+        if (otherAccount) {
+          isLastAvailableWallet = true;
+          break;
+        }
+      }
       // Delete wallet with confirmation
       showActionSheetWithOptions(
         {
           cancelButtonIndex: 1,
           destructiveButtonIndex: 0,
-          message: lang.t('wallet.action.delete_confirm'),
-          options: [lang.t('wallet.action.delete'), lang.t('button.cancel')],
-          title: `${label || abbreviations.address(address, 4, 6)}`,
+          message: lang.t('wallet.action.remove_confirm'),
+          options: [lang.t('wallet.action.remove'), lang.t('button.cancel')],
         },
-        async buttonIndex => {
+        async (buttonIndex: number) => {
           if (buttonIndex === 0) {
             analytics.track('Tapped "Delete Wallet" (final confirm)');
             await deleteWallet(walletId, address);
@@ -368,7 +384,7 @@ export default function ChangeWalletSheet() {
             } else {
               // If we're deleting the selected wallet
               // we need to switch to another one
-              if (address === currentAddress) {
+              if (wallets && address === currentAddress) {
                 const { wallet: foundWallet, key } =
                   doesWalletsContainAddress({
                     address: address,
@@ -382,8 +398,9 @@ export default function ChangeWalletSheet() {
           }
         }
       );
-    }
-  };
+    },
+    [currentAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
+  );
 
   const onPressAddAccount = useCallback(async () => {
     try {
@@ -401,7 +418,7 @@ export default function ChangeWalletSheet() {
             actionType: 'Create',
             asset: [],
             isNewProfile: true,
-            onCloseModal: async args => {
+            onCloseModal: async (args: any) => {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = args?.name ?? '';
@@ -413,10 +430,10 @@ export default function ChangeWalletSheet() {
 
                 // If it's not, then find it
                 !primaryWalletKey &&
-                  Object.keys(wallets).some(key => {
-                    const wallet = wallets[key];
+                  Object.keys(wallets as any).some(key => {
+                    const wallet = wallets?.[key];
                     if (
-                      wallet.type === WalletTypes.mnemonic &&
+                      wallet?.type === WalletTypes.mnemonic &&
                       wallet.primary
                     ) {
                       primaryWalletKey = key;
@@ -428,10 +445,10 @@ export default function ChangeWalletSheet() {
                 // If there's no primary wallet at all,
                 // we fallback to an imported one with a seed phrase
                 !primaryWalletKey &&
-                  Object.keys(wallets).some(key => {
-                    const wallet = wallets[key];
+                  Object.keys(wallets as any).some(key => {
+                    const wallet = wallets?.[key];
                     if (
-                      wallet.type === WalletTypes.mnemonic &&
+                      wallet?.type === WalletTypes.mnemonic &&
                       wallet.imported
                     ) {
                       primaryWalletKey = key;
@@ -442,15 +459,19 @@ export default function ChangeWalletSheet() {
 
                 try {
                   // If we found it and it's not damaged use it to create the new account
-                  if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
+                  if (
+                    primaryWalletKey &&
+                    !wallets?.[primaryWalletKey].damaged
+                  ) {
                     const newWallets = await dispatch(
                       createAccountForWallet(primaryWalletKey, color, name)
                     );
+                    // @ts-ignore
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
                     // We need to update userData backup so it can be restored too
                     if (
-                      wallets[primaryWalletKey].backedUp &&
+                      wallets?.[primaryWalletKey].backedUp &&
                       wallets[primaryWalletKey].backupType ===
                         WalletBackupTypes.cloud
                     ) {
@@ -478,6 +499,7 @@ export default function ChangeWalletSheet() {
                       true
                     );
                     await dispatch(walletsLoadState(profilesEnabled));
+                    // @ts-ignore
                     await initializeWallet();
                   }
                 } catch (e) {
@@ -523,12 +545,21 @@ export default function ChangeWalletSheet() {
     navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [navigate]);
 
+  const onPressPairHardwareWallet = useCallback(() => {
+    analytics.track('Tapped "Pair Hardware Wallet"');
+    goBack();
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+    });
+  }, [goBack, navigate]);
+
   const onPressEditMode = useCallback(() => {
     analytics.track('Tapped "Edit"');
     setEditMode(e => !e);
   }, []);
 
   return (
+    // @ts-ignore
     <Sheet borderRadius={30}>
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
@@ -548,20 +579,27 @@ export default function ChangeWalletSheet() {
           )}
         </Centered>
         {showDividers && (
+          // @ts-ignore
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
+        contextMenuActions={
+          {
+            edit: onPressEdit,
+            notifications: onPressNotifications,
+            remove: onPressRemove,
+          } as EditWalletContextMenuActions
+        }
         currentWallet={currentSelectedWallet}
         editMode={editMode}
-        getEditMenuItems={getEditMenuItems}
-        getOnMenuItemPress={getOnMenuItemPress}
         height={listHeight}
         onChangeAccount={onChangeAccount}
         onPressAddAccount={onPressAddAccount}
         onPressImportSeedPhrase={onPressImportSeedPhrase}
+        onPressPairHardwareWallet={onPressPairHardwareWallet}
         scrollEnabled={scrollEnabled}
         showDividers={showDividers}
         watchOnly={watchOnly}

@@ -67,7 +67,9 @@ export default function useWallets() {
     return bool;
   }, [selectedWallet, wallets]);
 
-  const switchToWalletWithAddress = async (address: string) => {
+  const switchToWalletWithAddress = async (
+    address: string
+  ): Promise<string | null> => {
     const walletKey = Object.keys(wallets!).find(key => {
       // Addresses
       return wallets![key].addresses.find(
@@ -76,7 +78,7 @@ export default function useWallets() {
       );
     });
 
-    if (!walletKey) return;
+    if (!walletKey) return null;
     const p1 = dispatch(walletsSetSelected(wallets![walletKey]));
     const p2 = dispatch(addressSetSelected(toChecksumAddress(address)!));
     await Promise.all([p1, p2]);
