@@ -4,6 +4,7 @@ import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@/entities';
 import { ExchangeModalTypes } from '@/helpers';
 import { AppDispatch, AppGetState } from '@/redux/store';
+import { logger } from '@/utils';
 
 export interface SwapAmount {
   display: string | null;
@@ -129,6 +130,7 @@ export const updateSwapInputCurrency = (
   newInputCurrency: SwappableAsset | null,
   ignoreTypeCheck = false
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
+  logger.debug('UPDATE SWAP INPUT CURRENCY');
   const {
     depositCurrency,
     independentField,
@@ -173,6 +175,7 @@ export const updateSwapOutputCurrency = (
   newOutputCurrency: SwappableAsset | null,
   ignoreTypeCheck = false
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
+  logger.debug('UPDATE SWAP OUTPUT CURRENCY');
   const { independentField, inputCurrency, type } = getState().swap;
   if (
     newOutputCurrency?.address === inputCurrency?.address &&
