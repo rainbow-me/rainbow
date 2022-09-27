@@ -128,29 +128,29 @@ export default function QRCodeScanner() {
         <Rows>
           <Row>
             <Box
-              style={{ backgroundColor: 'black', opacity: 0.9 }}
+              style={{ backgroundColor: 'black', opacity: 0.8 }}
               height="full"
             />
           </Row>
           <Row height="content">
             <Box alignItems="center">
               <CameraMaskSvg
-                width={deviceWidth - 32}
-                height={deviceWidth - 32}
+                width={deviceWidth - 20}
+                height={deviceWidth - 20}
               />
             </Box>
             <Cover alignHorizontal="left">
               <Box
                 height="full"
-                width={{ custom: 16 }}
-                style={{ backgroundColor: 'black', opacity: 0.9 }}
+                width={{ custom: 10 }}
+                style={{ backgroundColor: 'black', opacity: 0.8 }}
               />
             </Cover>
             <Cover alignHorizontal="right">
               <Box
                 height="full"
-                width={{ custom: 16 }}
-                style={{ backgroundColor: 'black', opacity: 0.9 }}
+                width={{ custom: 10 }}
+                style={{ backgroundColor: 'black', opacity: 0.8 }}
               />
             </Cover>
             <Cover alignHorizontal="center" alignVertical="center">
@@ -167,7 +167,7 @@ export default function QRCodeScanner() {
           </Row>
           <Row>
             <Box
-              style={{ backgroundColor: 'black', opacity: 0.9 }}
+              style={{ backgroundColor: 'black', opacity: 0.8 }}
               height="full"
             />
           </Row>
