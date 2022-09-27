@@ -6,12 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {
-  LayoutAnimation,
-  NativeModules,
-  StatusBar,
-  useColorScheme,
-} from 'react-native';
+import { LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import {
@@ -22,6 +17,7 @@ import {
 import currentColors from './currentColors';
 import { DesignSystemProvider } from '@/design-system';
 import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
+import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { StyleThingThemeProvider } from '@/styled-thing';
 
 export const Themes = {
@@ -83,18 +79,13 @@ export const MainThemeProvider = (
             ? 'dark'
             : 'light'
           : userPref;
-      StatusBar.setBarStyle(
-        userPrefSystemAdjusted === Themes.DARK
-          ? 'light-content'
-          : 'dark-content',
-        true
-      );
       currentColors.theme = userPrefSystemAdjusted;
       currentColors.themedColors =
         userPrefSystemAdjusted === Themes.DARK
           ? darkModeThemeColors
           : lightModeThemeColors;
       setColorScheme(userPref);
+      onHandleStatusBar();
     };
     loadUserPref();
   }, [isSystemDarkMode]);
@@ -102,7 +93,7 @@ export const MainThemeProvider = (
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
     if (colorScheme) {
-      //setIsDarkMode(colorScheme === Themes.DARK);
+      // setIsDarkMode(colorScheme === Themes.DARK);
       saveTheme(colorScheme);
     }
   }, [colorScheme]);
@@ -126,17 +117,13 @@ export const MainThemeProvider = (
               : 'light'
             : scheme;
         currentColors.theme = schemeSystemAdjusted;
-        StatusBar.setBarStyle(
-          schemeSystemAdjusted === Themes.DARK
-            ? 'light-content'
-            : 'dark-content',
-          true
-        );
+
         currentColors.themedColors =
           schemeSystemAdjusted === Themes.DARK
             ? darkModeThemeColors
             : lightModeThemeColors;
         setColorScheme(scheme);
+        onHandleStatusBar();
         LayoutAnimation.configureNext(
           LayoutAnimation.create(1000, 'easeInEaseOut', 'opacity')
         );
