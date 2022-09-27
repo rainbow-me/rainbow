@@ -221,7 +221,7 @@
     "react-native-ios11-devicecheck": "0.0.3",
     "react-native-keyboard-area": "1.0.5",
     "react-native-keychain": "8.0.0",
-    "react-native-keychain-new": "rainbow-me/react-native-keychain-new#b5a545e408c65920618b28244a3fe55c775537fb",
+    "react-native-keychain-android-new": "rainbow-me/react-native-keychain-android-new#f7ba2286b653cad9acb648ea270d89f5684d8146",
     "react-native-languages": "3.0.2",
     "react-native-level-fs": "3.0.1",
     "react-native-linear-gradient": "2.5.6",
