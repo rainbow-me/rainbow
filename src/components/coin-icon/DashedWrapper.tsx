@@ -36,7 +36,6 @@ export default function DashedWrapper(props) {
           pointerEvents="none"
           start={{ x: 1, y: 1 }}
           style={{ width: '100%', height: '100%' }}
-          // style={[sx.gradient]}
         />
       </MaskedView>
       <Box alignItems="center" paddingTop={{ custom: childXPosition }}>
