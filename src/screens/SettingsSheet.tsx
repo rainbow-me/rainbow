@@ -117,7 +117,7 @@ const Stack = createStackNavigator();
 
 export default function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
-  const { wallets, selectedWallet } = useWallets();
+  const { wallets } = useWallets();
   const { params } = useRoute<any>();
   const { colors } = useTheme();
 
@@ -216,6 +216,11 @@ export default function SettingsSheet() {
           options={{
             cardStyleInterpolator,
             title: lang.t('settings.label'),
+            headerStyle: {
+              ...memoSettingsOptions.headerStyle,
+              // ios MenuContainer scroll fix
+              ...(ios && { backgroundColor: colors.cardBackdrop }),
+            },
           }}
         >
           {() => (
