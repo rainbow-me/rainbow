@@ -7,6 +7,7 @@ import {
   ACCESSIBLE,
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
+  getAllInternetCredentialsKeys,
   getAllInternetCredentials,
   getInternetCredentials,
   getSupportedBiometryType,
@@ -189,6 +190,19 @@ export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
     };
   });
   return data;
+}
+
+export async function loadAllKeysOnly(): Promise<null | string[]> {
+  try {
+    const response = await getAllInternetCredentialsKeys();
+    if (response) {
+      return response.results;
+    }
+  } catch (err) {
+    logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
+    captureException(err);
+  }
+  return null;
 }
 
 export async function hasKey(key: string): Promise<boolean | Result> {
