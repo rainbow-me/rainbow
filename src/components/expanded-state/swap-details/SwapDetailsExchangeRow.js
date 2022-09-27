@@ -223,19 +223,31 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
           </SwapDetailsLabel>
         </Column>
         <Column width="content">
-          <Bleed vertical="10px">
-            <ExchangeIcon
-              icon={getExchangeIconUrl(parseExchangeName(protocols[0].name))}
-              protocol={parseExchangeName(protocols[0].name)}
-            />
-          </Bleed>
+          <Box
+            style={{
+              top: android ? -1.5 : 0,
+            }}
+          >
+            <Bleed vertical="10px">
+              <ExchangeIcon
+                icon={getExchangeIconUrl(parseExchangeName(protocols[0].name))}
+                protocol={parseExchangeName(protocols[0].name)}
+              />
+            </Bleed>
+          </Box>
         </Column>
         <Column width="content">
           <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
         </Column>
         <Column width="content">
-          <Bleed right="6px" vertical="6px">
-            <Pill textColor={defaultColor}>{`${protocols[0].part}%`}</Pill>
+          <Bleed right="6px" vertical="12px">
+            <Pill
+              height={20}
+              style={{
+                lineHeight: android && 18,
+              }}
+              textColor={defaultColor}
+            >{`${protocols[0].part}%`}</Pill>
           </Bleed>
         </Column>
       </Columns>
