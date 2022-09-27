@@ -96,22 +96,25 @@ const WalletRow = ({
   toggleNotifications,
 }: WalletRowProps) => {
   const index = useNavigationState(state => state.index);
+  const { walletNames } = useWallets();
+
   const { navigate } = useNavigation();
   const { notifications } = useNotificationSettings(wallet.address);
   const [notificationSettings, setNotificationSettings] = useState(
     notifications
   );
-
   const cleanedUpLabel = useMemo(
     () => removeFirstEmojiFromString(wallet.label),
     [wallet]
   );
 
+  const ens = walletNames?.[wallet.address];
+
   const displayAddress = useMemo(() => {
     return abbreviations.address(wallet.address, 4, 6);
   }, [wallet]);
 
-  const walletName = cleanedUpLabel || displayAddress || '';
+  const walletName = cleanedUpLabel || ens || displayAddress || '';
 
   useEffect(() => {
     const data = getAllNotificationSettingsFromStorage();
@@ -146,7 +149,7 @@ const WalletRow = ({
       leftComponent={
         <Box
           style={{
-            opacity: groupOff || !notificationSettings.enabled ? 0.25 : 1,
+            opacity: groupOff || !notificationSettings?.enabled ? 0.25 : 1,
           }}
         >
           {wallet?.image ? (
@@ -172,27 +175,29 @@ const NotificationsSection = () => {
   const { network } = useAccountSettings();
   const isTestnet = isTestnetNetwork(network);
   const { wallets } = useWallets();
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const walletIDs = Object.keys(wallets!);
-
   const { ownedWallets, watchedWallets } = useMemo(() => {
     const ownedWallets: RainbowAccount[] = [];
     const watchedWallets: RainbowAccount[] = [];
     // group wallets by relationship if the arrays are empty
     if (watchedWallets.length === 0 && ownedWallets.length === 0) {
+      const walletIDs = Object.keys(wallets!);
       walletIDs.forEach(key => {
         const wallet = wallets?.[key];
 
         if (wallet?.type === WalletTypes.readOnly) {
-          wallet?.addresses.forEach(item => watchedWallets.push(item));
+          wallet?.addresses.forEach(
+            item => item.visible && watchedWallets.push(item)
+          );
         } else {
-          wallet?.addresses.forEach(item => ownedWallets.push(item));
+          wallet?.addresses.forEach(
+            item => item.visible && ownedWallets.push(item)
+          );
         }
       });
     }
 
     return { ownedWallets, watchedWallets };
-  }, [walletIDs, wallets]);
+  }, [wallets]);
 
   const noOwnedWallets = !ownedWallets.length;
   const noWatchedWallets = !watchedWallets.length;
@@ -210,7 +215,7 @@ const NotificationsSection = () => {
     checkNotifications().then(({ status }) => {
       setPermissionStatus(status);
     });
-  }, [ownedWallets, walletIDs, wallets, watchedWallets]);
+  }, [ownedWallets, wallets, watchedWallets]);
 
   const toggleAllOwnedNotifications = useCallback(
     () =>
