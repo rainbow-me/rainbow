@@ -216,11 +216,6 @@ export default function SettingsSheet() {
           options={{
             cardStyleInterpolator,
             title: lang.t('settings.label'),
-            headerStyle: {
-              ...memoSettingsOptions.headerStyle,
-              // ios MenuContainer scroll fix
-              ...(ios && { backgroundColor: colors.cardBackdrop }),
-            },
           }}
         >
           {() => (
@@ -247,11 +242,6 @@ export default function SettingsSheet() {
                 options={{
                   cardStyleInterpolator,
                   title: getTitle(),
-                  headerStyle: {
-                    ...memoSettingsOptions.headerStyle,
-                    // ios MenuContainer scroll fix
-                    ...(ios && { backgroundColor: colors.cardBackdrop }),
-                  },
                 }}
                 // @ts-ignore
                 title={getTitle()}
@@ -280,6 +270,12 @@ export default function SettingsSheet() {
           options={({ route }: any) => ({
             cardStyleInterpolator,
             title: route.params?.title || lang.t('settings.backup'),
+            headerStyle: {
+              ...memoSettingsOptions.headerStyle,
+              // only do this if sheet needs a header subtitle AND is not scrollable
+              // if it's scrollable we need a better fix
+              ...(ios && { backgroundColor: 'transparent' }),
+            },
           })}
         />
         <Stack.Screen
