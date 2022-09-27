@@ -585,6 +585,7 @@ export default function useSwapDerivedOutputs(type: string) {
       maxInputUpdate,
       slippageInBips,
       source,
+      refuel,
     ],
     ...(IS_TESTING !== 'true'
       ? { refetchInterval: SWAP_POLLING_INTERVAL }
