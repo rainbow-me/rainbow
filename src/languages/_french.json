@@ -486,7 +486,9 @@
       },
       "swap": {
         "copy_contract_address": "Copy Contract Address :)",
+        "flashbots_protect": "Flashbots Protect :)",
         "losing": "Losing :)",
+        "on": "On :)",
         "price_impact": "Price impact :)",
         "price_row_per_token": "per :)",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade! :)",

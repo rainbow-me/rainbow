@@ -10,6 +10,7 @@ import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { AccentColorProvider, Box, Rows, Separator } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import {
+  useAccountSettings,
   useColorForAsset,
   useSwapAdjustedAmounts,
   useSwapCurrencies,
@@ -35,6 +36,7 @@ export default function SwapDetailsContent({
   const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(
     tradeDetails
   );
+  const { flashbotsEnabled } = useAccountSettings();
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
@@ -74,6 +76,17 @@ export default function SwapDetailsContent({
               testID="swaps-details-fee-row"
               tradeDetails={tradeDetails}
             />
+          )}
+          {flashbotsEnabled && (
+            <SwapDetailsRow
+              labelPress={() => {}}
+              label={`${lang.t('expanded_state.swap.flashbots_protect')} 􀅵`}
+              testID="swaps-details-flashbots-row"
+            >
+              <SwapDetailsValue letterSpacing="roundedTight">
+                {`${lang.t('expanded_state.swap.on')} 􀞜`}
+              </SwapDetailsValue>
+            </SwapDetailsRow>
           )}
           {!detailsExpanded && (
             <Box
