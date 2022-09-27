@@ -21,7 +21,7 @@ const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
       {mode} mode
     </Text>
     <ColorModeProvider value={mode}>
-      <Box background="surface">
+      <Box background="surfacePrimary">
         {(Object.keys(
           backgroundColors
         ) as (keyof typeof backgroundColors)[]).map(
