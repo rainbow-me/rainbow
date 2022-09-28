@@ -3,7 +3,6 @@ import { STORAGE_IDS } from '@/model/mmkv';
 import { useCallback, useEffect, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import Logger from '@/utils/logger';
-import { NotificationTransactionTypesType } from './types';
 
 type ValueOf<T> = T[keyof T];
 
@@ -238,12 +237,7 @@ export const updateSettingsForWallets = (
 ) => {
   const data = getAllNotificationSettingsFromStorage();
   const newSettings = data.map((wallet: WalletNotificationSettingsType) => {
-    console.log('😬😬😬 wallet', wallet);
     if (wallet.type === type) {
-      console.log('😬😬😬 wallet === type', wallet, options, {
-        ...wallet,
-        ...options,
-      });
       return { ...wallet, ...options };
     }
     return wallet;

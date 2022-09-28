@@ -122,6 +122,15 @@ const WalletRow = ({
     [navigate, toggleNotifications]
   );
 
+  const rowEnabled = useMemo(() => {
+    const enabledTopics = notificationSetting
+      ? Object.values(notificationSetting.topics).filter(topic =>
+          Boolean(topic)
+        )
+      : [];
+    return !groupOff && enabledTopics.length && notificationSetting?.enabled;
+  }, [groupOff, notificationSetting]);
+
   return (
     <MenuItem
       disabled={isTestnet}
@@ -136,7 +145,7 @@ const WalletRow = ({
       leftComponent={
         <Box
           style={{
-            opacity: groupOff || !notificationSetting?.enabled ? 0.25 : 1,
+            opacity: rowEnabled ? 1 : 0.25,
           }}
         >
           {wallet.image ? (
