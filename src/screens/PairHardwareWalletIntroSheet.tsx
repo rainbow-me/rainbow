@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
+import { Linking } from 'react-native';
 import { Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { SheetActionButton } from '@/components/sheet';
 import { ImgixImage } from '@/components/images';
@@ -8,6 +9,7 @@ import { Source } from 'react-native-fast-image';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { ButtonPressAnimation } from '@/components/animations';
 
 export function PairHardwareWalletIntroSheet() {
   const buttonColor = useForegroundColor('purple');
@@ -34,14 +36,19 @@ export function PairHardwareWalletIntroSheet() {
               >
                 {lang.t('hardware_wallets.connect_your_ledger')}
               </Text>
-              <Text
-                align="center"
-                color="blue"
-                weight="semibold"
-                size="15pt / 135%"
+              <ButtonPressAnimation
+                onPress={() => Linking.openURL('https://www.ledger.com')}
+                scaleTo={0.9}
               >
-                {lang.t('hardware_wallets.learn_more_about_ledger')}
-              </Text>
+                <Text
+                  align="center"
+                  color="blue"
+                  weight="semibold"
+                  size="15pt / 135%"
+                >
+                  {lang.t('hardware_wallets.learn_more_about_ledger')}
+                </Text>
+              </ButtonPressAnimation>
             </Stack>
           </Stack>
         </Inset>
