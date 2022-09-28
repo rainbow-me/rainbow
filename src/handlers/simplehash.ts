@@ -151,7 +151,9 @@ export async function getNftsByWalletAddress(walletAddress: string) {
     }
   );
 
-  return parseSimplehashNfts(rawResponseNfts).filter((token: UniqueAsset) =>
-    polygonAllowlist.includes(token.asset_contract?.address?.toLowerCase())
+  return parseSimplehashNfts(rawResponseNfts).filter(
+    (token: UniqueAsset) =>
+      token.network !== Network.polygon ||
+      polygonAllowlist.includes(token.asset_contract?.address?.toLowerCase())
   );
 }
