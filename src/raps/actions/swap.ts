@@ -34,7 +34,12 @@ import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
 import { estimateSwapGasLimit } from '@/handlers/swap';
+import { MMKV } from 'react-native-mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 
+export const metadataStorage = new MMKV({
+  id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
+});
 const actionName = 'swap';
 
 export const executeSwap = async ({
@@ -151,8 +156,7 @@ const swap = async (
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,
-  baseNonce?: number,
-  meta?: SwapMetadata
+  baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const {
@@ -271,22 +275,23 @@ const swap = async (
     to: swap?.to ?? null,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
-    meta: meta
-      ? {
-          type: 'swap' as const,
-          data: meta,
-        }
-      : undefined,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
-  console.log(meta);
+  console.log(newTransaction, parameters.meta, 'GGGGGG');
+  if (parameters.meta && swap?.hash) {
+    metadataStorage.set(
+      swap.hash.toLowerCase(),
+      JSON.stringify({ type: 'swap', data: parameters.meta })
+    );
+  }
+
   dispatch(
     dataAddNewTransaction(
+      // @ts-ignore
       newTransaction,
       accountAddress,
       false,
-      // @ts-ignore
       wallet?.provider
     )
   );
