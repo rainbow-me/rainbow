@@ -220,7 +220,11 @@ export const showTransactionDetailsSheet = (
           case TransactionActions.trySwapAgain:
             Navigation.handleAction(Routes.WALLET_SCREEN, {});
             Navigation.handleAction(Routes.EXCHANGE_MODAL, {
-              prefilledValues: parsedMeta,
+              params: {
+                meta: parsedMeta,
+                inputAsset: parsedMeta?.from,
+                outputAsset: parsedMeta?.to,
+              },
             });
             break;
           case TransactionActions.viewContact:

@@ -103,6 +103,7 @@ import networkInfo from '@/helpers/networkInfo';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
+import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -631,6 +632,8 @@ export default function ExchangeModal({
       return false;
     }
   };
+
+  const isFillingParams = useParamsForExchangeModal();
 
   const submit = useCallback(
     async amountInUSD => {
@@ -1204,7 +1207,9 @@ export default function ExchangeModal({
                 setInputAmount={updateInputAmount}
                 setNativeAmount={updateNativeAmount}
                 testID={`${testID}-input`}
-                updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
+                updateAmountOnFocus={
+                  maxInputUpdate || flipCurrenciesUpdate || isFillingParams
+                }
               />
               {showOutputField && (
                 <ExchangeOutputField
@@ -1233,7 +1238,9 @@ export default function ExchangeModal({
                   outputFieldRef={outputFieldRef}
                   setOutputAmount={updateOutputAmount}
                   testID={`${testID}-output`}
-                  updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
+                  updateAmountOnFocus={
+                    maxInputUpdate || flipCurrenciesUpdate || isFillingParams
+                  }
                 />
               )}
             </FloatingPanel>
