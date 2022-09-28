@@ -105,12 +105,7 @@ export default function QRCodeScanner() {
 
   return (
     <>
-      <Box
-        position="absolute"
-        width="full"
-        height={{ custom: deviceHeight }}
-        marginTop={{ custom: -48 }}
-      >
+      <Box position="absolute" width="full" height={{ custom: deviceHeight }}>
         {enabled && (
           <Box
             as={RNCamera}

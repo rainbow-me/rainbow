@@ -155,9 +155,11 @@ export const qrScannerConfig = {
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
+      cornerRadius: 'device',
       scrollEnabled: true,
       springDamping: 1,
-      transitionDuration: 0.3,
+      topOffset: 0,
+      transitionDuration: 0.25,
     }),
   }),
 };
