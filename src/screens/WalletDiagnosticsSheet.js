@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/core';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { StatusBar, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Divider from '../components/Divider';
@@ -339,8 +339,6 @@ const WalletDiagnosticsSheet = () => {
         : { additionalTopPadding: true, contentHeight: deviceHeight - 40 })}
       scrollEnabled
     >
-      {ios && <StatusBar barStyle="light-content" />}
-
       <ColumnWithMargins
         margin={15}
         style={{
