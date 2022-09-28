@@ -64,7 +64,6 @@ const WalletNotificationsSettings = () => {
       enabled: !notificationsEnabled,
     });
     toggleGroupNotifications(
-      // @ts-expect-error: sending an array with a single wallet
       [notifications],
       notifications.type,
       !notificationsEnabled
