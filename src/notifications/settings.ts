@@ -1,8 +1,9 @@
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import Logger from '@/utils/logger';
+import { NotificationTransactionTypesType } from './types';
 
 type ValueOf<T> = T[keyof T];
 
@@ -46,6 +47,27 @@ export const getAllNotificationSettingsFromStorage = () => {
 
   if (data) return JSON.parse(data);
   return [];
+};
+
+/* 
+  Hook to constantly listen notification settings
+*/
+export const useAllNotificationSettingsFromStorage = () => {
+  const data = storage.getString(WALLET_TOPICS_STORAGE_KEY);
+
+  const [notificationSettings, setNotificationSettings] = useState<
+    WalletNotificationSettingsType[]
+  >(data ? JSON.parse(data) : []);
+  const listener = storage.addOnValueChangedListener(changedKey => {
+    if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
+      const newSettings = storage.getString(changedKey);
+      newSettings && setNotificationSettings(JSON.parse(newSettings));
+    }
+  });
+  useEffect(() => () => {
+    listener.remove();
+  });
+  return { notificationSettings };
 };
 
 /*
@@ -210,6 +232,25 @@ export const useNotificationSettings = (address: string) => {
   return { notifications, updateSettings };
 };
 
+export const updateSettingsForWallets = (
+  type: ValueOf<typeof NotificationRelationship>,
+  options: object
+) => {
+  const data = getAllNotificationSettingsFromStorage();
+  const newSettings = data.map((wallet: WalletNotificationSettingsType) => {
+    console.log('😬😬😬 wallet', wallet);
+    if (wallet.type === type) {
+      console.log('😬😬😬 wallet === type', wallet, options, {
+        ...wallet,
+        ...options,
+      });
+      return { ...wallet, ...options };
+    }
+    return wallet;
+  });
+  storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
+};
+
 /* 
   Hook for getting and setting notification settings for all wallets 
   in an owned/watched group.
@@ -275,7 +316,7 @@ export const useWalletGroupNotificationSettings = () => {
     ]
   );
 
-  return { ownerEnabled, watcherEnabled, updateGroupSettings };
+  return { ownerEnabled, watcherEnabled, allWallets, updateGroupSettings };
 };
 
 /*
@@ -295,20 +336,20 @@ export function toggleGroupNotifications(
       const { topics, address, enabled } = wallet;
       // when toggling a whole group, check if notifications
       // are specifically enabled for this wallet
-      if (enabled || singleWallet) {
-        Object.keys(topics).forEach(
-          (topic: ValueOf<typeof NotificationTopic>) => {
-            if (topics[topic]) {
-              subscribeWalletToSingleNotificationTopic(
-                relationship,
-                NOTIFICATIONS_DEFAULT_CHAIN_ID,
-                address,
-                topic
-              );
-            }
+      // if (enabled || singleWallet) {
+      Object.keys(topics).forEach(
+        (topic: ValueOf<typeof NotificationTopic>) => {
+          if (topics[topic]) {
+            subscribeWalletToSingleNotificationTopic(
+              relationship,
+              NOTIFICATIONS_DEFAULT_CHAIN_ID,
+              address,
+              topic
+            );
           }
-        );
-      }
+        }
+      );
+      // }
     });
   } else {
     // loop through all owned wallets, unsubscribe from all topics

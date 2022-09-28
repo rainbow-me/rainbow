@@ -7,16 +7,15 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
-import { useNavigationState } from '@react-navigation/native';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useWallets } from '@/hooks';
 import profileUtils from '@/utils/profileUtils';
 import {
-  getAllNotificationSettingsFromStorage,
   NotificationRelationship,
-  useNotificationSettings,
+  updateSettingsForWallets,
+  useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
   WalletNotificationSettingsType,
 } from '@/notifications/settings';
@@ -31,30 +30,30 @@ type WalletRowProps = {
   isTestnet: boolean;
   wallet: RainbowAccount;
   toggleNotifications: () => void;
+  ens: string;
+  notificationSettings: WalletNotificationSettingsType[];
 };
 
 type WalletRowLabelProps = {
   groupOff: boolean;
-  notifications: {
-    enabled: boolean;
-    topics: string[];
-  };
+  notifications?: WalletNotificationSettingsType;
 };
 
 const DEVICE_WIDTH = deviceUtils.dimensions.width;
 const AMOUNT_OF_TOPICS_TO_DISPLAY = DEVICE_WIDTH > 400 ? 3 : 2;
 
 const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
-  const allTopicsEnabled = Object.values(notifications.topics).every(
-    topic => topic
-  );
-  const allTopicsDisabled =
-    groupOff || Object.values(notifications.topics).every(topic => !topic);
-  const enabledTopics = Object.keys(notifications.topics).filter(
-    topic => notifications.topics[(topic as unknown) as number]
-  );
-
   const composedLabel = useMemo(() => {
+    if (!notifications) return lang.t('settings.notifications_section.off');
+    const allTopicsEnabled = Object.values(notifications.topics).every(
+      topic => topic
+    );
+    const allTopicsDisabled =
+      groupOff || Object.values(notifications.topics).every(topic => !topic);
+    const enabledTopics = Object.keys(notifications.topics).filter(
+      topic => notifications.topics[(topic as unknown) as number]
+    );
+
     if (allTopicsDisabled) {
       return lang.t('settings.notifications_section.off');
     }
@@ -84,7 +83,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
     } else {
       return lang.t('settings.notifications_section.off');
     }
-  }, [allTopicsDisabled, allTopicsEnabled, enabledTopics, notifications]);
+  }, [groupOff, notifications]);
 
   return <MenuItem.Label text={composedLabel} />;
 };
@@ -94,35 +93,23 @@ const WalletRow = ({
   groupOff,
   isTestnet,
   toggleNotifications,
+  notificationSettings,
+  ens,
 }: WalletRowProps) => {
-  const index = useNavigationState(state => state.index);
-  const { walletNames } = useWallets();
-
   const { navigate } = useNavigation();
-  const { notifications } = useNotificationSettings(wallet.address);
-  const [notificationSettings, setNotificationSettings] = useState(
-    notifications
+  const notificationSetting = notificationSettings?.find(
+    (x: WalletNotificationSettingsType) => x.address === wallet.address
   );
   const cleanedUpLabel = useMemo(
     () => removeFirstEmojiFromString(wallet.label),
-    [wallet]
+    [wallet.label]
   );
 
-  const ens = walletNames?.[wallet.address];
-
-  const displayAddress = useMemo(() => {
-    return abbreviations.address(wallet.address, 4, 6);
-  }, [wallet]);
-
+  const displayAddress = useMemo(
+    () => abbreviations.address(wallet.address, 4, 6),
+    [wallet.address]
+  );
   const walletName = cleanedUpLabel || ens || displayAddress || '';
-
-  useEffect(() => {
-    const data = getAllNotificationSettingsFromStorage();
-    const updatedSettings = data.find(
-      (x: WalletNotificationSettingsType) => x.address === wallet.address
-    );
-    setNotificationSettings(updatedSettings);
-  }, [index, wallet.address]);
 
   const navigateToWalletSettings = useCallback(
     (name, address) => {
@@ -142,23 +129,23 @@ const WalletRow = ({
       hasRightArrow={!isTestnet}
       labelComponent={
         <WalletRowLabel
-          notifications={notificationSettings}
+          notifications={notificationSetting}
           groupOff={groupOff}
         />
       }
       leftComponent={
         <Box
           style={{
-            opacity: groupOff || !notificationSettings?.enabled ? 0.25 : 1,
+            opacity: groupOff || !notificationSetting?.enabled ? 0.25 : 1,
           }}
         >
-          {wallet?.image ? (
-            <ImageAvatar image={wallet?.image} size="smedium" />
+          {wallet.image ? (
+            <ImageAvatar image={wallet.image} size="smedium" />
           ) : (
             <ContactAvatar
-              color={wallet?.color}
+              color={wallet.color}
               size="small"
-              value={profileUtils.addressHashedEmoji(wallet?.address)}
+              value={profileUtils.addressHashedEmoji(wallet.address)}
             />
           )}
         </Box>
@@ -174,7 +161,14 @@ const NotificationsSection = () => {
   const { navigate } = useNavigation();
   const { network } = useAccountSettings();
   const isTestnet = isTestnetNetwork(network);
-  const { wallets } = useWallets();
+  const { wallets, walletNames } = useWallets();
+
+  const {
+    ownerEnabled,
+    watcherEnabled,
+    updateGroupSettings,
+  } = useWalletGroupNotificationSettings();
+  const { notificationSettings } = useAllNotificationSettingsFromStorage();
   const { ownedWallets, watchedWallets } = useMemo(() => {
     const ownedWallets: RainbowAccount[] = [];
     const watchedWallets: RainbowAccount[] = [];
@@ -186,7 +180,7 @@ const NotificationsSection = () => {
 
         if (wallet?.type === WalletTypes.readOnly) {
           wallet?.addresses.forEach(
-            item => item.visible && watchedWallets.push(item)
+            item => item.visible && watchedWallets.push({ ...item })
           );
         } else {
           wallet?.addresses.forEach(
@@ -201,11 +195,7 @@ const NotificationsSection = () => {
 
   const noOwnedWallets = !ownedWallets.length;
   const noWatchedWallets = !watchedWallets.length;
-  const {
-    ownerEnabled,
-    watcherEnabled,
-    updateGroupSettings,
-  } = useWalletGroupNotificationSettings();
+
   const [permissionStatus, setPermissionStatus] = useState<string | boolean>(
     false
   );
@@ -217,21 +207,39 @@ const NotificationsSection = () => {
     });
   }, [ownedWallets, wallets, watchedWallets]);
 
-  const toggleAllOwnedNotifications = useCallback(
-    () =>
-      updateGroupSettings({
-        [NotificationRelationship.OWNER]: !ownerEnabled,
-      }),
-    [ownerEnabled, updateGroupSettings]
-  );
+  const toggleAllOwnedNotifications = useCallback(() => {
+    updateSettingsForWallets(NotificationRelationship.OWNER, {
+      enabled: !ownerEnabled,
+    });
+    updateGroupSettings({
+      [NotificationRelationship.OWNER]: !ownerEnabled,
+    });
+  }, [ownerEnabled, updateGroupSettings]);
 
-  const toggleAllWatchedNotifications = useCallback(
-    () =>
-      updateGroupSettings({
-        [NotificationRelationship.WATCHER]: !watcherEnabled,
-      }),
-    [updateGroupSettings, watcherEnabled]
-  );
+  const toggleAllOwnedNotificationsFromWallet = useCallback(() => {
+    updateGroupSettings({
+      [NotificationRelationship.OWNER]: !ownerEnabled
+        ? !ownerEnabled
+        : ownerEnabled,
+    });
+  }, [ownerEnabled, updateGroupSettings]);
+
+  const toggleAllWatchedNotifications = useCallback(() => {
+    updateSettingsForWallets(NotificationRelationship.WATCHER, {
+      enabled: !watcherEnabled,
+    });
+    updateGroupSettings({
+      [NotificationRelationship.WATCHER]: !watcherEnabled,
+    });
+  }, [updateGroupSettings, watcherEnabled]);
+
+  const toggleAllWatchedNotificationsFromWallet = useCallback(() => {
+    updateGroupSettings({
+      [NotificationRelationship.WATCHER]: !watcherEnabled
+        ? !watcherEnabled
+        : watcherEnabled,
+    });
+  }, [updateGroupSettings, watcherEnabled]);
 
   const openSystemSettings = Linking.openSettings;
   const openNetworkSettings = useCallback(
@@ -318,7 +326,9 @@ const NotificationsSection = () => {
                   wallet={wallet}
                   groupOff={!ownerEnabled}
                   isTestnet={isTestnet}
-                  toggleNotifications={toggleAllOwnedNotifications}
+                  ens={walletNames[wallet.address]}
+                  notificationSettings={notificationSettings}
+                  toggleNotifications={toggleAllOwnedNotificationsFromWallet}
                 />
               ))}
             </Menu>
@@ -354,7 +364,9 @@ const NotificationsSection = () => {
                   wallet={wallet}
                   groupOff={!watcherEnabled}
                   isTestnet={isTestnet}
-                  toggleNotifications={toggleAllWatchedNotifications}
+                  ens={walletNames[wallet.address]}
+                  notificationSettings={notificationSettings}
+                  toggleNotifications={toggleAllWatchedNotificationsFromWallet}
                 />
               ))}
             </Menu>
