@@ -130,7 +130,6 @@ export const updateSwapInputCurrency = (
   newInputCurrency: SwappableAsset | null,
   ignoreTypeCheck = false
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  logger.debug('UPDATE SWAP INPUT CURRENCY');
   const {
     depositCurrency,
     independentField,
@@ -175,7 +174,6 @@ export const updateSwapOutputCurrency = (
   newOutputCurrency: SwappableAsset | null,
   ignoreTypeCheck = false
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  logger.debug('UPDATE SWAP OUTPUT CURRENCY');
   const { independentField, inputCurrency, type } = getState().swap;
   if (
     newOutputCurrency?.address === inputCurrency?.address &&

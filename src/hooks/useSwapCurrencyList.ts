@@ -371,6 +371,8 @@ const useSwapCurrencyList = (
           slowSearch();
         } else {
           await search();
+          setLowLiquidityAssets([]);
+          setHighLiquidityAssets([]);
           setLoading(false);
         }
       } else {

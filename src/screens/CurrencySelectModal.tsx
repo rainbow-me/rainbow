@@ -500,9 +500,9 @@ export default function CurrencySelectModal() {
 
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
-    setCurrentChainId(chainId);
+    setCurrentChainId(currentChainId);
     setIsTransitioning(true); // continue to display list while transitiong back
-  }, [chainId]);
+  }, [currentChainId]);
 
   const shouldUpdateFavoritesRef = useRef(false);
   useEffect(() => {
