@@ -22,7 +22,7 @@ export function PairHardwareWalletIntroSheet() {
   return (
     <Layout
       header={
-        <Inset horizontal="40px">
+        <Inset horizontal="44px">
           <Stack alignHorizontal="center" space="20px">
             <Text align="center" color="label" weight="bold" size="26pt">
               {lang.t('hardware_wallets.pair_your_nano')}
