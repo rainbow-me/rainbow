@@ -67,8 +67,7 @@ const WalletNotificationsSettings = () => {
       // @ts-expect-error: sending an array with a single wallet
       [notifications],
       notifications.type,
-      !notificationsEnabled,
-      true
+      !notificationsEnabled
     );
   }, [
     notificationsSectionEnabled,

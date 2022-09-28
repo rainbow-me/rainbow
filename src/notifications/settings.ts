@@ -49,7 +49,7 @@ export const getAllNotificationSettingsFromStorage = () => {
 };
 
 /* 
-  Hook to constantly listen notification settings
+  Hook to constantly listen to notification settings.
 */
 export const useAllNotificationSettingsFromStorage = () => {
   const data = storage.getString(WALLET_TOPICS_STORAGE_KEY);
@@ -162,7 +162,7 @@ export const addDefaultNotificationSettingsForWallet = (
       storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(settings));
 
       unsubscribeWalletFromAllNotificationTopics(
-        settingsForWallet.type,
+        NotificationRelationship.WATCHER,
         NOTIFICATIONS_DEFAULT_CHAIN_ID,
         address
       );
@@ -321,13 +321,12 @@ export const useWalletGroupNotificationSettings = () => {
 export function toggleGroupNotifications(
   wallets: [],
   relationship: ValueOf<typeof NotificationRelationship>,
-  enableNotifications: boolean,
-  singleWallet?: boolean
+  enableNotifications: boolean
 ) {
   if (enableNotifications) {
     // loop through all owned wallets, loop through their topics, subscribe to enabled topics
     wallets.forEach((wallet: WalletNotificationSettingsType) => {
-      const { topics, address, enabled } = wallet;
+      const { topics, address } = wallet;
       // when toggling a whole group, check if notifications
       // are specifically enabled for this wallet
       // if (enabled || singleWallet) {
@@ -392,7 +391,9 @@ const subscribeWalletToAllNotificationTopics = async (
   address: string
 ) => {
   Object.values(NotificationTopic).forEach(topic => {
-    Logger.log(`Notifications: subscribing ${type}:${address} to [ ${topic}] `);
+    Logger.log(
+      `Notifications: subscribing ${type}:${address} to [ ${topic} ] `
+    );
     messaging().subscribeToTopic(
       `${type}_${chainId}_${address.toLowerCase()}_${topic}`
     );
