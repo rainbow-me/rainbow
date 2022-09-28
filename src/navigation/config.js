@@ -468,7 +468,7 @@ export const settingsOptions = colors => ({
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,
   headerStyle: {
-    backgroundColor: 'transparent',
+    backgroundColor: ios ? colors.cardBackdrop : 'transparent',
     elevation: 0,
     height: 60,
     shadowColor: 'transparent',
