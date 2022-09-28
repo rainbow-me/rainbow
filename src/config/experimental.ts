@@ -25,7 +25,7 @@ export const defaultConfig = {
   [NOTIFICATIONS]: { needsRestart: true, settings: true, value: false },
   [PROFILES]: { settings: true, value: true },
   [REVIEW_ANDROID]: { settings: false, value: false },
-  [CROSSCHAIN_SWAPS]: { settings: true, value: false },
+  [CROSSCHAIN_SWAPS]: { settings: true, value: true },
 };
 
 const storageKey = 'config';

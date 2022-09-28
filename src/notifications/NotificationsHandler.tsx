@@ -202,7 +202,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       // casting data payload to type that was agreed on with backend
       const data = (notification.data as unknown) as TransactionNotificationData;
 
-      const { wallets, contacts } = syncedStateRef.current;
+      const { contacts } = syncedStateRef.current;
       const { accountAddress, nativeCurrency } = store.getState().settings;
 
       let walletAddress: string | null | undefined = accountAddress;
