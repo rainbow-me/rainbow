@@ -11,6 +11,7 @@ import { Box } from '@/design-system';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 
 interface CurrencySelectionListProps {
+  chainId?: number;
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
   footerSpacer: boolean;
   itemProps: {
@@ -31,6 +32,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<
   CurrencySelectionListProps
 > = (
   {
+    chainId,
     keyboardDismissMode,
     footerSpacer,
     itemProps,
@@ -48,27 +50,27 @@ const CurrencySelectionList: ForwardRefRenderFunction<
 
   return (
     <Box flexGrow={1} testID={testID}>
-      {showList && !showSkeleton && (
+      {showList && !showSkeleton && showGhost ? (
+        <Box
+          height="full"
+          justifyContent="center"
+          paddingBottom={{
+            custom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
+          }}
+        >
+          <NoResults chainId={chainId} />
+        </Box>
+      ) : (
         <Centered flex={1}>
-          {showGhost ? (
-            <Box
-              as={NoResults}
-              paddingBottom={{
-                custom:
-                  CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
-              }}
-            />
-          ) : (
-            <ExchangeAssetList
-              footerSpacer={footerSpacer}
-              itemProps={itemProps}
-              items={listItems}
-              keyboardDismissMode={keyboardDismissMode}
-              query={query}
-              ref={ref}
-              testID={testID}
-            />
-          )}
+          <ExchangeAssetList
+            footerSpacer={footerSpacer}
+            itemProps={itemProps}
+            items={listItems}
+            keyboardDismissMode={keyboardDismissMode}
+            query={query}
+            ref={ref}
+            testID={testID}
+          />
         </Centered>
       )}
       {(showSkeleton || !showList) && (
