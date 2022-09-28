@@ -4,7 +4,6 @@ import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@/entities';
 import { ExchangeModalTypes } from '@/helpers';
 import { AppDispatch, AppGetState } from '@/redux/store';
-import { logger } from '@/utils';
 
 export interface SwapAmount {
   display: string | null;
