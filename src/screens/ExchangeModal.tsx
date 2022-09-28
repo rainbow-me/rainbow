@@ -81,6 +81,7 @@ import {
 } from '@/raps';
 import {
   swapClearState,
+  SwapModalField,
   TypeSpecificParameters,
   updateSwapSlippage,
   updateSwapTypeDetails,
@@ -94,11 +95,13 @@ import logger from '@/utils/logger';
 import {
   CrosschainSwapActionParameters,
   SwapActionParameters,
+  SwapMetadata,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';
 import networkInfo from '@/helpers/networkInfo';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
@@ -657,9 +660,13 @@ export default function ExchangeModal({
         };
         logger.log('[exchange - handle submit] rap');
         const nonce = await getNextNonce();
-        const swapParameters:
-          | SwapActionParameters
-          | CrosschainSwapActionParameters = {
+        const {
+          independentField,
+          independentValue,
+          slippageInBips,
+          source,
+        } = store.getState().swap;
+        const swapParameters = {
           chainId,
           flashbots,
           inputAmount: inputAmount!,
@@ -670,6 +677,15 @@ export default function ExchangeModal({
             fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
             toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
           } as Quote | CrosschainQuote,
+          meta: {
+            flashbots,
+            from: inputCurrency,
+            to: outputCurrency,
+            independentField: independentField as SwapModalField,
+            independentValue: independentValue as string,
+            slippage: slippageInBips / 100,
+            route: source,
+          },
         };
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
@@ -716,23 +732,16 @@ export default function ExchangeModal({
       flashbots,
       getNextNonce,
       inputAmount,
-      inputCurrency?.address,
-      inputCurrency?.name,
-      inputCurrency?.symbol,
-      inputCurrency?.type,
+      inputCurrency,
       isCrosschainSwap,
       navigate,
       outputAmount,
-      outputCurrency?.address,
-      outputCurrency?.name,
-      outputCurrency?.symbol,
-      outputCurrency?.type,
+      outputCurrency,
       priceImpactPercentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,
       selectedGasFee?.option,
       setParams,
-      slippageInBips,
       tradeDetails,
       type,
     ]

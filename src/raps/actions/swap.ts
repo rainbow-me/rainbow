@@ -14,6 +14,7 @@ import {
   Rap,
   RapExchangeActionParameters,
   SwapActionParameters,
+  SwapMetadata,
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
@@ -150,7 +151,8 @@ const swap = async (
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,
-  baseNonce?: number
+  baseNonce?: number,
+  meta?: SwapMetadata
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const {
@@ -261,24 +263,31 @@ const swap = async (
     flashbots: parameters.flashbots,
     from: accountAddress,
     gasLimit,
-    hash: swap?.hash,
+    hash: swap?.hash ?? null,
     network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-    nonce: swap?.nonce,
+    nonce: swap?.nonce ?? null,
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,
-    to: swap?.to,
+    to: swap?.to ?? null,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
+    meta: meta
+      ? {
+          type: 'swap' as const,
+          data: meta,
+        }
+      : undefined,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
+  console.log(meta);
   dispatch(
     dataAddNewTransaction(
-      // @ts-ignore
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider as any
+      // @ts-ignore
+      wallet?.provider
     )
   );
   return swap?.nonce;

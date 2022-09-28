@@ -29,7 +29,7 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { analytics } from '@/analytics';
-import { Asset, EthereumAddress, Records } from '@/entities';
+import { Asset, EthereumAddress, Records, SwappableAsset } from '@/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
@@ -44,6 +44,7 @@ import {
   createUnlockAndCrosschainSwapRap,
   estimateUnlockAndCrosschainSwap,
 } from './unlockAndCrosschainSwap';
+import { Source, SwapModalField } from '@/redux/swap';
 
 const {
   commitENS,
@@ -85,6 +86,7 @@ export interface RapExchangeActionParameters {
   flashbots?: boolean;
   chainId?: number;
   requiresApprove?: boolean;
+  meta?: SwapMetadata;
 }
 
 export interface RapENSActionParameters {
@@ -105,6 +107,16 @@ export interface UnlockActionParameters {
   chainId: number;
 }
 
+export type SwapMetadata = {
+  flashbots: boolean;
+  slippage: number;
+  route: Source;
+  from: SwappableAsset;
+  to: SwappableAsset;
+  independentField: SwapModalField;
+  independentValue: string;
+};
+
 export interface BaseSwapActionParameters {
   inputAmount: string;
   nonce?: number;
@@ -124,6 +136,7 @@ export interface SwapActionParameters extends BaseSwapActionParameters {
 export interface CrosschainSwapActionParameters
   extends BaseSwapActionParameters {
   tradeDetails: CrosschainQuote;
+  meta?: SwapMetadata;
 }
 
 export interface ENSActionParameters {
