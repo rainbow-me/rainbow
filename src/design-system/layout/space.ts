@@ -18,6 +18,7 @@ export const space = {
   '32px': 32,
   '34px (Deprecated)': 34,
   '36px': 36,
+  '40px': 40,
   '42px (Deprecated)': 42,
   '44px': 44,
   '52px': 52,

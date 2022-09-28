@@ -1364,7 +1364,7 @@
         "import_wallet": "Add Wallet",
         "input": "Transaction Input",
         "notifications": "Notification Settings",
-        "pair_hardware_wallet": "Pair a hardware wallet",
+        "pair_hardware_wallet": "Pair a Ledger Nano X",
         "paste": "Paste",
         "pin": "Pin",
         "reject": "Reject",
