@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { InteractionManager, StatusBar } from 'react-native';
+import { InteractionManager } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
@@ -98,7 +98,6 @@ export default function RestoreSheet() {
     deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() / 2 : 0);
   return (
     <Column height={wrapperHeight}>
-      <StatusBar barStyle="light-content" />
       <SlackSheet
         contentHeight={longFormHeight}
         deferredHeight={android}

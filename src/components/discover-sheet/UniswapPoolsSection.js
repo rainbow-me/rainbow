@@ -19,7 +19,7 @@ import {
   useLatestCallback,
   useUniswapPools,
 } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import { useRemoveNextToLast } from '@/navigation/useRemoveNextToLast';
 import { parseAssetNative } from '@/parsers';
 import Routes from '@/navigation/routesNames';
@@ -206,6 +206,8 @@ export default function UniswapPools({
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useLatestCallback(item => {
+    const isFromWalletScreen = Navigation.getActiveRoute().params
+      ?.isFromWalletScreen;
     let poolAsset = uniswap.find(pool => pool.address === item.address);
     if (!poolAsset) {
       poolAsset = parseAssetNative(
@@ -227,6 +229,7 @@ export default function UniswapPools({
       asset: poolAsset,
       dpi: true,
       fromDiscover: true,
+      isFromWalletScreen,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: 'uniswap',
     });

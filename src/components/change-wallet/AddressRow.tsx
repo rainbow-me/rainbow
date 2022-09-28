@@ -156,9 +156,8 @@ export default function AddressRow({
 
   const emoji = useMemo(
     () =>
-      returnStringFirstEmoji(cleanedUpLabel) ||
-      profileUtils.addressHashedEmoji(address),
-    [address, cleanedUpLabel]
+      returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address),
+    [address, label]
   );
 
   const displayAddress = useMemo(
