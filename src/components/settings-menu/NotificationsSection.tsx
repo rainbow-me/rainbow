@@ -10,7 +10,8 @@ import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import WalletTypes from '@/helpers/walletTypes';
-import { useAccountSettings, useWallets } from '@/hooks';
+import { useAccountSettings, useAppState, useWallets } from '@/hooks';
+import { requestPermission } from '@/notifications/permissions';
 import profileUtils from '@/utils/profileUtils';
 import {
   NotificationRelationship,
@@ -167,6 +168,7 @@ const WalletRow = ({
 };
 
 const NotificationsSection = () => {
+  const { justBecameActive } = useAppState();
   const { navigate } = useNavigation();
   const { network } = useAccountSettings();
   const isTestnet = isTestnetNetwork(network);
@@ -183,6 +185,7 @@ const NotificationsSection = () => {
     const watchedWallets: RainbowAccount[] = [];
     // group wallets by relationship if the arrays are empty
     if (watchedWallets.length === 0 && ownedWallets.length === 0) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const walletIDs = Object.keys(wallets!);
       walletIDs.forEach(key => {
         const wallet = wallets?.[key];
@@ -204,17 +207,9 @@ const NotificationsSection = () => {
 
   const noOwnedWallets = !ownedWallets.length;
   const noWatchedWallets = !watchedWallets.length;
-
-  const [permissionStatus, setPermissionStatus] = useState<string | boolean>(
-    false
-  );
-  const noPermissions = permissionStatus !== RESULTS.GRANTED;
-
-  useEffect(() => {
-    checkNotifications().then(({ status }) => {
-      setPermissionStatus(status);
-    });
-  }, [ownedWallets, wallets, watchedWallets]);
+  const [permissionStatus, setPermissionStatus] = useState<string>('');
+  const neverGranted = permissionStatus === RESULTS.DENIED;
+  const disabledInSystem = permissionStatus === RESULTS.BLOCKED;
 
   const toggleAllOwnedNotifications = useCallback(() => {
     updateSettingsForWallets(NotificationRelationship.OWNER, {
@@ -256,10 +251,58 @@ const NotificationsSection = () => {
     [navigate]
   );
 
+  const requestNotificationPermissions = useCallback(async () => {
+    requestPermission().then(allowed => {
+      if (allowed) {
+        setPermissionStatus(RESULTS.GRANTED);
+      } else {
+        openSystemSettings();
+      }
+    });
+  }, [openSystemSettings]);
+
+  const checkPermissions = useCallback(async () => {
+    checkNotifications().then(({ status }) => {
+      setPermissionStatus(status);
+    });
+  }, []);
+
+  useEffect(() => {
+    checkPermissions();
+  }, [checkPermissions, justBecameActive]);
+
   return (
     <Box>
-      <MenuContainer>
-        {noPermissions && (
+      <MenuContainer
+        // requird key to force re-render when permission status changes
+        // while the app is in the background
+        key={permissionStatus}
+      >
+        {neverGranted && (
+          <Menu
+            description={lang.t(
+              'settings.notifications_section.no_first_time_permissions'
+            )}
+          >
+            <MenuItem
+              hasSfSymbol
+              size={52}
+              leftComponent={<MenuItem.TextIcon icon="􀝖" isLink />}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t(
+                    'settings.notifications_section.first_time_allow_notifications'
+                  )}
+                  weight="bold"
+                  isLink
+                />
+              }
+              onPress={requestNotificationPermissions}
+            />
+          </Menu>
+        )}
+
+        {disabledInSystem && (
           <Menu
             description={lang.t(
               'settings.notifications_section.no_permissions'
