@@ -1,9 +1,22 @@
 import lang from 'i18n-js';
 import React from 'react';
-import SwapDetailsRow from './SwapDetailsRow';
+import { SwapDetailsLabel, SwapDetailsValue } from './SwapDetailsRow';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import { CoinIcon } from '@/utils';
-import { Box } from '@/design-system';
+import { Column, Columns, Rows } from '@/design-system';
+import styled from '@/styled-thing';
+import { ImgixImage } from '@/components/images';
+import CaretImageSource from '@/assets/family-dropdown-arrow.png';
+
+const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
+  resizeMode: ImgixImage.resizeMode.contain,
+  source: CaretImageSource,
+  tintColor: colors.blueGreyDark,
+}))({
+  height: 11,
+  top: 0,
+  width: 7,
+});
 
 export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
   const fromAsset = tradeDetails?.refuel?.fromAsset;
@@ -14,24 +27,36 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
   const toSymbol = tradeDetails?.refuel?.toAsset?.symbol;
 
   return (
-    <SwapDetailsRow
-      label={`${lang.t('expanded_state.swap_details.refuel')}`}
-      testID={testID}
-    >
-      <Box paddingRight="4px" flexDirection="row">
-        <CoinIcon
-          address={fromAsset?.address}
-          symbol={fromAsset?.symbol}
-          size={20}
-        />
+    <Rows testID={testID}>
+      <Columns alignVertical="center" space="4px">
+        <Column>
+          <SwapDetailsLabel>
+            {lang.t('expanded_state.swap_details.refuel')}
+          </SwapDetailsLabel>
+        </Column>
 
-        <CoinIcon
-          address={toAsset?.address}
-          symbol={toAsset?.symbol}
-          size={20}
-        />
-      </Box>
-      {`${toAmount.display}${toSymbol}`}
-    </SwapDetailsRow>
+        <Column width="content">
+          <CoinIcon
+            address={fromAsset?.address}
+            symbol={fromAsset?.symbol}
+            size={20}
+          />
+        </Column>
+        <Column width="content">
+          <CaretIcon />
+        </Column>
+        <Column width="content">
+          <CoinIcon
+            address={toAsset?.address}
+            symbol={toAsset?.symbol}
+            size={20}
+          />
+        </Column>
+
+        <Column width="content">
+          <SwapDetailsValue>{`${toAmount.display}${toSymbol}`}</SwapDetailsValue>
+        </Column>
+      </Columns>
+    </Rows>
   );
 }
