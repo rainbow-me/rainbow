@@ -810,25 +810,25 @@ export const explainers = (params, colors) => ({
       </DashedWrapper>
     ),
     title: lang.t('explain.swap_refuel.title', {
-      gasToken: params.gasToken,
+      gasToken: params?.gasToken,
     }),
     text: lang.t('explain.swap_refuel.text', {
-      networkName: params.networkName,
-      gasToken: params.gasToken,
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
     }),
     button: {
       label: lang.t('button.no_thanks'),
       textColor: 'blueGreyDark20',
       bgColor: colors?.transparent,
-      onPress: params.onContinue,
+      onPress: params?.onContinue,
     },
     secondaryButton: {
       label: lang.t('explain.swap_refuel.button', {
-        gasToken: params.gasToken,
+        gasToken: params?.gasToken,
       }),
       textColor: colors?.networkColors[params?.network],
       bgColor: colors?.alpha(colors?.networkColors[params?.network], 0.05),
-      onPress: params.onRefuel,
+      onPress: params?.onRefuel,
     },
   },
 });
