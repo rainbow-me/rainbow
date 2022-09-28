@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import Logger from '@/utils/logger';
 
@@ -258,13 +258,13 @@ export const useWalletGroupNotificationSettings = () => {
     storage.getString(WALLET_GROUPS_STORAGE_KEY)
   );
 
-  const allWallets = getAllNotificationSettingsFromStorage();
+  const { notificationSettings } = useAllNotificationSettingsFromStorage();
 
-  const ownedWallets = allWallets.filter(
+  const ownedWallets = notificationSettings.filter(
     (wallet: WalletNotificationSettingsType) =>
       wallet.type === NotificationRelationship.OWNER
   );
-  const watchedWallets = allWallets.filter(
+  const watchedWallets = notificationSettings.filter(
     (wallet: WalletNotificationSettingsType) =>
       wallet.type === NotificationRelationship.WATCHER
   );
@@ -310,7 +310,27 @@ export const useWalletGroupNotificationSettings = () => {
     ]
   );
 
-  return { ownerEnabled, watcherEnabled, allWallets, updateGroupSettings };
+  const isOwnerEnabled = useMemo(() => {
+    const allWalletsDisabled = ownedWallets.reduce(
+      (prevWalletDisabled, wallet) => prevWalletDisabled && !wallet.enabled,
+      true
+    );
+    return ownerEnabled && !allWalletsDisabled;
+  }, [ownedWallets, ownerEnabled]);
+
+  const isWatcherEnabled = useMemo(() => {
+    const allWalletsDisabled = watchedWallets.reduce(
+      (prevWalletDisabled, wallet) => prevWalletDisabled && !wallet.enabled,
+      true
+    );
+    return watcherEnabled && !allWalletsDisabled;
+  }, [watchedWallets, watcherEnabled]);
+
+  return {
+    ownerEnabled: isOwnerEnabled,
+    watcherEnabled: isWatcherEnabled,
+    updateGroupSettings,
+  };
 };
 
 /*
@@ -319,7 +339,7 @@ export const useWalletGroupNotificationSettings = () => {
   when using the `Allow Notifications` switch in the wallet settings view.
 */
 export function toggleGroupNotifications(
-  wallets: [],
+  wallets: WalletNotificationSettingsType[],
   relationship: ValueOf<typeof NotificationRelationship>,
   enableNotifications: boolean
 ) {
