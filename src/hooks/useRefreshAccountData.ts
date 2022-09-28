@@ -29,9 +29,9 @@ export default function useRefreshAccountData() {
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
-      const getWalletENSAvatars = profilesEnabled
-        ? dispatch(fetchWalletENSAvatars())
-        : null;
+      // const getWalletENSAvatars = profilesEnabled
+      //   ? dispatch(fetchWalletENSAvatars())
+      //   : null;
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
       const balances = dispatch(
         fetchOnchainBalances({ keepPolling: false, withPrices: false })
@@ -42,7 +42,7 @@ export default function useRefreshAccountData() {
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
         getUniqueTokens,
-        getWalletENSAvatars,
+        // getWalletENSAvatars,
         // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
         refetchSavings(true),
         balances,
@@ -54,7 +54,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network, profilesEnabled, refetchSavings]);
+  }, [dispatch, network, refetchSavings]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
