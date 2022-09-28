@@ -4,7 +4,13 @@ import { neverRerender } from '@/utils';
 import { Inset, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 
-export const NoResults = ({ chainId }: { chainId?: number }) => {
+export const NoResults = ({
+  fromDiscover,
+  onL2,
+}: {
+  fromDiscover?: boolean;
+  onL2?: boolean;
+}) => {
   const { colors } = useTheme();
   return (
     <Inset horizontal={{ custom: 50 }}>
@@ -15,20 +21,20 @@ export const NoResults = ({ chainId }: { chainId?: number }) => {
         </Text>
         <Stack space="12px" alignHorizontal="center">
           <Text color={{ custom: colors.dark }} size="17pt" weight="bold">
-            {chainId
-              ? lang.t('exchange.no_results.nothing_found')
-              : lang.t('exchange.no_results.nothing_here')}
+            {fromDiscover
+              ? lang.t('exchange.no_results.nothing_here')
+              : lang.t('exchange.no_results.nothing_found')}
           </Text>
-          {chainId && (
+          {!fromDiscover && (
             <Text
               align="center"
               color={{ custom: 'rgba(60, 66, 82, 0.5)' }}
               size="15pt"
               weight="semibold"
             >
-              {chainId === 1
-                ? lang.t('exchange.no_results.description')
-                : lang.t('exchange.no_results.description_l2')}
+              {onL2
+                ? lang.t('exchange.no_results.description_l2')
+                : lang.t('exchange.no_results.description')}
             </Text>
           )}
         </Stack>

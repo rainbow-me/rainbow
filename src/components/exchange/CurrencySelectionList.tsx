@@ -11,9 +11,9 @@ import { Box } from '@/design-system';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 
 interface CurrencySelectionListProps {
-  chainId?: number;
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
   footerSpacer: boolean;
+  fromDiscover?: boolean;
   itemProps: {
     onActionAsset: (asset: any, isFavorited?: any) => void;
     onPress: (item: any) => void;
@@ -22,6 +22,7 @@ interface CurrencySelectionListProps {
   };
   listItems: { data: EnrichedExchangeAsset[]; title: string }[];
   loading: boolean;
+  onL2?: boolean;
   query: string;
   showList: boolean;
   testID: string;
@@ -32,12 +33,13 @@ const CurrencySelectionList: ForwardRefRenderFunction<
   CurrencySelectionListProps
 > = (
   {
-    chainId,
     keyboardDismissMode,
     footerSpacer,
+    fromDiscover,
     itemProps,
     listItems,
     loading,
+    onL2,
     query,
     showList,
     testID,
@@ -58,7 +60,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<
             custom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
           }}
         >
-          <NoResults chainId={chainId} />
+          <NoResults fromDiscover={fromDiscover} onL2={onL2} />
         </Box>
       ) : (
         <Centered flex={1}>

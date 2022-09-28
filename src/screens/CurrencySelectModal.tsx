@@ -572,7 +572,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
-                chainId={currentChainId}
+                onL2={Boolean(currentChainId && currentChainId !== 1)}
                 footerSpacer={android}
                 itemProps={itemProps}
                 listItems={currencyList}
