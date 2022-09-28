@@ -206,11 +206,11 @@ index 75c0d5c..e84bdfa 100644
  
 -const { RNKeychainManager } = NativeModules;
 +const {
-+  RNKeychainManagerNew,
++  RNKeychainManagerAndroidNew,
 +  RNKeychainManager: RNKeychainManagerOld
 +} = NativeModules;
 +
-+const RNKeychainManager = Platform.OS === 'android' && Platform.Version >= 24 ? RNKeychainManagerNew : RNKeychainManagerOld
++const RNKeychainManager = Platform.OS === 'android' && Platform.Version >= 24 ? RNKeychainManagerAndroidNew : RNKeychainManagerOld
  
  export const SECURITY_LEVEL: {
    ANY: string,

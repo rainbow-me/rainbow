@@ -16354,9 +16354,9 @@ react-native-keyboard-area@1.0.5:
   dependencies:
     "@types/react-native" "0.62.16"
 
-react-native-keychain-android-new@rainbow-me/react-native-keychain-android-new#f7ba2286b653cad9acb648ea270d89f5684d8146:
+react-native-keychain-android-new@rainbow-me/react-native-keychain-android-new#8f140fd6c012cd38211d714708a2b5576b7278e3:
   version "8.4.0"
-  resolved "https://codeload.github.com/rainbow-me/react-native-keychain-android-new/tar.gz/f7ba2286b653cad9acb648ea270d89f5684d8146"
+  resolved "https://codeload.github.com/rainbow-me/react-native-keychain-android-new/tar.gz/8f140fd6c012cd38211d714708a2b5576b7278e3"
 
 react-native-keychain@8.0.0:
   version "8.0.0"
