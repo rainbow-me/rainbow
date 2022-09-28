@@ -52,11 +52,11 @@ export const getAllNotificationSettingsFromStorage = () => {
   Hook to constantly listen to notification settings.
 */
 export const useAllNotificationSettingsFromStorage = () => {
-  const data = storage.getString(WALLET_TOPICS_STORAGE_KEY);
+  const data = getAllNotificationSettingsFromStorage();
 
   const [notificationSettings, setNotificationSettings] = useState<
     WalletNotificationSettingsType[]
-  >(data ? JSON.parse(data) : []);
+  >(data);
   const listener = storage.addOnValueChangedListener(changedKey => {
     if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
       const newSettings = storage.getString(changedKey);
