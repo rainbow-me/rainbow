@@ -417,12 +417,5 @@ export const parseSimplehashNfts = nftData => {
     };
     return parsedNft;
   });
-  // filter out polygon NFTs that are not on our allow list
-  remove(
-    results,
-    nft =>
-      nft.network === Network.polygon &&
-      !polygonAllowList.includes(nft?.asset_contract?.address?.toLowerCase())
-  );
   return results;
 };
