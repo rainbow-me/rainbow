@@ -51,7 +51,7 @@ import {
 import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { divide, greaterThan, multiply } from '@/helpers/utilities';
+import { divide, greaterThan, isZero, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -81,7 +81,7 @@ import {
 } from '@/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
+import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
@@ -90,7 +90,6 @@ import {
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import networkInfo from '@/helpers/networkInfo';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -1023,8 +1022,7 @@ export default function ExchangeModal({
     : !!inputCurrency && !!outputCurrency;
 
   const handleConfirmExchangePress = useCallback(() => {
-    const balance = Number(outputNetworkDetails?.balance?.amount);
-    const hasZeroBalance = balance === 0;
+    const hasZeroBalance = isZero(outputNetworkDetails?.balance?.amount);
 
     const showRefuelAddSheet = isCrosschainSwap && hasZeroBalance;
 
