@@ -221,7 +221,7 @@ export const addRequestToApprove = (
  * @param topic The client ID to filter for.
  * @returns The matching requests.
  */
-export const requestsForTopic = (topic: string) => (
+export const requestsForTopic = (topic: string | undefined) => (
   dispatch: unknown,
   getState: AppGetState
 ): RequestData[] => {

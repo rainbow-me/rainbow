@@ -9,7 +9,7 @@ import {
   Heading,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 const InfoRow = ({
   icon,
@@ -31,7 +31,12 @@ const InfoRow = ({
               paddingTop: '6px',
             })}
           >
-            <Heading align="center" color="action" size="28px" weight="bold">
+            <Heading
+              align="center"
+              color="action (Deprecated)"
+              size="28px / 33px (Deprecated)"
+              weight="bold"
+            >
               {icon}
             </Heading>
           </Box>
@@ -51,8 +56,18 @@ const InfoRow = ({
     </Column>
     <Bleed top="3px">
       <Stack space="12px">
-        <Text weight="bold">{title}</Text>
-        <Text color="secondary60" size="14px" weight="medium">
+        <Text
+          color="primary (Deprecated)"
+          size="16px / 22px (Deprecated)"
+          weight="bold"
+        >
+          {title}
+        </Text>
+        <Text
+          color="secondary60 (Deprecated)"
+          size="14px / 19px (Deprecated)"
+          weight="medium"
+        >
           {description}
         </Text>
       </Stack>

@@ -22,6 +22,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { abbreviations } from '@/utils';
+import config from '@/model/config';
 
 // NOTE:
 // If you’re trying to edit this file for iOS and you’re not seeing any changes,
@@ -132,6 +133,11 @@ export default function ProfileMasthead({
       return;
     }
 
+    if (!config.wyre_enabled) {
+      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
+      return;
+    }
+
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
@@ -183,7 +189,12 @@ export default function ProfileMasthead({
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
         <Row>
-          <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
+          <AccountName
+            testID={`profileAddress-${accountName}`}
+            deviceWidth={deviceWidth}
+          >
+            {accountName}
+          </AccountName>
           <DropdownArrow>
             <Icon color={colors.dark} direction="down" name="caret" />
           </DropdownArrow>

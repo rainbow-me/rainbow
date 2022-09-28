@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react-native';
-// @ts-expect-error
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { Network } from '@/helpers';
@@ -7,8 +6,10 @@ import { parseSimplehashNfts } from '@/parsers';
 import { logger } from '@/utils';
 
 interface SimplehashMarketplace {
+  marketplace_id: string;
   marketplace_name: string;
   marketplace_collection_id: string;
+  nft_url: string;
   collection_url: string;
   verified: boolean;
 }

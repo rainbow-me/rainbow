@@ -1,9 +1,8 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
@@ -49,7 +48,7 @@ const SavingsSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
   const { params } = useRoute();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { isReadOnlyWallet } = useWallets();
   const { nativeCurrency } = useAccountSettings();
   const cTokenBalance = params['cTokenBalance'];
@@ -158,7 +157,6 @@ const SavingsSheet = () => {
       height={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}
       insets={insets}
     >
-      <StatusBar barStyle="light-content" />
       <SlackSheet
         additionalTopPadding={android}
         contentHeight={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}

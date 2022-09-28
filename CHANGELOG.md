@@ -13,6 +13,51 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.7.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.7)
+
+### Changed
+
+- Update Polygon allowlist
+- Gas fee bug fixes
+- Bug fixes in create new wallet modal
+
+## [1.7.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.6)
+
+### Changed
+
+- Onboarding bug fixes
+
+## [1.7.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.5)
+
+### Changed
+
+- Onboarding bug fixes
+
+## [1.7.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.4)
+
+### Changed
+
+- Bug fixes
+
+## [1.7.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.3)
+
+### Added
+
+- Smolverse custom app icon
+- Swaps Promo
+
+### Changed
+
+- Default to "Fast Gas" on swaps for Mainnet/Polygon
+- Settings redesign
+- Profiles bug fixes
+- Android bug fixes
+- e2e test improvements
+
+### Removed
+
+- Removed deprecated testnets
+
 ## [1.7.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.2)
 
 ### Changed

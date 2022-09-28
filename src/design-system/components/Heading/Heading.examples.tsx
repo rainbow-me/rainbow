@@ -5,52 +5,61 @@ import { palettes } from '../../color/palettes';
 import { Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { Guide } from '../../playground/Guide';
-import { MockBadge } from '../../playground/MockBadge';
+import { HeadingSize, typeHierarchy } from '../../typography/typeHierarchy';
 import { Inline } from '../Inline/Inline';
 import { Stack } from '../Stack/Stack';
-import { Heading, HeadingProps } from './Heading';
-
-const headingExamples: Required<Pick<HeadingProps, 'size' | 'weight'>>[] = [
-  { size: '34px', weight: 'bold' },
-  { size: '30px', weight: 'bold' },
-  { size: '28px', weight: 'bold' },
-  { size: '23px', weight: 'bold' },
-  { size: '20px', weight: 'bold' },
-  { size: '18px', weight: 'bold' },
-];
+import { Heading } from './Heading';
 
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
-export const sizes: Example[] = headingExamples.map(({ size, weight }) => ({
-  name: `${size} (${weight})`,
+export const sizes: Example[] = (Object.keys(
+  typeHierarchy.heading
+) as HeadingSize[]).map(size => ({
+  name: size,
   Example: () =>
     source(
       <>
         <Stack space="10px">
           <View>
             <Guide />
-            <Heading size={size} weight={weight}>
+            <Heading color="primary (Deprecated)" size={size} weight="bold">
               {loremIpsum}
             </Heading>
             <Guide />
-            <Heading numberOfLines={1} size={size} weight={weight}>
+            <Heading
+              numberOfLines={1}
+              color="primary (Deprecated)"
+              size={size}
+              weight="bold"
+            >
               Truncated text truncated text truncated text truncated text
               truncated text truncated text
             </Heading>
             <Guide />
           </View>
-          <Inline space="10px">
-            <MockBadge>
-              <Heading size={size} weight={weight}>
-                CENTERED
+          <Inline alignVertical="center" space="10px">
+            <View style={{ backgroundColor: 'rgba(255,0,0,0.2)' }}>
+              <Heading color="primary (Deprecated)" size={size} weight="bold">
+                Bounding Box
               </Heading>
-            </MockBadge>
-            <MockBadge>
-              <Heading size={size} weight={weight}>
-                Centered
+            </View>
+            <View style={{ position: 'relative' }}>
+              <Heading color="primary (Deprecated)" size={size} weight="bold">
+                Bounding Box
               </Heading>
-            </MockBadge>
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: '#ffd4d3',
+                  zIndex: 1,
+                }}
+              />
+            </View>
           </Inline>
         </Stack>
       </>
@@ -63,7 +72,14 @@ export const withEmoji: Example = {
     source(
       <View>
         <Guide />
-        <Heading containsEmoji>Heading with emoji 🌈</Heading>
+        <Heading
+          containsEmoji
+          color="primary (Deprecated)"
+          size="20px / 22px (Deprecated)"
+          weight="heavy"
+        >
+          Heading with emoji 🌈
+        </Heading>
         <Guide />
       </View>
     ),
@@ -75,7 +91,12 @@ export const withTruncation: Example = {
     source(
       <View>
         <Guide />
-        <Heading numberOfLines={1}>
+        <Heading
+          numberOfLines={1}
+          color="primary (Deprecated)"
+          size="20px / 22px (Deprecated)"
+          weight="heavy"
+        >
           Truncated text truncated text truncated text truncated text truncated
           text truncated text
         </Heading>
@@ -91,16 +112,29 @@ export const withColor: Example = {
       <View>
         <View
           style={{
-            backgroundColor: palettes.dark.backgroundColors.body.color,
+            backgroundColor:
+              palettes.dark.backgroundColors['body (Deprecated)'].color,
             padding: 24,
           }}
         >
           <Stack space="24px">
             <ColorModeProvider value="dark">
-              <Heading>Dark mode</Heading>
+              <Heading
+                color="primary (Deprecated)"
+                size="20px / 22px (Deprecated)"
+                weight="heavy"
+              >
+                Dark mode
+              </Heading>
             </ColorModeProvider>
             <ColorModeProvider value="darkTinted">
-              <Heading>Dark tinted mode</Heading>
+              <Heading
+                color="primary (Deprecated)"
+                size="20px / 22px (Deprecated)"
+                weight="heavy"
+              >
+                Dark tinted mode
+              </Heading>
             </ColorModeProvider>
           </Stack>
         </View>

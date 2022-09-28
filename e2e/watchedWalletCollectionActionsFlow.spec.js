@@ -1,8 +1,10 @@
 /* eslint-disable no-undef */
+/* eslint-disable jest/expect-expect */
+import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
 describe('Watched showcase and hidden actions flow', () => {
-  it('hides actions for watched wallets', async () => {
+  it('boots and loads wallet screen', async () => {
     // Watch a wallet.
     await Helpers.waitAndTap('already-have-wallet-button');
     await Helpers.waitAndTap('watch-address-button');
@@ -14,25 +16,23 @@ describe('Watched showcase and hidden actions flow', () => {
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
-      await Helpers.authenticatePin('1234');
-      await Helpers.authenticatePin('1234');
-    }
-    await Helpers.enableSynchronization();
+  });
 
-    // Tap an NFT.
+  it('opens NFT', async () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tap('token-family-header-ENS');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
+  });
 
-    // Check that showcase and hide buttons are hidden.
-    await expect(element(by.label('Showcase')).atIndex(0)).toNotExist();
+  it('hides actions for watched wallets', async () => {
+    await expect(element(by.text('Showcase'))).toNotExist();
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
-    await expect(element(by.label('Unhide')).atIndex(0)).toNotExist();
+    await expect(element(by.text('Unhide'))).toNotExist();
   });
 
   afterAll(async () => {
     await device.clearKeychain();
+    await exec('kill $(lsof -t -i:8545)');
   });
 });

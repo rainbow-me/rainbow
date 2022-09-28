@@ -1,16 +1,13 @@
 import { useMemo } from 'react';
+import { textColors } from '../../color/palettes';
 import { useForegroundColor } from '../../color/useForegroundColor';
-import {
-  textColors,
-  textSizes,
-  textWeights,
-} from '../../typography/typography';
+import { textSizes, textWeights } from '../../typography/typography';
 import { TextProps } from './Text';
 
 export function useTextStyle({
   align: textAlign,
-  color = 'primary',
-  size = '16px',
+  color,
+  size,
   weight = 'regular',
   tabularNumbers = false,
   uppercase = false,
@@ -28,7 +25,19 @@ export function useTextStyle({
     }
   }
 
-  const colorValue = useForegroundColor(color);
+  if (__DEV__) {
+    if (!textSizes[size]) {
+      throw new Error(
+        `Text: ${
+          size ? `Invalid size "${size}"` : 'Missing size prop'
+        }. Valid sizes are: ${Object.keys(textSizes)
+          .map(x => `"${x}"`)
+          .join(', ')}`
+      );
+    }
+  }
+
+  const colorValue = useForegroundColor(color ?? 'label'); // Fallback for JS consumers
   const sizeStyles = textSizes[size];
   const weightStyles = textWeights[weight];
 

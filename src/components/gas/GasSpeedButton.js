@@ -105,9 +105,7 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
 }))({});
 
-const TextContainer = styled(Column).attrs(() => ({
-  marginBottom: ios ? 0 : 11,
-}))({});
+const TextContainer = styled(Column).attrs(() => ({}))({});
 
 const TransactionTimeLabel = ({ formatter, theme }) => {
   const { colors } = useTheme();
@@ -297,7 +295,7 @@ const GasSpeedButton = ({
     const [estimatedTimeValue = 0, estimatedTimeUnit = 'min'] = estimatedTime;
     const time = parseFloat(estimatedTimeValue).toFixed(0);
 
-    let timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
+    const timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
     if (!estimatedTime || (time === '0' && estimatedTimeUnit === 'min')) {
       return '';
     }
@@ -345,7 +343,7 @@ const GasSpeedButton = ({
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
       const totalGwei = add(
-        gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
       const estimatedGwei = add(
@@ -487,7 +485,7 @@ const GasSpeedButton = ({
           scaleTo={0.9}
           testID="estimated-fee-label"
         >
-          <Row style={{ top: android ? 8 : 0 }}>
+          <Row>
             <NativeCoinIconWrapper>
               <CoinIcon
                 address={nativeFeeCurrency.address}

@@ -15,10 +15,10 @@ const ProfileDescription = ({ description }: { description?: string }) => {
       {text?.map((t, i) => (
         <>
           <Text
-            color="secondary80"
+            color="secondary80 (Deprecated)"
             containsEmoji
             key={i}
-            size="15px"
+            size="15px / 21px (Deprecated)"
             weight="medium"
           >
             {t}

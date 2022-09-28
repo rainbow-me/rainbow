@@ -1,10 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { Records } from '@/entities';
-import { fetchCoinAddresses, fetchRecords } from '@/handlers/ens';
+import {
+  fetchCoinAddresses,
+  fetchContenthash,
+  fetchRecords,
+} from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
-import { queryClient } from '@/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@/react-query/types';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 
 export const ensRecordsQueryKey = ({
   name,
@@ -25,6 +32,7 @@ export async function fetchENSRecords(
 ) {
   const cachedRecords: {
     coinAddresses: { [key in ENS_RECORDS]: string };
+    contenthash?: string;
     records: Partial<Records>;
   } | null = await getENSData('records', name);
 
@@ -35,9 +43,12 @@ export async function fetchENSRecords(
     );
     if (cacheFirst) return cachedRecords;
   }
-  const records = await fetchRecords(name, { supportedOnly });
-  const coinAddresses = await fetchCoinAddresses(name, { supportedOnly });
-  const data = { coinAddresses, records };
+  const [records, coinAddresses, contenthash] = await Promise.all([
+    fetchRecords(name, { supportedOnly }),
+    fetchCoinAddresses(name, { supportedOnly }),
+    fetchContenthash(name),
+  ]);
+  const data = { coinAddresses, contenthash, records };
   saveENSData('records', name, data);
   return data;
 }
@@ -61,7 +72,9 @@ export default function useENSRecords(
   {
     supportedOnly = true,
     ...config
-  }: QueryConfig<typeof fetchENSRecords> & { supportedOnly?: boolean } = {}
+  }: QueryConfigDeprecated<typeof fetchENSRecords> & {
+    supportedOnly?: boolean;
+  } = {}
 ) {
   return useQuery<UseQueryData<typeof fetchENSRecords>>(
     ensRecordsQueryKey({ name, supportedOnly }),

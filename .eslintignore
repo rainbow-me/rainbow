@@ -11,3 +11,7 @@ out/
 .eslintrc.js
 babel.config.js
 metro.config.js
+jest.config.js
+.detoxrc.js
+__generated__
+coverage

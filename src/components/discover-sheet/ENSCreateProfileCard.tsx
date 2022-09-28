@@ -116,7 +116,11 @@ export default function ENSCreateProfileCard() {
       testID="ens-create-profile-card"
     >
       <AccentColorProvider color={shadowColor}>
-        <Box background="body" borderRadius={24} shadow={cardShadow}>
+        <Box
+          background="body (Deprecated)"
+          borderRadius={24}
+          shadow={cardShadow}
+        >
           <AccentColorProvider color="#E8E8E8">
             <Box background="accent" borderRadius={24} style={cardStyle}>
               <Inset space={{ custom: -CARD_BORDER_WIDTH }}>
@@ -141,10 +145,18 @@ export default function ENSCreateProfileCard() {
                     space="12px"
                   >
                     <Stack space={{ custom: 13 }}>
-                      <Heading color="primary" size="20px" weight="bold">
+                      <Heading
+                        color="primary (Deprecated)"
+                        size="20px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {lang.t('discover.ens_create_profile.title')}
                       </Heading>
-                      <Text color="secondary60" size="15px" weight="semibold">
+                      <Text
+                        color="secondary60 (Deprecated)"
+                        size="15px / 21px (Deprecated)"
+                        weight="semibold"
+                      >
                         {lang.t('discover.ens_create_profile.body')}
                       </Text>
                     </Stack>
@@ -152,8 +164,8 @@ export default function ENSCreateProfileCard() {
                       <Box width={{ custom: 40 }}>
                         <Heading
                           align="right"
-                          color="primary"
-                          size="20px"
+                          color="primary (Deprecated)"
+                          size="20px / 22px (Deprecated)"
                           weight="bold"
                         >
                           􀜍

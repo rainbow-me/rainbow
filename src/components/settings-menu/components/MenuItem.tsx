@@ -48,13 +48,13 @@ const TextIcon = ({
         colorOverride
           ? { custom: colorOverride }
           : disabled
-          ? 'secondary60'
+          ? 'secondary60 (Deprecated)'
           : isLink
-          ? 'action'
-          : 'primary'
+          ? 'action (Deprecated)'
+          : 'primary (Deprecated)'
       }
       containsEmoji
-      size="18px"
+      size="18px / 27px (Deprecated)"
       weight="semibold"
     >
       {icon}
@@ -67,7 +67,11 @@ interface SelectionProps {
 }
 
 const Selection = ({ children }: SelectionProps) => (
-  <Text color="secondary60" size="18px" weight="semibold">
+  <Text
+    color="secondary60 (Deprecated)"
+    size="18px / 27px (Deprecated)"
+    weight="semibold"
+  >
     {children}
   </Text>
 );
@@ -115,9 +119,15 @@ interface TitleProps {
 
 const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
   <Text
-    color={disabled ? 'secondary60' : isLink ? 'action' : 'primary'}
+    color={
+      disabled
+        ? 'secondary60 (Deprecated)'
+        : isLink
+        ? 'action (Deprecated)'
+        : 'primary (Deprecated)'
+    }
     containsEmoji
-    size="18px"
+    size="18px / 27px (Deprecated)"
     weight={weight}
   >
     {text}
@@ -133,8 +143,8 @@ const Label = ({ text, warn }: LabelProps) => {
   const { colors } = useTheme();
   return (
     <Text
-      color={warn ? { custom: colors.orangeLight } : 'secondary60'}
-      size="14px"
+      color={warn ? { custom: colors.orangeLight } : 'secondary60 (Deprecated)'}
+      size="14px / 19px (Deprecated)"
       weight="medium"
     >
       {text}

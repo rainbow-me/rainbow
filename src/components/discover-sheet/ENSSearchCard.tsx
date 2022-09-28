@@ -127,11 +127,15 @@ export default function ENSSearchCard() {
       testID="ens-register-name-banner"
     >
       <AccentColorProvider color={shadowColor}>
-        <Box background="body" borderRadius={24} shadow={CardShadow}>
+        <Box
+          background="body (Deprecated)"
+          borderRadius={24}
+          shadow={CardShadow}
+        >
           <ColorModeProvider value="darkTinted">
             <Box
               as={LinearGradient}
-              background="body"
+              background="body (Deprecated)"
               borderRadius={24}
               colors={colors.gradients.ens}
               end={{ x: 1, y: 0.5 }}
@@ -162,7 +166,12 @@ export default function ENSSearchCard() {
                         width={{ custom: 40 }}
                       >
                         <Cover alignHorizontal="center" alignVertical="center">
-                          <Text align="center" size="20px" weight="heavy">
+                          <Text
+                            align="center"
+                            color="primary (Deprecated)"
+                            size="20px / 24px (Deprecated)"
+                            weight="heavy"
+                          >
                             {pendingRegistrations?.length}
                           </Text>
                         </Cover>
@@ -190,6 +199,7 @@ export default function ENSSearchCard() {
                             >
                               <Text
                                 align="center"
+                                color="primary (Deprecated)"
                                 size="icon 19px"
                                 weight="bold"
                               >
@@ -223,11 +233,19 @@ export default function ENSSearchCard() {
                   <Box bottom="0px" position="absolute">
                     <Stack space={{ custom: 11 }}>
                       <AccentColorProvider color="#BFDAFF">
-                        <Text color="accent" size="14px" weight="bold">
+                        <Text
+                          color="accent"
+                          size="14px / 19px (Deprecated)"
+                          weight="bold"
+                        >
                           {lang.t('discover.ens_search.mini_title')}
                         </Text>
                       </AccentColorProvider>
-                      <Heading size="20px" weight="bold">
+                      <Heading
+                        color="primary (Deprecated)"
+                        size="20px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {/* RN seems to treat "a .eth" as a URL and prevents line breaks between "a" and ".eth". &#8203; is a zero width character that allows a line break. */}
                         {lang.t('discover.ens_search.title_part_1')}&#8203;
                         {lang.t('discover.ens_search.title_part_2')}

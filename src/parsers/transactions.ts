@@ -418,7 +418,7 @@ export const getTitle = ({
 }: {
   protocol: ProtocolType | null | undefined;
   status: TransactionStatus;
-  type: TransactionType;
+  type?: TransactionType;
 }) => {
   if (
     protocol &&
@@ -476,7 +476,7 @@ export const getTransactionLabel = ({
   pending: boolean;
   protocol: ProtocolType | null | undefined;
   status: ZerionTransactionStatus | TransactionStatus;
-  type: TransactionType;
+  type?: TransactionType;
 }) => {
   if (status === TransactionStatus.cancelling)
     return TransactionStatus.cancelling;
@@ -524,6 +524,7 @@ export const getTransactionLabel = ({
 
   if (type === TransactionType.authorize) return TransactionStatus.approved;
   if (type === TransactionType.purchase) return TransactionStatus.purchased;
+  if (type === TransactionType.cancel) return TransactionStatus.cancelled;
 
   if (type === TransactionType.deposit) {
     if (protocol === ProtocolType.compound) {

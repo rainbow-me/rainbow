@@ -11,7 +11,7 @@ import {
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},
-  fallbackColor: any = undefined,
+  fallbackColor: string | undefined = undefined,
   forceLightMode = false,
   forceETHColor = false
 ) {

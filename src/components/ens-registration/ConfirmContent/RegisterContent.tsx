@@ -3,7 +3,15 @@ import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { Box, Divider, Inline, Row, Rows, Stack, Text } from '@/design-system';
+import {
+  Box,
+  Inline,
+  Row,
+  Rows,
+  Separator,
+  Stack,
+  Text,
+} from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
@@ -33,17 +41,17 @@ const RegisterContent = ({
             <Stack space="24px">
               <Text
                 align="center"
-                color="primary"
+                color="primary (Deprecated)"
                 containsEmoji
-                size="23px"
+                size="23px / 27px (Deprecated)"
                 weight="heavy"
               >
                 {lang.t('profiles.confirm.last_step')} 💈
               </Text>
               <Text
                 align="center"
-                color="secondary60"
-                size="16px"
+                color="secondary60 (Deprecated)"
+                size="16px / 22px (Deprecated)"
                 weight="semibold"
               >
                 {lang.t('profiles.confirm.last_step_description')}
@@ -52,18 +60,26 @@ const RegisterContent = ({
           </Box>
         </Row>
         <Row height="content">
-          <Stack space="19px">
-            <Divider />
+          <Stack space="19px (Deprecated)">
+            <Separator color="divider80 (Deprecated)" />
             <Inline alignHorizontal="justify" alignVertical="center">
               <Inline>
-                <Text color="secondary80" size="16px" weight="bold">
+                <Text
+                  color="secondary80 (Deprecated)"
+                  size="16px / 22px (Deprecated)"
+                  weight="bold"
+                >
                   {`${lang.t('profiles.confirm.set_ens_name')} `}
                 </Text>
                 <ButtonPressAnimation
                   onPress={openPrimaryENSNameHelper}
                   scaleTo={0.9}
                 >
-                  <Text color="secondary30" size="16px" weight="bold">
+                  <Text
+                    color="secondary30 (Deprecated)"
+                    size="16px / 22px (Deprecated)"
+                    weight="bold"
+                  >
                     􀅵
                   </Text>
                 </ButtonPressAnimation>

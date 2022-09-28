@@ -189,12 +189,23 @@ export const walletsLoadState = (profilesEnabled: boolean = false) => async (
       );
     }
 
-    const selectedAddress = selectedWallet!.addresses.find(a => {
+    const selectedAddress = selectedWallet?.addresses.find(a => {
       return a.visible && a.address === addressFromKeychain;
     });
 
+    // Let's select the first visible account if we don't have a selected address
     if (!selectedAddress) {
-      const account = selectedWallet!.addresses.find(a => a.visible)!;
+      const allWallets = Object.values(allWalletsResult?.wallets || {});
+      let account = null;
+      for (const wallet of allWallets) {
+        for (const rainbowAccount of wallet.addresses) {
+          if (rainbowAccount.visible) {
+            account = rainbowAccount;
+            break;
+          }
+        }
+      }
+      if (!account) return;
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
       logger.sentry(
@@ -276,7 +287,8 @@ export const setIsWalletLoading = (val: WalletsState['isWalletLoading']) => (
 export const setWalletBackedUp = (
   walletId: RainbowWallet['id'],
   method: RainbowWallet['backupType'],
-  backupFile: RainbowWallet['backupFile'] = null
+  backupFile: RainbowWallet['backupFile'] = null,
+  updateUserMetadata: boolean = true
 ) => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
@@ -302,7 +314,7 @@ export const setWalletBackedUp = (
     dispatch(setIsWalletLoading(null));
   }, 1000);
 
-  if (method === WalletBackupTypes.cloud) {
+  if (method === WalletBackupTypes.cloud && updateUserMetadata) {
     try {
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {

@@ -61,7 +61,7 @@ const BottomRow = React.memo(function BottomRow({
         <Text
           color={{ custom: coinNameColor || colors.dark }}
           numberOfLines={1}
-          size="16px"
+          size="16px / 22px (Deprecated)"
         >
           {description}
         </Text>
@@ -70,7 +70,7 @@ const BottomRow = React.memo(function BottomRow({
         <Text
           align="right"
           color={{ custom: balanceTextColor ?? colors.dark }}
-          size="16px"
+          size="16px / 22px (Deprecated)"
           weight={isReceived ? 'medium' : undefined}
         >
           {balanceText}
@@ -129,7 +129,10 @@ export default React.memo(function TransactionCoinRow({
         onPress={ios ? onPressIOSCallback : noop}
         scaleTo={0.96}
       >
-        <View style={sx.wholeRow}>
+        <View
+          style={sx.wholeRow}
+          testID={`${item.title}-${item.description}-${item.balance?.display}`}
+        >
           <View style={sx.icon}>
             <FastCoinIcon
               address={mainnetAddress || item.address}
@@ -151,7 +154,7 @@ export default React.memo(function TransactionCoinRow({
                 <Text
                   color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
                   numberOfLines={1}
-                  size="14px"
+                  size="14px / 19px (Deprecated)"
                 >
                   {item.balance?.display ?? ''}
                 </Text>

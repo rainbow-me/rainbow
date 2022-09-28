@@ -31,13 +31,13 @@ const docs: DocsType = {
           <Docs.Text>
             To apply a background color, pass the{' '}
             <Docs.Code>background</Docs.Code> prop. If this prop is provided,
-            the foreground colour compatible children (e.g.{' '}
+            the foreground color compatible children (e.g.{' '}
             <Docs.Code>Text</Docs.Code>) will render a foreground color that has
             sufficient contrast with the background color of Box.
           </Docs.Text>
           <Docs.Text>
-            Below, you can see that the foreground color of{' '}
-            <Docs.Code>body</Docs.Code> is dark grey, however, for{' '}
+            Below, you can see that the text color of{' '}
+            <Docs.Code>surfacePrimary</Docs.Code> is dark, however, for{' '}
             <Docs.Code>accent</Docs.Code> it is light.
           </Docs.Text>
         </>

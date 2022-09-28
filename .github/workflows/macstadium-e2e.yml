@@ -41,19 +41,25 @@ jobs:
 
       - name: Check for frozen lockfile
         run: yarn check-lockfile
-        
+
       - name: Audit CI
         run:  yarn audit-ci --moderate --config audit-ci.json
 
       - name: Lint
-        run: yarn lint
-        
+        run: yarn lint:ci
+
+      - name: Unit tests
+        run: yarn test
+
       - name: Install Pods
         run: cd ios && pod install && cd ..
 
+      - name: Rebuild detox cache
+        run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
+
       - name: Build the app in Release mode
         run: ./node_modules/.bin/detox build --configuration ios.sim.release
-      
+
       - name: Run iOS e2e tests
         run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
 

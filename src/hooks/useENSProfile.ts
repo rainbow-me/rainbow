@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
-import { ensAddressQueryKey, fetchENSAddress } from './useENSAddress';
 import { ensAvatarQueryKey, fetchENSAvatar } from './useENSAvatar';
 import { ensCoverQueryKey, fetchENSCover } from './useENSCover';
 import { ensOwnerQueryKey, fetchENSOwner } from './useENSOwner';
@@ -9,8 +8,12 @@ import { ensRegistrantQueryKey, fetchENSRegistrant } from './useENSRegistrant';
 import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
 import useWallets from './useWallets';
 import { getENSProfile, saveENSProfile } from '@/handlers/localstorage/ens';
-import { queryClient } from '@/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@/react-query/types';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
+import { fetchENSAddress } from '@/resources/ens/ensAddressQuery';
 
 const queryKey = (
   name: string,
@@ -36,13 +39,11 @@ async function fetchENSProfile(
     avatar,
     header,
     owner,
-    { coinAddresses, records },
+    { coinAddresses, contenthash, records },
     { registration, registrant },
     resolver,
   ] = await Promise.all([
-    queryClient.fetchQuery(ensAddressQueryKey(name), () =>
-      fetchENSAddress(name)
-    ),
+    fetchENSAddress({ name }),
     queryClient.fetchQuery(ensAvatarQueryKey(name), () => fetchENSAvatar(name)),
     queryClient.fetchQuery(ensCoverQueryKey(name), () => fetchENSCover(name)),
     queryClient.fetchQuery(ensOwnerQueryKey(name), () => fetchENSOwner(name)),
@@ -60,6 +61,7 @@ async function fetchENSProfile(
   const profile = {
     address,
     coinAddresses,
+    contenthash,
     images: {
       avatar,
       header,
@@ -92,7 +94,7 @@ export default function useENSProfile(
   {
     supportedRecordsOnly = true,
     ...config
-  }: QueryConfig<typeof fetchENSProfile> & {
+  }: QueryConfigDeprecated<typeof fetchENSProfile> & {
     supportedRecordsOnly?: boolean;
   } = {}
 ) {
