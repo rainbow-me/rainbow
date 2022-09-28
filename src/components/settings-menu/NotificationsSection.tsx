@@ -22,7 +22,10 @@ import {
 } from '@/notifications/settings';
 import { abbreviations, deviceUtils } from '@/utils';
 import { Box } from '@/design-system';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@/helpers/emojiHandler';
 import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
 
@@ -155,7 +158,10 @@ const WalletRow = ({
             <ContactAvatar
               color={wallet.color}
               size="small"
-              value={profileUtils.addressHashedEmoji(wallet.address)}
+              value={
+                returnStringFirstEmoji(wallet.label) ||
+                profileUtils.addressHashedEmoji(wallet.address)
+              }
             />
           )}
         </Box>
