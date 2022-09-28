@@ -44,6 +44,8 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_TEST } from '@/env';
 import { API_BASE_URL } from '@rainbow-me/swaps';
+import { metadataStorage } from '@/raps/actions/swap';
+import { SwapMetadata } from '@/raps/common';
 import { analytics } from '@/analytics';
 
 const flashbotsApi = new RainbowFetchClient({
@@ -131,6 +133,18 @@ export const showTransactionDetailsSheet = (
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
 
   const network = transactionDetails.network ?? Network.mainnet;
+  const parentTxHash = hash?.includes('-') ? hash.split('-')[0] : hash;
+  const wrappedMeta = JSON.parse(
+    metadataStorage.getString(parentTxHash?.toLowerCase() ?? '') ?? ''
+  );
+  let parsedMeta: undefined | SwapMetadata;
+  if (wrappedMeta?.type === 'swap') {
+    parsedMeta = wrappedMeta.data as SwapMetadata;
+  }
+
+  const isRetryButtonVisible = true; // TODO
+
+  console.log(parsedMeta, hash, metadataStorage.getAllKeys());
   const date = getHumanReadableDate(minedAt);
   const isSent =
     status === TransactionStatusTypes.sending ||
@@ -168,6 +182,7 @@ export const showTransactionDetailsSheet = (
 
   if (hash) {
     const buttons = [
+      ...(isRetryButtonVisible ? [TransactionActions.trySwapAgain] : []),
       ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
       ...(canBeCancelled ? [TransactionActions.cancel] : []),
       blockExplorerAction,
@@ -202,6 +217,12 @@ export const showTransactionDetailsSheet = (
           action: actionId,
         });
         switch (action) {
+          case TransactionActions.trySwapAgain:
+            Navigation.handleAction(Routes.WALLET_SCREEN, {});
+            Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+              prefilledValues: parsedMeta,
+            });
+            break;
           case TransactionActions.viewContact:
           case TransactionActions.addToContacts:
             Navigation.handleAction(Routes.MODAL_SCREEN, {
