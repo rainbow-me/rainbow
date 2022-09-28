@@ -818,7 +818,7 @@ export const explainers = (params, colors) => ({
     }),
     button: {
       label: lang.t('button.no_thanks'),
-      textColor: 'blueGreyDark20',
+      textColor: 'blueGreyDark60',
       bgColor: colors?.transparent,
       onPress: params?.onContinue,
     },
