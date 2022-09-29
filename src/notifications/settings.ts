@@ -115,30 +115,36 @@ export const addDefaultNotificationSettingsForWallet = (
   relationship: string
 ) => {
   const existingSettings = walletHasNotificationSettings(address);
-  const defaultTopicSettings = {};
+  const defaultEnabledTopicSettings = {};
   Object.values(NotificationTopic).forEach(
     // looping through topics and setting them all as true by default
     // @ts-expect-error: Object.values() returns a string[]
-    topic => (defaultTopicSettings[topic] = true)
+    topic => (defaultEnabledTopicSettings[topic] = true)
   );
 
   if (!existingSettings) {
+    const isOwnedWallet = relationship === NotificationRelationship.OWNER;
     const settings = getAllNotificationSettingsFromStorage();
     const newSettings = [
       ...settings,
       {
         address,
-        topics: defaultTopicSettings,
-        enabled: true,
+        topics: defaultEnabledTopicSettings,
+        enabled: isOwnedWallet, // turn off notifications for watched wallets by default
         type: relationship,
       },
     ];
+
     storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
-    subscribeWalletToAllNotificationTopics(
-      relationship,
-      NOTIFICATIONS_DEFAULT_CHAIN_ID,
-      address
-    );
+
+    if (isOwnedWallet) {
+      // only auto-subscribe to topics for owned wallets
+      subscribeWalletToAllNotificationTopics(
+        relationship,
+        NOTIFICATIONS_DEFAULT_CHAIN_ID,
+        address
+      );
+    }
   } else {
     const settings = getAllNotificationSettingsFromStorage();
     const settingsForWallet = settings.find(
@@ -157,7 +163,7 @@ export const addDefaultNotificationSettingsForWallet = (
       // update config for this wallet with new relationship and all topics enabled by default
       settings[settingsIndex].type = relationship;
       settings[settingsIndex].enabled = true;
-      settings[settingsIndex].topics = defaultTopicSettings;
+      settings[settingsIndex].topics = defaultEnabledTopicSettings;
 
       storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(settings));
 
