@@ -174,7 +174,7 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
-export const swapsPromoSheetConfig = {
+export const promoSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
