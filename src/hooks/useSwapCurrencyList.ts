@@ -84,13 +84,13 @@ const searchCurrencyList = async (searchParams: {
 
 const useSwapCurrencyList = (
   searchQuery: string,
-  chainId = MAINNET_CHAINID
+  searchChainId = MAINNET_CHAINID
 ) => {
-  const previousChainId = usePrevious(chainId);
+  const previousChainId = usePrevious(searchChainId);
 
   const searching = useMemo(
-    () => searchQuery !== '' || MAINNET_CHAINID !== chainId,
-    [chainId, searchQuery]
+    () => searchQuery !== '' || MAINNET_CHAINID !== searchChainId,
+    [searchChainId, searchQuery]
   );
   const dispatch = useDispatch();
 
@@ -115,10 +115,14 @@ const useSwapCurrencyList = (
     [inputCurrency?.network]
   );
   const isCrosschainSearch = useMemo(() => {
-    if (inputChainId && inputChainId !== chainId && crosschainSwapsEnabled) {
+    if (
+      inputChainId &&
+      inputChainId !== searchChainId &&
+      crosschainSwapsEnabled
+    ) {
       return true;
     }
-  }, [chainId, inputChainId, crosschainSwapsEnabled]);
+  }, [searchChainId, inputChainId, crosschainSwapsEnabled]);
 
   const isFavorite = useCallback(
     (address: EthereumAddress) =>
@@ -132,9 +136,10 @@ const useSwapCurrencyList = (
       // These transformations are necessary for L2 tokens to match our spec
       return (tokens || [])
         .map(token => {
-          token.address = token.networks?.[chainId]?.address || token.address;
-          if (chainId !== MAINNET_CHAINID) {
-            const network = ethereumUtils.getNetworkFromChainId(chainId);
+          token.address =
+            token.networks?.[searchChainId]?.address || token.address;
+          if (searchChainId !== MAINNET_CHAINID) {
+            const network = ethereumUtils.getNetworkFromChainId(searchChainId);
             token.type = network;
             if (token.networks[MAINNET_CHAINID]) {
               token.mainnet_address = token.networks[MAINNET_CHAINID].address;
@@ -145,7 +150,7 @@ const useSwapCurrencyList = (
         })
         .filter(({ address }) => !isFavorite(address));
     },
-    [chainId, isFavorite]
+    [searchChainId, isFavorite]
   );
 
   const getCurated = useCallback(() => {
@@ -193,10 +198,10 @@ const useSwapCurrencyList = (
       ? await searchCurrencyList({
           searchList: unfilteredFavorites as RainbowToken[],
           query: searchQuery,
-          chainId,
+          chainId: searchChainId,
         })
       : unfilteredFavorites;
-  }, [chainId, searchQuery, searching, unfilteredFavorites]);
+  }, [searchChainId, searchQuery, searching, unfilteredFavorites]);
 
   const getImportedAsset = useCallback(
     async (searchQuery, chainId): Promise<RT[] | null> => {
@@ -261,7 +266,7 @@ const useSwapCurrencyList = (
               await searchCurrencyList({
                 searchList: assetType,
                 query: searchQuery,
-                chainId,
+                chainId: searchChainId,
                 fromChainId: isCrosschainSearch && inputChainId,
               })
             )
@@ -273,7 +278,7 @@ const useSwapCurrencyList = (
               await searchCurrencyList({
                 searchList: assetType,
                 query: searchQuery,
-                chainId,
+                chainId: searchChainId,
                 fromChainId: isCrosschainSearch && inputChainId,
               })
             )
@@ -285,7 +290,7 @@ const useSwapCurrencyList = (
               await searchCurrencyList({
                 searchList: assetType,
                 query: searchQuery,
-                chainId,
+                chainId: searchChainId,
                 fromChainId: isCrosschainSearch && inputChainId,
               })
             )
@@ -297,7 +302,7 @@ const useSwapCurrencyList = (
         case 'importedAssets': {
           const importedAssetResult = await getImportedAsset(
             searchQuery,
-            chainId
+            searchChainId
           );
           if (importedAssetResult) {
             setImportedAssets(handleSearchResponse(importedAssetResult));
@@ -311,7 +316,7 @@ const useSwapCurrencyList = (
       getImportedAsset,
       handleSearchResponse,
       searchQuery,
-      chainId,
+      searchChainId,
       inputChainId,
       isCrosschainSearch,
     ]
@@ -319,7 +324,7 @@ const useSwapCurrencyList = (
 
   const search = useCallback(async () => {
     const categories: swapCurrencyListType[] =
-      chainId === MAINNET_CHAINID
+      searchChainId === MAINNET_CHAINID
         ? [
             'favoriteAssets',
             'highLiquidityAssets',
@@ -331,7 +336,7 @@ const useSwapCurrencyList = (
     await Promise.all(
       categories.map(assetType => getResultsForAssetType(assetType))
     );
-  }, [chainId, getResultsForAssetType]);
+  }, [searchChainId, getResultsForAssetType]);
 
   const slowSearch = useCallback(async () => {
     try {
@@ -359,9 +364,9 @@ const useSwapCurrencyList = (
       if (
         (searching && !wasSearching) ||
         (searching && previousSearchQuery !== searchQuery) ||
-        chainId !== previousChainId
+        searchChainId !== previousChainId
       ) {
-        if (chainId === MAINNET_CHAINID) {
+        if (searchChainId === MAINNET_CHAINID) {
           search();
           slowSearch();
         } else {
@@ -374,7 +379,7 @@ const useSwapCurrencyList = (
     };
     doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searching, searchQuery, chainId, isCrosschainSearch]);
+  }, [searching, searchQuery, searchChainId, isCrosschainSearch]);
 
   const { colors } = useTheme();
 
@@ -416,7 +421,7 @@ const useSwapCurrencyList = (
           }
         }
       }
-      if (favoriteAssets?.length && chainId === MAINNET_CHAINID) {
+      if (favoriteAssets?.length && searchChainId === MAINNET_CHAINID) {
         list.push({
           color: colors.yellowFavorite,
           data: abcSort(favoriteAssets, 'name'),
@@ -455,7 +460,7 @@ const useSwapCurrencyList = (
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
-      if (chainId === MAINNET_CHAINID) {
+      if (searchChainId === MAINNET_CHAINID) {
         const curatedAssets = getCurated();
         if (curatedAssets.length) {
           list.push({
@@ -477,7 +482,7 @@ const useSwapCurrencyList = (
     lowLiquidityAssets,
     colors.yellowFavorite,
     unfilteredFavorites,
-    chainId,
+    searchChainId,
     getCurated,
     isFavorite,
   ]);
