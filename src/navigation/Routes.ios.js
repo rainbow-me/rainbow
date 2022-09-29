@@ -27,6 +27,7 @@ import SettingsSheet from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
+import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -53,13 +54,13 @@ import {
   profileConfig,
   profilePreviewConfig,
   qrScannerConfig,
+  promoSheetConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
   settingsSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
-  swapsPromoSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -321,7 +322,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SwapsPromoSheet}
         name={Routes.SWAPS_PROMO_SHEET}
-        {...swapsPromoSheetConfig}
+        {...promoSheetConfig}
+      />
+      <NativeStack.Screen
+        component={NotificationsPromoSheet}
+        name={Routes.NOTIFICATIONS_PROMO_SHEET}
+        {...promoSheetConfig}
       />
       <NativeStack.Screen
         component={ExternalLinkWarningSheet}

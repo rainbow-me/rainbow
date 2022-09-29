@@ -41,6 +41,7 @@ const Routes = {
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
   NETWORK_SWITCHER: 'NetworkSection',
+  NOTIFICATIONS_PROMO_SHEET: 'NotificationsPromoSheet',
   PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
   PROFILE_PREVIEW_SHEET: 'ProfilePreviewSheet',
   PROFILE_SCREEN: 'ProfileScreen',
