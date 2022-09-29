@@ -1,4 +1,10 @@
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   useContacts,
   useInitializeAccountData,
@@ -22,7 +28,7 @@ import {
   saveFCMToken,
 } from '@/notifications/tokens';
 import { WALLETCONNECT_SYNC_DELAY } from '@/notifications/constants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { requestsForTopic } from '@/redux/requests';
 import { ThunkDispatch } from 'redux-thunk';
 import store, { AppState } from '@/redux/store';
@@ -54,16 +60,24 @@ type Callback = () => void;
 
 type Props = PropsWithChildren<{ walletReady: boolean }>;
 
-export const NotificationsHandler = ({ children, walletReady }: Props) => {
+export const NotificationsHandler = ({ children }: Props) => {
   const wallets = useWallets();
+  const { isLoadingAssets } = useSelector(state => ({
+    // @ts-expect-error
+    isLoadingAssets: state.data.isLoadingAssets,
+  })) as { isLoadingAssets: boolean };
+  const { walletReady } = useSelector(state => ({
+    // @ts-expect-error
+    walletReady: state.appState.walletReady,
+  })) as { walletReady: boolean };
+
   const { contacts } = useContacts();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const syncedStateRef = useRef({
     wallets,
     contacts,
   });
-  const loadAccountData = useLoadAccountData();
-  const initializeAccountData = useInitializeAccountData();
+
   const prevWalletReady = usePrevious(walletReady);
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
@@ -79,47 +93,28 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
   syncedStateRef.current.wallets = wallets;
   syncedStateRef.current.contacts = contacts;
 
-  useEffect(() => {
-    setupAndroidChannels();
-    saveFCMToken();
-    onTokenRefreshListener.current = registerTokenRefreshListener();
-    foregroundNotificationListener.current = messaging().onMessage(
-      onForegroundRemoteNotification
-    );
-    messaging().setBackgroundMessageHandler(onBackgroundRemoteNotification);
-    messaging().getInitialNotification().then(handleAppOpenedWithNotification);
-    notificationOpenedListener.current = messaging().onNotificationOpenedApp(
-      handleAppOpenedWithNotification
-    );
-    appStateListener.current = ApplicationState.addEventListener(
-      'change',
-      nextAppState => {
-        if (appState.current === 'background' && nextAppState === 'active') {
-          console.log(
-            ' ✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅ appState.current === ackground'
-          );
-          handleDeferredNotificationIfNeeded();
-        }
-      }
-    );
-    notifeeForegroundEventListener.current = notifee.onForegroundEvent(
-      handleNotificationPressed
-    );
-
-    return () => {
-      onTokenRefreshListener.current?.();
-      foregroundNotificationListener.current?.();
-      notificationOpenedListener.current?.();
-      appStateListener.current?.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (prevWalletReady !== walletReady) {
-      console.log(' ✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅ prevWalletReady !== walletReady');
-      handleDeferredNotificationIfNeeded();
+  const handleDeferredNotificationIfNeeded = useCallback(() => {
+    const notification = NotificationStorage.getDeferredNotification();
+    // console.log(
+    //   '😬😬😬😬😬😬😬😬😬😬😬😬😬😬 handleDeferredNotificationIfNeeded'
+    // );
+    // const notification = {
+    //   data: {
+    //     address: '0x5B570F0F8E2a29B7bCBbfC000f9C7b78D45b7C35',
+    //     hash:
+    //       '0xf14a8336cce135d056fa6ac320f3d252093f3e8fb9bf2a73769333aced0f5f4c',
+    //     chain: '1',
+    //     transaction_type: 'sent',
+    //     type: 'transaction',
+    //   },
+    //   title: 'title',
+    //   body: 'body',
+    // };
+    if (notification) {
+      performActionBasedOnOpenedNotificationType(notification);
+      NotificationStorage.clearDeferredNotification();
     }
-  }, [walletReady]);
+  }, []);
 
   const onForegroundRemoteNotification = (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage
@@ -153,29 +148,6 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
         return false;
       }
     }, WALLETCONNECT_SYNC_DELAY);
-  };
-
-  const handleDeferredNotificationIfNeeded = () => {
-    // const notification = NotificationStorage.getDeferredNotification();
-    console.log(
-      '😬😬😬😬😬😬😬😬😬😬😬😬😬😬 handleDeferredNotificationIfNeeded'
-    );
-    const notification = {
-      data: {
-        address: '0x5B570F0F8E2a29B7bCBbfC000f9C7b78D45b7C35',
-        hash:
-          '0xf14a8336cce135d056fa6ac320f3d252093f3e8fb9bf2a73769333aced0f5f4c',
-        chain: '1',
-        transaction_type: 'sent',
-        type: 'transaction',
-      },
-      title: 'title',
-      body: 'body',
-    };
-    if (notification) {
-      performActionBasedOnOpenedNotificationType(notification);
-      NotificationStorage.clearDeferredNotification();
-    }
   };
 
   const handleAppOpenedWithNotification = (
@@ -349,6 +321,47 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (walletReady && prevWalletReady !== walletReady) {
+      handleDeferredNotificationIfNeeded();
+    }
+  }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
+
+  useEffect(() => {
+    setupAndroidChannels();
+    saveFCMToken();
+    onTokenRefreshListener.current = registerTokenRefreshListener();
+    foregroundNotificationListener.current = messaging().onMessage(
+      onForegroundRemoteNotification
+    );
+    messaging().setBackgroundMessageHandler(onBackgroundRemoteNotification);
+    messaging().getInitialNotification().then(handleAppOpenedWithNotification);
+    notificationOpenedListener.current = messaging().onNotificationOpenedApp(
+      handleAppOpenedWithNotification
+    );
+    appStateListener.current = ApplicationState.addEventListener(
+      'change',
+      nextAppState => {
+        if (appState.current === 'background' && nextAppState === 'active') {
+          console.log(
+            ' ✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅ appState.current === ackground'
+          );
+          handleDeferredNotificationIfNeeded();
+        }
+      }
+    );
+    notifeeForegroundEventListener.current = notifee.onForegroundEvent(
+      handleNotificationPressed
+    );
+
+    return () => {
+      onTokenRefreshListener.current?.();
+      foregroundNotificationListener.current?.();
+      notificationOpenedListener.current?.();
+      appStateListener.current?.remove();
+    };
+  }, []);
 
   return children;
 };
