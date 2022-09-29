@@ -1,9 +1,13 @@
 import lang from 'i18n-js';
 import { getHumanReadableDate, hasAddableContact } from './transactions';
 import { isValidDomainFormat } from './validators';
-import { TransactionStatusTypes } from '@/entities';
+import {
+  TransactionStatus,
+  TransactionStatusTypes,
+  TransactionType,
+} from '@/entities';
 import { TransactionActions } from '@/helpers/transactionActions';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import {
@@ -11,6 +15,10 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@/utils';
+import store from '@/redux/store';
+import WalletTypes from '@/helpers/walletTypes';
+import { metadataStorage } from '@/raps/actions/swap';
+import { SwapMetadata } from '@/raps/common';
 
 const startCase = (string: string) =>
   string.charAt(0).toUpperCase() + string.slice(1);
@@ -78,7 +86,15 @@ export const getMenuItems = (item: any) => {
     };
   }
 
+  const isReadOnly =
+    store.getState().wallets.selected?.type === WalletTypes.readOnly ?? true;
+  const isRetryButtonVisible =
+    !isReadOnly &&
+    status === TransactionStatus.failed &&
+    type === TransactionType.trade;
+
   const buttons = [
+    ...(isRetryButtonVisible ? [TransactionActions.trySwapAgain] : []),
     ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
     ...(canBeCancelled ? [TransactionActions.cancel] : []),
     blockExplorerAction,
@@ -173,6 +189,24 @@ export const getCallback = (navigate: Navigate, item: any) => (
     case blockExplorerAction:
       ethereumUtils.openTransactionInBlockExplorer(hash, network);
       break;
+    case TransactionActions.trySwapAgain: {
+      const parentTxHash = hash?.includes('-') ? hash.split('-')[0] : hash;
+      const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
+      const wrappedMeta = data ? JSON.parse(data) : {};
+      let parsedMeta: undefined | SwapMetadata;
+      if (wrappedMeta?.type === 'swap') {
+        parsedMeta = wrappedMeta.data as SwapMetadata;
+      }
+      Navigation.handleAction(Routes.WALLET_SCREEN, {});
+      Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+        params: {
+          meta: parsedMeta,
+          inputAsset: parsedMeta?.from,
+          outputAsset: parsedMeta?.to,
+        },
+      });
+      break;
+    }
     default: {
       return;
     }
