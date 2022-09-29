@@ -42,11 +42,6 @@ export const useSwappableUserAssets = (params: {
           outputCurrency.type !== 'token'
             ? outputCurrency.type
             : Network.mainnet;
-        const addresses = filteredAssetsInWallet.map(asset =>
-          asset?.address === ETH_ADDRESS
-            ? ETH_ADDRESS_AGGREGATORS
-            : asset?.address
-        );
         if (outputNetwork !== network) {
           const swappableAddresses = (await walletFilter({
             addresses,
@@ -64,7 +59,7 @@ export const useSwappableUserAssets = (params: {
         }
       }
     },
-    [filteredAssetsInWallet, outputCurrency]
+    [outputCurrency]
   );
 
   const getSwappableAddressesInWallet = useCallback(async () => {
