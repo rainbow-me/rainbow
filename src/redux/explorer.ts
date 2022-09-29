@@ -300,7 +300,7 @@ export const notificationsSubscription = (address: string) => (
         address,
         action: 'subscribe',
       },
-      scope: 'notifications',
+      scope: ['notifications'],
     },
   ];
   addressSocket?.emit(...payload);
