@@ -9,6 +9,8 @@ import { nonceManagerLoadState } from '@/redux/nonceManager';
 import { AppState } from '@/redux/store';
 import { promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
+import sentry from '@/utils/sentry';
+import { captureException } from '@sentry/react-native';
 
 const loadWalletBalanceNamesToCache = () =>
   queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
@@ -25,13 +27,20 @@ export default function useLoadGlobalLateData() {
       return false;
     }
     logger.sentry('Load wallet global late data');
-    const promises = [];
+    const promises: any[] = [];
     const p1 = loadWalletBalanceNamesToCache();
     const p2 = dispatch(nonceManagerLoadState());
     promises.push(p1, p2);
 
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Promise<void> | ((dispatch: Dis... Remove this comment to see the full error message
-    return promiseUtils.PromiseAllWithFails(promises);
+    const a = () => {
+      try {
+        promiseUtils.PromiseAllWithFails(promises);
+      } catch (e) {
+        logger.error('ERROR on loadGlobalData', JSON.stringify(e));
+        captureException('ERROR on loadGlobalData', JSON.stringify(e));
+      }
+    };
+    return a;
   }, [dispatch, walletReady]);
 
   return loadGlobalData;
