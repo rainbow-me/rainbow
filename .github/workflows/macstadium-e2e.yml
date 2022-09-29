@@ -61,7 +61,7 @@ jobs:
         run: ./node_modules/.bin/detox build --configuration ios.sim.release
 
       - name: Run iOS e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
+        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit --runInBand
 
       - name: Send success message to slack
         id: slack-success-msg
