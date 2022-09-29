@@ -147,12 +147,14 @@ const unlock = async (
       assetAddress,
       contractAddress,
     });
+    const contractAllowsPermit =
+      contractAddress === RAINBOW_ROUTER_CONTRACT_ADDRESS;
     gasLimit = await estimateApprove(
       accountAddress,
       assetAddress,
       contractAddress,
       chainId,
-      contractAddress === RAINBOW_ROUTER_CONTRACT_ADDRESS
+      contractAllowsPermit
     );
   } catch (e) {
     logger.sentry(`[${actionName}] Error estimating gas`);
