@@ -132,7 +132,6 @@ export const showTransactionDetailsSheet = (
   accountAddress: string
 ) => {
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
-
   const network = transactionDetails.network ?? Network.mainnet;
   const parentTxHash = hash?.includes('-') ? hash.split('-')[0] : hash;
   const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
@@ -149,7 +148,6 @@ export const showTransactionDetailsSheet = (
     status === TransactionStatus.failed &&
     type === TransactionType.trade;
 
-  console.log(parsedMeta, hash, metadataStorage.getAllKeys());
   const date = getHumanReadableDate(minedAt);
   const isSent =
     status === TransactionStatusTypes.sending ||

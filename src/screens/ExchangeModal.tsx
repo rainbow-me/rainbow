@@ -690,6 +690,7 @@ export default function ExchangeModal({
             route: source,
           },
         };
+
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
         logger.log('[exchange - handle submit] executed rap!');

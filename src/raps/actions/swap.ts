@@ -278,7 +278,6 @@ const swap = async (
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
-  console.log(newTransaction, parameters.meta, 'GGGGGG');
   if (parameters.meta && swap?.hash) {
     metadataStorage.set(
       swap.hash.toLowerCase(),
