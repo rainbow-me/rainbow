@@ -215,7 +215,6 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     notification: MinimalNotification
   ) => {
     const type = notification?.data?.type;
-    console.log(' 😬😬😬😬😬 performActionBasedOnOpenedNotificationType');
     if (type === NotificationTypes.transaction) {
       const untypedData = notification?.data;
       if (
@@ -235,10 +234,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
 
       let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
-        // await delay(5000);
         walletAddress = await wallets.switchToWalletWithAddress(data.address);
-        await loadAccountData(Network.mainnet);
-        initializeAccountData();
       }
       if (!walletAddress) {
         return;

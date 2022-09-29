@@ -37,7 +37,7 @@ export default function useLoadGlobalLateData() {
         promiseUtils.PromiseAllWithFails(promises);
       } catch (e) {
         logger.error('ERROR on loadGlobalData', JSON.stringify(e));
-        captureException('ERROR on loadGlobalData: ' + JSON.stringify(e));
+        captureException(e);
       }
     };
     return a;

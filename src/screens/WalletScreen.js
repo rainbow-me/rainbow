@@ -42,6 +42,7 @@ import { emitChartsRequest, emitPortfolioRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { delay } from '@/helpers/utilities';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
