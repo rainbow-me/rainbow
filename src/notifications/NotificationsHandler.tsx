@@ -167,7 +167,9 @@ export const NotificationsHandler = ({ children }: Props) => {
 
   const handleNotificationPressed = (event: NotifeeEvent) => {
     if (event.type === EventType.PRESS) {
-      handleOpenedNotification(event.detail.notification);
+      InteractionManager.runAfterInteractions(() => {
+        handleOpenedNotification(event.detail.notification);
+      });
     }
   };
 
