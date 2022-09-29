@@ -15,6 +15,9 @@ beforeAll(async () => {
     await exec(
       'yarn adb-all shell cmd overlay enable com.android.internal.systemui.navbar.threebutton'
     );
+    await exec(
+      'yarn adb-all uninstall me.rainbow'
+    );
   }
   await device.clearKeychain();
 
