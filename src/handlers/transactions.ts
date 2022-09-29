@@ -5,11 +5,11 @@ import { metadataClient } from '@/apollo/client';
 import { CONTRACT_FUNCTION } from '@/apollo/queries';
 import {
   RainbowTransaction,
+  TransactionStatus,
   TransactionStatusTypes,
   TransactionDirection,
-  TransactionStatus,
-  TransactionType,
   TransactionTypes,
+  TransactionType,
   ZerionTransaction,
 } from '@/entities';
 import store from '@/redux/store';
@@ -46,6 +46,7 @@ import { IS_TEST } from '@/env';
 import { API_BASE_URL } from '@rainbow-me/swaps';
 import { metadataStorage } from '@/raps/actions/swap';
 import { SwapMetadata } from '@/raps/common';
+import WalletTypes from '@/helpers/walletTypes';
 import { analytics } from '@/analytics';
 
 const flashbotsApi = new RainbowFetchClient({
@@ -134,15 +135,19 @@ export const showTransactionDetailsSheet = (
 
   const network = transactionDetails.network ?? Network.mainnet;
   const parentTxHash = hash?.includes('-') ? hash.split('-')[0] : hash;
-  const wrappedMeta = JSON.parse(
-    metadataStorage.getString(parentTxHash?.toLowerCase() ?? '') ?? ''
-  );
+  const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
+  const wrappedMeta = data ? JSON.parse(data) : {};
   let parsedMeta: undefined | SwapMetadata;
   if (wrappedMeta?.type === 'swap') {
     parsedMeta = wrappedMeta.data as SwapMetadata;
   }
 
-  const isRetryButtonVisible = true; // TODO
+  const isReadOnly =
+    store.getState().wallets.selected?.type === WalletTypes.readOnly ?? true;
+  const isRetryButtonVisible =
+    !isReadOnly &&
+    status === TransactionStatus.failed &&
+    type === TransactionType.trade;
 
   console.log(parsedMeta, hash, metadataStorage.getAllKeys());
   const date = getHumanReadableDate(minedAt);
