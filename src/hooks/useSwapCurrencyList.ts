@@ -3,7 +3,6 @@ import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
 import { Contract, ethers } from 'ethers';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
@@ -31,6 +30,7 @@ import { ethereumUtils, filterList, logger } from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import { IS_TEST } from '@/env';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -434,7 +434,7 @@ const useSwapCurrencyList = (
           data: verifiedAssetsWithImport,
           key: 'verified',
           title: tokenSectionTypes.verifiedTokenSection,
-          useGradientText: IS_TESTING !== 'true',
+          useGradientText: !IS_TEST,
         });
       }
       if (highLiquidityAssetsWithImport?.length) {
@@ -467,7 +467,7 @@ const useSwapCurrencyList = (
             data: curatedAssets,
             key: 'curated',
             title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING !== 'true',
+            useGradientText: !IS_TEST,
           });
         }
       }
