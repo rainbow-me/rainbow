@@ -17,10 +17,7 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@/utils/profileUtils';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({
@@ -158,18 +155,9 @@ const ContactRow = (
     address,
   ]);
 
-  const emojiAvatar = profilesEnabled
-    ? emoji
-    : avatar || nickname || label || ensName;
+  const emojiAvatar = avatar || nickname || label || ensName;
 
-  const colorIndex = useMemo(
-    () => (address ? addressHashedColorIndex(address) : 0),
-    [address]
-  );
-
-  const bgColor = profilesEnabled
-    ? colors.avatarBackgrounds[colorIndex || 0]
-    : color;
+  const bgColor = color;
 
   return (
     <ButtonPressAnimation
