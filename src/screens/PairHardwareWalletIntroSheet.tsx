@@ -67,14 +67,6 @@ export function PairHardwareWalletIntroSheet() {
           />
         </Inset>
       }
-    >
-      <Inset top="52px">
-        <ImgixImage
-          source={ledgerNano as Source}
-          style={{ width: 216, height: 292 }}
-          size={292}
-        />
-      </Inset>
-    </Layout>
+    />
   );
 }
