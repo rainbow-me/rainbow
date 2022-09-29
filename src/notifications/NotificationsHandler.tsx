@@ -1,5 +1,11 @@
 import { PropsWithChildren, useEffect, useRef } from 'react';
-import { useContacts, usePrevious, useWallets } from '@/hooks';
+import {
+  useContacts,
+  useInitializeAccountData,
+  useLoadAccountData,
+  usePrevious,
+  useWallets,
+} from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
   FirebaseMessagingTypes,
@@ -39,9 +45,10 @@ import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/tran
 import { TransactionDirection, TransactionStatus } from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
-import { isZero } from '@/helpers/utilities';
+import { delay, isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
+import { Network } from '@/helpers';
 
 type Callback = () => void;
 
@@ -55,6 +62,8 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     wallets,
     contacts,
   });
+  const loadAccountData = useLoadAccountData();
+  const initializeAccountData = useInitializeAccountData();
   const prevWalletReady = usePrevious(walletReady);
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
@@ -86,6 +95,9 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       'change',
       nextAppState => {
         if (appState.current === 'background' && nextAppState === 'active') {
+          console.log(
+            ' ✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅ appState.current === ackground'
+          );
           handleDeferredNotificationIfNeeded();
         }
       }
@@ -104,6 +116,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
 
   useEffect(() => {
     if (prevWalletReady !== walletReady) {
+      console.log(' ✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅ prevWalletReady !== walletReady');
       handleDeferredNotificationIfNeeded();
     }
   }, [walletReady]);
@@ -143,7 +156,22 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
   };
 
   const handleDeferredNotificationIfNeeded = () => {
-    const notification = NotificationStorage.getDeferredNotification();
+    // const notification = NotificationStorage.getDeferredNotification();
+    console.log(
+      '😬😬😬😬😬😬😬😬😬😬😬😬😬😬 handleDeferredNotificationIfNeeded'
+    );
+    const notification = {
+      data: {
+        address: '0x5B570F0F8E2a29B7bCBbfC000f9C7b78D45b7C35',
+        hash:
+          '0xf14a8336cce135d056fa6ac320f3d252093f3e8fb9bf2a73769333aced0f5f4c',
+        chain: '1',
+        transaction_type: 'sent',
+        type: 'transaction',
+      },
+      title: 'title',
+      body: 'body',
+    };
     if (notification) {
       performActionBasedOnOpenedNotificationType(notification);
       NotificationStorage.clearDeferredNotification();
@@ -187,7 +215,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     notification: MinimalNotification
   ) => {
     const type = notification?.data?.type;
-
+    console.log(' 😬😬😬😬😬 performActionBasedOnOpenedNotificationType');
     if (type === NotificationTypes.transaction) {
       const untypedData = notification?.data;
       if (
@@ -207,7 +235,10 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
 
       let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
+        // await delay(5000);
         walletAddress = await wallets.switchToWalletWithAddress(data.address);
+        await loadAccountData(Network.mainnet);
+        initializeAccountData();
       }
       if (!walletAddress) {
         return;
