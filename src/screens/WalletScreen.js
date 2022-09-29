@@ -207,7 +207,7 @@ export default function WalletScreen() {
 
   useEffect(() => {
     if (walletReady && assetsSocket) {
-      loadAccountLateData();
+      // loadAccountLateData();
       loadGlobalLateData();
       initializeDiscoverData();
     }
