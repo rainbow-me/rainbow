@@ -59,22 +59,19 @@ export const tokenSearch = async (searchParams: {
 
 export const walletFilter = async (params: {
   addresses: EthereumAddress[];
-  departureChainId: number;
-  destinationChainId: number;
+  fromChainId: number;
+  toChainId: number;
 }) => {
   try {
-    const { addresses, destinationChainId, departureChainId } = params;
-    const filteredAddresses = await tokenSearchApi.post(
-      `/${departureChainId}`,
-      {
-        addresses,
-        toChainId: destinationChainId,
-      }
-    );
+    const { addresses, fromChainId, toChainId } = params;
+    const filteredAddresses = await tokenSearchApi.post(`/${fromChainId}`, {
+      addresses,
+      toChainId,
+    });
     return filteredAddresses?.data?.data || [];
   } catch (e) {
     logger.error(
-      `An error occurred while filter wallet addresses: destinationChainId: ${params.destinationChainId} -> departureChainId: ${params.departureChainId}: ${e}`
+      `An error occurred while filter wallet addresses: toChainId: ${params.toChainId} -> fromChainId: ${params.fromChainId}: ${e}`
     );
   }
 };
