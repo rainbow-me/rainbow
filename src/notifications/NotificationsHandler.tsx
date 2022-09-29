@@ -39,6 +39,7 @@ import Routes from '@rainbow-me/routes';
 import {
   AppState as ApplicationState,
   AppStateStatus,
+  InteractionManager,
   NativeEventSubscription,
 } from 'react-native';
 import notifee, {
@@ -46,7 +47,7 @@ import notifee, {
   EventType,
 } from '@notifee/react-native';
 import { getProviderForNetwork } from '@/handlers/web3';
-import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { ethereumUtils, isLowerCaseMatch, logger } from '@/utils';
 import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/transaction';
 import { TransactionDirection, TransactionStatus } from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
@@ -206,6 +207,7 @@ export const NotificationsHandler = ({ children }: Props) => {
 
       let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
+        logger.sentry('💰💰💰💰💰💰💰💰💰💰💰💰💰 switchToWalletWithAddress');
         walletAddress = await wallets.switchToWalletWithAddress(data.address);
       }
       if (!walletAddress) {
@@ -324,7 +326,9 @@ export const NotificationsHandler = ({ children }: Props) => {
 
   useEffect(() => {
     if (walletReady && prevWalletReady !== walletReady) {
-      handleDeferredNotificationIfNeeded();
+      InteractionManager.runAfterInteractions(() => {
+        handleDeferredNotificationIfNeeded();
+      });
     }
   }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
 
