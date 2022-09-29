@@ -45,8 +45,8 @@ export const useSwappableUserAssets = (params: {
         if (outputNetwork !== network) {
           const swappableAddresses = (await walletFilter({
             addresses,
-            departureChainId: ethereumUtils.getChainIdFromNetwork(network),
-            destinationChainId: ethereumUtils.getChainIdFromNetwork(
+            fromChainId: ethereumUtils.getChainIdFromNetwork(network),
+            toChainId: ethereumUtils.getChainIdFromNetwork(
               outputNetwork as Network
             ),
           })) as string[];
