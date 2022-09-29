@@ -105,6 +105,24 @@ export const useSwappableUserAssets = (params: {
     [filteredAssetsInWallet, swappableAssets]
   );
 
+  const unswappableUserAssets = useMemo(
+    () =>
+      filteredAssetsInWallet.filter(asset => {
+        const assetNetwork = asset?.network || (Network.mainnet as Network);
+        const assetAddress =
+          asset?.address === ETH_ADDRESS
+            ? ETH_ADDRESS_AGGREGATORS
+            : asset?.address;
+        // we place our testnets (goerli) in the Network type which creates this type issue
+        // @ts-ignore
+        const isNotSwappable = !swappableAssets[assetNetwork]?.includes(
+          assetAddress
+        );
+        return isNotSwappable;
+      }),
+    [filteredAssetsInWallet, swappableAssets]
+  );
+
   useEffect(() => {
     getSwappableAddressesInWallet();
   }, [getSwappableAddressesInWallet]);
@@ -112,10 +130,12 @@ export const useSwappableUserAssets = (params: {
   if (!outputCurrency) {
     return {
       swappableUserAssets: filteredAssetsInWallet,
+      unswappableUserAssets: [],
     };
   }
 
   return {
     swappableUserAssets,
+    unswappableUserAssets,
   };
 };
