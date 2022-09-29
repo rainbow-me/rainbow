@@ -208,8 +208,8 @@ export default function WalletScreen() {
   useEffect(() => {
     if (walletReady && assetsSocket) {
       // loadAccountLateData();
-      loadGlobalLateData();
-      initializeDiscoverData();
+      // loadGlobalLateData();
+      // initializeDiscoverData();
     }
   }, [
     assetsSocket,
