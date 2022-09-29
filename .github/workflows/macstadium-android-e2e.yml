@@ -52,7 +52,7 @@ jobs:
         run: ./node_modules/.bin/detox build --configuration android.emu.release
 
       - name: Run Android e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration android.emu.release --forceExit
+        run: ./node_modules/.bin/detox test -R 5 --configuration android.emu.release --forceExit --runInBand
 
       - name: Send success message to slack
         id: slack-success-msg
