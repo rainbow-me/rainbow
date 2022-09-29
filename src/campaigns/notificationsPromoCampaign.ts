@@ -25,17 +25,9 @@ export const notificationsCampaignAction = async () => {
   }, 1000);
 };
 
-export enum NotificationsPromoCampaignExclusion {
-  firstLaunch = 'first_launch',
-}
-
-export const notificationsCampaignCheck = async (): Promise<
-  NotificationsPromoCampaignExclusion | GenericCampaignCheckResponse
-> => {
+export const notificationsCampaignCheck = async (): Promise<GenericCampaignCheckResponse> => {
   const hasShownCampaign = mmkv.getBoolean(CampaignKey.notificationsLaunch);
-
-  // we only want to show this campaign once
-  if (hasShownCampaign) return GenericCampaignCheckResponse.nonstarter;
+  const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
 
   const {
     selected: currentWallet,
@@ -43,12 +35,15 @@ export const notificationsCampaignCheck = async (): Promise<
     selected: RainbowWallet | undefined;
   } = store.getState().wallets;
 
-  // if there's no wallet then stop
-  if (!currentWallet) return GenericCampaignCheckResponse.nonstarter;
-
-  const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
-
-  if (isFirstLaunch) return NotificationsPromoCampaignExclusion.firstLaunch;
+  /**
+   * stop if:
+   * there's no wallet
+   * the campaign has already been activated
+   * the user is launching Rainbow for the first time
+   */
+  if (!currentWallet || hasShownCampaign || isFirstLaunch) {
+    return GenericCampaignCheckResponse.nonstarter;
+  }
 
   NotificationsPromoCampaign.action();
   return GenericCampaignCheckResponse.activated;
@@ -58,5 +53,5 @@ export const NotificationsPromoCampaign: Campaign = {
   action: async () => await notificationsCampaignAction(),
   campaignKey: CampaignKey.notificationsLaunch,
   check: async () => await notificationsCampaignCheck(),
-  checkType: CampaignCheckType.deviceOrWallet,
+  checkType: CampaignCheckType.device,
 };

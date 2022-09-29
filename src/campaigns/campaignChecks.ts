@@ -2,10 +2,7 @@ import {
   SwapsPromoCampaign,
   SwapsPromoCampaignExclusion,
 } from './swapsPromoCampaign';
-import {
-  NotificationsPromoCampaign,
-  NotificationsPromoCampaignExclusion,
-} from './notificationsPromoCampaign';
+import { NotificationsPromoCampaign } from './notificationsPromoCampaign';
 import { analytics } from '@/analytics';
 import { logger } from '@/utils';
 
@@ -27,8 +24,7 @@ export enum GenericCampaignCheckResponse {
 
 export type CampaignCheckResponse =
   | GenericCampaignCheckResponse
-  | SwapsPromoCampaignExclusion
-  | NotificationsPromoCampaignExclusion;
+  | SwapsPromoCampaignExclusion;
 
 export interface Campaign {
   action(): Promise<void>; // Function to call on activating the campaign
@@ -60,8 +56,6 @@ export const runCampaignChecks = async (): Promise<boolean> => {
         type: campaign.checkType,
       });
     }
-
-    return false;
   }
   return false;
 };

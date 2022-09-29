@@ -1132,7 +1132,7 @@
           "title": "Flashbots protection",
           "description": "Price protection, plus no fees on failed swaps. Enable in swap settings."
         },
-        "header": "Notifications on Rainbow",
+        "header": "Swaps on Rainbow",
         "subheader": "REINTRODUCING"
       },
       "notifications_launch": {
@@ -1150,7 +1150,7 @@
           "title": "Flashbots protection",
           "description": "Price protection, plus no fees on failed swaps. Enable in swap settings."
         },
-        "header": "Swaps on Rainbow",
+        "header": "Notifications on Rainbow",
         "subheader": "REINTRODUCING"
       }
     },
