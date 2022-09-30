@@ -59,7 +59,6 @@ export default function useMagicAutofocus(
       cancel = false;
       return;
     }
-    console.log('TRIGGETING');
 
     if (!lastFocusedInputHandle.current) {
       return focusTextInput(defaultAutofocusInputRef.current);
