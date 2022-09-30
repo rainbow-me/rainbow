@@ -117,13 +117,13 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     }, WALLETCONNECT_SYNC_DELAY);
   };
 
-  const handleDeferredNotificationIfNeeded = () => {
+  const handleDeferredNotificationIfNeeded = useCallback(() => {
     const notification = NotificationStorage.getDeferredNotification();
     if (notification) {
       performActionBasedOnOpenedNotificationType(notification);
       NotificationStorage.clearDeferredNotification();
     }
-  };
+  }, []);
 
   const handleAppOpenedWithNotification = (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage | null

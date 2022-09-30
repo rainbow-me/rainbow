@@ -140,19 +140,22 @@ export const addDefaultNotificationSettingsForWallet = (
   if (!existingSettings) {
     const isOwnedWallet = relationship === NotificationRelationship.OWNER;
     const settings = getAllNotificationSettingsFromStorage();
+    const groupSettings = getExistingGroupSettingsFromStorage();
+    const notificationsEnabled =
+      isOwnedWallet && groupSettings[NotificationRelationship.OWNER];
     const newSettings = [
       ...settings,
       {
         address,
         topics: defaultEnabledTopicSettings,
-        enabled: isOwnedWallet, // turn off notifications for watched wallets by default
+        enabled: notificationsEnabled, // turn off notifications for watched wallets by default
         type: relationship,
       },
     ];
 
     storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
 
-    if (isOwnedWallet) {
+    if (notificationsEnabled) {
       // only auto-subscribe to topics for owned wallets
       subscribeWalletToAllNotificationTopics(
         relationship,
