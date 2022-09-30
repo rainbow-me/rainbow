@@ -11,7 +11,7 @@ jobs:
   android-e2e:
     if: startsWith(github.head_ref, 'android-ci')
     # The type of runner that the job will run on
-    runs-on: ["self-hosted", "android"]
+    runs-on: ["self-hosted", "CI-9"]
     # Cancel current builds if there's a newer commit on the same branch
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
