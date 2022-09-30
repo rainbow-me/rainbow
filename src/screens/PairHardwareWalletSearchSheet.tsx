@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
@@ -7,9 +7,80 @@ import { Source } from 'react-native-fast-image';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import TintButton from '@/components/buttons/TintButton';
 import { useNavigation } from '@/navigation';
+import { PermissionsAndroid, Alert } from 'react-native';
+import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+import { Subscription } from '@ledgerhq/hw-transport';
+import { IS_ANDROID } from '@/env';
 
 export function PairHardwareWalletSearchSheet() {
   const { dangerouslyGetParent } = useNavigation();
+
+  const requestBLEPermissions = async () => {
+    try {
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      );
+      await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+      ]);
+      console.log('android bluetooth permissions requested succesfully!');
+    } catch (e) {
+      console.log('android bluetooth permissions error: ', e);
+    }
+  };
+  const [deviceFound, setDeviceFound] = useState(false);
+
+  const [observe, setObserve] = useState<Subscription>();
+  const [listen, setListen] = useState<Subscription>();
+
+  useEffect(() => {
+    const handlePair = () => {
+      const _observe = TransportBLE.observeState({
+        next: (e: any) => {
+          if (e.available) {
+            console.log('observing: ', e);
+            const _listen = TransportBLE.listen({
+              complete: () => {},
+              next: e => {
+                if (!deviceFound) {
+                  if (e.type === 'add') {
+                    setDeviceFound(true);
+                    const device = e.descriptor;
+                    console.log('device found:', {
+                      deviceId: device.id,
+                      name: device.name,
+                    });
+                    Alert.alert('Device Found!', device.name);
+                  }
+                }
+              },
+              error: error => {
+                console.log('transport listen error: ', error);
+                if (IS_ANDROID) {
+                  requestBLEPermissions();
+                }
+              },
+            });
+            setListen(_listen);
+          } else {
+            if (e.type === 'PoweredOff') {
+              console.log('bluetooth is turned off');
+            }
+          }
+        },
+        complete: () => {},
+        error: () => {},
+      });
+      setObserve(_observe);
+    };
+    handlePair();
+    return () => {
+      console.log('unsubscribing:');
+      observe?.unsubscribe();
+      listen?.unsubscribe();
+    };
+  }, []);
 
   return (
     <Box background="surfaceSecondary" height="full">

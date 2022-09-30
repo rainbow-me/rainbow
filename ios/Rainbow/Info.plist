@@ -118,7 +118,7 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Rainbow</string>
+	<string>Find and pair a Ledger Nano X</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSCalendarsUsageDescription</key>
