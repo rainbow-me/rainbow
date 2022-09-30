@@ -48,25 +48,39 @@ export const getAllNotificationSettingsFromStorage = () => {
   return [];
 };
 
+export const getExistingGroupSettingsFromStorage = () => {
+  const data = storage.getString(WALLET_GROUPS_STORAGE_KEY);
+
+  if (data) return JSON.parse(data);
+  return [];
+};
+
 /* 
   Hook to constantly listen to notification settings.
 */
 export const useAllNotificationSettingsFromStorage = () => {
   const data = getAllNotificationSettingsFromStorage();
+  const existingGroupSettingsData = getExistingGroupSettingsFromStorage();
 
   const [notificationSettings, setNotificationSettings] = useState<
     WalletNotificationSettingsType[]
   >(data);
+  const [existingGroupSettings, setExistingGroupSettings] = useState<{
+    [key: ValueOf<typeof NotificationRelationship>]: boolean;
+  }>(existingGroupSettingsData);
   const listener = storage.addOnValueChangedListener(changedKey => {
     if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
       const newSettings = storage.getString(changedKey);
       newSettings && setNotificationSettings(JSON.parse(newSettings));
+    } else if (changedKey === WALLET_GROUPS_STORAGE_KEY) {
+      const newSettings = storage.getString(changedKey);
+      newSettings && setExistingGroupSettings(JSON.parse(newSettings));
     }
   });
   useEffect(() => () => {
     listener.remove();
   });
-  return { notificationSettings };
+  return { notificationSettings, existingGroupSettings };
 };
 
 /*
@@ -260,25 +274,61 @@ export const updateSettingsForWallets = (
   Provides a function for updating the group settings.
 */
 export const useWalletGroupNotificationSettings = () => {
-  const existingGroupSettings = JSON.parse(
-    // @ts-expect-error: MMKV
-    storage.getString(WALLET_GROUPS_STORAGE_KEY)
-  );
-  const { notificationSettings } = useAllNotificationSettingsFromStorage();
+  const {
+    notificationSettings,
+    existingGroupSettings,
+  } = useAllNotificationSettingsFromStorage();
 
-  const ownedWallets = notificationSettings.filter(
-    (wallet: WalletNotificationSettingsType) =>
-      wallet.type === NotificationRelationship.OWNER
-  );
-  const watchedWallets = notificationSettings.filter(
-    (wallet: WalletNotificationSettingsType) =>
-      wallet.type === NotificationRelationship.WATCHER
-  );
-  const [ownerEnabled, setOwnerEnabled] = useState(
-    existingGroupSettings[NotificationRelationship.OWNER]
-  );
-  const [watcherEnabled, setWatcherEnabled] = useState(
-    existingGroupSettings[NotificationRelationship.WATCHER]
+  const ownerEnabled = existingGroupSettings[NotificationRelationship.OWNER];
+  const watcherEnabled =
+    existingGroupSettings[NotificationRelationship.WATCHER];
+
+  const {
+    lastWatchedWalletEnabled,
+    lastOwnedWalletEnabled,
+    allWatchedWalletsDisabled,
+    allOwnedWalletsDisabled,
+    watchedWallets,
+    ownedWallets,
+  } = useMemo(() => {
+    const ownedWallets = notificationSettings.filter(
+      (wallet: WalletNotificationSettingsType) =>
+        wallet.type === NotificationRelationship.OWNER
+    );
+    const watchedWallets = notificationSettings.filter(
+      (wallet: WalletNotificationSettingsType) =>
+        wallet.type === NotificationRelationship.WATCHER
+    );
+    const allOwnedWalletsDisabled = ownedWallets.reduce(
+      (prevWalletDisabled, wallet) => prevWalletDisabled && !wallet.enabled,
+      true
+    );
+
+    const allWatchedWalletsDisabled = watchedWallets.reduce(
+      (prevWalletDisabled, wallet) => prevWalletDisabled && !wallet.enabled,
+      true
+    );
+    const lastOwnedWalletEnabled =
+      ownedWallets.filter(wallet => wallet.enabled).length === 1;
+    const lastWatchedWalletEnabled =
+      watchedWallets.filter(wallet => wallet.enabled).length === 1;
+
+    return {
+      lastWatchedWalletEnabled,
+      lastOwnedWalletEnabled,
+      allWatchedWalletsDisabled,
+      allOwnedWalletsDisabled,
+      watchedWallets,
+      ownedWallets,
+    };
+  }, [notificationSettings]);
+
+  const updateSectionSettings = useCallback(
+    (options: object) => {
+      const newSettings = { ...existingGroupSettings, ...options };
+      storage.set(WALLET_GROUPS_STORAGE_KEY, JSON.stringify(newSettings));
+    },
+    [existingGroupSettings]
   );
 
   const updateGroupSettings = useCallback(
@@ -287,8 +337,6 @@ export const useWalletGroupNotificationSettings = () => {
       const newOwnerEnabled = newSettings[NotificationRelationship.OWNER];
       const newWatcherEnabled = newSettings[NotificationRelationship.WATCHER];
 
-      setOwnerEnabled(newOwnerEnabled);
-      setWatcherEnabled(newWatcherEnabled);
       storage.set(WALLET_GROUPS_STORAGE_KEY, JSON.stringify(newSettings));
 
       if (newOwnerEnabled !== ownerEnabled) {
@@ -316,26 +364,22 @@ export const useWalletGroupNotificationSettings = () => {
     ]
   );
 
-  const isOwnerEnabled = useMemo(() => {
-    const allWalletsDisabled = ownedWallets.reduce(
-      (prevWalletDisabled, wallet) => prevWalletDisabled && !wallet.enabled,
-      true
-    );
-    return ownerEnabled && !allWalletsDisabled;
-  }, [ownedWallets, ownerEnabled]);
-
-  const isWatcherEnabled = useMemo(() => {
-    const allWalletsDisabled = watchedWallets.reduce(
-      (prevWalletDisabled, wallet) => prevWalletDisabled && !wallet.enabled,
-      true
-    );
-    return watcherEnabled && !allWalletsDisabled;
-  }, [watchedWallets, watcherEnabled]);
+  const isOwnerEnabled = useMemo(
+    () => ownerEnabled && !allOwnedWalletsDisabled,
+    [allOwnedWalletsDisabled, ownerEnabled]
+  );
+  const isWatcherEnabled = useMemo(
+    () => watcherEnabled && !allWatchedWalletsDisabled,
+    [allWatchedWalletsDisabled, watcherEnabled]
+  );
 
   return {
     ownerEnabled: isOwnerEnabled,
     watcherEnabled: isWatcherEnabled,
+    lastOwnedWalletEnabled,
+    lastWatchedWalletEnabled,
     updateGroupSettings,
+    updateSectionSettings,
   };
 };
 

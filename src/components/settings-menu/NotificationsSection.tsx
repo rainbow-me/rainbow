@@ -33,7 +33,6 @@ type WalletRowProps = {
   groupOff: boolean;
   isTestnet: boolean;
   wallet: RainbowAccount;
-  toggleNotifications: () => void;
   ens: string;
   notificationSettings: WalletNotificationSettingsType[];
 };
@@ -96,7 +95,6 @@ const WalletRow = ({
   wallet,
   groupOff,
   isTestnet,
-  toggleNotifications,
   notificationSettings,
   ens,
 }: WalletRowProps) => {
@@ -120,10 +118,9 @@ const WalletRow = ({
       navigate(Routes.WALLET_NOTIFICATIONS_SETTINGS, {
         title: name,
         address,
-        toggleNotifications,
       });
     },
-    [navigate, toggleNotifications]
+    [navigate]
   );
 
   const rowEnabled = useMemo(() => {
@@ -386,7 +383,6 @@ const NotificationsSection = () => {
                   isTestnet={isTestnet}
                   ens={walletNames[wallet.address]}
                   notificationSettings={notificationSettings}
-                  toggleNotifications={toggleAllOwnedNotificationsFromWallet}
                 />
               ))}
             </Menu>
@@ -424,7 +420,6 @@ const NotificationsSection = () => {
                   isTestnet={isTestnet}
                   ens={walletNames[wallet.address]}
                   notificationSettings={notificationSettings}
-                  toggleNotifications={toggleAllWatchedNotificationsFromWallet}
                 />
               ))}
             </Menu>

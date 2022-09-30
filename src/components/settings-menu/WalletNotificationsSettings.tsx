@@ -23,7 +23,6 @@ import {
 type RouteParams = {
   WalletNotificationsSettings: {
     address: string;
-    toggleNotifications: () => void;
   };
 };
 
@@ -32,31 +31,50 @@ const WalletNotificationsSettings = () => {
   const route = useRoute<
     RouteProp<RouteParams, 'WalletNotificationsSettings'>
   >();
-  const { address, toggleNotifications } = route.params;
+  const { address } = route.params;
   const { notifications, updateSettings } = useNotificationSettings(address);
 
   const {
     ownerEnabled,
     watcherEnabled,
-    updateGroupSettings,
+    lastOwnedWalletEnabled,
+    lastWatchedWalletEnabled,
+    updateSectionSettings,
   } = useWalletGroupNotificationSettings();
 
-  const { notificationsEnabled, notificationsSectionEnabled } = useMemo(() => {
+  const {
+    notificationsEnabled,
+    notificationsSectionEnabled,
+    lastWalletEnabled,
+  } = useMemo(() => {
     const ownedWallet = notifications.type === NotificationRelationship.OWNER;
     const notificationsSectionEnabled = ownedWallet
       ? ownerEnabled
       : watcherEnabled;
+    const lastWalletEnabled = ownedWallet
+      ? lastOwnedWalletEnabled
+      : lastWatchedWalletEnabled;
     return {
       notificationsEnabled:
         notificationsSectionEnabled && notifications.enabled,
       notificationsSectionEnabled,
+      lastWalletEnabled,
     };
-  }, [notifications.type, notifications.enabled, ownerEnabled, watcherEnabled]);
+  }, [
+    notifications.type,
+    notifications.enabled,
+    ownerEnabled,
+    watcherEnabled,
+    lastOwnedWalletEnabled,
+    lastWatchedWalletEnabled,
+  ]);
 
   const toggleAllowNotifications = useCallback(() => {
-    if (!notificationsSectionEnabled) {
-      toggleNotifications();
-      updateGroupSettings({
+    if (
+      !notificationsSectionEnabled ||
+      (notificationsSectionEnabled && lastWalletEnabled)
+    ) {
+      updateSectionSettings({
         [notifications.type]: !notificationsEnabled,
       });
     }
@@ -70,11 +88,11 @@ const WalletNotificationsSettings = () => {
     );
   }, [
     notificationsSectionEnabled,
+    lastWalletEnabled,
     updateSettings,
     notificationsEnabled,
     notifications,
-    toggleNotifications,
-    updateGroupSettings,
+    updateSectionSettings,
   ]);
 
   const toggleTopic = useCallback(
