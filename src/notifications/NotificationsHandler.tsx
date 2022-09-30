@@ -45,7 +45,7 @@ import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/tran
 import { TransactionDirection, TransactionStatus } from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
-import { isZero } from '@/helpers/utilities';
+import { delay, isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
 import { notificationsSubscription } from '@/redux/explorer';
@@ -117,9 +117,11 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     }, WALLETCONNECT_SYNC_DELAY);
   };
 
-  const handleDeferredNotificationIfNeeded = useCallback(() => {
+  const handleDeferredNotificationIfNeeded = useCallback(async () => {
     const notification = NotificationStorage.getDeferredNotification();
     if (notification) {
+      // wait to wallet to load completely before opening
+      await delay(3000);
       performActionBasedOnOpenedNotificationType(notification);
       NotificationStorage.clearDeferredNotification();
     }
