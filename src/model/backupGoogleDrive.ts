@@ -11,6 +11,7 @@ import WalletTypes from '../helpers/walletTypes';
 import {
   allWalletsKey,
   pinKey,
+  pinKeyOld,
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
@@ -26,7 +27,7 @@ import AesEncryptor from '@/handlers/aesEncryption';
 import {
   decryptPIN,
   authenticateWithPIN,
-  saveNewAuthenticationPIN,
+  saveNewAuthenticationPINOrTakeExisting,
 } from '@/handlers/authentication';
 import logger from '@/utils/logger';
 
@@ -202,7 +203,6 @@ export async function restoreCloudBackup({
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
-
   try {
     const filename =
       backupSelected || (userData && findLatestBackUp(userData?.wallets));
@@ -291,6 +291,15 @@ async function restoreCurrentBackupIntoKeychain(
   onAfterPINCreated = NOOP
 ): Promise<boolean> {
   try {
+    const hasBiometricsEnabled = await getSupportedBiometryType();
+    let userPIN = '';
+    if (!hasBiometricsEnabled) {
+      // interrupt loader
+      onBeforePINCreated();
+      userPIN = await saveNewAuthenticationPINOrTakeExisting();
+      onAfterPINCreated();
+    }
+
     // Access control config per each type of key
     const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
@@ -302,8 +311,6 @@ async function restoreCurrentBackupIntoKeychain(
           accessControl = privateAccessControlOptions;
         }
 
-        const hasBiometricsEnabled = await getSupportedBiometryType();
-
         if (key.endsWith(seedPhraseKey)) {
           const parsedValue = JSON.parse(value);
           const { seedphrase } = parsedValue;
@@ -312,11 +319,6 @@ async function restoreCurrentBackupIntoKeychain(
             seedphrase?.includes('salt') && seedphrase?.includes('cipher');
 
           if (!wasBackupSavedWithPIN && !hasBiometricsEnabled) {
-            // interrupt loader
-            onBeforePINCreated();
-            const userPIN = await saveNewAuthenticationPIN();
-            onAfterPINCreated();
-
             const encryptedSeed = await encryptor.encrypt(userPIN, seedphrase);
 
             if (encryptedSeed) {
@@ -329,7 +331,11 @@ async function restoreCurrentBackupIntoKeychain(
               logger.sentry(
                 'This wallet was backuped with faceId and now we replace it by seed with PIN '
               );
-              return keychain.saveString(key, valueWithPINInfo, accessControl);
+              return await keychain.saveString(
+                key,
+                valueWithPINInfo,
+                accessControl
+              );
             }
           } else if (wasBackupSavedWithPIN) {
             // the seed phrase shouldn't be encrypted at this stage, if it's encrypted,
@@ -345,10 +351,6 @@ async function restoreCurrentBackupIntoKeychain(
 
             let encryptedSeed;
             if (!hasBiometricsEnabled) {
-              onBeforePINCreated();
-              const userPIN = await saveNewAuthenticationPIN();
-              onAfterPINCreated();
-
               encryptedSeed = await encryptor.encrypt(userPIN, decryptedSeed);
             }
 
@@ -362,6 +364,8 @@ async function restoreCurrentBackupIntoKeychain(
             );
             return keychain.saveString(key, valueWithPINInfo, accessControl);
           }
+        } else if (key === pinKey) {
+          return keychain.saveString(pinKeyOld, value, accessControl);
         }
         if (typeof value === 'string') {
           return keychain.saveString(key, value, accessControl);
