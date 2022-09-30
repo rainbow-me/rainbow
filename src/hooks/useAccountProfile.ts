@@ -2,26 +2,15 @@ import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { EthereumAddress } from '@/entities';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { AppState } from '@/redux/store';
 
-const walletSelector = createSelector(
-  ({ wallets: { selected = {}, walletNames } }) => ({
-    selectedWallet: selected as any,
-    walletNames,
-  }),
-  ({ selectedWallet, walletNames }) => ({
-    selectedWallet,
-    walletNames,
-  })
-);
-
-const settingsSelector = createSelector(
-  ({ settings: { accountAddress } }) => ({
-    accountAddress,
-  }),
-  ({ accountAddress }) => ({
-    accountAddress,
-  })
-);
+const walletSelector = (state: AppState) => ({
+  selectedWallet: state.wallets.selected || {},
+  walletNames: state.wallets.walletNames,
+});
+const settingsSelector = (state: AppState) => ({
+  accountAddress: state.settings.accountAddress,
+});
 
 const buildAccountProfile = (
   wallet: {
@@ -29,12 +18,13 @@ const buildAccountProfile = (
     walletNames: { [a: EthereumAddress]: string };
   },
   account: { accountAddress: string }
-) =>
-  getAccountProfileInfo(
+) => {
+  return getAccountProfileInfo(
     wallet.selectedWallet,
     wallet.walletNames,
     account.accountAddress
   );
+};
 
 export default function useAccountProfile() {
   const accountProfileSelector = createSelector(
@@ -49,7 +39,6 @@ export default function useAccountProfile() {
     accountImage,
     accountName,
     accountSymbol,
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'OutputParametricSelector<{ walle... Remove this comment to see the full error message
   } = useSelector(accountProfileSelector);
 
   return {
