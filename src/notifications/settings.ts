@@ -151,6 +151,7 @@ export const addDefaultNotificationSettingsForWallet = (
       (wallet: WalletNotificationSettingsType) => wallet.address === address
     );
 
+    // handle case where user imports an already watched wallet which becomes owned
     if (settingsForWallet.type !== relationship) {
       Logger.log(
         `Notifications: unsubscribing ${address} from all [${settingsForWallet.type}] notifications and subscribing to all notifications as [${relationship}]`
@@ -191,7 +192,7 @@ export const addDefaultNotificationGroupSettings = () => {
   if (!data) {
     const defaultSettings = {
       [NotificationRelationship.OWNER]: true,
-      [NotificationRelationship.WATCHER]: true,
+      [NotificationRelationship.WATCHER]: false,
     };
     storage.set(WALLET_GROUPS_STORAGE_KEY, JSON.stringify(defaultSettings));
   }
@@ -263,7 +264,6 @@ export const useWalletGroupNotificationSettings = () => {
     // @ts-expect-error: MMKV
     storage.getString(WALLET_GROUPS_STORAGE_KEY)
   );
-
   const { notificationSettings } = useAllNotificationSettingsFromStorage();
 
   const ownedWallets = notificationSettings.filter(
