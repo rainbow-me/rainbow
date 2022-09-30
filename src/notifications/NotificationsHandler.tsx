@@ -121,7 +121,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     const notification = NotificationStorage.getDeferredNotification();
     if (notification) {
       // wait to wallet to load completely before opening
-      await delay(3000);
+      await delay(1000);
       performActionBasedOnOpenedNotificationType(notification);
       NotificationStorage.clearDeferredNotification();
     }
