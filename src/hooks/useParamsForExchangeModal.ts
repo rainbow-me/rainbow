@@ -8,6 +8,7 @@ import { useSwapInputHandlers } from '@/hooks/index';
 import { SwapMetadata } from '@/raps/common';
 import { useDispatch } from 'react-redux';
 import { useRoute } from '@react-navigation/core';
+import { disable, enable } from '@/hooks/useMagicAutofocus';
 
 export default function () {
   const {
@@ -29,6 +30,7 @@ export default function () {
 
   useEffect(() => {
     if (meta) {
+      disable();
       setIsFillingParams(true);
       if (meta.independentField === SwapModalField.output) {
         updateOutputAmount(meta.independentValue);
@@ -39,9 +41,7 @@ export default function () {
       }
       dispatch(updateSwapSource(meta.route));
       dispatch(updateSwapSlippage(meta.slippage));
-      setTimeout(() => {
-        setIsFillingParams(false);
-      }, 1000);
+      setTimeout(enable, 1000);
     }
   }, [
     dispatch,

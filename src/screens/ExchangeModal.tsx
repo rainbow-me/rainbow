@@ -686,7 +686,7 @@ export default function ExchangeModal({
             to: outputCurrency,
             independentField: independentField as SwapModalField,
             independentValue: independentValue as string,
-            slippage: slippageInBips / 100,
+            slippage: slippageInBips,
             route: source,
           },
         };

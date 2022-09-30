@@ -10,6 +10,7 @@ const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 let timeout: ReturnType<typeof setTimeout> | null = null;
 let delay = false;
 let cancel = false;
+let cancelAll = false;
 
 export function delayNext() {
   if (timeout !== null) {
@@ -26,6 +27,14 @@ export function cancelNext() {
 
 export function uncancelNext() {
   cancel = false;
+}
+
+export function disable() {
+  cancelAll = true;
+}
+
+export function enable() {
+  cancelAll = false;
 }
 
 export default function useMagicAutofocus(
@@ -46,10 +55,11 @@ export default function useMagicAutofocus(
   }, []);
 
   const triggerFocus = useCallback(() => {
-    if (cancel) {
+    if (cancel || cancelAll) {
       cancel = false;
       return;
     }
+    console.log('TRIGGETING');
 
     if (!lastFocusedInputHandle.current) {
       return focusTextInput(defaultAutofocusInputRef.current);
