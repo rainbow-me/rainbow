@@ -1,9 +1,13 @@
 import { captureException } from '@sentry/react-native';
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
-import { RainbowFetchClient } from '../rainbow-fetch';
+import { RainbowFetchClient, rainbowFetch } from '../rainbow-fetch';
+
 import { Network } from '@/helpers';
 import { parseSimplehashNfts } from '@/parsers';
+import { queryClient } from '@/react-query/queryClient';
+
 import { logger } from '@/utils';
+import { UniqueAsset } from '@/entities';
 
 interface SimplehashMarketplace {
   marketplace_id: string;
@@ -103,7 +107,7 @@ export async function getNFTByTokenId({
 export async function getNftsByWalletAddress(walletAddress: string) {
   let rawResponseNfts: SimplehashNft[] = [];
   try {
-    const chainsParam = `${Network.arbitrum},${Network.optimism}`;
+    const chainsParam = `${Network.arbitrum},${Network.optimism},${Network.polygon}`;
 
     let cursor = START_CURSOR;
     while (cursor) {
@@ -130,5 +134,26 @@ export async function getNftsByWalletAddress(walletAddress: string) {
     );
     captureException(error);
   }
-  return parseSimplehashNfts(rawResponseNfts);
+
+  // TODO(jxom): migrate this to Async State RFC architecture once it's merged in.
+  const polygonAllowlist = await queryClient.fetchQuery(
+    ['polygon-allowlist'],
+    async () => {
+      return (
+        await rainbowFetch(
+          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+          { method: 'get' }
+        )
+      ).data.data.addresses;
+    },
+    {
+      staleTime: 1000 * 60 * 10, // 10 minutes
+    }
+  );
+
+  return parseSimplehashNfts(rawResponseNfts).filter(
+    (token: UniqueAsset) =>
+      token.network !== Network.polygon ||
+      polygonAllowlist.includes(token.asset_contract?.address?.toLowerCase())
+  );
 }
