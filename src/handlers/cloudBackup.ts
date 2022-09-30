@@ -1,3 +1,4 @@
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { captureException } from '@sentry/react-native';
 import { sortBy } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
@@ -10,6 +11,10 @@ import { IS_ANDROID } from '@/env';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
+
+export function normalizeAndroidBackupFilename(filename: string) {
+  return filename.replace(`${REMOTE_BACKUP_WALLET_DIR}/`, '');
+}
 
 export const CLOUD_BACKUP_ERRORS = {
   ERROR_DECRYPTING_DATA: 'Error decrypting data',
@@ -64,18 +69,26 @@ export async function encryptAndSaveDataToCloud(
       password,
       JSON.stringify(data)
     );
+
+    const backupFilename = IS_ANDROID
+      ? normalizeAndroidBackupFilename(filename)
+      : filename;
+
     // Store it on the FS first
-    const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
+    const path = `${RNFS.DocumentDirectoryPath}/${backupFilename}`;
+
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
     await RNFS.writeFile(path, encryptedData, 'utf8');
     const sourceUri = { path };
-    const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
+    const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${backupFilename}`;
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
-    if (android) {
+
+    if (IS_ANDROID) {
       await RNCloudFs.loginIfNeeded();
     }
+
     const result = await RNCloudFs.copyToCloud({
       mimeType,
       scope,
@@ -84,7 +97,7 @@ export async function encryptAndSaveDataToCloud(
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
-      ios
+      IS_IOS
         ? {
             scope,
             targetPath: destinationPath,
