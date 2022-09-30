@@ -203,4 +203,12 @@ public class RNZoomableButtonManager extends
             view.pivotY = (float) transformOrigin.getDouble(1);
         }
     }
+
+    @Override
+    protected void onAfterUpdateTransaction(ButtonViewGroup view) {
+        // Ripple effect is broken in GH 1.10.3 on Android 13
+        // It appears all the time on press even when the color is transparent
+        // So we disable any feedback completely since we have our own animation
+        // So this is NOOP
+    }
 }
