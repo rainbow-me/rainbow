@@ -67,7 +67,6 @@ const SwipeableContactRow = (
   forwardedRef
 ) => {
   const swipeableRef = useRef();
-  console.log(color);
 
   useImperativeHandle(forwardedRef, () => ({
     close: swipeableRef.current?.close,
