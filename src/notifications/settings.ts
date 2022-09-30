@@ -95,12 +95,13 @@ export const removeNotificationSettingsForWallet = (address: string) => {
   const newSettings = allSettings.filter(
     (wallet: WalletNotificationSettingsType) => wallet.address !== address
   );
-  storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
+
   unsubscribeWalletFromAllNotificationTopics(
     settingsForWallet.type,
     NOTIFICATIONS_DEFAULT_CHAIN_ID,
     address
   );
+  storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
 };
 
 /* 
@@ -161,15 +162,8 @@ export const addDefaultNotificationSettingsForWallet = (
         (wallet: WalletNotificationSettingsType) => wallet.address === address
       );
 
-      // update config for this wallet with new relationship and all topics enabled by default
-      settings[settingsIndex].type = relationship;
-      settings[settingsIndex].enabled = true;
-      settings[settingsIndex].topics = defaultEnabledTopicSettings;
-
-      storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(settings));
-
       unsubscribeWalletFromAllNotificationTopics(
-        NotificationRelationship.WATCHER,
+        settingsForWallet.type,
         NOTIFICATIONS_DEFAULT_CHAIN_ID,
         address
       );
@@ -178,6 +172,12 @@ export const addDefaultNotificationSettingsForWallet = (
         NOTIFICATIONS_DEFAULT_CHAIN_ID,
         address
       );
+      // update config for this wallet with new relationship and all topics enabled by default
+      settings[settingsIndex].type = relationship;
+      settings[settingsIndex].enabled = true;
+      settings[settingsIndex].topics = defaultEnabledTopicSettings;
+
+      storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(settings));
     }
   }
 };
