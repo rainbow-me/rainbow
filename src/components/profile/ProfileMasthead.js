@@ -69,7 +69,7 @@ export default function ProfileMasthead({
     onSelectionCallback,
   } = useOnAvatarPress();
 
-  const iconColor = useForegroundColor('secondary60');
+  const iconColor = useForegroundColor('secondary60 (Deprecated)');
 
   const handlePressAvatar = useCallback(() => {
     recyclerListRef?.scrollToTop(true);

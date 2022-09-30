@@ -8,7 +8,10 @@ export const ProfileStickyHeaderHeight = 52;
 
 export function ProfileStickyHeader() {
   return (
-    <StickyHeader name="profile-header" visibleAtYPosition={navbarHeight}>
+    <StickyHeader
+      name="profile-header"
+      visibleAtYPosition={ios ? navbarHeight : navbarHeight + 80}
+    >
       <Box
         background="body (Deprecated)"
         justifyContent="center"

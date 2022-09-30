@@ -275,7 +275,7 @@ export default function WalletScreen() {
           }
         />
       </HeaderOpacityToggler>
-      <Box style={{ flex: 1, marginTop: -navbarHeightWithInset }}>
+      <Box style={{ flex: 1, marginTop: ios ? -navbarHeightWithInset : 0 }}>
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
