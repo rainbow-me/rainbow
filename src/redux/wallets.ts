@@ -143,7 +143,7 @@ const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 /**
  * Loads wallet information from storage and updates state accordingly.
  */
-export const walletsLoadState = (profilesEnabled: boolean = false) => async (
+export const walletsLoadState = (profilesEnabled = false) => async (
   dispatch: ThunkDispatch<AppState, unknown, WalletsLoadAction>,
   getState: AppGetState
 ) => {
@@ -288,7 +288,7 @@ export const setWalletBackedUp = (
   walletId: RainbowWallet['id'],
   method: RainbowWallet['backupType'],
   backupFile: RainbowWallet['backupFile'] = null,
-  updateUserMetadata: boolean = true
+  updateUserMetadata = true
 ) => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
@@ -473,7 +473,7 @@ export const getWalletENSAvatars = async (
     };
   });
   if (updatedWallets) {
-    dispatch(walletsSetSelected(updatedWallets[selected!.id]));
+    // dispatch(walletsSetSelected(updatedWallets[selected!.id]));
     dispatch(walletsUpdate(updatedWallets));
   }
 };
