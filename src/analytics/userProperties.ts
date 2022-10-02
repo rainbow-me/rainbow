@@ -3,6 +3,7 @@ import { NativeCurrencyKey } from '@/entities';
 // these are all reported seperately so they must be optional
 export interface UserProperties {
   // settings
+  currentAddressHash?: string; // NEW
   currency?: NativeCurrencyKey;
   enabledTestnets?: boolean;
   enabledFlashbots?: boolean;
