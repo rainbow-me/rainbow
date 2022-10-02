@@ -226,10 +226,10 @@ interface UniqueTokenExpandedStateProps {
   external: boolean;
 }
 
+// TODO(RNBW-4552): renable polygon once remote allowlist is updated on web.
 const getIsSupportedOnRainbowWeb = (network: Network) => {
   switch (network) {
     case Network.mainnet:
-    case Network.polygon:
       return true;
     default:
       return false;

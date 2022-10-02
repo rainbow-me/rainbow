@@ -331,13 +331,12 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
       uniqueTokens = uniqueTokens.concat(poaps);
     }
-    await fetchNetwork(Network.polygon);
 
     // Fetch Optimism and Arbitrum NFTs
-    const optimismArbitrumNFTs = await getNftsByWalletAddress(accountAddress);
+    const layer2NFTs = await getNftsByWalletAddress(accountAddress);
 
-    if (optimismArbitrumNFTs.length > 0) {
-      uniqueTokens = uniqueTokens.concat(optimismArbitrumNFTs);
+    if (layer2NFTs.length > 0) {
+      uniqueTokens = uniqueTokens.concat(layer2NFTs);
     }
 
     // we only care about analytics for mainnet + L2's
