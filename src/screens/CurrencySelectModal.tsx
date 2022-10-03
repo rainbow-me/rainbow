@@ -453,6 +453,11 @@ export default function CurrencySelectModal() {
     };
   }, [handleFavoriteAsset, handleSelectAsset, type, currentChainId]);
 
+  const searchingOnL2Network = useMemo(
+    () => isL2Network(ethereumUtils.getNetworkFromChainId(currentChainId)),
+    [currentChainId]
+  );
+
   const handleApplyFavoritesQueue = useCallback(() => {
     const addresses = Object.keys(assetsToFavoriteQueue);
     const [assetsToAdd, assetsToRemove] = addresses.reduce(
@@ -572,9 +577,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
-                onL2={isL2Network(
-                  ethereumUtils.getNetworkFromChainId(currentChainId)
-                )}
+                onL2={searchingOnL2Network}
                 footerSpacer={android}
                 itemProps={itemProps}
                 listItems={currencyList}
