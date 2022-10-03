@@ -15,6 +15,8 @@ beforeAll(async () => {
     await exec(
       'yarn adb-all shell cmd overlay enable com.android.internal.systemui.navbar.threebutton'
     );
+    await exec('/opt/homebrew/share/android-commandlinetools/platform-tools/adb emu kill');
+    await exec('/opt/homebrew/share/android-commandlinetools/emulator/emulator -avd Pixel_5_API_31 -dns-server 8.8.8.8 -no-snapshot-load');
   }
   await device.clearKeychain();
 
