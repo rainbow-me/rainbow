@@ -56,7 +56,9 @@ export function PairHardwareWalletSearchSheet() {
           />
         </Inset>
         <Inset top="104px">
-          <Text size="12pt">{device ? `Found!` : 'Waiting...'}</Text>
+          <Text color="label" size="12pt">
+            {device ? `Found!` : 'Waiting...'}
+          </Text>
         </Inset>
       </Layout>
     </Box>
