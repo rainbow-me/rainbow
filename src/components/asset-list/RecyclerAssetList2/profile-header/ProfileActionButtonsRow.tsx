@@ -338,7 +338,7 @@ function MoreButton() {
               actionTitle: lang.t('wallet.connected_apps'),
               icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
             }
-          : {},
+          : null,
       ].filter(Boolean),
       ...(ios ? { menuTitle: '' } : {}),
     }),
