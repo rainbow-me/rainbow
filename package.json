@@ -398,7 +398,8 @@
     "react-native/react-devtools-core": "4.24.0",
     "cross-fetch": "3.1.5",
     "**/undici": "5.8.2",
-    "**/vm2": "3.9.11"
+    "**/vm2": "3.9.11",
+    "**/d3-color": "3.1.0"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",

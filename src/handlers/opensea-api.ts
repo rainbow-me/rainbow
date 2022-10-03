@@ -14,8 +14,6 @@ import {
 } from '@/parsers';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import logger from '@/utils/logger';
-import { queryClient } from '@/react-query/queryClient';
-import { UniqueAsset } from '@/entities';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
@@ -61,33 +59,7 @@ export const apiGetAccountUniqueTokens = async (
         })
     );
 
-    let tokens;
-    if (isPolygon) {
-      // TODO(jxom): migrate this to Async State RFC architecture once it's merged in.
-      const polygonAllowlist = await queryClient.fetchQuery(
-        ['polygon-allowlist'],
-        async () => {
-          return (
-            await rainbowFetch(
-              'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
-              { method: 'get' }
-            )
-          ).data.data.addresses;
-        },
-        {
-          staleTime: 1000 * 60 * 10, // 10 minutes
-        }
-      );
-      tokens = parseAccountUniqueTokensPolygon(
-        data
-      ).filter((token: UniqueAsset) =>
-        polygonAllowlist.includes(token.asset_contract?.address?.toLowerCase())
-      );
-    } else {
-      tokens = parseAccountUniqueTokens(data);
-    }
-
-    return tokens;
+    return parseAccountUniqueTokens(data);
   } catch (error: any) {
     // opensea gives us an error if the account has no tokens on the network, we want to ignore this error
     if (
