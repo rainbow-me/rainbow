@@ -88,10 +88,17 @@ export const getMenuItems = (item: any) => {
 
   const isReadOnly =
     store.getState().wallets.selected?.type === WalletTypes.readOnly ?? true;
+
+  const parentTxHash = hash?.includes('-') ? hash.split('-')[0] : hash;
+  const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
+  const wrappedMeta = data ? JSON.parse(data) : {};
+  let parsedMeta: undefined | SwapMetadata;
+  if (wrappedMeta?.type === 'swap') {
+    parsedMeta = wrappedMeta.data as SwapMetadata;
+  }
+
   const isRetryButtonVisible =
-    !isReadOnly &&
-    status === TransactionStatus.failed &&
-    type === TransactionType.trade;
+    !isReadOnly && status === TransactionStatus.failed && !!parsedMeta;
 
   const buttons = [
     ...(isRetryButtonVisible ? [TransactionActions.trySwapAgain] : []),

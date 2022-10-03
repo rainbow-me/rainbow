@@ -144,9 +144,7 @@ export const showTransactionDetailsSheet = (
   const isReadOnly =
     store.getState().wallets.selected?.type === WalletTypes.readOnly ?? true;
   const isRetryButtonVisible =
-    !isReadOnly &&
-    status === TransactionStatus.failed &&
-    type === TransactionType.trade;
+    !isReadOnly && status === TransactionStatus.failed && !!wrappedMeta;
 
   const date = getHumanReadableDate(minedAt);
   const isSent =
