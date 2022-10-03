@@ -48,8 +48,8 @@ jobs:
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
 
-      - name: Build the app in Release mode
-        run: ./node_modules/.bin/detox build --configuration android.emu.release
+      # - name: Build the app in Release mode
+      #   run: ./node_modules/.bin/detox build --configuration android.emu.release
 
       - name: Run Android e2e tests
         run: ./node_modules/.bin/detox test -R 5 --configuration android.emu.release --forceExit
