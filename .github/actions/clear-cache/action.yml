@@ -1,0 +1,12 @@
+# This is a basic workflow to help you get started with Actions
+
+name: "clear-cache"
+description: 'Clear macstadium cache on a specific instance'
+runs:
+  using: "composite"
+  steps:
+    - id: clean
+      shell: bash
+      run: |
+        yarn nuke
+

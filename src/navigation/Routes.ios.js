@@ -1,7 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
-import { StatusBar } from 'react-native';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -50,6 +49,7 @@ import {
   externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  pairHardwareWalletNavigatorConfig,
   profileConfig,
   profilePreviewConfig,
   registerENSNavigatorConfig,
@@ -71,10 +71,12 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
+import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -189,9 +191,7 @@ function NativeStackFallbackNavigator() {
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
         options={{
           ...sheetPreset,
-          onTransitionStart: () => {
-            StatusBar.setBarStyle('light-content');
-          },
+          onTransitionStart: StatusBarHelper.setLightContent,
         }}
       />
       <Stack.Screen
@@ -209,9 +209,7 @@ function NativeStackFallbackNavigator() {
         name={Routes.SEND_SHEET}
         options={{
           ...omitFlatten(sheetPreset, 'gestureResponseDistance'),
-          onTransitionStart: () => {
-            StatusBar.setBarStyle('light-content');
-          },
+          onTransitionStart: StatusBarHelper.setLightContent,
         }}
       />
       <Stack.Screen
@@ -409,6 +407,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.SWAP_SETTINGS_SHEET}
         {...customGasSheetConfig}
+      />
+      <NativeStack.Screen
+        component={PairHardwareWalletNavigator}
+        name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
+        {...pairHardwareWalletNavigatorConfig}
       />
 
       {profilesEnabled && (

@@ -2,16 +2,26 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
+const android = device.getPlatform() === 'android';
+
 describe('Hidden tokens flow', () => {
-  it('boots and load wallet screen', async () => {
+  it('boots and loads wallet screen', async () => {
     await Helpers.waitAndTap('already-have-wallet-button');
     await Helpers.waitAndTap('restore-with-key-button');
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.waitAndTap('import-sheet-button');
-
+    await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
+    if (android) {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
+    await Helpers.checkIfVisible('wallet-screen', 80000);
+    await Helpers.enableSynchronization();
   });
 
   it('NFT is hideable', async () => {
@@ -22,8 +32,15 @@ describe('Hidden tokens flow', () => {
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
 
-    await waitFor(element(by.label('Hide')).atIndex(1)).toBeVisible();
-    await element(by.label('Hide')).atIndex(1).tap();
+    if (android) {
+      await waitFor(element(by.text('Hide')))
+        .toBeVisible()
+        .withTimeout(2000);
+      await element(by.text('Hide')).tap();
+    } else {
+      await waitFor(element(by.label('Hide')).atIndex(1)).toBeVisible();
+      await element(by.label('Hide')).atIndex(1).tap();
+    }
   });
 
   it('NFT shows in Hidden collection', async () => {
@@ -39,8 +56,10 @@ describe('Hidden tokens flow', () => {
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
 
-    await waitFor(element(by.label('Unhide')).atIndex(0)).toBeVisible();
-    await element(by.label('Unhide')).atIndex(0).tap();
+    await waitFor(element(by.text('Unhide')))
+      .toBeVisible()
+      .withTimeout(2000);
+    await element(by.text('Unhide')).tap();
 
     await waitFor(element(by.id('token-family-header-Hidden'))).toNotExist();
 

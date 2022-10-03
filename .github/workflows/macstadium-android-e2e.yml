@@ -9,7 +9,7 @@ on: [pull_request, workflow_dispatch]
 jobs:
   # This workflow contains a single job called "android-e2e"
   android-e2e:
-    if: github.ref_name == '@tchayen/android-detox'
+    if: startsWith(github.head_ref, 'android-ci')
     # The type of runner that the job will run on
     runs-on: ["self-hosted", "ci-5"]
     # Cancel current builds if there's a newer commit on the same branch
@@ -44,6 +44,9 @@ jobs:
           export RAINBOW_KEY_ANDROID_PASSWORD=android
       - name: Install deps via Yarn
         run: yarn setup-ci
+
+      - name: Rebuild detox cache
+        run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
 
       - name: Build the app in Release mode
         run: ./node_modules/.bin/detox build --configuration android.emu.release

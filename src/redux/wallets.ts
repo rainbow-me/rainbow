@@ -287,7 +287,8 @@ export const setIsWalletLoading = (val: WalletsState['isWalletLoading']) => (
 export const setWalletBackedUp = (
   walletId: RainbowWallet['id'],
   method: RainbowWallet['backupType'],
-  backupFile: RainbowWallet['backupFile'] = null
+  backupFile: RainbowWallet['backupFile'] = null,
+  updateUserMetadata: boolean = true
 ) => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
@@ -313,7 +314,7 @@ export const setWalletBackedUp = (
     dispatch(setIsWalletLoading(null));
   }, 1000);
 
-  if (method === WalletBackupTypes.cloud) {
+  if (method === WalletBackupTypes.cloud && updateUserMetadata) {
     try {
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {

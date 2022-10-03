@@ -32,6 +32,7 @@ buildscript {
         maven {
             url 'https://maven.fabric.io/public'
         }
+        mavenCentral()
     }
     dependencies {
         classpath("com.android.tools.build:gradle:7.0.4")

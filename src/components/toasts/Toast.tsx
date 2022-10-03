@@ -7,7 +7,7 @@ import Animated, {
   withSpring,
   WithSpringConfig,
 } from 'react-native-reanimated';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
@@ -72,7 +72,7 @@ export default function Toast({
 }: Props) {
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const animation = useSharedValue(isVisible ? 1 : 0);
 
   useLayoutEffect(() => {

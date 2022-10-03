@@ -10,8 +10,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Keyboard, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { Keyboard } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -235,7 +235,7 @@ export default function SendConfirmationSheet() {
     width: deviceWidth,
   } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { contacts } = useContacts();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -537,7 +537,6 @@ export default function SendConfirmationSheet() {
       height={contentHeight}
       insets={insets}
     >
-      {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {/* @ts-expect-error JavaScript component */}

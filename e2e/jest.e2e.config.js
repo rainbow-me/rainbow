@@ -3,10 +3,10 @@ const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('../tsconfig');
 
 module.exports = {
-  maxWorkers: 4,
+  maxWorkers: 1,
   setupFilesAfterEnv: ['./init.js'],
   testEnvironment: './environment',
-  testTimeout: 120000,
+  testTimeout: 240000,
   testRegex: '\\.spec\\.[jt]sx?$',
   reporters: ['detox/runners/jest/streamlineReporter'],
   verbose: true,
