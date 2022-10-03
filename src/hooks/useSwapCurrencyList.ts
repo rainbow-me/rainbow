@@ -195,20 +195,12 @@ const useSwapCurrencyList = (
         const aIsRanked = rankA > -1;
         const bIsRanked = rankB > -1;
         if (aIsRanked) {
-          return bIsRanked
-            ? // compare rank within list
-              rankA < rankB
-              ? -1
-              : 1
-            : // only t1 is ranked
-              -1;
-        } else {
-          return bIsRanked
-            ? // only t2 is ranked
-              1
-            : // sort unranked by abc
-              name1?.localeCompare(name2);
+          if (bIsRanked) {
+            return rankA > rankB ? -1 : 1;
+          }
+          return -1;
         }
+        return bIsRanked ? 1 : name1?.localeCompare(name2);
       });
   }, [curatedMap, favoriteAddresses]);
 
