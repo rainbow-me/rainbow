@@ -57,7 +57,6 @@ export const estimateUnlockAndCrosschainSwap = async (
       gasLimits = gasLimits.concat(unlockGasLimit);
     }
   }
-  console.log('------ swapAssetNeedsUnlocking', swapAssetNeedsUnlocking);
 
   const swapGasLimit = await estimateCrosschainSwapGasLimit({
     chainId: Number(chainId),
