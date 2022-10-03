@@ -473,7 +473,6 @@ export const getWalletENSAvatars = async (
     };
   });
   if (updatedWallets) {
-    // dispatch(walletsSetSelected(updatedWallets[selected!.id]));
     dispatch(walletsUpdate(updatedWallets));
   }
 };
