@@ -546,7 +546,7 @@ const useSwapCurrencyList = (
   ]);
 
   const crosschainExactMatches = useMemo(() => {
-    if (!currencyList.length) return [];
+    if (currencyList.length) return [];
     if (!searchQuery) return [];
     const exactMatches: RT[] = [];
     Object.keys(crosschainVerifiedAssets).forEach(network => {
@@ -557,7 +557,7 @@ const useSwapCurrencyList = (
         // including goerli in our networks type is causing this type issue
         // @ts-ignore
         const exactMatch = crosschainVerifiedAssets[network as Network].find(
-          asset => {
+          (asset: RT) => {
             const symbolMatch =
               asset?.symbol.toLowerCase() === searchQuery.toLowerCase();
             const nameMatch =
@@ -566,7 +566,7 @@ const useSwapCurrencyList = (
           }
         );
         if (exactMatch) {
-          exactMatches.push(exactMatch);
+          exactMatches.push({ ...exactMatch, network });
         }
       }
     });
