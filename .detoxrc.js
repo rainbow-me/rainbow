@@ -47,8 +47,7 @@ module.exports = {
       build:
         'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
       name: 'Pixel_5_API_31',
-      bootArgs:
-        '-no-boot-anim -netdelay none -netspeed full -no-snapshot-save -no-snapshot-load',
+      bootArgs: '-no-snapshot-load',
     },
   },
 };
