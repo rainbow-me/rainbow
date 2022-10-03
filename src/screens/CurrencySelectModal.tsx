@@ -45,7 +45,7 @@ import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
 import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, filterList } from '@/utils';
+import { ethereumUtils, filterList, logger } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
@@ -185,6 +185,7 @@ export default function CurrencySelectModal() {
   ]);
 
   const {
+    crosschainExactMatches,
     swapCurrencyList,
     swapCurrencyListLoading,
     updateFavorites,

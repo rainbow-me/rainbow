@@ -46,6 +46,13 @@ const uniswapFavoriteMetadataSelector = (state: AppState) =>
 const uniswapFavoritesSelector = (state: AppState): string[] =>
   state.uniswap.favorites;
 
+type CrosschainVerifiedAssets = {
+  [Network.mainnet]: RT[];
+  [Network.optimism]: RT[];
+  [Network.polygon]: RT[];
+  [Network.arbitrum]: RT[];
+};
+
 const abcSort = (list: any[], key?: string) => {
   return list.sort((a, b) => {
     return key ? a[key]?.localeCompare(b[key]) : a?.localeCompare(b);
@@ -105,6 +112,18 @@ const useSwapCurrencyList = (
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
+  const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(
+    false
+  );
+  const [
+    crosschainVerifiedAssets,
+    setCrosschainVerifiedAssets,
+  ] = useState<CrosschainVerifiedAssets>({
+    [Network.mainnet]: [],
+    [Network.optimism]: [],
+    [Network.polygon]: [],
+    [Network.arbitrum]: [],
+  });
 
   const { inputCurrency } = useSwapCurrencies();
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
@@ -127,8 +146,8 @@ const useSwapCurrencyList = (
   const isFavorite = useCallback(
     (address: EthereumAddress) =>
       favoriteAddresses
-        .map(a => a.toLowerCase())
-        .includes(address.toLowerCase()),
+        .map(a => a?.toLowerCase())
+        .includes(address?.toLowerCase()),
     [favoriteAddresses]
   );
   const handleSearchResponse = useCallback(
@@ -257,6 +276,32 @@ const useSwapCurrencyList = (
     [searching]
   );
 
+  const getCrosschainVerifiedAssetsForNetwork = useCallback(
+    async (network: Network) => {
+      const results = await searchCurrencyList({
+        searchList: 'verifiedAssets',
+        query: '',
+        chainId: ethereumUtils.getChainIdFromNetwork(network),
+        fromChainId: isCrosschainSearch && inputChainId,
+      });
+      setCrosschainVerifiedAssets(state => ({
+        ...state,
+        [network]: handleSearchResponse(results),
+      }));
+    },
+    [handleSearchResponse, inputChainId, isCrosschainSearch]
+  );
+
+  const getCrosschainVerifiedAssets = useCallback(async () => {
+    const crosschainAssetRequests: Promise<void>[] = [];
+    Object.keys(crosschainVerifiedAssets).forEach(network => {
+      crosschainAssetRequests.push(
+        getCrosschainVerifiedAssetsForNetwork(network as Network)
+      );
+    });
+    await Promise.all(crosschainAssetRequests);
+  }, [crosschainVerifiedAssets, getCrosschainVerifiedAssetsForNetwork]);
+
   const getResultsForAssetType = useCallback(
     async (assetType: swapCurrencyListType) => {
       switch (assetType) {
@@ -358,6 +403,17 @@ const useSwapCurrencyList = (
 
   const wasSearching = usePrevious(searching);
   const previousSearchQuery = usePrevious(searchQuery);
+
+  useEffect(() => {
+    setFetchingCrosschainAssets(false);
+  }, [inputChainId]);
+
+  useEffect(() => {
+    if (!fetchingCrosschainAssets) {
+      setFetchingCrosschainAssets(true);
+      getCrosschainVerifiedAssets();
+    }
+  }, [getCrosschainVerifiedAssets, fetchingCrosschainAssets]);
 
   useEffect(() => {
     const doSearch = async () => {
@@ -489,6 +545,39 @@ const useSwapCurrencyList = (
     isFavorite,
   ]);
 
+  const crosschainExactMatches = useMemo(() => {
+    if (!currencyList.length) return [];
+    if (!searchQuery) return [];
+    const exactMatches: RT[] = [];
+    Object.keys(crosschainVerifiedAssets).forEach(network => {
+      const currentNetworkChainId = ethereumUtils.getChainIdFromNetwork(
+        network as Network
+      );
+      if (currentNetworkChainId !== searchChainId) {
+        // including goerli in our networks type is causing this type issue
+        // @ts-ignore
+        const exactMatch = crosschainVerifiedAssets[network as Network].find(
+          asset => {
+            const symbolMatch =
+              asset?.symbol.toLowerCase() === searchQuery.toLowerCase();
+            const nameMatch =
+              asset?.name.toLowerCase() === searchQuery.toLowerCase();
+            return symbolMatch || nameMatch;
+          }
+        );
+        if (exactMatch) {
+          exactMatches.push(exactMatch);
+        }
+      }
+    });
+    return exactMatches;
+  }, [
+    crosschainVerifiedAssets,
+    currencyList.length,
+    searchChainId,
+    searchQuery,
+  ]);
+
   const updateFavorites = useCallback(
     (...data: [string | string[], boolean]) =>
       dispatch(uniswapUpdateFavorites(...data)),
@@ -496,6 +585,7 @@ const useSwapCurrencyList = (
   );
 
   return {
+    crosschainExactMatches,
     swapCurrencyList: currencyList,
     swapCurrencyListLoading: loading,
     updateFavorites,
