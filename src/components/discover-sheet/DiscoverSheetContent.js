@@ -5,6 +5,7 @@ import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
 import DiscoverSearchContainer from './DiscoverSearchContainer';
 import { Box, Inset } from '@/design-system';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function Switcher({ showSearch, children }) {
   return (
@@ -23,9 +24,11 @@ export default function DiscoverSheetContent() {
   const [showSearch, setShowSearch] = useState(false);
   const ref = useRef();
 
+  const insets = useSafeAreaInsets();
+
   return (
     <Box flex={1} testID="discover-home">
-      <Inset top="8px">
+      <Inset top="8px" bottom={{ custom: insets.bottom }}>
         <DiscoverSearchContainer
           ref={ref}
           setShowSearch={setShowSearch}
