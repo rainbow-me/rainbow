@@ -141,7 +141,7 @@ export default function ConfirmExchangeButton({
   }
 
   const handleExplainer = useCallback(() => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       inputCurrency,
       outputCurrency,

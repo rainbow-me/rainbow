@@ -142,6 +142,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       paddingRight={ExchangeFieldPadding}
       width="full"
       style={style}
+      testID={`${testID}-${symbol || 'empty'}-${type || 'empty'}`}
     >
       <TouchableWithoutFeedback
         onPress={onTapWhileDisabled ?? handleFocusField}

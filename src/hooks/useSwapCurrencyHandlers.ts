@@ -17,11 +17,14 @@ import {
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
+import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
 export default function useSwapCurrencyHandlers({
   currentNetwork,
+  inputNetwork,
+  outputNetwork,
   defaultInputAsset,
   defaultOutputAsset,
   fromDiscover,
@@ -35,6 +38,7 @@ export default function useSwapCurrencyHandlers({
   type,
 }: any = {}) {
   const dispatch = useDispatch();
+  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
 
   const { derivedValues } = useSwapDerivedValues();
@@ -95,13 +99,16 @@ export default function useSwapCurrencyHandlers({
         dispatch(
           updateSwapInputCurrency(
             defaultInputItemInWallet,
-            ignoreInitialTypeCheck
+            ignoreInitialTypeCheck || crosschainSwapsEnabled
           )
         );
       }
       if (defaultOutputItem) {
         dispatch(
-          updateSwapOutputCurrency(defaultOutputItem, ignoreInitialTypeCheck)
+          updateSwapOutputCurrency(
+            defaultOutputItem,
+            ignoreInitialTypeCheck || crosschainSwapsEnabled
+          )
         );
       }
     }
@@ -112,6 +119,7 @@ export default function useSwapCurrencyHandlers({
     shouldUpdate,
     fromDiscover,
     ignoreInitialTypeCheck,
+    crosschainSwapsEnabled,
   ]);
 
   const flipSwapCurrenciesWithTimeout = useCallback(
@@ -132,7 +140,7 @@ export default function useSwapCurrencyHandlers({
   );
 
   const flipCurrencies = useCallback(() => {
-    if (currentNetwork === Network.arbitrum) {
+    if (currentNetwork === Network.arbitrum || inputNetwork !== outputNetwork) {
       updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
@@ -167,15 +175,17 @@ export default function useSwapCurrencyHandlers({
     }
   }, [
     currentNetwork,
+    inputNetwork,
+    outputNetwork,
     nativeFieldRef,
     inputFieldRef,
     outputFieldRef,
     updateOutputAmount,
-    updateInputAmount,
     flipSwapCurrenciesWithTimeout,
     derivedValues?.outputAmount,
     derivedValues?.inputAmount,
     updateNativeAmount,
+    updateInputAmount,
   ]);
 
   const updateInputCurrency = useCallback(
@@ -188,11 +198,13 @@ export default function useSwapCurrencyHandlers({
         : null;
 
       dispatch(emitAssetRequest(newInputCurrency.mainnet_address));
-      dispatch(updateSwapInputCurrency(newInputCurrency));
+      dispatch(
+        updateSwapInputCurrency(newInputCurrency, crosschainSwapsEnabled)
+      );
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newInputCurrency);
     },
-    [dispatch, inputFieldRef, setLastFocusedInputHandle]
+    [crosschainSwapsEnabled, dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const updateOutputCurrency = useCallback(
@@ -205,11 +217,13 @@ export default function useSwapCurrencyHandlers({
         : null;
 
       dispatch(emitAssetRequest(newOutputCurrency.mainnet_address));
-      dispatch(updateSwapOutputCurrency(newOutputCurrency));
+      dispatch(
+        updateSwapOutputCurrency(newOutputCurrency, crosschainSwapsEnabled)
+      );
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newOutputCurrency);
     },
-    [dispatch, inputFieldRef, setLastFocusedInputHandle]
+    [crosschainSwapsEnabled, dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const navigateToSelectInputCurrency = useCallback(

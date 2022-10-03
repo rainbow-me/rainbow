@@ -123,10 +123,6 @@ const DevSection = () => {
     }
   }, [navigate]);
 
-  const navToDevNotifications = useCallback(() => {
-    navigate('DevNotificationsSection');
-  }, [navigate]);
-
   const checkAlert = useCallback(async () => {
     try {
       const request = await fetch(
@@ -349,17 +345,6 @@ const DevSection = () => {
               testID="alert-section"
               titleComponent={
                 <MenuItem.Title text={lang.t('developer_settings.alert')} />
-              }
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🔔" isEmoji />}
-              onPress={navToDevNotifications}
-              size={52}
-              testID="notifications-section"
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.notifications_debug')}
-                />
               }
             />
 

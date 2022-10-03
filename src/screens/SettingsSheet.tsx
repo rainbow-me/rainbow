@@ -10,7 +10,6 @@ import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   AppIconSection,
   CurrencySection,
-  DevNotificationsSection,
   DevSection,
   LanguageSection,
   NetworkSection,
@@ -248,14 +247,6 @@ export default function SettingsSheet() {
               />
             )
         )}
-        <Stack.Screen
-          component={DevNotificationsSection}
-          name="DevNotificationsSection"
-          options={{
-            cardStyleInterpolator,
-            title: lang.t('developer_settings.notifications_debug'),
-          }}
-        />
         <Stack.Screen
           component={WalletNotificationsSettings}
           name="WalletNotificationsSettings"
