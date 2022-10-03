@@ -116,7 +116,7 @@ const getWalletRowCount = (wallets: any) => {
 
 export type EditWalletContextMenuActions = {
   edit: (walletId: string, address: EthereumAddress) => void;
-  notifications: (walletName: string) => void;
+  notifications: (walletName: string, address: EthereumAddress) => void;
   remove: (walletId: string, address: EthereumAddress) => void;
 };
 
@@ -336,10 +336,10 @@ export default function ChangeWalletSheet() {
   );
 
   const onPressNotifications = useCallback(
-    walletName => {
+    (walletName, address) => {
       analytics.track('Tapped "Notification Settings"');
       navigate(Routes.SETTINGS_SHEET, {
-        params: { title: walletName },
+        params: { address, title: walletName },
         screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
       });
     },

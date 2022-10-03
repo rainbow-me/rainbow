@@ -22,7 +22,7 @@ export const defaultConfig = {
   [HARDWARE_WALLETS]: { settings: true, value: false },
   [L2_TXS]: { needsRestart: true, settings: true, value: false },
   [LANGUAGE_SETTINGS]: { settings: false, value: false },
-  [NOTIFICATIONS]: { needsRestart: true, settings: true, value: false },
+  [NOTIFICATIONS]: { needsRestart: true, settings: true, value: true },
   [PROFILES]: { settings: true, value: true },
   [REVIEW_ANDROID]: { settings: false, value: false },
   [CROSSCHAIN_SWAPS]: { settings: true, value: false },
