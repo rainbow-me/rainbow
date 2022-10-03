@@ -11,7 +11,7 @@ import { times } from '@/helpers/utilities';
 import { useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { navbarHeightWithInset } from '../navbar/Navbar';
+import { navbarHeight, navbarHeightWithInset } from '../navbar/Navbar';
 
 const Container = styled(Column)({
   ...position.sizeAsObject('100%'),
@@ -50,7 +50,7 @@ const EmptyAssetList = ({
           refreshControl={
             <RefreshControl
               onRefresh={refresh}
-              progressViewOffset={60}
+              progressViewOffset={navbarHeight + 16}
               refreshing={isRefreshing}
             />
           }
