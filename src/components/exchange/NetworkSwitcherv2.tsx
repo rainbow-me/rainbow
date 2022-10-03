@@ -68,12 +68,13 @@ const NetworkSwitcherv2 = ({
 
   return (
     <>
-      <Box height="46px" width="full">
+      <Box height="46px" width="full" testID="network-switcher-v2">
         <ScrollView
           contentContainerStyle={{ paddingHorizontal: 20 }}
           horizontal
           ref={scrollViewRef}
           showsHorizontalScrollIndicator={false}
+          testID={'network-switcher-v2-scroll-view'}
         >
           <Columns space="8px">
             {networkMenuItems.map(({ chainId, title, type, network }) => {
@@ -86,7 +87,7 @@ const NetworkSwitcherv2 = ({
                   // @ts-expect-error overloaded props from ButtonPressAnimation
                   onPress={() => setCurrentChainId(chainId)}
                   padding="8px"
-                  testID={`${testID}-${title}`}
+                  testID={`${testID}-${network}`}
                 >
                   {isSelected && (
                     <RadialGradient
@@ -123,6 +124,7 @@ const NetworkSwitcherv2 = ({
                         }
                         size="16px / 22px (Deprecated)"
                         weight="bold"
+                        testID={`network-switcher-v2-item-${network}`}
                       >
                         {title}
                       </Text>

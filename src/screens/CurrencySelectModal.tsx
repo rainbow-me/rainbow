@@ -142,6 +142,12 @@ export default function CurrencySelectModal() {
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
+  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+
+  const NetworkSwitcher = !crosschainSwapsEnabled
+    ? NetworkSwitcherv1
+    : NetworkSwitcherv2;
+
   useEffect(() => {
     if (chainId && typeof chainId === 'number') {
       setCurrentChainId(chainId);
@@ -383,7 +389,7 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
-      if (checkForRequiredAssets(item)) return;
+      if (!crosschainSwapsEnabled && checkForRequiredAssets(item)) return;
 
       const isMainnet = currentChainId === 1;
       const assetWithType =
@@ -399,6 +405,7 @@ export default function CurrencySelectModal() {
         onSelectCurrency(assetWithType, handleNavigate);
       };
       if (
+        !crosschainSwapsEnabled &&
         checkForSameNetwork(
           assetWithType,
           selectAsset,
@@ -412,13 +419,14 @@ export default function CurrencySelectModal() {
       selectAsset();
     },
     [
+      crosschainSwapsEnabled,
       checkForRequiredAssets,
+      currentChainId,
+      type,
       checkForSameNetwork,
       dispatch,
-      currentChainId,
       callback,
       onSelectCurrency,
-      type,
       handleNavigate,
     ]
   );
@@ -500,11 +508,6 @@ export default function CurrencySelectModal() {
       { translateX: (1 - scrollPosition.value) * 8 },
     ],
   }));
-
-  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = !crosschainEnabled
-    ? NetworkSwitcherv1
-    : NetworkSwitcherv2;
 
   return (
     <Wrapper>

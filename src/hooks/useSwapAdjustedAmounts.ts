@@ -1,12 +1,12 @@
 import { ETH_ADDRESS, Quote } from '@rainbow-me/swaps';
 import lang from 'i18n-js';
 import { useSelector } from 'react-redux';
-import { computeSlippageAdjustedAmounts, Field } from '@/handlers/uniswap';
 import { AppState } from '@/redux/store';
 import { SwapModalField } from '@/redux/swap';
 import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS } from '@/references';
 import { fromWei, updatePrecisionToDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
+import { computeSlippageAdjustedAmounts, Field } from '@/handlers/swap';
 
 export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
   const inputCurrency = useSelector(

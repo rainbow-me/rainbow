@@ -156,7 +156,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
           borderRadius={25}
-          shadows={shadows[backgroundColor]}
+          shadows={shadows?.[backgroundColor] || []}
           {...(android && {
             height: 80,
             width: isVeryNarrowPhone ? 95 : 100,
