@@ -250,7 +250,6 @@ export default function DiscoverSearch() {
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer
-          fromDiscover
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
           listItems={currencyList}

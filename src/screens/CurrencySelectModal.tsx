@@ -29,7 +29,7 @@ import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@/analytics';
-import { addHexPrefix } from '@/handlers/web3';
+import { addHexPrefix, isL2Network } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@/helpers';
 import {
   useAssetsInWallet,
@@ -572,7 +572,9 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
-                onL2={Boolean(currentChainId && currentChainId !== 1)}
+                onL2={isL2Network(
+                  ethereumUtils.getNetworkFromChainId(currentChainId)
+                )}
                 footerSpacer={android}
                 itemProps={itemProps}
                 listItems={currencyList}
