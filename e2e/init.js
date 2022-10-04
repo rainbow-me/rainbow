@@ -29,16 +29,16 @@ beforeAll(async () => {
   ]);
 });
 
-afterEach(async function () {
-  testSummary.status = this.currentTest.state || 'failed';
-  console.log(testSummary);
-  if (testSummary.status === 'failed' && device.getPlatform() === 'android') {
-    await exec(
-      '/opt/homebrew/share/android-commandlinetools/platform-tools/adb emu kill'
-    );
-    await exec(
-      '/opt/homebrew/share/android-commandlinetools/emulator/emulator -avd Pixel_5_API_31 -dns-server 8.8.8.8 -no-snapshot-load'
-    );
-  }
-  await detox.afterEach(testSummary);
-});
+// afterEach(async function () {
+//   testSummary.status = this.currentTest.state || 'failed';
+//   console.log(testSummary);
+//   if (testSummary.status === 'failed' && device.getPlatform() === 'android') {
+//     await exec(
+//       '/opt/homebrew/share/android-commandlinetools/platform-tools/adb emu kill'
+//     );
+//     await exec(
+//       '/opt/homebrew/share/android-commandlinetools/emulator/emulator -avd Pixel_5_API_31 -dns-server 8.8.8.8 -no-snapshot-load'
+//     );
+//   }
+//   await detox.afterEach(testSummary);
+// });
