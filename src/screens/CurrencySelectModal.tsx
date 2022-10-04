@@ -39,6 +39,7 @@ import {
   usePrevious,
   useSwapCurrencies,
   useSwapCurrencyList,
+  useSwappableUserAssets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
@@ -143,7 +144,6 @@ export default function CurrencySelectModal() {
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-
   const NetworkSwitcher = !crosschainSwapsEnabled
     ? NetworkSwitcherv1
     : NetworkSwitcherv2;
@@ -156,6 +156,7 @@ export default function CurrencySelectModal() {
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
+  // TODO: remove this value when crosschain swaps is released
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
       let filteredAssetsInWallet = assetsInWallet?.filter(
@@ -188,6 +189,8 @@ export default function CurrencySelectModal() {
     swapCurrencyListLoading,
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
+
+  const { swappableUserAssets } = useSwappableUserAssets({ outputCurrency });
 
   const checkForSameNetwork = useCallback(
     (newAsset, selectAsset, type) => {
@@ -230,18 +233,27 @@ export default function CurrencySelectModal() {
   }, []);
 
   const getWalletCurrencyList = useCallback(() => {
+    const listToUse = crosschainSwapsEnabled
+      ? swappableUserAssets
+      : filteredAssetsInWallet;
     if (type === CurrencySelectionTypes.input) {
       if (searchQueryForSearch !== '') {
         const searchResults = searchWalletCurrencyList(
-          filteredAssetsInWallet,
+          listToUse,
           searchQueryForSearch
         );
         return headerlessSection(searchResults);
       } else {
-        return headerlessSection(filteredAssetsInWallet);
+        return headerlessSection(listToUse);
       }
     }
-  }, [filteredAssetsInWallet, searchQueryForSearch, type]);
+  }, [
+    filteredAssetsInWallet,
+    searchQueryForSearch,
+    type,
+    crosschainSwapsEnabled,
+    swappableUserAssets,
+  ]);
 
   const currencyList = useMemo(() => {
     let list = (type === CurrencySelectionTypes.input
@@ -487,9 +499,14 @@ export default function CurrencySelectModal() {
 
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
-    setCurrentChainId(chainId);
+    InteractionManager.runAfterInteractions(() => {
+      const inputChainId = ethereumUtils.getChainIdFromType(
+        inputCurrency?.type
+      );
+      setCurrentChainId(inputChainId);
+    });
     setIsTransitioning(true); // continue to display list while transitiong back
-  }, [chainId]);
+  }, [inputCurrency?.type]);
 
   const shouldUpdateFavoritesRef = useRef(false);
   useEffect(() => {

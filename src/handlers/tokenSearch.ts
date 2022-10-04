@@ -7,6 +7,7 @@ import {
   TokenSearchUniswapAssetKey,
 } from '@/entities';
 import logger from '@/utils/logger';
+import { EthereumAddress } from '@rainbow-me/swaps';
 
 const tokenSearchApi = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v2',
@@ -17,7 +18,7 @@ const tokenSearchApi = new RainbowFetchClient({
   timeout: 30000,
 });
 
-const tokenSearch = async (searchParams: {
+export const tokenSearch = async (searchParams: {
   chainId: number;
   fromChainId?: number | '';
   keys: TokenSearchUniswapAssetKey[];
@@ -56,4 +57,22 @@ const tokenSearch = async (searchParams: {
   }
 };
 
-export default tokenSearch;
+export const walletFilter = async (params: {
+  addresses: EthereumAddress[];
+  fromChainId: number;
+  toChainId: number;
+}) => {
+  try {
+    const { addresses, fromChainId, toChainId } = params;
+    const filteredAddresses = await tokenSearchApi.post(`/${fromChainId}`, {
+      addresses,
+      toChainId,
+    });
+    return filteredAddresses?.data?.data || [];
+  } catch (e) {
+    logger.error(
+      `An error occurred while filter wallet addresses: toChainId: ${params.toChainId} -> fromChainId: ${params.fromChainId}: ${e}`
+    );
+    throw e;
+  }
+};

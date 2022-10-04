@@ -14,7 +14,7 @@ import {
   RainbowToken as RT,
   TokenSearchTokenListId,
 } from '@/entities';
-import tokenSearch from '@/handlers/tokenSearch';
+import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import {
@@ -371,6 +371,8 @@ const useSwapCurrencyList = (
           slowSearch();
         } else {
           await search();
+          setLowLiquidityAssets([]);
+          setHighLiquidityAssets([]);
           setLoading(false);
         }
       } else {
