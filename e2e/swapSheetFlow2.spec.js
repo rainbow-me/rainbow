@@ -125,6 +125,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.waitAndTap('settings-button');
     await Helpers.checkIfVisible('settings-sheet');
+    await Helpers.scrollTo('settings-menu-container', 'bottom');
     await Helpers.waitAndTap('developer-section');
     await Helpers.scrollTo('developer-settings-sheet', 'bottom');
     await Helpers.tapByText('Crosschain Swaps');
