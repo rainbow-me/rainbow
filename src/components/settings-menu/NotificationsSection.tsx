@@ -14,6 +14,7 @@ import { useAccountSettings, useAppState, useWallets } from '@/hooks';
 import { requestPermission } from '@/notifications/permissions';
 import profileUtils from '@/utils/profileUtils';
 import {
+  addDefaultNotificationSettingsForWallet,
   NotificationRelationship,
   updateSettingsForWallets,
   useAllNotificationSettingsFromStorage,
@@ -223,28 +224,12 @@ const NotificationsSection = () => {
     });
   }, [ownerEnabled, updateGroupSettings]);
 
-  const toggleAllOwnedNotificationsFromWallet = useCallback(() => {
-    updateGroupSettings({
-      [NotificationRelationship.OWNER]: !ownerEnabled
-        ? !ownerEnabled
-        : ownerEnabled,
-    });
-  }, [ownerEnabled, updateGroupSettings]);
-
   const toggleAllWatchedNotifications = useCallback(() => {
     updateSettingsForWallets(NotificationRelationship.WATCHER, {
       enabled: !watcherEnabled,
     });
     updateGroupSettings({
       [NotificationRelationship.WATCHER]: !watcherEnabled,
-    });
-  }, [updateGroupSettings, watcherEnabled]);
-
-  const toggleAllWatchedNotificationsFromWallet = useCallback(() => {
-    updateGroupSettings({
-      [NotificationRelationship.WATCHER]: !watcherEnabled
-        ? !watcherEnabled
-        : watcherEnabled,
     });
   }, [updateGroupSettings, watcherEnabled]);
 
@@ -272,7 +257,31 @@ const NotificationsSection = () => {
 
   useEffect(() => {
     checkPermissions();
-  }, [checkPermissions, justBecameActive]);
+    // populate notification settings if they
+    // have been cleared from dev settings to prevent a crash
+    // when going to the notification settings screen for a wallet
+    if (notificationSettings.length === 0) {
+      ownedWallets.forEach(wallet => {
+        addDefaultNotificationSettingsForWallet(
+          wallet.address,
+          NotificationRelationship.OWNER
+        );
+      });
+
+      watchedWallets.forEach(wallet => {
+        addDefaultNotificationSettingsForWallet(
+          wallet.address,
+          NotificationRelationship.WATCHER
+        );
+      });
+    }
+  }, [
+    checkPermissions,
+    justBecameActive,
+    notificationSettings,
+    ownedWallets,
+    watchedWallets,
+  ]);
 
   return (
     <Box>

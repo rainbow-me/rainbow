@@ -1,4 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
+import { addDefaultNotificationGroupSettings } from '@/notifications/settings';
 
 export const STORAGE_IDS = {
   ACCOUNT: 'ACCOUNT',
@@ -22,4 +23,10 @@ export const clearAllStorages = () => {
 
   const defaultStorage = new MMKV();
   defaultStorage.clearAll();
+
+  // set default notification group settings
+  // to prevent crashing & weird state
+  // if the user does not restart the app
+  // after clearing all storages
+  addDefaultNotificationGroupSettings();
 };
