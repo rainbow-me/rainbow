@@ -65,6 +65,7 @@ export const parseTransactions = async (
   accountAddress: EthereumAddress,
   nativeCurrency: keyof typeof supportedNativeCurrencies,
   existingTransactions: RainbowTransaction[],
+  pendingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
   network: Network,
   appended = false
@@ -73,9 +74,23 @@ export const parseTransactions = async (
     ethereumUtils.getHash(txn)
   );
 
-  const [allL2Transactions, existingWithoutL2] = partition(
-    existingTransactions,
-    tx => isL2Network(tx.network || '')
+  // pending crosschain swaps transactions now depends on bridge status API
+  // so we need to persist pending txs until bridge is done even tho the tx
+  // on chain was confirmed https://github.com/rainbow-me/rainbow/pull/4189
+  const pendingCrosschainSwapsTransactionHashes = pendingTransactions
+    .filter(txn => txn.protocol === ProtocolType.socket)
+    .map(txn => ethereumUtils.getHash(txn));
+  const filteredExistingTransactions = existingTransactions.filter(
+    txn =>
+      !pendingCrosschainSwapsTransactionHashes.includes(
+        ethereumUtils.getHash(txn)
+      )
+  );
+  const [
+    allL2Transactions,
+    existingWithoutL2,
+  ] = partition(filteredExistingTransactions, tx =>
+    isL2Network(tx.network || '')
   );
 
   const data = appended
