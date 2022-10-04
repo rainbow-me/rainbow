@@ -186,6 +186,10 @@ export default function ExchangeModal({
     outputNetworkDetails,
     setOutputNetworkDetails,
   ] = useState<ParsedAddressAsset>();
+  const [
+    inputNetworkDetails,
+    setInputNetworkDetails,
+  ] = useState<ParsedAddressAsset>();
   const genericAssets = useSelector<
     { data: { genericAssets: { [address: string]: SwappableAsset } } },
     { [address: string]: SwappableAsset }
@@ -360,15 +364,20 @@ export default function ExchangeModal({
 
   useEffect(() => {
     const getNativeAsset = async () => {
-      if (!outputNetwork || !accountAddress) return;
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
+      if (!outputNetwork || !inputNetwork || !accountAddress) return;
+      const outputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(
         outputNetwork,
         accountAddress
       );
-      setOutputNetworkDetails(nativeAsset);
+      const inputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(
+        inputNetwork,
+        accountAddress
+      );
+      setOutputNetworkDetails(outputNativeAsset);
+      setInputNetworkDetails(inputNativeAsset);
     };
     getNativeAsset();
-  }, [outputNetwork, accountAddress]);
+  }, [outputNetwork, inputNetwork, accountAddress]);
 
   const defaultGasLimit = useMemo(() => {
     const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
@@ -945,6 +954,7 @@ export default function ExchangeModal({
     ]
   );
 
+  console.log('........', tradeDetails);
   const navigateToRefuelModal = useCallback(() => {
     const getNetworkDetails = (network: Network) => {
       switch (network) {
