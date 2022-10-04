@@ -51,6 +51,7 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
+import networkTypes from '@/helpers/networkTypes';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -198,7 +199,8 @@ export default function CurrencySelectModal() {
       const hasShownWarning = getHasShownWarning();
       if (
         otherAsset &&
-        newAsset?.type !== otherAsset?.type &&
+        ethereumUtils.getChainIdFromType(newAsset?.type) !==
+          ethereumUtils.getChainIdFromType(otherAsset?.type) &&
         !hasShownWarning
       ) {
         Keyboard.dismiss();
