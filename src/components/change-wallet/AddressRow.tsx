@@ -156,13 +156,12 @@ export default function AddressRow({
 
   const emoji = useMemo(
     () =>
-      returnStringFirstEmoji(cleanedUpLabel) ||
-      profileUtils.addressHashedEmoji(address),
-    [address, cleanedUpLabel]
+      returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address),
+    [address, label]
   );
 
   const displayAddress = useMemo(
-    () => abbreviations.address(toChecksumAddress(address) || '', 4, 6),
+    () => abbreviations.address(toChecksumAddress(address) || address, 4, 6),
     [address]
   );
 
@@ -226,7 +225,7 @@ export default function AddressRow({
           contextMenuActions?.remove(walletId, address);
           break;
         case ContextMenuKeys.Notifications:
-          contextMenuActions?.notifications(walletName);
+          contextMenuActions?.notifications(walletName, address);
           break;
         case ContextMenuKeys.Edit:
           contextMenuActions?.edit(walletId, address);

@@ -100,14 +100,13 @@ const getInputAmount = async (
     const quoteParams: QuoteParams = {
       buyAmount,
       buyTokenAddress: outputTokenAddress,
-      chainId: Number(outputChainId),
+      chainId: Number(inputChainId),
       fromAddress,
       sellTokenAddress: inputTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       ...(quoteSource ? { source } : {}),
       swapType: SwapType.normal,
-      toChainId: Number(inputChainId),
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -144,10 +143,7 @@ const getInputAmount = async (
 
     return {
       inputAmount,
-      inputAmountDisplay:
-        inputAmountToDisplay || inputAmount
-          ? String(quoteTradeDetails.buyAmount)
-          : null,
+      inputAmountDisplay,
       tradeDetails: {
         ...quoteTradeDetails,
         inputTokenDecimals: inputToken.decimals,

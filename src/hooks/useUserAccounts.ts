@@ -1,5 +1,4 @@
 import { values } from 'lodash';
-
 import useAccountSettings from './useAccountSettings';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import walletTypes from '@/helpers/walletTypes';

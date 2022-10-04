@@ -35,7 +35,8 @@ export default function ProfileHeaderButton() {
         ) : (
           <ContactAvatar
             color={isNaN(accountColor) ? colors.skeleton : accountColor}
-            size="small"
+            // TODO: remove `legacySmall` size once rainbow home screen revamp is released
+            size="legacySmall"
             value={accountSymbol}
           />
         )}
