@@ -1026,7 +1026,9 @@ export default function ExchangeModal({
     : !!inputCurrency && !!outputCurrency;
 
   const handleConfirmExchangePress = useCallback(() => {
-    const hasZeroBalance = isZero(outputNetworkDetails?.balance?.amount);
+    if (!outputNetworkDetails?.balance?.amount) return NOOP;
+
+    const hasZeroBalance = isZero(outputNetworkDetails.balance.amount);
 
     const showRefuelAddSheet = isCrosschainSwap && hasZeroBalance;
 
