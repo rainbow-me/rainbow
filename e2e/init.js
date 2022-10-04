@@ -29,10 +29,10 @@ beforeAll(async () => {
   ]);
 });
 
-// eslint-disable-next-line jest/no-done-callback
-afterEach(async result => {
-  console.log(result);
-  if (result.status === 'failed' && device.getPlatform() === 'android') {
+afterEach(async function () {
+  testSummary.status = this.currentTest.state || 'failed';
+  console.log(testSummary);
+  if (testSummary.status === 'failed' && device.getPlatform() === 'android') {
     await exec(
       '/opt/homebrew/share/android-commandlinetools/platform-tools/adb emu kill'
     );
@@ -40,4 +40,5 @@ afterEach(async result => {
       '/opt/homebrew/share/android-commandlinetools/emulator/emulator -avd Pixel_5_API_31 -dns-server 8.8.8.8 -no-snapshot-load'
     );
   }
+  await detox.afterEach(testSummary);
 });
