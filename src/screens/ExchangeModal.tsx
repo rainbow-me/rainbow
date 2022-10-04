@@ -881,58 +881,62 @@ export default function ExchangeModal({
     swapSupportsFlashbots,
   ]);
 
-  const navigateToSwapDetailsModal = useCallback(() => {
-    android && Keyboard.dismiss();
-    const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
-    android && (lastFocusedInputHandle.current = null);
-    inputFieldRef?.current?.blur();
-    outputFieldRef?.current?.blur();
-    nativeFieldRef?.current?.blur();
-    const internalNavigate = () => {
-      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
-      setParams({ focused: false });
-      navigate(Routes.SWAP_DETAILS_SHEET, {
-        confirmButtonProps,
-        currentNetwork,
-        flashbotTransaction: flashbots,
-        restoreFocusOnSwapModal: () => {
-          android &&
-            (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
-          setParams({ focused: true });
-        },
-        type: 'swap_details',
-      });
-      analytics.track('Opened Swap Details modal', {
-        inputTokenAddress: inputCurrency?.address || '',
-        inputTokenName: inputCurrency?.name || '',
-        inputTokenSymbol: inputCurrency?.symbol || '',
-        outputTokenAddress: outputCurrency?.address || '',
-        outputTokenName: outputCurrency?.name || '',
-        outputTokenSymbol: outputCurrency?.symbol || '',
-        type,
-      });
-    };
-    ios || !isKeyboardOpen()
-      ? internalNavigate()
-      : Keyboard.addListener('keyboardDidHide', internalNavigate);
-  }, [
-    confirmButtonProps,
-    currentNetwork,
-    flashbots,
-    inputCurrency?.address,
-    inputCurrency?.name,
-    inputCurrency?.symbol,
-    inputFieldRef,
-    lastFocusedInputHandle,
-    nativeFieldRef,
-    navigate,
-    outputCurrency?.address,
-    outputCurrency?.name,
-    outputCurrency?.symbol,
-    outputFieldRef,
-    setParams,
-    type,
-  ]);
+  const navigateToSwapDetailsModal = useCallback(
+    (isRefuelTx = false) => {
+      android && Keyboard.dismiss();
+      const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
+      android && (lastFocusedInputHandle.current = null);
+      inputFieldRef?.current?.blur();
+      outputFieldRef?.current?.blur();
+      nativeFieldRef?.current?.blur();
+      const internalNavigate = () => {
+        android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+        setParams({ focused: false });
+        navigate(Routes.SWAP_DETAILS_SHEET, {
+          confirmButtonProps,
+          currentNetwork,
+          flashbotTransaction: flashbots,
+          isRefuelTx,
+          restoreFocusOnSwapModal: () => {
+            android &&
+              (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+            setParams({ focused: true });
+          },
+          type: 'swap_details',
+        });
+        analytics.track('Opened Swap Details modal', {
+          inputTokenAddress: inputCurrency?.address || '',
+          inputTokenName: inputCurrency?.name || '',
+          inputTokenSymbol: inputCurrency?.symbol || '',
+          outputTokenAddress: outputCurrency?.address || '',
+          outputTokenName: outputCurrency?.name || '',
+          outputTokenSymbol: outputCurrency?.symbol || '',
+          type,
+        });
+      };
+      ios || !isKeyboardOpen()
+        ? internalNavigate()
+        : Keyboard.addListener('keyboardDidHide', internalNavigate);
+    },
+    [
+      confirmButtonProps,
+      currentNetwork,
+      flashbots,
+      inputCurrency?.address,
+      inputCurrency?.name,
+      inputCurrency?.symbol,
+      inputFieldRef,
+      lastFocusedInputHandle,
+      nativeFieldRef,
+      navigate,
+      outputCurrency?.address,
+      outputCurrency?.name,
+      outputCurrency?.symbol,
+      outputFieldRef,
+      setParams,
+      type,
+    ]
+  );
 
   const navigateToRefuelModal = useCallback(() => {
     const getNetworkDetails = (network: Network) => {
@@ -973,7 +977,7 @@ export default function ExchangeModal({
       ) => {
         setRefuel(true);
         handleClose();
-        navigateToSwapDetailsModal();
+        navigateToSwapDetailsModal(true);
       },
       onContinue: (
         navigate: () => void,

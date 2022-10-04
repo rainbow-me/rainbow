@@ -90,7 +90,12 @@ export default function SwapDetailsState({
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
   const {
-    params: { longFormHeight, currentNetwork, flashbotTransaction } = {},
+    params: {
+      longFormHeight,
+      currentNetwork,
+      flashbotTransaction,
+      isRefuelTx,
+    } = {},
   } = useRoute();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
@@ -186,6 +191,7 @@ export default function SwapDetailsState({
           priceImpactPercentDisplay={priceImpactPercentDisplay}
         />
         <SwapDetailsContent
+          isRefuelTx={isRefuelTx}
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={setContentHeight}

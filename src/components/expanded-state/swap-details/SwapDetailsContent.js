@@ -28,6 +28,7 @@ const Container = styled(Box).attrs({
 
 export default function SwapDetailsContent({
   isHighPriceImpact,
+  isRefuelTx,
   onCopySwapDetailsText,
   tradeDetails,
   ...props
@@ -64,7 +65,7 @@ export default function SwapDetailsContent({
             </SwapDetailsValue>
           </SwapDetailsRow>
 
-          {tradeDetails.refuel && (
+          {isRefuelTx && (
             <SwapDetailsRefuelRow
               testID="swaps-details-refuel-row"
               tradeDetails={tradeDetails}
