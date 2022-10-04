@@ -1,7 +1,15 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import Animated, {
+  useSharedValue,
+  withSequence,
+  withTiming,
+  withSpring,
+  Easing,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+
 import { useSelector } from 'react-redux';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
@@ -28,7 +36,7 @@ import {
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { abbreviations } from '@/utils';
+import { abbreviations, deviceUtils } from '@/utils';
 
 const springConfig = {
   damping: 500,
@@ -122,10 +130,39 @@ export default function SwapDetailsState({
   } = useSwapDetailsClipboardState();
 
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
+  const [buttonPosition, setButtonPosition] = useState();
   const [slippageMessageHeight, setSlippageMessageHeight] = useHeight();
   const [contentHeight, setContentHeight] = useHeight(
     FOOTER_CONTENT_MIN_HEIGHT
   );
+
+  const offsetButtonAnimation = useSharedValue(0);
+  const justOpenedSheet = useRef(false);
+
+  const onContentHeightChange = useCallback(
+    event => {
+      // offsetButtonAnimation.value = withSpring()
+      if (justOpenedSheet.current) {
+        console.log({ contentHeight, event });
+        offsetButtonAnimation.value = withSpring(
+          event?.nativeEvent?.layout?.height - contentHeight,
+          {
+            damping: 10,
+            mass: 0.08,
+            stiffness: 100,
+            overshootClamping: true,
+          }
+        );
+        console.log('VVVVVVV', event - contentHeight);
+      }
+      setContentHeight(event);
+    },
+    [contentHeight, offsetButtonAnimation, setContentHeight]
+  );
+
+  const buttonWrapperStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: offsetButtonAnimation.value }],
+  }));
 
   useEffect(() => {
     if (!isFocused && prevIsFocused) {
@@ -144,12 +181,13 @@ export default function SwapDetailsState({
   const contentScroll = useSharedValue(0);
 
   useEffect(() => {
-    contentScroll.value = withSpring(0, springConfig);
     setParams({
       longFormHeight: sheetHeightWithoutKeyboard,
       transitionDuration: 0.7,
     });
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
+
+  console.log({ buttonPosition });
 
   return (
     <SheetKeyboardAnimation
@@ -188,22 +226,39 @@ export default function SwapDetailsState({
         <SwapDetailsContent
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
-          onLayout={setContentHeight}
+          onLayout={onContentHeightChange}
+          onPressMore={() => {
+            justOpenedSheet.current = true;
+          }}
           tradeDetails={tradeDetails}
         />
-        <Footer onLayout={setFooterHeight}>
-          <ConfirmExchangeButton
-            {...confirmButtonProps}
-            testID="swap-details-confirm-button"
-          />
-          <GasSpeedButton
-            asset={outputCurrency}
-            currentNetwork={currentNetwork}
-            flashbotTransaction={flashbotTransaction}
-            testID="swap-details-gas"
-            theme="light"
-          />
-        </Footer>
+        <Animated.View
+          style={[
+            buttonWrapperStyle,
+            buttonPosition && {
+              position: 'absolute',
+              top: buttonPosition.y,
+              width: '100%',
+            },
+          ]}
+          onLayout={e =>
+            !justOpenedSheet.current && setButtonPosition(e.nativeEvent.layout)
+          }
+        >
+          <Footer onLayout={setFooterHeight}>
+            <ConfirmExchangeButton
+              {...confirmButtonProps}
+              testID="swap-details-confirm-button"
+            />
+            <GasSpeedButton
+              asset={outputCurrency}
+              currentNetwork={currentNetwork}
+              flashbotTransaction={flashbotTransaction}
+              testID="swap-details-gas"
+              theme="light"
+            />
+          </Footer>
+        </Animated.View>
         <ToastPositionContainer>
           <CopyToast copiedText={copiedText} copyCount={copyCount} />
         </ToastPositionContainer>

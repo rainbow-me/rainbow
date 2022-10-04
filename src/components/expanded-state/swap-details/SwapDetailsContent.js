@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, View } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
 import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
@@ -32,6 +32,7 @@ export default function SwapDetailsContent({
   isHighPriceImpact,
   onCopySwapDetailsText,
   tradeDetails,
+  onPressMore,
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -103,7 +104,10 @@ export default function SwapDetailsContent({
               }}
             >
               <ButtonPressAnimation
-                onPress={() => setDetailsExpanded(!detailsExpanded)}
+                onPress={() => {
+                  setDetailsExpanded(!detailsExpanded);
+                  onPressMore();
+                }}
                 scaleTo={1.06}
                 style={{
                   // enlarge tap target for details button
