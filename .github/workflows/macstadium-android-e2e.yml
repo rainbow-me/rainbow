@@ -41,9 +41,23 @@ jobs:
           # set up password
           cp android/keystores/debug.keystore android/keystores/rainbow-key.keystore
           sed -i -e "s:rainbow-alias:androiddebugkey:g" android/app/build.gradle
-          export RAINBOW_KEY_ANDROID_PASSWORD=android
+
       - name: Install deps via Yarn
         run: yarn setup-ci
+
+      - name: Start emulator
+        run: |
+          # Stop currently running emulator (without forcing)
+          killall qemu-system-aarch64
+          # Cold boot
+          /opt/homebrew/share/android-commandlinetools/emulator/emulator -avd Pixel_5_API_31 -dns-server 8.8.8.8 -no-snapshot-load &>/dev/null &
+          # Wait for boot
+          booted=0
+          while [ "$booted" != "1" ]; do
+            echo "Waiting for emulator..."
+            booted=`/opt/homebrew/share/android-commandlinetools/platform-tools/adb shell getprop dev.bootcomplete`
+            sleep 1
+          done
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
