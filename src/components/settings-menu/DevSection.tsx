@@ -49,6 +49,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import {
+  addDefaultNotificationGroupSettings,
   removeNotificationSettingsForWallet,
   useAllNotificationSettingsFromStorage,
 } from '@/notifications/settings';
@@ -214,11 +215,13 @@ const DevSection = () => {
     clearAllNotificationSettings();
     await AsyncStorage.clear();
     clearAllStorages();
+    addDefaultNotificationGroupSettings();
   }, [clearAllNotificationSettings]);
 
   const clearMMKVStorage = useCallback(async () => {
     clearAllNotificationSettings();
     clearAllStorages();
+    addDefaultNotificationGroupSettings();
   }, [clearAllNotificationSettings]);
 
   return (
