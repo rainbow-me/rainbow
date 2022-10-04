@@ -141,10 +141,11 @@ export default function CurrencySelectModal() {
   ]);
   const assetsInWallet = useAssetsInWallet() as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
+  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
-  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
 
+  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const NetworkSwitcher = !crosschainSwapsEnabled
     ? NetworkSwitcherv1
     : NetworkSwitcherv2;
@@ -234,7 +235,7 @@ export default function CurrencySelectModal() {
   }, []);
 
   const getWalletCurrencyList = useCallback(() => {
-    const listToUse = crosschainSwapsEnabled
+    const listToUse = crosschainEnabled
       ? swappableUserAssets
       : filteredAssetsInWallet;
     if (type === CurrencySelectionTypes.input) {
@@ -252,7 +253,7 @@ export default function CurrencySelectModal() {
     filteredAssetsInWallet,
     searchQueryForSearch,
     type,
-    crosschainSwapsEnabled,
+    crosschainEnabled,
     swappableUserAssets,
   ]);
 
