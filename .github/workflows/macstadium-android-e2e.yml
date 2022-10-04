@@ -48,7 +48,7 @@ jobs:
       - name: Start emulator
         run: |
           # Stop currently running emulator (without forcing)
-          killall qemu-system-aarch64
+          killall qemu-system-aarch64 || true
           # Cold boot
           /opt/homebrew/share/android-commandlinetools/emulator/emulator -avd Pixel_5_API_31 -dns-server 8.8.8.8 -no-snapshot-load &>/dev/null &
           # Wait for boot
