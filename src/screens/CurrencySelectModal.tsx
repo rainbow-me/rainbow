@@ -48,7 +48,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, filterList, logger } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { SwappableAsset } from '@/entities';
+import { RainbowToken, SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 
@@ -256,10 +256,21 @@ export default function CurrencySelectModal() {
     swappableUserAssets,
   ]);
 
+  const activeSwapCurrencyList = useMemo(() => {
+    if (crosschainExactMatches.length) {
+      // logger.debug('CROSS CHAIN EXACT MATCHES: ', JSON.stringify(crosschainExactMatches[0].data, null, 2));
+      return crosschainExactMatches;
+    }
+    return swapCurrencyList;
+  }, [crosschainExactMatches, swapCurrencyList]);
+
   const currencyList = useMemo(() => {
     let list = (type === CurrencySelectionTypes.input
       ? getWalletCurrencyList()
-      : swapCurrencyList) as { data: EnrichedExchangeAsset[]; title: string }[];
+      : activeSwapCurrencyList) as {
+      data: EnrichedExchangeAsset[];
+      title: string;
+    }[];
 
     // Remove tokens that show up in two lists and empty sections
     let uniqueIds: string[] = [];
@@ -293,7 +304,7 @@ export default function CurrencySelectModal() {
       });
     }
     return list.filter(section => section.data.length > 0);
-  }, [getWalletCurrencyList, type, swapCurrencyList]);
+  }, [activeSwapCurrencyList, getWalletCurrencyList, type]);
 
   const handleFavoriteAsset = useCallback(
     (asset, isFavorited) => {

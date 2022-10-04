@@ -71,7 +71,11 @@ const searchCurrencyList = async (searchParams: {
   const formattedQuery = isAddress ? addHexPrefix(query).toLowerCase() : query;
   if (typeof searchList === 'string') {
     const threshold = isAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
-    if (chainId === MAINNET_CHAINID && !formattedQuery) {
+    if (
+      chainId === MAINNET_CHAINID &&
+      !formattedQuery &&
+      searchList !== 'verifiedAssets'
+    ) {
       return [];
     }
     return tokenSearch({
@@ -270,6 +274,7 @@ const useSwapCurrencyList = (
 
   const getCrosschainVerifiedAssetsForNetwork = useCallback(
     async (network: Network) => {
+      logger.debug('CHAIN ID: ', ethereumUtils.getChainIdFromNetwork(network));
       const results = await searchCurrencyList({
         searchList: 'verifiedAssets',
         query: '',
@@ -562,7 +567,18 @@ const useSwapCurrencyList = (
         }
       }
     });
-    return exactMatches;
+    if (exactMatches?.length) {
+      logger.debug('EXACT MATCHES: ', JSON.stringify(exactMatches, null, 2));
+      return [
+        {
+          data: exactMatches,
+          key: 'verified',
+          title: tokenSectionTypes.crosschainMatchSection,
+          useGradientText: !IS_TEST,
+        },
+      ];
+    }
+    return [];
   }, [
     crosschainVerifiedAssets,
     currencyList.length,
