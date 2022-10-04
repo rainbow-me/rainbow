@@ -1,8 +1,13 @@
 import {
+  CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
+  getCrosschainQuote,
   getQuote,
   Quote,
   QuoteError,
+  QuoteParams,
+  Source,
+  SwapType,
 } from '@rainbow-me/swaps';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
@@ -12,13 +17,13 @@ import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import isTestFlight from '@/helpers/isTestFlight';
 import { useDispatch, useSelector } from 'react-redux';
-import { Token } from '../entities/tokens';
+import { SwappableAsset } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@/analytics';
-import { EthereumAddress } from '@/entities';
+import { AssetType, EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { AppState } from '@/redux/store';
-import { Source, SwapModalField, updateSwapQuote } from '@/redux/swap';
+import { SwapModalField, updateSwapQuote } from '@/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -32,69 +37,86 @@ import { ethereumUtils } from '@/utils';
 import Logger from '@/utils/logger';
 
 const SWAP_POLLING_INTERVAL = 5000;
+
 enum DisplayValue {
   input = 'inputAmountDisplay',
   output = 'outputAmountDisplay',
   native = 'nativeAmountDisplay',
 }
 
-const getSource = (source: Source | null) => {
-  if (source === Source.AggregatorRainbow) return null;
-  return source;
+const getSource = (source: Source) => {
+  if (source === Source.Aggregator0x || source === Source.Aggregotor1inch)
+    return source;
+  return null;
 };
 
 const getInputAmount = async (
   outputAmount: string | null,
-  inputToken: Token,
-  outputToken: Token | null,
+  inputToken: SwappableAsset | null,
+  outputToken: SwappableAsset,
   inputPrice: string | null,
   slippage: number,
-  source: Source | null,
-  fromAddress: EthereumAddress,
-  chainId = 1
-) => {
-  if (!outputAmount || isZero(outputAmount) || !outputToken) {
-    return {
-      inputAmount: null,
-      inputAmountDisplay: null,
-      tradeDetails: null,
-    };
-  }
+  source: Source,
+  fromAddress: EthereumAddress
+): Promise<{
+  inputAmount: string | null;
+  inputAmountDisplay: string | null;
+  quoteError?: QuoteError;
+  tradeDetails: Quote | CrosschainQuote | null;
+} | null> => {
+  if (!inputToken || !outputAmount || isZero(outputAmount) || !outputToken)
+    return null;
 
   try {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    const buyTokenAddress = isNativeAsset(outputToken?.address, network)
-      ? ETH_ADDRESS_AGGREGATORS
-      : outputToken?.address;
-    const sellTokenAddress = isNativeAsset(inputToken?.address, network)
+    const outputChainId = ethereumUtils.getChainIdFromType(
+      outputToken?.type || 'token'
+    );
+    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
+
+    const inputChainId = ethereumUtils.getChainIdFromType(
+      inputToken?.type || 'token'
+    );
+    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
+
+    const inputTokenAddress = isNativeAsset(inputToken?.address, inputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
+
+    const outputTokenAddress = isNativeAsset(
+      outputToken?.address,
+      outputNetwork
+    )
+      ? ETH_ADDRESS_AGGREGATORS
+      : outputToken?.address;
+
+    const isCrosschainSwap = inputNetwork !== outputNetwork;
+    if (isCrosschainSwap) return null;
 
     const buyAmount = convertAmountToRawAmount(
       convertNumberToString(outputAmount),
       outputToken.decimals
     );
-    const realSource = getSource(source);
-    const quoteParams = {
+    const quoteSource = getSource(source);
+    const quoteParams: QuoteParams = {
       buyAmount,
-      buyTokenAddress,
-      chainId: Number(chainId),
+      buyTokenAddress: outputTokenAddress,
+      chainId: Number(inputChainId),
       fromAddress,
-      sellTokenAddress,
+      sellTokenAddress: inputTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
-      source: realSource,
+      ...(quoteSource ? { source } : {}),
+      swapType: SwapType.normal,
     };
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
-    // @ts-ignore About to get quote
-    const quote: Quote = await getQuote(quoteParams);
-    Logger.debug('Got quote', rand, quote);
+    const quote = await getQuote(quoteParams);
 
-    if (!quote || !quote.sellAmount) {
-      const quoteError = (quote as unknown) as QuoteError;
-      if (quoteError.error) {
+    // if no quote, if quote is error or there's no sell amount
+    if (!quote || (quote as QuoteError).error || !(quote as Quote).sellAmount) {
+      if ((quote as QuoteError).error) {
+        const quoteError = (quote as unknown) as QuoteError;
         Logger.log('Quote Error', {
           code: quoteError.error_code,
           msg: quoteError.message,
@@ -106,66 +128,63 @@ const getInputAmount = async (
           tradeDetails: null,
         };
       }
-      return {
-        inputAmount: null,
-        inputAmountDisplay: null,
-        tradeDetails: null,
-      };
+      return null;
     }
-
+    const quoteTradeDetails = quote as Quote;
     const inputAmount = convertRawAmountToDecimalFormat(
-      quote.sellAmount.toString(),
+      quoteTradeDetails.sellAmount.toString(),
       inputToken.decimals
     );
 
     const inputAmountDisplay =
       inputAmount && inputPrice
         ? updatePrecisionToDisplay(inputAmount, inputPrice)
-        : inputAmount
-        ? quote.buyAmount
         : null;
-
-    quote.inputTokenDecimals = inputToken.decimals;
-    quote.outputTokenDecimals = outputToken.decimals;
 
     return {
       inputAmount,
       inputAmountDisplay,
-      tradeDetails: quote,
+      tradeDetails: {
+        ...quoteTradeDetails,
+        inputTokenDecimals: inputToken.decimals,
+        outputTokenDecimals: outputToken.decimals,
+      },
     };
   } catch (e) {
-    return {
-      inputAmount: null,
-      inputAmountDisplay: null,
-      tradeDetails: null,
-    };
+    return null;
   }
 };
 
 const getOutputAmount = async (
   inputAmount: string | null,
-  inputToken: Token,
-  outputToken: Token | null,
+  inputToken: SwappableAsset,
+  outputToken: SwappableAsset | null,
   outputPrice: string | number | null | undefined,
   slippage: number,
   source: Source,
-  fromAddress: EthereumAddress,
-  chainId = 1
-) => {
-  if (!inputAmount || isZero(inputAmount) || !outputToken) {
-    return {
-      outputAmount: null,
-      outputAmountDisplay: null,
-      tradeDetails: null,
-    };
-  }
+  fromAddress: EthereumAddress
+): Promise<{
+  outputAmount: string | null;
+  outputAmountDisplay: string | null;
+  tradeDetails: Quote | CrosschainQuote | null;
+  quoteError?: QuoteError;
+} | null> => {
+  if (!inputAmount || isZero(inputAmount) || !outputToken) return null;
 
   try {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    const buyTokenAddress = isNativeAsset(outputToken?.address, network)
+    const outputChainId = ethereumUtils.getChainIdFromType(
+      outputToken?.type || AssetType.token
+    );
+    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
+    const buyTokenAddress = isNativeAsset(outputToken?.address, outputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
-    const sellTokenAddress = isNativeAsset(inputToken?.address, network)
+    const inputChainId = ethereumUtils.getChainIdFromType(
+      inputToken?.type || AssetType.token
+    );
+    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
+
+    const sellTokenAddress = isNativeAsset(inputToken?.address, inputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : inputToken?.address;
 
@@ -173,47 +192,58 @@ const getOutputAmount = async (
       convertNumberToString(inputAmount),
       inputToken.decimals
     );
-    const realSource = getSource(source);
-    const quoteParams = {
-      buyAmount: null || '0',
+    const isCrosschainSwap = outputNetwork !== inputNetwork;
+    const quoteSource = getSource(source);
+    const quoteParams: QuoteParams = {
       buyTokenAddress,
-      chainId: Number(chainId),
+      chainId: Number(inputChainId),
       fromAddress,
       sellAmount,
       sellTokenAddress,
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
-      source: realSource,
+      ...(quoteSource ? { source } : {}),
+      swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+      toChainId: Number(outputChainId),
+      refuel: false,
     };
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
-    // @ts-ignore About to get quote
-    const quote: Quote = await getQuote(quoteParams);
+
+    const quote:
+      | Quote
+      | CrosschainQuote
+      | QuoteError
+      | null = await (isCrosschainSwap ? getCrosschainQuote : getQuote)(
+      quoteParams
+    );
     Logger.debug('Got quote', rand, quote);
 
-    if (!quote || !quote.buyAmount) {
-      const quoteError = (quote as unknown) as QuoteError;
+    if (
+      !quote ||
+      (quote as QuoteError)?.error ||
+      !(quote as Quote)?.buyAmount
+    ) {
+      const quoteError = quote as QuoteError;
       if (quoteError.error) {
         Logger.log('Quote Error', {
           code: quoteError.error_code,
           msg: quoteError.message,
         });
         return {
+          quoteError,
           outputAmount: null,
           outputAmountDisplay: null,
-          quoteError,
           tradeDetails: null,
         };
       }
-      return {
-        outputAmount: null,
-        outputAmountDisplay: null,
-        tradeDetails: null,
-      };
+      return null;
     }
+
+    const tradeDetails = quote as Quote | CrosschainQuote;
     const outputAmount = convertRawAmountToDecimalFormat(
-      quote.buyAmount.toString(),
+      tradeDetails.buyAmount.toString(),
       outputToken.decimals
     );
     const outputAmountDisplay = updatePrecisionToDisplay(
@@ -221,20 +251,17 @@ const getOutputAmount = async (
       outputPrice
     );
 
-    quote.inputTokenDecimals = inputToken.decimals;
-    quote.outputTokenDecimals = outputToken.decimals;
-
     return {
       outputAmount,
       outputAmountDisplay,
-      tradeDetails: quote,
+      tradeDetails: {
+        ...tradeDetails,
+        inputTokenDecimals: inputToken.decimals,
+        outputTokenDecimals: outputToken.decimals,
+      },
     };
   } catch (e) {
-    return {
-      outputAmount: null,
-      outputAmountDisplay: null,
-      tradeDetails: null,
-    };
+    return null;
   }
 };
 
@@ -250,7 +277,7 @@ const displayValues: { [key in DisplayValue]: string | null } = {
   [DisplayValue.native]: null,
 };
 
-export default function useSwapDerivedOutputs(chainId: number, type: string) {
+export default function useSwapDerivedOutputs(type: string) {
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
 
@@ -312,7 +339,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   }, [dispatch]);
 
   const getTradeDetails = useCallback(async () => {
-    let tradeDetails = null;
+    if (!independentValue) {
+      return resetSwapInputs();
+    }
 
     if (independentValue === '0.') {
       switch (independentField) {
@@ -338,60 +367,54 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         result: {
           derivedValues,
           displayValues,
-          tradeDetails,
+          tradeDetails: null,
         },
       };
     }
 
-    if (!independentValue) {
-      return resetSwapInputs();
-    }
-
-    const inputToken = inputCurrency;
-    const outputToken = outputCurrency;
+    let tradeDetails = null;
     const slippagePercentage = slippageInBips / 100;
     let quoteError: QuoteError | undefined;
 
     if (independentField === SwapModalField.input) {
-      derivedValues[SwapModalField.input] = independentValue;
-
-      displayValues[DisplayValue.input] = independentValue;
-
       const nativeValue = inputPrice
         ? convertAmountToNativeAmount(independentValue, inputPrice)
         : null;
-
+      derivedValues[SwapModalField.input] = independentValue;
+      displayValues[DisplayValue.input] = independentValue;
       derivedValues[SwapModalField.native] = nativeValue;
       displayValues[DisplayValue.native] = nativeValue;
 
       if (derivedValues[SwapModalField.input] !== independentValue) return;
+
+      const outputAmountData = await getOutputAmount(
+        independentValue,
+        inputCurrency,
+        outputCurrency,
+        outputPrice,
+        slippagePercentage,
+        source,
+        accountAddress
+      );
+
+      // if original value changed, ignore new quote
+      if (
+        derivedValues[SwapModalField.input] !== independentValue ||
+        !outputAmountData
+      )
+        return null;
+
       const {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
         quoteError: newQuoteError,
-      } = await getOutputAmount(
-        independentValue,
-        inputToken,
-        outputToken,
-        outputPrice,
-        slippagePercentage,
-        source,
-        accountAddress,
-        chainId
-      );
-      // if original value changed, ignore new quote
-      if (derivedValues[SwapModalField.input] !== independentValue) return;
+      } = outputAmountData;
 
       tradeDetails = newTradeDetails;
       quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
-      // @ts-ignore next-line
-      displayValues[DisplayValue.output] = outputAmount
-        ? outputAmountDisplay?.toString()
-        : null;
-
-      independentValue;
+      displayValues[DisplayValue.output] = outputAmountDisplay;
     } else if (independentField === SwapModalField.native) {
       const inputAmount =
         independentValue && inputPrice
@@ -402,43 +425,47 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
             )
           : null;
 
-      derivedValues[SwapModalField.native] = independentValue;
-      displayValues[DisplayValue.native] = independentValue;
-      derivedValues[SwapModalField.input] = inputAmount;
-
       const inputAmountDisplay = updatePrecisionToDisplay(
         inputAmount,
         inputPrice,
         true
       );
+      derivedValues[SwapModalField.native] = independentValue;
+      displayValues[DisplayValue.native] = independentValue;
+      derivedValues[SwapModalField.input] = inputAmount;
       displayValues[DisplayValue.input] = inputAmountDisplay;
 
       if (derivedValues[SwapModalField.native] !== independentValue) return;
+
+      const outputAmountData = await getOutputAmount(
+        inputAmount,
+        inputCurrency,
+        outputCurrency,
+        outputPrice,
+        slippagePercentage,
+        source,
+        accountAddress
+      );
+      // if original value changed, ignore new quote
+      if (
+        derivedValues[SwapModalField.native] !== independentValue ||
+        !outputAmountData
+      )
+        return null;
+
       const {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
         quoteError: newQuoteError,
-      } = await getOutputAmount(
-        inputAmount,
-        inputToken,
-        outputToken,
-        outputPrice,
-        slippagePercentage,
-        source,
-        accountAddress,
-        chainId
-      );
-      // if original value changed, ignore new quote
-      if (derivedValues[SwapModalField.native] !== independentValue) return;
+      } = outputAmountData;
 
       tradeDetails = newTradeDetails;
       quoteError = newQuoteError;
       derivedValues[SwapModalField.output] = outputAmount;
-      displayValues[DisplayValue.output] =
-        outputAmountDisplay?.toString() || null;
+      displayValues[DisplayValue.output] = outputAmountDisplay;
     } else {
-      if (!outputToken || !inputToken) {
+      if (!outputCurrency || !inputCurrency) {
         return {
           quoteError: null,
           result: {
@@ -452,34 +479,40 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       displayValues[DisplayValue.output] = independentValue;
 
       if (derivedValues[SwapModalField.output] !== independentValue) return;
+
+      const inputAmountData = await getInputAmount(
+        independentValue,
+        inputCurrency,
+        outputCurrency,
+        inputPrice,
+        slippagePercentage,
+        source,
+        accountAddress
+      );
+
+      // if original value changed, ignore new quote
+      if (
+        derivedValues[SwapModalField.output] !== independentValue ||
+        !inputAmountData
+      )
+        return null;
+
       const {
         inputAmount,
         inputAmountDisplay,
         tradeDetails: newTradeDetails,
         quoteError: newQuoteError,
-      } = await getInputAmount(
-        independentValue,
-        inputToken,
-        outputToken,
-        inputPrice.toString(),
-        slippagePercentage,
-        source,
-        accountAddress,
-        chainId
-      );
-      // if original value changed, ignore new quote
-      if (derivedValues[SwapModalField.output] !== independentValue) return;
-      quoteError = newQuoteError;
+      } = inputAmountData;
 
-      tradeDetails = newTradeDetails;
-      derivedValues[SwapModalField.input] = inputAmount || '0';
-      // @ts-ignore next-line
-      displayValues[DisplayValue.input] = inputAmountDisplay;
       const nativeValue =
         inputPrice && inputAmount
           ? convertAmountToNativeAmount(inputAmount, inputPrice)
           : null;
 
+      quoteError = newQuoteError;
+      tradeDetails = newTradeDetails;
+      derivedValues[SwapModalField.input] = inputAmount;
+      displayValues[DisplayValue.input] = inputAmountDisplay;
       derivedValues[SwapModalField.native] = nativeValue;
       displayValues[DisplayValue.native] = nativeValue;
     }
@@ -487,7 +520,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     const data = {
       derivedValues,
       displayValues,
-      doneLoadingReserves: true,
       quoteError,
       tradeDetails,
     };
@@ -499,25 +531,25 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         tradeDetails: data.tradeDetails,
       })
     );
-    const slippage = slippageInBips / 100;
     analytics.track(`Updated ${type} details`, {
       aggregator: data.tradeDetails?.source || '',
-      inputTokenAddress: inputToken?.address || '',
-      inputTokenName: inputToken?.name || '',
-      inputTokenSymbol: inputToken?.symbol || '',
+      inputTokenAddress: inputCurrency?.address || '',
+      inputTokenName: inputCurrency?.name || '',
+      inputTokenSymbol: inputCurrency?.symbol || '',
       liquiditySources: (data.tradeDetails?.protocols as any[]) || [],
-      network: ethereumUtils.getNetworkFromChainId(chainId),
-      outputTokenAddress: outputToken?.address || '',
-      outputTokenName: outputToken?.name || '',
-      outputTokenSymbol: outputToken?.symbol || '',
-      slippage: isNaN(slippage) ? 'Error calculating slippage.' : slippage,
+      network: ethereumUtils.getNetworkFromChainId(inputCurrency.chainId),
+      outputTokenAddress: outputCurrency?.address || '',
+      outputTokenName: outputCurrency?.name || '',
+      outputTokenSymbol: outputCurrency?.symbol || '',
+      slippage: isNaN(slippagePercentage)
+        ? 'Error calculating slippage.'
+        : slippagePercentage,
       type,
     });
 
     return { quoteError, result: data };
   }, [
     accountAddress,
-    chainId,
     dispatch,
     independentField,
     independentValue,
@@ -536,9 +568,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       'getTradeDetails',
       independentField,
       independentValue,
-      derivedValues[SwapModalField.output],
-      derivedValues[SwapModalField.input],
-      derivedValues[SwapModalField.native],
       inputCurrency,
       outputCurrency,
       inputPrice,

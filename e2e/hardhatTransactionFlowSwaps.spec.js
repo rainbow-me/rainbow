@@ -94,6 +94,56 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
+  it('Should go to settings and enable cross chain swaps', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+    await Helpers.waitAndTap('settings-button');
+    await Helpers.checkIfVisible('settings-sheet');
+    await Helpers.waitAndTap('developer-section');
+    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
+    await Helpers.tapByText('Crosschain Swaps');
+    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should be able to do a cross chain swap', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
+    await Helpers.waitAndTap('exchange-modal-output-selection-button');
+    await Helpers.waitAndTap('currency-select-network-switcher-optimism');
+    await Helpers.typeText('currency-select-search-input', 'USDC', true);
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-USDC-optimism'
+    );
+    await Helpers.typeText('exchange-modal-input', '0.001', true);
+    if (ios) {
+      await Helpers.tapAndLongPress('exchange-modal-confirm-button');
+    } else {
+      await Helpers.tap('exchange-modal-confirm-button');
+    }
+    await Helpers.tapAndLongPress('swap-details-confirm-button');
+    await acceptAlertIfGasPriceIsHigh();
+    if (android) {
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
+  });
+
+  it('Should go to settings and disable cross chain swaps', async () => {
+    await Helpers.checkIfVisible('profile-screen');
+    await Helpers.waitAndTap('settings-button');
+    await Helpers.checkIfVisible('settings-sheet');
+    await Helpers.waitAndTap('developer-section');
+    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
+    await Helpers.tapByText('Crosschain Swaps');
+    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip('Should withdraw DAI (via Compound)', async () => {
     await Helpers.waitAndTap('savings-list-row-DAI');

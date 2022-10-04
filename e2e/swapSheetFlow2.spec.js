@@ -58,6 +58,116 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
+  it('Should enable cross chain swaps and connect to hardhat', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+    await Helpers.waitAndTap('settings-button');
+    await Helpers.checkIfVisible('settings-sheet');
+    await Helpers.waitAndTap('developer-section');
+    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
+    await Helpers.tapByText('Crosschain Swaps');
+    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should go to swap and try different cross chain swaps', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
+
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
+    await Helpers.checkIfVisible(`exchange-modal-output-empty-empty`);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('network-switcher-v2');
+    await Helpers.tap('currency-select-network-switcher-optimism');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-optimism');
+    await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
+    await Helpers.checkIfVisible(`exchange-modal-output-DAI-optimism`);
+
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('network-switcher-v2');
+    await Helpers.tap('currency-select-network-switcher-arbitrum');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
+    await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
+    await Helpers.checkIfVisible(`exchange-modal-output-DAI-arbitrum`);
+
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('network-switcher-v2');
+    await Helpers.swipe('network-switcher-v2-scroll-view', 'left', 'slow');
+    await Helpers.tap('currency-select-network-switcher-polygon');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-polygon');
+    await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
+    await Helpers.checkIfVisible(`exchange-modal-output-DAI-polygon`);
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+
+  it('Should go to expanded asset state and check if cross chain available networks component is visible', async () => {
+    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.typeText('discover-search-input', 'WBTC\n', true);
+    await Helpers.waitAndTap(
+      'discover-currency-select-list-exchange-coin-row-WBTC-token'
+    );
+    // Not feature complete yet so just checking is visible
+    await Helpers.checkIfVisible(`available-networks-v2`);
+    await Helpers.swipe('expanded-state-header', 'down');
+    await Helpers.tapByText('Done');
+    await Helpers.swipe('discover-header', 'right', 'slow');
+  });
+
+  it('Should go to settings and disable cross chain swaps', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+    await Helpers.waitAndTap('settings-button');
+    await Helpers.checkIfVisible('settings-sheet');
+    await Helpers.waitAndTap('developer-section');
+    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
+    await Helpers.tapByText('Crosschain Swaps');
+    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should go to swap and check that choosing a different asset network is cleaning the other input token', async () => {
+    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.waitAndTap('currency-select-network-switcher-1');
+    await Helpers.tapByText('Optimism');
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ETH-optimism'
+    );
+    await Helpers.waitAndTap('explainer-sheet-accent-action-button');
+    await Helpers.checkIfVisible(`exchange-modal-input-empty-empty`);
+    await Helpers.checkIfVisible(`exchange-modal-output-ETH-optimism`);
+    await Helpers.tap('exchange-modal-input-selection-button');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ETH-token'
+    );
+    await Helpers.checkIfVisible(`exchange-modal-input-ETH-token`);
+    await Helpers.checkIfVisible(`exchange-modal-output-empty-empty`);
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+
+  it('Should go to expanded asset state and check if cross chain available networks component is not visible', async () => {
+    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.typeText('discover-search-input', 'WBTC\n', true);
+    await Helpers.waitAndTap(
+      'discover-currency-select-list-exchange-coin-row-WBTC-token'
+    );
+    // Not feature complete yet so just checking is visible
+    await Helpers.checkIfNotVisible(`available-networks-v2`);
+    await Helpers.swipe('expanded-state-header', 'down');
+    await Helpers.tapByText('Done');
+    await Helpers.swipe('discover-header', 'right', 'slow');
+  });
+
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ETH as output', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');

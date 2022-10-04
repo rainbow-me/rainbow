@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, StatusBar } from 'react-native';
+import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainBadge, CoinIcon } from '../components/coin-icon';
 import {
@@ -550,6 +550,21 @@ export const explainers = (params, colors) => ({
       </Text>
     ),
   },
+  noRouteFound: {
+    extraHeight: -90,
+    emoji: '🚧',
+    title: lang.t('explain.no_route_found.title'),
+    stillCurious: (
+      <>
+        <Text {...getBodyTextPropsWithColor(colors)}>
+          {lang.t('explain.no_route_found.fragment1')}
+        </Text>
+        <Text {...getBodyTextPropsWithColor(colors)}>
+          {lang.t('explain.no_route_found.fragment2')}
+        </Text>
+      </>
+    ),
+  },
   noQuote: {
     extraHeight: -90,
     emoji: '🏦',
@@ -854,6 +869,7 @@ const ExplainSheet = () => {
           colors[explainSheetConfig.button?.textColor] || colors.appleBlue
         }
         weight="heavy"
+        testID={'explainer-sheet-accent'}
       />
     );
     const buttonArray = [secondaryButton, accentCta];
@@ -877,8 +893,6 @@ const ExplainSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      {ios && <StatusBar barStyle="light-content" />}
-
       <SlackSheet
         additionalTopPadding={android}
         contentHeight={sheetHeight}

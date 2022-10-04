@@ -7,7 +7,7 @@ import UnderlyingAssetCoinRow from '../../coin-row/UnderlyingAssetCoinRow';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { useAccountSettings, useColorForAsset } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils } from '@/utils';
@@ -46,9 +46,11 @@ export default function UnderlyingAsset({
 
     // on iOS we handle this on native side
     android && removeNextToLastRoute();
-
+    const isFromWalletScreen = Navigation.getActiveRoute().params
+      ?.isFromWalletScreen;
     push(Routes.EXPANDED_ASSET_SHEET, {
       asset,
+      isFromWalletScreen,
       type: 'token',
     });
   }, [address, genericAssets, nativeCurrency, push, removeNextToLastRoute]);

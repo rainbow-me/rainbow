@@ -11,13 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  InteractionManager,
-  Keyboard,
-  Linking,
-  StatusBar,
-  TextInput,
-} from 'react-native';
+import { InteractionManager, Keyboard, Linking, TextInput } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -148,6 +142,12 @@ export default function CurrencySelectModal() {
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
+  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+
+  const NetworkSwitcher = !crosschainSwapsEnabled
+    ? NetworkSwitcherv1
+    : NetworkSwitcherv2;
+
   useEffect(() => {
     if (chainId && typeof chainId === 'number') {
       setCurrentChainId(chainId);
@@ -161,7 +161,7 @@ export default function CurrencySelectModal() {
       let filteredAssetsInWallet = assetsInWallet?.filter(
         asset => !hiddenCoinsObj[asset.uniqueId]
       );
-      //TODO: remove this once BACK-219 is fixed
+      // TODO: remove this once BACK-219 is fixed
       if (fromDiscover && defaultOutputAsset?.implementations) {
         const outputTokenNetworks = Object.keys(
           defaultOutputAsset?.implementations
@@ -389,7 +389,7 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
-      if (checkForRequiredAssets(item)) return;
+      if (!crosschainSwapsEnabled && checkForRequiredAssets(item)) return;
 
       const isMainnet = currentChainId === 1;
       const assetWithType =
@@ -405,6 +405,7 @@ export default function CurrencySelectModal() {
         onSelectCurrency(assetWithType, handleNavigate);
       };
       if (
+        !crosschainSwapsEnabled &&
         checkForSameNetwork(
           assetWithType,
           selectAsset,
@@ -418,13 +419,14 @@ export default function CurrencySelectModal() {
       selectAsset();
     },
     [
+      crosschainSwapsEnabled,
       checkForRequiredAssets,
+      currentChainId,
+      type,
       checkForSameNetwork,
       dispatch,
-      currentChainId,
       callback,
       onSelectCurrency,
-      type,
       handleNavigate,
     ]
   );
@@ -483,8 +485,6 @@ export default function CurrencySelectModal() {
     fromDiscover,
   ]);
 
-  const isFocusedAndroid = useIsFocused() && android;
-
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
     setCurrentChainId(chainId);
@@ -509,11 +509,6 @@ export default function CurrencySelectModal() {
     ],
   }));
 
-  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = !crosschainEnabled
-    ? NetworkSwitcherv1
-    : NetworkSwitcherv2;
-
   return (
     <Wrapper>
       <Box as={Animated.View} height="full" width="full" style={style}>
@@ -525,7 +520,6 @@ export default function CurrencySelectModal() {
           overflow="hidden"
           radius={30}
         >
-          {isFocusedAndroid && <StatusBar barStyle="light-content" />}
           <GestureBlocker type="top" />
           <Rows>
             <Row height="content">

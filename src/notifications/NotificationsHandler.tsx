@@ -1,4 +1,10 @@
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { useContacts, usePrevious, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
@@ -39,13 +45,20 @@ import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/tran
 import { TransactionDirection, TransactionStatus } from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
-import { isZero } from '@/helpers/utilities';
+import { delay, isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
+import { notificationsSubscription } from '@/redux/explorer';
+import {
+  addDefaultNotificationSettingsForWallet,
+  NotificationRelationship,
+} from './settings';
+import walletTypes from '@/helpers/walletTypes';
 
 type Callback = () => void;
 
 type Props = PropsWithChildren<{ walletReady: boolean }>;
+type ValueOf<T> = T[keyof T];
 
 export const NotificationsHandler = ({ children, walletReady }: Props) => {
   const wallets = useWallets();
@@ -69,44 +82,6 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
    */
   syncedStateRef.current.wallets = wallets;
   syncedStateRef.current.contacts = contacts;
-
-  useEffect(() => {
-    setupAndroidChannels();
-    saveFCMToken();
-    onTokenRefreshListener.current = registerTokenRefreshListener();
-    foregroundNotificationListener.current = messaging().onMessage(
-      onForegroundRemoteNotification
-    );
-    messaging().setBackgroundMessageHandler(onBackgroundRemoteNotification);
-    messaging().getInitialNotification().then(handleAppOpenedWithNotification);
-    notificationOpenedListener.current = messaging().onNotificationOpenedApp(
-      handleAppOpenedWithNotification
-    );
-    appStateListener.current = ApplicationState.addEventListener(
-      'change',
-      nextAppState => {
-        if (appState.current === 'background' && nextAppState === 'active') {
-          handleDeferredNotificationIfNeeded();
-        }
-      }
-    );
-    notifeeForegroundEventListener.current = notifee.onForegroundEvent(
-      handleNotificationPressed
-    );
-
-    return () => {
-      onTokenRefreshListener.current?.();
-      foregroundNotificationListener.current?.();
-      notificationOpenedListener.current?.();
-      appStateListener.current?.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (prevWalletReady !== walletReady) {
-      handleDeferredNotificationIfNeeded();
-    }
-  }, [walletReady]);
 
   const onForegroundRemoteNotification = (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage
@@ -142,13 +117,15 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     }, WALLETCONNECT_SYNC_DELAY);
   };
 
-  const handleDeferredNotificationIfNeeded = () => {
+  const handleDeferredNotificationIfNeeded = useCallback(async () => {
     const notification = NotificationStorage.getDeferredNotification();
     if (notification) {
+      // wait to wallet to load completely before opening
+      await delay(3000);
       performActionBasedOnOpenedNotificationType(notification);
       NotificationStorage.clearDeferredNotification();
     }
-  };
+  }, []);
 
   const handleAppOpenedWithNotification = (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
@@ -322,6 +299,72 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       }
     }
   };
+
+  const addresses = useMemo(() => {
+    const addresses: {
+      address: string;
+      relationship: ValueOf<typeof NotificationRelationship>;
+    }[] = [];
+    Object.values(wallets.wallets || {}).forEach(wallet =>
+      wallet?.addresses.forEach(
+        ({ address, visible }: { address: string; visible: boolean }) =>
+          visible &&
+          addresses.push({
+            address,
+            relationship:
+              wallet.type === walletTypes.readOnly
+                ? NotificationRelationship.WATCHER
+                : NotificationRelationship.OWNER,
+          })
+      )
+    );
+    return addresses;
+  }, [wallets]);
+
+  useEffect(() => {
+    setupAndroidChannels();
+    saveFCMToken();
+    onTokenRefreshListener.current = registerTokenRefreshListener();
+    foregroundNotificationListener.current = messaging().onMessage(
+      onForegroundRemoteNotification
+    );
+    messaging().setBackgroundMessageHandler(onBackgroundRemoteNotification);
+    messaging().getInitialNotification().then(handleAppOpenedWithNotification);
+    notificationOpenedListener.current = messaging().onNotificationOpenedApp(
+      handleAppOpenedWithNotification
+    );
+    appStateListener.current = ApplicationState.addEventListener(
+      'change',
+      nextAppState => {
+        if (appState.current === 'background' && nextAppState === 'active') {
+          handleDeferredNotificationIfNeeded();
+        }
+      }
+    );
+    notifeeForegroundEventListener.current = notifee.onForegroundEvent(
+      handleNotificationPressed
+    );
+
+    return () => {
+      onTokenRefreshListener.current?.();
+      foregroundNotificationListener.current?.();
+      notificationOpenedListener.current?.();
+      appStateListener.current?.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (walletReady && prevWalletReady !== walletReady) {
+      handleDeferredNotificationIfNeeded();
+    }
+  }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
+
+  useEffect(() => {
+    addresses.forEach(({ address, relationship }) => {
+      dispatch(notificationsSubscription(address));
+      addDefaultNotificationSettingsForWallet(address, relationship);
+    });
+  }, [addresses, dispatch]);
 
   return children;
 };

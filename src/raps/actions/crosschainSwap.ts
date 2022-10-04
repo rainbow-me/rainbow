@@ -1,12 +1,8 @@
 import { Wallet } from '@ethersproject/wallet';
 import {
   ChainId,
-  ETH_ADDRESS,
-  fillQuote,
-  Quote,
-  unwrapNativeAsset,
-  wrapNativeAsset,
-  WRAPPED_ASSET,
+  CrosschainQuote,
+  fillCrosschainQuote,
 } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
@@ -32,11 +28,11 @@ import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
-import { estimateSwapGasLimit } from '@/handlers/swap';
+import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 
-const actionName = 'swap';
+const actionName = 'crosschainSwap';
 
-export const executeSwap = async ({
+export const executeCrosschainSwap = async ({
   chainId,
   gasLimit,
   maxFeePerGas,
@@ -54,7 +50,7 @@ export const executeSwap = async ({
   maxPriorityFeePerGas: string;
   gasPrice: string;
   nonce?: number;
-  tradeDetails: Quote | null;
+  tradeDetails: CrosschainQuote | null;
   wallet: Wallet | null;
   permit: boolean;
   flashbots: boolean;
@@ -80,7 +76,6 @@ export const executeSwap = async ({
 
   if (!walletToUse || !tradeDetails) return null;
 
-  const { sellTokenAddress, buyTokenAddress } = tradeDetails;
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
@@ -91,61 +86,18 @@ export const executeSwap = async ({
     nonce: nonce ? toHex(nonce) : undefined,
   };
 
-  // Wrap Eth
-  if (
-    sellTokenAddress === ETH_ADDRESS &&
-    buyTokenAddress === WRAPPED_ASSET[chainId]
-  ) {
-    logger.debug(
-      'wrapping native asset',
-      tradeDetails.buyAmount,
-      walletToUse.address,
-      chainId
-    );
-    return wrapNativeAsset(
-      tradeDetails.buyAmount,
-      walletToUse,
-      chainId,
-      transactionParams
-    );
-    // Unwrap Weth
-  } else if (
-    sellTokenAddress === WRAPPED_ASSET[chainId] &&
-    buyTokenAddress === ETH_ADDRESS
-  ) {
-    logger.debug(
-      'unwrapping native asset',
-      tradeDetails.sellAmount,
-      walletToUse.address,
-      chainId
-    );
-    return unwrapNativeAsset(
-      tradeDetails.sellAmount,
-      walletToUse,
-      chainId,
-      transactionParams
-    );
-    // Swap
-  } else {
-    logger.debug(
-      'FILLQUOTE',
-      tradeDetails,
-      transactionParams,
-      walletToUse.address,
-      permit,
-      chainId
-    );
-    return fillQuote(
-      tradeDetails,
-      transactionParams,
-      walletToUse,
-      permit,
-      chainId
-    );
-  }
+  logger.debug(
+    'FILLCROSSCHAINSWAP',
+    tradeDetails,
+    transactionParams,
+    walletToUse.address,
+    permit,
+    chainId
+  );
+  return fillCrosschainQuote(tradeDetails, transactionParams, walletToUse);
 };
 
-const swap = async (
+const crosschainSwap = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
@@ -193,10 +145,10 @@ const swap = async (
   }
   let gasLimit;
   try {
-    const newGasLimit = await estimateSwapGasLimit({
+    const newGasLimit = await estimateCrosschainSwapGasLimit({
       chainId: Number(chainId),
       requiresApprove,
-      tradeDetails,
+      tradeDetails: tradeDetails as CrosschainQuote,
     });
     gasLimit = newGasLimit;
   } catch (e) {
@@ -219,22 +171,23 @@ const swap = async (
       flashbots: !!parameters.flashbots,
       gasLimit,
       nonce,
-      permit: !!permit,
       tradeDetails,
       wallet,
     };
 
     // @ts-ignore
-    swap = await executeSwap(swapParams);
-    dispatch(
-      additionalDataUpdateL2AssetToWatch({
-        hash: swap?.hash || '',
-        inputCurrency,
-        network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-        outputCurrency,
-        userAddress: accountAddress,
-      })
-    );
+    swap = await executeCrosschainSwap(swapParams);
+    if (swap?.hash) {
+      dispatch(
+        additionalDataUpdateL2AssetToWatch({
+          hash: swap?.hash,
+          inputCurrency,
+          network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
+          outputCurrency,
+          userAddress: accountAddress,
+        })
+      );
+    }
 
     if (permit) {
       // Clear the allowance
@@ -284,4 +237,4 @@ const swap = async (
   return swap?.nonce;
 };
 
-export { swap };
+export { crosschainSwap };

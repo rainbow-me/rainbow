@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { Linking, StatusBar } from 'react-native';
+import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
@@ -47,8 +47,6 @@ const ExternalLinkWarningSheet = () => {
       height={ExternalLinkWarningSheetHeight}
       insets={insets}
     >
-      {ios && <StatusBar barStyle="light-content" />}
-
       {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         additionalTopPadding={android}

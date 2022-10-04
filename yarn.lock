@@ -4212,10 +4212,10 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.14.tgz#9772f9a5ab21b6d3f88d9f90424f5d42b4f68fd2"
-  integrity sha512-AJlirHhXhRfnTuRt1Yr4L4qTtuVGUF21FpCjfy02jUSsYYJ6GxVSuUWdqePNgKaADfMQwp/R/i1tP7Y1di6CmQ==
+"@rainbow-me/swaps@0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.15.tgz#5f9cfc8882191e5a625024e02b2a9d00cbfbfa10"
+  integrity sha512-lMohX0gJ8jA9gfhIzuRuMYf7BANUe9nQigTebGGJF42Luv4Bgvz1UvaaeIVixsj7iHmgyqOEZDkh6Q3fmVA+5Q==
   dependencies:
     "@ethersproject/abi" "5.6.0"
     "@ethersproject/bignumber" "5.6.0"
@@ -8424,9 +8424,10 @@ currency.js@2.0.4:
   dependencies:
     internmap "1 - 2"
 
-"d3-color@1 - 3":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-3.0.1.tgz#03316e595955d1fcd39d9f3610ad41bb90194d0a"
+"d3-color@1 - 3", d3-color@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-3.1.0.tgz#395b2833dfac71507f12ac2f7af23bf819de24e2"
+  integrity sha512-zg/chbXyeBtMQ1LbD/WSoW2DpC3I0mpmPdW+ynRTj/x2DAWYrIY7qeZIHidozwV24m4iavr15lNwIwLxRmOxhA==
 
 "d3-format@1 - 3":
   version "3.1.0"
@@ -10768,10 +10769,10 @@ fs-extra@^1.0.0:
     jsonfile "^2.1.0"
     klaw "^1.0.0"
 
-fs-extra@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.0.0.tgz#9ff61b655dde53fb34a82df84bb214ce802e17c1"
-  integrity sha512-C5owb14u9eJwizKGdchcDUQeFtlSHHthBk8pbX9Vc1PFZrLombudjDnNns88aYslCyF6IY5SUw3Roz6xShcEIQ==
+fs-extra@^10.1.0:
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.1.0.tgz#02873cfbc4084dde127eaa5f9905eef2325d1abf"
+  integrity sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==
   dependencies:
     graceful-fs "^4.2.0"
     jsonfile "^6.0.1"
@@ -16172,14 +16173,14 @@ react-native-android-keyboard-adjust@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-android-keyboard-adjust/-/react-native-android-keyboard-adjust-1.2.0.tgz#7988b1258482c08548ce972401b2ae03a674fcb4"
 
-react-native-bootsplash@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-bootsplash/-/react-native-bootsplash-4.1.0.tgz#2d11f855f914116a268f7b263832747d974702ce"
-  integrity sha512-otFBLou7+zlKNN0ikGH7lEDk5NgBpWinjukwEYt+ysBYjH5YGodMe1kB5tRjcULwHha1Y2Z4WZc9TqnNGReuLA==
+react-native-bootsplash@4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-bootsplash/-/react-native-bootsplash-4.3.2.tgz#347b024975dc344310ee4d95cb3be56b0b39e381"
+  integrity sha512-HzXl6AKk4sRjEtV+1C7q4gSXP5kYMhpzGaB4DllZNObdZ8oVH8Ac7Y9ShKZ8wLQLJaG/TtzyGHKIDaNi0oNGJA==
   dependencies:
-    chalk "^4.1.2"
-    fs-extra "^10.0.0"
+    fs-extra "^10.1.0"
     jimp "^0.16.1"
+    picocolors "^1.0.0"
 
 react-native-branch@5.3.1:
   version "5.3.1"
@@ -16204,9 +16205,9 @@ react-native-circular-progress@1.3.6:
   dependencies:
     prop-types "^15.7.2"
 
-react-native-cloud-fs@brunobar79/react-native-cloud-fs#e7e3111fb427b6df5e97f61c700ca1e64636cad8:
-  version "2.4.0"
-  resolved "https://codeload.github.com/brunobar79/react-native-cloud-fs/tar.gz/e7e3111fb427b6df5e97f61c700ca1e64636cad8"
+react-native-cloud-fs@brunobar79/react-native-cloud-fs#6e2086b5e35515fb06abf6f37bfd682d23921481:
+  version "2.5.0"
+  resolved "https://codeload.github.com/brunobar79/react-native-cloud-fs/tar.gz/6e2086b5e35515fb06abf6f37bfd682d23921481"
 
 react-native-code-push@7.0.4:
   version "7.0.4"
@@ -16571,10 +16572,9 @@ react-native-widgetkit@1.0.9:
   resolved "https://registry.yarnpkg.com/react-native-widgetkit/-/react-native-widgetkit-1.0.9.tgz#aded1c12f7c7cfd18912b947228aac433c05ddc2"
   integrity sha512-WBwdUbcOzyL0LiqhRyd7gS9A1D0X5A/m2h0fAKTbxUAbp3r2D2pdjyPnVW/6q0otpq7RIyZFo6Ln1EDJ9gfhEg==
 
-react-native@0.68.1:
+react-native@rainbow-me/react-native#d6858416ff69b7835f0c25aee58409f1dc6c81ef:
   version "0.68.1"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.68.1.tgz#c3d92f89028cdc2453fe7cd2d532b3f68d1c27c8"
-  integrity sha512-5gfvslo5NO2Ece2k/q41eVOK3ca4u1QAOf+qM+auvOiUA4/QR5Yr0WfSGbRpUr2GaFgv7qP11F4+elCravg7uQ==
+  resolved "https://codeload.github.com/rainbow-me/react-native/tar.gz/d6858416ff69b7835f0c25aee58409f1dc6c81ef"
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^7.0.3"
@@ -19180,10 +19180,10 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
-vm2@^3.9.8:
-  version "3.9.9"
-  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.9.9.tgz#c0507bc5fbb99388fad837d228badaaeb499ddc5"
-  integrity sha512-xwTm7NLh/uOjARRBs8/95H0e8fT3Ukw5D/JJWhxMbhKzNh1Nu981jQKvkep9iKYNxzlVrdzD0mlBGkDKZWprlw==
+vm2@3.9.11, vm2@^3.9.8:
+  version "3.9.11"
+  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.9.11.tgz#a880f510a606481719ec3f9803b940c5805a06fe"
+  integrity sha512-PFG8iJRSjvvBdisowQ7iVF580DXb1uCIiGaXgm7tynMR1uTBlv7UJlB1zdv5KJ+Tmq1f0Upnj3fayoEOPpCBKg==
   dependencies:
     acorn "^8.7.0"
     acorn-walk "^8.2.0"
