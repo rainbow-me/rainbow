@@ -53,6 +53,7 @@ jobs:
           /opt/homebrew/share/android-commandlinetools/emulator/emulator -avd Pixel_5_API_31 -dns-server 8.8.8.8 -no-snapshot-load &>/dev/null &
           # Wait for boot
           booted=0
+          sleep 5
           while [ "$booted" != "1" ]; do
             echo "Waiting for emulator..."
             booted=`/opt/homebrew/share/android-commandlinetools/platform-tools/adb shell getprop dev.bootcomplete`
