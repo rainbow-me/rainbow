@@ -5,7 +5,7 @@ import ExchangeFab from './ExchangeFab';
 import SendFab from './SendFab';
 import styled from '@/styled-thing';
 
-export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
+export const FabWrapperBottomPosition = 8 + safeAreaInsetValues.bottom;
 export const FabWrapperItemMargin = 15;
 
 const FabWrapperRow = styled(RowWithMargins).attrs({ margin: 13 })({
