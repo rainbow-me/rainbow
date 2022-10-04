@@ -47,6 +47,7 @@ module.exports = {
       build:
         'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
       name: 'Pixel_5_API_31',
+      bootArgs: ' -dns-server 8.8.8.8 -no-snapshot-load',
     },
   },
 };
