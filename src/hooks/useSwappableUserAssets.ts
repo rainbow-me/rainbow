@@ -37,26 +37,30 @@ export const useSwappableUserAssets = (params: {
 
   const getSwappableAddressesForNetwork = useCallback(
     async (addresses: EthereumAddress[], network: Network) => {
-      if (outputCurrency) {
-        const outputNetwork =
-          outputCurrency.type !== 'token'
-            ? outputCurrency.type
-            : Network.mainnet;
-        if (outputNetwork !== network) {
-          const swappableAddresses = (await walletFilter({
-            addresses,
-            fromChainId: ethereumUtils.getChainIdFromNetwork(network),
-            toChainId: ethereumUtils.getChainIdFromNetwork(
-              outputNetwork as Network
-            ),
-          })) as string[];
-          setSwappableAssets(state => ({
-            ...state,
-            [network]: swappableAddresses,
-          }));
-        } else {
-          setSwappableAssets(state => ({ ...state, [network]: addresses }));
+      try {
+        if (outputCurrency) {
+          const outputNetwork =
+            outputCurrency.type !== 'token'
+              ? outputCurrency.type
+              : Network.mainnet;
+          if (outputNetwork !== network) {
+            const swappableAddresses = (await walletFilter({
+              addresses,
+              fromChainId: ethereumUtils.getChainIdFromNetwork(network),
+              toChainId: ethereumUtils.getChainIdFromNetwork(
+                outputNetwork as Network
+              ),
+            })) as string[];
+            setSwappableAssets(state => ({
+              ...state,
+              [network]: swappableAddresses,
+            }));
+          } else {
+            setSwappableAssets(state => ({ ...state, [network]: addresses }));
+          }
         }
+      } catch (e) {
+        setSwappableAssets(state => ({ ...state, [network]: addresses }));
       }
     },
     [outputCurrency]

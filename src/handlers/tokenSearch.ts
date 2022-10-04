@@ -73,5 +73,6 @@ export const walletFilter = async (params: {
     logger.error(
       `An error occurred while filter wallet addresses: toChainId: ${params.toChainId} -> fromChainId: ${params.fromChainId}: ${e}`
     );
+    throw e;
   }
 };
