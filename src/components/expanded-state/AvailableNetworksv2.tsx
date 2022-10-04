@@ -137,6 +137,7 @@ const AvailableNetworksv2 = ({
           scaleTo={0.96}
           onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
           marginHorizontal={{ custom: marginHorizontal }}
+          testID={'available-networks-v2'}
         >
           <Box
             borderRadius={99}

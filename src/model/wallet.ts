@@ -234,6 +234,7 @@ export const walletInit = async (
   if (isNew) {
     saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
+
   return { isNew, walletAddress };
 };
 

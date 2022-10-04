@@ -37,15 +37,13 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
 
   const emoji = useMemo(
     () =>
-      profilesEnabled
-        ? addressHashedEmoji(address)
-        : returnStringFirstEmoji(contactNickname),
-    [address, contactNickname, profilesEnabled]
+      returnStringFirstEmoji(contactNickname) || addressHashedEmoji(address),
+    [address, contactNickname]
   );
 
   const colorIndex = useMemo(
-    () => (profilesEnabled ? addressHashedColorIndex(address) : color || 0),
-    [address, color, profilesEnabled]
+    () => color || addressHashedColorIndex(address) || 0,
+    [address, color]
   );
 
   const { network } = useAccountSettings();
@@ -55,13 +53,20 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
       ? value
       : (emoji ? `${emoji} ${value}` : value).trim();
     if (value?.length > 0) {
-      onAddOrUpdateContacts(address, nickname, color, network, ens);
+      onAddOrUpdateContacts(
+        address,
+        nickname,
+        colors.avatarBackgrounds[colorIndex || 0],
+        network,
+        ens
+      );
       goBack();
     }
     android && Keyboard.dismiss();
   }, [
     address,
-    color,
+    colorIndex,
+    colors.avatarBackgrounds,
     emoji,
     ens,
     goBack,
@@ -84,7 +89,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   );
 
   const accentColor =
-    dominantColor || colors.avatarBackgrounds[colorIndex || 0];
+    dominantColor || color || colors.avatarBackgrounds[colorIndex || 0];
 
   return (
     <ProfileModal
