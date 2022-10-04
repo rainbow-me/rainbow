@@ -136,7 +136,7 @@ const getInputAmount = async (
       inputToken.decimals
     );
 
-    const inputAmountToDisplay =
+    const inputAmountDisplay =
       inputAmount && inputPrice
         ? updatePrecisionToDisplay(inputAmount, inputPrice)
         : null;
