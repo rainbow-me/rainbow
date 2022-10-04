@@ -27,6 +27,7 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
+import { IS_TEST } from '@/env';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -34,7 +35,6 @@ export const avatarMetadataAtom = atom<Image | undefined>({
 });
 
 const size = 70;
-const isTesting = IS_TESTING === 'true';
 
 const RegistrationAvatar = ({
   hasSeenExplainSheet,
@@ -178,15 +178,15 @@ const RegistrationAvatar = ({
       ) : (
         <ConditionalWrap
           condition={
-            hasSeenExplainSheet && !isTesting && (enableNFTs || !!avatarUrl)
+            hasSeenExplainSheet && !IS_TEST && (enableNFTs || !!avatarUrl)
           }
           wrap={children => <ContextMenu>{children}</ContextMenu>}
         >
           <ButtonPressAnimation
             onPress={
-              !hasSeenExplainSheet
+              !hasSeenExplainSheet && !IS_TEST
                 ? onShowExplainSheet
-                : isTesting
+                : IS_TEST
                 ? handleSelectNFT
                 : enableNFTs
                 ? undefined

@@ -41,6 +41,7 @@ import { padding, position } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { haptics } from '@/utils';
 import ShadowStack from '@/react-native-shadow-stack';
+import { IS_TEST } from '@/env';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 
@@ -275,7 +276,7 @@ function HoldToAuthorizeButtonContent2({
               )}
               <ShimmerAnimation
                 color={colors.whiteLabel}
-                enabled={!disableShimmerAnimation && !disabled}
+                enabled={!disableShimmerAnimation && !disabled && !IS_TEST}
                 width={width}
               />
               {!hideInnerBorder && <InnerBorder radius={height} />}
