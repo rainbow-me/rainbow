@@ -9,7 +9,8 @@ import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 
 const buildShadows = (color, size, darkMode, colors) => {
-  if (size === 'small') {
+  // TODO: remove `legacySmall` size once rainbow home screen revamp is released
+  if (size === 'small' || size === 'legacySmall') {
     return [
       [0, 3, 5, colors.shadow, 0.14],
       [
@@ -75,6 +76,11 @@ const sizeConfigs = colors => ({
     textSize: 'larger',
   },
   small: {
+    dimensions: 36,
+    textSize: 'large',
+  },
+  // TODO: remove `legacySmall` size once rainbow home screen revamp is released
+  legacySmall: {
     dimensions: 34,
     textSize: 'large',
   },

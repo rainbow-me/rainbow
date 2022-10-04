@@ -139,7 +139,7 @@ describe('Wallet avatar options', () => {
       await Helpers.tapByText('Pick an Emoji');
       await Helpers.checkIfVisible('avatar-builder');
       await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
-      await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+      await Helpers.tapAtPoint('wallet-screen', PROFILE_AVATAR_COORDS);
     }
     await Helpers.tapByText('View Profile');
     await Helpers.checkIfVisible('profile-sheet');
@@ -168,8 +168,6 @@ describe('Wallet avatar options', () => {
 
   it('test watched wallet with ens avatar', async () => {
     await Helpers.tapAtPoint('wallet-screen', PROFILE_AVATAR_COORDS);
-    await Helpers.checkIfExistsByText('View Profile');
-    await Helpers.tapByText('View Profile');
     await Helpers.checkIfVisible('profile-sheet');
   });
 

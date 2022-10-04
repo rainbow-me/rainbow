@@ -157,19 +157,13 @@ const ContactRow = (
   const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
     address,
   ]);
-
-  const emojiAvatar = profilesEnabled
-    ? emoji
-    : avatar || nickname || label || ensName;
+  const emojiAvatar = avatar || emoji || nickname || label;
 
   const colorIndex = useMemo(
     () => (address ? addressHashedColorIndex(address) : 0),
     [address]
   );
-
-  const bgColor = profilesEnabled
-    ? colors.avatarBackgrounds[colorIndex || 0]
-    : color;
+  const bgColor = color ?? colors.avatarBackgrounds[colorIndex || 0];
 
   return (
     <ButtonPressAnimation

@@ -93,6 +93,7 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   });
 
   it('Should open send sheet after tapping send fab', async () => {
+    await Helpers.swipe('wallet-screen', 'down');
     await Helpers.waitAndTap('send-button');
     await Helpers.checkIfVisible('send-asset-form-field');
   });

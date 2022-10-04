@@ -39,6 +39,7 @@ import {
   usePrevious,
   useSwapCurrencies,
   useSwapCurrencyList,
+  useSwappableUserAssets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
@@ -142,6 +143,11 @@ export default function CurrencySelectModal() {
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
+  const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+  const NetworkSwitcher = !crosschainSwapsEnabled
+    ? NetworkSwitcherv1
+    : NetworkSwitcherv2;
+
   useEffect(() => {
     if (chainId && typeof chainId === 'number') {
       setCurrentChainId(chainId);
@@ -150,6 +156,7 @@ export default function CurrencySelectModal() {
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
+  // TODO: remove this value when crosschain swaps is released
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
       let filteredAssetsInWallet = assetsInWallet?.filter(
@@ -182,6 +189,8 @@ export default function CurrencySelectModal() {
     swapCurrencyListLoading,
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
+
+  const { swappableUserAssets } = useSwappableUserAssets({ outputCurrency });
 
   const checkForSameNetwork = useCallback(
     (newAsset, selectAsset, type) => {
@@ -224,18 +233,27 @@ export default function CurrencySelectModal() {
   }, []);
 
   const getWalletCurrencyList = useCallback(() => {
+    const listToUse = crosschainSwapsEnabled
+      ? swappableUserAssets
+      : filteredAssetsInWallet;
     if (type === CurrencySelectionTypes.input) {
       if (searchQueryForSearch !== '') {
         const searchResults = searchWalletCurrencyList(
-          filteredAssetsInWallet,
+          listToUse,
           searchQueryForSearch
         );
         return headerlessSection(searchResults);
       } else {
-        return headerlessSection(filteredAssetsInWallet);
+        return headerlessSection(listToUse);
       }
     }
-  }, [filteredAssetsInWallet, searchQueryForSearch, type]);
+  }, [
+    filteredAssetsInWallet,
+    searchQueryForSearch,
+    type,
+    crosschainSwapsEnabled,
+    swappableUserAssets,
+  ]);
 
   const currencyList = useMemo(() => {
     let list = (type === CurrencySelectionTypes.input
@@ -383,7 +401,7 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
-      if (checkForRequiredAssets(item)) return;
+      if (!crosschainSwapsEnabled && checkForRequiredAssets(item)) return;
 
       const isMainnet = currentChainId === 1;
       const assetWithType =
@@ -399,6 +417,7 @@ export default function CurrencySelectModal() {
         onSelectCurrency(assetWithType, handleNavigate);
       };
       if (
+        !crosschainSwapsEnabled &&
         checkForSameNetwork(
           assetWithType,
           selectAsset,
@@ -412,13 +431,14 @@ export default function CurrencySelectModal() {
       selectAsset();
     },
     [
+      crosschainSwapsEnabled,
       checkForRequiredAssets,
+      currentChainId,
+      type,
       checkForSameNetwork,
       dispatch,
-      currentChainId,
       callback,
       onSelectCurrency,
-      type,
       handleNavigate,
     ]
   );
@@ -479,9 +499,14 @@ export default function CurrencySelectModal() {
 
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
-    setCurrentChainId(chainId);
+    InteractionManager.runAfterInteractions(() => {
+      const inputChainId = ethereumUtils.getChainIdFromType(
+        inputCurrency?.type
+      );
+      setCurrentChainId(inputChainId);
+    });
     setIsTransitioning(true); // continue to display list while transitiong back
-  }, [chainId]);
+  }, [inputCurrency?.type]);
 
   const shouldUpdateFavoritesRef = useRef(false);
   useEffect(() => {
@@ -500,11 +525,6 @@ export default function CurrencySelectModal() {
       { translateX: (1 - scrollPosition.value) * 8 },
     ],
   }));
-
-  const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = !crosschainEnabled
-    ? NetworkSwitcherv1
-    : NetworkSwitcherv2;
 
   return (
     <Wrapper>

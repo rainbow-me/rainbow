@@ -147,7 +147,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
 
-  it('Should display currency selection screen on swap-fab press', async () => {
+  it('Should display currency selection screen on swap-button press', async () => {
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.waitAndTap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');

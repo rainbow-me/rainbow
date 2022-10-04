@@ -199,7 +199,8 @@
         "fetching_quote": "Fetching Quote :)",
         "insufficient_eth": "ETH Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
-        "insufficient_liquidity": "Insufficient Liquidity :)",
+        "insufficient_liquidity": "􀅵 Insufficient Liquidity :)",
+        "no_route_found": "􀅵 No route found :)",
         "insufficient_matic": "MATIC Insuffisants",
         "insufficient_token": "Insufficient %{tokenName} :)",
         "invalid_fee": "Frais Non Valides",
@@ -485,7 +486,9 @@
       },
       "swap": {
         "copy_contract_address": "Copy Contract Address :)",
+        "flashbots_protect": "Flashbots Protect :)",
         "losing": "Losing :)",
+        "on": "On :)",
         "price_impact": "Price impact :)",
         "price_row_per_token": "per :)",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade! :)",
@@ -656,6 +659,11 @@
         "fragment2": "Read more :)",
         "fragment3": " about AMMs and token liquidity. :)",
         "title": "Insufficient Liquidity :)"
+      },
+      "no_route_found": {
+        "fragment1": "We couldn’t find a route for this swap. :)",
+        "fragment2": "A route may not exist for this swap, or the amount may be too small. :)",
+        "title": "No routes found :)"
       },
       "no_quote": {
         "title": "No quote available",
@@ -1141,11 +1149,19 @@
         "sold": "Sold :)",
         "minted": "Minted :)",
         "swapped": "Swapped :)",
-        "approvals": "Approvals :)",
-        "contracts_and_more": "Contracts & More :)",
+        "approvals": "Approved :)",
+        "other": "Contracts & More :)",
         "all": "All :)",
         "off": "Off :)",
-        "plus_n_more": "+ %{n} more :)"
+        "plus_n_more": "+ %{n} more :)",
+        "no_permissions": "Looks like your notification permissions are disabled. Please enable them in Settings to receive notifications from Rainbow. :)",
+        "no_watched_wallets": "You are not watching any wallets. :)",
+        "no_owned_wallets": "You do not have any wallets in Rainbow. Create a wallet or import one with your secret phrase. :)",
+        "open_system_settings": "Open Settings :)",
+        "unsupported_network": "Notifications are only available for Ethereum Mainnet transactions at this time. :)",
+        "change_network": "Change your Network :)",
+        "no_first_time_permissions": "Please allow Rainbow to send you notifications. :)",
+        "first_time_allow_notifications": "Allow Notifications :)"
       },
       "privacy": "Privacy :)",
       "privacy_section": {

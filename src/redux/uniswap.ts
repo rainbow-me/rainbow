@@ -17,7 +17,7 @@ import {
   saveUniswapFavorites,
   saveUniswapFavoritesMetadata,
 } from '@/handlers/localstorage/uniswap';
-import { getTestnetUniswapPairs } from '@/handlers/uniswap';
+import { getTestnetUniswapPairs } from '@/handlers/swap';
 import { Network } from '@/helpers/networkTypes';
 import {
   DefaultUniswapFavorites,
@@ -189,7 +189,7 @@ export const uniswapResetState = () => (
 const getUniswapFavoritesMetadata = async (
   addresses: EthereumAddress[]
 ): Promise<UniswapFavoriteTokenData> => {
-  let favoritesMetadata: UniswapFavoriteTokenData = {};
+  const favoritesMetadata: UniswapFavoriteTokenData = {};
   try {
     const newFavoritesMeta = await getUniswapV2Tokens(
       addresses.map(address => {

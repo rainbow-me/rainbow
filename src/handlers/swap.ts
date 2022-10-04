@@ -1,33 +1,24 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
 import {
   ALLOWS_PERMIT,
   ChainId,
+  CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  fillQuote,
   getQuoteExecutionDetails,
   getWrappedAssetMethod,
   PermitSupportedTokenList,
   Quote,
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
-  unwrapNativeAsset,
-  wrapNativeAsset,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { ethers } from 'ethers';
 import { mapKeys, mapValues } from 'lodash';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
-import { loadWallet } from '../model/wallet';
 import {
   estimateGasWithPadding,
-  getFlashbotsProvider,
   getProviderForNetwork,
-  toHex,
   toHexNoLeadingZeros,
 } from './web3';
 import config from '@/model/config';
@@ -67,7 +58,7 @@ async function getClosestGasEstimate(
   let highestFailedGuess = null;
   let lowestSuccessfulGuess = null;
   let lowestFailureGuess = null;
-  //guess is typically middle of array
+  // guess is typically middle of array
   let guessIndex = Math.floor((end - start) / 2);
   while (end > start) {
     const gasEstimationSucceded = await estimationFn(gasEstimates[guessIndex]);
@@ -106,6 +97,9 @@ async function getClosestGasEstimate(
     }
   }
 }
+
+const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) =>
+  tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
 export const getDefaultGasLimitForTrade = (
   tradeDetails: Quote,
@@ -263,7 +257,6 @@ export const estimateSwapGasLimit = async ({
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
-
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
 
   const isWrapNativeAsset =
@@ -346,6 +339,69 @@ export const estimateSwapGasLimit = async ({
   }
 };
 
+export const estimateCrosschainSwapGasLimit = async ({
+  chainId,
+  requiresApprove,
+  tradeDetails,
+}: {
+  chainId: number;
+  requiresApprove?: boolean;
+  tradeDetails: CrosschainQuote;
+}): Promise<string | number> => {
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const provider = await getProviderForNetwork(network);
+  if (!provider || !tradeDetails) {
+    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
+  }
+  try {
+    if (requiresApprove) {
+      if (
+        CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) &&
+        IS_TESTING !== 'true'
+      ) {
+        try {
+          const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
+            chainId,
+            provider,
+            tradeDetails
+          );
+          logger.debug(
+            ' ✅ Got gasLimitWithFakeApproval!',
+            gasLimitWithFakeApproval
+          );
+          return gasLimitWithFakeApproval;
+        } catch (e) {
+          logger.debug('Error estimating swap gas limit with approval', e);
+          const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
+          if (routeGasLimit) return routeGasLimit;
+        }
+      }
+
+      return (
+        getCrosschainSwapDefaultGasLimit(tradeDetails) ||
+        getDefaultGasLimitForTrade(tradeDetails, chainId)
+      );
+    }
+
+    const gasLimit = await estimateGasWithPadding(
+      {
+        data: tradeDetails.data,
+        from: tradeDetails.from,
+        to: tradeDetails.to,
+        value: tradeDetails.value,
+      },
+      null,
+      null,
+      provider,
+      SWAP_GAS_PADDING
+    );
+
+    return gasLimit || getCrosschainSwapDefaultGasLimit(tradeDetails);
+  } catch (error) {
+    return getCrosschainSwapDefaultGasLimit(tradeDetails);
+  }
+};
+
 export const computeSlippageAdjustedAmounts = (
   trade: any,
   allowedSlippageInBlips: string
@@ -374,115 +430,6 @@ export const computeSlippageAdjustedAmounts = (
     [Field.OUTPUT]: output,
   };
   return results;
-};
-
-export const executeSwap = async ({
-  chainId,
-  gasLimit,
-  maxFeePerGas,
-  maxPriorityFeePerGas,
-  gasPrice,
-  nonce,
-  tradeDetails,
-  wallet,
-  permit = false,
-  flashbots = false,
-}: {
-  chainId: ChainId;
-  gasLimit: string | number;
-  maxFeePerGas: string;
-  maxPriorityFeePerGas: string;
-  gasPrice: string;
-  nonce?: number;
-  tradeDetails: Quote | null;
-  wallet: Wallet | null;
-  permit: boolean;
-  flashbots: boolean;
-}) => {
-  let walletToUse = wallet;
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  let provider;
-
-  // Switch to the flashbots provider if enabled
-  if (flashbots && network === Network.mainnet) {
-    logger.debug('flashbots provider being set on mainnet');
-    provider = await getFlashbotsProvider();
-  } else {
-    logger.debug('normal provider being set', network);
-    provider = await getProviderForNetwork(network);
-  }
-
-  if (!walletToUse) {
-    walletToUse = await loadWallet(undefined, true, provider);
-  } else {
-    walletToUse = new Wallet(walletToUse.privateKey, provider);
-  }
-
-  if (!walletToUse || !tradeDetails) return null;
-
-  const { sellTokenAddress, buyTokenAddress } = tradeDetails;
-  const transactionParams = {
-    gasLimit: toHex(gasLimit) || undefined,
-    // In case it's an L2 with legacy gas price like arbitrum
-    gasPrice: gasPrice || undefined,
-    // EIP-1559 like networks
-    maxFeePerGas: maxFeePerGas || undefined,
-    maxPriorityFeePerGas: maxPriorityFeePerGas || undefined,
-    nonce: nonce ? toHex(nonce) : undefined,
-  };
-
-  // Wrap Eth
-  if (
-    sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WRAPPED_ASSET[chainId]
-  ) {
-    logger.debug(
-      'wrapping native asset',
-      tradeDetails.buyAmount,
-      walletToUse.address,
-      chainId
-    );
-    return wrapNativeAsset(
-      tradeDetails.buyAmount,
-      walletToUse,
-      chainId,
-      transactionParams
-    );
-    // Unwrap Weth
-  } else if (
-    sellTokenAddress === WRAPPED_ASSET[chainId] &&
-    buyTokenAddress === ETH_ADDRESS_AGGREGATORS
-  ) {
-    logger.debug(
-      'unwrapping native asset',
-      tradeDetails.sellAmount,
-      walletToUse.address,
-      chainId
-    );
-    return unwrapNativeAsset(
-      tradeDetails.sellAmount,
-      walletToUse,
-      chainId,
-      transactionParams
-    );
-    // Swap
-  } else {
-    logger.debug(
-      'FILLQUOTE',
-      tradeDetails,
-      transactionParams,
-      walletToUse.address,
-      permit,
-      chainId
-    );
-    return fillQuote(
-      tradeDetails,
-      transactionParams,
-      walletToUse,
-      permit,
-      chainId
-    );
-  }
 };
 
 export const getTokenForCurrency = (

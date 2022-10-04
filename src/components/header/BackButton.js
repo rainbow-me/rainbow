@@ -4,7 +4,6 @@ import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
-import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
 
@@ -42,13 +41,6 @@ export default function BackButton({
 
   return (
     <HeaderButton
-      {...(__DEV__
-        ? {
-            onLongPress() {
-              navigation.navigate(Routes.EXPLAIN_SHEET);
-            },
-          }
-        : {})}
       onPress={handlePress}
       opacityTouchable={false}
       radiusAndroid={42}

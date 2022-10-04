@@ -12,11 +12,11 @@ import {
   SwapActionParameters,
 } from './common';
 import { Asset } from '@/entities';
-import { estimateSwapGasLimit } from '@/handlers/uniswap';
 import store from '@/redux/store';
 import { ethUnits, savingsAssetsListByUnderlying } from '@/references';
 import { add } from '@/helpers/utilities';
 import logger from '@/utils/logger';
+import { estimateSwapGasLimit } from '@/handlers/swap';
 
 export const estimateSwapAndDepositCompound = async (
   swapParameters: SwapActionParameters
