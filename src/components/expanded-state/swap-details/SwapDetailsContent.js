@@ -9,7 +9,6 @@ import SwapDetailsPriceRow from './SwapDetailsPriceRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { AccentColorProvider, Box, Rows, Separator } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import Routes from '@/navigation/routesNames';
 import {
   useColorForAsset,
   useSwapAdjustedAmounts,
@@ -17,7 +16,7 @@ import {
 } from '@/hooks';
 import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
-import { colors, padding } from '@/styles';
+import { padding } from '@/styles';
 import { ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 
@@ -35,7 +34,6 @@ export default function SwapDetailsContent({
   const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(
     tradeDetails
   );
-  const { navigate } = useNavigation();
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
@@ -46,21 +44,6 @@ export default function SwapDetailsContent({
   const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
     inputCurrency?.type
   );
-
-  const [isLongWait, setIsLongWait] = useState(false);
-
-  const estimatedWaitTime = useMemo(() => {
-    const minutes = Math.floor(tradeDetails?.routes[0]?.maxServiceTime / 60);
-
-    // if estimate is over an hour, lets round and show hours
-    if (minutes >= 60) {
-      const hours = Math.floor(minutes / 60);
-      setIsLongWait(true);
-      return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
-    }
-    setIsLongWait(false);
-    return `${minutes} minutes`;
-  }, [tradeDetails?.routes]);
 
   return (
     <AccentColorProvider color={colorForAsset}>
@@ -77,24 +60,6 @@ export default function SwapDetailsContent({
             <SwapDetailsValue letterSpacing="roundedTight">
               {amountReceivedSold}{' '}
               {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
-            </SwapDetailsValue>
-          </SwapDetailsRow>
-          <SwapDetailsRow
-            labelPress={() =>
-              navigate(Routes.EXPLAIN_SHEET, {
-                outputCurrency,
-                outputToken: outputCurrency?.symbol,
-                type: 'longWaitSwap',
-              })
-            }
-            label={`${lang.t('expanded_state.swap.settling_time')} 􀅵`}
-            testID="swaps-details-settling-time"
-          >
-            <SwapDetailsValue
-              letterSpacing="roundedTight"
-              color={{ custom: isLongWait && colors.lightOrange }}
-            >
-              {`${isLongWait ? '􀇿 ' : ''}${estimatedWaitTime}`}
             </SwapDetailsValue>
           </SwapDetailsRow>
           {tradeDetails?.protocols && (
