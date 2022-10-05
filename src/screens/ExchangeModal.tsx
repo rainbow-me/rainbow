@@ -95,6 +95,7 @@ import {
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import useMinRefuelAmount from '@/hooks/useMinRefuelAmount';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -290,6 +291,7 @@ export default function ExchangeModal({
     inputNetwork,
     outputNetwork,
     chainId,
+    toChainId,
     currentNetwork,
     isCrosschainSwap,
   } = useMemo(() => {
@@ -303,6 +305,9 @@ export default function ExchangeModal({
             inputCurrency?.type ?? outputCurrency?.type
           )
         : 1;
+
+    const toChainId =
+      ethereumUtils.getChainIdFromType(outputCurrency?.type) ?? 1;
     const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const isCrosschainSwap =
       crosschainSwapsEnabled && inputNetwork !== outputNetwork;
@@ -311,6 +316,7 @@ export default function ExchangeModal({
       inputNetwork,
       outputNetwork,
       chainId,
+      toChainId,
       currentNetwork,
       isCrosschainSwap,
     };
@@ -954,7 +960,14 @@ export default function ExchangeModal({
     ]
   );
 
-  console.log('........', tradeDetails);
+  const {
+    data: minRefuelAmount,
+    isLoading: isMintRefuelAmountLoading,
+  } = useMinRefuelAmount({ chainId, toChainId }, { enabled: isCrosschainSwap });
+
+  console.log(minRefuelAmount, isMintRefuelAmountLoading);
+
+  // console.log('........', inputCurrency, '...........', outputCurrency);
   const navigateToRefuelModal = useCallback(() => {
     const getNetworkDetails = (network: Network) => {
       switch (network) {
