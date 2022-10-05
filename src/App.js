@@ -25,7 +25,7 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
-import { connect, Provider as ReduxProvider } from 'react-redux';
+import { connect, Provider as ReduxProvider, useSelector } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
@@ -144,7 +144,7 @@ enableScreens();
 
 const containerStyle = { flex: 1 };
 
-class App extends Component {
+class OldApp extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
@@ -319,9 +319,13 @@ class App extends Component {
   );
 }
 
-const AppWithRedux = connect(state => ({
+const OldAppWithRedux = connect(state => ({
   walletReady: state.appState.walletReady,
-}))(App);
+}))(OldApp);
+
+function App() {
+  return <OldAppWithRedux />;
+}
 
 function Root() {
   return (
@@ -336,7 +340,7 @@ function Root() {
               <RainbowContextWrapper>
                 <SharedValuesProvider>
                   <ErrorBoundary>
-                    <AppWithRedux />
+                    <App />
                   </ErrorBoundary>
                 </SharedValuesProvider>
               </RainbowContextWrapper>
