@@ -5,6 +5,6 @@
     "GHSA-6fc8-4gx4-v693", // https://github.com/advisories/GHSA-6fc8-4gx4-v693
     "GHSA-2j79-8pqc-r7x6", // https://github.com/advisories/GHSA-2j79-8pqc-r7x6
     "GHSA-36jr-mh4h-2g58", // https://github.com/advisories/GHSA-36jr-mh4h-2g58
-    "GHSA-mrgp-mrhc-5jrq", // https://github.com/advisories/GHSA-mrgp-mrhc-5jrq
+    "GHSA-mrgp-mrhc-5jrq" // https://github.com/advisories/GHSA-mrgp-mrhc-5jrq
   ]
 }
