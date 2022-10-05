@@ -4212,10 +4212,10 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@0.1.16":
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.16.tgz#ff61ee9643157729e71ad2f7b594612327668bae"
-  integrity sha512-2yKvTHLLgwfnwr4mtOfwHNbpnwferD27VZyQpwP8CLMz4y3VxRbSlXeGODkpEkUGzK5KHQxSA0XTjpYmHXVxsw==
+"@rainbow-me/swaps@0.1.17":
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.17.tgz#90e29e5e15dee2af92cf1e8c58e95abeb2140a5a"
+  integrity sha512-D5XMoj2fVrmtsUMdL4Xztb/QOAusR7gxy28s4YsXnUJtTyLincJuSnJwyuXL9NebKE3PVJQMbr8Mv4DIGPfGtQ==
   dependencies:
     "@ethersproject/abi" "5.6.0"
     "@ethersproject/bignumber" "5.6.0"
