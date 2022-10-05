@@ -7,7 +7,7 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: "fix(Github Actions)"
+      prefix: "fix(actions)"
     target-branch: "develop"
     reviewers:
       - "rainbow-me/app-admin"
