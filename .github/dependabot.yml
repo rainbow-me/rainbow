@@ -1,3 +1,4 @@
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 version: 2
 updates:
 
@@ -9,10 +10,6 @@ updates:
       prefix: "fix(Github Actions)"
     target-branch: "develop"
     reviewers:
-      - "estrattonbailey"
-      - "osdnk"
-      - "brunobar79"
-      - "estebanmino"
       - "rainbow-dot-me/admins"
 
   - package-ecosystem: "npm"
@@ -23,8 +20,4 @@ updates:
       prefix: "fix(npm)"
     target-branch: "develop"
     reviewers:
-      - "estrattonbailey"
-      - "osdnk"
-      - "brunobar79"
-      - "estebanmino"
       - "rainbow-dot-me/admins"
