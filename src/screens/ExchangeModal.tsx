@@ -49,7 +49,12 @@ import {
   SwappableAsset,
 } from '@/entities';
 import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
-import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
+import {
+  ExchangeModalTypes,
+  isKeyboardOpen,
+  Network,
+  NetworkTypes,
+} from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { divide, greaterThan, isZero, multiply } from '@/helpers/utilities';
 import {
@@ -1033,7 +1038,10 @@ export default function ExchangeModal({
 
     const hasZeroBalance = isZero(outputNetworkDetails.balance.amount);
 
-    const showRefuelAddSheet = isCrosschainSwap && hasZeroBalance;
+    const showRefuelAddSheet =
+      isCrosschainSwap &&
+      hasZeroBalance &&
+      outputNetwork !== NetworkTypes.mainnet;
 
     if (loading) {
       return NOOP;
@@ -1045,11 +1053,12 @@ export default function ExchangeModal({
 
     return navigateToSwapDetailsModal();
   }, [
-    loading,
+    outputNetworkDetails.balance.amount,
     isCrosschainSwap,
-    navigateToRefuelModal,
+    outputNetwork,
+    loading,
     navigateToSwapDetailsModal,
-    outputNetworkDetails,
+    navigateToRefuelModal,
   ]);
 
   return (
