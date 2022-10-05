@@ -960,6 +960,7 @@ export default function ExchangeModal({
     };
 
     const networkDetails = getNetworkDetails(outputNetwork);
+    android && Keyboard.dismiss();
 
     navigate(Routes.EXPLAIN_SHEET, {
       network: outputNetwork,
