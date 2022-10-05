@@ -75,12 +75,21 @@ export default function useManageCloudBackups() {
                       const potentialUserData = await fetchUserDataFromCloud();
                       let backupSelected = null;
                       let userData = null;
+
+                      // TODO: remove path from name
+                      const fileNameWithoutPathInName = filteredFiles[
+                        buttonIndex
+                      ].name?.replace('rainbow.me/wallet-backups/', '');
+
                       // If the backup is the latest, we use the normal restore flow
                       // To preserve account names, colors, etc
-                      const isUserdataAvailableForThisBackup =
+                      const potentialUserDataJSON = JSON.stringify(
                         potentialUserData
-                          .toString()
-                          .indexOf(filteredFiles[buttonIndex].name) !== -1;
+                      );
+                      const isUserdataAvailableForThisBackup = potentialUserDataJSON.includes(
+                        fileNameWithoutPathInName
+                      );
+
                       if (isUserdataAvailableForThisBackup) {
                         userData = potentialUserData;
                       } else {
@@ -100,6 +109,7 @@ export default function useManageCloudBackups() {
             );
           } else {
             const userData = await fetchUserDataFromCloud();
+            console.log('userData.1.0+ ', JSON.stringify(userData));
             navigate(Routes.RESTORE_SHEET, {
               fromSettings: true,
               step: walletBackupStepTypes.cloud,
