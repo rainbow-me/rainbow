@@ -4,7 +4,7 @@ import { dataUpdateAsset } from './data';
 import { ParsedAddressAsset, SwappableAsset } from '@/entities';
 import { getOnchainAssetBalance, isL2Asset } from '@/handlers/assets';
 import { getCoingeckoIds } from '@/handlers/dispersion';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork, isL2Network } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { AppDispatch, AppGetState, AppState } from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
@@ -147,7 +147,7 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
       outputCurrency?.type
     );
     const updatedAssets = [
-      isL2Asset(inputCurrency)
+      isL2Network(inputCurrencyNetwork)
         ? await getUpdatedL2AssetBalance(
             inputCurrency,
             genericAssets,
@@ -155,7 +155,7 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
             userAddress
           )
         : null,
-      isL2Asset(outputCurrency)
+      isL2Network(outputCurrencyNetwork)
         ? await getUpdatedL2AssetBalance(
             outputCurrency,
             genericAssets,
