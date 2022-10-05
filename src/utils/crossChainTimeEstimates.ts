@@ -20,7 +20,7 @@ export const getCrossChainTimeEstimate = ({
     isLongWait = true;
     timeEstimateDisplay = `>${hours} ${hours === 1 ? 'hr' : 'hrs'} 􀇿`;
   } else if (minutes >= 1) {
-    timeEstimateDisplay = `~${minutes} min}`;
+    timeEstimateDisplay = `~${minutes} min`;
   } else {
     timeEstimateDisplay = `~${timeEstimate} sec`;
   }
