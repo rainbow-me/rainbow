@@ -1,0 +1,30 @@
+version: 2
+updates:
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "fix(Github Actions)"
+    target-branch: "develop"
+    reviewers:
+      - "estrattonbailey"
+      - "osdnk"
+      - "brunobar79"
+      - "estebanmino"
+      - "rainbow-dot-me/admins"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "fix(npm)"
+    target-branch: "develop"
+    reviewers:
+      - "estrattonbailey"
+      - "osdnk"
+      - "brunobar79"
+      - "estebanmino"
+      - "rainbow-dot-me/admins"
