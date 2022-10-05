@@ -1,14 +1,8 @@
+import useSwapDetailsButtonPosition from './useSwapDetailsButtonPosition';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import Animated, {
-  useSharedValue,
-  withSequence,
-  withTiming,
-  withSpring,
-  Easing,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import React, { useCallback, useEffect, useState } from 'react';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 
 import { useSelector } from 'react-redux';
 import { ConfirmExchangeButton } from '../exchange';
@@ -36,13 +30,7 @@ import {
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { abbreviations, deviceUtils } from '@/utils';
-
-const springConfig = {
-  damping: 500,
-  mass: 3,
-  stiffness: 1000,
-};
+import { abbreviations } from '@/utils';
 
 const AnimatedContainer = styled(Animated.View)({
   ...position.sizeAsObject('100%'),
@@ -130,39 +118,25 @@ export default function SwapDetailsState({
   } = useSwapDetailsClipboardState();
 
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
-  const [buttonPosition, setButtonPosition] = useState();
   const [slippageMessageHeight, setSlippageMessageHeight] = useHeight();
   const [contentHeight, setContentHeight] = useHeight(
     FOOTER_CONTENT_MIN_HEIGHT
   );
 
-  const offsetButtonAnimation = useSharedValue(0);
-  const justOpenedSheet = useRef(false);
+  const {
+    onHeightChange,
+    wrapperStyle,
+    onPressMore,
+    onWrapperLayout,
+  } = useSwapDetailsButtonPosition({ contentHeight });
 
   const onContentHeightChange = useCallback(
     event => {
-      // offsetButtonAnimation.value = withSpring()
-      if (justOpenedSheet.current) {
-        console.log({ contentHeight, event });
-        offsetButtonAnimation.value = withSpring(
-          event?.nativeEvent?.layout?.height - contentHeight,
-          {
-            damping: 10,
-            mass: 0.08,
-            stiffness: 100,
-            overshootClamping: true,
-          }
-        );
-        console.log('VVVVVVV', event - contentHeight);
-      }
+      onHeightChange(event);
       setContentHeight(event);
     },
-    [contentHeight, offsetButtonAnimation, setContentHeight]
+    [onHeightChange, setContentHeight]
   );
-
-  const buttonWrapperStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: offsetButtonAnimation.value }],
-  }));
 
   useEffect(() => {
     if (!isFocused && prevIsFocused) {
@@ -186,8 +160,6 @@ export default function SwapDetailsState({
       transitionDuration: 0.7,
     });
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
-
-  console.log({ buttonPosition });
 
   return (
     <SheetKeyboardAnimation
@@ -227,24 +199,10 @@ export default function SwapDetailsState({
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={onContentHeightChange}
-          onPressMore={() => {
-            justOpenedSheet.current = true;
-          }}
+          onPressMore={onPressMore}
           tradeDetails={tradeDetails}
         />
-        <Animated.View
-          style={[
-            buttonWrapperStyle,
-            buttonPosition && {
-              position: 'absolute',
-              top: buttonPosition.y,
-              width: '100%',
-            },
-          ]}
-          onLayout={e =>
-            !justOpenedSheet.current && setButtonPosition(e.nativeEvent.layout)
-          }
-        >
+        <Animated.View style={wrapperStyle} onLayout={onWrapperLayout}>
           <Footer onLayout={setFooterHeight}>
             <ConfirmExchangeButton
               {...confirmButtonProps}
