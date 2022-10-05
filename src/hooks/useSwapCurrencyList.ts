@@ -155,14 +155,19 @@ const useSwapCurrencyList = (
     [favoriteAddresses]
   );
   const handleSearchResponse = useCallback(
-    (tokens: RT[]) => {
+    (tokens: RT[], crosschainNetwork?: Network) => {
       // These transformations are necessary for L2 tokens to match our spec
+      const activeChainId = crosschainNetwork
+        ? ethereumUtils.getChainIdFromNetwork(crosschainNetwork)
+        : searchChainId;
       return (tokens || [])
         .map(token => {
           token.address =
-            token.networks?.[searchChainId]?.address || token.address;
-          if (searchChainId !== MAINNET_CHAINID) {
-            const network = ethereumUtils.getNetworkFromChainId(searchChainId);
+            token.networks?.[activeChainId]?.address || token.address;
+          if (activeChainId !== MAINNET_CHAINID) {
+            const network =
+              crosschainNetwork ||
+              ethereumUtils.getNetworkFromChainId(searchChainId);
             token.type = network;
             if (token.networks[MAINNET_CHAINID]) {
               token.mainnet_address = token.networks[MAINNET_CHAINID].address;
@@ -274,7 +279,6 @@ const useSwapCurrencyList = (
 
   const getCrosschainVerifiedAssetsForNetwork = useCallback(
     async (network: Network) => {
-      logger.debug('CHAIN ID: ', ethereumUtils.getChainIdFromNetwork(network));
       const results = await searchCurrencyList({
         searchList: 'verifiedAssets',
         query: '',
@@ -283,7 +287,7 @@ const useSwapCurrencyList = (
       });
       setCrosschainVerifiedAssets(state => ({
         ...state,
-        [network]: handleSearchResponse(results),
+        [network]: handleSearchResponse(results, network),
       }));
     },
     [handleSearchResponse, inputChainId, isCrosschainSearch]
