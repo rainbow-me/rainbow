@@ -21,6 +21,7 @@ import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { IS_ANDROID } from '@/env';
+import { useSelector } from 'react-redux';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
@@ -49,6 +50,7 @@ export default function CustomGasState({ asset }) {
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
   const { selectedGasFee, currentBlockParams } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
+  const { tradeDetails } = useSelector(state => state.swap);
 
   const validateGasParams = useRef(null);
   useAndroidDisableGesturesOnFocus();
@@ -116,6 +118,7 @@ export default function CustomGasState({ asset }) {
           theme="dark"
           validateGasParams={validateGasParams}
           marginTop={19}
+          crossChainServiceTime={tradeDetails?.routes[0]?.serviceTime}
         />
       </Column>
     </SlackSheet>

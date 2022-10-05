@@ -89,6 +89,7 @@ import {
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import { CrosschainQuote } from '@rainbow-me/swaps';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -872,20 +873,6 @@ export default function ExchangeModal({
     const internalNavigate = () => {
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
-
-      navigate(Routes.EXPLAIN_SHEET, {
-        outputCurrency,
-        onClose: () => {
-          InteractionManager.runAfterInteractions(() => {
-            setTimeout(() => {
-              //lastFocusedInput?.focus();
-            }, 250);
-          });
-        },
-        outputToken: outputCurrency?.symbol,
-        type: 'longWaitSwap',
-      });
-      return;
       navigate(Routes.SWAP_DETAILS_SHEET, {
         confirmButtonProps,
         currentNetwork,
@@ -1081,6 +1068,9 @@ export default function ExchangeModal({
                 marginBottom={0}
                 marginTop={0}
                 testID={`${testID}-gas`}
+                crossChainServiceTime={
+                  (tradeDetails as CrosschainQuote)?.routes[0]?.serviceTime
+                }
               />
             </Row>
           </Rows>

@@ -15,6 +15,7 @@ import { isL2Network } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
+import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -107,13 +108,16 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
 
 const TextContainer = styled(Column).attrs(() => ({}))({});
 
-const TransactionTimeLabel = ({ formatter, theme }) => {
+const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
   const { colors } = useTheme();
   return (
     <Label
       align="right"
+      // eslint-disable-next-line no-nested-ternary
       color={
-        theme === 'dark'
+        isLongWait
+          ? colors.lightOrange
+          : theme === 'dark'
           ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
           : colors.alpha(colors.blueGreyDark, 0.6)
       }
@@ -138,11 +142,13 @@ const GasSpeedButton = ({
   canGoBack = true,
   validateGasParams,
   flashbotTransaction = false,
+  crossChainServiceTime,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const rawColorForAsset = useColorForAsset(asset || {}, null, false, true);
+  const [isLongWait, setIsLongWait] = useState(false);
 
   const {
     gasFeeParamsBySpeed,
@@ -289,6 +295,16 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
+    // override time estimate for cross chain swaps
+    if (crossChainServiceTime) {
+      const { isLongWait, timeEstimateDisplay } = getCrossChainTimeEstimate({
+        serviceTime: crossChainServiceTime,
+        gasTimeInSeconds: selectedGasFee?.estimatedTime?.amount,
+      });
+      setIsLongWait(isLongWait);
+      return timeEstimateDisplay;
+    }
+
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
       ' '
     );
@@ -300,7 +316,12 @@ const GasSpeedButton = ({
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
+  }, [
+    crossChainServiceTime,
+    gasPriceReady,
+    selectedGasFee?.estimatedTime?.amount,
+    selectedGasFee?.estimatedTime?.display,
+  ]);
 
   const openGasHelper = useCallback(() => {
     Keyboard.dismiss();
@@ -509,6 +530,7 @@ const GasSpeedButton = ({
                 <TransactionTimeLabel
                   formatter={formatTransactionTime}
                   theme={theme}
+                  isLongWait={isLongWait}
                 />
               </Text>
             </TextContainer>
