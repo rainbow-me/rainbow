@@ -633,7 +633,11 @@ export default function ExchangeModal({
     }
   };
 
-  const isFillingParams = useParamsForExchangeModal();
+  const isFillingParams = useParamsForExchangeModal({
+    inputFieldRef,
+    outputFieldRef,
+    nativeFieldRef,
+  });
 
   const submit = useCallback(
     async amountInUSD => {
