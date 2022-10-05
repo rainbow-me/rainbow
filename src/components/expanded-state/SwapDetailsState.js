@@ -95,6 +95,7 @@ export default function SwapDetailsState({
       currentNetwork,
       flashbotTransaction,
       isRefuelTx,
+      onClose,
     } = {},
   } = useRoute();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -155,6 +156,12 @@ export default function SwapDetailsState({
       transitionDuration: 0.7,
     });
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
+
+  useEffect(() => {
+    return () => {
+      onClose?.();
+    };
+  }, [onClose]);
 
   return (
     <SheetKeyboardAnimation

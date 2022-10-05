@@ -897,6 +897,7 @@ export default function ExchangeModal({
           currentNetwork,
           flashbotTransaction: flashbots,
           isRefuelTx,
+          onClose: () => setRefuel(false),
           restoreFocusOnSwapModal: () => {
             android &&
               (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -934,6 +935,7 @@ export default function ExchangeModal({
       outputCurrency?.symbol,
       outputFieldRef,
       setParams,
+      setRefuel,
       type,
     ]
   );
