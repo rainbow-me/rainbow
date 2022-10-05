@@ -48,7 +48,7 @@ src/navigation @osdnk @terrysahaidak
 app.json @brunobar79 @estebanmino
 
 # SECURITY / APP INFRA
-audit-ci.jsonc @brunobar79 @skylarbarrera @estebanmino @nickbytes
+audit-ci.jsonc @brunobar79 @skylarbarrera @estebanmino @estrattonbailey @osdnk @terrysahaidak
 
 # APP INFRA
 babel.config.js @brunobar79 @osdnk @estebanmino
