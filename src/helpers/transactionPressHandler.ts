@@ -89,7 +89,7 @@ export const getMenuItems = (item: any) => {
   const isReadOnly =
     store.getState().wallets.selected?.type === WalletTypes.readOnly ?? true;
 
-  const parentTxHash = hash?.includes('-') ? hash.split('-')[0] : hash;
+  const parentTxHash = ethereumUtils.getHash(item);
   const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
   const wrappedMeta = data ? JSON.parse(data) : {};
   let parsedMeta: undefined | SwapMetadata;
@@ -197,7 +197,7 @@ export const getCallback = (navigate: Navigate, item: any) => (
       ethereumUtils.openTransactionInBlockExplorer(hash, network);
       break;
     case TransactionActions.trySwapAgain: {
-      const parentTxHash = hash?.includes('-') ? hash.split('-')[0] : hash;
+      const parentTxHash = ethereumUtils.getHash(item);
       const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
       const wrappedMeta = data ? JSON.parse(data) : {};
       let parsedMeta: undefined | SwapMetadata;

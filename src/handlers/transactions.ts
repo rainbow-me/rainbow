@@ -133,7 +133,7 @@ export const showTransactionDetailsSheet = (
 ) => {
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
   const network = transactionDetails.network ?? Network.mainnet;
-  const parentTxHash = hash?.includes('-') ? hash.split('-')[0] : hash;
+  const parentTxHash = ethereumUtils.getHash(transactionDetails);
   const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
   const wrappedMeta = data ? JSON.parse(data) : {};
   let parsedMeta: undefined | SwapMetadata;
