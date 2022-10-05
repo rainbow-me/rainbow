@@ -98,6 +98,7 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import useMinRefuelAmount from '@/hooks/useMinRefuelAmount';
 import useCanRefuel from '@/hooks/useCanRefuel';
 import { isNativeAsset } from '@/handlers/assets';
+import useSwapRefuel from '@/hooks/useSwapRefuel';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -369,23 +370,6 @@ export default function ExchangeModal({
       speedUrgentSelected.current = false;
     }
   }, [currentNetwork, prevTxNetwork]);
-
-  useEffect(() => {
-    const getNativeAsset = async () => {
-      if (!outputNetwork || !inputNetwork || !accountAddress) return;
-      const outputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(
-        outputNetwork,
-        accountAddress
-      );
-      const inputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(
-        inputNetwork,
-        accountAddress
-      );
-      setOutputNetworkDetails(outputNativeAsset);
-      setInputNetworkDetails(inputNativeAsset);
-    };
-    getNativeAsset();
-  }, [outputNetwork, inputNetwork, accountAddress]);
 
   const defaultGasLimit = useMemo(() => {
     const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
@@ -962,23 +946,12 @@ export default function ExchangeModal({
     ]
   );
 
-  // TODO
-  // - Find out if the swap is going into a native token on the destination chain, in which case we can likely ignore all reswap functionality
-  // - Get minimum refuel amount, this is how much must be used by the refuel swap
-  // - Check if they have enough of the source native asset once you deduct input amount (if native asset) + gas amount, if the value is < minRefuelAmount we should show the explainer that gives them no options
-  // - If they have >= minRefuelAmount then we should check to see if they swapping native asset and if they will have the minRefuel amount left over after the swap then we offer them the option to add the amount on
-  // - If they wont have enough after the swap of the source native asset then we should offer to deduct some of the input amount into the refuel amount
+  const { showRefuelSheet, outputNativeAsset } = useSwapRefuel({
+    inputCurrency,
+    outputCurrency,
+    tradeDetails,
+  });
 
-  const {
-    data: minRefuelAmount,
-    isLoading: isMintRefuelAmountLoading,
-  } = useMinRefuelAmount({ chainId, toChainId }, { enabled: isCrosschainSwap });
-
-  useCanRefuel();
-
-  console.log(outputAmount, outputCurrency);
-
-  // console.log('........', inputCurrency, '...........', outputCurrency);
   const navigateToRefuelModal = useCallback(() => {
     const getNetworkDetails = (network: Network) => {
       switch (network) {
@@ -1008,9 +981,9 @@ export default function ExchangeModal({
       networkName: networkDetails?.name,
       gasToken: networkDetails?.gasToken,
       nativeAsset: {
-        mainnet_address: outputNetworkDetails?.mainnet_address,
-        type: outputNetworkDetails?.type,
-        symbol: outputNetworkDetails?.symbol,
+        mainnet_address: outputNativeAsset?.mainnet_address,
+        type: outputNativeAsset?.type,
+        symbol: outputNativeAsset?.symbol,
       },
       onRefuel: (
         navigate: () => void,
@@ -1034,9 +1007,11 @@ export default function ExchangeModal({
   }, [
     outputNetwork,
     navigate,
-    navigateToSwapDetailsModal,
+    outputNativeAsset?.mainnet_address,
+    outputNativeAsset?.type,
+    outputNativeAsset?.symbol,
     setRefuel,
-    outputNetworkDetails,
+    navigateToSwapDetailsModal,
   ]);
 
   const handleTapWhileDisabled = useCallback(() => {
@@ -1068,34 +1043,17 @@ export default function ExchangeModal({
     : !!inputCurrency && !!outputCurrency;
 
   const handleConfirmExchangePress = useCallback(() => {
-    if (!outputNetworkDetails?.balance?.amount || loading) return NOOP;
-
-    const hasExistingOutputNativeZeroBalance = isZero(
-      outputNetworkDetails.balance.amount
-    );
-    const isOutputNativeAsset = isNativeAsset(
-      outputCurrency?.address,
-      outputCurrency?.type
-    );
-
-
-    const showRefuelAddSheet =
-      isCrosschainSwap &&
-      hasExistingOutputNativeZeroBalance &&
-      outputNetwork !== NetworkTypes.mainnet;
-
-
-    // If its not a crosschain swap immediately go to details sheet
-    if (!isCrosschainSwap) {
-      return navigateToSwapDetailsModal();
+    if (loading) return NOOP();
+    if (showRefuelSheet) {
+      return navigateToRefuelModal();
     }
-
-    // If the user
-    // - doesnt have an existing balance
-    // - isnt swapping into the native token
-    // - has enough to add $3 from native token balance
-    return navigateToRefuelModal();
-  }, [isCrosschainSwap, outputNetwork, loading, navigateToSwapDetailsModal, navigateToRefuelModal, outputNetworkDetails, outputCurrency]);
+    return navigateToSwapDetailsModal();
+  }, [
+    loading,
+    showRefuelSheet,
+    navigateToSwapDetailsModal,
+    navigateToRefuelModal,
+  ]);
 
   return (
     <Wrapper keyboardType={KeyboardType.numpad}>
