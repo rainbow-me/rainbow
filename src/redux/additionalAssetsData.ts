@@ -2,7 +2,7 @@ import { EthereumAddress } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { dataUpdateAsset } from './data';
 import { ParsedAddressAsset, SwappableAsset } from '@/entities';
-import { getOnchainAssetBalance } from '@/handlers/assets';
+import { getOnchainAssetBalance, isL2Asset } from '@/handlers/assets';
 import { getCoingeckoIds } from '@/handlers/dispersion';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
@@ -140,22 +140,31 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
     const assetsToUpdate = l2AssetsToWatch?.[id];
     if (!assetsToUpdate) return;
     const { inputCurrency, outputCurrency, userAddress } = assetsToUpdate;
+    const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+      inputCurrency?.type
+    );
+    const outputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+      outputCurrency?.type
+    );
     const updatedAssets = [
-      await getUpdatedL2AssetBalance(
-        inputCurrency,
-        genericAssets,
-        ethereumUtils.getNetworkFromType(inputCurrency?.type),
-        userAddress
-      ),
-      await getUpdatedL2AssetBalance(
-        outputCurrency,
-        genericAssets,
-        ethereumUtils.getNetworkFromType(outputCurrency?.type),
-        userAddress
-      ),
+      isL2Asset(inputCurrency)
+        ? await getUpdatedL2AssetBalance(
+            inputCurrency,
+            genericAssets,
+            inputCurrencyNetwork,
+            userAddress
+          )
+        : null,
+      isL2Asset(outputCurrency)
+        ? await getUpdatedL2AssetBalance(
+            outputCurrency,
+            genericAssets,
+            outputCurrencyNetwork,
+            userAddress
+          )
+        : null,
     ];
 
-    // @ts-ignore
     updatedAssets.forEach(asset => asset && dispatch(dataUpdateAsset(asset)));
 
     const newL2AssetsToWatch = Object.entries(l2AssetsToWatch).reduce(
