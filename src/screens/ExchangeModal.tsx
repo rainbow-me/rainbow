@@ -1053,7 +1053,7 @@ export default function ExchangeModal({
 
     return navigateToSwapDetailsModal();
   }, [
-    outputNetworkDetails.balance.amount,
+    outputNetworkDetails?.balance?.amount,
     isCrosschainSwap,
     outputNetwork,
     loading,
