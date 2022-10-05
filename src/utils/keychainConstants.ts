@@ -6,5 +6,6 @@ export const selectedWalletKey = 'rainbowSelectedWalletKey';
 export const allWalletsKey = 'rainbowAllWalletsKey';
 export const oldSeedPhraseMigratedKey = 'rainbowOldSeedPhraseMigratedKey';
 export const pinKey = 'rainbowPinKey';
+export const pinKeyOld = 'rainbowPinKeyOld';
 export const signingWallet = 'signingWallet';
 export const signingWalletAddress = 'signingWalletAddress';

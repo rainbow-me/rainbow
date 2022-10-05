@@ -102,3 +102,21 @@ export async function saveNewAuthenticationPIN() {
     });
   });
 }
+export async function saveNewAuthenticationPINOrTakeExisting() {
+  const validPin = await getExistingPIN();
+  if (validPin) return validPin;
+  return new Promise((resolve, reject) => {
+    return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
+      onCancel: reject,
+      onSuccess: async (pin: any) => {
+        try {
+          await savePIN(pin);
+        } catch (e) {
+          reject();
+        }
+        resolve(pin);
+      },
+      validPin: false,
+    });
+  });
+}
