@@ -32,5 +32,13 @@ jest.mock('react-native-keychain', () => ({
   resetGenericPassword: jest.fn(),
   setGenericPassword: jest.fn(),
 }));
+jest.mock('react-native-keychain-android-new', () => ({
+  ACCESSIBLE: {
+    ALWAYS_THIS_DEVICE_ONLY: 'kSecAttrAccessibleAlwaysThisDeviceOnly',
+  },
+  getGenericPassword: jest.fn(),
+  resetGenericPassword: jest.fn(),
+  setGenericPassword: jest.fn(),
+}));
 
 jest.mock('react-native-mmkv');
