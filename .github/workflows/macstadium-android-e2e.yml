@@ -56,7 +56,7 @@ jobs:
 
       - name: Send success message to slack
         id: slack-success-msg
-        uses: slackapi/slack-github-action@v1.21.0
+        uses: slackapi/slack-github-action@v1.22.0
         if: ${{ job.status == 'success' }}
         with:
           # This data can be any valid JSON from a previous step in the GitHub Action
@@ -103,7 +103,7 @@ jobs:
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       - name: Send error message to slack
         id: slack-error-msg
-        uses: slackapi/slack-github-action@v1.21.0
+        uses: slackapi/slack-github-action@v1.22.0
         if: ${{ job.status != 'success' }}
         with:
           # This data can be any valid JSON from a previous step in the GitHub Action
