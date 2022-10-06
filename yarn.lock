@@ -4419,9 +4419,10 @@
   version "1.2.3"
   resolved "git+https://github.com/brunobar79/clipboard#01d1c1344723d0a4cee94e1fbc199c2e2169905c"
 
-"@react-native-community/netinfo@5.9.7":
-  version "5.9.7"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-5.9.7.tgz#769c6b306ea6bbaa1c4a3fffdd183d0cfc30ed7e"
+"@react-native-community/netinfo@9.3.4":
+  version "9.3.4"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-9.3.4.tgz#712d567703e05c4a01d82a18bd646a93c6757007"
+  integrity sha512-IXbJ+L8p4oE2ssDPfXCyxx9xVo5WuTMv6HA5YJw2McuRLLtVKR/vambycrB47AWTkHCTj3e0VOz28iUOvTSVPw==
 
 "@react-native-firebase/app@14.7.0":
   version "14.7.0"
