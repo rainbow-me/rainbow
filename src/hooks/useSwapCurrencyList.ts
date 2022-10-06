@@ -129,8 +129,9 @@ const useSwapCurrencyList = (
     [Network.arbitrum]: [],
   });
 
-  const { inputCurrency } = useSwapCurrencies();
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+  const { inputCurrency } = useSwapCurrencies();
+  const previousInputCurrencyType = usePrevious(inputCurrency?.type);
   const inputChainId = useMemo(
     () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
     [inputCurrency?.type]
@@ -425,7 +426,8 @@ const useSwapCurrencyList = (
       if (
         (searching && !wasSearching) ||
         (searching && previousSearchQuery !== searchQuery) ||
-        searchChainId !== previousChainId
+        searchChainId !== previousChainId ||
+        inputCurrency?.type !== previousInputCurrencyType
       ) {
         if (searchChainId === MAINNET_CHAINID) {
           search();
@@ -442,7 +444,13 @@ const useSwapCurrencyList = (
     };
     doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searching, searchQuery, searchChainId, isCrosschainSearch]);
+  }, [
+    searching,
+    searchQuery,
+    searchChainId,
+    isCrosschainSearch,
+    inputCurrency?.type,
+  ]);
 
   const { colors } = useTheme();
 
@@ -491,14 +499,6 @@ const useSwapCurrencyList = (
         }
       }
       if (inputCurrency?.name && verifiedAssets.length) {
-        if (searchChainId === MAINNET_CHAINID && isCrosschainSearch) {
-          if (!bridgeAsset) {
-            bridgeAsset = favoriteAssets.find(
-              asset =>
-                asset?.name.toLowerCase() === inputCurrency.name.toLowerCase()
-            );
-          }
-        }
         if (bridgeAsset) {
           list.push({
             color:
