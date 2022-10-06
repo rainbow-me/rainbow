@@ -2,14 +2,14 @@ import { debounce, upperFirst } from 'lodash';
 import { useCallback, useMemo } from 'react';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import Mailer from 'react-native-mail';
+import { useClipboard } from '@react-native-community/clipboard';
 import { Alert } from '../components/alerts';
-import useClipboard from './useClipboard';
 
 export default function useEmailRainbow({
   emailAddress = 'support@rainbow.me',
   subject = 'feedback',
 }) {
-  const { setClipboard } = useClipboard();
+  const [, setClipboard] = useClipboard();
 
   const emailOptions = useMemo(
     () => ({
