@@ -492,6 +492,8 @@
         "us_except": "United States (except Texas and New York)"
       },
       "swap": {
+        "swap": "Swap",
+        "bridge": "Bridge",
         "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
         "on": "On",
@@ -525,6 +527,7 @@
         "maximum_sold": "Maximum sold",
         "token_contract": "%{token} contract",
         "number_of_exchanges": "%{number} Exchanges",
+        "number_of_steps": "%{number} Steps",
         "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
