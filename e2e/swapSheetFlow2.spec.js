@@ -124,6 +124,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.waitAndTap('settings-button');
+    await Helpers.scrollTo('settings-menu-container', 'bottom');
     await Helpers.checkIfVisible('settings-sheet');
     await Helpers.scrollTo('settings-menu-container', 'bottom');
     await Helpers.waitAndTap('developer-section');

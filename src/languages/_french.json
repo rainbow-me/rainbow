@@ -399,6 +399,12 @@
         "loser": "Loser :)",
         "mover": "Mover :)"
       },
+      "no_results": {
+        "description": "Some tokens don’t have enough liquidity to perform a successful swap.: )",
+        "description_l2": "Some tokens don’t have enough layer 2 liquidity to perform a successful swap. :)",
+        "nothing_found": "Nothing found :)",
+        "nothing_here": "Nothing here! :)"
+      },
       "price_impact": {
         "losing_prefix": "Losing :)",
         "small_market": "Small Market :)",
@@ -761,7 +767,6 @@
       "recipient_address": "Adresse du destinataire"
     },
     "list": {
-      "nothing_here": "Nothing here! :)",
       "share": {
         "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl} :)",
         "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl} :)"
