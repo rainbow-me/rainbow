@@ -397,7 +397,7 @@
         "loser": "Loser",
         "mover": "Mover"
       },
-      "long_wait":{
+      "long_wait": {
         "prefix": "Long Wait",
         "time": "Up to %{estimatedWaitTime} to swap"
       },
