@@ -1,5 +1,4 @@
 import { ParsedAddressAsset, SwappableAsset } from '@/entities';
-import { toWei } from '@/handlers/web3';
 import { ethereumUtils } from '@/utils';
 import useMinRefuelAmount from './useMinRefuelAmount';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
@@ -101,6 +100,7 @@ export default function useSwapRefuel({
       outputCurrency?.address,
       outputNetwork
     );
+    // - Find out if the swap is going into a native token on the destination chain, in which case we can likely ignore all reswap functionality
     if (swappingToNativeAsset) {
       return false;
     }
@@ -108,7 +108,6 @@ export default function useSwapRefuel({
       return false;
     }
     if (outputNetwork === NetworkTypes.mainnet) return false;
-    // - Find out if the swap is going into a native token on the destination chain, in which case we can likely ignore all reswap functionality
     const hasZeroOutputNativeAssetBalance = isZero(
       outputNativeAsset?.balance?.amount || 0
     );
@@ -127,12 +126,26 @@ export default function useSwapRefuel({
     );
     const gasFeesPlusRefuelAmount = add(gasFee, refuelAmount?.toString());
     // - If they wont have enough after the swap of the source native asset then we should offer to deduct some of the input amount into the refuel amount
+
     if (swappingFromNativeAsset) {
       const nativeAmountAfterSwap = subtract(
         inputNativeAssetAmount,
         tradeDetails?.sellAmount?.toString() || '0'
       );
-      return lessThan(gasFeesPlusRefuelAmount, nativeAmountAfterSwap);
+      const enoughNativeAssetAfterSwapAndRefuel = lessThan(
+        gasFeesPlusRefuelAmount,
+        nativeAmountAfterSwap
+      );
+      // if enoughNativeAssetAfterSwapAndRefuel user can refuel without any issue
+      if (enoughNativeAssetAfterSwapAndRefuel)
+        return enoughNativeAssetAfterSwapAndRefuel;
+      // if user max'ed out
+
+      // new input is sellAmount - minRefuelAmount if sellAmount > minRefuelAmount
+      // const newSellAmountAfterRefuel = subtract(tradeDetails?.sellAmount?.toString() || '0', minRefuelAmount)
+      // if user press adjust and add 3 go back to exchange modal and update the input token amount
+      // updateSwapInputAmount(fromWei(newSellAmountAfterRefuel))
+      return enoughNativeAssetAfterSwapAndRefuel;
     }
     return lessThan(gasFeesPlusRefuelAmount, inputNativeAssetAmount);
   }, [
