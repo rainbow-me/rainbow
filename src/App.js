@@ -25,7 +25,7 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
-import { connect, Provider as ReduxProvider, useSelector } from 'react-redux';
+import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
@@ -82,6 +82,7 @@ import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
+import useAppState from '@/hooks/useAppState';
 
 const FedoraToastRef = createRef();
 
@@ -155,7 +156,6 @@ class OldApp extends Component {
     InteractionManager.runAfterInteractions(() => {
       rainbowTokenList.update();
     });
-    AppState.addEventListener('change', this.handleAppStateChange);
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
@@ -199,7 +199,6 @@ class OldApp extends Component {
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this.handleAppStateChange);
     rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
     this.branchListener?.();
   }
@@ -244,22 +243,6 @@ class OldApp extends Component {
         screenScale,
       });
     }
-  };
-
-  handleAppStateChange = async nextAppState => {
-    // Restore WC connectors when going from BG => FG
-    if (this.state.appState === 'background' && nextAppState === 'active') {
-      store.dispatch(walletConnectLoadState());
-      InteractionManager.runAfterInteractions(() => {
-        rainbowTokenList.update();
-      });
-    }
-    this.setState({ appState: nextAppState });
-
-    analytics.track('State change', {
-      category: 'app state',
-      label: nextAppState,
-    });
   };
 
   handleNavigatorRef = navigatorRef => {
@@ -324,6 +307,21 @@ const OldAppWithRedux = connect(state => ({
 }))(OldApp);
 
 function App() {
+  useAppState({
+    onChange(state) {
+      analytics.track('State change', {
+        category: 'app state',
+        label: state,
+      });
+    },
+    onActive() {
+      store.dispatch(walletConnectLoadState());
+      InteractionManager.runAfterInteractions(() => {
+        rainbowTokenList.update();
+      });
+    },
+  });
+
   return <OldAppWithRedux />;
 }
 

@@ -1,31 +1,52 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import usePrevious from './usePrevious';
 
-const AppStateTypes = {
-  active: 'active',
-  background: 'background',
-  inactive: 'inactive',
-};
+import usePrevious from '@/hooks/usePrevious';
 
-export default function useAppState() {
-  const [appState, setAppState] = useState(AppState.currentState);
-  const prevAppState = usePrevious(appState);
-
-  function onChange(newState: AppStateStatus) {
-    setAppState(newState);
-  }
+export default function useAppState({
+  onChange,
+  onActive,
+  onBackground,
+}: {
+  onChange?(state: AppStateStatus): void;
+  onActive?(): void;
+  onBackground?(): void;
+} = {}) {
+  const [appState, setAppState] = useState<AppStateStatus>(
+    AppState.currentState
+  );
+  const prevAppState = usePrevious<AppStateStatus>(appState);
+  const justBecameActive = appState === 'active' && prevAppState !== 'active';
+  const justBecameBackground =
+    appState === 'background' && prevAppState !== 'background';
 
   useEffect(() => {
-    AppState.addEventListener('change', onChange);
-    return () => AppState.removeEventListener('change', onChange);
+    const { remove } = AppState.addEventListener('change', setAppState);
+    return () => remove();
   }, []);
+
+  useEffect(() => {
+    if (!prevAppState || prevAppState === appState) return;
+
+    if (justBecameActive && onActive) {
+      onActive();
+    } else if (justBecameBackground && onBackground) {
+      onBackground();
+    }
+
+    if (onChange) onChange(appState);
+  }, [
+    appState,
+    prevAppState,
+    justBecameActive,
+    justBecameBackground,
+    onChange,
+    onActive,
+    onBackground,
+  ]);
 
   return {
     appState,
-    justBecameActive:
-      appState === AppStateTypes.active &&
-      prevAppState &&
-      prevAppState !== AppStateTypes.active,
+    justBecameActive,
   };
 }
