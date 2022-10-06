@@ -7,6 +7,7 @@ import {
   TokenSearchUniswapAssetKey,
 } from '@/entities';
 import logger from '@/utils/logger';
+import { EthereumAddress } from '@rainbow-me/swaps';
 
 const tokenSearchApi = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v2',
@@ -17,34 +18,61 @@ const tokenSearchApi = new RainbowFetchClient({
   timeout: 30000,
 });
 
-const tokenSearch = async (
-  list: TokenSearchTokenListId,
-  query: string,
-  chainId: number,
-  keys: TokenSearchUniswapAssetKey[],
-  threshold: TokenSearchThreshold
-) => {
+export const tokenSearch = async (searchParams: {
+  chainId: number;
+  fromChainId?: number | '';
+  keys: TokenSearchUniswapAssetKey[];
+  list: TokenSearchTokenListId;
+  threshold: TokenSearchThreshold;
+  query: string;
+}) => {
+  const queryParams: {
+    keys: TokenSearchUniswapAssetKey[];
+    list: TokenSearchTokenListId;
+    threshold: TokenSearchThreshold;
+    query?: string;
+    fromChainId?: number;
+  } = {
+    keys: searchParams.keys,
+    list: searchParams.list,
+    threshold: searchParams.threshold,
+    query: searchParams.query,
+  };
+  if (searchParams.fromChainId) {
+    queryParams.fromChainId = searchParams.fromChainId;
+  }
   try {
-    const data = {
+    if (isAddress(searchParams.query) && !searchParams.fromChainId) {
       // @ts-ignore
-      keys,
-      list,
-      query,
-      threshold,
-    };
-    if (query) {
-      data.query = query;
-      if (isAddress(query)) {
-        // @ts-ignore
-        data.keys = `networks.${chainId}.address`;
-      }
+      params.keys = `networks.${params.chainId}.address`;
     }
-    const url = `/${chainId}/?${qs.stringify(data)}`;
+    const url = `/${searchParams.chainId}/?${qs.stringify(queryParams)}`;
     const tokenSearch = await tokenSearchApi.get(url);
     return tokenSearch.data?.data;
   } catch (e) {
-    logger.error(`An error occurred while searching for query: ${query}.`, e);
+    logger.error(
+      `An error occurred while searching for query: ${searchParams.query}.`,
+      e
+    );
   }
 };
 
-export default tokenSearch;
+export const walletFilter = async (params: {
+  addresses: EthereumAddress[];
+  fromChainId: number;
+  toChainId: number;
+}) => {
+  try {
+    const { addresses, fromChainId, toChainId } = params;
+    const filteredAddresses = await tokenSearchApi.post(`/${fromChainId}`, {
+      addresses,
+      toChainId,
+    });
+    return filteredAddresses?.data?.data || [];
+  } catch (e) {
+    logger.error(
+      `An error occurred while filter wallet addresses: toChainId: ${params.toChainId} -> fromChainId: ${params.fromChainId}: ${e}`
+    );
+    throw e;
+  }
+};
