@@ -35,6 +35,10 @@ jest.mock('react-native', () => ({
  * Just fixes type errors for us in this file
  */
 const ProxyAppState = AppState as typeof AppState & {
+  /**
+   * This method is NOT natively part of `AppState`, but we add it here as a
+   * backdoor for testing purposes.
+   */
   setCurrentState(state: AppStateStatus): void;
 };
 
@@ -63,6 +67,7 @@ test('returns correct values', () => {
     justBecameActive: false,
   });
 
+  // always call act() when doing something that will change React state
   act(() => {
     ProxyAppState.setCurrentState('active');
   });
@@ -91,6 +96,7 @@ test('runs callbacks', () => {
 
   render(<Comp />);
 
+  // always call act() when doing something that will change React state
   act(() => {
     ProxyAppState.setCurrentState('active');
   });
@@ -98,6 +104,7 @@ test('runs callbacks', () => {
   expect(onChange).toHaveBeenCalledWith('active');
   expect(onActive).toHaveBeenCalled();
 
+  // always call act() when doing something that will change React state
   act(() => {
     ProxyAppState.setCurrentState('background');
   });
@@ -122,6 +129,7 @@ test('does not run callbacks more than needed', () => {
 
   render(<Comp />);
 
+  // always call act() when doing something that will change React state
   act(() => {
     ProxyAppState.setCurrentState('active');
   });
@@ -129,6 +137,7 @@ test('does not run callbacks more than needed', () => {
   expect(onChange).toHaveBeenCalledTimes(1);
   expect(onActive).toHaveBeenCalledTimes(1);
 
+  // always call act() when doing something that will change React state
   act(() => {
     ProxyAppState.setCurrentState('active');
   });
@@ -137,6 +146,7 @@ test('does not run callbacks more than needed', () => {
   expect(onChange).toHaveBeenCalledTimes(1);
   expect(onActive).toHaveBeenCalledTimes(1);
 
+  // always call act() when doing something that will change React state
   act(() => {
     ProxyAppState.setCurrentState('background');
   });
@@ -145,6 +155,7 @@ test('does not run callbacks more than needed', () => {
   expect(onChange).toHaveBeenCalledTimes(2);
   expect(onBackground).toHaveBeenCalledTimes(1);
 
+  // always call act() when doing something that will change React state
   act(() => {
     ProxyAppState.setCurrentState('background');
   });
