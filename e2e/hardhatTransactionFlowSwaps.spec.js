@@ -107,7 +107,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should be able to do a cross chain swap', async () => {
-    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.waitAndTap('swap-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-DAI-token'

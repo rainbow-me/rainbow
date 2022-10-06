@@ -72,7 +72,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should go to swap and try different cross chain swaps', async () => {
-    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.waitAndTap('swap-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
 
@@ -132,7 +132,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should go to swap and check that choosing a different asset network is cleaning the other input token', async () => {
-    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.waitAndTap('swap-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
     await Helpers.waitAndTap('exchange-modal-input-max');
