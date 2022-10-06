@@ -28,9 +28,14 @@ const parseExchangeName = name => {
     network.toLowerCase()
   );
 
-  return networks.some(network => name.toLowerCase().includes(network))
-    ? name.slice(name.indexOf('_') + 1, name.length)
-    : name;
+  const removeNetworks = name =>
+    networks.some(network => name.toLowerCase().includes(network))
+      ? name.slice(name.indexOf('_') + 1, name.length)
+      : name;
+
+  const removeBridge = name => name.replace('-bridge', '');
+
+  return removeNetworks(removeBridge(name));
 };
 const ExchangeIcon = magicMemo(
   function ExchangeIcon({ index = 1, icon, protocol }) {
@@ -112,7 +117,7 @@ const ExchangeIconStack = magicMemo(
             >
               <ExchangeIcon
                 icon={icon}
-                protocol={protocols?.name ?? protocols.names[index]}
+                protocol={protocols?.name || protocols.names[index]}
               />
             </Box>
           );
