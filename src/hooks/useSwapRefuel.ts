@@ -9,12 +9,11 @@ import { useAccountSettings, useGas } from '.';
 import { isNativeAsset } from '@/handlers/assets';
 import { NetworkTypes } from '@/helpers';
 
-// TODO
-// - Find out if the swap is going into a native token on the destination chain, in which case we can likely ignore all reswap functionality
-// - Get minimum refuel amount, this is how much must be used by the refuel swap
-// - Check if they have enough of the source native asset once you deduct input amount (if native asset) + gas amount, if the value is < minRefuelAmount we should show the explainer that gives them no options
-// - If they have >= minRefuelAmount then we should check to see if they swapping native asset and if they will have the minRefuel amount left over after the swap then we offer them the option to add the amount on
-// - If they wont have enough after the swap of the source native asset then we should offer to deduct some of the input amount into the refuel amount
+export enum RefuelState {
+  'Add' = 'Add',
+  'Deduct' = 'Deduct',
+  'Notice' = 'Notice',
+}
 
 export default function useSwapRefuel({
   inputCurrency,
@@ -95,38 +94,48 @@ export default function useSwapRefuel({
     getNativeAsset();
   }, [outputNetwork, inputNetwork, accountAddress]);
 
-  const showRefuelSheet = useMemo(() => {
+  const { showRefuelSheet, refuelState } = useMemo(() => {
     const swappingToNativeAsset = isNativeAsset(
       outputCurrency?.address,
       outputNetwork
     );
-    // - Find out if the swap is going into a native token on the destination chain, in which case we can likely ignore all reswap functionality
+    // If the swap is going into a native token on the destination chain, in which case we can ignore all refuel functionality
     if (swappingToNativeAsset) {
-      return false;
+      return { showRefuelSheet: false, refuelState: null };
     }
+    // If its not a crosschain swap then ignore
     if (!isCrosschainSwap) {
-      return false;
+      return { showRefuelSheet: false, refuelState: null };
     }
-    if (outputNetwork === NetworkTypes.mainnet) return false;
+    // If we are swapping to mainnet then ignore
+    if (outputNetwork === NetworkTypes.mainnet)
+      return { showRefuelSheet: false, refuelState: null };
+
+    // Does the user have an existing balance on the output native asset
     const hasZeroOutputNativeAssetBalance = isZero(
       outputNativeAsset?.balance?.amount || 0
     );
-    if (!hasZeroOutputNativeAssetBalance) return false;
+    // If its not 0 then ignore
+    if (!hasZeroOutputNativeAssetBalance)
+      return { showRefuelSheet: false, refuelState: null };
 
-    // - Get minimum refuel amount, this is how much must be used by the refuel swap
-    const refuelAmount = minRefuelAmount || 0;
-    // - Check if they have enough of the source native asset once you deduct input amount (if native asset) + gas amount, if the value is < minRefuelAmount we should show the explainer that gives them no options
+    // Get minimum refuel amount, this is how much must be used by the refuel swap
+    const refuelAmount = minRefuelAmount || '0';
+    // Check if they have enough of the source native asset once you deduct input amount (if native asset) + gas amount, if the value is < minRefuelAmount we should show the explainer that gives them no options
+    // Get the gas fee for the swap
     const gasFee = selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '0';
     // - If they have >= minRefuelAmount then we should check to see if they swapping native asset and if they will have the minRefuel amount left over after the swap then we offer them the option to add the amount on
+    // Check the existing source native asset balance
     const inputNativeAssetAmount = inputNativeAsset?.balance?.amount || '0';
-
+    // Check if swapping from native asset
     const swappingFromNativeAsset = isNativeAsset(
       inputCurrency?.address,
       inputNetwork
     );
-    const gasFeesPlusRefuelAmount = add(gasFee, refuelAmount?.toString());
-    // - If they wont have enough after the swap of the source native asset then we should offer to deduct some of the input amount into the refuel amount
 
+    const gasFeesPlusRefuelAmount = add(gasFee, refuelAmount.toString());
+    // - If they wont have enough after the swap of the source native asset then we should offer to deduct some of the input amount into the refuel amount
+    // If swapping from the native asset we should take that amount into account
     if (swappingFromNativeAsset) {
       const nativeAmountAfterSwap = subtract(
         inputNativeAssetAmount,
@@ -138,16 +147,24 @@ export default function useSwapRefuel({
       );
       // if enoughNativeAssetAfterSwapAndRefuel user can refuel without any issue
       if (enoughNativeAssetAfterSwapAndRefuel)
-        return enoughNativeAssetAfterSwapAndRefuel;
+        return { showRefuelSheet: true, refuelState: RefuelState.Add };
       // if user max'ed out
 
-      // new input is sellAmount - minRefuelAmount if sellAmount > minRefuelAmount
-      // const newSellAmountAfterRefuel = subtract(tradeDetails?.sellAmount?.toString() || '0', minRefuelAmount)
-      // if user press adjust and add 3 go back to exchange modal and update the input token amount
-      // updateSwapInputAmount(fromWei(newSellAmountAfterRefuel))
-      return enoughNativeAssetAfterSwapAndRefuel;
+      // Show deduct refuel amount modal
+      return { showRefuelSheet: true, refuelState: RefuelState.Deduct };
     }
-    return lessThan(gasFeesPlusRefuelAmount, inputNativeAssetAmount);
+    // If the total gas and refuel amount is less than native asset amount balance then show normal refuel screen
+    // If total gas and refuel is more than the native asset amount the  show the continue anyway and dont allow for refuel
+    const enoughNativeAssetAfterSwapAndRefuel = lessThan(
+      gasFeesPlusRefuelAmount,
+      inputNativeAssetAmount
+    );
+
+    if (enoughNativeAssetAfterSwapAndRefuel) {
+      return { showRefuelSheet: true, refuelState: RefuelState.Add };
+    }
+
+    return { showRefuelSheet: true, refuelState: RefuelState.Notice };
   }, [
     inputCurrency?.address,
     inputNativeAsset?.balance?.amount,
@@ -163,7 +180,9 @@ export default function useSwapRefuel({
 
   return {
     showRefuelSheet,
+    refuelState,
     inputNativeAsset,
     outputNativeAsset,
+    minRefuelAmount,
   };
 }
