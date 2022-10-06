@@ -864,7 +864,7 @@ export const explainers = (params, colors) => ({
       gasToken: params?.gasToken,
     }),
     button: {
-      label: lang.t('button.go_back'),
+      label: lang.t('button.no_thanks'),
       textColor: 'blueGreyDark60',
       bgColor: colors?.transparent,
       onPress: params?.onContinue,
@@ -917,7 +917,7 @@ export const explainers = (params, colors) => ({
     secondaryButton: {
       label: lang.t('button.proceed_anyway'),
       textColor: colors?.appleBlue,
-      bgColor: colors?.appleBlueLight,
+      bgColor: colors?.alpha(colors?.appleBlue, 0.05),
       onPress: params?.onProceed,
     },
   },
