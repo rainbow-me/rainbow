@@ -106,7 +106,6 @@ export const showTransactionDetailsSheet = (
 ) => {
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
 
-  // Invariants
   const network = transactionDetails.network ?? NetworkTypes.mainnet;
   const date = getHumanReadableDate(minedAt);
   const isSent =
@@ -158,7 +157,6 @@ export const showTransactionDetailsSheet = (
       );
     }
 
-    console.log('----- getOnPressIOS');
     showActionSheetWithOptions(
       {
         cancelButtonIndex: buttons.length - 1,
