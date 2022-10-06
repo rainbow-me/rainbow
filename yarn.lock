@@ -2134,6 +2134,11 @@
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@daybrush/utils/-/utils-0.11.0.tgz#3fd113fcedaab29d8c80773ca5f4d32551bdc9d8"
 
+"@dominicstop/ts-event-emitter@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@dominicstop/ts-event-emitter/-/ts-event-emitter-1.1.0.tgz#1f3d3fa878a1ccab686931280757954719cf88e4"
+  integrity sha512-CcxmJIvUb1vsFheuGGVSQf4KdPZC44XolpUT34+vlal+LyQoBUOn31pjFET5M9ctOxEpt8xa0M3/2M7uUiAoJw==
+
 "@egjs/hammerjs@^2.0.17":
   version "2.0.17"
   resolved "https://registry.yarnpkg.com/@egjs/hammerjs/-/hammerjs-2.0.17.tgz#5dc02af75a6a06e4c2db0202cae38c9263895124"
@@ -16340,10 +16345,12 @@ react-native-indicators@0.17.0:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-ios-context-menu@1.7.4:
-  version "1.7.4"
-  resolved "https://registry.yarnpkg.com/react-native-ios-context-menu/-/react-native-ios-context-menu-1.7.4.tgz#37f3d32b292eef43f6126d9d708fafc471b1f442"
-  integrity sha512-qOu6VFVP2KH92HuXSzy6y86pKSfrkovJuWwXVnzc5PK6m40+H5+Ah8moUr5/yQJSD3FwlmqfKhyDMFO5MSlaBg==
+react-native-ios-context-menu@1.14.0:
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/react-native-ios-context-menu/-/react-native-ios-context-menu-1.14.0.tgz#361f4b6073142fe25047a551c96fa25e0f6d4f1c"
+  integrity sha512-HiNZ/WTNgN7mqIO2meMRC3DYQ4L/QLUrL6AMKsD4gP8DEpUskIKeXjiiKXO1ajZImt1J1Z9jUhPORc/RGw4OKw==
+  dependencies:
+    "@dominicstop/ts-event-emitter" "^1.1.0"
 
 react-native-ios11-devicecheck@0.0.3:
   version "0.0.3"
