@@ -1,8 +1,9 @@
 import { analytics } from '@/analytics';
 import { MinimalNotification } from '@/notifications/types';
-import { NotificationRelationship, NotificationTopic } from './settings';
-
-type ValueOf<T> = T[keyof T];
+import {
+  NotificationRelationshipType,
+  NotificationTopicType,
+} from './settings';
 
 export const trackTappedPushNotification = (
   notification: MinimalNotification | undefined
@@ -17,8 +18,8 @@ export const trackTappedPushNotification = (
 
 export const trackChangedNotificationsSetting = (
   chainId: number,
-  topic: ValueOf<typeof NotificationTopic>,
-  type: ValueOf<typeof NotificationRelationship>,
+  topic: NotificationTopicType,
+  type: NotificationRelationshipType,
   action: 'subscribe' | 'unsubscribe'
 ) => {
   analytics.track('Changed Notification Settings', {

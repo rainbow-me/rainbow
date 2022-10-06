@@ -5,8 +5,6 @@ import messaging from '@react-native-firebase/messaging';
 import Logger from '@/utils/logger';
 import { trackChangedNotificationsSetting } from './analytics';
 
-type ValueOf<T> = T[keyof T];
-
 export const NotificationTopic = {
   SENT: 'sent',
   RECEIVED: 'received',
@@ -23,11 +21,14 @@ export const NotificationRelationship = {
   WATCHER: 'watcher',
 };
 
+export type NotificationTopicType = typeof NotificationTopic[keyof typeof NotificationTopic];
+export type NotificationRelationshipType = typeof NotificationRelationship[keyof typeof NotificationRelationship];
+
 export type WalletNotificationSettingsType = {
   address: string;
-  topics: { [key: ValueOf<typeof NotificationTopic>]: boolean };
+  topics: { [key: NotificationTopicType]: boolean };
   enabled: boolean;
-  type: ValueOf<typeof NotificationRelationship>;
+  type: NotificationRelationshipType;
 };
 
 const WALLET_TOPICS_STORAGE_KEY = 'notificationSettings';
@@ -67,7 +68,7 @@ export const useAllNotificationSettingsFromStorage = () => {
     WalletNotificationSettingsType[]
   >(data);
   const [existingGroupSettings, setExistingGroupSettings] = useState<{
-    [key: ValueOf<typeof NotificationRelationship>]: boolean;
+    [key: NotificationRelationshipType]: boolean;
   }>(existingGroupSettingsData);
   const listener = storage.addOnValueChangedListener(changedKey => {
     if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
@@ -257,7 +258,7 @@ export const useNotificationSettings = (address: string) => {
 };
 
 export const updateSettingsForWallets = (
-  type: ValueOf<typeof NotificationRelationship>,
+  type: NotificationRelationshipType,
   options: object
 ) => {
   const data = getAllNotificationSettingsFromStorage();
@@ -394,7 +395,7 @@ export const useWalletGroupNotificationSettings = () => {
 */
 export function toggleGroupNotifications(
   wallets: WalletNotificationSettingsType[],
-  relationship: ValueOf<typeof NotificationRelationship>,
+  relationship: NotificationRelationshipType,
   enableNotifications: boolean
 ) {
   if (enableNotifications) {
@@ -404,18 +405,16 @@ export function toggleGroupNotifications(
       // when toggling a whole group, check if notifications
       // are specifically enabled for this wallet
       // if (enabled || singleWallet) {
-      Object.keys(topics).forEach(
-        (topic: ValueOf<typeof NotificationTopic>) => {
-          if (topics[topic]) {
-            subscribeWalletToSingleNotificationTopic(
-              relationship,
-              NOTIFICATIONS_DEFAULT_CHAIN_ID,
-              address,
-              topic
-            );
-          }
+      Object.keys(topics).forEach((topic: NotificationTopicType) => {
+        if (topics[topic]) {
+          subscribeWalletToSingleNotificationTopic(
+            relationship,
+            NOTIFICATIONS_DEFAULT_CHAIN_ID,
+            address,
+            topic
+          );
         }
-      );
+      });
       // }
     });
   } else {
@@ -434,9 +433,9 @@ export function toggleGroupNotifications(
   Function for subscribing/unsubscribing a wallet to/from a single notification topic.  
 */
 export function toggleTopicForWallet(
-  relationship: ValueOf<typeof NotificationRelationship>,
+  relationship: NotificationRelationshipType,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>,
+  topic: NotificationTopicType,
   enableTopic: boolean
 ) {
   if (enableTopic) {
@@ -483,7 +482,7 @@ const subscribeWalletToSingleNotificationTopic = async (
   type: string,
   chainId: number,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>
+  topic: NotificationTopicType
 ) => {
   Logger.log(
     `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`
@@ -498,7 +497,7 @@ const unsubscribeWalletFromSingleNotificationTopic = async (
   type: string,
   chainId: number,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>
+  topic: NotificationTopicType
 ) => {
   Logger.log(
     `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`
