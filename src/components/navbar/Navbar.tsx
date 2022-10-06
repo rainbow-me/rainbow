@@ -10,6 +10,7 @@ type NavbarProps = {
   hasStatusBarInset?: boolean;
   leftComponent?: React.ReactElement | null;
   rightComponent?: React.ReactElement | null;
+  testID?: string;
   title?: string;
 };
 
@@ -20,10 +21,11 @@ export function Navbar({
   hasStatusBarInset = false,
   leftComponent = <Box />,
   rightComponent = <Box />,
+  testID,
   title,
 }: NavbarProps) {
   return (
-    <Box>
+    <Box testID={testID}>
       {hasStatusBarInset && (
         <Box height={{ custom: safeAreaInsetValues.top }} />
       )}

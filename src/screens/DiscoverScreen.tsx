@@ -46,6 +46,9 @@ export default function DiscoverScreen() {
               </Navbar.Item>
             ) : null
           }
+          testID={
+            isSearchModeEnabled ? 'discover-header-search' : 'discover-header'
+          }
           title={isSearchModeEnabled ? 'Search' : 'Discover'}
         />
         <Box
