@@ -48,6 +48,7 @@ export const parseNewTransaction = async (
     type: txType,
     txTo,
     value,
+    swap,
   } = txDetails;
 
   if (amount && asset) {
@@ -116,5 +117,6 @@ export const parseNewTransaction = async (
     txTo: txTo || to,
     type,
     value,
+    swap,
   };
 };

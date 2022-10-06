@@ -63,6 +63,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.waitAndTap('settings-button');
     await Helpers.checkIfVisible('settings-sheet');
+    await Helpers.scrollTo('settings-menu-container', 'bottom');
     await Helpers.waitAndTap('developer-section');
     await Helpers.scrollTo('developer-settings-sheet', 'bottom');
     await Helpers.tapByText('Crosschain Swaps');
@@ -124,6 +125,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.waitAndTap('settings-button');
     await Helpers.checkIfVisible('settings-sheet');
+    await Helpers.scrollTo('settings-menu-container', 'bottom');
     await Helpers.waitAndTap('developer-section');
     await Helpers.scrollTo('developer-settings-sheet', 'bottom');
     await Helpers.tapByText('Crosschain Swaps');
@@ -154,7 +156,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible(`exchange-modal-output-empty-empty`);
     await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
-
   it('Should go to expanded asset state and check if cross chain available networks component is not visible', async () => {
     await Helpers.swipe('wallet-screen', 'left', 'slow');
     await Helpers.typeText('discover-search-input', 'WBTC\n', true);
