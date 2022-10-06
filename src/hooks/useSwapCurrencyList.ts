@@ -514,13 +514,7 @@ const useSwapCurrencyList = (
       if (favoriteAssets?.length && searchChainId === MAINNET_CHAINID) {
         list.push({
           color: colors.yellowFavorite,
-          data: abcSort(
-            favoriteAssets.filter(
-              asset =>
-                asset?.name.toLowerCase() !== bridgeAsset?.name.toLowerCase()
-            ),
-            'name'
-          ),
+          data: abcSort(favoriteAssets, 'name'),
           key: 'favorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
