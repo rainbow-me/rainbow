@@ -127,6 +127,7 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
+  - OpenSSL-Universal (1.1.1700)
   - PanModal (1.2.7)
   - Permission-Camera (3.0.5):
     - RNPermissions
@@ -402,6 +403,13 @@ PODS:
   - react-native-palette-full (1.2.0):
     - React
     - SDWebImage (~> 5)
+  - react-native-quick-base64 (2.0.5):
+    - React-Core
+  - react-native-quick-crypto (0.4.6):
+    - OpenSSL-Universal
+    - React
+    - React-callinvoker
+    - React-Core
   - react-native-quick-md5 (3.0.3):
     - React-Core
   - react-native-randombytes (3.5.3):
@@ -420,7 +428,6 @@ PODS:
     - React
     - RNInputMask
   - react-native-udp (2.7.0):
-    - CocoaAsyncSocket
     - React
   - react-native-version-number (0.3.6):
     - React
@@ -521,7 +528,7 @@ PODS:
     - React
   - RNFastImage (8.5.11):
     - React-Core
-    - SDWebImage (~> 5.12.5)
+    - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFBApp (14.7.0):
     - Firebase/CoreOnly (= 8.14.0)
@@ -607,9 +614,9 @@ PODS:
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
-  - SDWebImage (5.12.5):
-    - SDWebImage/Core (= 5.12.5)
-  - SDWebImage/Core (5.12.5)
+  - SDWebImage (5.11.1):
+    - SDWebImage/Core (= 5.11.1)
+  - SDWebImage/Core (5.11.1)
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
@@ -627,7 +634,6 @@ PODS:
   - SSZipArchive (2.2.3)
   - swift-vibrant (1.0.0)
   - TcpSockets (3.3.2):
-    - CocoaAsyncSocket
     - React
   - TOCropViewController (2.6.1)
   - ToolTipMenu (5.2.1):
@@ -687,6 +693,8 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-palette-full (from `../node_modules/react-native-palette-full`)
+  - react-native-quick-base64 (from `../node_modules/react-native-quick-base64`)
+  - react-native-quick-crypto (from `../node_modules/react-native-quick-crypto`)
   - react-native-quick-md5 (from `../node_modules/react-native-quick-md5`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-restart (from `../node_modules/react-native-restart`)
@@ -779,6 +787,7 @@ SPEC REPOS:
     - MMKV
     - MMKVCore
     - nanopb
+    - OpenSSL-Universal
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
@@ -880,6 +889,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-pager-view"
   react-native-palette-full:
     :path: "../node_modules/react-native-palette-full"
+  react-native-quick-base64:
+    :path: "../node_modules/react-native-quick-base64"
+  react-native-quick-crypto:
+    :path: "../node_modules/react-native-quick-crypto"
   react-native-quick-md5:
     :path: "../node_modules/react-native-quick-md5"
   react-native-randombytes:
@@ -1045,6 +1058,7 @@ SPEC CHECKSUMS:
   MMKV: aac95d817a100479445633f2b3ed8961b4ac5043
   MMKVCore: 3388952ded307e41b3ed8a05892736a236ed1b8e
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
+  OpenSSL-Universal: ee0a7a25f2042782e2df405e66db3e429198e392
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
   Permission-Camera: ac603073e4128e51e6ca3c39129778f05b4082fa
   Permission-FaceID: 9b1f0d42ee7aa2c830844964e739676fe6b634bd
@@ -1081,13 +1095,15 @@ SPEC CHECKSUMS:
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
+  react-native-quick-base64: e657e9197e61b60a9dec49807843052b830da254
+  react-native-quick-crypto: e7ac378e827bfab02db29092ff204f13adc60c7c
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
-  react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
+  react-native-udp: ff9d13e523f2b58e6bc5d4d32321ac60671b5dc9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: 0bb76b6d6b77da3009611586c7dbf817b947f30e
   react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
@@ -1114,7 +1130,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
-  RNFastImage: 945abf54742505d790d9024d230c69b1e866bc88
+  RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFBApp: 097a31d372b3db15b41c7a1a5c429433b0609e12
   RNFBCrashlytics: 4ec9aae1a1dbb6572d095417392483bec82b07bb
   RNFBMessaging: 06a7a73883f3f43da61507dbfcf4db2245c22869
@@ -1136,7 +1152,7 @@ SPEC CHECKSUMS:
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 91e9ee67766408d08cb08f5bd80cd57c9d2a6691
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
-  SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
+  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   segment-analytics-react-native: e4be824133efd888616f6e6654a2cd4b1b8a3102
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
@@ -1145,11 +1161,11 @@ SPEC CHECKSUMS:
   SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
-  TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
+  TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
 
 PODFILE CHECKSUM: 3d81d103721ac587f9cc40f9440d9afc96ce8bcf
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3
