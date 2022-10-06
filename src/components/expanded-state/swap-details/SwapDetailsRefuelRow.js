@@ -93,7 +93,9 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
           </>
         ) : (
           <Column width="content">
-            <Spinner color={colors.blueGreyDark80} size={20} />
+            <Box marginTop={ICON_ALIGN_MARGIN} marginBottom={ICON_ALIGN_MARGIN}>
+              <Spinner color={colors.blueGreyDark80} size={20} />
+            </Box>
           </Column>
         )}
       </Columns>
