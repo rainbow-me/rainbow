@@ -890,9 +890,7 @@ export default function ExchangeModal({
           flashbotTransaction: flashbots,
           isRefuelTx,
           onClose: () => {
-            // If we close the swap detail screen we shoul reset the state for refuel
-            setHasDeductedRefuel(false);
-            setRefuel(false);
+            resetRefuelState();
           },
           restoreFocusOnSwapModal: () => {
             android &&
@@ -946,6 +944,11 @@ export default function ExchangeModal({
     outputCurrency,
     tradeDetails,
   });
+
+  const resetRefuelState = () => {
+    setHasDeductedRefuel(false);
+    setRefuel(false);
+  };
 
   const navigateToRefuelModal = useCallback(() => {
     const getNetworkDetails = (network: Network) => {
@@ -1159,7 +1162,10 @@ export default function ExchangeModal({
                 network={inputNetwork}
                 onFocus={handleFocus}
                 onPressMaxBalance={updateMaxInputAmount}
-                onPressSelectInputCurrency={navigateToSelectInputCurrency}
+                onPressSelectInputCurrency={chainId => {
+                  resetRefuelState();
+                  navigateToSelectInputCurrency(chainId);
+                }}
                 setInputAmount={updateInputAmount}
                 setNativeAmount={updateNativeAmount}
                 testID={`${testID}-input`}
@@ -1174,9 +1180,10 @@ export default function ExchangeModal({
                   }
                   network={outputNetwork}
                   onFocus={handleFocus}
-                  onPressSelectOutputCurrency={() =>
-                    navigateToSelectOutputCurrency(chainId)
-                  }
+                  onPressSelectOutputCurrency={() => {
+                    resetRefuelState();
+                    navigateToSelectOutputCurrency(chainId);
+                  }}
                   {...(currentNetwork === Network.arbitrum &&
                     !!outputCurrency && {
                       onTapWhileDisabled: handleTapWhileDisabled,
