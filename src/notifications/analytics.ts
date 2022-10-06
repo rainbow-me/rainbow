@@ -16,7 +16,7 @@ export const trackTappedPushNotification = (
   });
 };
 
-export const trackChangedNotificationsSetting = (
+export const trackChangedNotificationSettings = (
   chainId: number,
   topic: NotificationTopicType,
   type: NotificationRelationshipType,
