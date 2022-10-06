@@ -287,21 +287,21 @@ export default function CurrencySelectModal() {
     });
 
     // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
-    // if (IS_TESTING === 'true' && type === CurrencySelectionTypes.output) {
-    //   let symbols: string[] = [];
-    //   list = list?.map(section => {
-    //     // Remove dupes
-    //     section.data = uniqBy(section?.data, 'symbol');
-    //     // Remove dupes across sections
-    //     section.data = section?.data?.filter(
-    //       token => !symbols.includes(token?.symbol)
-    //     );
-    //     const sectionSymbols = section?.data?.map(token => token?.symbol);
-    //     symbols = symbols.concat(sectionSymbols);
+    if (IS_TESTING === 'true' && type === CurrencySelectionTypes.output) {
+      let symbols: string[] = [];
+      list = list?.map(section => {
+        // Remove dupes
+        section.data = uniqBy(section?.data, 'symbol');
+        // Remove dupes across sections
+        section.data = section?.data?.filter(
+          token => !symbols.includes(token?.symbol)
+        );
+        const sectionSymbols = section?.data?.map(token => token?.symbol);
+        symbols = symbols.concat(sectionSymbols);
 
-    //     return section;
-    //   });
-    // }
+        return section;
+      });
+    }
     return list.filter(section => section.data.length > 0);
   }, [activeSwapCurrencyList, getWalletCurrencyList, type]);
 
