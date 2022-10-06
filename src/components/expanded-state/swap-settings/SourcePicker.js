@@ -119,7 +119,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
             borderRadius={40}
             paddingHorizontal="10px"
             paddingVertical="6px"
-            shadow="21px light"
+            shadow="21px light (Deprecated)"
             // shadow clipped on android by ButtonPressAnimation.android.tsx inside <ContextMenuButton>
           >
             <Inline alignVertical="center" horizontalSpace="4px">

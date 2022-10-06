@@ -3,7 +3,8 @@ import React from 'react';
 import { Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { Placeholder } from '../../playground/Placeholder';
-import { Column, Columns } from '../Columns/Columns';
+import { ColorModeProvider } from '../../color/ColorMode';
+import { Columns } from '../Columns/Columns';
 import { Inset } from '../Inset/Inset';
 import { Stack } from '../Stack/Stack';
 import { Text } from '../Text/Text';
@@ -218,95 +219,400 @@ export const shadows: Example = {
   name: 'Shadows',
   Example: () =>
     source(
-      <Box background="surfacePrimary" padding="24px" shadow="30px light" />
-    ),
-};
-
-export const shadowsWithSizes: Example = {
-  name: 'Shadows',
-  subTitle: 'Sizes',
-  Example: () =>
-    source(
-      <Stack space="32px">
-        <Columns space="32px">
-          <Column width="1/3" />
-          <Column width="1/3">
-            <Box
-              background="surfacePrimary"
-              padding="16px"
-              shadow="9px medium"
-            />
-          </Column>
-        </Columns>
-        <Columns space="32px">
-          <Column width="1/3" />
-          <Column width="1/3">
-            <Box
-              background="surfacePrimary"
-              padding="16px"
-              shadow="12px medium"
-            />
-          </Column>
-          <Column width="1/3">
-            <Box
-              background="surfacePrimary"
-              padding="16px"
-              shadow="12px heavy"
-            />
-          </Column>
-        </Columns>
-        <Columns space="32px">
-          <Column width="1/3">
-            <Box
-              background="surfacePrimary"
-              padding="16px"
-              shadow="21px light"
-            />
-          </Column>
-          <Column width="1/3" />
-          <Column width="1/3">
-            <Box
-              background="surfacePrimary"
-              padding="16px"
-              shadow="21px heavy"
-            />
-          </Column>
-        </Columns>
-        <Columns space="32px">
-          <Box background="surfacePrimary" padding="16px" shadow="30px light" />
-          <Box
-            background="surfacePrimary"
-            padding="16px"
-            shadow="30px medium"
-          />
-          <Box background="surfacePrimary" padding="16px" shadow="30px heavy" />
-        </Columns>
+      <Stack>
+        <ColorModeProvider value="light">
+          <Box background="surfacePrimary">
+            <Inset space="32px">
+              <Stack space="32px">
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="6px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      6px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="6px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="6px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="12px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      12px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="12px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="12px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="24px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      24px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="24px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="24px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="30px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      30px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="30px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="30px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+              </Stack>
+            </Inset>
+          </Box>
+        </ColorModeProvider>
+        <ColorModeProvider value="dark">
+          <Box background="surfacePrimary">
+            <Inset space="32px">
+              <Stack space="32px">
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="6px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      6px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="6px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="6px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="12px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      12px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="12px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="12px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="24px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      24px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="24px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="24px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="30px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      30px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="30px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="30px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+              </Stack>
+            </Inset>
+          </Box>
+        </ColorModeProvider>
       </Stack>
-    ),
-};
-
-export const shadowsWithColors: Example = {
-  name: 'Shadows',
-  subTitle: 'Colors',
-  Example: () =>
-    source(
-      <Columns space="32px">
-        <Box
-          background="surfacePrimary"
-          padding="16px"
-          shadow="12px medium accent"
-        />
-        <Box
-          background="surfacePrimary"
-          padding="16px"
-          shadow="21px heavy swap (Deprecated)"
-        />
-        <Box
-          background="surfacePrimary"
-          padding="16px"
-          shadow="30px heavy action (Deprecated)"
-        />
-      </Columns>
     ),
 };
 
@@ -321,21 +627,19 @@ export const shadowsWithCustom: Example = {
           padding="16px"
           shadow={{
             custom: {
-              ios: [
-                {
-                  offset: { x: 0, y: 5 },
-                  opacity: 0.05,
-                  blur: 10,
-                },
-                {
-                  offset: { x: 0, y: 10 },
-                  opacity: 0.15,
-                  blur: 20,
-                },
-              ],
-              android: {
-                elevation: 15,
-                opacity: 0.5,
+              light: {
+                ios: [
+                  { x: 0, y: 5, blur: 10, color: 'shadowFar', opacity: 0.05 },
+                  { x: 0, y: 10, blur: 20, color: 'shadowFar', opacity: 0.15 },
+                ],
+                android: { elevation: 15, color: 'shadowFar', opacity: 0.5 },
+              },
+              dark: {
+                ios: [
+                  { x: 0, y: 5, blur: 10, color: 'shadowFar', opacity: 0.05 },
+                  { x: 0, y: 10, blur: 20, color: 'shadowFar', opacity: 0.15 },
+                ],
+                android: { elevation: 15, color: 'shadowFar', opacity: 0.5 },
               },
             },
           }}
@@ -345,30 +649,41 @@ export const shadowsWithCustom: Example = {
           padding="16px"
           shadow={{
             custom: {
-              ios: [
-                {
+              light: {
+                ios: [
+                  {
+                    x: 0,
+                    y: 2,
+                    blur: 5,
+                    color: { custom: '#FF54BB' },
+                    opacity: 0.5,
+                  },
+                  { x: 0, y: 4, blur: 10, color: 'accent', opacity: 0.5 },
+                  { x: 0, y: 4, blur: 15, color: 'shadowFar', opacity: 0.5 },
+                ],
+                android: {
+                  elevation: 15,
                   color: { custom: '#FF54BB' },
-                  offset: { x: 0, y: 2 },
-                  opacity: 0.5,
-                  blur: 5,
+                  opacity: 1,
                 },
-                {
-                  color: 'swap (Deprecated)',
-                  offset: { x: 0, y: 4 },
-                  opacity: 0.5,
-                  blur: 10,
+              },
+              dark: {
+                ios: [
+                  {
+                    x: 0,
+                    y: 2,
+                    blur: 5,
+                    color: { custom: '#FF54BB' },
+                    opacity: 0.5,
+                  },
+                  { x: 0, y: 4, blur: 10, color: 'accent', opacity: 0.5 },
+                  { x: 0, y: 4, blur: 15, color: 'shadowFar', opacity: 0.5 },
+                ],
+                android: {
+                  elevation: 15,
+                  color: { custom: '#FF54BB' },
+                  opacity: 1,
                 },
-                {
-                  color: 'shadow',
-                  offset: { x: 0, y: 4 },
-                  opacity: 0.5,
-                  blur: 15,
-                },
-              ],
-              android: {
-                color: { custom: '#FF54BB' },
-                elevation: 15,
-                opacity: 1,
               },
             },
           }}

@@ -16,6 +16,7 @@ import { ButtonPressAnimation } from '../animations';
 import {
   AccentColorProvider,
   Box,
+  CustomShadow,
   Heading,
   Inset,
   Stack,
@@ -65,22 +66,27 @@ export default function GasCard() {
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0);
 
-  const cardShadow = useMemo(
+  const cardShadow = useMemo<CustomShadow>(
     () => ({
       custom: {
         android: {
+          color: 'shadowFar',
           elevation: 24,
           opacity: 0.5,
         },
         ios: [
           {
+            color: 'shadowFar',
             blur: 24,
-            offset: { x: 0, y: 8 },
+            x: 0,
+            y: 8,
             opacity: colorMode === 'dark' ? 0.3 : 0.1,
           },
           {
+            color: 'shadowFar',
             blur: 6,
-            offset: { x: 0, y: 2 },
+            x: 0,
+            y: 2,
             opacity: 0.02,
           },
         ],

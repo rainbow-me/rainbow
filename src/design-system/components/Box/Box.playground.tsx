@@ -14,11 +14,7 @@ const playground: Playground = {
     examples.heights,
     {
       ...examples.shadows,
-      examples: [
-        examples.shadowsWithSizes,
-        examples.shadowsWithColors,
-        examples.shadowsWithCustom,
-      ],
+      examples: [examples.shadowsWithCustom],
     },
   ],
 };
