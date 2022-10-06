@@ -28,6 +28,7 @@ import TransactionActions from '@/helpers/transactionActions';
 import Routes from '@rainbow-me/routes';
 import { Navigation } from '@/navigation';
 import { Contact } from '@/redux/contacts';
+import { NetworkTypes } from '@/helpers';
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);
@@ -103,21 +104,10 @@ export const showTransactionDetailsSheet = (
   contacts: { [p: string]: Contact },
   accountAddress: string
 ) => {
-  const {
-    hash,
-    from,
-    minedAt,
-    network,
-    pending,
-    to,
-    status,
-    type,
-  } = transactionDetails;
+  const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
 
   // Invariants
-  if (!network) {
-    return;
-  }
+  const network = transactionDetails.network ?? NetworkTypes.mainnet;
   const date = getHumanReadableDate(minedAt);
   const isSent =
     status === TransactionStatusTypes.sending ||
@@ -168,6 +158,7 @@ export const showTransactionDetailsSheet = (
       );
     }
 
+    console.log('----- getOnPressIOS');
     showActionSheetWithOptions(
       {
         cancelButtonIndex: buttons.length - 1,
