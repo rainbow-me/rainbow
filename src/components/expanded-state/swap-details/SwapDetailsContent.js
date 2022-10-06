@@ -70,7 +70,7 @@ export default function SwapDetailsContent({
             </SwapDetailsValue>
           </SwapDetailsRow>
 
-          {isRefuelTx && (
+          {(isRefuelTx || tradeDetails?.refuel) && (
             <SwapDetailsRefuelRow
               testID="swaps-details-refuel-row"
               tradeDetails={tradeDetails}
