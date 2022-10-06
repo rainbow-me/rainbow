@@ -9,6 +9,8 @@ updates:
     commit-message:
       prefix: "fix(actions)"
     target-branch: "develop"
+    # https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/configuring-dependabot-security-updates#overriding-the-default-behavior-with-a-configuration-file
+    open-pull-requests-limit: 0
     reviewers:
       - "rainbow-me/app-admin"
 
@@ -19,5 +21,7 @@ updates:
     commit-message:
       prefix: "fix(npm)"
     target-branch: "develop"
+    # https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/configuring-dependabot-security-updates#overriding-the-default-behavior-with-a-configuration-file
+    open-pull-requests-limit: 0
     reviewers:
       - "rainbow-me/app-admin"
