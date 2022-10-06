@@ -22,6 +22,8 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   width: 7,
 });
 
+const ICON_ALIGN_MARGIN = '-8px';
+
 export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
   const { colors } = useTheme();
   const fromAsset = tradeDetails?.refuel?.fromAsset;
@@ -48,7 +50,11 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
         {tradeDetails.refuel ? (
           <>
             <Column width="content">
-              <Box paddingRight="2px">
+              <Box
+                paddingRight="2px"
+                marginTop={ICON_ALIGN_MARGIN}
+                marginBottom={ICON_ALIGN_MARGIN}
+              >
                 <CoinIcon
                   mainnet_address={fromNativeAsset?.address}
                   symbol={fromAsset?.symbol}
@@ -64,7 +70,11 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
               <CaretIcon />
             </Column>
             <Column width="content">
-              <Box paddingLeft="4px">
+              <Box
+                paddingLeft="4px"
+                marginTop={ICON_ALIGN_MARGIN}
+                marginBottom={ICON_ALIGN_MARGIN}
+              >
                 <CoinIcon
                   mainnet_address={toNativeAsset?.address}
                   symbol={toAsset?.symbol}
