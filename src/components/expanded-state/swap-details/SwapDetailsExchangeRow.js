@@ -189,7 +189,9 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
           icons: [getExchangeIconUrl(protocolName)],
           label: capitalize(protocolName.replace('_', ' ')),
           name: SocketBridges[protocol.name] ?? protocolName.slice('_'),
-          action: isBridge ? 'Bridge' : 'Swap',
+          action: isBridge
+            ? lang.t('expanded_state.swap.bridge')
+            : lang.t('expanded_state.swap.swap'),
           part: convertAmountToPercentageDisplay(protocol.part),
         },
       ];
@@ -204,7 +206,9 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
         label: capitalize(protocolName.replace('_', ' ')),
         name: SocketBridges[protocol.name] ?? protocolName.slice('_'),
         isBridge,
-        action: isBridge ? 'Bridge' : 'Swap',
+        action: isBridge
+          ? lang.t('expanded_state.swap.bridge')
+          : lang.t('expanded_state.swap.swap'),
         part,
       };
     });
