@@ -47,6 +47,9 @@ src/navigation @osdnk @terrysahaidak
 # APP INFRA
 app.json @brunobar79 @estebanmino
 
+# SECURITY / APP INFRA
+audit-ci.json @brunobar79 @skylarbarrera @estebanmino @nickbytes
+
 # APP INFRA
 babel.config.js @brunobar79 @osdnk @estebanmino
 CODEOWNERS @brunobar79 @estebanmino @nickbytes
@@ -65,12 +68,13 @@ LICENSE @jinchung @brunobar79 @nickbytes @estebanmino
 # SECURITY / APP INFRA
 metro.config.js @brunobar79 @osdnk @terrysahaidak @estebanmino
 metro.transform.js @brunobar79 @osdnk @estebanmino
-package.json @rainbow-me/app-admin
-yarn.lock @rainbow-me/app-admin
-audit-ci.jsonc @rainbow-me/app-admin
+package.json @brunobar79 @estebanmino @nickbytes
 
 # APP INFRA
 react-native.config.js @brunobar79 @estebanmino
 README.md @brunobar79 @estebanmino @nickbytes
 shim.js @brunobar79 @osdnk @estebanmino @nickbytes
 tsconfig.json @brunobar79 @osdnk @estebanmino @nickbytes
+
+# SECURITY / APP INFRA
+yarn.lock @brunobar79 @estebanmino @nickbytes
