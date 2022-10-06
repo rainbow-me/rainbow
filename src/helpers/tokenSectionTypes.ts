@@ -1,4 +1,5 @@
 export default {
+  bridgeTokenSection: '􀊝 Bridge',
   crosschainMatchSection: '􀤆 On other networks',
   favoriteTokenSection: '􀋃 Favorites',
   lowLiquidityTokenSection: '􀇿 Low Liquidity',

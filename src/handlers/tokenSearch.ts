@@ -48,6 +48,7 @@ export const tokenSearch = async (searchParams: {
     }
     const url = `/${searchParams.chainId}/?${qs.stringify(queryParams)}`;
     const tokenSearch = await tokenSearchApi.get(url);
+    logger.debug('URL: ', url);
     return tokenSearch.data?.data;
   } catch (e) {
     logger.error(

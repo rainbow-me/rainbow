@@ -132,10 +132,8 @@ const useSwapCurrencyList = (
   const { inputCurrency } = useSwapCurrencies();
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const inputChainId = useMemo(
-    () =>
-      inputCurrency?.network &&
-      ethereumUtils.getChainIdFromNetwork(inputCurrency?.network as Network),
-    [inputCurrency?.network]
+    () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
+    [inputCurrency?.type]
   );
   const isCrosschainSearch = useMemo(() => {
     if (
@@ -279,18 +277,20 @@ const useSwapCurrencyList = (
 
   const getCrosschainVerifiedAssetsForNetwork = useCallback(
     async (network: Network) => {
+      const crosschainId = ethereumUtils.getChainIdFromNetwork(network);
+      const fromChainId = inputChainId !== crosschainId ? inputChainId : '';
       const results = await searchCurrencyList({
         searchList: 'verifiedAssets',
         query: '',
-        chainId: ethereumUtils.getChainIdFromNetwork(network),
-        fromChainId: isCrosschainSearch && inputChainId,
+        chainId: crosschainId,
+        fromChainId,
       });
       setCrosschainVerifiedAssets(state => ({
         ...state,
         [network]: handleSearchResponse(results, network),
       }));
     },
-    [handleSearchResponse, inputChainId, isCrosschainSearch]
+    [handleSearchResponse, inputChainId]
   );
 
   const getCrosschainVerifiedAssets = useCallback(async () => {
@@ -410,11 +410,15 @@ const useSwapCurrencyList = (
   }, [inputChainId]);
 
   useEffect(() => {
-    if (!fetchingCrosschainAssets) {
+    if (!fetchingCrosschainAssets && crosschainSwapsEnabled) {
       setFetchingCrosschainAssets(true);
       getCrosschainVerifiedAssets();
     }
-  }, [getCrosschainVerifiedAssets, fetchingCrosschainAssets]);
+  }, [
+    getCrosschainVerifiedAssets,
+    fetchingCrosschainAssets,
+    crosschainSwapsEnabled,
+  ]);
 
   useEffect(() => {
     const doSearch = async () => {
@@ -444,6 +448,12 @@ const useSwapCurrencyList = (
 
   const currencyList = useMemo(() => {
     const list = [];
+    let bridgeAsset = isCrosschainSearch
+      ? verifiedAssets.find(
+          asset =>
+            asset?.name.toLowerCase() === inputCurrency?.name.toLowerCase()
+        )
+      : null;
     if (searching) {
       const importedAsset = importedAssets?.[0];
       let verifiedAssetsWithImport = verifiedAssets;
@@ -480,10 +490,37 @@ const useSwapCurrencyList = (
           }
         }
       }
+      if (inputCurrency?.name && verifiedAssets.length) {
+        if (searchChainId === MAINNET_CHAINID && isCrosschainSearch) {
+          if (!bridgeAsset) {
+            bridgeAsset = favoriteAssets.find(
+              asset =>
+                asset?.name.toLowerCase() === inputCurrency.name.toLowerCase()
+            );
+          }
+        }
+        if (bridgeAsset) {
+          list.push({
+            color:
+              colors.networkColors[
+                ethereumUtils.getNetworkFromType(bridgeAsset.type)
+              ],
+            data: [bridgeAsset],
+            key: 'bridgeAsset',
+            title: tokenSectionTypes.bridgeTokenSection,
+          });
+        }
+      }
       if (favoriteAssets?.length && searchChainId === MAINNET_CHAINID) {
         list.push({
           color: colors.yellowFavorite,
-          data: abcSort(favoriteAssets, 'name'),
+          data: abcSort(
+            favoriteAssets.filter(
+              asset =>
+                asset?.name.toLowerCase() !== bridgeAsset?.name.toLowerCase()
+            ),
+            'name'
+          ),
           key: 'favorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
@@ -511,6 +548,23 @@ const useSwapCurrencyList = (
         });
       }
     } else {
+      const curatedAssets = searchChainId === MAINNET_CHAINID && getCurated();
+      if (inputCurrency?.name && isCrosschainSearch && curatedAssets) {
+        bridgeAsset = curatedAssets.find(
+          asset => asset?.name === inputCurrency?.name
+        );
+        if (bridgeAsset) {
+          list.push({
+            color:
+              colors.networkColors[
+                ethereumUtils.getNetworkFromType(bridgeAsset.type)
+              ],
+            data: [bridgeAsset],
+            key: 'bridgeAsset',
+            title: tokenSectionTypes.bridgeTokenSection,
+          });
+        }
+      }
       if (unfilteredFavorites?.length) {
         list.push({
           color: colors.yellowFavorite,
@@ -519,16 +573,13 @@ const useSwapCurrencyList = (
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
-      if (searchChainId === MAINNET_CHAINID) {
-        const curatedAssets = getCurated();
-        if (curatedAssets.length) {
-          list.push({
-            data: curatedAssets,
-            key: 'curated',
-            title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: !IS_TEST,
-          });
-        }
+      if (curatedAssets && curatedAssets.length) {
+        list.push({
+          data: curatedAssets,
+          key: 'curated',
+          title: tokenSectionTypes.verifiedTokenSection,
+          useGradientText: !IS_TEST,
+        });
       }
     }
     return list;
@@ -544,6 +595,9 @@ const useSwapCurrencyList = (
     searchChainId,
     getCurated,
     isFavorite,
+    inputCurrency?.name,
+    colors.networkColors,
+    isCrosschainSearch,
   ]);
 
   const crosschainExactMatches = useMemo(() => {
@@ -572,7 +626,6 @@ const useSwapCurrencyList = (
       }
     });
     if (exactMatches?.length) {
-      logger.debug('EXACT MATCHES: ', JSON.stringify(exactMatches, null, 2));
       return [
         {
           data: exactMatches,
