@@ -3,7 +3,7 @@ import { STORAGE_IDS } from '@/model/mmkv';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import Logger from '@/utils/logger';
-import { analytics } from '@/analytics';
+import { trackChangedNotificationsSetting } from './analytics';
 
 type ValueOf<T> = T[keyof T];
 
@@ -491,12 +491,7 @@ const subscribeWalletToSingleNotificationTopic = async (
   messaging().subscribeToTopic(
     `${type}_${chainId}_${address.toLowerCase()}_${topic}`
   );
-  analytics.track('Changed Notification Settings', {
-    chainId,
-    topic,
-    type,
-    action: 'subscribe',
-  });
+  trackChangedNotificationsSetting(chainId, topic, type, 'subscribe');
 };
 
 const unsubscribeWalletFromSingleNotificationTopic = async (
@@ -511,10 +506,5 @@ const unsubscribeWalletFromSingleNotificationTopic = async (
   messaging().unsubscribeFromTopic(
     `${type}_${chainId}_${address.toLowerCase()}_${topic}`
   );
-  analytics.track('Changed Notification Settings', {
-    chainId,
-    topic,
-    type,
-    action: 'unsubscribe',
-  });
+  trackChangedNotificationsSetting(chainId, topic, type, 'unsubscribe');
 };
