@@ -4554,10 +4554,10 @@
     nanoid "^3.1.25"
     promise.allsettled "^1.0.5"
 
-"@segment/sovran-react-native@0.4.3", "@segment/sovran-react-native@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@segment/sovran-react-native/-/sovran-react-native-0.4.3.tgz#cccfa95ea86ceeccd27bc152081a0f451d196417"
-  integrity sha512-5AVPXmeVoaAlHo0pF/8CPHHfCQuQlAEMkdyjlN+xwO7NPG3e4i1gsJ5CB4QNP0U8adKjmNvvWEKc5WggpZUQgQ==
+"@segment/sovran-react-native@0.4.4", "@segment/sovran-react-native@^0.4.3":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@segment/sovran-react-native/-/sovran-react-native-0.4.4.tgz#2f1e1c0280d2cc3f242970b7c76f8e1dd3ddd18e"
+  integrity sha512-YnXhHfFIdqjMb+6ejMA+1oO0KeJPK3Hv0dHYgcWmq5oxVAWrJNTK8rGiRVuVaVQHfSkGg0zQ/nGB09oMUVteDg==
   dependencies:
     "@react-native-async-storage/async-storage" "^1.15.15"
     ansi-regex "5.0.1"
