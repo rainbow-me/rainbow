@@ -486,6 +486,8 @@
         "us_except": "United States (except Texas and New York)"
       },
       "swap": {
+        "swap": "Swap",
+        "bridge": "Bridge",
         "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
         "on": "On",

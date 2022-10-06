@@ -485,6 +485,8 @@
         "us_except": "United States (except Texas and New York) :)"
       },
       "swap": {
+        "swap": "Swap",
+        "bridge": "Bridge",
         "copy_contract_address": "Copy Contract Address :)",
         "flashbots_protect": "Flashbots Protect :)",
         "losing": "Losing :)",
