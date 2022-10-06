@@ -7,7 +7,13 @@ module.exports = {
   setupFiles: ['./config/test/jest-setup.js'],
   testPathIgnorePatterns: ['node_modules', 'e2e'],
   transform: {
-    '\\.tsx?$': 'ts-jest',
+    // https://kulshekhar.github.io/ts-jest/docs/guides/react-native
+    '\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.jest.json',
+      },
+    ],
   },
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|@react-native(-community)?)/)',
