@@ -889,7 +889,11 @@ export default function ExchangeModal({
           currentNetwork,
           flashbotTransaction: flashbots,
           isRefuelTx,
-          onClose: () => setRefuel(false),
+          onClose: () => {
+            // If we close the swap detail screen we shoul reset the state for refuel
+            setHasDeductedRefuel(false);
+            setRefuel(false);
+          },
           restoreFocusOnSwapModal: () => {
             android &&
               (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
