@@ -824,6 +824,7 @@ export const explainers = (params, colors) => ({
     },
     secondaryButton: {
       label: lang.t('explain.swap_refuel.button', {
+        networkName: params?.networkName,
         gasToken: params?.gasToken,
       }),
       textColor: colors?.networkColors[params?.network],
@@ -870,6 +871,7 @@ export const explainers = (params, colors) => ({
     },
     secondaryButton: {
       label: lang.t('explain.swap_refuel_deduct.button', {
+        networkName: params?.networkName,
         gasToken: params?.gasToken,
       }),
       textColor: colors?.networkColors[params?.network],
@@ -914,8 +916,8 @@ export const explainers = (params, colors) => ({
     },
     secondaryButton: {
       label: lang.t('button.proceed_anyway'),
-      textColor: colors?.networkColors[params?.network],
-      bgColor: colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.appleBlueLight,
       onPress: params?.onProceed,
     },
   },
