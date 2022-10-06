@@ -28,7 +28,7 @@ import TransactionActions from '@/helpers/transactionActions';
 import Routes from '@rainbow-me/routes';
 import { Navigation } from '@/navigation';
 import { Contact } from '@/redux/contacts';
-import { NetworkTypes } from '@/helpers';
+import { Network } from '@/helpers';
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);
@@ -106,7 +106,7 @@ export const showTransactionDetailsSheet = (
 ) => {
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
 
-  const network = transactionDetails.network ?? NetworkTypes.mainnet;
+  const network = transactionDetails.network ?? Network.mainnet;
   const date = getHumanReadableDate(minedAt);
   const isSent =
     status === TransactionStatusTypes.sending ||
