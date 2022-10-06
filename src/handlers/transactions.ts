@@ -40,13 +40,14 @@ import { isZero } from '@/helpers/utilities';
 import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_TEST } from '@/env';
+import { API_BASE_URL } from '@rainbow-me/swaps';
 
 const flashbotsApi = new RainbowFetchClient({
   baseURL: 'https://protect.flashbots.net',
 });
 
 const rainbowSwapsApi = new RainbowFetchClient({
-  baseURL: 'https://swap.s.rainbow.me',
+  baseURL: API_BASE_URL,
 });
 
 const parseSignatureToTitle = (signature: string) => {
