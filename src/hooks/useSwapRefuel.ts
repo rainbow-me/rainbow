@@ -2,12 +2,20 @@ import { ParsedAddressAsset, SwappableAsset } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import useMinRefuelAmount from './useMinRefuelAmount';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
-import { add, isZero, lessThan, subtract } from '@/helpers/utilities';
+import {
+  add,
+  greaterThan,
+  isZero,
+  lessThan,
+  multiply,
+  subtract,
+} from '@/helpers/utilities';
 import { useEffect, useMemo, useState } from 'react';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useGas } from '.';
 import { isNativeAsset } from '@/handlers/assets';
 import { NetworkTypes } from '@/helpers';
+import { toWei } from '@/handlers/web3';
 
 export enum RefuelState {
   'Add' = 'Add',
@@ -99,7 +107,7 @@ export default function useSwapRefuel({
       outputCurrency?.address,
       outputNetwork
     );
-    // If the swap is going into a native token on the destination chain, in which case we can ignore all refuel functionality
+    // // If the swap is going into a native token on the destination chain, in which case we can ignore all refuel functionality
     if (swappingToNativeAsset) {
       return { showRefuelSheet: false, refuelState: null };
     }
@@ -123,10 +131,15 @@ export default function useSwapRefuel({
     const refuelAmount = minRefuelAmount || '0';
     // Check if they have enough of the source native asset once you deduct input amount (if native asset) + gas amount, if the value is < minRefuelAmount we should show the explainer that gives them no options
     // Get the gas fee for the swap
-    const gasFee = selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '0';
+    const gasFee = multiply(
+      selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '0',
+      1.5
+    ).toString();
     // - If they have >= minRefuelAmount then we should check to see if they swapping native asset and if they will have the minRefuel amount left over after the swap then we offer them the option to add the amount on
     // Check the existing source native asset balance
-    const inputNativeAssetAmount = inputNativeAsset?.balance?.amount || '0';
+    const inputNativeAssetAmount = toWei(
+      inputNativeAsset?.balance?.amount || '0'
+    );
     // Check if swapping from native asset
     const swappingFromNativeAsset = isNativeAsset(
       inputCurrency?.address,
@@ -141,6 +154,10 @@ export default function useSwapRefuel({
         inputNativeAssetAmount,
         tradeDetails?.sellAmount?.toString() || '0'
       );
+      const nativeAmountAfterSwapStillLeft = greaterThan(
+        nativeAmountAfterSwap,
+        0
+      );
       const enoughNativeAssetAfterSwapAndRefuel = lessThan(
         gasFeesPlusRefuelAmount,
         nativeAmountAfterSwap
@@ -149,9 +166,14 @@ export default function useSwapRefuel({
       if (enoughNativeAssetAfterSwapAndRefuel)
         return { showRefuelSheet: true, refuelState: RefuelState.Add };
       // if user max'ed out
-
-      // Show deduct refuel amount modal
-      return { showRefuelSheet: true, refuelState: RefuelState.Deduct };
+      // Show deduct refuel amount modal if enough balance to refuel
+      if (
+        !enoughNativeAssetAfterSwapAndRefuel &&
+        nativeAmountAfterSwapStillLeft
+      )
+        return { showRefuelSheet: true, refuelState: RefuelState.Deduct };
+      // Show notice refuel amount modal if not enough balance to refuel
+      return { showRefuelSheet: true, refuelState: RefuelState.Notice };
     }
     // If the total gas and refuel amount is less than native asset amount balance then show normal refuel screen
     // If total gas and refuel is more than the native asset amount the  show the continue anyway and dont allow for refuel
