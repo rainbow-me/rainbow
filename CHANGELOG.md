@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.7.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.9)
+
+### Added 
+
+- Notifications
+- Simplehash being used for Polygon NFTs
+- React native safe area context
+- First PRs for hardware wallet integration
+
+### Changed
+
+- Gas UI alignments & tweaks
+- Other small bug fixes (including initializing stuck state fix)
+- Fix Android 13 ripple effect
+
 ## [1.7.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.7)
 
 ### Changed
