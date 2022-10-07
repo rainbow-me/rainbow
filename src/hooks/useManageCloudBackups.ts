@@ -109,7 +109,6 @@ export default function useManageCloudBackups() {
             );
           } else {
             const userData = await fetchUserDataFromCloud();
-            console.log('userData.1.0+ ', JSON.stringify(userData));
             navigate(Routes.RESTORE_SHEET, {
               fromSettings: true,
               step: walletBackupStepTypes.cloud,

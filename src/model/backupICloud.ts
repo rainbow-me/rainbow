@@ -25,7 +25,6 @@ import {
   createWallet,
   RainbowWallet,
 } from './wallet';
-import AesEncryptor from '@/handlers/aesEncryption';
 import { analytics } from '@/analytics';
 import logger from '@/utils/logger';
 
@@ -159,7 +158,6 @@ export async function restoreCloudBackup({
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
 
-  console.log('ios.restoreCloudBackup.1.0');
   try {
     const filename =
       backupSelected || (userData && findLatestBackUp(userData?.wallets));
