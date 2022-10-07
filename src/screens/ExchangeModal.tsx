@@ -47,7 +47,7 @@ import {
   LegacyGasFeeParams,
   SwappableAsset,
 } from '@/entities';
-import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
+import { getProviderForNetwork, getHasMerged, toWei } from '@/handlers/web3';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import {
@@ -80,6 +80,7 @@ import {
 } from '@/raps';
 import {
   swapClearState,
+  SwapModalField,
   TypeSpecificParameters,
   updateSwapInputAmount,
   updateSwapSlippage,
@@ -315,6 +316,7 @@ export default function ExchangeModal({
     flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
+    updateAndFocusInputAmount,
   } = useSwapCurrencyHandlers({
     currentNetwork,
     inputNetwork,
@@ -873,6 +875,11 @@ export default function ExchangeModal({
     swapSupportsFlashbots,
   ]);
 
+  const resetRefuelState = useCallback(() => {
+    setHasDeductedRefuel(false);
+    setRefuel(false);
+  }, [setRefuel]);
+
   const navigateToSwapDetailsModal = useCallback(
     (isRefuelTx = false) => {
       android && Keyboard.dismiss();
@@ -928,8 +935,8 @@ export default function ExchangeModal({
       outputCurrency?.name,
       outputCurrency?.symbol,
       outputFieldRef,
+      resetRefuelState,
       setParams,
-      setRefuel,
       type,
     ]
   );
@@ -944,11 +951,6 @@ export default function ExchangeModal({
     outputCurrency,
     tradeDetails,
   });
-
-  const resetRefuelState = () => {
-    setHasDeductedRefuel(false);
-    setRefuel(false);
-  };
 
   const navigateToRefuelModal = useCallback(() => {
     const getNetworkDetails = (network: Network) => {
@@ -1027,7 +1029,7 @@ export default function ExchangeModal({
           );
 
           // if user press adjust and add 3 go back to exchange modal and update the input token amount
-          dispatch(updateSwapInputAmount(fromWei(newSellAmountAfterRefuel)));
+          updateAndFocusInputAmount(fromWei(newSellAmountAfterRefuel));
           setHasDeductedRefuel(true);
           setRefuel(true);
           handleClose();
@@ -1073,17 +1075,18 @@ export default function ExchangeModal({
       });
     }
   }, [
-    refuelState,
     outputNetwork,
+    refuelState,
     navigate,
     outputNativeAsset?.mainnet_address,
     outputNativeAsset?.type,
     outputNativeAsset?.symbol,
     setRefuel,
     navigateToSwapDetailsModal,
-    tradeDetails,
+    tradeDetails?.sellAmount,
     minRefuelAmount,
-    dispatch,
+    updateAndFocusInputAmount,
+    handleFocus,
   ]);
 
   const handleTapWhileDisabled = useCallback(() => {
