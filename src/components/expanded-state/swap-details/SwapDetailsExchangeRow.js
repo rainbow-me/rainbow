@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { capitalize } from 'lodash';
 import React, { Fragment, useMemo } from 'react';
+import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
 import Pill from '../../Pill';
 import { ButtonPressAnimation } from '../../animations';
@@ -12,7 +13,6 @@ import {
   Columns,
   Cover,
   Inline,
-  Rows,
   Stack,
   Text,
   useForegroundColor,
@@ -21,15 +21,21 @@ import networkInfo from '@/helpers/networkInfo';
 import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';
+import { SocketBridges } from '@/references/swap/bridges';
 
 const parseExchangeName = name => {
   const networks = Object.keys(networkInfo).map(network =>
     network.toLowerCase()
   );
 
-  return networks.some(network => name.toLowerCase().includes(network))
-    ? name.slice(name.indexOf('_') + 1, name.length)
-    : name;
+  const removeNetworks = name =>
+    networks.some(network => name.toLowerCase().includes(network))
+      ? name.slice(name.indexOf('_') + 1, name.length)
+      : name;
+
+  const removeBridge = name => name.replace('-bridge', '');
+
+  return removeNetworks(removeBridge(name));
 };
 const ExchangeIcon = magicMemo(
   function ExchangeIcon({ index = 1, icon, protocol }) {
@@ -111,7 +117,7 @@ const ExchangeIconStack = magicMemo(
             >
               <ExchangeIcon
                 icon={icon}
-                protocol={protocols?.name ?? protocols.names[index]}
+                protocol={protocols?.name || protocols.names[index]}
               />
             </Box>
           );
@@ -122,27 +128,70 @@ const ExchangeIconStack = magicMemo(
   ['protocols']
 );
 
-export default function SwapDetailsExchangeRow({ protocols, testID }) {
+const CrossChainIconStack = magicMemo(
+  ({ protocols }) => {
+    return (
+      <Inline>
+        {protocols?.icons?.map((icon, index) => {
+          return (
+            <Inline key={`protocol-icon-${index}`} marginLeft={{ custom: 0 }}>
+              <ExchangeIcon
+                icon={icon}
+                protocol={protocols?.name ?? protocols.names[index]}
+              />
+
+              {index < protocols?.icons.length - 1 && (
+                <Box paddingTop="6px">
+                  <Text
+                    color="secondary50 (Deprecated)"
+                    size="11pt"
+                    weight="semibold"
+                  >
+                    􀆊
+                  </Text>
+                </Box>
+              )}
+            </Inline>
+          );
+        })}
+      </Inline>
+    );
+  },
+  ['protocols']
+);
+
+export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
+  const bridges = routes?.[0]?.usedBridgeNames;
+
   const steps = useMemo(() => {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
       icons: sortedProtocols.map(({ name }) =>
         getExchangeIconUrl(parseExchangeName(name))
       ),
-      label: lang.t('expanded_state.swap_details.number_of_exchanges', {
-        number: sortedProtocols?.length,
-      }),
+      label: lang.t(
+        bridges
+          ? 'expanded_state.swap_details.number_of_steps'
+          : 'expanded_state.swap_details.number_of_exchanges',
+        {
+          number: sortedProtocols?.length,
+        }
+      ),
       names: sortedProtocols.map(({ name }) => name),
     };
     if (sortedProtocols.length === 1) {
       const protocol = sortedProtocols[0];
       const protocolName = parseExchangeName(protocol.name);
+      const isBridge = bridges?.includes(protocol.name);
 
       return [
         {
           icons: [getExchangeIconUrl(protocolName)],
           label: capitalize(protocolName.replace('_', ' ')),
-          name: protocolName.slice('_'),
+          name: SocketBridges[protocol.name] ?? protocolName.slice('_'),
+          action: isBridge
+            ? lang.t('expanded_state.swap.bridge')
+            : lang.t('expanded_state.swap.swap'),
           part: convertAmountToPercentageDisplay(protocol.part),
         },
       ];
@@ -150,28 +199,28 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
     const mappedExchanges = sortedProtocols.map(protocol => {
       const protocolName = parseExchangeName(protocol.name);
       const part = convertAmountToPercentageDisplay(protocol.part, 0, 3, true);
+      const isBridge = bridges?.includes(protocol.name);
 
       return {
         icons: [getExchangeIconUrl(protocolName)],
         label: capitalize(protocolName.replace('_', ' ')),
-        name: protocolName,
+        name: SocketBridges[protocol.name] ?? protocolName.slice('_'),
+        isBridge,
+        action: isBridge
+          ? lang.t('expanded_state.swap.bridge')
+          : lang.t('expanded_state.swap.swap'),
         part,
       };
     });
     return [defaultCase, ...mappedExchanges];
-  }, [protocols]);
+  }, [bridges, protocols]);
 
   const [step, nextStep] = useStepper(steps.length);
   const defaultColor = useForegroundColor('secondary (Deprecated)');
 
   if (protocols?.length > 1) {
     return (
-      <Box
-        style={{
-          // enlarge tap target
-          marginVertical: -10,
-        }}
-      >
+      <Bleed vertical="8px">
         <ButtonPressAnimation
           onPress={nextStep}
           scaleTo={1.06}
@@ -180,77 +229,87 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
             paddingVertical: 8,
           }}
         >
-          <Box>
-            <Rows>
-              <Columns
-                alignHorizontal="right"
-                alignVertical="center"
-                space="4px"
+          <Columns alignHorizontal="right" alignVertical="center" space="4px">
+            <Column>
+              <SwapDetailsLabel>
+                {lang.t('expanded_state.swap.swapping_via')}
+              </SwapDetailsLabel>
+            </Column>
+            <Column width="content">
+              <Box
+                style={{
+                  top: android ? -1.5 : 0,
+                }}
               >
-                <Column>
-                  <SwapDetailsLabel>
-                    {lang.t('expanded_state.swap.swapping_via')}
-                  </SwapDetailsLabel>
-                </Column>
-                <Column width="content">
-                  <Box
-                    style={{
-                      top: android ? -1.5 : 0,
-                    }}
-                  >
+                <Bleed vertical="10px">
+                  {bridges ? (
+                    <CrossChainIconStack protocols={steps[step]} />
+                  ) : (
                     <ExchangeIconStack protocols={steps[step]} />
-                  </Box>
-                </Column>
-                <Column width="content">
-                  <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
-                </Column>
-                {steps?.[step]?.part && (
-                  <Column width="content">
-                    <Bleed right="5px (Deprecated)" vertical="6px">
-                      <Pill
-                        height={20}
-                        style={{
-                          lineHeight: android && 18,
-                          top: android ? -1 : 0,
-                        }}
-                        textColor={defaultColor}
-                      >
-                        {steps[step].part}
-                      </Pill>
-                    </Bleed>
-                  </Column>
-                )}
-              </Columns>
-            </Rows>
-          </Box>
+                  )}
+                </Bleed>
+              </Box>
+            </Column>
+            <Column width="content">
+              <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
+            </Column>
+            {(steps?.[step]?.part || steps?.[step]?.action) && (
+              <Column width="content">
+                <Bleed right="5px (Deprecated)" vertical="6px">
+                  <Pill
+                    height={20}
+                    style={{
+                      lineHeight: android && 18,
+                      top: android ? -1 : 0,
+                    }}
+                    textColor={defaultColor}
+                  >
+                    {bridges ? steps[step].action : steps[step].part}
+                  </Pill>
+                </Bleed>
+              </Column>
+            )}
+          </Columns>
         </ButtonPressAnimation>
-      </Box>
+      </Bleed>
     );
   } else if (protocols?.length > 0) {
     return (
-      <Rows testID={testID}>
-        <Columns alignVertical="center" space="4px">
-          <Column>
-            <SwapDetailsLabel>
-              {lang.t('expanded_state.swap.swapping_via')}
-            </SwapDetailsLabel>
-          </Column>
-          <Column width="content">
-            <ExchangeIcon
-              icon={getExchangeIconUrl(parseExchangeName(protocols[0].name))}
-              protocol={parseExchangeName(protocols[0].name)}
-            />
-          </Column>
-          <Column width="content">
-            <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
-          </Column>
-          <Column width="content">
-            <Bleed right="6px" vertical="6px">
-              <Pill textColor={defaultColor}>{`${protocols[0].part}%`}</Pill>
+      <Columns alignVertical="center" space="4px" testID={testID}>
+        <Column>
+          <SwapDetailsLabel>
+            {lang.t('expanded_state.swap.swapping_via')}
+          </SwapDetailsLabel>
+        </Column>
+        <Column width="content">
+          <Box
+            style={{
+              top: android ? -1.5 : 0,
+            }}
+          >
+            <Bleed vertical="10px">
+              <ExchangeIcon
+                icon={getExchangeIconUrl(parseExchangeName(protocols[0].name))}
+                protocol={parseExchangeName(protocols[0].name)}
+              />
             </Bleed>
-          </Column>
-        </Columns>
-      </Rows>
+          </Box>
+        </Column>
+        <Column width="content">
+          <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
+        </Column>
+        <Column width="content">
+          <Bleed right="6px" vertical="12px">
+            <Pill
+              height={20}
+              style={{
+                lineHeight: android && 18,
+              }}
+              textColor={defaultColor}
+            >{`${protocols[0].part}%`}</Pill>
+          </Bleed>
+        </Column>
+      </Columns>
     );
   }
   return null;

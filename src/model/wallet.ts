@@ -60,6 +60,8 @@ import store from '@/redux/store';
 import { setIsWalletLoading } from '@/redux/wallets';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
+import delay from 'delay';
+import { Platform } from 'react-native';
 
 const encryptor = new AesEncryptor();
 
@@ -234,6 +236,7 @@ export const walletInit = async (
   if (isNew) {
     saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
+
   return { isNew, walletAddress };
 };
 
@@ -482,6 +485,14 @@ const loadPrivateKey = async (
       if (!addressToUse) {
         return null;
       }
+
+      // TODO: (https://github.com/rainbow-me/rainbow/pull/4025):
+      // Use the official version of keychain instead of the fork
+      // This is a fix for Android when SDK 21-23.
+      // This delay sometimes helps avoid race conditions when performing ECDH KeyAgreement.
+      // Sometimes it's executed during the animation. It created a deadlock.
+      // For SDK 24+ we use a fork of keychain where it's fixed.
+      Platform.Version < 24 && (await delay(700));
 
       const privateKeyData = await getPrivateKey(addressToUse);
       if (privateKeyData === -1) {

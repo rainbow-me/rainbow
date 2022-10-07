@@ -13,6 +13,7 @@ import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 interface CurrencySelectionListProps {
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
   footerSpacer: boolean;
+  fromDiscover?: boolean;
   itemProps: {
     onActionAsset: (asset: any, isFavorited?: any) => void;
     onPress: (item: any) => void;
@@ -21,6 +22,7 @@ interface CurrencySelectionListProps {
   };
   listItems: { data: EnrichedExchangeAsset[]; title: string }[];
   loading: boolean;
+  onL2?: boolean;
   query: string;
   showList: boolean;
   testID: string;
@@ -33,9 +35,11 @@ const CurrencySelectionList: ForwardRefRenderFunction<
   {
     keyboardDismissMode,
     footerSpacer,
+    fromDiscover,
     itemProps,
     listItems,
     loading,
+    onL2,
     query,
     showList,
     testID,
@@ -48,27 +52,27 @@ const CurrencySelectionList: ForwardRefRenderFunction<
 
   return (
     <Box flexGrow={1} testID={testID}>
-      {showList && !showSkeleton && (
+      {showList && !showSkeleton && showGhost ? (
+        <Box
+          height="full"
+          justifyContent="center"
+          paddingBottom={{
+            custom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
+          }}
+        >
+          <NoResults fromDiscover={fromDiscover} onL2={onL2} />
+        </Box>
+      ) : (
         <Centered flex={1}>
-          {showGhost ? (
-            <Box
-              as={NoResults}
-              paddingBottom={{
-                custom:
-                  CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
-              }}
-            />
-          ) : (
-            <ExchangeAssetList
-              footerSpacer={footerSpacer}
-              itemProps={itemProps}
-              items={listItems}
-              keyboardDismissMode={keyboardDismissMode}
-              query={query}
-              ref={ref}
-              testID={testID}
-            />
-          )}
+          <ExchangeAssetList
+            footerSpacer={footerSpacer}
+            itemProps={itemProps}
+            items={listItems}
+            keyboardDismissMode={keyboardDismissMode}
+            query={query}
+            ref={ref}
+            testID={testID}
+          />
         </Centered>
       )}
       {(showSkeleton || !showList) && (

@@ -74,6 +74,7 @@ import WalletConnectIcon from './svg/WalletConnectIcon';
 import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
+import BridgeIcon from './svg/BridgeIcon';
 
 const IconTypes = {
   applePay: ApplePayIcon,
@@ -82,6 +83,7 @@ const IconTypes = {
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
   backspace: BackspaceIcon,
+  bridge: BridgeIcon,
   btcCoin: BTCIcon,
   camera: CameraIcon,
   caret: CaretIcon,
