@@ -29,7 +29,10 @@ import {
 } from '@/utils';
 import { getRandomColor } from '@/styles/colors';
 import startCase from 'lodash/startCase';
-import TransactionActions from '@/helpers/transactionActions';
+import {
+  getShortTransactionActionId,
+  TransactionActions,
+} from '@/helpers/transactionActions';
 import Routes from '@rainbow-me/routes';
 import { Navigation } from '@/navigation';
 import { Contact } from '@/redux/contacts';
@@ -41,6 +44,7 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_TEST } from '@/env';
 import { API_BASE_URL } from '@rainbow-me/swaps';
+import { analytics } from '@/analytics';
 
 const flashbotsApi = new RainbowFetchClient({
   baseURL: 'https://protect.flashbots.net',
@@ -193,6 +197,10 @@ export const showTransactionDetailsSheet = (
       },
       (buttonIndex: number) => {
         const action = buttons[buttonIndex];
+        const actionId = getShortTransactionActionId(action);
+        analytics.track('Tapped Transaction Details Menu Item', {
+          action: actionId,
+        });
         switch (action) {
           case TransactionActions.viewContact:
           case TransactionActions.addToContacts:
