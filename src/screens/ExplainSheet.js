@@ -827,7 +827,9 @@ export const explainers = (params, colors) => ({
         gasToken: params?.gasToken,
       }),
       textColor: colors?.networkColors[params?.network],
-      bgColor: colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.05),
       onPress: params?.onRefuel,
     },
   },
