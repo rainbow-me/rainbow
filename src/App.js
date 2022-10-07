@@ -353,9 +353,10 @@ function Root() {
 }
 
 const RootWithSentry = Sentry.wrap(Root);
-const RootWithCodePush = codePush({
-  checkFrequency: codePush.CheckFrequency.MANUAL,
-})(RootWithSentry);
+
+// const RootWithCodePush = codePush({
+//   checkFrequency: codePush.CheckFrequency.MANUAL,
+// })(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>
@@ -364,5 +365,5 @@ const PlaygroundWithReduxStore = () => (
 );
 
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush
+  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithSentry
 );
