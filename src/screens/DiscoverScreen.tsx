@@ -25,7 +25,6 @@ export default function DiscoverScreen() {
   useFocusEffect(
     React.useCallback(() => {
       return () => {
-        setIsSearchModeEnabled(false);
         setViewPagerSwipeEnabled(true);
       };
     }, [setViewPagerSwipeEnabled])
@@ -57,6 +56,7 @@ export default function DiscoverScreen() {
           scrollEnabled={!isSearchModeEnabled}
           bounces={!isSearchModeEnabled}
           removeClippedSubviews
+          testID="discover-sheet"
         >
           <DiscoverSheetContent />
         </Box>

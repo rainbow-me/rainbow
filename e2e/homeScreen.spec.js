@@ -64,7 +64,7 @@ describe('Home Screen', () => {
 
   it('tapping "More" opens action sheet', async () => {
     await Helpers.waitAndTap('more-button');
-    await Helpers.checkIfExistsByText('Add Cash');
+    await Helpers.checkIfExistsByText('Copy Address');
     await Helpers.checkIfExistsByText('My QR Code');
   });
 

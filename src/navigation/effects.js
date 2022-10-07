@@ -15,7 +15,7 @@ import {
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 
-export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 0;
+export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 4;
 
 const backgroundInterpolator = ({
   current: { progress: current },
@@ -356,7 +356,7 @@ export const emojiPresetWallet = {
         <View
           style={{
             alignItems: 'center',
-            top: HeaderHeightWithStatusBar + 16,
+            top: HeaderHeightWithStatusBar - 16,
           }}
         >
           <EmojiAvatar size={ProfileAvatarSize} />

@@ -5,7 +5,7 @@ import * as Helpers from './helpers';
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
 const WALLET_ADDRESS_COORDS = { x: 210, y: 185 };
 const PROFILE_AVATAR_COORDS = { x: 210, y: 125 };
-const PROFILE_ADDRESS_COORDS = { x: 210, y: 195 };
+const PROFILE_ADDRESS_COORDS = { x: 210, y: 185 };
 const DISMISS_AVATAR_BUILDER_COORDS = { x: 20, y: 90 };
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 const RAINBOW_WALLET = 'rainbowwallet.eth';
