@@ -26,7 +26,7 @@ import {
   WBTC_ADDRESS,
   WETH_ADDRESS,
 } from '@/references';
-import { ethereumUtils, filterList, logger } from '@/utils';
+import { ethereumUtils, filterList, isLowerCaseMatch, logger } from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
@@ -457,9 +457,8 @@ const useSwapCurrencyList = (
   const currencyList = useMemo(() => {
     const list = [];
     let bridgeAsset = isCrosschainSearch
-      ? verifiedAssets.find(
-          asset =>
-            asset?.name.toLowerCase() === inputCurrency?.name.toLowerCase()
+      ? verifiedAssets.find(asset =>
+          isLowerCaseMatch(asset?.name, inputCurrency?.name)
         )
       : null;
     if (searching) {
@@ -607,10 +606,8 @@ const useSwapCurrencyList = (
         // @ts-ignore
         const exactMatch = crosschainVerifiedAssets[network as Network].find(
           (asset: RT) => {
-            const symbolMatch =
-              asset?.symbol.toLowerCase() === searchQuery.toLowerCase();
-            const nameMatch =
-              asset?.name.toLowerCase() === searchQuery.toLowerCase();
+            const symbolMatch = isLowerCaseMatch(asset?.symbol, searchQuery);
+            const nameMatch = isLowerCaseMatch(asset?.name, searchQuery);
             return symbolMatch || nameMatch;
           }
         );
