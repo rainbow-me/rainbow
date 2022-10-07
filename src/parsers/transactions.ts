@@ -36,7 +36,11 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '@/helpers/utilities';
-import { ethereumUtils, getTokenMetadata } from '@/utils';
+import { ethereumUtils, getTokenMetadata, isLowerCaseMatch } from '@/utils';
+import {
+  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
+} from '@rainbow-me/swaps';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -285,6 +289,19 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   };
 };
 
+const overrideSwap = (tx: ZerionTransaction): ZerionTransaction => {
+  if (
+    isLowerCaseMatch(
+      tx.address_to || '',
+      SOCKET_REGISTRY_CONTRACT_ADDRESSESS
+    ) ||
+    isLowerCaseMatch(tx.address_to || '', RAINBOW_ROUTER_CONTRACT_ADDRESS)
+  ) {
+    return { ...tx, type: TransactionType.trade };
+  }
+  return tx;
+};
+
 const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
   nativeCurrency: keyof typeof supportedNativeCurrencies,
@@ -344,6 +361,7 @@ const parseTransaction = async (
   txn = overrideAuthorizations(txn);
   txn = overrideSelfWalletConnect(txn);
   txn = overrideTradeRefund(txn);
+  txn = overrideSwap(txn);
 
   if (txn.changes.length) {
     const internalTransactions = txn.changes.map(
