@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
-## [1.7.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.9)
+## [1.7.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.8)
 
 ### Added 
 
