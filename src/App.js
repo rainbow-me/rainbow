@@ -350,9 +350,9 @@ const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
 const AppWithSentry = Sentry.wrap(AppWithReduxStore);
 
-const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
+// const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
 
-const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
+// const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>
@@ -361,5 +361,5 @@ const PlaygroundWithReduxStore = () => (
 );
 
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : AppWithCodePush
+  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : AppWithSentry
 );
