@@ -4422,9 +4422,9 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-community/clipboard@rainbow-me/clipboard#01d1c13":
+"@react-native-community/clipboard@git+https://github.com/rainbow-me/clipboard#01d1c13":
   version "1.2.3"
-  resolved "https://codeload.github.com/rainbow-me/clipboard/tar.gz/01d1c1344723d0a4cee94e1fbc199c2e2169905c"
+  resolved "git+https://github.com/rainbow-me/clipboard#01d1c1344723d0a4cee94e1fbc199c2e2169905c"
 
 "@react-native-community/netinfo@5.9.7":
   version "5.9.7"
