@@ -650,7 +650,7 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - PanModal (from `https://github.com/osdnk/PanModal`, commit `ab97d74279ba28c2891b47a5dc767ed4dd7cf994`)
+  - PanModal (from `https://github.com/rainbow-me/PanModal`, commit `ab97d74279ba28c2891b47a5dc767ed4dd7cf994`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID`)
   - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications`)
@@ -811,7 +811,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/lottie-react-native"
   PanModal:
     :commit: ab97d74279ba28c2891b47a5dc767ed4dd7cf994
-    :git: https://github.com/osdnk/PanModal
+    :git: https://github.com/rainbow-me/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera"
   Permission-FaceID:
@@ -1006,7 +1006,7 @@ EXTERNAL SOURCES:
 CHECKOUT OPTIONS:
   PanModal:
     :commit: ab97d74279ba28c2891b47a5dc767ed4dd7cf994
-    :git: https://github.com/osdnk/PanModal
+    :git: https://github.com/rainbow-me/PanModal
 
 SPEC CHECKSUMS:
   AppCenter: b0b6f1190215b5f983c42934db718f3b46fff3c0
@@ -1150,6 +1150,6 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
 
-PODFILE CHECKSUM: 3d81d103721ac587f9cc40f9440d9afc96ce8bcf
+PODFILE CHECKSUM: 32c72110b842dc4ecd54a716182301862d2a92c6
 
 COCOAPODS: 1.11.2

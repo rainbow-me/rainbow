@@ -29,7 +29,7 @@ import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@/analytics';
-import { addHexPrefix } from '@/handlers/web3';
+import { addHexPrefix, isL2Network } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@/helpers';
 import {
   useAssetsInWallet,
@@ -51,6 +51,7 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
+import networkTypes from '@/helpers/networkTypes';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -198,7 +199,8 @@ export default function CurrencySelectModal() {
       const hasShownWarning = getHasShownWarning();
       if (
         otherAsset &&
-        newAsset?.type !== otherAsset?.type &&
+        ethereumUtils.getChainIdFromType(newAsset?.type) !==
+          ethereumUtils.getChainIdFromType(otherAsset?.type) &&
         !hasShownWarning
       ) {
         Keyboard.dismiss();
@@ -453,6 +455,11 @@ export default function CurrencySelectModal() {
     };
   }, [handleFavoriteAsset, handleSelectAsset, type, currentChainId]);
 
+  const searchingOnL2Network = useMemo(
+    () => isL2Network(ethereumUtils.getNetworkFromChainId(currentChainId)),
+    [currentChainId]
+  );
+
   const handleApplyFavoritesQueue = useCallback(() => {
     const addresses = Object.keys(assetsToFavoriteQueue);
     const [assetsToAdd, assetsToRemove] = addresses.reduce(
@@ -572,6 +579,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
+                onL2={searchingOnL2Network}
                 footerSpacer={android}
                 itemProps={itemProps}
                 listItems={currencyList}
