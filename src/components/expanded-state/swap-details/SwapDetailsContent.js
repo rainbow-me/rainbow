@@ -70,6 +70,7 @@ export default function SwapDetailsContent({
           {tradeDetails?.protocols && (
             <SwapDetailsExchangeRow
               protocols={tradeDetails?.protocols}
+              routes={tradeDetails?.routes}
               testID="swaps-details-protocols-row"
             />
           )}

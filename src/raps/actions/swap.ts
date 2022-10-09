@@ -278,7 +278,7 @@ const swap = async (
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider
+      wallet?.provider as any
     )
   );
   return swap?.nonce;
