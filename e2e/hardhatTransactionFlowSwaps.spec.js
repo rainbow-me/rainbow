@@ -136,7 +136,7 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should be able to do a bridge', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.waitAndTap('swap-button');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-USDC-token'
