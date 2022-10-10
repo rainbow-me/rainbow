@@ -151,11 +151,14 @@ const WalletRow = ({
           }}
         >
           {wallet.image ? (
-            <ImageAvatar image={wallet.image} size="smedium" />
+            <ImageAvatar
+              image={wallet.image}
+              size={rowEnabled ? 'smedium' : 'smedium_shadowless'}
+            />
           ) : (
             <ContactAvatar
               color={wallet.color}
-              size="small"
+              size={rowEnabled ? 'small' : 'small_shadowless'}
               value={
                 returnStringFirstEmoji(wallet.label) ||
                 profileUtils.addressHashedEmoji(wallet.address)
