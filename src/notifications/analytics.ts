@@ -32,17 +32,26 @@ export const trackChangedNotificationSettings = (
   });
 };
 
-export const trackPushNotificationPermissionStatus = async () => {
-  const permissionStatus = await getPermissionStatus();
-  let statusToReport = 'never asked';
+export const trackPushNotificationPermissionStatus = (
+  status: PushNotificationPermissionStatus
+) => {
+  analytics.identify(undefined, { notificationsPermissionStatus: status });
+};
 
-  if (permissionStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';
+
+export const resolveAndTrackPushNotificationPermissionStatus = async () => {
+  const permissionStatus = await getPermissionStatus();
+  let statusToReport: PushNotificationPermissionStatus = 'never asked';
+
+  if (
+    permissionStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    permissionStatus === messaging.AuthorizationStatus.PROVISIONAL
+  ) {
     statusToReport = 'enabled';
   } else if (permissionStatus === messaging.AuthorizationStatus.DENIED) {
     statusToReport = 'disabled';
   }
 
-  analytics.identify(undefined, {
-    notificationsPermissionStatus: statusToReport,
-  });
+  trackPushNotificationPermissionStatus(statusToReport);
 };

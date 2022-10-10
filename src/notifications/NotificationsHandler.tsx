@@ -55,7 +55,7 @@ import {
 } from './settings';
 import walletTypes from '@/helpers/walletTypes';
 import {
-  trackPushNotificationPermissionStatus,
+  resolveAndTrackPushNotificationPermissionStatus,
   trackTappedPushNotification,
 } from '@/notifications/analytics';
 
@@ -349,7 +349,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       handleNotificationPressed
     );
 
-    trackPushNotificationPermissionStatus();
+    resolveAndTrackPushNotificationPermissionStatus();
 
     return () => {
       onTokenRefreshListener.current?.();
