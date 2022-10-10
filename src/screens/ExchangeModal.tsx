@@ -209,43 +209,6 @@ export default function ExchangeModal({
     nativeCurrency,
   } = useAccountSettings();
 
-  // if the default input is on a different network than
-  // we want to update the output to be on the same, if its not available -> null
-  const defaultOutputAssetOverride = useMemo(() => {
-    const newOutput = defaultOutputAsset;
-
-    if (
-      defaultInputAsset &&
-      defaultOutputAsset &&
-      defaultInputAsset.type !== defaultOutputAsset.type
-    ) {
-      if (
-        defaultOutputAsset?.implementations?.[
-          defaultInputAsset?.type === AssetType.token
-            ? 'ethereum'
-            : defaultInputAsset?.type
-        ]?.address
-      ) {
-        if (defaultInputAsset.type !== Network.mainnet) {
-          newOutput.mainnet_address = defaultOutputAsset.address;
-        }
-
-        newOutput.address =
-          defaultOutputAsset.implementations[defaultInputAsset?.type].address;
-        newOutput.type = defaultInputAsset.type;
-        newOutput.uniqueId =
-          newOutput.type === Network.mainnet
-            ? defaultOutputAsset?.address
-            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
-        return newOutput;
-      } else {
-        return null;
-      }
-    } else {
-      return newOutput;
-    }
-  }, [defaultInputAsset, defaultOutputAsset]);
-
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
   const prevTxNetwork = usePrevious(txNetwork);
@@ -302,6 +265,49 @@ export default function ExchangeModal({
       isCrosschainSwap,
     };
   }, [crosschainSwapsEnabled, inputCurrency?.type, outputCurrency?.type]);
+
+  // if the default input is on a different network than
+  // we want to update the output to be on the same, if its not available -> null
+  const defaultOutputAssetOverride = useMemo(() => {
+    const newOutput = defaultOutputAsset;
+
+    // just let this pass through if crosschain swaps are enabled
+    // TODO: remove this memoized value when crosschain swaps is released
+    if (crosschainSwapsEnabled) {
+      return newOutput;
+    }
+
+    if (
+      defaultInputAsset &&
+      defaultOutputAsset &&
+      defaultInputAsset.type !== defaultOutputAsset.type
+    ) {
+      const crosschainImplementation =
+        defaultOutputAsset?.implementations?.[
+          defaultInputAsset?.type === AssetType.token
+            ? 'ethereum'
+            : defaultInputAsset?.type
+        ]?.address;
+      if (crosschainImplementation) {
+        if (defaultInputAsset.type !== Network.mainnet) {
+          newOutput.mainnet_address = defaultOutputAsset.address;
+        }
+        newOutput.address =
+          crosschainImplementation || defaultOutputAsset.address;
+        newOutput.type = defaultInputAsset.type;
+        newOutput.uniqueId =
+          newOutput.type === Network.mainnet
+            ? defaultOutputAsset?.address
+            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
+        logger.debug('new output confirmed: ', newOutput);
+        return newOutput;
+      } else {
+        return null;
+      }
+    } else {
+      return newOutput;
+    }
+  }, [defaultInputAsset, defaultOutputAsset, crosschainSwapsEnabled]);
 
   const {
     flipCurrencies,
