@@ -56,9 +56,7 @@ export default ({ contentHeight }: { contentHeight: number }) => {
 
   return {
     wrapperStyle,
-    buttonWrapperStyle,
     onHeightChange,
-    justOpenedSheet,
     onPressMore,
     onWrapperLayout,
   };
