@@ -118,7 +118,7 @@ export default function CustomGasState({ asset }) {
           theme="dark"
           validateGasParams={validateGasParams}
           marginTop={19}
-          crossChainServiceTime={tradeDetails?.routes[0]?.serviceTime}
+          crossChainServiceTime={tradeDetails?.routes?.[0]?.serviceTime}
         />
       </Column>
     </SlackSheet>

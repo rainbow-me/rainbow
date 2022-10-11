@@ -1069,7 +1069,7 @@ export default function ExchangeModal({
                 marginTop={0}
                 testID={`${testID}-gas`}
                 crossChainServiceTime={
-                  (tradeDetails as CrosschainQuote)?.routes[0]?.serviceTime
+                  (tradeDetails as CrosschainQuote)?.routes?.[0]?.serviceTime
                 }
               />
             </Row>

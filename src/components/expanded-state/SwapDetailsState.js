@@ -202,7 +202,7 @@ export default function SwapDetailsState({
             flashbotTransaction={flashbotTransaction}
             testID="swap-details-gas"
             theme="light"
-            crossChainServiceTime={tradeDetails?.routes[0]?.serviceTime}
+            crossChainServiceTime={tradeDetails?.routes?.[0]?.serviceTime}
           />
         </Footer>
         <ToastPositionContainer>
