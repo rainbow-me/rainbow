@@ -19,12 +19,12 @@ For example, using our `device` store looks like this, since it's scoped to the
 device (the most base level scope):
 
 ```typescript
-import * as storage from '@/storage'
+import * as storage from '@/storage';
 
-storage.device.set(['doNotTrack'], true)
-storage.device.get(['doNotTrack'])
-storage.device.remove(['doNotTrack'])
-storage.device.removeMany([], ['doNotTrack'])
+storage.device.set(['doNotTrack'], true);
+storage.device.get(['doNotTrack']);
+storage.device.remove(['doNotTrack']);
+storage.device.removeMany([], ['doNotTrack']);
 ```
 
 ## TypeScript
@@ -40,29 +40,37 @@ case, storage instances are created with type-guards, like this:
 
 ```typescript
 type NetworkAndWalletSchema = {
-   contacts: Contact[]
-}
+  contacts: Contact[];
+};
 
 enum Network {
-   Mainnet = 'mainnet',
-   Optimism = 'optimism',
+  Mainnet = 'mainnet',
+  Optimism = 'optimism',
 }
 
-type WalletAddress = `Ox${string}`
+type WalletAddress = `Ox${string}`;
 
-const networkAndWallet = new Storage<[Network, WalletAddress], NetworkAndWalletSchema>({
-   id: 'networkAndWallet'
-})
+const networkAndWallet = new Storage<
+  [Network, WalletAddress],
+  NetworkAndWalletSchema
+>({
+  id: 'networkAndWallet',
+});
 
-networkAndWallet.set([Network.Mainnet, '0x12345', 'contacts'], [
-   { name: 'rainbow.eth', address: '0x67890' }
-])
+networkAndWallet.set(
+  [Network.Mainnet, '0x12345', 'contacts'],
+  [{ name: 'rainbow.eth', address: '0x67890' }]
+);
 
-const contacts: Contact[] = networkAndWallet.get([Network.Mainnet, '0x12345', 'contacts'])
+const contacts: Contact[] = networkAndWallet.get([
+  Network.Mainnet,
+  '0x12345',
+  'contacts',
+]);
 ```
 
 Here, if `[Network.Mainnet, '0x12345']` are not supplied along with the key of
-`contacts`, type checking will fail. If used in JavaScript, *it will return undefined.*
+`contacts`, type checking will fail. If used in JavaScript, _it will return undefined._
 
 ## Future Work
 
@@ -112,9 +120,7 @@ export networkAndWallet = new NetworkAndWalletStorage()
 Then, we could set/get values by key only:
 
 ```typescript
-import { networkAndWallet } from '@/storage/networkAndWallet'
+import { networkAndWallet } from '@/storage/networkAndWallet';
 
-networkAndWallet.set('contacts', [
-   { name: 'rainbow.eth', address: '0x67890' }
-])
+networkAndWallet.set('contacts', [{ name: 'rainbow.eth', address: '0x67890' }]);
 ```
