@@ -82,6 +82,7 @@ import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
+import { StorageTest } from '@/StorageTest';
 
 const FedoraToastRef = createRef();
 
@@ -311,6 +312,7 @@ class OldApp extends Component {
               <PortalConsumer />
             </InitialRouteContext.Provider>
           )}
+          <StorageTest />
           <OfflineToast />
           <FedoraToast ref={FedoraToastRef} />
         </View>

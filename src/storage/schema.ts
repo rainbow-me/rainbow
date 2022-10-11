@@ -3,4 +3,5 @@
  */
 export type Device = {
   doNotTrack: boolean;
+  comments: any
 };

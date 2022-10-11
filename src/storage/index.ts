@@ -1,4 +1,5 @@
-import { MMKV } from 'react-native-mmkv';
+// import { MMKV } from 'react-native-mmkv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Device } from '@/storage/schema';
 
@@ -8,10 +9,10 @@ import { Device } from '@/storage/schema';
  */
 export class Storage<Scopes extends unknown[], Schema> {
   protected sep = ':';
-  protected store: MMKV;
+  protected store: AsyncStorage;
 
   constructor({ id }: { id: string }) {
-    this.store = new MMKV({ id });
+    this.store = AsyncStorage
   }
 
   /**
@@ -20,12 +21,12 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `set([key], value)`
    *   `set([scope, key], value)`
    */
-  set<Key extends keyof Schema>(
+  async set<Key extends keyof Schema>(
     scopes: [...Scopes, Key],
     data: Schema[Key]
   ): void {
     // stored as `{ data: <value> }` structure to ease stringification
-    this.store.set(scopes.join(this.sep), JSON.stringify({ data }));
+    return this.store.setItem(scopes.join(this.sep), JSON.stringify({ data }));
   }
 
   /**
@@ -34,10 +35,10 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `get([key])`
    *   `get([scope, key])`
    */
-  get<Key extends keyof Schema>(
+  async get<Key extends keyof Schema>(
     scopes: [...Scopes, Key]
   ): Schema[Key] | undefined {
-    const res = this.store.getString(scopes.join(this.sep));
+    const res = this.store.getItem(scopes.join(this.sep));
     if (!res) return undefined;
     // parsed from storage structure `{ data: <value> }`
     return JSON.parse(res).data;
@@ -49,8 +50,8 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `remove([key])`
    *   `remove([scope, key])`
    */
-  remove<Key extends keyof Schema>(scopes: [...Scopes, Key]) {
-    this.store.delete(scopes.join(this.sep));
+  async remove<Key extends keyof Schema>(scopes: [...Scopes, Key]) {
+    this.store.removeItem(scopes.join(this.sep));
   }
 
   /**
@@ -59,7 +60,7 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `removeMany([], [key])`
    *   `removeMany([scope], [key])`
    */
-  removeMany<Key extends keyof Schema>(scopes: [...Scopes], keys: Key[]) {
+  async removeMany<Key extends keyof Schema>(scopes: [...Scopes], keys: Key[]) {
     keys.forEach(key => this.remove([...scopes, key]));
   }
 }
