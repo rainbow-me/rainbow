@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
