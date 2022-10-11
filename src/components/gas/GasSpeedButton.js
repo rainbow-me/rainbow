@@ -21,6 +21,7 @@ import {
   useColorForAsset,
   useGas,
   usePrevious,
+  useSwapCurrencies,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
@@ -149,6 +150,8 @@ const GasSpeedButton = ({
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const rawColorForAsset = useColorForAsset(asset || {}, null, false, true);
   const [isLongWait, setIsLongWait] = useState(false);
+
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
     gasFeeParamsBySpeed,
@@ -297,6 +300,7 @@ const GasSpeedButton = ({
     if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
     // override time estimate for cross chain swaps
     if (crossChainServiceTime) {
+      console.log('!!!!!!!! service time');
       const { isLongWait, timeEstimateDisplay } = getCrossChainTimeEstimate({
         serviceTime: crossChainServiceTime,
         gasTimeInSeconds: selectedGasFee?.estimatedTime?.amount,
@@ -327,8 +331,22 @@ const GasSpeedButton = ({
     Keyboard.dismiss();
     const network = currentNetwork ?? networkTypes.mainnet;
     const networkName = networkInfo[network]?.name;
-    navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
-  }, [currentNetwork, navigate]);
+    if (crossChainServiceTime) {
+      navigate(Routes.EXPLAIN_SHEET, {
+        inputCurrency,
+        outputCurrency,
+        type: 'crossChainGas',
+      });
+    } else {
+      navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
+    }
+  }, [
+    crossChainServiceTime,
+    currentNetwork,
+    inputCurrency,
+    navigate,
+    outputCurrency,
+  ]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {

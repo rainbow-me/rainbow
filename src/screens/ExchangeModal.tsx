@@ -89,7 +89,7 @@ import {
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { CrosschainQuote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,

@@ -688,11 +688,9 @@
         "title": "No quote available",
         "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
-      "long_wait": {
-        "title": "Long wait to swap",
-        "text": "This swap may take a very long time to complete. This is usually due to problems with a cross-chain bridge.",
-        "button": "Continue anyway",
-        "secondary_button": "Cancel"
+      "cross_chain_swap": {
+        "title": "Crosschain Swap",
+        "text": "This swap may take a while to complete. \n\n Crosschain swaps take place on 2 networks, which requires a bridge. Sometimes these bridges take longer than expected."
       },
       "go_to_hop_with_icon": {
         "text": "Go to the Hop Bridge 􀮶"

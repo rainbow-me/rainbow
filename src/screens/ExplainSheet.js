@@ -15,12 +15,12 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
-import { Box, Inset } from '@/design-system';
+import { Box } from '@/design-system';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -578,27 +578,37 @@ export const explainers = (params, colors) => ({
       </RowWithMargins>
     ),
   },
-  longWaitSwap: {
+  crossChainGas: {
     extraHeight: -40,
-    button: {
-      label: lang.t('explain.long_wait.secondary_button'),
-      bgColor: colors?.transparent,
-      textColor: colors?.blueGreyDark80,
-    },
-    secondaryButton: {
-      label: lang.t('explain.long_wait.button'),
-      textColor: colors?.appleBlue,
-      bgColor: colors?.clearBlue,
-    },
-    title: lang.t('explain.long_wait.title'),
-    text: lang.t('explain.long_wait.text'),
+    title: lang.t('explain.cross_chain_swap.title'),
+    text: lang.t('explain.cross_chain_swap.text'),
     logo: (
-      <RowWithMargins justify="center" margin={0} marginBottom={10}>
-        <CoinIcon size={40} {...params?.outputCurrency} />
-        <Box style={{ position: 'absolute', top: 18, left: 28 }}>
-          <Text size={20} color={colors?.orange}>
-            􀇿
-          </Text>
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <Box>
+          {ethereumUtils.getNetworkFromType(params?.inputCurrency?.type) !==
+          Network.mainnet ? (
+            <ChainBadge
+              assetType={params?.inputCurrency?.type}
+              position="relative"
+              size="large"
+            />
+          ) : (
+            <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
+          )}
+        </Box>
+        <DoubleChevron />
+        <Box>
+          {ethereumUtils.getNetworkFromType(params?.outputCurrency?.type) !==
+          Network.mainnet ? (
+            <ChainBadge
+              assetType={params?.outputCurrency?.type}
+              marginBottom={8}
+              position="relative"
+              size="large"
+            />
+          ) : (
+            <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
+          )}
         </Box>
       </RowWithMargins>
     ),
