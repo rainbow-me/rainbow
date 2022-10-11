@@ -95,7 +95,6 @@ import logger from '@/utils/logger';
 import {
   CrosschainSwapActionParameters,
   SwapActionParameters,
-  SwapMetadata,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';

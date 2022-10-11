@@ -127,6 +127,7 @@ export interface BaseSwapActionParameters {
   chainId: number;
   requiresApprove?: boolean;
   swapType?: SwapType;
+  meta?: SwapMetadata;
 }
 
 export interface SwapActionParameters extends BaseSwapActionParameters {
@@ -136,7 +137,6 @@ export interface SwapActionParameters extends BaseSwapActionParameters {
 export interface CrosschainSwapActionParameters
   extends BaseSwapActionParameters {
   tradeDetails: CrosschainQuote;
-  meta?: SwapMetadata;
 }
 
 export interface ENSActionParameters {

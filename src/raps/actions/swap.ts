@@ -37,7 +37,7 @@ import { estimateSwapGasLimit } from '@/handlers/swap';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 
-export const metadataStorage = new MMKV({
+export const swapMetadataStorage = new MMKV({
   id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
 });
 const actionName = 'swap';
@@ -279,7 +279,7 @@ const swap = async (
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
   if (parameters.meta && swap?.hash) {
-    metadataStorage.set(
+    swapMetadataStorage.set(
       swap.hash.toLowerCase(),
       JSON.stringify({ type: 'swap', data: parameters.meta })
     );
