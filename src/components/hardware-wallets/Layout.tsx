@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Box, Inset, Row, Rows } from '@/design-system';
+import { safeAreaInsetValues } from '@/utils';
+import { SheetHandleFixedToTopHeight } from '../sheet';
 
 export function Layout({
   children,
@@ -11,18 +13,25 @@ export function Layout({
   footer: React.ReactElement;
 }) {
   return (
-    <Inset top="60px" bottom="52px">
-      <Box height="full">
-        <Rows>
-          <Row height="content">{header}</Row>
-          <Row>
-            <Rows alignHorizontal="center">
-              <Row height="content">{children}</Row>
+    <Box background="surfaceSecondary">
+      <Inset
+        top={{ custom: SheetHandleFixedToTopHeight }}
+        bottom={{ custom: safeAreaInsetValues.bottom }}
+      >
+        <Inset top="36px" bottom="20px">
+          <Box height="full">
+            <Rows>
+              <Row height="content">{header}</Row>
+              <Row>
+                <Rows alignHorizontal="center">
+                  <Row height="content">{children}</Row>
+                </Rows>
+              </Row>
+              <Row height="content">{footer}</Row>
             </Rows>
-          </Row>
-          <Row height="content">{footer}</Row>
-        </Rows>
-      </Box>
-    </Inset>
+          </Box>
+        </Inset>
+      </Inset>
+    </Box>
   );
 }

@@ -915,6 +915,7 @@ export const transactionsReceived = (
     accountAddress,
     nativeCurrency,
     transactions,
+    pendingTransactions,
     purchaseTransactions,
     currentNetwork,
     appended

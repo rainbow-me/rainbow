@@ -1,7 +1,9 @@
+import useSwapDetailsButtonPosition from './useSwapDetailsButtonPosition';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue } from 'react-native-reanimated';
+
 import { useSelector } from 'react-redux';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
@@ -29,12 +31,6 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { abbreviations } from '@/utils';
-
-const springConfig = {
-  damping: 500,
-  mass: 3,
-  stiffness: 1000,
-};
 
 const AnimatedContainer = styled(Animated.View)({
   ...position.sizeAsObject('100%'),
@@ -127,6 +123,21 @@ export default function SwapDetailsState({
     FOOTER_CONTENT_MIN_HEIGHT
   );
 
+  const {
+    onHeightChange,
+    wrapperStyle,
+    onPressMore,
+    onWrapperLayout,
+  } = useSwapDetailsButtonPosition({ contentHeight });
+
+  const onContentHeightChange = useCallback(
+    event => {
+      onHeightChange(event);
+      setContentHeight(event);
+    },
+    [onHeightChange, setContentHeight]
+  );
+
   useEffect(() => {
     if (!isFocused && prevIsFocused) {
       return restoreFocusOnSwapModal();
@@ -144,7 +155,6 @@ export default function SwapDetailsState({
   const contentScroll = useSharedValue(0);
 
   useEffect(() => {
-    contentScroll.value = withSpring(0, springConfig);
     setParams({
       longFormHeight: sheetHeightWithoutKeyboard,
       transitionDuration: 0.7,
@@ -188,22 +198,25 @@ export default function SwapDetailsState({
         <SwapDetailsContent
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
-          onLayout={setContentHeight}
+          onLayout={onContentHeightChange}
+          onPressMore={onPressMore}
           tradeDetails={tradeDetails}
         />
-        <Footer onLayout={setFooterHeight}>
-          <ConfirmExchangeButton
-            {...confirmButtonProps}
-            testID="swap-details-confirm-button"
-          />
-          <GasSpeedButton
-            asset={outputCurrency}
-            currentNetwork={currentNetwork}
-            flashbotTransaction={flashbotTransaction}
-            testID="swap-details-gas"
-            theme="light"
-          />
-        </Footer>
+        <Animated.View style={wrapperStyle} onLayout={onWrapperLayout}>
+          <Footer onLayout={setFooterHeight}>
+            <ConfirmExchangeButton
+              {...confirmButtonProps}
+              testID="swap-details-confirm-button"
+            />
+            <GasSpeedButton
+              asset={outputCurrency}
+              currentNetwork={currentNetwork}
+              flashbotTransaction={flashbotTransaction}
+              testID="swap-details-gas"
+              theme="light"
+            />
+          </Footer>
+        </Animated.View>
         <ToastPositionContainer>
           <CopyToast copiedText={copiedText} copyCount={copyCount} />
         </ToastPositionContainer>
