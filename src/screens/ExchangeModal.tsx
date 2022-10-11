@@ -276,16 +276,18 @@ export default function ExchangeModal({
       defaultOutputAsset &&
       defaultInputAsset.type !== defaultOutputAsset.type
     ) {
-      const crosschainImplementation =
+      // find address for output asset on the input's network
+      // TODO: this value can be removed after the crosschain swaps flag is no longer necessary
+      const inputNetworkImplementationAddress =
         defaultOutputAsset?.implementations?.[
           defaultInputAsset?.type === AssetType.token
             ? 'ethereum'
             : defaultInputAsset?.type
         ]?.address;
-      if (crosschainImplementation || crosschainSwapsEnabled) {
+      if (inputNetworkImplementationAddress || crosschainSwapsEnabled) {
         if (!crosschainSwapsEnabled) {
           newOutput.address =
-            crosschainImplementation || defaultOutputAsset.address;
+            inputNetworkImplementationAddress || defaultOutputAsset.address;
           if (defaultInputAsset.type !== Network.mainnet) {
             newOutput.mainnet_address = defaultOutputAsset.address;
           }
