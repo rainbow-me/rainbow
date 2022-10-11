@@ -3,6 +3,55 @@
 The main log handler of the Rainbow app, with support for log levels, debug
 contexts, and separate transports for production, dev, and test mode.
 
+<details>
+  <summary><strong>Coming from <code>@/utils/logger</code>?</strong> Here's a cheatsheet:</summary>
+
+  Methods `debug` and `warn` are the same, use them as you have been.
+  `prettyLog` is deprecated, just use one of the other methods.
+
+  The old `Logger.log` is now `logger.info`.
+
+  The old `Logger.sentry` and `Logger.error` should now look like this (see
+  below for more info):
+
+  ```typescript
+  import { logger, RainbowError } from '@/logger';
+
+  try {
+    // some async code
+  } catch (e) {
+    const error = new RainbowError('Descriptive error message');
+    logger.error(error, { ...metadata });
+  }
+  ```
+</details>
+
+<details>
+  <summary><strong>Coming from <code>@/utils/sentry</code>?</strong> Peep this:</summary>
+
+  All `addBreadcrumb` utils can be replicated with `logger.info`. Essentially,
+  this:
+
+  ```typescript
+  addDataBreadcrumb('Message', { clicked: true })
+  ```
+
+  Becomes this:
+
+  ```typescript
+  import { logger } from '@/logger';
+
+  logger.info(`Message`, { clicked: true });
+  ```
+
+  And for specific types of breadcrumbs, we can now use the built-in Sentry types
+  (see source file for options) like this:
+
+  ```typescript
+  logger.info(`From ${prevRoute} to ${nextRoute}`, { type: 'nav' });
+  ```
+</details>
+
 ## At a Glance
 
 The basic interface looks like this:
