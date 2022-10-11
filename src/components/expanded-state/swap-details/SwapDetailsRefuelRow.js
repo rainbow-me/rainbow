@@ -67,7 +67,9 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
               </Box>
             </Column>
             <Column width="content">
-              <CaretIcon />
+              <Box marginTop="-4px" marginBottom="-4px">
+                <CaretIcon />
+              </Box>
             </Column>
             <Column width="content">
               <Box
@@ -93,8 +95,8 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
           </>
         ) : (
           <Column width="content">
-            <Box marginTop={ICON_ALIGN_MARGIN} marginBottom={ICON_ALIGN_MARGIN}>
-              <Spinner color={colors.blueGreyDark80} size={20} />
+            <Box marginTop={ICON_ALIGN_MARGIN}>
+              <Spinner color={colors.blueGreyDark80} size={18} />
             </Box>
           </Column>
         )}
