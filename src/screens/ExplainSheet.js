@@ -880,6 +880,7 @@ export const explainers = (params, colors) => ({
     },
   },
   swap_refuel_notice: {
+    extraHeight: 50,
     logo: (
       <DashedWrapper
         size={50}
