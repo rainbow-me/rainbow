@@ -86,7 +86,7 @@ export interface NewTransaction {
     toChainId: ChainId;
     isBridge: boolean;
   };
-  meta: SwapMetadata | undefined;
+  meta?: SwapMetadata;
 }
 
 export interface NewTransactionOrAddCashTransaction
