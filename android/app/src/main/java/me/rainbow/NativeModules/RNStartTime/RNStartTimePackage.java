@@ -5,6 +5,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.oblador.keychain.KeychainModuleBuilder;
+import com.obladorfork.keychain.KeychainModuleBuilderNew;
 
 import java.util.Arrays;
 import java.util.Collections;

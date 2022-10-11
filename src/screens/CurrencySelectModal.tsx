@@ -29,7 +29,7 @@ import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@/analytics';
-import { addHexPrefix } from '@/handlers/web3';
+import { addHexPrefix, isL2Network } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network } from '@/helpers';
 import {
   useAssetsInWallet,
@@ -39,6 +39,7 @@ import {
   usePrevious,
   useSwapCurrencies,
   useSwapCurrencyList,
+  useSwappableUserAssets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
@@ -50,6 +51,7 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
+import networkTypes from '@/helpers/networkTypes';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -143,7 +145,6 @@ export default function CurrencySelectModal() {
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-
   const NetworkSwitcher = !crosschainSwapsEnabled
     ? NetworkSwitcherv1
     : NetworkSwitcherv2;
@@ -156,6 +157,7 @@ export default function CurrencySelectModal() {
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
+  // TODO: remove this value when crosschain swaps is released
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
       let filteredAssetsInWallet = assetsInWallet?.filter(
@@ -189,13 +191,16 @@ export default function CurrencySelectModal() {
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
 
+  const { swappableUserAssets } = useSwappableUserAssets({ outputCurrency });
+
   const checkForSameNetwork = useCallback(
     (newAsset, selectAsset, type) => {
       const otherAsset = type === 'input' ? outputCurrency : inputCurrency;
       const hasShownWarning = getHasShownWarning();
       if (
         otherAsset &&
-        newAsset?.type !== otherAsset?.type &&
+        ethereumUtils.getChainIdFromType(newAsset?.type) !==
+          ethereumUtils.getChainIdFromType(otherAsset?.type) &&
         !hasShownWarning
       ) {
         Keyboard.dismiss();
@@ -230,18 +235,27 @@ export default function CurrencySelectModal() {
   }, []);
 
   const getWalletCurrencyList = useCallback(() => {
+    const listToUse = crosschainSwapsEnabled
+      ? swappableUserAssets
+      : filteredAssetsInWallet;
     if (type === CurrencySelectionTypes.input) {
       if (searchQueryForSearch !== '') {
         const searchResults = searchWalletCurrencyList(
-          filteredAssetsInWallet,
+          listToUse,
           searchQueryForSearch
         );
         return headerlessSection(searchResults);
       } else {
-        return headerlessSection(filteredAssetsInWallet);
+        return headerlessSection(listToUse);
       }
     }
-  }, [filteredAssetsInWallet, searchQueryForSearch, type]);
+  }, [
+    filteredAssetsInWallet,
+    searchQueryForSearch,
+    type,
+    crosschainSwapsEnabled,
+    swappableUserAssets,
+  ]);
 
   const currencyList = useMemo(() => {
     let list = (type === CurrencySelectionTypes.input
@@ -441,6 +455,11 @@ export default function CurrencySelectModal() {
     };
   }, [handleFavoriteAsset, handleSelectAsset, type, currentChainId]);
 
+  const searchingOnL2Network = useMemo(
+    () => isL2Network(ethereumUtils.getNetworkFromChainId(currentChainId)),
+    [currentChainId]
+  );
+
   const handleApplyFavoritesQueue = useCallback(() => {
     const addresses = Object.keys(assetsToFavoriteQueue);
     const [assetsToAdd, assetsToRemove] = addresses.reduce(
@@ -487,9 +506,14 @@ export default function CurrencySelectModal() {
 
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
-    setCurrentChainId(chainId);
+    InteractionManager.runAfterInteractions(() => {
+      const inputChainId = ethereumUtils.getChainIdFromType(
+        inputCurrency?.type
+      );
+      setCurrentChainId(inputChainId);
+    });
     setIsTransitioning(true); // continue to display list while transitiong back
-  }, [chainId]);
+  }, [inputCurrency?.type]);
 
   const shouldUpdateFavoritesRef = useRef(false);
   useEffect(() => {
@@ -555,6 +579,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
+                onL2={searchingOnL2Network}
                 footerSpacer={android}
                 itemProps={itemProps}
                 listItems={currencyList}

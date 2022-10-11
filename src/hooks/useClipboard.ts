@@ -22,7 +22,7 @@ export default function useClipboard() {
 
   const getClipboard = useCallback(
     callback =>
-      Clipboard.getString().then(result => {
+      Clipboard.getString().then((result: string) => {
         updateClipboardData(result);
         callback?.(result);
       }),

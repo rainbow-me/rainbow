@@ -3,8 +3,7 @@ import { STORAGE_IDS } from '@/model/mmkv';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import Logger from '@/utils/logger';
-
-type ValueOf<T> = T[keyof T];
+import { trackChangedNotificationSettings } from './analytics';
 
 export const NotificationTopic = {
   SENT: 'sent',
@@ -22,16 +21,19 @@ export const NotificationRelationship = {
   WATCHER: 'watcher',
 };
 
+export type NotificationTopicType = typeof NotificationTopic[keyof typeof NotificationTopic];
+export type NotificationRelationshipType = typeof NotificationRelationship[keyof typeof NotificationRelationship];
+
 export type WalletNotificationSettingsType = {
   address: string;
-  topics: { [key: ValueOf<typeof NotificationTopic>]: boolean };
+  topics: { [key: NotificationTopicType]: boolean };
   enabled: boolean;
-  type: ValueOf<typeof NotificationRelationship>;
+  type: NotificationRelationshipType;
 };
 
 const WALLET_TOPICS_STORAGE_KEY = 'notificationSettings';
 const WALLET_GROUPS_STORAGE_KEY = 'notificationGroupToggle';
-export const NOTIFICATIONS_DEFAULT_CHAIN_ID = 1; // hardcoded mainnet until we get multi-chain support
+const NOTIFICATIONS_DEFAULT_CHAIN_ID = 1; // hardcoded mainnet until we get multi-chain support
 
 const storage = new MMKV({
   id: STORAGE_IDS.NOTIFICATIONS,
@@ -66,7 +68,7 @@ export const useAllNotificationSettingsFromStorage = () => {
     WalletNotificationSettingsType[]
   >(data);
   const [existingGroupSettings, setExistingGroupSettings] = useState<{
-    [key: ValueOf<typeof NotificationRelationship>]: boolean;
+    [key: NotificationRelationshipType]: boolean;
   }>(existingGroupSettingsData);
   const listener = storage.addOnValueChangedListener(changedKey => {
     if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
@@ -172,7 +174,7 @@ export const addDefaultNotificationSettingsForWallet = (
     // handle case where user imports an already watched wallet which becomes owned
     if (settingsForWallet.type !== relationship) {
       Logger.log(
-        `Notifications: unsubscribing ${address} from all [${settingsForWallet.type}] notifications and subscribing to all notifications as [${relationship}]`
+        `Notifications: unsubscribing ${address} from all [${settingsForWallet.type.toUpperCase()}] notifications and subscribing to all notifications as [${relationship.toUpperCase()}]`
       );
 
       const settingsIndex = settings.findIndex(
@@ -256,7 +258,7 @@ export const useNotificationSettings = (address: string) => {
 };
 
 export const updateSettingsForWallets = (
-  type: ValueOf<typeof NotificationRelationship>,
+  type: NotificationRelationshipType,
   options: object
 ) => {
   const data = getAllNotificationSettingsFromStorage();
@@ -393,7 +395,7 @@ export const useWalletGroupNotificationSettings = () => {
 */
 export function toggleGroupNotifications(
   wallets: WalletNotificationSettingsType[],
-  relationship: ValueOf<typeof NotificationRelationship>,
+  relationship: NotificationRelationshipType,
   enableNotifications: boolean
 ) {
   if (enableNotifications) {
@@ -403,18 +405,16 @@ export function toggleGroupNotifications(
       // when toggling a whole group, check if notifications
       // are specifically enabled for this wallet
       // if (enabled || singleWallet) {
-      Object.keys(topics).forEach(
-        (topic: ValueOf<typeof NotificationTopic>) => {
-          if (topics[topic]) {
-            subscribeWalletToSingleNotificationTopic(
-              relationship,
-              NOTIFICATIONS_DEFAULT_CHAIN_ID,
-              address,
-              topic
-            );
-          }
+      Object.keys(topics).forEach((topic: NotificationTopicType) => {
+        if (topics[topic]) {
+          subscribeWalletToSingleNotificationTopic(
+            relationship,
+            NOTIFICATIONS_DEFAULT_CHAIN_ID,
+            address,
+            topic
+          );
         }
-      );
+      });
       // }
     });
   } else {
@@ -433,9 +433,9 @@ export function toggleGroupNotifications(
   Function for subscribing/unsubscribing a wallet to/from a single notification topic.  
 */
 export function toggleTopicForWallet(
-  relationship: ValueOf<typeof NotificationRelationship>,
+  relationship: NotificationRelationshipType,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>,
+  topic: NotificationTopicType,
   enableTopic: boolean
 ) {
   if (enableTopic) {
@@ -464,12 +464,7 @@ const subscribeWalletToAllNotificationTopics = async (
   address: string
 ) => {
   Object.values(NotificationTopic).forEach(topic => {
-    Logger.log(
-      `Notifications: subscribing ${type}:${address} to [ ${topic} ] `
-    );
-    messaging().subscribeToTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
+    subscribeWalletToSingleNotificationTopic(type, chainId, address, topic);
   });
 };
 
@@ -479,12 +474,7 @@ const unsubscribeWalletFromAllNotificationTopics = async (
   address: string
 ) => {
   Object.values(NotificationTopic).forEach(topic => {
-    Logger.log(
-      `Notifications: unsubscribing ${type}:${address} from [ ${topic} ]`
-    );
-    messaging().unsubscribeFromTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
+    unsubscribeWalletFromSingleNotificationTopic(type, chainId, address, topic);
   });
 };
 
@@ -492,24 +482,28 @@ const subscribeWalletToSingleNotificationTopic = async (
   type: string,
   chainId: number,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>
+  topic: NotificationTopicType
 ) => {
-  Logger.log(`Notifications: subscribing ${type}:${address} to [ ${topic} ]`);
+  Logger.log(
+    `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`
+  );
   messaging().subscribeToTopic(
     `${type}_${chainId}_${address.toLowerCase()}_${topic}`
   );
+  trackChangedNotificationSettings(chainId, topic, type, 'subscribe');
 };
 
 const unsubscribeWalletFromSingleNotificationTopic = async (
   type: string,
   chainId: number,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>
+  topic: NotificationTopicType
 ) => {
   Logger.log(
-    `Notifications: unsubscribing ${type}:${address} from [ ${topic} ]`
+    `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`
   );
   messaging().unsubscribeFromTopic(
     `${type}_${chainId}_${address.toLowerCase()}_${topic}`
   );
+  trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
 };

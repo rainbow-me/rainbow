@@ -464,6 +464,7 @@ export default function ExchangeModal({
         if (currentNetwork === Network.optimism) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+              // @ts-ignore
               {
                 data: tradeDetails.data,
                 from: tradeDetails.from,
@@ -624,7 +625,11 @@ export default function ExchangeModal({
           inputAmount: inputAmount!,
           outputAmount: outputAmount!,
           nonce,
-          tradeDetails: tradeDetails!,
+          tradeDetails: {
+            ...tradeDetails,
+            fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
+            toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+          } as Quote | CrosschainQuote,
         };
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
@@ -674,12 +679,14 @@ export default function ExchangeModal({
       inputCurrency?.address,
       inputCurrency?.name,
       inputCurrency?.symbol,
+      inputCurrency?.type,
       isCrosschainSwap,
       navigate,
       outputAmount,
       outputCurrency?.address,
       outputCurrency?.name,
       outputCurrency?.symbol,
+      outputCurrency?.type,
       priceImpactPercentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,

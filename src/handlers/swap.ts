@@ -258,7 +258,6 @@ export const estimateSwapGasLimit = async ({
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
-
   const isWrapNativeAsset =
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
     buyTokenAddress === WRAPPED_ASSET[chainId];
