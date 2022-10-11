@@ -271,12 +271,6 @@ export default function ExchangeModal({
   const defaultOutputAssetOverride = useMemo(() => {
     const newOutput = defaultOutputAsset;
 
-    // just let this pass through if crosschain swaps are enabled
-    // TODO: remove this memoized value when crosschain swaps is released
-    if (crosschainSwapsEnabled) {
-      return newOutput;
-    }
-
     if (
       defaultInputAsset &&
       defaultOutputAsset &&
@@ -288,18 +282,19 @@ export default function ExchangeModal({
             ? 'ethereum'
             : defaultInputAsset?.type
         ]?.address;
-      if (crosschainImplementation) {
-        if (defaultInputAsset.type !== Network.mainnet) {
-          newOutput.mainnet_address = defaultOutputAsset.address;
+      if (crosschainImplementation || crosschainSwapsEnabled) {
+        if (!crosschainSwapsEnabled) {
+          newOutput.address =
+            crosschainImplementation || defaultOutputAsset.address;
+          if (defaultInputAsset.type !== Network.mainnet) {
+            newOutput.mainnet_address = defaultOutputAsset.address;
+          }
+          newOutput.type = defaultInputAsset.type;
         }
-        newOutput.address =
-          crosschainImplementation || defaultOutputAsset.address;
-        newOutput.type = defaultInputAsset.type;
         newOutput.uniqueId =
           newOutput.type === Network.mainnet
             ? defaultOutputAsset?.address
             : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
-        logger.debug('new output confirmed: ', newOutput);
         return newOutput;
       } else {
         return null;
