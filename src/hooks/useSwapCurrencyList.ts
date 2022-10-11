@@ -26,7 +26,7 @@ import {
   WBTC_ADDRESS,
   WETH_ADDRESS,
 } from '@/references';
-import { ethereumUtils, filterList, logger } from '@/utils';
+import { ethereumUtils, filterList, isLowerCaseMatch, logger } from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
@@ -46,6 +46,13 @@ const uniswapFavoriteMetadataSelector = (state: AppState) =>
 const uniswapFavoritesSelector = (state: AppState): string[] =>
   state.uniswap.favorites;
 
+type CrosschainVerifiedAssets = {
+  [Network.mainnet]: RT[];
+  [Network.optimism]: RT[];
+  [Network.polygon]: RT[];
+  [Network.arbitrum]: RT[];
+};
+
 const abcSort = (list: any[], key?: string) => {
   return list.sort((a, b) => {
     return key ? a[key]?.localeCompare(b[key]) : a?.localeCompare(b);
@@ -64,7 +71,11 @@ const searchCurrencyList = async (searchParams: {
   const formattedQuery = isAddress ? addHexPrefix(query).toLowerCase() : query;
   if (typeof searchList === 'string') {
     const threshold = isAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
-    if (chainId === MAINNET_CHAINID && !formattedQuery) {
+    if (
+      chainId === MAINNET_CHAINID &&
+      !formattedQuery &&
+      searchList !== 'verifiedAssets'
+    ) {
       return [];
     }
     return tokenSearch({
@@ -105,14 +116,25 @@ const useSwapCurrencyList = (
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
+  const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(
+    false
+  );
+  const [
+    crosschainVerifiedAssets,
+    setCrosschainVerifiedAssets,
+  ] = useState<CrosschainVerifiedAssets>({
+    [Network.mainnet]: [],
+    [Network.optimism]: [],
+    [Network.polygon]: [],
+    [Network.arbitrum]: [],
+  });
 
-  const { inputCurrency } = useSwapCurrencies();
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+  const { inputCurrency } = useSwapCurrencies();
+  const previousInputCurrencyType = usePrevious(inputCurrency?.type);
   const inputChainId = useMemo(
-    () =>
-      inputCurrency?.network &&
-      ethereumUtils.getChainIdFromNetwork(inputCurrency?.network as Network),
-    [inputCurrency?.network]
+    () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
+    [inputCurrency?.type]
   );
   const isCrosschainSearch = useMemo(() => {
     if (
@@ -127,19 +149,24 @@ const useSwapCurrencyList = (
   const isFavorite = useCallback(
     (address: EthereumAddress) =>
       favoriteAddresses
-        .map(a => a.toLowerCase())
-        .includes(address.toLowerCase()),
+        .map(a => a?.toLowerCase())
+        .includes(address?.toLowerCase()),
     [favoriteAddresses]
   );
   const handleSearchResponse = useCallback(
-    (tokens: RT[]) => {
+    (tokens: RT[], crosschainNetwork?: Network) => {
       // These transformations are necessary for L2 tokens to match our spec
+      const activeChainId = crosschainNetwork
+        ? ethereumUtils.getChainIdFromNetwork(crosschainNetwork)
+        : searchChainId;
       return (tokens || [])
         .map(token => {
           token.address =
-            token.networks?.[searchChainId]?.address || token.address;
-          if (searchChainId !== MAINNET_CHAINID) {
-            const network = ethereumUtils.getNetworkFromChainId(searchChainId);
+            token.networks?.[activeChainId]?.address || token.address;
+          if (activeChainId !== MAINNET_CHAINID) {
+            const network =
+              crosschainNetwork ||
+              ethereumUtils.getNetworkFromChainId(searchChainId);
             token.type = network;
             if (token.networks[MAINNET_CHAINID]) {
               token.mainnet_address = token.networks[MAINNET_CHAINID].address;
@@ -176,20 +203,12 @@ const useSwapCurrencyList = (
         const aIsRanked = rankA > -1;
         const bIsRanked = rankB > -1;
         if (aIsRanked) {
-          return bIsRanked
-            ? // compare rank within list
-              rankA < rankB
-              ? -1
-              : 1
-            : // only t1 is ranked
-              -1;
-        } else {
-          return bIsRanked
-            ? // only t2 is ranked
-              1
-            : // sort unranked by abc
-              name1?.localeCompare(name2);
+          if (bIsRanked) {
+            return rankA > rankB ? -1 : 1;
+          }
+          return -1;
         }
+        return bIsRanked ? 1 : name1?.localeCompare(name2);
       });
   }, [curatedMap, favoriteAddresses]);
 
@@ -256,6 +275,34 @@ const useSwapCurrencyList = (
     },
     [searching]
   );
+
+  const getCrosschainVerifiedAssetsForNetwork = useCallback(
+    async (network: Network) => {
+      const crosschainId = ethereumUtils.getChainIdFromNetwork(network);
+      const fromChainId = inputChainId !== crosschainId ? inputChainId : '';
+      const results = await searchCurrencyList({
+        searchList: 'verifiedAssets',
+        query: '',
+        chainId: crosschainId,
+        fromChainId,
+      });
+      setCrosschainVerifiedAssets(state => ({
+        ...state,
+        [network]: handleSearchResponse(results, network),
+      }));
+    },
+    [handleSearchResponse, inputChainId]
+  );
+
+  const getCrosschainVerifiedAssets = useCallback(async () => {
+    const crosschainAssetRequests: Promise<void>[] = [];
+    Object.keys(crosschainVerifiedAssets).forEach(network => {
+      crosschainAssetRequests.push(
+        getCrosschainVerifiedAssetsForNetwork(network as Network)
+      );
+    });
+    await Promise.all(crosschainAssetRequests);
+  }, [crosschainVerifiedAssets, getCrosschainVerifiedAssetsForNetwork]);
 
   const getResultsForAssetType = useCallback(
     async (assetType: swapCurrencyListType) => {
@@ -360,11 +407,27 @@ const useSwapCurrencyList = (
   const previousSearchQuery = usePrevious(searchQuery);
 
   useEffect(() => {
+    setFetchingCrosschainAssets(false);
+  }, [inputChainId]);
+
+  useEffect(() => {
+    if (!fetchingCrosschainAssets && crosschainSwapsEnabled) {
+      setFetchingCrosschainAssets(true);
+      getCrosschainVerifiedAssets();
+    }
+  }, [
+    getCrosschainVerifiedAssets,
+    fetchingCrosschainAssets,
+    crosschainSwapsEnabled,
+  ]);
+
+  useEffect(() => {
     const doSearch = async () => {
       if (
         (searching && !wasSearching) ||
         (searching && previousSearchQuery !== searchQuery) ||
-        searchChainId !== previousChainId
+        searchChainId !== previousChainId ||
+        inputCurrency?.type !== previousInputCurrencyType
       ) {
         if (searchChainId === MAINNET_CHAINID) {
           search();
@@ -381,12 +444,25 @@ const useSwapCurrencyList = (
     };
     doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searching, searchQuery, searchChainId, isCrosschainSearch]);
+  }, [
+    searching,
+    searchQuery,
+    searchChainId,
+    isCrosschainSearch,
+    inputCurrency?.type,
+  ]);
 
   const { colors } = useTheme();
 
   const currencyList = useMemo(() => {
     const list = [];
+    let bridgeAsset = isCrosschainSearch
+      ? verifiedAssets.find(
+          asset =>
+            isLowerCaseMatch(asset?.name, inputCurrency?.name) &&
+            asset?.type !== inputCurrency?.type
+        )
+      : null;
     if (searching) {
       const importedAsset = importedAssets?.[0];
       let verifiedAssetsWithImport = verifiedAssets;
@@ -423,6 +499,19 @@ const useSwapCurrencyList = (
           }
         }
       }
+      if (inputCurrency?.name && verifiedAssets.length) {
+        if (bridgeAsset) {
+          list.push({
+            color:
+              colors.networkColors[
+                ethereumUtils.getNetworkFromType(bridgeAsset.type)
+              ],
+            data: [bridgeAsset],
+            key: 'bridgeAsset',
+            title: tokenSectionTypes.bridgeTokenSection,
+          });
+        }
+      }
       if (favoriteAssets?.length && searchChainId === MAINNET_CHAINID) {
         list.push({
           color: colors.yellowFavorite,
@@ -454,6 +543,23 @@ const useSwapCurrencyList = (
         });
       }
     } else {
+      const curatedAssets = searchChainId === MAINNET_CHAINID && getCurated();
+      if (inputCurrency?.name && isCrosschainSearch && curatedAssets) {
+        bridgeAsset = curatedAssets.find(
+          asset => asset?.name === inputCurrency?.name
+        );
+        if (bridgeAsset) {
+          list.push({
+            color:
+              colors.networkColors[
+                ethereumUtils.getNetworkFromType(bridgeAsset.type)
+              ],
+            data: [bridgeAsset],
+            key: 'bridgeAsset',
+            title: tokenSectionTypes.bridgeTokenSection,
+          });
+        }
+      }
       if (unfilteredFavorites?.length) {
         list.push({
           color: colors.yellowFavorite,
@@ -462,16 +568,13 @@ const useSwapCurrencyList = (
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
-      if (searchChainId === MAINNET_CHAINID) {
-        const curatedAssets = getCurated();
-        if (curatedAssets.length) {
-          list.push({
-            data: curatedAssets,
-            key: 'curated',
-            title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: !IS_TEST,
-          });
-        }
+      if (curatedAssets && curatedAssets.length) {
+        list.push({
+          data: curatedAssets,
+          key: 'curated',
+          title: tokenSectionTypes.verifiedTokenSection,
+          useGradientText: !IS_TEST,
+        });
       }
     }
     return list;
@@ -487,6 +590,50 @@ const useSwapCurrencyList = (
     searchChainId,
     getCurated,
     isFavorite,
+    inputCurrency?.name,
+    colors.networkColors,
+    isCrosschainSearch,
+  ]);
+
+  const crosschainExactMatches = useMemo(() => {
+    if (currencyList.length) return [];
+    if (!searchQuery) return [];
+    const exactMatches: RT[] = [];
+    Object.keys(crosschainVerifiedAssets).forEach(network => {
+      const currentNetworkChainId = ethereumUtils.getChainIdFromNetwork(
+        network as Network
+      );
+      if (currentNetworkChainId !== searchChainId) {
+        // including goerli in our networks type is causing this type issue
+        // @ts-ignore
+        const exactMatch = crosschainVerifiedAssets[network as Network].find(
+          (asset: RT) => {
+            const symbolMatch = isLowerCaseMatch(asset?.symbol, searchQuery);
+            const nameMatch = isLowerCaseMatch(asset?.name, searchQuery);
+            return symbolMatch || nameMatch;
+          }
+        );
+        if (exactMatch) {
+          exactMatches.push({ ...exactMatch, network });
+        }
+      }
+    });
+    if (exactMatches?.length) {
+      return [
+        {
+          data: exactMatches,
+          key: 'verified',
+          title: tokenSectionTypes.crosschainMatchSection,
+          useGradientText: !IS_TEST,
+        },
+      ];
+    }
+    return [];
+  }, [
+    crosschainVerifiedAssets,
+    currencyList.length,
+    searchChainId,
+    searchQuery,
   ]);
 
   const updateFavorites = useCallback(
@@ -496,6 +643,7 @@ const useSwapCurrencyList = (
   );
 
   return {
+    crosschainExactMatches,
     swapCurrencyList: currencyList,
     swapCurrencyListLoading: loading,
     updateFavorites,
