@@ -1,11 +1,7 @@
 import lang from 'i18n-js';
 import { getHumanReadableDate, hasAddableContact } from './transactions';
 import { isValidDomainFormat } from './validators';
-import {
-  TransactionStatus,
-  TransactionStatusTypes,
-  TransactionType,
-} from '@/entities';
+import { TransactionStatus, TransactionStatusTypes } from '@/entities';
 import { TransactionActions } from '@/helpers/transactionActions';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -17,7 +13,7 @@ import {
 } from '@/utils';
 import store from '@/redux/store';
 import WalletTypes from '@/helpers/walletTypes';
-import { metadataStorage } from '@/raps/actions/swap';
+import { swapMetadataStorage } from '@/raps/actions/swap';
 import { SwapMetadata } from '@/raps/common';
 
 const startCase = (string: string) =>
@@ -90,7 +86,7 @@ export const getMenuItems = (item: any) => {
     store.getState().wallets.selected?.type === WalletTypes.readOnly ?? true;
 
   const parentTxHash = ethereumUtils.getHash(item);
-  const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
+  const data = swapMetadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
   const wrappedMeta = data ? JSON.parse(data) : {};
   let parsedMeta: undefined | SwapMetadata;
   if (wrappedMeta?.type === 'swap') {
@@ -198,7 +194,9 @@ export const getCallback = (navigate: Navigate, item: any) => (
       break;
     case TransactionActions.trySwapAgain: {
       const parentTxHash = ethereumUtils.getHash(item);
-      const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
+      const data = swapMetadataStorage.getString(
+        parentTxHash?.toLowerCase() ?? ''
+      );
       const wrappedMeta = data ? JSON.parse(data) : {};
       let parsedMeta: undefined | SwapMetadata;
       if (wrappedMeta?.type === 'swap') {

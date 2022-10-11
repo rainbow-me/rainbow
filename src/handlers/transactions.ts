@@ -44,7 +44,7 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_TEST } from '@/env';
 import { API_BASE_URL } from '@rainbow-me/swaps';
-import { metadataStorage } from '@/raps/actions/swap';
+import { swapMetadataStorage } from '@/raps/actions/swap';
 import { SwapMetadata } from '@/raps/common';
 import WalletTypes from '@/helpers/walletTypes';
 import { analytics } from '@/analytics';
@@ -133,8 +133,10 @@ export const showTransactionDetailsSheet = (
 ) => {
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
   const network = transactionDetails.network ?? Network.mainnet;
+
+  // get info to try swap again
   const parentTxHash = ethereumUtils.getHash(transactionDetails);
-  const data = metadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
+  const data = swapMetadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
   const wrappedMeta = data ? JSON.parse(data) : {};
   let parsedMeta: undefined | SwapMetadata;
   if (wrappedMeta?.type === 'swap') {
