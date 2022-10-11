@@ -15,7 +15,8 @@ type NavbarProps = {
 };
 
 export const navbarHeight = 48;
-export const navbarHeightWithInset = navbarHeight + safeAreaInsetValues.top;
+export const navbarInset = safeAreaInsetValues.top + (android ? 20 : 0);
+export const navbarHeightWithInset = navbarHeight + navbarInset;
 
 export function Navbar({
   hasStatusBarInset = false,
@@ -26,9 +27,7 @@ export function Navbar({
 }: NavbarProps) {
   return (
     <Box testID={testID}>
-      {hasStatusBarInset && (
-        <Box height={{ custom: safeAreaInsetValues.top }} />
-      )}
+      {hasStatusBarInset && <Box height={{ custom: navbarInset }} />}
       <Box
         height={{ custom: navbarHeight }}
         justifyContent="center"

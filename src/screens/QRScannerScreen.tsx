@@ -10,7 +10,7 @@ import {
 } from '../components/qrcode-scanner';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { Navbar } from '@/components/navbar/Navbar';
+import { Navbar, navbarInset } from '@/components/navbar/Navbar';
 import { Box, ColorModeProvider } from '@/design-system';
 import { SheetHandle } from '@/components/sheet';
 import { safeAreaInsetValues } from '@/utils';
@@ -45,14 +45,14 @@ export default function QRScannerScreen() {
       <ColorModeProvider value="darkTinted">
         <Box
           position="absolute"
-          top={{ custom: safeAreaInsetValues.top - 8 }}
+          top={{ custom: navbarInset - 8 }}
           width="full"
           style={{ zIndex: 1 }}
         >
           <Box alignItems="center" paddingTop="8px" height={{ custom: 16 }}>
             <SheetHandle color="rgba(245, 248, 255, 0.4)" showBlur={false} />
           </Box>
-          <Navbar hasStatusBarInset={android} title="Scan to Connect" />
+          <Navbar hasStatusBarInset={false} title="Scan to Connect" />
         </Box>
         <ScannerContainer>
           <Background />
