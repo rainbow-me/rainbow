@@ -86,7 +86,7 @@ export default function useSwapRefuel({
   );
 
   useEffect(() => {
-    const getNativeAsset = async () => {
+    const getNativeInputOutputAssets = async () => {
       if (!outputNetwork || !inputNetwork || !accountAddress) return;
       const outputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(
         outputNetwork,
@@ -99,7 +99,7 @@ export default function useSwapRefuel({
       setOutputNativeAsset(outputNativeAsset);
       setInputNativeAsset(inputNativeAsset);
     };
-    getNativeAsset();
+    getNativeInputOutputAssets();
   }, [outputNetwork, inputNetwork, accountAddress]);
 
   const { showRefuelSheet, refuelState } = useMemo(() => {
