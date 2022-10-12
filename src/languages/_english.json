@@ -719,17 +719,17 @@
         }
       },
       "swap_refuel": {
-        "title": "No %{gasToken} detected",
+        "title": "No %{networkName} %{gasToken} detected",
         "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
         "button": "Add $3 of %{networkName} %{gasToken}"
       },
       "swap_refuel_deduct": {
-        "title": "No %{gasToken} detected",
+        "title": "No %{networkName} %{gasToken} detected",
         "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH subtracted from this swap.",
         "button": "Adjust and add $3 of %{gasToken}"
       },
       "swap_refuel_notice": {
-        "title": "No %{gasToken} detected",
+        "title": "No %{networkName} %{gasToken} detected",
         "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
         "button": "Proceed anyway"
       }

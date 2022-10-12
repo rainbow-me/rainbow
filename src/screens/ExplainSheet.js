@@ -810,6 +810,7 @@ export const explainers = (params, colors) => ({
       </DashedWrapper>
     ),
     title: lang.t('explain.swap_refuel.title', {
+      networkName: params?.networkName,
       gasToken: params?.gasToken,
     }),
     text: lang.t('explain.swap_refuel.text', {

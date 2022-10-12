@@ -98,6 +98,7 @@ import {
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';
+import networkInfo from '@/helpers/networkInfo';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -953,27 +954,7 @@ export default function ExchangeModal({
   });
 
   const navigateToRefuelModal = useCallback(() => {
-    const getNetworkDetails = (network: Network) => {
-      switch (network) {
-        case Network.arbitrum:
-          return {
-            gasToken: 'ETH',
-            name: 'Arbitrum',
-          };
-        case Network.optimism:
-          return {
-            gasToken: 'ETH',
-            name: 'Optimism',
-          };
-        case Network.polygon:
-          return {
-            gasToken: 'Matic',
-            name: 'Polygon',
-          };
-      }
-    };
-
-    const networkDetails = getNetworkDetails(outputNetwork);
+    const networkDetails = networkInfo[outputNetwork];
     android && Keyboard.dismiss();
 
     if (refuelState === RefuelState.Add) {
