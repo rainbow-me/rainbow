@@ -39,7 +39,7 @@ const storage = new MMKV({
   id: STORAGE_IDS.NOTIFICATIONS,
 });
 
-/* 
+/**
   Grabs notification settings for all wallets if they exist,
   otherwise returns an empty array.
 */
@@ -57,7 +57,7 @@ export const getExistingGroupSettingsFromStorage = () => {
   return [];
 };
 
-/* 
+/**
   Hook to constantly listen to notification settings.
 */
 export const useAllNotificationSettingsFromStorage = () => {
@@ -85,7 +85,7 @@ export const useAllNotificationSettingsFromStorage = () => {
   return { notificationSettings, existingGroupSettings };
 };
 
-/*
+/**
   Checks if notification settings exist for a wallet and returns a boolean.
 */
 export const walletHasNotificationSettings = (address: string) => {
@@ -97,7 +97,7 @@ export const walletHasNotificationSettings = (address: string) => {
   return !!settings;
 };
 
-/*
+/**
   1. Reads notification settings for all wallets from storage.
   2. Matches settings for the wallet with the given address.
   3. Excludes that wallet from the array and saves the new array.
@@ -120,7 +120,7 @@ export const removeNotificationSettingsForWallet = (address: string) => {
   storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
 };
 
-/* 
+/**
   1. Checks if notification settings already exist for the given address.
   2. Grabs all notification settings from storage.
   3. Appends default settings for the given address to the array.
@@ -201,7 +201,7 @@ export const addDefaultNotificationSettingsForWallet = (
   }
 };
 
-/* 
+/**
   Checks if group notification settings are present in storage
   and adds default values for them if they do not exist.
 */
@@ -220,8 +220,8 @@ export const addDefaultNotificationGroupSettings = () => {
 // Runs the above function when the app is loaded to make sure settings are always present.
 addDefaultNotificationGroupSettings();
 
-/*
-  * Hook for getting and setting notification settings for a single wallet.
+/**
+  Hook for getting and setting notification settings for a single wallet.
 
   Returns an object with the wallet address, enabled/disabled topics, relationship,
   and a main boolean for enabling/disabling all notifications for this wallet.
@@ -271,7 +271,7 @@ export const updateSettingsForWallets = (
   storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
 };
 
-/* 
+/**
   Hook for getting and setting notification settings for all wallets 
   in an owned/watched group.
 
@@ -388,7 +388,7 @@ export const useWalletGroupNotificationSettings = () => {
   };
 };
 
-/*
+/**
   Function for enabling/disabling all notifications for a group of wallets.
   Also used to batch toggle notifications for a single wallet 
   when using the `Allow Notifications` switch in the wallet settings view.
@@ -429,7 +429,7 @@ export function toggleGroupNotifications(
   }
 }
 
-/*
+/**
   Function for subscribing/unsubscribing a wallet to/from a single notification topic.  
 */
 export function toggleTopicForWallet(
@@ -455,7 +455,7 @@ export function toggleTopicForWallet(
   }
 }
 
-/*
+/**
   Firebase functions for subscribing/unsubscribing to topics.
 */
 const subscribeWalletToAllNotificationTopics = async (
