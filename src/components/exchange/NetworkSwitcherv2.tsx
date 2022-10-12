@@ -70,6 +70,7 @@ const NetworkSwitcherv2 = ({
     <>
       <Box height="46px" width="full" testID="network-switcher-v2">
         <ScrollView
+          keyboardShouldPersistTaps="always"
           contentContainerStyle={{ paddingHorizontal: 20 }}
           horizontal
           ref={scrollViewRef}
