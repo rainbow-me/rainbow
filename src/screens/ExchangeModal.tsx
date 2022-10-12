@@ -360,7 +360,7 @@ export default function ExchangeModal({
   }, [currentNetwork, prevTxNetwork]);
 
   useEffect(() => {
-    const getNativeAsset = async () => {
+    const getNativeOutputAsset = async () => {
       if (!outputNetwork || !accountAddress) return;
       const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
         outputNetwork,
@@ -368,7 +368,7 @@ export default function ExchangeModal({
       );
       setOutputNetworkDetails(nativeAsset);
     };
-    getNativeAsset();
+    getNativeOutputAsset();
   }, [outputNetwork, accountAddress]);
 
   const defaultGasLimit = useMemo(() => {
