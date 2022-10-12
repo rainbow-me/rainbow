@@ -3,20 +3,24 @@ import {
   JsonMap,
   SegmentClient,
 } from '@segment/analytics-react-native';
-import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
+import {
+  ANALYTICS_KEY,
+  REACT_APP_SEGMENT_API_WRITE_KEY,
+} from 'react-native-dotenv';
 import { TrackingEventProperties, TrackingEvents } from './trackingEvents';
 import { UserProperties } from './userProperties';
 import Routes from '@/navigation/routesNames';
+import { MMKV } from 'react-native-mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 import { EthereumAddress } from '@/entities';
 import { ethers } from 'ethers';
-import { forEach } from 'lodash';
+import { nanoid } from 'nanoid/non-secure';
 
-// TODO: need to generate secure key
 export function secureHmac(value: string) {
   return ethers.utils.computeHmac(
     ethers.utils.SupportedAlgorithm.sha256,
-    value,
-    '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608'
+    ANALYTICS_KEY,
+    value
   );
 }
 
@@ -49,18 +53,24 @@ export class Analytics {
 
     // we need to wait for context to be loaded before we can set the deviceId
     // TODO: persist this in local storage after initial load
-    this.client.onContextLoaded(() => {
-      this.deviceId = analytics.context.get()?.device?.id || '';
-      this.identify({});
-    });
-
+    this.deviceId = this.getDeviceId();
     this.secureAddressHash = secureHmac(currentAddress);
   }
 
-  public identify(properties: UserProperties) {
-    // if we dont have a deviceId yet we should wait - should only effect initial app load.
-    if (!this.deviceId) return;
+  private getDeviceId() {
+    const mmkv = new MMKV();
+    const storedDeviceID = mmkv.getString(STORAGE_IDS.DEVICE_ID);
 
+    // if no saved device ID, generate a new one
+    if (!storedDeviceID) {
+      const identifier = nanoid();
+      mmkv.set(STORAGE_IDS.DEVICE_ID, identifier);
+      return identifier;
+    } else {
+      return storedDeviceID;
+    }
+  }
+  public identify(properties: UserProperties) {
     const extraMetadata = this.getExtraMetadata();
     this.client.identify(this.deviceId, ({
       ...properties,
@@ -108,7 +118,7 @@ export class Analytics {
   ) {
     let category = null;
     const categories = Object.keys(TrackingEvents);
-    forEach(categories, key => {
+    categories.forEach(key => {
       // @ts-ignore
       const events = Object.values(TrackingEvents[key]);
 
