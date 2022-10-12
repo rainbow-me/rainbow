@@ -35,6 +35,7 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
   const webviewRef = useRef();
   const { colors } = useTheme();
   const [ready, setReady] = useState(false);
+  const [closed, setClosed] = useState(false);
   useEffect(() => {
     StatusBarHelper.setBackgroundColor('transparent', false);
     StatusBarHelper.setTranslucent(true);
@@ -85,19 +86,22 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
      `;
       // eslint-disable-next-line react-hooks/exhaustive-deps
       webviewRef.current?.injectJavaScript(js);
+      setClosed(true);
     };
   }, []);
 
   return (
     <Container>
-      <StyledWebView
-        ref={webviewRef}
-        scalesPageToFit
-        scrollEnabled={false}
-        source={{
-          uri: playerUri,
-        }}
-      />
+      {!closed && (
+        <StyledWebView
+          ref={webviewRef}
+          scalesPageToFit
+          scrollEnabled={false}
+          source={{
+            uri: playerUri,
+          }}
+        />
+      )}
       {!ready && (
         <Centered
           flex={1}
