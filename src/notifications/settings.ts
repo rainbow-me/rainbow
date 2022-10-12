@@ -3,8 +3,7 @@ import { STORAGE_IDS } from '@/model/mmkv';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import Logger from '@/utils/logger';
-
-type ValueOf<T> = T[keyof T];
+import { trackChangedNotificationSettings } from './analytics';
 
 export const NotificationTopic = {
   SENT: 'sent',
@@ -22,22 +21,25 @@ export const NotificationRelationship = {
   WATCHER: 'watcher',
 };
 
+export type NotificationTopicType = typeof NotificationTopic[keyof typeof NotificationTopic];
+export type NotificationRelationshipType = typeof NotificationRelationship[keyof typeof NotificationRelationship];
+
 export type WalletNotificationSettingsType = {
   address: string;
-  topics: { [key: ValueOf<typeof NotificationTopic>]: boolean };
+  topics: { [key: NotificationTopicType]: boolean };
   enabled: boolean;
-  type: ValueOf<typeof NotificationRelationship>;
+  type: NotificationRelationshipType;
 };
 
 const WALLET_TOPICS_STORAGE_KEY = 'notificationSettings';
 const WALLET_GROUPS_STORAGE_KEY = 'notificationGroupToggle';
-export const NOTIFICATIONS_DEFAULT_CHAIN_ID = 1; // hardcoded mainnet until we get multi-chain support
+const NOTIFICATIONS_DEFAULT_CHAIN_ID = 1; // hardcoded mainnet until we get multi-chain support
 
 const storage = new MMKV({
   id: STORAGE_IDS.NOTIFICATIONS,
 });
 
-/* 
+/**
   Grabs notification settings for all wallets if they exist,
   otherwise returns an empty array.
 */
@@ -55,7 +57,7 @@ export const getExistingGroupSettingsFromStorage = () => {
   return [];
 };
 
-/* 
+/**
   Hook to constantly listen to notification settings.
 */
 export const useAllNotificationSettingsFromStorage = () => {
@@ -66,7 +68,7 @@ export const useAllNotificationSettingsFromStorage = () => {
     WalletNotificationSettingsType[]
   >(data);
   const [existingGroupSettings, setExistingGroupSettings] = useState<{
-    [key: ValueOf<typeof NotificationRelationship>]: boolean;
+    [key: NotificationRelationshipType]: boolean;
   }>(existingGroupSettingsData);
   const listener = storage.addOnValueChangedListener(changedKey => {
     if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
@@ -83,7 +85,7 @@ export const useAllNotificationSettingsFromStorage = () => {
   return { notificationSettings, existingGroupSettings };
 };
 
-/*
+/**
   Checks if notification settings exist for a wallet and returns a boolean.
 */
 export const walletHasNotificationSettings = (address: string) => {
@@ -95,7 +97,7 @@ export const walletHasNotificationSettings = (address: string) => {
   return !!settings;
 };
 
-/*
+/**
   1. Reads notification settings for all wallets from storage.
   2. Matches settings for the wallet with the given address.
   3. Excludes that wallet from the array and saves the new array.
@@ -118,7 +120,7 @@ export const removeNotificationSettingsForWallet = (address: string) => {
   storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
 };
 
-/* 
+/**
   1. Checks if notification settings already exist for the given address.
   2. Grabs all notification settings from storage.
   3. Appends default settings for the given address to the array.
@@ -172,7 +174,7 @@ export const addDefaultNotificationSettingsForWallet = (
     // handle case where user imports an already watched wallet which becomes owned
     if (settingsForWallet.type !== relationship) {
       Logger.log(
-        `Notifications: unsubscribing ${address} from all [${settingsForWallet.type}] notifications and subscribing to all notifications as [${relationship}]`
+        `Notifications: unsubscribing ${address} from all [${settingsForWallet.type.toUpperCase()}] notifications and subscribing to all notifications as [${relationship.toUpperCase()}]`
       );
 
       const settingsIndex = settings.findIndex(
@@ -199,7 +201,7 @@ export const addDefaultNotificationSettingsForWallet = (
   }
 };
 
-/* 
+/**
   Checks if group notification settings are present in storage
   and adds default values for them if they do not exist.
 */
@@ -218,8 +220,8 @@ export const addDefaultNotificationGroupSettings = () => {
 // Runs the above function when the app is loaded to make sure settings are always present.
 addDefaultNotificationGroupSettings();
 
-/*
-  * Hook for getting and setting notification settings for a single wallet.
+/**
+  Hook for getting and setting notification settings for a single wallet.
 
   Returns an object with the wallet address, enabled/disabled topics, relationship,
   and a main boolean for enabling/disabling all notifications for this wallet.
@@ -256,7 +258,7 @@ export const useNotificationSettings = (address: string) => {
 };
 
 export const updateSettingsForWallets = (
-  type: ValueOf<typeof NotificationRelationship>,
+  type: NotificationRelationshipType,
   options: object
 ) => {
   const data = getAllNotificationSettingsFromStorage();
@@ -269,7 +271,7 @@ export const updateSettingsForWallets = (
   storage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
 };
 
-/* 
+/**
   Hook for getting and setting notification settings for all wallets 
   in an owned/watched group.
 
@@ -386,14 +388,14 @@ export const useWalletGroupNotificationSettings = () => {
   };
 };
 
-/*
+/**
   Function for enabling/disabling all notifications for a group of wallets.
   Also used to batch toggle notifications for a single wallet 
   when using the `Allow Notifications` switch in the wallet settings view.
 */
 export function toggleGroupNotifications(
   wallets: WalletNotificationSettingsType[],
-  relationship: ValueOf<typeof NotificationRelationship>,
+  relationship: NotificationRelationshipType,
   enableNotifications: boolean
 ) {
   if (enableNotifications) {
@@ -403,18 +405,16 @@ export function toggleGroupNotifications(
       // when toggling a whole group, check if notifications
       // are specifically enabled for this wallet
       // if (enabled || singleWallet) {
-      Object.keys(topics).forEach(
-        (topic: ValueOf<typeof NotificationTopic>) => {
-          if (topics[topic]) {
-            subscribeWalletToSingleNotificationTopic(
-              relationship,
-              NOTIFICATIONS_DEFAULT_CHAIN_ID,
-              address,
-              topic
-            );
-          }
+      Object.keys(topics).forEach((topic: NotificationTopicType) => {
+        if (topics[topic]) {
+          subscribeWalletToSingleNotificationTopic(
+            relationship,
+            NOTIFICATIONS_DEFAULT_CHAIN_ID,
+            address,
+            topic
+          );
         }
-      );
+      });
       // }
     });
   } else {
@@ -429,13 +429,13 @@ export function toggleGroupNotifications(
   }
 }
 
-/*
+/**
   Function for subscribing/unsubscribing a wallet to/from a single notification topic.  
 */
 export function toggleTopicForWallet(
-  relationship: ValueOf<typeof NotificationRelationship>,
+  relationship: NotificationRelationshipType,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>,
+  topic: NotificationTopicType,
   enableTopic: boolean
 ) {
   if (enableTopic) {
@@ -455,7 +455,7 @@ export function toggleTopicForWallet(
   }
 }
 
-/*
+/**
   Firebase functions for subscribing/unsubscribing to topics.
 */
 const subscribeWalletToAllNotificationTopics = async (
@@ -464,12 +464,7 @@ const subscribeWalletToAllNotificationTopics = async (
   address: string
 ) => {
   Object.values(NotificationTopic).forEach(topic => {
-    Logger.log(
-      `Notifications: subscribing ${type}:${address} to [ ${topic} ] `
-    );
-    messaging().subscribeToTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
+    subscribeWalletToSingleNotificationTopic(type, chainId, address, topic);
   });
 };
 
@@ -479,12 +474,7 @@ const unsubscribeWalletFromAllNotificationTopics = async (
   address: string
 ) => {
   Object.values(NotificationTopic).forEach(topic => {
-    Logger.log(
-      `Notifications: unsubscribing ${type}:${address} from [ ${topic} ]`
-    );
-    messaging().unsubscribeFromTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    );
+    unsubscribeWalletFromSingleNotificationTopic(type, chainId, address, topic);
   });
 };
 
@@ -492,24 +482,28 @@ const subscribeWalletToSingleNotificationTopic = async (
   type: string,
   chainId: number,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>
+  topic: NotificationTopicType
 ) => {
-  Logger.log(`Notifications: subscribing ${type}:${address} to [ ${topic} ]`);
+  Logger.log(
+    `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`
+  );
   messaging().subscribeToTopic(
     `${type}_${chainId}_${address.toLowerCase()}_${topic}`
   );
+  trackChangedNotificationSettings(chainId, topic, type, 'subscribe');
 };
 
 const unsubscribeWalletFromSingleNotificationTopic = async (
   type: string,
   chainId: number,
   address: string,
-  topic: ValueOf<typeof NotificationTopic>
+  topic: NotificationTopicType
 ) => {
   Logger.log(
-    `Notifications: unsubscribing ${type}:${address} from [ ${topic} ]`
+    `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`
   );
   messaging().unsubscribeFromTopic(
     `${type}_${chainId}_${address.toLowerCase()}_${topic}`
   );
+  trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
 };

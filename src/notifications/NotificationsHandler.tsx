@@ -54,6 +54,10 @@ import {
   NotificationRelationship,
 } from './settings';
 import walletTypes from '@/helpers/walletTypes';
+import {
+  resolveAndTrackPushNotificationPermissionStatus,
+  trackTappedPushNotification,
+} from '@/notifications/analytics';
 
 type Callback = () => void;
 
@@ -150,6 +154,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     if (!notification) {
       return;
     }
+    trackTappedPushNotification(notification);
     // Need to call getState() directly, because the event handler
     // has the old value reference in its closure
     if (!store.getState().appState.walletReady) {
@@ -343,6 +348,8 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     notifeeForegroundEventListener.current = notifee.onForegroundEvent(
       handleNotificationPressed
     );
+
+    resolveAndTrackPushNotificationPermissionStatus();
 
     return () => {
       onTokenRefreshListener.current?.();

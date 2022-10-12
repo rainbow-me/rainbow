@@ -44,7 +44,6 @@ export function PairHardwareWalletNavigator() {
         <Box
           style={{
             height: contentHeight,
-            overflow: 'hidden',
           }}
         >
           <Swipe.Navigator

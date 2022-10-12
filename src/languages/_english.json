@@ -398,6 +398,12 @@
         "loser": "Loser",
         "mover": "Mover"
       },
+      "no_results": {
+        "description": "Some tokens don’t have enough liquidity to perform a successful swap.",
+        "description_l2": "Some tokens don’t have enough layer 2 liquidity to perform a successful swap.",
+        "nothing_found": "Nothing found",
+        "nothing_here": "Nothing here!"
+      },
       "price_impact": {
         "losing_prefix": "Losing",
         "small_market": "Small Market",
@@ -487,6 +493,8 @@
         "us_except": "United States (except Texas and New York)"
       },
       "swap": {
+        "swap": "Swap",
+        "bridge": "Bridge",
         "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
         "on": "On",
@@ -521,6 +529,7 @@
         "maximum_sold": "Maximum sold",
         "token_contract": "%{token} contract",
         "number_of_exchanges": "%{number} Exchanges",
+        "number_of_steps": "%{number} Steps",
         "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
@@ -831,7 +840,6 @@
       "recipient_address": "Recipient Address"
     },
     "list": {
-      "nothing_here": "Nothing here!",
       "share": {
         "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl}",
         "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl}"
@@ -1387,7 +1395,7 @@
         "import_wallet": "Add Wallet",
         "input": "Transaction Input",
         "notifications": "Notification Settings",
-        "pair_hardware_wallet": "Pair a hardware wallet",
+        "pair_hardware_wallet": "Pair a Ledger Nano X",
         "paste": "Paste",
         "pin": "Pin",
         "reject": "Reject",

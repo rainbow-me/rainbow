@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { capitalize } from 'lodash';
 import React, { Fragment, useMemo } from 'react';
+import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
 import Pill from '../../Pill';
 import { ButtonPressAnimation } from '../../animations';
@@ -20,15 +21,21 @@ import networkInfo from '@/helpers/networkInfo';
 import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';
+import { SocketBridges } from '@/references/swap/bridges';
 
 const parseExchangeName = name => {
   const networks = Object.keys(networkInfo).map(network =>
     network.toLowerCase()
   );
 
-  return networks.some(network => name.toLowerCase().includes(network))
-    ? name.slice(name.indexOf('_') + 1, name.length)
-    : name;
+  const removeNetworks = name =>
+    networks.some(network => name.toLowerCase().includes(network))
+      ? name.slice(name.indexOf('_') + 1, name.length)
+      : name;
+
+  const removeBridge = name => name.replace('-bridge', '');
+
+  return removeNetworks(removeBridge(name));
 };
 const ExchangeIcon = magicMemo(
   function ExchangeIcon({ index = 1, icon, protocol }) {
@@ -110,7 +117,7 @@ const ExchangeIconStack = magicMemo(
             >
               <ExchangeIcon
                 icon={icon}
-                protocol={protocols?.name ?? protocols.names[index]}
+                protocol={protocols?.name || protocols.names[index]}
               />
             </Box>
           );
@@ -121,27 +128,70 @@ const ExchangeIconStack = magicMemo(
   ['protocols']
 );
 
-export default function SwapDetailsExchangeRow({ protocols, testID }) {
+const CrossChainIconStack = magicMemo(
+  ({ protocols }) => {
+    return (
+      <Inline>
+        {protocols?.icons?.map((icon, index) => {
+          return (
+            <Inline key={`protocol-icon-${index}`} marginLeft={{ custom: 0 }}>
+              <ExchangeIcon
+                icon={icon}
+                protocol={protocols?.name ?? protocols.names[index]}
+              />
+
+              {index < protocols?.icons.length - 1 && (
+                <Box paddingTop="6px">
+                  <Text
+                    color="secondary50 (Deprecated)"
+                    size="11pt"
+                    weight="semibold"
+                  >
+                    􀆊
+                  </Text>
+                </Box>
+              )}
+            </Inline>
+          );
+        })}
+      </Inline>
+    );
+  },
+  ['protocols']
+);
+
+export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
+  const bridges = routes?.[0]?.usedBridgeNames;
+
   const steps = useMemo(() => {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
       icons: sortedProtocols.map(({ name }) =>
         getExchangeIconUrl(parseExchangeName(name))
       ),
-      label: lang.t('expanded_state.swap_details.number_of_exchanges', {
-        number: sortedProtocols?.length,
-      }),
+      label: lang.t(
+        bridges
+          ? 'expanded_state.swap_details.number_of_steps'
+          : 'expanded_state.swap_details.number_of_exchanges',
+        {
+          number: sortedProtocols?.length,
+        }
+      ),
       names: sortedProtocols.map(({ name }) => name),
     };
     if (sortedProtocols.length === 1) {
       const protocol = sortedProtocols[0];
       const protocolName = parseExchangeName(protocol.name);
+      const isBridge = bridges?.includes(protocol.name);
 
       return [
         {
           icons: [getExchangeIconUrl(protocolName)],
           label: capitalize(protocolName.replace('_', ' ')),
-          name: protocolName.slice('_'),
+          name: SocketBridges[protocol.name] ?? protocolName.slice('_'),
+          action: isBridge
+            ? lang.t('expanded_state.swap.bridge')
+            : lang.t('expanded_state.swap.swap'),
           part: convertAmountToPercentageDisplay(protocol.part),
         },
       ];
@@ -149,16 +199,21 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
     const mappedExchanges = sortedProtocols.map(protocol => {
       const protocolName = parseExchangeName(protocol.name);
       const part = convertAmountToPercentageDisplay(protocol.part, 0, 3, true);
+      const isBridge = bridges?.includes(protocol.name);
 
       return {
         icons: [getExchangeIconUrl(protocolName)],
         label: capitalize(protocolName.replace('_', ' ')),
-        name: protocolName,
+        name: SocketBridges[protocol.name] ?? protocolName.slice('_'),
+        isBridge,
+        action: isBridge
+          ? lang.t('expanded_state.swap.bridge')
+          : lang.t('expanded_state.swap.swap'),
         part,
       };
     });
     return [defaultCase, ...mappedExchanges];
-  }, [protocols]);
+  }, [bridges, protocols]);
 
   const [step, nextStep] = useStepper(steps.length);
   const defaultColor = useForegroundColor('secondary (Deprecated)');
@@ -187,14 +242,18 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
                 }}
               >
                 <Bleed vertical="10px">
-                  <ExchangeIconStack protocols={steps[step]} />
+                  {bridges ? (
+                    <CrossChainIconStack protocols={steps[step]} />
+                  ) : (
+                    <ExchangeIconStack protocols={steps[step]} />
+                  )}
                 </Bleed>
               </Box>
             </Column>
             <Column width="content">
               <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
             </Column>
-            {steps?.[step]?.part && (
+            {(steps?.[step]?.part || steps?.[step]?.action) && (
               <Column width="content">
                 <Bleed right="5px (Deprecated)" vertical="6px">
                   <Pill
@@ -205,7 +264,7 @@ export default function SwapDetailsExchangeRow({ protocols, testID }) {
                     }}
                     textColor={defaultColor}
                   >
-                    {steps[step].part}
+                    {bridges ? steps[step].action : steps[step].part}
                   </Pill>
                 </Bleed>
               </Column>
