@@ -48,9 +48,9 @@ import {
   ParsedAddressAsset,
   SwappableAsset,
 } from '@/entities';
-import { getProviderForNetwork, getHasMerged, toWei } from '@/handlers/web3';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
+import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
 import {
   divide,
   fromWei,
@@ -58,15 +58,6 @@ import {
   multiply,
   subtract,
 } from '@/helpers/utilities';
-import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
-import {
-  ExchangeModalTypes,
-  isKeyboardOpen,
-  Network,
-  NetworkTypes,
-} from '@/helpers';
-import { KeyboardType } from '@/helpers/keyboardTypes';
-import { divide, greaterThan, isZero, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -90,9 +81,7 @@ import {
 } from '@/raps';
 import {
   swapClearState,
-  SwapModalField,
   TypeSpecificParameters,
-  updateSwapInputAmount,
   updateSwapSlippage,
   updateSwapTypeDetails,
 } from '@/redux/swap';
@@ -107,7 +96,6 @@ import {
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';
-import networkInfo from '@/helpers/networkInfo';
 import networkInfo from '@/helpers/networkInfo';
 import logger from '@/utils/logger';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
