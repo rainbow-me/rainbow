@@ -30,7 +30,7 @@ import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Network } from '@/handlers/web3';
-import { CurrencySelectionTypes, Network } from '@/helpers';
+import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
@@ -51,7 +51,6 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
-import networkTypes from '@/helpers/networkTypes';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -62,6 +61,7 @@ export interface EnrichedExchangeAsset extends SwappableAsset {
   useGradientText: boolean;
   title?: string;
   key: string;
+  disabled?: boolean;
 }
 
 const storage = new MMKV();
@@ -192,7 +192,10 @@ export default function CurrencySelectModal() {
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
 
-  const { swappableUserAssets } = useSwappableUserAssets({ outputCurrency });
+  const {
+    swappableUserAssets,
+    unswappableUserAssets,
+  } = useSwappableUserAssets({ outputCurrency });
 
   const checkForSameNetwork = useCallback(
     (newAsset, selectAsset, type) => {
@@ -239,15 +242,40 @@ export default function CurrencySelectModal() {
     const listToUse = crosschainSwapsEnabled
       ? swappableUserAssets
       : filteredAssetsInWallet;
+    let walletCurrencyList;
     if (type === CurrencySelectionTypes.input) {
       if (searchQueryForSearch !== '') {
         const searchResults = searchWalletCurrencyList(
           listToUse,
           searchQueryForSearch
         );
-        return headerlessSection(searchResults);
+        walletCurrencyList = headerlessSection(searchResults);
+        if (crosschainSwapsEnabled) {
+          const unswappableSearchResults = searchWalletCurrencyList(
+            unswappableUserAssets,
+            searchQueryForSearch
+          );
+          walletCurrencyList.push({
+            data: unswappableSearchResults.map(unswappableAsset => ({
+              ...unswappableAsset,
+              disabled: true,
+            })),
+            title: TokenSectionTypes.unswappableTokenSection,
+          });
+        }
+        return walletCurrencyList;
       } else {
-        return headerlessSection(listToUse);
+        walletCurrencyList = headerlessSection(listToUse);
+        if (crosschainSwapsEnabled) {
+          walletCurrencyList.push({
+            data: unswappableUserAssets.map(unswappableAsset => ({
+              ...unswappableAsset,
+              disabled: true,
+            })),
+            title: TokenSectionTypes.unswappableTokenSection,
+          });
+        }
+        return walletCurrencyList;
       }
     }
   }, [
@@ -256,6 +284,7 @@ export default function CurrencySelectModal() {
     type,
     crosschainSwapsEnabled,
     swappableUserAssets,
+    unswappableUserAssets,
   ]);
 
   const activeSwapCurrencyList = useMemo(() => {
