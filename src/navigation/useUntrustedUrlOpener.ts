@@ -11,6 +11,7 @@ const trustedDomains = [
   'etherscan.io',
   'foundation.app',
   'instagram.com',
+  'looksrare.org',
   'opensea.io',
   'quixotic.io',
   'qx.app',

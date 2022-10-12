@@ -3647,6 +3647,13 @@
   dependencies:
     "@sinclair/typebox" "^0.24.1"
 
+"@jest/schemas@^29.0.0":
+  version "29.0.0"
+  resolved "https://registry.yarnpkg.com/@jest/schemas/-/schemas-29.0.0.tgz#5f47f5994dd4ef067fb7b4188ceac45f77fe952a"
+  integrity sha512-3Ab5HgYIIAnS0HjqJHQYZS+zXc4tUmTmBH3z83ajI6afXp8X3ZtdLX+nXx+I7LNkJD7uN9LAVhgnjDgZa2z0kA==
+  dependencies:
+    "@sinclair/typebox" "^0.24.1"
+
 "@jest/source-map@^28.1.2":
   version "28.1.2"
   resolved "https://registry.yarnpkg.com/@jest/source-map/-/source-map-28.1.2.tgz#7fe832b172b497d6663cdff6c13b0a920e139e24"
@@ -4415,9 +4422,9 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-community/clipboard@git+https://github.com/brunobar79/clipboard#01d1c13":
+"@react-native-community/clipboard@git+https://github.com/rainbow-me/clipboard#01d1c13":
   version "1.2.3"
-  resolved "git+https://github.com/brunobar79/clipboard#01d1c1344723d0a4cee94e1fbc199c2e2169905c"
+  resolved "git+https://github.com/rainbow-me/clipboard#01d1c1344723d0a4cee94e1fbc199c2e2169905c"
 
 "@react-native-community/netinfo@5.9.7":
   version "5.9.7"
@@ -4968,6 +4975,13 @@
     "@tanstack/query-core" "^4.0.0-beta.1"
     "@types/use-sync-external-store" "^0.0.3"
     use-sync-external-store "^1.2.0"
+
+"@testing-library/react-native@11.2.0":
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/react-native/-/react-native-11.2.0.tgz#5408a745d71f87509763d73914c38db383094bdd"
+  integrity sha512-j3t78/htRkjPJjLlEjh9VxIAvcCJ85CG2L8mKH1mz9F3gyH65MH/JScOY2RHGOkTHGAGh5c+53Dw4u7J1WEJSA==
+  dependencies:
+    pretty-format "^29.0.3"
 
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
@@ -15734,6 +15748,15 @@ pretty-format@^28.1.3:
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
 
+pretty-format@^29.0.3:
+  version "29.1.2"
+  resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-29.1.2.tgz#b1f6b75be7d699be1a051f5da36e8ae9e76a8e6a"
+  integrity sha512-CGJ6VVGXVRP2o2Dorl4mAwwvDWT25luIsYhkyVQW32E4nL+TgW939J7LlKT/npq5Cpq6j3s+sy+13yk7xYpBmg==
+  dependencies:
+    "@jest/schemas" "^29.0.0"
+    ansi-styles "^5.0.0"
+    react-is "^18.0.0"
+
 pretty-ms@^7.0.0, pretty-ms@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/pretty-ms/-/pretty-ms-7.0.1.tgz#7d903eaab281f7d8e03c66f867e239dc32fb73e8"
@@ -16111,9 +16134,9 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@osdnk/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b:
+react-coin-icon@rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b:
   version "0.1.44"
-  resolved "https://codeload.github.com/osdnk/react-coin-icon/tar.gz/06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b"
+  resolved "https://codeload.github.com/rainbow-me/react-coin-icon/tar.gz/06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b"
   dependencies:
     "@svgr/cli" "^4.3.0"
     react-primitives "^0.8.1"
@@ -16169,9 +16192,9 @@ react-native-actionsheet@2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
 
-react-native-aes-crypto@brunobar79/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b:
+react-native-aes-crypto@rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b:
   version "2.0.2"
-  resolved "https://codeload.github.com/brunobar79/react-native-aes/tar.gz/65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
+  resolved "https://codeload.github.com/rainbow-me/react-native-aes/tar.gz/65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
 
 react-native-android-keyboard-adjust@1.2.0:
   version "1.2.0"
@@ -16209,9 +16232,9 @@ react-native-circular-progress@1.3.6:
   dependencies:
     prop-types "^15.7.2"
 
-react-native-cloud-fs@brunobar79/react-native-cloud-fs#6e2086b5e35515fb06abf6f37bfd682d23921481:
+react-native-cloud-fs@rainbow-me/react-native-cloud-fs#6e2086b5e35515fb06abf6f37bfd682d23921481:
   version "2.5.0"
-  resolved "https://codeload.github.com/brunobar79/react-native-cloud-fs/tar.gz/6e2086b5e35515fb06abf6f37bfd682d23921481"
+  resolved "https://codeload.github.com/rainbow-me/react-native-cloud-fs/tar.gz/6e2086b5e35515fb06abf6f37bfd682d23921481"
 
 react-native-code-push@7.0.4:
   version "7.0.4"
@@ -16400,18 +16423,18 @@ react-native-markdown-display@7.0.0-alpha.2:
     prop-types "^15.7.2"
     react-native-fit-image "^1.5.5"
 
-react-native-minimizer@brunobar79/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0:
+react-native-minimizer@rainbow-me/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0:
   version "1.3.5"
-  resolved "https://codeload.github.com/brunobar79/react-native-minimizer/tar.gz/26ae6dce10d353de701cebc3a1ae126729bf87f0"
+  resolved "https://codeload.github.com/rainbow-me/react-native-minimizer/tar.gz/26ae6dce10d353de701cebc3a1ae126729bf87f0"
 
 react-native-mmkv@2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.3.3.tgz#ca0916e3dfb3e420fa27de526e53d9e391e3c9a1"
   integrity sha512-bfBsIivEnr+OAxS2tWRqzyaDLlw9ZBGrbiuifO7wRtq1J5rNwkiKfSwTYBNLe23dzpl8pvSIUYgDrvmRnXTAhA==
 
-react-native-os@brunobar79/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c:
+react-native-os@rainbow-me/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c:
   version "1.2.8"
-  resolved "https://codeload.github.com/brunobar79/react-native-os/tar.gz/41a08e45260b8c1c53c77ad00e13ae954cb9337c"
+  resolved "https://codeload.github.com/rainbow-me/react-native-os/tar.gz/41a08e45260b8c1c53c77ad00e13ae954cb9337c"
 
 react-native-pager-view@5.4.24:
   version "5.4.24"
@@ -16474,9 +16497,9 @@ react-native-safe-area-context@4.3.1:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.3.1.tgz#5cf97b25b395e0d09bc1f828920cd7da0d792ade"
   integrity sha512-cEr7fknJCToTrSyDCVNg0GRdRMhyLeQa2NZwVCuzEQcWedOw/59ExomjmzCE4rxrKXs6OJbyfNtFRNyewDaHuA==
 
-react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
+react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   version "0.11.0"
-  resolved "https://codeload.github.com/mikedemarais/react-native-safe-area-view/tar.gz/a543897214519c700fab160a03388cef5a70ec3c"
+  resolved "https://codeload.github.com/rainbow-me/react-native-safe-area-view/tar.gz/a543897214519c700fab160a03388cef5a70ec3c"
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
@@ -16510,9 +16533,9 @@ react-native-store-review@0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/react-native-store-review/-/react-native-store-review-0.1.5.tgz#9df69786a137580748e368641698d2104519e4cf"
 
-react-native-svg@brunobar79/react-native-svg#6e9d1f0327e1567913743b8df9093a38e8b8b473:
+react-native-svg@rainbow-me/react-native-svg#6e9d1f0327e1567913743b8df9093a38e8b8b473:
   version "12.2.1"
-  resolved "https://codeload.github.com/brunobar79/react-native-svg/tar.gz/6e9d1f0327e1567913743b8df9093a38e8b8b473"
+  resolved "https://codeload.github.com/rainbow-me/react-native-svg/tar.gz/6e9d1f0327e1567913743b8df9093a38e8b8b473"
   dependencies:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"
@@ -16536,17 +16559,17 @@ react-native-text-input-mask@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-2.0.0.tgz#9cb793e764355d9282d92ea5231d8030a7ca5692"
 
-react-native-text-size@brunobar79/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a:
+react-native-text-size@rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a:
   version "4.0.0-rc.1"
-  resolved "https://codeload.github.com/brunobar79/react-native-text-size/tar.gz/15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
+  resolved "https://codeload.github.com/rainbow-me/react-native-text-size/tar.gz/15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
 
-react-native-tooltip@brunobar79/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590:
+react-native-tooltip@rainbow-me/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590:
   version "5.2.1"
-  resolved "https://codeload.github.com/brunobar79/react-native-tooltip/tar.gz/e0e88d212b5b7f350e5eabba87f588a32e0f2590"
+  resolved "https://codeload.github.com/rainbow-me/react-native-tooltip/tar.gz/e0e88d212b5b7f350e5eabba87f588a32e0f2590"
 
-react-native-tooltips@brunobar79/react-native-tooltips#3b79e544378c112aaa608037f8155ce174cd9249:
+react-native-tooltips@rainbow-me/react-native-tooltips#3b79e544378c112aaa608037f8155ce174cd9249:
   version "1.0.2"
-  resolved "https://codeload.github.com/brunobar79/react-native-tooltips/tar.gz/3b79e544378c112aaa608037f8155ce174cd9249"
+  resolved "https://codeload.github.com/rainbow-me/react-native-tooltips/tar.gz/3b79e544378c112aaa608037f8155ce174cd9249"
 
 react-native-udp@2.7.0:
   version "2.7.0"

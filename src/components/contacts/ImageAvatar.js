@@ -50,6 +50,11 @@ const sizeConfigs = (colors, isDarkMode) => ({
     shadow: [[0, 4, android ? 5 : 12, colors.shadow, 0.4]],
     textSize: 'large',
   },
+  smedium_shadowless: {
+    dimensions: 36,
+    shadow: [[0, 0, 0, colors.shadow, 0]],
+    textSize: 'large',
+  },
 });
 
 const Avatar = styled(ImgixImage)(({ dimensions }) => ({

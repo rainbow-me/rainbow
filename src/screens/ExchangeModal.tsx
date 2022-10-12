@@ -45,6 +45,7 @@ import {
   GasFee,
   LegacyGasFee,
   LegacyGasFeeParams,
+  ParsedAddressAsset,
   SwappableAsset,
 } from '@/entities';
 import { getProviderForNetwork, getHasMerged, toWei } from '@/handlers/web3';
@@ -57,6 +58,15 @@ import {
   multiply,
   subtract,
 } from '@/helpers/utilities';
+import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
+import {
+  ExchangeModalTypes,
+  isKeyboardOpen,
+  Network,
+  NetworkTypes,
+} from '@/helpers';
+import { KeyboardType } from '@/helpers/keyboardTypes';
+import { divide, greaterThan, isZero, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -91,7 +101,6 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import logger from '@/utils/logger';
 import {
   CrosschainSwapActionParameters,
   SwapActionParameters,
@@ -99,6 +108,9 @@ import {
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';
 import networkInfo from '@/helpers/networkInfo';
+import networkInfo from '@/helpers/networkInfo';
+import logger from '@/utils/logger';
+import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -186,6 +198,10 @@ export default function ExchangeModal({
   const title = getInputHeaderTitle(type, defaultInputAsset);
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
+  const [
+    outputNetworkDetails,
+    setOutputNetworkDetails,
+  ] = useState<ParsedAddressAsset>();
   const genericAssets = useSelector<
     { data: { genericAssets: { [address: string]: SwappableAsset } } },
     { [address: string]: SwappableAsset }
@@ -217,43 +233,6 @@ export default function ExchangeModal({
     flashbotsEnabled,
     nativeCurrency,
   } = useAccountSettings();
-
-  // if the default input is on a different network than
-  // we want to update the output to be on the same, if its not available -> null
-  const defaultOutputAssetOverride = useMemo(() => {
-    const newOutput = defaultOutputAsset;
-
-    if (
-      defaultInputAsset &&
-      defaultOutputAsset &&
-      defaultInputAsset.type !== defaultOutputAsset.type
-    ) {
-      if (
-        defaultOutputAsset?.implementations?.[
-          defaultInputAsset?.type === AssetType.token
-            ? 'ethereum'
-            : defaultInputAsset?.type
-        ]?.address
-      ) {
-        if (defaultInputAsset.type !== Network.mainnet) {
-          newOutput.mainnet_address = defaultOutputAsset.address;
-        }
-
-        newOutput.address =
-          defaultOutputAsset.implementations[defaultInputAsset?.type].address;
-        newOutput.type = defaultInputAsset.type;
-        newOutput.uniqueId =
-          newOutput.type === Network.mainnet
-            ? defaultOutputAsset?.address
-            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
-        return newOutput;
-      } else {
-        return null;
-      }
-    } else {
-      return newOutput;
-    }
-  }, [defaultInputAsset, defaultOutputAsset]);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
@@ -313,6 +292,46 @@ export default function ExchangeModal({
     };
   }, [crosschainSwapsEnabled, inputCurrency?.type, outputCurrency?.type]);
 
+  // if the default input is on a different network than
+  // we want to update the output to be on the same, if its not available -> null
+  const defaultOutputAssetOverride = useMemo(() => {
+    const newOutput = defaultOutputAsset;
+
+    if (
+      defaultInputAsset &&
+      defaultOutputAsset &&
+      defaultInputAsset.type !== defaultOutputAsset.type
+    ) {
+      // find address for output asset on the input's network
+      // TODO: this value can be removed after the crosschain swaps flag is no longer necessary
+      const inputNetworkImplementationAddress =
+        defaultOutputAsset?.implementations?.[
+          defaultInputAsset?.type === AssetType.token
+            ? 'ethereum'
+            : defaultInputAsset?.type
+        ]?.address;
+      if (inputNetworkImplementationAddress || crosschainSwapsEnabled) {
+        if (!crosschainSwapsEnabled) {
+          newOutput.address =
+            inputNetworkImplementationAddress || defaultOutputAsset.address;
+          if (defaultInputAsset.type !== Network.mainnet) {
+            newOutput.mainnet_address = defaultOutputAsset.address;
+          }
+          newOutput.type = defaultInputAsset.type;
+        }
+        newOutput.uniqueId =
+          newOutput.type === Network.mainnet
+            ? defaultOutputAsset?.address
+            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
+        return newOutput;
+      } else {
+        return null;
+      }
+    } else {
+      return newOutput;
+    }
+  }, [defaultInputAsset, defaultOutputAsset, crosschainSwapsEnabled]);
+
   const {
     flipCurrencies,
     navigateToSelectInputCurrency,
@@ -359,6 +378,18 @@ export default function ExchangeModal({
       speedUrgentSelected.current = false;
     }
   }, [currentNetwork, prevTxNetwork]);
+
+  useEffect(() => {
+    const getNativeOutputAsset = async () => {
+      if (!outputNetwork || !accountAddress) return;
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
+        outputNetwork,
+        accountAddress
+      );
+      setOutputNetworkDetails(nativeAsset);
+    };
+    getNativeOutputAsset();
+  }, [outputNetwork, accountAddress]);
 
   const defaultGasLimit = useMemo(() => {
     const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
@@ -637,7 +668,11 @@ export default function ExchangeModal({
           inputAmount: inputAmount!,
           outputAmount: outputAmount!,
           nonce,
-          tradeDetails: tradeDetails!,
+          tradeDetails: {
+            ...tradeDetails,
+            fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
+            toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+          } as Quote | CrosschainQuote,
         };
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
@@ -687,12 +722,14 @@ export default function ExchangeModal({
       inputCurrency?.address,
       inputCurrency?.name,
       inputCurrency?.symbol,
+      inputCurrency?.type,
       isCrosschainSwap,
       navigate,
       outputAmount,
       outputCurrency?.address,
       outputCurrency?.name,
       outputCurrency?.symbol,
+      outputCurrency?.type,
       priceImpactPercentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,
