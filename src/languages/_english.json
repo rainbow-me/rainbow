@@ -211,6 +211,7 @@
         "review": "Review",
         "submitting": "Submitting",
         "swap": "Hold to Swap",
+        "bridge": "Hold to Bridge",
         "swap_anyway": "Swap Anyway",
         "symbol_balance_too_low": "%{symbol} balance too low",
         "view_details": "View Details",
