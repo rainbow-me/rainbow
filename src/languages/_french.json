@@ -684,8 +684,9 @@
         "title": "No Tokens on %{networkName} :)"
       },
       "swap_refuel": {
-        "title": "No %{gasToken} detected",
-        "text": "You won’t be able to use %{networkName} without %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet."
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
+        "button": "Add $3 of %{networkName} %{gasToken}"
       }
     },
     "fedora": {
