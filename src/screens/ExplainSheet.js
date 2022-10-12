@@ -36,6 +36,7 @@ import {
 } from '@/utils';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
+import { isL2Network } from '@/handlers/web3';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -286,16 +287,37 @@ export const explainers = (params, colors) => ({
   output_disabled: {
     extraHeight: -30,
     title: params?.inputToken
-      ? lang.t('explain.output_disabled.title', {
-          inputToken: params?.inputToken,
-        })
+      ? lang.t(
+          `explain.output_disabled.${
+            params?.isCrosschainSwap ? 'title_crosschain' : 'title'
+          }`,
+          {
+            inputToken: params?.inputToken,
+            fromNetwork: networkInfo[params?.fromNetwork]?.name,
+          }
+        )
       : lang.t('explain.output_disabled.title_empty'),
-    text: lang.t('explain.output_disabled.text', {
-      network: networkInfo[params?.network]?.name,
-      inputToken: params?.inputToken,
-      outputToken: params?.outputToken,
-    }),
-    logo: (
+
+    text: params?.isCrosschainSwap
+      ? lang.t(
+          `explain.output_disabled.${
+            params?.isBridgeSwap ? 'text_bridge' : 'text_crosschain'
+          }`,
+          {
+            inputToken: params?.inputToken,
+            outputToken: params?.outputToken,
+            fromNetwork: networkInfo[params?.fromNetwork]?.name,
+            toNetwork: networkInfo[params?.toNetwork]?.name,
+          }
+        )
+      : lang.t('explain.output_disabled.text', {
+          network: networkInfo[params?.fromNetwork]?.name,
+          inputToken: params?.inputToken,
+          outputToken: params?.outputToken,
+        }),
+    logo: !isL2Network(params?.network) ? (
+      <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_SYMBOL} />
+    ) : (
       <ChainBadge
         assetType={params?.network}
         marginBottom={8}

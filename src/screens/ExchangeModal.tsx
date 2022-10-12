@@ -1111,8 +1111,10 @@ export default function ExchangeModal({
 
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
-      network: currentNetwork,
+      fromNetwork: inputNetwork,
+      toNetwork: outputNetwork,
       isCrosschainSwap,
+      isBridgeSwap,
       onClose: () => {
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
@@ -1124,12 +1126,14 @@ export default function ExchangeModal({
       type: 'output_disabled',
     });
   }, [
-    currentNetwork,
     inputCurrency?.symbol,
+    inputNetwork,
+    isBridgeSwap,
     isCrosschainSwap,
     lastFocusedInputHandle,
     navigate,
     outputCurrency?.symbol,
+    outputNetwork,
   ]);
 
   const showConfirmButton = isSavings
