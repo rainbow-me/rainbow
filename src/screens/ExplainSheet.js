@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChainBadge, CoinIcon } from '../components/coin-icon';
+import { ChainBadge, CoinIcon, DashedWrapper } from '../components/coin-icon';
 import {
   Centered,
   Column,
@@ -28,8 +28,14 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { deviceUtils, ethereumUtils, gasUtils } from '@/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  gasUtils,
+  getTokenMetadata,
+} from '@/utils';
 import { cloudPlatformAccountName } from '@/utils/platform';
+import { useTheme } from '@/theme';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -240,7 +246,7 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'optimismRed',
       bgColor: 'optimismRed06',
-      onPress: (navigate, goBack, handleClose) => () => {
+      onPress: (navigate, goBack, handleClose) => {
         if (handleClose) handleClose();
         if (goBack) goBack();
         setTimeout(() => {
@@ -263,7 +269,7 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'smolPurple',
       bgColor: 'smolPurple06',
-      onPress: (navigate, goBack, handleClose) => () => {
+      onPress: (navigate, goBack, handleClose) => {
         if (handleClose) handleClose();
         if (goBack) goBack();
         setTimeout(() => {
@@ -781,6 +787,54 @@ export const explainers = (params, colors) => ({
       </Text>
     ),
   },
+  swap_refuel_add: {
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel.title', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.no_thanks'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('explain.swap_refuel.button', {
+        networkName: params?.networkName,
+        gasToken: params?.gasToken,
+      }),
+      textColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      onPress: params?.onRefuel,
+    },
+  },
 });
 
 const ExplainSheet = () => {
@@ -825,6 +879,29 @@ const ExplainSheet = () => {
 
   const buttons = useMemo(() => {
     const reverseButtons = type === 'obtainL2Assets' || type === 'unverified';
+    const onSecondaryPress = e => {
+      if (explainSheetConfig?.readMoreLink) {
+        return handleReadMore(e);
+      }
+      if (explainSheetConfig.secondaryButton?.onPress) {
+        return explainSheetConfig.secondaryButton.onPress(
+          navigate,
+          goBack,
+          handleClose
+        );
+      }
+
+      return goBack(e);
+    };
+
+    const onPrimaryPress = e => {
+      if (explainSheetConfig.button?.onPress) {
+        return explainSheetConfig.button.onPress(navigate, goBack, handleClose);
+      }
+
+      handleClose(e);
+    };
+
     const secondaryButton = (explainSheetConfig?.readMoreLink ||
       explainSheetConfig?.secondaryButton?.label) && (
       <Column
@@ -841,7 +918,7 @@ const ExplainSheet = () => {
             explainSheetConfig.secondaryButton?.label ||
             lang.t('explain.read_more')
           }
-          onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
+          onPress={onSecondaryPress}
           size="big"
           textColor={
             explainSheetConfig.secondaryButton?.textColor ??
@@ -859,11 +936,7 @@ const ExplainSheet = () => {
         }
         isTransparent
         label={explainSheetConfig.button?.label || lang.t('button.got_it')}
-        onPress={
-          explainSheetConfig.button?.onPress
-            ? explainSheetConfig.button.onPress(navigate, goBack, handleClose)
-            : handleClose
-        }
+        onPress={onPrimaryPress}
         size="big"
         textColor={
           colors[explainSheetConfig.button?.textColor] || colors.appleBlue
@@ -880,6 +953,7 @@ const ExplainSheet = () => {
   }, [
     colors,
     explainSheetConfig.button,
+    explainSheetConfig.secondaryButton,
     explainSheetConfig?.readMoreLink,
     explainSheetConfig.secondaryButton?.bgColor,
     explainSheetConfig.secondaryButton?.label,

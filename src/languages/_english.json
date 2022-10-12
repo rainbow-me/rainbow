@@ -241,6 +241,7 @@
       "learn_more": "Learn more",
       "less": "Less",
       "loading": "Loading",
+      "no_thanks": "No thanks",
       "notify_me": "Get notified",
       "offline": "Offline",
       "ok": "OK",
@@ -519,6 +520,7 @@
       "swap_details": {
         "exchange_rate": "Exchange rate",
         "rainbow_fee": "Included Rainbow fee",
+        "refuel": "Extra network tokens",
         "review": "Review",
         "show_details": "More details",
         "hide_details": "Hide details",
@@ -724,6 +726,11 @@
           "fragment2": "Read more",
           "fragment3": " about Flashbots and the protection it offers."
         }
+      },
+      "swap_refuel": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
+        "button": "Add $3 of %{networkName} %{gasToken}"
       }
     },
     "fedora": {
