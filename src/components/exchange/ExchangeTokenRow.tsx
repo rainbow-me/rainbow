@@ -64,52 +64,48 @@ export default React.memo(function ExchangeTokenRow({
           testID={rowTestID}
           disabled={disabled}
         >
-          <Inline alignVertical="center" space="10px" alignHorizontal="justify">
-            <Inline alignVertical="center" space="10px">
-              <Box
-                as={FastCoinIcon}
-                address={address || item?.address}
-                assetType={type ?? item?.type}
-                mainnetAddress={mainnet_address ?? item?.mainnet_address}
-                symbol={symbol ?? item?.symbol}
-                theme={theme}
-              />
-              <Stack space="10px">
+          <Inline alignVertical="center" space="10px">
+            <Box
+              as={FastCoinIcon}
+              address={address || item?.address}
+              assetType={type ?? item?.type}
+              mainnetAddress={mainnet_address ?? item?.mainnet_address}
+              symbol={symbol ?? item?.symbol}
+              theme={theme}
+            />
+            <Stack space="10px">
+              <Text
+                size="15px / 21px (Deprecated)"
+                color="primary (Deprecated)"
+                weight="bold"
+                numberOfLines={1}
+              >
+                {name ?? item?.name}
+              </Text>
+              {item?.balance?.display && (
                 <Text
-                  size="15px / 21px (Deprecated)"
-                  color="primary (Deprecated)"
-                  weight="bold"
+                  size="13pt"
+                  color="secondary (Deprecated)"
                   numberOfLines={1}
                 >
-                  {name ?? item?.name}
+                  {item?.balance?.display ?? ''}
                 </Text>
-                {item?.balance?.display && (
-                  <Text
-                    size="13pt"
-                    color="secondary (Deprecated)"
-                    numberOfLines={1}
-                  >
-                    {item?.balance?.display ?? ''}
-                  </Text>
-                )}
-              </Stack>
-            </Inline>
-
-            {showBalance && (
-              <Box background="fillSecondary" padding="8px" borderRadius={15}>
-                <Text
-                  align="right"
-                  size="15px / 21px (Deprecated)"
-                  weight="bold"
-                  color="labelSecondary"
-                >
-                  {item?.native?.balance?.display ??
-                    `${nativeCurrencySymbol}0.00`}
-                </Text>
-              </Box>
-            )}
+              )}
+            </Stack>
           </Inline>
         </Box>
+        {showBalance && (
+          <Box background="fillSecondary" padding="8px" borderRadius={15}>
+            <Text
+              align="right"
+              size="15px / 21px (Deprecated)"
+              weight="bold"
+              color="labelSecondary"
+            >
+              {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
+            </Text>
+          </Box>
+        )}
         {!showBalance && (
           <Box pointerEvents="auto">
             <Inline alignVertical="center" space="12px">
