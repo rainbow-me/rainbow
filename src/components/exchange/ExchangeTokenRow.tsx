@@ -54,46 +54,47 @@ export default React.memo(function ExchangeTokenRow({
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
 
   return (
-    <Box paddingHorizontal="20px">
-      <Inline alignVertical="center" alignHorizontal="justify">
-        <Box
-          as={ButtonPressAnimation}
-          // @ts-ignore
-          onPress={onPress}
-          style={[disabled && { opacity: 0.5 }]}
-          testID={rowTestID}
-          disabled={disabled}
-        >
-          <Inline alignVertical="center" space="10px">
-            <Box
-              as={FastCoinIcon}
-              address={address || item?.address}
-              assetType={type ?? item?.type}
-              mainnetAddress={mainnet_address ?? item?.mainnet_address}
-              symbol={symbol ?? item?.symbol}
-              theme={theme}
-            />
-            <Stack space="10px">
+    <Inline alignVertical="center" alignHorizontal="justify">
+      <Box
+        as={ButtonPressAnimation}
+        // @ts-ignore
+        onPress={onPress}
+        style={[disabled && { opacity: 0.5 }]}
+        testID={rowTestID}
+        disabled={disabled}
+        paddingLeft="20px"
+      >
+        <Inline alignVertical="center" space="10px">
+          <Box
+            as={FastCoinIcon}
+            address={address || item?.address}
+            assetType={type ?? item?.type}
+            mainnetAddress={mainnet_address ?? item?.mainnet_address}
+            symbol={symbol ?? item?.symbol}
+            theme={theme}
+          />
+          <Stack space="10px">
+            <Text
+              size="15px / 21px (Deprecated)"
+              color="primary (Deprecated)"
+              weight="bold"
+              numberOfLines={1}
+            >
+              {name ?? item?.name}
+            </Text>
+            {item?.balance?.display && (
               <Text
-                size="15px / 21px (Deprecated)"
-                color="primary (Deprecated)"
-                weight="bold"
+                size="13pt"
+                color="secondary (Deprecated)"
                 numberOfLines={1}
               >
-                {name ?? item?.name}
+                {item?.balance?.display ?? ''}
               </Text>
-              {item?.balance?.display && (
-                <Text
-                  size="13pt"
-                  color="secondary (Deprecated)"
-                  numberOfLines={1}
-                >
-                  {item?.balance?.display ?? ''}
-                </Text>
-              )}
-            </Stack>
-          </Inline>
-        </Box>
+            )}
+          </Stack>
+        </Inline>
+      </Box>
+      <Box paddingRight="20px">
         {showBalance && (
           <Box background="fillSecondary" padding="8px" borderRadius={15}>
             <Text
@@ -107,53 +108,51 @@ export default React.memo(function ExchangeTokenRow({
           </Box>
         )}
         {!showBalance && (
-          <Box pointerEvents="auto">
-            <Inline alignVertical="center" space="12px">
-              {isInfoButtonVisible && (
-                <Info
-                  contextMenuProps={contextMenuProps}
-                  showAddButton={showAddButton}
-                  showFavoriteButton={showFavoriteButton}
+          <Inline alignVertical="center" space="12px">
+            {isInfoButtonVisible && (
+              <Info
+                contextMenuProps={contextMenuProps}
+                showAddButton={showAddButton}
+                showFavoriteButton={showFavoriteButton}
+              />
+            )}
+            {showFavoriteButton &&
+              (IS_IOS ? (
+                // @ts-ignore
+                <FloatingEmojis
+                  centerVertically
+                  deviceWidth={deviceWidth}
+                  disableHorizontalMovement
+                  disableVerticalMovement
+                  distance={70}
+                  duration={400}
+                  emojis={['glowing_star']}
+                  fadeOut={false}
+                  marginTop={-4}
+                  range={[0, 0]}
+                  scaleTo={0}
+                  size={32}
+                  wiggleFactor={0}
+                >
+                  {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+                    <FavStar
+                      favorite={favorite}
+                      theme={theme}
+                      toggleFavorite={() => toggleFavorite(onNewEmoji)}
+                    />
+                  )}
+                </FloatingEmojis>
+              ) : (
+                <FavStar
+                  favorite={favorite}
+                  theme={theme}
+                  toggleFavorite={toggleFavorite}
                 />
-              )}
-              {showFavoriteButton &&
-                (IS_IOS ? (
-                  // @ts-ignore
-                  <FloatingEmojis
-                    centerVertically
-                    deviceWidth={deviceWidth}
-                    disableHorizontalMovement
-                    disableVerticalMovement
-                    distance={70}
-                    duration={400}
-                    emojis={['glowing_star']}
-                    fadeOut={false}
-                    marginTop={-4}
-                    range={[0, 0]}
-                    scaleTo={0}
-                    size={32}
-                    wiggleFactor={0}
-                  >
-                    {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-                      <FavStar
-                        favorite={favorite}
-                        theme={theme}
-                        toggleFavorite={() => toggleFavorite(onNewEmoji)}
-                      />
-                    )}
-                  </FloatingEmojis>
-                ) : (
-                  <FavStar
-                    favorite={favorite}
-                    theme={theme}
-                    toggleFavorite={toggleFavorite}
-                  />
-                ))}
-            </Inline>
-          </Box>
+              ))}
+          </Inline>
         )}
-      </Inline>
-    </Box>
+      </Box>
+    </Inline>
   );
 },
 isEqual);
