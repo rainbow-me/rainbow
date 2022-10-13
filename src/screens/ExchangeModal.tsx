@@ -1108,7 +1108,6 @@ export default function ExchangeModal({
   const handleTapWhileDisabled = useCallback(() => {
     const lastFocusedInput = (lastFocusedInputHandle?.current as unknown) as TextInput;
     lastFocusedInput?.blur();
-
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
       fromNetwork: inputNetwork,

@@ -311,7 +311,7 @@ export const explainers = (params, colors) => ({
           }
         )
       : lang.t('explain.output_disabled.text', {
-          network: networkInfo[params?.fromNetwork]?.name,
+          fromNetwork: networkInfo[params?.fromNetwork]?.name,
           inputToken: params?.inputToken,
           outputToken: params?.outputToken,
         }),
