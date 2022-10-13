@@ -12,7 +12,6 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, Keyboard, Linking, TextInput } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -51,6 +50,7 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
+import { IS_TEST } from '@/env';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -70,7 +70,11 @@ const getHasShownWarning = () =>
 const setHasShownWarning = () =>
   storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
 
-const headerlessSection = (data: SwappableAsset[]) => [{ data, title: '' }];
+const headerlessSection = (
+  data: SwappableAsset[]
+): { data: SwappableAsset[]; title: string; key: string }[] => [
+  { data, title: '', key: 'swappableAssets' },
+];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 const searchWalletCurrencyList = (
@@ -261,18 +265,32 @@ export default function CurrencySelectModal() {
               disabled: true,
             })),
             title: TokenSectionTypes.unswappableTokenSection,
+            key: 'unswappableAssets',
           });
         }
         return walletCurrencyList;
       } else {
         walletCurrencyList = headerlessSection(listToUse);
+        let unswappableAssets = unswappableUserAssets;
+        if (IS_TEST) {
+          unswappableAssets = unswappableAssets.concat({
+            address: '0x123',
+            decimals: 18,
+            name: 'Unswappable',
+            symbol: 'UNSWAP',
+            type: 'token',
+            id: 'foobar',
+            uniqueId: '0x123',
+          });
+        }
         if (crosschainSwapsEnabled) {
           walletCurrencyList.push({
-            data: unswappableUserAssets.map(unswappableAsset => ({
+            data: unswappableAssets.map(unswappableAsset => ({
               ...unswappableAsset,
               disabled: true,
             })),
             title: TokenSectionTypes.unswappableTokenSection,
+            key: 'unswappableAssets',
           });
         }
         return walletCurrencyList;
@@ -318,7 +336,7 @@ export default function CurrencySelectModal() {
     });
 
     // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
-    if (IS_TESTING === 'true' && type === CurrencySelectionTypes.output) {
+    if (IS_TEST && type === CurrencySelectionTypes.output) {
       let symbols: string[] = [];
       list = list?.map(section => {
         // Remove dupes

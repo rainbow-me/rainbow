@@ -222,7 +222,10 @@ const ExchangeAssetList: ForwardRefRenderFunction<
         <Box paddingTop="10px" paddingBottom="2px" paddingLeft="20px">
           <HeaderBackground />
           <Box>
-            <TitleComponent color={section.color} testID={section.key}>
+            <TitleComponent
+              color={section.color}
+              testID={`currency-select-list-exchange-section-header-${section.key}`}
+            >
               {`${section.title}${isVerified ? '  􀅵' : ' '}`}
             </TitleComponent>
           </Box>
