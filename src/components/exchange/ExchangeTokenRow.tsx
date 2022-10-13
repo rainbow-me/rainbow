@@ -7,12 +7,16 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers';
-import { useAccountAsset } from '@/hooks';
+import { useAccountAsset, useDimensions } from '@/hooks';
 import { deviceUtils, ethereumUtils } from '@/utils';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
 import { IS_IOS } from '@/env';
+import {
+  FavStar,
+  Info,
+} from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? Box
@@ -21,49 +25,6 @@ const SafeRadialGradient = (IS_TESTING === 'true'
 interface FastCurrencySelectionRowProps {
   item: any;
 }
-
-interface FavStarProps {
-  theme: any;
-  favorite: boolean;
-  toggleFavorite: (onNewEmoji?: () => void) => void;
-}
-
-function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
-  const { isDarkMode, colors } = theme;
-  return (
-    <ButtonPressAnimation onPress={toggleFavorite}>
-      <SafeRadialGradient
-        center={[0, 15]}
-        colors={
-          favorite
-            ? [
-                colors.alpha('#FFB200', isDarkMode ? 0.15 : 0),
-                colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2),
-              ]
-            : colors.gradients.lightestGrey
-        }
-        style={{
-          alignItems: 'center',
-          borderRadius: 15,
-          height: 30,
-          width: 30,
-          justifyContent: 'center',
-          overflow: 'hidden',
-        }}
-      >
-        <Text
-          size="15pt"
-          numberOfLines={1}
-          color={favorite ? 'yellow' : 'secondary25 (Deprecated)'}
-        >
-          􀋃
-        </Text>
-      </SafeRadialGradient>
-    </ButtonPressAnimation>
-  );
-}
-
-const deviceWidth = deviceUtils.dimensions.width;
 
 export default React.memo(function FastCurrencySelectionRow({
   item: {
@@ -88,6 +49,7 @@ export default React.memo(function FastCurrencySelectionRow({
   },
 }: FastCurrencySelectionRowProps) {
   const { colors } = theme;
+  const { width: deviceWidth } = useDimensions();
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
@@ -158,34 +120,11 @@ export default React.memo(function FastCurrencySelectionRow({
             <Box>
               <Inline alignVertical="center" space="12px">
                 {isInfoButtonVisible && (
-                  <ContextMenuButton
-                    onPressMenuItem={contextMenuProps.handlePressMenuItem}
-                    {...contextMenuProps}
-                    style={showFavoriteButton || showAddButton}
-                  >
-                    <ButtonPressAnimation>
-                      <SafeRadialGradient
-                        center={[0, 15]}
-                        colors={colors.gradients.lightestGrey}
-                        style={{
-                          alignItems: 'center',
-                          borderRadius: 15,
-                          height: 30,
-                          width: 30,
-                          justifyContent: 'center',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        <Text
-                          color="secondary25 (Deprecated)"
-                          size="14px / 19px (Deprecated)"
-                          weight="bold"
-                        >
-                          􀅳
-                        </Text>
-                      </SafeRadialGradient>
-                    </ButtonPressAnimation>
-                  </ContextMenuButton>
+                  <Info
+                    contextMenuProps={contextMenuProps}
+                    showAddButton={showAddButton}
+                    showFavoriteButton={showFavoriteButton}
+                  />
                 )}
                 {showFavoriteButton &&
                   (IS_IOS ? (
