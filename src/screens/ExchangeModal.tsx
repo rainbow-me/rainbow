@@ -1207,8 +1207,8 @@ export default function ExchangeModal({
                   onFocus={handleFocus}
                   onPressSelectOutputCurrency={() => {
                     resetRefuelState();
-                      navigateToSelectOutputCurrency(chainId);
-                    }}
+                    navigateToSelectOutputCurrency(chainId);
+                  }}
                   {...((currentNetwork === Network.arbitrum ||
                     isCrosschainSwap) &&
                     !!outputCurrency && {
