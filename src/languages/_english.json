@@ -228,6 +228,7 @@
       "exchange": "Exchange",
       "exchange_again": "Exchange Again",
       "exchange_search_placeholder": "Search tokens",
+      "exchange_search_placeholder_network": "Search tokens on %{network}",
       "go_back": "Go Back",
       "go_back_lowercase": "Go back",
       "got_it": "Got it",

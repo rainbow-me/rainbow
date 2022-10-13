@@ -1,14 +1,10 @@
 import React from 'react';
 import isEqual from 'react-fast-compare';
-import { View } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
-import RadialGradient from 'react-native-radial-gradient';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers';
 import { useAccountAsset, useDimensions } from '@/hooks';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { ethereumUtils } from '@/utils';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
@@ -17,10 +13,6 @@ import {
   FavStar,
   Info,
 } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
-
-const SafeRadialGradient = (IS_TESTING === 'true'
-  ? Box
-  : RadialGradient) as typeof RadialGradient;
 
 interface FastCurrencySelectionRowProps {
   item: any;
@@ -48,7 +40,6 @@ export default React.memo(function FastCurrencySelectionRow({
     disabled,
   },
 }: FastCurrencySelectionRowProps) {
-  const { colors } = theme;
   const { width: deviceWidth } = useDimensions();
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
@@ -64,8 +55,7 @@ export default React.memo(function FastCurrencySelectionRow({
 
   return (
     <Box height="56px" paddingHorizontal="20px">
-      <Box
-        as={ButtonPressAnimation}
+      <ButtonPressAnimation
         // @ts-ignore
         onPress={onPress}
         style={[disabled && { opacity: 0.5 }]}
@@ -163,7 +153,7 @@ export default React.memo(function FastCurrencySelectionRow({
             </Box>
           )}
         </Inline>
-      </Box>
+      </ButtonPressAnimation>
     </Box>
   );
 },
