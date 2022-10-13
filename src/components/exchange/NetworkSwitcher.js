@@ -35,7 +35,7 @@ const androidNetworkMenuItems = () => {
 const NetworkSwitcherv1 = ({
   colors,
   hideDivider,
-  marginVertical = 0,
+  marginVertical = 12,
   marginHorizontal = 19,
   currentChainId,
   setCurrentChainId,
