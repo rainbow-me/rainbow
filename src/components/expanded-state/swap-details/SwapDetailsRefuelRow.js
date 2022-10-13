@@ -22,6 +22,8 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   width: 7,
 });
 
+const ICON_ALIGN_MARGIN = '-8px';
+
 export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
   const { colors } = useTheme();
   const fromAsset = tradeDetails?.refuel?.fromAsset;
@@ -48,7 +50,11 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
         {tradeDetails.refuel ? (
           <>
             <Column width="content">
-              <Box paddingRight="2px">
+              <Box
+                paddingRight="2px"
+                marginTop={ICON_ALIGN_MARGIN}
+                marginBottom={ICON_ALIGN_MARGIN}
+              >
                 <CoinIcon
                   mainnet_address={fromNativeAsset?.address}
                   symbol={fromAsset?.symbol}
@@ -61,10 +67,16 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
               </Box>
             </Column>
             <Column width="content">
-              <CaretIcon />
+              <Box marginTop="-4px" marginBottom="-4px">
+                <CaretIcon />
+              </Box>
             </Column>
             <Column width="content">
-              <Box paddingLeft="4px">
+              <Box
+                paddingLeft="4px"
+                marginTop={ICON_ALIGN_MARGIN}
+                marginBottom={ICON_ALIGN_MARGIN}
+              >
                 <CoinIcon
                   mainnet_address={toNativeAsset?.address}
                   symbol={toAsset?.symbol}
@@ -83,7 +95,9 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
           </>
         ) : (
           <Column width="content">
-            <Spinner color={colors.blueGreyDark80} size={20} />
+            <Box marginTop={ICON_ALIGN_MARGIN}>
+              <Spinner color={colors.blueGreyDark80} size={18} />
+            </Box>
           </Column>
         )}
       </Columns>

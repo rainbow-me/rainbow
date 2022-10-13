@@ -835,6 +835,96 @@ export const explainers = (params, colors) => ({
       onPress: params?.onRefuel,
     },
   },
+  swap_refuel_deduct: {
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel_deduct.title', {
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel_deduct.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.no_thanks'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('explain.swap_refuel_deduct.button', {
+        networkName: params?.networkName,
+        gasToken: params?.gasToken,
+      }),
+      textColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      onPress: params?.onRefuel,
+    },
+  },
+  swap_refuel_notice: {
+    extraHeight: 50,
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel_notice.title', {
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel_notice.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.go_back'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('button.proceed_anyway'),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.alpha(colors?.appleBlue, 0.05),
+      onPress: params?.onProceed,
+    },
+  },
 });
 
 const ExplainSheet = () => {
