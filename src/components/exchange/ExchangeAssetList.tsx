@@ -47,7 +47,7 @@ const HeaderBackground = styled(LinearGradient).attrs(
   ({ theme: { colors } }: { theme: { colors: Colors } }) => ({
     colors: [colors.white, colors.alpha(colors.white, 0)],
     end: { x: 0.5, y: 1 },
-    locations: [0.55, 1],
+    locations: [0.65, 1],
     start: { x: 0.5, y: 0 },
   })
 )({
@@ -219,7 +219,11 @@ const ExchangeAssetList: ForwardRefRenderFunction<
         onPress={openVerifiedExplainer}
         scaleTo={0.96}
       >
-        <Box paddingTop="10px" paddingBottom="2px" paddingLeft="20px">
+        <Box
+          paddingTop={section.useGradientText ? '10px' : { custom: 14 }}
+          paddingBottom="4px"
+          paddingLeft="20px"
+        >
           <HeaderBackground />
           <Box>
             <TitleComponent color={section.color} testID={section.key}>
