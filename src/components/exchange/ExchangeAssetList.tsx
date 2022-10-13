@@ -145,7 +145,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   ) || {
     sectionListRef: undefined,
   };
-
   useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
   const { dangerouslyGetParent, navigate } = useNavigation();
@@ -370,4 +369,8 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   );
 };
 
-export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query']);
+export default magicMemo(forwardRef(ExchangeAssetList), [
+  'items',
+  'query',
+  'itemProps',
+]);
