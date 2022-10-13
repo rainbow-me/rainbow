@@ -68,7 +68,7 @@ const NetworkSwitcherv2 = ({
 
   return (
     <>
-      <Box height="46px" width="full" testID="network-switcher-v2">
+      <Box width="full" testID="network-switcher-v2" paddingVertical="12px">
         <ScrollView
           keyboardShouldPersistTaps="always"
           contentContainerStyle={{ paddingHorizontal: 20 }}

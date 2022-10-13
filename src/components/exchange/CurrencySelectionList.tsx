@@ -26,6 +26,7 @@ interface CurrencySelectionListProps {
   query: string;
   showList: boolean;
   testID: string;
+  isExchangeList?: boolean;
 }
 
 const CurrencySelectionList: ForwardRefRenderFunction<
@@ -43,6 +44,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<
     query,
     showList,
     testID,
+    isExchangeList = false,
   },
   ref
 ) => {
@@ -72,6 +74,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<
             query={query}
             ref={ref}
             testID={testID}
+            isExchangeList={isExchangeList}
           />
         </Centered>
       )}

@@ -643,6 +643,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
+                isExchangeList={crosschainSwapsEnabled}
                 onL2={searchingOnL2Network}
                 footerSpacer={android}
                 itemProps={itemProps}

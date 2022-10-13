@@ -99,6 +99,10 @@ function renderItem({ item }: { item: EnrichedExchangeAsset }) {
       />
     );
   }
+  return <FastCurrencySelectionRow item={item} />;
+}
+
+function renderEchangeItem({ item }: { item: EnrichedExchangeAsset }) {
   return <ExchangeTokenRow item={item} />;
 }
 
@@ -116,6 +120,7 @@ interface ExchangeAssetListProps {
   onLayout?: () => void;
   query: string;
   testID: string;
+  isExchangeList?: boolean;
 }
 
 const ExchangeAssetList: ForwardRefRenderFunction<
@@ -130,6 +135,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
     onLayout,
     query,
     testID,
+    isExchangeList,
   },
   ref
 ) => {
@@ -348,7 +354,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
           onLayout={onLayout}
           onScroll={android ? onScroll : undefined}
           ref={sectionListRef}
-          renderItem={renderItem}
+          renderItem={isExchangeList ? renderEchangeItem : renderItem}
           renderSectionHeader={ExchangeAssetSectionListHeader}
           scrollsToTop={isFocused}
           sections={itemsWithFavorite}

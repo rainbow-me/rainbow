@@ -54,7 +54,7 @@ export default React.memo(function FastCurrencySelectionRow({
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
 
   return (
-    <Box height="56px" paddingHorizontal="20px">
+    <Box paddingHorizontal="20px">
       <ButtonPressAnimation
         // @ts-ignore
         onPress={onPress}
