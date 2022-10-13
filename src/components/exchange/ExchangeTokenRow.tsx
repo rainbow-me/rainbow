@@ -114,6 +114,7 @@ export default React.memo(function ExchangeTokenRow({
                 contextMenuProps={contextMenuProps}
                 showAddButton={showAddButton}
                 showFavoriteButton={showFavoriteButton}
+                theme={theme}
               />
             )}
             {showFavoriteButton &&

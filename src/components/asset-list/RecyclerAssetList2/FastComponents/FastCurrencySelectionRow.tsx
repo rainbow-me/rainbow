@@ -71,13 +71,16 @@ interface InfoProps {
   contextMenuProps: any;
   showFavoriteButton: boolean;
   showAddButton: boolean;
+  theme: any;
 }
 
 export function Info({
   contextMenuProps,
   showAddButton,
   showFavoriteButton,
+  theme,
 }: InfoProps) {
+  const { colors } = theme;
   return (
     <ContextMenuButton
       onPressMenuItem={contextMenuProps.handlePressMenuItem}
@@ -223,6 +226,7 @@ export default React.memo(function FastCurrencySelectionRow({
               contextMenuProps={contextMenuProps}
               showAddButton={showAddButton}
               showFavoriteButton={showFavoriteButton}
+              theme={theme}
             />
           )}
           {showFavoriteButton &&
