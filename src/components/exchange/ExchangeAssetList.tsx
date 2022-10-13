@@ -40,6 +40,7 @@ import { abbreviations, deviceUtils, haptics, magicMemo } from '@/utils';
 import { Box, Text } from '@/design-system';
 import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
+import ExchangeTokenRow from './ExchangeTokenRow';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -98,7 +99,7 @@ function renderItem({ item }: { item: EnrichedExchangeAsset }) {
       />
     );
   }
-  return <FastCurrencySelectionRow item={item} />;
+  return <ExchangeTokenRow item={item} />;
 }
 
 interface ExchangeAssetListProps {
