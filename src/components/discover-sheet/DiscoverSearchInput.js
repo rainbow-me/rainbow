@@ -146,7 +146,7 @@ const ExchangeSearch = (
   const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) || {};
 
   const placeholder = useMemo(() => {
-    if (!placeholderText) return placeholderText;
+    if (!currentChainId) return placeholderText;
     const network = ethereumUtils.getNetworkFromChainId(currentChainId);
     return lang.t('button.exchange_search_placeholder_network', {
       network: networkInfo[network].name,
