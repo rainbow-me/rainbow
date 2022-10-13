@@ -315,11 +315,11 @@ export const explainers = (params, colors) => ({
           inputToken: params?.inputToken,
           outputToken: params?.outputToken,
         }),
-    logo: !isL2Network(params?.network) ? (
+    logo: !isL2Network(params?.fromNetwork) ? (
       <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_SYMBOL} />
     ) : (
       <ChainBadge
-        assetType={params?.network}
+        assetType={params?.fromNetwork}
         marginBottom={8}
         position="relative"
         size="large"
