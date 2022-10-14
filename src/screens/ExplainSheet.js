@@ -579,37 +579,14 @@ export const explainers = (params, colors) => ({
     ),
   },
   crossChainGas: {
-    extraHeight: -40,
+    extraHeight: 20,
     title: lang.t('explain.cross_chain_swap.title'),
     text: lang.t('explain.cross_chain_swap.text'),
     logo: (
       <RowWithMargins justify="center" margin={35} marginBottom={10}>
-        <Box>
-          {ethereumUtils.getNetworkFromType(params?.inputCurrency?.type) !==
-          Network.mainnet ? (
-            <ChainBadge
-              assetType={params?.inputCurrency?.type}
-              position="relative"
-              size="large"
-            />
-          ) : (
-            <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
-          )}
-        </Box>
+        <CoinIcon size={40} {...params?.inputCurrency} />
         <DoubleChevron />
-        <Box>
-          {ethereumUtils.getNetworkFromType(params?.outputCurrency?.type) !==
-          Network.mainnet ? (
-            <ChainBadge
-              assetType={params?.outputCurrency?.type}
-              marginBottom={8}
-              position="relative"
-              size="large"
-            />
-          ) : (
-            <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
-          )}
-        </Box>
+        <CoinIcon size={40} {...params?.outputCurrency} />
       </RowWithMargins>
     ),
   },
