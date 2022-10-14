@@ -53,7 +53,6 @@ export default React.memo(function ExchangeTokenRow({
     !item?.isNativeAsset ||
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
 
-  console.log('--- item', item);
   return (
     <Columns alignVertical="center" space="10px">
       <Column>
@@ -87,22 +86,24 @@ export default React.memo(function ExchangeTokenRow({
                 >
                   {name ?? item?.name}
                 </Text>
-                {/* {item?.balance?.display && (
-                <Text
-                  size="13pt"
-                  color="secondary (Deprecated)"
-                  numberOfLines={1}
-                >
-                  {item?.balance?.display ?? ''}
-                </Text>
-              )} */}
-                <Text
-                  size="13pt"
-                  color="secondary (Deprecated)"
-                  numberOfLines={1}
-                >
-                  {symbol ?? item?.symbol ?? ''}
-                </Text>
+                {showBalance && item?.balance?.display && (
+                  <Text
+                    size="13pt"
+                    color="secondary (Deprecated)"
+                    numberOfLines={1}
+                  >
+                    {item?.balance?.display ?? ''}
+                  </Text>
+                )}
+                {!showBalance && (
+                  <Text
+                    size="13pt"
+                    color="secondary (Deprecated)"
+                    numberOfLines={1}
+                  >
+                    {symbol ?? item?.symbol ?? ''}
+                  </Text>
+                )}
               </Stack>
             </Column>
           </Columns>
