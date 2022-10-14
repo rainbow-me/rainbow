@@ -399,6 +399,10 @@
         "loser": "Loser",
         "mover": "Mover"
       },
+      "long_wait": {
+        "prefix": "Long Wait",
+        "time": "Up to %{estimatedWaitTime} to swap"
+      },
       "no_results": {
         "description": "Some tokens don’t have enough liquidity to perform a successful swap.",
         "description_l2": "Some tokens don’t have enough layer 2 liquidity to perform a successful swap.",
@@ -507,6 +511,7 @@
         "uniswap_v2": "Uniswap v2",
         "view_on": "View on %{blockExplorerName}",
         "network_switcher": "Swapping on the %{network} network",
+        "settling_time": "Estimated settling time",
         "swap_max_alert": {
           "title": "Are you sure?",
           "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}?",
@@ -689,6 +694,10 @@
       "no_quote": {
         "title": "No quote available",
         "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
+      },
+      "cross_chain_swap": {
+        "title": "Expect Bridge Delays",
+        "text": "This swap may take longer than expected to complete. \n\n Cross-chain swaps require bridging funds to the destination network, and bridges can sometimes take longer than expected to transfer funds. Your funds will remain safe during this time."
       },
       "go_to_hop_with_icon": {
         "text": "Go to the Hop Bridge 􀮶"

@@ -90,6 +90,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_TEST } from '@/env';
+import logger from '@/utils/logger';
 import {
   CrosschainSwapActionParameters,
   SwapActionParameters,
@@ -97,8 +98,8 @@ import {
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';
 import networkInfo from '@/helpers/networkInfo';
-import logger from '@/utils/logger';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -1280,6 +1281,9 @@ export default function ExchangeModal({
                 marginBottom={0}
                 marginTop={0}
                 testID={`${testID}-gas`}
+                crossChainServiceTime={getCrosschainSwapServiceTime(
+                  tradeDetails as CrosschainQuote
+                )}
               />
             </Row>
           </Rows>
