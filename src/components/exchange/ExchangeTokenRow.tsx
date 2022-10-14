@@ -1,6 +1,6 @@
 import React from 'react';
 import isEqual from 'react-fast-compare';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers';
 import { useAccountAsset, useDimensions } from '@/hooks';
@@ -53,107 +53,124 @@ export default React.memo(function ExchangeTokenRow({
     !item?.isNativeAsset ||
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
 
+  console.log('--- item', item);
   return (
-    <Inline alignVertical="center" alignHorizontal="justify">
-      <Box
-        as={ButtonPressAnimation}
-        // @ts-ignore
-        onPress={onPress}
-        style={[disabled && { opacity: 0.5 }]}
-        testID={rowTestID}
-        disabled={disabled}
-        paddingLeft="20px"
-      >
-        <Inline alignVertical="center" space="10px">
-          <Box
-            as={FastCoinIcon}
-            address={address || item?.address}
-            assetType={type ?? item?.type}
-            mainnetAddress={mainnet_address ?? item?.mainnet_address}
-            symbol={symbol ?? item?.symbol}
-            theme={theme}
-          />
-          <Stack space="10px">
-            <Text
-              size="15px / 21px (Deprecated)"
-              color="primary (Deprecated)"
-              weight="bold"
-              numberOfLines={1}
-            >
-              {name ?? item?.name}
-            </Text>
-            {item?.balance?.display && (
-              <Text
-                size="13pt"
-                color="secondary (Deprecated)"
-                numberOfLines={1}
-              >
-                {item?.balance?.display ?? ''}
-              </Text>
-            )}
-          </Stack>
-        </Inline>
-      </Box>
-      <Box paddingRight="20px">
-        {showBalance && (
-          <Box background="fillSecondary" padding="8px" borderRadius={15}>
-            <Text
-              align="right"
-              size="15px / 21px (Deprecated)"
-              weight="bold"
-              color="labelSecondary"
-            >
-              {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
-            </Text>
-          </Box>
-        )}
-        {!showBalance && (
-          <Inline alignVertical="center" space="12px">
-            {isInfoButtonVisible && (
-              <Info
-                contextMenuProps={contextMenuProps}
-                showAddButton={showAddButton}
-                showFavoriteButton={showFavoriteButton}
+    <Columns alignVertical="center" space="10px">
+      <Column>
+        <Box
+          paddingLeft="20px"
+          as={ButtonPressAnimation}
+          // @ts-ignore
+          onPress={onPress}
+          style={[disabled && { opacity: 0.5 }]}
+          testID={rowTestID}
+          disabled={disabled}
+        >
+          <Columns alignVertical="center" space="10px">
+            <Column width="content">
+              <Box
+                as={FastCoinIcon}
+                address={address || item?.address}
+                assetType={type ?? item?.type}
+                mainnetAddress={mainnet_address ?? item?.mainnet_address}
+                symbol={symbol ?? item?.symbol}
                 theme={theme}
               />
-            )}
-            {showFavoriteButton &&
-              (IS_IOS ? (
-                // @ts-ignore
-                <FloatingEmojis
-                  centerVertically
-                  deviceWidth={deviceWidth}
-                  disableHorizontalMovement
-                  disableVerticalMovement
-                  distance={70}
-                  duration={400}
-                  emojis={['glowing_star']}
-                  fadeOut={false}
-                  marginTop={-4}
-                  range={[0, 0]}
-                  scaleTo={0}
-                  size={32}
-                  wiggleFactor={0}
+            </Column>
+            <Column>
+              <Stack space="8px">
+                <Text
+                  size="15px / 21px (Deprecated)"
+                  color="primary (Deprecated)"
+                  weight="bold"
+                  numberOfLines={1}
                 >
-                  {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-                    <FavStar
-                      favorite={favorite}
-                      theme={theme}
-                      toggleFavorite={() => toggleFavorite(onNewEmoji)}
-                    />
-                  )}
-                </FloatingEmojis>
-              ) : (
-                <FavStar
-                  favorite={favorite}
+                  {name ?? item?.name}
+                </Text>
+                {/* {item?.balance?.display && (
+                <Text
+                  size="13pt"
+                  color="secondary (Deprecated)"
+                  numberOfLines={1}
+                >
+                  {item?.balance?.display ?? ''}
+                </Text>
+              )} */}
+                <Text
+                  size="13pt"
+                  color="secondary (Deprecated)"
+                  numberOfLines={1}
+                >
+                  {symbol ?? item?.symbol ?? ''}
+                </Text>
+              </Stack>
+            </Column>
+          </Columns>
+        </Box>
+      </Column>
+      <Column width="content">
+        <Box paddingRight="20px">
+          {showBalance && (
+            <Box background="fillSecondary" padding="8px" borderRadius={15}>
+              <Text
+                align="right"
+                size="15px / 21px (Deprecated)"
+                weight="bold"
+                color="labelSecondary"
+              >
+                {item?.native?.balance?.display ??
+                  `${nativeCurrencySymbol}0.00`}
+              </Text>
+            </Box>
+          )}
+          {!showBalance && (
+            <Inline alignVertical="center" space="12px">
+              {isInfoButtonVisible && (
+                <Info
+                  contextMenuProps={contextMenuProps}
+                  showAddButton={showAddButton}
+                  showFavoriteButton={showFavoriteButton}
                   theme={theme}
-                  toggleFavorite={toggleFavorite}
                 />
-              ))}
-          </Inline>
-        )}
-      </Box>
-    </Inline>
+              )}
+              {showFavoriteButton &&
+                (IS_IOS ? (
+                  // @ts-ignore
+                  <FloatingEmojis
+                    centerVertically
+                    deviceWidth={deviceWidth}
+                    disableHorizontalMovement
+                    disableVerticalMovement
+                    distance={70}
+                    duration={400}
+                    emojis={['glowing_star']}
+                    fadeOut={false}
+                    marginTop={-4}
+                    range={[0, 0]}
+                    scaleTo={0}
+                    size={32}
+                    wiggleFactor={0}
+                  >
+                    {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+                      <FavStar
+                        favorite={favorite}
+                        theme={theme}
+                        toggleFavorite={() => toggleFavorite(onNewEmoji)}
+                      />
+                    )}
+                  </FloatingEmojis>
+                ) : (
+                  <FavStar
+                    favorite={favorite}
+                    theme={theme}
+                    toggleFavorite={toggleFavorite}
+                  />
+                ))}
+            </Inline>
+          )}
+        </Box>
+      </Column>
+    </Columns>
   );
 },
 isEqual);
