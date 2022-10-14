@@ -300,7 +300,6 @@ const GasSpeedButton = ({
     if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
     // override time estimate for cross chain swaps
     if (crossChainServiceTime) {
-      console.log('!!!!!!!! service time');
       const { isLongWait, timeEstimateDisplay } = getCrossChainTimeEstimate({
         serviceTime: crossChainServiceTime,
         gasTimeInSeconds: selectedGasFee?.estimatedTime?.amount,
