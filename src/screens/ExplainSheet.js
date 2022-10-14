@@ -20,7 +20,7 @@ import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
-import networkTypes, { Network } from '@/helpers/networkTypes';
+import networkTypes from '@/helpers/networkTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -892,6 +892,7 @@ export const explainers = (params, colors) => ({
       </DashedWrapper>
     ),
     title: lang.t('explain.swap_refuel_deduct.title', {
+      networkName: params?.networkName,
       gasToken: params?.gasToken,
     }),
     text: lang.t('explain.swap_refuel_deduct.text', {
@@ -940,6 +941,7 @@ export const explainers = (params, colors) => ({
       </DashedWrapper>
     ),
     title: lang.t('explain.swap_refuel_notice.title', {
+      networkName: params?.networkName,
       gasToken: params?.gasToken,
     }),
     text: lang.t('explain.swap_refuel_notice.text', {
