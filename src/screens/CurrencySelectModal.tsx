@@ -51,6 +51,7 @@ import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
+import DiscoverSearchInput from '@/components/discover-sheet/DiscoverSearchInput';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -149,9 +150,12 @@ export default function CurrencySelectModal() {
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = !crosschainSwapsEnabled
-    ? NetworkSwitcherv1
-    : NetworkSwitcherv2;
+  const NetworkSwitcher = crosschainSwapsEnabled
+    ? NetworkSwitcherv2
+    : NetworkSwitcherv1;
+  const SearchInput = crosschainSwapsEnabled
+    ? DiscoverSearchInput
+    : ExchangeSearch;
 
   useEffect(() => {
     if (chainId && typeof chainId === 'number') {
@@ -613,7 +617,9 @@ export default function CurrencySelectModal() {
               />
             </Row>
             <Row height="content">
-              <ExchangeSearch
+              <SearchInput
+                isDiscover={false}
+                currentChainId={currentChainId}
                 clearTextOnFocus={false}
                 isFetching={swapCurrencyListLoading}
                 isSearching={swapCurrencyListLoading}
@@ -637,6 +643,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
+                isExchangeList={crosschainSwapsEnabled}
                 onL2={searchingOnL2Network}
                 footerSpacer={android}
                 itemProps={itemProps}
