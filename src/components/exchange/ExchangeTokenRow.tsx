@@ -79,7 +79,7 @@ export default React.memo(function ExchangeTokenRow({
             <Column>
               <Stack space="8px">
                 <Text
-                  size="15px / 21px (Deprecated)"
+                  size="15pt"
                   color="primary (Deprecated)"
                   weight="bold"
                   numberOfLines={1}
@@ -113,12 +113,7 @@ export default React.memo(function ExchangeTokenRow({
         <Box paddingRight="20px">
           {showBalance && (
             <Box background="fillSecondary" padding="8px" borderRadius={15}>
-              <Text
-                align="right"
-                size="15px / 21px (Deprecated)"
-                weight="bold"
-                color="labelSecondary"
-              >
+              <Text size="15pt" weight="bold" color="labelSecondary">
                 {item?.native?.balance?.display ??
                   `${nativeCurrencySymbol}0.00`}
               </Text>
