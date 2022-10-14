@@ -689,8 +689,8 @@
         "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
       "cross_chain_swap": {
-        "title": "Crosschain Swap",
-        "text": "This swap may take a while to complete. \n\n Crosschain swaps take place on 2 networks, which requires a bridge. Sometimes these bridges take longer than expected."
+        "title": "Expect Bridge Delays",
+        "text": "This swap may take longer than expected to complete. \n\n Cross-chain swaps require bridging funds to the destination network, and bridges can sometimes take longer than expected to transfer funds. Your funds will remain safe during this time."
       },
       "go_to_hop_with_icon": {
         "text": "Go to the Hop Bridge 􀮶"
