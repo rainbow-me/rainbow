@@ -228,6 +228,7 @@
       "exchange": "Échanger",
       "exchange_again": "Échanger encore",
       "exchange_search_placeholder": "Cherche",
+      "exchange_search_placeholder_network": "Search tokens on %{network} :)",
       "go_back": "Retourner",
       "go_back_undercase": "Go back :)",
       "got_it": "Got it :)",
@@ -515,6 +516,7 @@
         "uniswap_v2": "Uniswap v2 :)",
         "view_on": "View on %{blockExplorerName} :)",
         "network_switcher": "Swapping on the %{network} network :)",
+        "settling_time": "Estimated settling time :)",
         "swap_max_alert": {
           "title": "Are you sure? :)",
           "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}? :)",
@@ -691,6 +693,10 @@
       "no_quote": {
         "title": "No quote available",
         "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
+      },
+      "cross_chain_swap": {
+        "title": "Expect Bridge Delays :)",
+        "text": "This swap may take longer than expected to complete. \n\n Cross-chain swaps require bridging funds to the destination network, and bridges can sometimes take longer than expected to transfer funds. Your funds will remain safe during this time. :)"
       },
       "unverified": {
         "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",

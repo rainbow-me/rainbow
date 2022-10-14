@@ -25,9 +25,7 @@ import { useNavigation } from '@/navigation';
 
 const Container = styled(Box).attrs({
   flex: 1,
-})(({ isHighPriceImpact }) =>
-  padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
-);
+})(({ hasWarning }) => padding.object(hasWarning ? 24 : 30, 19, 30));
 
 export default function SwapDetailsContent({
   isHighPriceImpact,
@@ -53,10 +51,11 @@ export default function SwapDetailsContent({
   const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
     inputCurrency?.type
   );
+
   return (
     <AccentColorProvider color={colorForAsset}>
       <Container
-        isHighPriceImpact={isHighPriceImpact}
+        hasWarning={isHighPriceImpact}
         testID="swap-details-state"
         {...props}
       >

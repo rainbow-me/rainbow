@@ -33,7 +33,7 @@ interface FavStarProps {
   toggleFavorite: (onNewEmoji?: () => void) => void;
 }
 
-function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
+export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
   const { isDarkMode, colors } = theme;
   return (
     <ButtonPressAnimation onPress={toggleFavorite}>
@@ -64,6 +64,45 @@ function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
         </RNText>
       </SafeRadialGradient>
     </ButtonPressAnimation>
+  );
+}
+
+interface InfoProps {
+  contextMenuProps: any;
+  showFavoriteButton: boolean;
+  showAddButton: boolean;
+  theme: any;
+}
+
+export function Info({
+  contextMenuProps,
+  showAddButton,
+  showFavoriteButton,
+  theme,
+}: InfoProps) {
+  const { colors } = theme;
+  return (
+    <ContextMenuButton
+      onPressMenuItem={contextMenuProps.handlePressMenuItem}
+      {...contextMenuProps}
+      style={(showFavoriteButton || showAddButton) && sx.info}
+    >
+      <ButtonPressAnimation>
+        <SafeRadialGradient
+          center={[0, 15]}
+          colors={colors.gradients.lightestGrey}
+          style={[sx.gradient, sx.igradient]}
+        >
+          <Text
+            color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }}
+            size="16px / 22px (Deprecated)"
+            weight="bold"
+          >
+            􀅳
+          </Text>
+        </SafeRadialGradient>
+      </ButtonPressAnimation>
+    </ContextMenuButton>
   );
 }
 
@@ -183,27 +222,12 @@ export default React.memo(function FastCurrencySelectionRow({
       {!showBalance && (
         <View style={sx.fav}>
           {isInfoButtonVisible && (
-            <ContextMenuButton
-              onPressMenuItem={contextMenuProps.handlePressMenuItem}
-              {...contextMenuProps}
-              style={(showFavoriteButton || showAddButton) && sx.info}
-            >
-              <ButtonPressAnimation>
-                <SafeRadialGradient
-                  center={[0, 15]}
-                  colors={colors.gradients.lightestGrey}
-                  style={[sx.gradient, sx.igradient]}
-                >
-                  <Text
-                    color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }}
-                    size="16px / 22px (Deprecated)"
-                    weight="bold"
-                  >
-                    􀅳
-                  </Text>
-                </SafeRadialGradient>
-              </ButtonPressAnimation>
-            </ContextMenuButton>
+            <Info
+              contextMenuProps={contextMenuProps}
+              showAddButton={showAddButton}
+              showFavoriteButton={showFavoriteButton}
+              theme={theme}
+            />
           )}
           {showFavoriteButton &&
             (ios ? (

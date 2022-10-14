@@ -1,4 +1,4 @@
-import { Quote, QuoteError } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@/entities';
@@ -40,7 +40,7 @@ interface SwapState {
   slippageInBips: number;
   source: Source;
   type: string;
-  tradeDetails: Quote | null;
+  tradeDetails: Quote | CrosschainQuote | null;
   typeSpecificParameters?: TypeSpecificParameters | null;
   outputCurrency: SwappableAsset | null;
 }

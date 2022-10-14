@@ -40,6 +40,7 @@ import { abbreviations, deviceUtils, haptics, magicMemo } from '@/utils';
 import { Box, Text } from '@/design-system';
 import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
+import ExchangeTokenRow from './ExchangeTokenRow';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -101,6 +102,10 @@ function renderItem({ item }: { item: EnrichedExchangeAsset }) {
   return <FastCurrencySelectionRow item={item} />;
 }
 
+function renderExchangeItem({ item }: { item: EnrichedExchangeAsset }) {
+  return <ExchangeTokenRow item={item} />;
+}
+
 interface ExchangeAssetListProps {
   footerSpacer: boolean;
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
@@ -115,6 +120,7 @@ interface ExchangeAssetListProps {
   onLayout?: () => void;
   query: string;
   testID: string;
+  isExchangeList?: boolean;
 }
 
 const ExchangeAssetList: ForwardRefRenderFunction<
@@ -129,6 +135,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
     onLayout,
     query,
     testID,
+    isExchangeList,
   },
   ref
 ) => {
@@ -138,7 +145,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   ) || {
     sectionListRef: undefined,
   };
-
   useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
   const { dangerouslyGetParent, navigate } = useNavigation();
@@ -351,7 +357,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
           onLayout={onLayout}
           onScroll={android ? onScroll : undefined}
           ref={sectionListRef}
-          renderItem={renderItem}
+          renderItem={isExchangeList ? renderExchangeItem : renderItem}
           renderSectionHeader={ExchangeAssetSectionListHeader}
           scrollsToTop={isFocused}
           sections={itemsWithFavorite}
@@ -367,4 +373,8 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   );
 };
 
-export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query']);
+export default magicMemo(forwardRef(ExchangeAssetList), [
+  'items',
+  'query',
+  'itemProps',
+]);

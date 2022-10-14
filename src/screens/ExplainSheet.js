@@ -20,7 +20,7 @@ import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -606,6 +606,18 @@ export const explainers = (params, colors) => ({
       </RowWithMargins>
     ),
   },
+  crossChainGas: {
+    extraHeight: 20,
+    title: lang.t('explain.cross_chain_swap.title'),
+    text: lang.t('explain.cross_chain_swap.text'),
+    logo: (
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <CoinIcon size={40} {...params?.inputCurrency} />
+        <DoubleChevron />
+        <CoinIcon size={40} {...params?.outputCurrency} />
+      </RowWithMargins>
+    ),
+  },
   availableNetworks: {
     buttonText: `Go to Hop`,
     extraHeight: -90,
@@ -1043,16 +1055,14 @@ const ExplainSheet = () => {
     const accentCta = (
       <SheetActionButton
         color={
-          colors[explainSheetConfig.button?.bgColor] ||
+          explainSheetConfig.button?.bgColor ||
           colors.alpha(colors.appleBlue, 0.04)
         }
         isTransparent
         label={explainSheetConfig.button?.label || lang.t('button.got_it')}
         onPress={onPrimaryPress}
         size="big"
-        textColor={
-          colors[explainSheetConfig.button?.textColor] || colors.appleBlue
-        }
+        textColor={explainSheetConfig.button?.textColor ?? colors.appleBlue}
         weight="heavy"
         testID={'explainer-sheet-accent'}
       />
