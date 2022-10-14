@@ -31,6 +31,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { abbreviations } from '@/utils';
+import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 
 const AnimatedContainer = styled(Animated.View)({
   ...position.sizeAsObject('100%'),
@@ -227,7 +228,7 @@ export default function SwapDetailsState({
               flashbotTransaction={flashbotTransaction}
               testID="swap-details-gas"
               theme="light"
-              crossChainServiceTime={tradeDetails?.routes?.[0]?.serviceTime}
+              crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails)}
             />
           </Footer>
         </Animated.View>

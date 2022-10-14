@@ -22,6 +22,7 @@ import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { useSelector } from 'react-redux';
+import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
@@ -116,7 +117,7 @@ export default function CustomGasState({ asset }) {
           theme="dark"
           validateGasParams={validateGasParams}
           marginTop={19}
-          crossChainServiceTime={tradeDetails?.routes?.[0]?.serviceTime}
+          crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails)}
         />
       </Column>
     </SlackSheet>
