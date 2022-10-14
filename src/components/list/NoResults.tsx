@@ -28,9 +28,9 @@ export const NoResults = ({
           {!fromDiscover && (
             <Text
               align="center"
-              color={{ custom: 'rgba(60, 66, 82, 0.5)' }}
               size="15pt"
               weight="semibold"
+              color="labelSecondary"
             >
               {onL2
                 ? lang.t('exchange.no_results.description_l2')
