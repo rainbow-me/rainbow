@@ -54,6 +54,13 @@ import {
   NotificationRelationship,
 } from './settings';
 import walletTypes from '@/helpers/walletTypes';
+import {
+  resolveAndTrackPushNotificationPermissionStatus,
+  NotificationSubscriptionChangesListener,
+  registerNotificationSubscriptionChangesListener,
+  trackTappedPushNotification,
+  trackWalletsSubscribedForNotifications,
+} from '@/notifications/analytics';
 
 type Callback = () => void;
 
@@ -69,6 +76,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     contacts,
   });
   const prevWalletReady = usePrevious(walletReady);
+  const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
   const notificationOpenedListener = useRef<Callback>();
@@ -121,7 +129,6 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     const notification = NotificationStorage.getDeferredNotification();
     if (notification) {
       // wait to wallet to load completely before opening
-      await delay(3000);
       performActionBasedOnOpenedNotificationType(notification);
       NotificationStorage.clearDeferredNotification();
     }
@@ -151,6 +158,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     if (!notification) {
       return;
     }
+    trackTappedPushNotification(notification);
     // Need to call getState() directly, because the event handler
     // has the old value reference in its closure
     if (!store.getState().appState.walletReady) {
@@ -324,6 +332,8 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
   useEffect(() => {
     setupAndroidChannels();
     saveFCMToken();
+    trackWalletsSubscribedForNotifications();
+    subscriptionChangesListener.current = registerNotificationSubscriptionChangesListener();
     onTokenRefreshListener.current = registerTokenRefreshListener();
     foregroundNotificationListener.current = messaging().onMessage(
       onForegroundRemoteNotification
@@ -345,7 +355,10 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
       handleNotificationPressed
     );
 
+    resolveAndTrackPushNotificationPermissionStatus();
+
     return () => {
+      subscriptionChangesListener.current?.remove();
       onTokenRefreshListener.current?.();
       foregroundNotificationListener.current?.();
       notificationOpenedListener.current?.();

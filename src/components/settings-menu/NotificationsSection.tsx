@@ -14,11 +14,12 @@ import { useAccountSettings, useAppState, useWallets } from '@/hooks';
 import { requestPermission } from '@/notifications/permissions';
 import profileUtils from '@/utils/profileUtils';
 import {
+  addDefaultNotificationSettingsForWallet,
   NotificationRelationship,
   updateSettingsForWallets,
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
-  WalletNotificationSettingsType,
+  WalletNotificationSettings,
 } from '@/notifications/settings';
 import { abbreviations, deviceUtils } from '@/utils';
 import { Box } from '@/design-system';
@@ -34,12 +35,12 @@ type WalletRowProps = {
   isTestnet: boolean;
   wallet: RainbowAccount;
   ens: string;
-  notificationSettings: WalletNotificationSettingsType[];
+  notificationSettings: WalletNotificationSettings[];
 };
 
 type WalletRowLabelProps = {
   groupOff: boolean;
-  notifications?: WalletNotificationSettingsType;
+  notifications?: WalletNotificationSettings;
 };
 
 const DEVICE_WIDTH = deviceUtils.dimensions.width;
@@ -100,7 +101,7 @@ const WalletRow = ({
 }: WalletRowProps) => {
   const { navigate } = useNavigation();
   const notificationSetting = notificationSettings?.find(
-    (x: WalletNotificationSettingsType) => x.address === wallet.address
+    (x: WalletNotificationSettings) => x.address === wallet.address
   );
   const cleanedUpLabel = useMemo(
     () => removeFirstEmojiFromString(wallet.label),
@@ -150,11 +151,14 @@ const WalletRow = ({
           }}
         >
           {wallet.image ? (
-            <ImageAvatar image={wallet.image} size="smedium" />
+            <ImageAvatar
+              image={wallet.image}
+              size={rowEnabled ? 'smedium' : 'smedium_shadowless'}
+            />
           ) : (
             <ContactAvatar
               color={wallet.color}
-              size="small"
+              size={rowEnabled ? 'small' : 'small_shadowless'}
               value={
                 returnStringFirstEmoji(wallet.label) ||
                 profileUtils.addressHashedEmoji(wallet.address)
@@ -223,28 +227,12 @@ const NotificationsSection = () => {
     });
   }, [ownerEnabled, updateGroupSettings]);
 
-  const toggleAllOwnedNotificationsFromWallet = useCallback(() => {
-    updateGroupSettings({
-      [NotificationRelationship.OWNER]: !ownerEnabled
-        ? !ownerEnabled
-        : ownerEnabled,
-    });
-  }, [ownerEnabled, updateGroupSettings]);
-
   const toggleAllWatchedNotifications = useCallback(() => {
     updateSettingsForWallets(NotificationRelationship.WATCHER, {
       enabled: !watcherEnabled,
     });
     updateGroupSettings({
       [NotificationRelationship.WATCHER]: !watcherEnabled,
-    });
-  }, [updateGroupSettings, watcherEnabled]);
-
-  const toggleAllWatchedNotificationsFromWallet = useCallback(() => {
-    updateGroupSettings({
-      [NotificationRelationship.WATCHER]: !watcherEnabled
-        ? !watcherEnabled
-        : watcherEnabled,
     });
   }, [updateGroupSettings, watcherEnabled]);
 
@@ -272,7 +260,31 @@ const NotificationsSection = () => {
 
   useEffect(() => {
     checkPermissions();
-  }, [checkPermissions, justBecameActive]);
+    // populate notification settings if they
+    // have been cleared from dev settings to prevent a crash
+    // when going to the notification settings screen for a wallet
+    if (notificationSettings.length === 0) {
+      ownedWallets.forEach(wallet => {
+        addDefaultNotificationSettingsForWallet(
+          wallet.address,
+          NotificationRelationship.OWNER
+        );
+      });
+
+      watchedWallets.forEach(wallet => {
+        addDefaultNotificationSettingsForWallet(
+          wallet.address,
+          NotificationRelationship.WATCHER
+        );
+      });
+    }
+  }, [
+    checkPermissions,
+    justBecameActive,
+    notificationSettings,
+    ownedWallets,
+    watchedWallets,
+  ]);
 
   return (
     <Box>

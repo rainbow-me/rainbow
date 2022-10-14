@@ -74,10 +74,7 @@ describe('Wallet avatar options', () => {
   it('watch wallet with ENS but without ENS avatar', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
     if (android) {
-      await Helpers.tapByText('􀂍 Add an existing wallet', undefined, {
-        x: 30,
-        y: 0,
-      });
+      await Helpers.tapByText('􀂍 Add an existing wallet');
     } else {
       await Helpers.tapByText('􀂍 Add an existing wallet');
     }
@@ -112,10 +109,7 @@ describe('Wallet avatar options', () => {
   it('import wallet with ENS but without ENS avatar', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
     if (android) {
-      await Helpers.tapByText('􀂍 Add an existing wallet', undefined, {
-        x: 30,
-        y: 0,
-      });
+      await Helpers.tapByText('􀂍 Add an existing wallet');
     } else {
       await Helpers.tapByText('􀂍 Add an existing wallet');
     }
@@ -151,10 +145,7 @@ describe('Wallet avatar options', () => {
   it('import wallet with ENS avatar', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
     if (android) {
-      await Helpers.tapByText('􀂍 Add an existing wallet', undefined, {
-        x: 30,
-        y: 0,
-      });
+      await Helpers.tapByText('􀂍 Add an existing wallet');
     } else {
       await Helpers.tapByText('􀂍 Add an existing wallet');
     }

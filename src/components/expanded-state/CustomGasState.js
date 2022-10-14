@@ -19,7 +19,7 @@ import {
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 
 const FOOTER_HEIGHT = 76;
@@ -82,9 +82,7 @@ export default function CustomGasState({ asset }) {
         removeTopPadding: true,
       })}
       backgroundColor={colors.transparent}
-      contentHeight={
-        ios ? longFormHeight : deviceHeight - safeAreaInsetValues.top
-      }
+      contentHeight={longFormHeight}
       radius={0}
       scrollEnabled={false}
     >
