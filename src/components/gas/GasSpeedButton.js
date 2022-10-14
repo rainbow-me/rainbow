@@ -111,20 +111,17 @@ const TextContainer = styled(Column).attrs(() => ({}))({});
 
 const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
   const { colors } = useTheme();
+  let color =
+    theme === 'dark'
+      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+      : colors.alpha(colors.blueGreyDark, 0.6);
+
+  if (isLongWait) {
+    color = colors.lightOrange;
+  }
+
   return (
-    <Label
-      align="right"
-      // eslint-disable-next-line no-nested-ternary
-      color={
-        isLongWait
-          ? colors.lightOrange
-          : theme === 'dark'
-          ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-          : colors.alpha(colors.blueGreyDark, 0.6)
-      }
-      size="lmedium"
-      weight="bold"
-    >
+    <Label align="right" color={color} size="lmedium" weight="bold">
       {formatter()}
     </Label>
   );
