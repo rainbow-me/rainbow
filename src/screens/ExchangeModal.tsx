@@ -255,6 +255,7 @@ export default function ExchangeModal({
     chainId,
     currentNetwork,
     isCrosschainSwap,
+    isBridgeSwap,
   } = useMemo(() => {
     const inputNetwork = ethereumUtils.getNetworkFromType(inputCurrency?.type);
     const outputNetwork = ethereumUtils.getNetworkFromType(
@@ -270,15 +271,22 @@ export default function ExchangeModal({
     const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const isCrosschainSwap =
       crosschainSwapsEnabled && inputNetwork !== outputNetwork;
-
+    const isBridgeSwap = inputCurrency?.symbol === outputCurrency?.symbol;
     return {
       inputNetwork,
       outputNetwork,
       chainId,
       currentNetwork,
       isCrosschainSwap,
+      isBridgeSwap,
     };
-  }, [crosschainSwapsEnabled, inputCurrency?.type, outputCurrency?.type]);
+  }, [
+    crosschainSwapsEnabled,
+    inputCurrency?.symbol,
+    inputCurrency?.type,
+    outputCurrency?.symbol,
+    outputCurrency?.type,
+  ]);
 
   // if the default input is on a different network than
   // we want to update the output to be on the same, if its not available -> null
@@ -846,6 +854,7 @@ export default function ExchangeModal({
       quoteError,
       tradeDetails,
       type,
+      isBridgeSwap,
     }),
     [
       currentNetwork,
@@ -859,6 +868,7 @@ export default function ExchangeModal({
       type,
       quoteError,
       isSufficientBalance,
+      isBridgeSwap,
     ]
   );
 
@@ -1100,7 +1110,10 @@ export default function ExchangeModal({
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
-      network: currentNetwork,
+      fromNetwork: inputNetwork,
+      toNetwork: outputNetwork,
+      isCrosschainSwap,
+      isBridgeSwap,
       onClose: () => {
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
@@ -1112,11 +1125,14 @@ export default function ExchangeModal({
       type: 'output_disabled',
     });
   }, [
-    currentNetwork,
     inputCurrency?.symbol,
+    inputNetwork,
+    isBridgeSwap,
+    isCrosschainSwap,
     lastFocusedInputHandle,
     navigate,
     outputCurrency?.symbol,
+    outputNetwork,
   ]);
 
   const showConfirmButton = isSavings
@@ -1193,7 +1209,8 @@ export default function ExchangeModal({
                     resetRefuelState();
                     navigateToSelectOutputCurrency(chainId);
                   }}
-                  {...(currentNetwork === Network.arbitrum &&
+                  {...((currentNetwork === Network.arbitrum ||
+                    isCrosschainSwap) &&
                     !!outputCurrency && {
                       onTapWhileDisabled: handleTapWhileDisabled,
                     })}
