@@ -102,7 +102,7 @@ function renderItem({ item }: { item: EnrichedExchangeAsset }) {
   return <FastCurrencySelectionRow item={item} />;
 }
 
-function renderEchangeItem({ item }: { item: EnrichedExchangeAsset }) {
+function renderExchangeItem({ item }: { item: EnrichedExchangeAsset }) {
   return <ExchangeTokenRow item={item} />;
 }
 
@@ -353,7 +353,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
           onLayout={onLayout}
           onScroll={android ? onScroll : undefined}
           ref={sectionListRef}
-          renderItem={isExchangeList ? renderEchangeItem : renderItem}
+          renderItem={isExchangeList ? renderExchangeItem : renderItem}
           renderSectionHeader={ExchangeAssetSectionListHeader}
           scrollsToTop={isFocused}
           sections={itemsWithFavorite}
