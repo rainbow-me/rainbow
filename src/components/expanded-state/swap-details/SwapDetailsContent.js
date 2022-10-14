@@ -1,11 +1,12 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, View } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
 import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
+import SwapDetailsRefuelRow from './SwapDetailsRefuelRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { AccentColorProvider, Box, Rows, Separator } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
@@ -28,8 +29,10 @@ const Container = styled(Box).attrs({
 
 export default function SwapDetailsContent({
   isHighPriceImpact,
+  isRefuelTx,
   onCopySwapDetailsText,
   tradeDetails,
+  onPressMore,
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -66,6 +69,14 @@ export default function SwapDetailsContent({
               {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
             </SwapDetailsValue>
           </SwapDetailsRow>
+
+          {(isRefuelTx || tradeDetails?.refuel) && (
+            <SwapDetailsRefuelRow
+              testID="swaps-details-refuel-row"
+              tradeDetails={tradeDetails}
+            />
+          )}
+
           {tradeDetails?.protocols && (
             <SwapDetailsExchangeRow
               protocols={tradeDetails?.protocols}
@@ -103,7 +114,10 @@ export default function SwapDetailsContent({
               }}
             >
               <ButtonPressAnimation
-                onPress={() => setDetailsExpanded(!detailsExpanded)}
+                onPress={() => {
+                  setDetailsExpanded(!detailsExpanded);
+                  onPressMore();
+                }}
                 scaleTo={1.06}
                 style={{
                   // enlarge tap target for details button

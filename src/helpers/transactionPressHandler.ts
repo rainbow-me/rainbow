@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { getHumanReadableDate, hasAddableContact } from './transactions';
 import { isValidDomainFormat } from './validators';
 import { TransactionStatusTypes } from '@/entities';
-import TransactionActions from '@/helpers/transactionActions';
+import { TransactionActions } from '@/helpers/transactionActions';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
@@ -78,7 +78,7 @@ export const getMenuItems = (item: any) => {
     };
   }
 
-  let buttons = [
+  const buttons = [
     ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
     ...(canBeCancelled ? [TransactionActions.cancel] : []),
     blockExplorerAction,

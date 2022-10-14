@@ -210,6 +210,7 @@
         "review": "Review :)",
         "submitting": "Submitting :)",
         "swap": "Tenir pour Swap",
+        "bridge": "Tenir pour Bridge",
         "swap_anyway": "Echanger quand Même",
         "symbol_balance_too_low": "%{symbol} balance too low :)",
         "view_details": "View Details :)",
@@ -241,7 +242,7 @@
       "learn_more": "En savoir plus",
       "less": "Moins",
       "loading": "Se charge",
-      "no_thanks": "No thanks :)",
+      "no_thanks": "No thanks",
       "notify_me": "Recevoir des notifications",
       "offline": "Hors connexion",
       "ok": "D'accord",
@@ -529,6 +530,7 @@
       "swap_details": {
         "exchange_rate": "Exchange rate :)",
         "rainbow_fee": "Included Rainbow fee :)",
+        "refuel": "Extra network tokens",
         "review": "Review :)",
         "show_details": "More details :)",
         "hide_details": "Hide details :)",
@@ -603,8 +605,11 @@
         "button": "Snag the icon :)"
       },
       "output_disabled": {
-        "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
+        "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
         "title": "Enter %{inputToken} Instead :)",
+        "title_crosschain": "Enter %{fromNetwork} %{inputToken} Instead :)",
+        "text_crosschain": "Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
+        "text_bridge": "Rainbow can't prepare a bridge based on the amount of %{outputToken} you'd like to receive at the %{toNetwork} destination. \n\n Try entering the amount of %{fromNetwork} %{inputToken} you’d like to bridge instead. :)",
         "title_empty": "Choose a Token :)"
       },
       "available_networks": {
@@ -695,6 +700,21 @@
         "fragment2": "Read more :)",
         "fragment3": " about bridges. :)",
         "title": "No Tokens on %{networkName} :)"
+      },
+      "swap_refuel": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
+        "button": "Add $3 of %{networkName} %{gasToken}"
+      },
+      "swap_refuel_deduct": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH subtracted from this swap.",
+        "button": "Adjust and add $3 of %{gasToken}"
+      },
+      "swap_refuel_notice": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
+        "button": "Adjust and add $3 of %{gasToken}"
       }
     },
     "fedora": {

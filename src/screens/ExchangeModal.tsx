@@ -45,12 +45,19 @@ import {
   GasFee,
   LegacyGasFee,
   LegacyGasFeeParams,
+  ParsedAddressAsset,
   SwappableAsset,
 } from '@/entities';
-import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { divide, greaterThan, multiply } from '@/helpers/utilities';
+import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
+import {
+  divide,
+  fromWei,
+  greaterThan,
+  multiply,
+  subtract,
+} from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -89,6 +96,8 @@ import {
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';
+import networkInfo from '@/helpers/networkInfo';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
@@ -177,11 +186,15 @@ export default function ExchangeModal({
   const title = getInputHeaderTitle(type, defaultInputAsset);
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
+  const [
+    outputNetworkDetails,
+    setOutputNetworkDetails,
+  ] = useState<ParsedAddressAsset>();
   const genericAssets = useSelector<
     { data: { genericAssets: { [address: string]: SwappableAsset } } },
     { [address: string]: SwappableAsset }
   >(({ data: { genericAssets } }) => genericAssets);
-
+  const [hasDeductedRefuel, setHasDeductedRefuel] = useState(false);
   const {
     navigate,
     setParams,
@@ -208,43 +221,6 @@ export default function ExchangeModal({
     flashbotsEnabled,
     nativeCurrency,
   } = useAccountSettings();
-
-  // if the default input is on a different network than
-  // we want to update the output to be on the same, if its not available -> null
-  const defaultOutputAssetOverride = useMemo(() => {
-    const newOutput = defaultOutputAsset;
-
-    if (
-      defaultInputAsset &&
-      defaultOutputAsset &&
-      defaultInputAsset.type !== defaultOutputAsset.type
-    ) {
-      if (
-        defaultOutputAsset?.implementations?.[
-          defaultInputAsset?.type === AssetType.token
-            ? 'ethereum'
-            : defaultInputAsset?.type
-        ]?.address
-      ) {
-        if (defaultInputAsset.type !== Network.mainnet) {
-          newOutput.mainnet_address = defaultOutputAsset.address;
-        }
-
-        newOutput.address =
-          defaultOutputAsset.implementations[defaultInputAsset?.type].address;
-        newOutput.type = defaultInputAsset.type;
-        newOutput.uniqueId =
-          newOutput.type === Network.mainnet
-            ? defaultOutputAsset?.address
-            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
-        return newOutput;
-      } else {
-        return null;
-      }
-    } else {
-      return newOutput;
-    }
-  }, [defaultInputAsset, defaultOutputAsset]);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
@@ -279,6 +255,7 @@ export default function ExchangeModal({
     chainId,
     currentNetwork,
     isCrosschainSwap,
+    isBridgeSwap,
   } = useMemo(() => {
     const inputNetwork = ethereumUtils.getNetworkFromType(inputCurrency?.type);
     const outputNetwork = ethereumUtils.getNetworkFromType(
@@ -290,23 +267,72 @@ export default function ExchangeModal({
             inputCurrency?.type ?? outputCurrency?.type
           )
         : 1;
+
     const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const isCrosschainSwap =
       crosschainSwapsEnabled && inputNetwork !== outputNetwork;
-
+    const isBridgeSwap = inputCurrency?.symbol === outputCurrency?.symbol;
     return {
       inputNetwork,
       outputNetwork,
       chainId,
       currentNetwork,
       isCrosschainSwap,
+      isBridgeSwap,
     };
-  }, [crosschainSwapsEnabled, inputCurrency?.type, outputCurrency?.type]);
+  }, [
+    crosschainSwapsEnabled,
+    inputCurrency?.symbol,
+    inputCurrency?.type,
+    outputCurrency?.symbol,
+    outputCurrency?.type,
+  ]);
+
+  // if the default input is on a different network than
+  // we want to update the output to be on the same, if its not available -> null
+  const defaultOutputAssetOverride = useMemo(() => {
+    const newOutput = defaultOutputAsset;
+
+    if (
+      defaultInputAsset &&
+      defaultOutputAsset &&
+      defaultInputAsset.type !== defaultOutputAsset.type
+    ) {
+      // find address for output asset on the input's network
+      // TODO: this value can be removed after the crosschain swaps flag is no longer necessary
+      const inputNetworkImplementationAddress =
+        defaultOutputAsset?.implementations?.[
+          defaultInputAsset?.type === AssetType.token
+            ? 'ethereum'
+            : defaultInputAsset?.type
+        ]?.address;
+      if (inputNetworkImplementationAddress || crosschainSwapsEnabled) {
+        if (!crosschainSwapsEnabled) {
+          newOutput.address =
+            inputNetworkImplementationAddress || defaultOutputAsset.address;
+          if (defaultInputAsset.type !== Network.mainnet) {
+            newOutput.mainnet_address = defaultOutputAsset.address;
+          }
+          newOutput.type = defaultInputAsset.type;
+        }
+        newOutput.uniqueId =
+          newOutput.type === Network.mainnet
+            ? defaultOutputAsset?.address
+            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
+        return newOutput;
+      } else {
+        return null;
+      }
+    } else {
+      return newOutput;
+    }
+  }, [defaultInputAsset, defaultOutputAsset, crosschainSwapsEnabled]);
 
   const {
     flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
+    updateAndFocusInputAmount,
   } = useSwapCurrencyHandlers({
     currentNetwork,
     inputNetwork,
@@ -349,6 +375,18 @@ export default function ExchangeModal({
     }
   }, [currentNetwork, prevTxNetwork]);
 
+  useEffect(() => {
+    const getNativeOutputAsset = async () => {
+      if (!outputNetwork || !accountAddress) return;
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
+        outputNetwork,
+        accountAddress
+      );
+      setOutputNetworkDetails(nativeAsset);
+    };
+    getNativeOutputAsset();
+  }, [outputNetwork, accountAddress]);
+
   const defaultGasLimit = useMemo(() => {
     const basicSwap = ethereumUtils.getBasicSwapGasLimit(Number(chainId));
     if (isDeposit) return ethUnits.basic_deposit;
@@ -369,6 +407,7 @@ export default function ExchangeModal({
     },
     loading,
     resetSwapInputs,
+    setRefuel,
     quoteError,
   } = useSwapDerivedOutputs(type);
 
@@ -815,6 +854,7 @@ export default function ExchangeModal({
       quoteError,
       tradeDetails,
       type,
+      isBridgeSwap,
     }),
     [
       currentNetwork,
@@ -828,6 +868,7 @@ export default function ExchangeModal({
       type,
       quoteError,
       isSufficientBalance,
+      isBridgeSwap,
     ]
   );
 
@@ -870,57 +911,198 @@ export default function ExchangeModal({
     swapSupportsFlashbots,
   ]);
 
-  const navigateToSwapDetailsModal = useCallback(() => {
+  const resetRefuelState = useCallback(() => {
+    setHasDeductedRefuel(false);
+    setRefuel(false);
+  }, [setRefuel]);
+
+  const navigateToSwapDetailsModal = useCallback(
+    (isRefuelTx = false) => {
+      android && Keyboard.dismiss();
+      const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
+      android && (lastFocusedInputHandle.current = null);
+      inputFieldRef?.current?.blur();
+      outputFieldRef?.current?.blur();
+      nativeFieldRef?.current?.blur();
+      const internalNavigate = () => {
+        android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+        setParams({ focused: false });
+        navigate(Routes.SWAP_DETAILS_SHEET, {
+          confirmButtonProps,
+          currentNetwork,
+          flashbotTransaction: flashbots,
+          isRefuelTx,
+          onClose: () => {
+            resetRefuelState();
+          },
+          restoreFocusOnSwapModal: () => {
+            android &&
+              (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+            setParams({ focused: true });
+          },
+          type: 'swap_details',
+        });
+        analytics.track('Opened Swap Details modal', {
+          inputTokenAddress: inputCurrency?.address || '',
+          inputTokenName: inputCurrency?.name || '',
+          inputTokenSymbol: inputCurrency?.symbol || '',
+          outputTokenAddress: outputCurrency?.address || '',
+          outputTokenName: outputCurrency?.name || '',
+          outputTokenSymbol: outputCurrency?.symbol || '',
+          type,
+        });
+      };
+      ios || !isKeyboardOpen()
+        ? internalNavigate()
+        : Keyboard.addListener('keyboardDidHide', internalNavigate);
+    },
+    [
+      confirmButtonProps,
+      currentNetwork,
+      flashbots,
+      inputCurrency?.address,
+      inputCurrency?.name,
+      inputCurrency?.symbol,
+      inputFieldRef,
+      lastFocusedInputHandle,
+      nativeFieldRef,
+      navigate,
+      outputCurrency?.address,
+      outputCurrency?.name,
+      outputCurrency?.symbol,
+      outputFieldRef,
+      resetRefuelState,
+      setParams,
+      type,
+    ]
+  );
+
+  const {
+    showRefuelSheet,
+    refuelState,
+    outputNativeAsset,
+    minRefuelAmount,
+  } = useSwapRefuel({
+    inputCurrency,
+    outputCurrency,
+    tradeDetails,
+  });
+
+  const navigateToRefuelModal = useCallback(() => {
+    const networkDetails = networkInfo[outputNetwork];
     android && Keyboard.dismiss();
-    const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
-    android && (lastFocusedInputHandle.current = null);
-    inputFieldRef?.current?.blur();
-    outputFieldRef?.current?.blur();
-    nativeFieldRef?.current?.blur();
-    const internalNavigate = () => {
-      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
-      setParams({ focused: false });
-      navigate(Routes.SWAP_DETAILS_SHEET, {
-        confirmButtonProps,
-        currentNetwork,
-        flashbotTransaction: flashbots,
-        restoreFocusOnSwapModal: () => {
-          android &&
-            (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
-          setParams({ focused: true });
+
+    if (refuelState === RefuelState.Add) {
+      return navigate(Routes.EXPLAIN_SHEET, {
+        network: outputNetwork,
+        networkName: networkDetails?.name,
+        gasToken: networkDetails?.gasToken,
+        nativeAsset: {
+          mainnet_address: outputNativeAsset?.mainnet_address,
+          type: outputNativeAsset?.type,
+          symbol: outputNativeAsset?.symbol,
         },
-        type: 'swap_details',
+        onRefuel: (
+          navigate: () => void,
+          goBack: () => void,
+          handleClose: () => void
+        ) => {
+          setRefuel(true);
+          handleClose();
+          navigateToSwapDetailsModal(true);
+        },
+        onContinue: (
+          navigate: () => void,
+          goBack: () => void,
+          handleClose: () => void
+        ) => {
+          handleClose();
+          navigateToSwapDetailsModal();
+        },
+        type: 'swap_refuel_add',
       });
-      analytics.track('Opened Swap Details modal', {
-        inputTokenAddress: inputCurrency?.address || '',
-        inputTokenName: inputCurrency?.name || '',
-        inputTokenSymbol: inputCurrency?.symbol || '',
-        outputTokenAddress: outputCurrency?.address || '',
-        outputTokenName: outputCurrency?.name || '',
-        outputTokenSymbol: outputCurrency?.symbol || '',
-        type,
+    }
+
+    if (refuelState === RefuelState.Deduct) {
+      return navigate(Routes.EXPLAIN_SHEET, {
+        network: outputNetwork,
+        networkName: networkDetails?.name,
+        gasToken: networkDetails?.gasToken,
+        nativeAsset: {
+          mainnet_address: outputNativeAsset?.mainnet_address,
+          type: outputNativeAsset?.type,
+          symbol: outputNativeAsset?.symbol,
+        },
+        onRefuel: (
+          navigate: () => void,
+          goBack: () => void,
+          handleClose: () => void
+        ) => {
+          // new input is sellAmount - minRefuelAmount if sellAmount > minRefuelAmount
+          const newSellAmountAfterRefuel = subtract(
+            tradeDetails?.sellAmount?.toString() || '0',
+            minRefuelAmount?.toString() || '0'
+          );
+
+          // if user press adjust and add 3 go back to exchange modal and update the input token amount
+          updateAndFocusInputAmount(fromWei(newSellAmountAfterRefuel));
+          setHasDeductedRefuel(true);
+          setRefuel(true);
+          handleClose();
+        },
+        onContinue: (
+          navigate: () => void,
+          goBack: () => void,
+          handleClose: () => void
+        ) => {
+          handleClose();
+          navigateToSwapDetailsModal();
+        },
+        type: 'swap_refuel_deduct',
       });
-    };
-    ios || !isKeyboardOpen()
-      ? internalNavigate()
-      : Keyboard.addListener('keyboardDidHide', internalNavigate);
+    }
+
+    if (refuelState === RefuelState.Notice) {
+      return navigate(Routes.EXPLAIN_SHEET, {
+        network: outputNetwork,
+        networkName: networkDetails?.name,
+        gasToken: networkDetails?.gasToken,
+        nativeAsset: {
+          mainnet_address: outputNativeAsset?.mainnet_address,
+          type: outputNativeAsset?.type,
+          symbol: outputNativeAsset?.symbol,
+        },
+        onProceed: (
+          navigate: () => void,
+          goBack: () => void,
+          handleClose: () => void
+        ) => {
+          handleClose();
+          navigateToSwapDetailsModal();
+        },
+        onContinue: (
+          navigate: () => void,
+          goBack: () => void,
+          handleClose: () => void
+        ) => {
+          handleClose();
+        },
+        type: 'swap_refuel_notice',
+      });
+    }
   }, [
-    confirmButtonProps,
-    currentNetwork,
-    flashbots,
-    inputCurrency?.address,
-    inputCurrency?.name,
-    inputCurrency?.symbol,
-    inputFieldRef,
-    lastFocusedInputHandle,
-    nativeFieldRef,
+    outputNetwork,
+    refuelState,
     navigate,
-    outputCurrency?.address,
-    outputCurrency?.name,
-    outputCurrency?.symbol,
-    outputFieldRef,
-    setParams,
-    type,
+    outputNativeAsset?.mainnet_address,
+    outputNativeAsset?.type,
+    outputNativeAsset?.symbol,
+    setRefuel,
+    navigateToSwapDetailsModal,
+    tradeDetails?.sellAmount,
+    minRefuelAmount,
+    updateAndFocusInputAmount,
+    handleFocus,
   ]);
 
   const handleTapWhileDisabled = useCallback(() => {
@@ -928,7 +1110,10 @@ export default function ExchangeModal({
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
-      network: currentNetwork,
+      fromNetwork: inputNetwork,
+      toNetwork: outputNetwork,
+      isCrosschainSwap,
+      isBridgeSwap,
       onClose: () => {
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
@@ -940,16 +1125,33 @@ export default function ExchangeModal({
       type: 'output_disabled',
     });
   }, [
-    currentNetwork,
     inputCurrency?.symbol,
+    inputNetwork,
+    isBridgeSwap,
+    isCrosschainSwap,
     lastFocusedInputHandle,
     navigate,
     outputCurrency?.symbol,
+    outputNetwork,
   ]);
 
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
+
+  const handleConfirmExchangePress = useCallback(() => {
+    if (loading) return NOOP();
+    if (showRefuelSheet && !hasDeductedRefuel) {
+      return navigateToRefuelModal();
+    }
+    return navigateToSwapDetailsModal();
+  }, [
+    loading,
+    showRefuelSheet,
+    navigateToSwapDetailsModal,
+    navigateToRefuelModal,
+    hasDeductedRefuel,
+  ]);
 
   return (
     <Wrapper keyboardType={KeyboardType.numpad}>
@@ -985,7 +1187,10 @@ export default function ExchangeModal({
                 network={inputNetwork}
                 onFocus={handleFocus}
                 onPressMaxBalance={updateMaxInputAmount}
-                onPressSelectInputCurrency={navigateToSelectInputCurrency}
+                onPressSelectInputCurrency={chainId => {
+                  resetRefuelState();
+                  navigateToSelectInputCurrency(chainId);
+                }}
                 setInputAmount={updateInputAmount}
                 setNativeAmount={updateNativeAmount}
                 testID={`${testID}-input`}
@@ -1000,10 +1205,12 @@ export default function ExchangeModal({
                   }
                   network={outputNetwork}
                   onFocus={handleFocus}
-                  onPressSelectOutputCurrency={() =>
-                    navigateToSelectOutputCurrency(chainId)
-                  }
-                  {...(currentNetwork === Network.arbitrum &&
+                  onPressSelectOutputCurrency={() => {
+                    resetRefuelState();
+                    navigateToSelectOutputCurrency(chainId);
+                  }}
+                  {...((currentNetwork === Network.arbitrum ||
+                    isCrosschainSwap) &&
                     !!outputCurrency && {
                       onTapWhileDisabled: handleTapWhileDisabled,
                     })}
@@ -1059,9 +1266,7 @@ export default function ExchangeModal({
               {showConfirmButton && (
                 <ConfirmExchangeButton
                   {...confirmButtonProps}
-                  onPressViewDetails={
-                    loading ? NOOP : navigateToSwapDetailsModal
-                  }
+                  onPressViewDetails={handleConfirmExchangePress}
                   testID={`${testID}-confirm-button`}
                 />
               )}
