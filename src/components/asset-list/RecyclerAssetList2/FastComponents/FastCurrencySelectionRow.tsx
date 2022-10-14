@@ -89,6 +89,7 @@ export default React.memo(function FastCurrencySelectionRow({
     name,
     testID,
     type,
+    disabled,
   },
 }: FastCurrencySelectionRowProps) {
   const { colors } = theme;
@@ -108,9 +109,10 @@ export default React.memo(function FastCurrencySelectionRow({
     <View style={sx.row}>
       <ButtonPressAnimation
         onPress={onPress}
-        style={sx.flex}
+        style={[sx.flex, disabled && { opacity: 0.5 }]}
         testID={rowTestID}
         wrapperStyle={sx.flex}
+        disabled={disabled}
       >
         <View style={sx.rootContainer}>
           <FastCoinIcon

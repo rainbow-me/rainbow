@@ -74,6 +74,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should go to swap and try different cross chain swaps', async () => {
     await Helpers.waitAndTap('exchange-fab');
+    await Helpers.checkIfExists('unswappableAssets');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
 
