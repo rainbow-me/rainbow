@@ -225,8 +225,8 @@ export const showTransactionDetailsSheet = (
             Navigation.handleAction(Routes.EXCHANGE_MODAL, {
               params: {
                 meta: parsedMeta,
-                inputAsset: parsedMeta?.from,
-                outputAsset: parsedMeta?.to,
+                inputAsset: parsedMeta?.inputAsset,
+                outputAsset: parsedMeta?.outputAsset,
               },
             });
             break;

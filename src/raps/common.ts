@@ -111,8 +111,8 @@ export type SwapMetadata = {
   flashbots: boolean;
   slippage: number;
   route: Source;
-  from: SwappableAsset;
-  to: SwappableAsset;
+  inputAsset: SwappableAsset;
+  outputAsset: SwappableAsset;
   independentField: SwapModalField;
   independentValue: string;
 };

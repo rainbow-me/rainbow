@@ -685,8 +685,8 @@ export default function ExchangeModal({
           } as Quote | CrosschainQuote,
           meta: {
             flashbots,
-            from: inputCurrency,
-            to: outputCurrency,
+            inputAsset: inputCurrency,
+            outputAsset: outputCurrency,
             independentField: independentField as SwapModalField,
             independentValue: independentValue as string,
             slippage: slippageInBips,
