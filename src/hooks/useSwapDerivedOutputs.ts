@@ -10,7 +10,7 @@ import {
   SwapType,
 } from '@rainbow-me/swaps';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 // DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
@@ -162,7 +162,8 @@ const getOutputAmount = async (
   outputPrice: string | number | null | undefined,
   slippage: number,
   source: Source,
-  fromAddress: EthereumAddress
+  fromAddress: EthereumAddress,
+  refuel: boolean
 ): Promise<{
   outputAmount: string | null;
   outputAmountDisplay: string | null;
@@ -205,7 +206,7 @@ const getOutputAmount = async (
       ...(quoteSource ? { source } : {}),
       swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(outputChainId),
-      refuel: false,
+      refuel,
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -306,6 +307,8 @@ export default function useSwapDerivedOutputs(type: string) {
     (state: AppState) => state.data.genericAssets
   );
 
+  const [refuel, setRefuel] = useState(false);
+
   const inputPrice = useMemo(() => {
     const price = ethereumUtils.getAssetPrice(
       inputCurrency?.mainnet_address ?? inputCurrency?.address
@@ -394,7 +397,8 @@ export default function useSwapDerivedOutputs(type: string) {
         outputPrice,
         slippagePercentage,
         source,
-        accountAddress
+        accountAddress,
+        refuel
       );
 
       // if original value changed, ignore new quote
@@ -444,7 +448,8 @@ export default function useSwapDerivedOutputs(type: string) {
         outputPrice,
         slippagePercentage,
         source,
-        accountAddress
+        accountAddress,
+        refuel
       );
       // if original value changed, ignore new quote
       if (
@@ -561,6 +566,7 @@ export default function useSwapDerivedOutputs(type: string) {
     slippageInBips,
     source,
     type,
+    refuel,
   ]);
   const { data, isLoading } = useQuery({
     queryFn: getTradeDetails,
@@ -575,6 +581,7 @@ export default function useSwapDerivedOutputs(type: string) {
       maxInputUpdate,
       slippageInBips,
       source,
+      refuel,
     ],
     ...(IS_TESTING !== 'true'
       ? { refetchInterval: SWAP_POLLING_INTERVAL }
@@ -585,6 +592,7 @@ export default function useSwapDerivedOutputs(type: string) {
     loading: isLoading && Boolean(independentValue),
     quoteError: data?.quoteError || null,
     resetSwapInputs,
+    setRefuel,
     result: data?.result || {
       derivedValues,
       displayValues,

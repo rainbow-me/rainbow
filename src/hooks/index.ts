@@ -129,6 +129,7 @@ export { default as useSwapIsSufficientBalance } from './useSwapIsSufficientBala
 export { default as useSwapSettings } from './useSwapSettings';
 export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
 export { default as useSwapDerivedValues } from './useSwapDerivedValues';
+export { default as useSwapRefuel } from './useSwapRefuel';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';

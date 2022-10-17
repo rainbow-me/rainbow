@@ -7,6 +7,7 @@ import { TransactionType } from './transactionType';
 import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
+import { SwapMetadata } from '@/raps/common';
 
 export interface RainbowTransaction {
   address?: string;
@@ -85,6 +86,7 @@ export interface NewTransaction {
     toChainId: ChainId;
     isBridge: boolean;
   };
+  meta?: SwapMetadata;
 }
 
 export interface NewTransactionOrAddCashTransaction

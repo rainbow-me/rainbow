@@ -5,11 +5,11 @@ import { metadataClient } from '@/apollo/client';
 import { CONTRACT_FUNCTION } from '@/apollo/queries';
 import {
   RainbowTransaction,
+  TransactionStatus,
   TransactionStatusTypes,
   TransactionDirection,
-  TransactionStatus,
-  TransactionType,
   TransactionTypes,
+  TransactionType,
   ZerionTransaction,
 } from '@/entities';
 import store from '@/redux/store';
@@ -29,7 +29,10 @@ import {
 } from '@/utils';
 import { getRandomColor } from '@/styles/colors';
 import startCase from 'lodash/startCase';
-import TransactionActions from '@/helpers/transactionActions';
+import {
+  getShortTransactionActionId,
+  TransactionActions,
+} from '@/helpers/transactionActions';
 import Routes from '@rainbow-me/routes';
 import { Navigation } from '@/navigation';
 import { Contact } from '@/redux/contacts';
@@ -41,6 +44,10 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_TEST } from '@/env';
 import { API_BASE_URL } from '@rainbow-me/swaps';
+import { swapMetadataStorage } from '@/raps/actions/swap';
+import { SwapMetadata } from '@/raps/common';
+import WalletTypes from '@/helpers/walletTypes';
+import { analytics } from '@/analytics';
 
 const flashbotsApi = new RainbowFetchClient({
   baseURL: 'https://protect.flashbots.net',
@@ -125,8 +132,22 @@ export const showTransactionDetailsSheet = (
   accountAddress: string
 ) => {
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
-
   const network = transactionDetails.network ?? Network.mainnet;
+
+  // get info to try swap again
+  const parentTxHash = ethereumUtils.getHash(transactionDetails);
+  const data = swapMetadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
+  const wrappedMeta = data ? JSON.parse(data) : {};
+  let parsedMeta: undefined | SwapMetadata;
+  if (wrappedMeta?.type === 'swap') {
+    parsedMeta = wrappedMeta.data as SwapMetadata;
+  }
+
+  const isReadOnly =
+    store.getState().wallets.selected?.type === WalletTypes.readOnly ?? true;
+  const isRetryButtonVisible =
+    !isReadOnly && status === TransactionStatus.failed && !!parsedMeta;
+
   const date = getHumanReadableDate(minedAt);
   const isSent =
     status === TransactionStatusTypes.sending ||
@@ -164,6 +185,7 @@ export const showTransactionDetailsSheet = (
 
   if (hash) {
     const buttons = [
+      ...(isRetryButtonVisible ? [TransactionActions.trySwapAgain] : []),
       ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
       ...(canBeCancelled ? [TransactionActions.cancel] : []),
       blockExplorerAction,
@@ -193,7 +215,21 @@ export const showTransactionDetailsSheet = (
       },
       (buttonIndex: number) => {
         const action = buttons[buttonIndex];
+        const actionId = getShortTransactionActionId(action);
+        analytics.track('Tapped Transaction Details Menu Item', {
+          action: actionId,
+        });
         switch (action) {
+          case TransactionActions.trySwapAgain:
+            Navigation.handleAction(Routes.WALLET_SCREEN, {});
+            Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+              params: {
+                meta: parsedMeta,
+                inputAsset: parsedMeta?.inputAsset,
+                outputAsset: parsedMeta?.outputAsset,
+              },
+            });
+            break;
           case TransactionActions.viewContact:
           case TransactionActions.addToContacts:
             Navigation.handleAction(Routes.MODAL_SCREEN, {

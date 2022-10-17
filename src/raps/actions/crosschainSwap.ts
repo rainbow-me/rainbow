@@ -29,6 +29,7 @@ import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
+import { swapMetadataStorage } from './swap';
 
 const actionName = 'crosschainSwap';
 
@@ -221,6 +222,13 @@ const crosschainSwap = async (
     },
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
+
+  if (parameters.meta && swap?.hash) {
+    swapMetadataStorage.set(
+      swap.hash.toLowerCase(),
+      JSON.stringify({ type: 'swap', data: parameters.meta })
+    );
+  }
 
   dispatch(
     dataAddNewTransaction(

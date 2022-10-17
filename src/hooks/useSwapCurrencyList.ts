@@ -593,6 +593,7 @@ const useSwapCurrencyList = (
     inputCurrency?.name,
     colors.networkColors,
     isCrosschainSearch,
+    inputCurrency?.type,
   ]);
 
   const crosschainExactMatches = useMemo(() => {

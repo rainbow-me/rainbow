@@ -222,6 +222,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
     return (
       <Bleed vertical="8px">
         <ButtonPressAnimation
+          testID={`${testID}`}
           onPress={nextStep}
           scaleTo={1.06}
           style={{

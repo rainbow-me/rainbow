@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChainBadge, CoinIcon } from '../components/coin-icon';
+import { ChainBadge, CoinIcon, DashedWrapper } from '../components/coin-icon';
 import {
   Centered,
   Column,
@@ -28,8 +28,15 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { deviceUtils, ethereumUtils, gasUtils } from '@/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  gasUtils,
+  getTokenMetadata,
+} from '@/utils';
 import { cloudPlatformAccountName } from '@/utils/platform';
+import { useTheme } from '@/theme';
+import { isL2Network } from '@/handlers/web3';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -240,7 +247,7 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'optimismRed',
       bgColor: 'optimismRed06',
-      onPress: (navigate, goBack, handleClose) => () => {
+      onPress: (navigate, goBack, handleClose) => {
         if (handleClose) handleClose();
         if (goBack) goBack();
         setTimeout(() => {
@@ -263,7 +270,7 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'smolPurple',
       bgColor: 'smolPurple06',
-      onPress: (navigate, goBack, handleClose) => () => {
+      onPress: (navigate, goBack, handleClose) => {
         if (handleClose) handleClose();
         if (goBack) goBack();
         setTimeout(() => {
@@ -280,18 +287,39 @@ export const explainers = (params, colors) => ({
   output_disabled: {
     extraHeight: -30,
     title: params?.inputToken
-      ? lang.t('explain.output_disabled.title', {
-          inputToken: params?.inputToken,
-        })
+      ? lang.t(
+          `explain.output_disabled.${
+            params?.isCrosschainSwap ? 'title_crosschain' : 'title'
+          }`,
+          {
+            inputToken: params?.inputToken,
+            fromNetwork: networkInfo[params?.fromNetwork]?.name,
+          }
+        )
       : lang.t('explain.output_disabled.title_empty'),
-    text: lang.t('explain.output_disabled.text', {
-      network: networkInfo[params?.network]?.name,
-      inputToken: params?.inputToken,
-      outputToken: params?.outputToken,
-    }),
-    logo: (
+
+    text: params?.isCrosschainSwap
+      ? lang.t(
+          `explain.output_disabled.${
+            params?.isBridgeSwap ? 'text_bridge' : 'text_crosschain'
+          }`,
+          {
+            inputToken: params?.inputToken,
+            outputToken: params?.outputToken,
+            fromNetwork: networkInfo[params?.fromNetwork]?.name,
+            toNetwork: networkInfo[params?.toNetwork]?.name,
+          }
+        )
+      : lang.t('explain.output_disabled.text', {
+          fromNetwork: networkInfo[params?.fromNetwork]?.name,
+          inputToken: params?.inputToken,
+          outputToken: params?.outputToken,
+        }),
+    logo: !isL2Network(params?.fromNetwork) ? (
+      <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_SYMBOL} />
+    ) : (
       <ChainBadge
-        assetType={params?.network}
+        assetType={params?.fromNetwork}
         marginBottom={8}
         position="relative"
         size="large"
@@ -578,6 +606,18 @@ export const explainers = (params, colors) => ({
       </RowWithMargins>
     ),
   },
+  crossChainGas: {
+    extraHeight: 20,
+    title: lang.t('explain.cross_chain_swap.title'),
+    text: lang.t('explain.cross_chain_swap.text'),
+    logo: (
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <CoinIcon size={40} {...params?.inputCurrency} />
+        <DoubleChevron />
+        <CoinIcon size={40} {...params?.outputCurrency} />
+      </RowWithMargins>
+    ),
+  },
   availableNetworks: {
     buttonText: `Go to Hop`,
     extraHeight: -90,
@@ -781,6 +821,146 @@ export const explainers = (params, colors) => ({
       </Text>
     ),
   },
+  swap_refuel_add: {
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel.title', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.no_thanks'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('explain.swap_refuel.button', {
+        networkName: params?.networkName,
+        gasToken: params?.gasToken,
+      }),
+      textColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      onPress: params?.onRefuel,
+    },
+  },
+  swap_refuel_deduct: {
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel_deduct.title', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel_deduct.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.no_thanks'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('explain.swap_refuel_deduct.button', {
+        networkName: params?.networkName,
+        gasToken: params?.gasToken,
+      }),
+      textColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      onPress: params?.onRefuel,
+    },
+  },
+  swap_refuel_notice: {
+    extraHeight: 50,
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel_notice.title', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel_notice.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.go_back'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('button.proceed_anyway'),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.alpha(colors?.appleBlue, 0.05),
+      onPress: params?.onProceed,
+    },
+  },
 });
 
 const ExplainSheet = () => {
@@ -825,6 +1005,29 @@ const ExplainSheet = () => {
 
   const buttons = useMemo(() => {
     const reverseButtons = type === 'obtainL2Assets' || type === 'unverified';
+    const onSecondaryPress = e => {
+      if (explainSheetConfig?.readMoreLink) {
+        return handleReadMore(e);
+      }
+      if (explainSheetConfig.secondaryButton?.onPress) {
+        return explainSheetConfig.secondaryButton.onPress(
+          navigate,
+          goBack,
+          handleClose
+        );
+      }
+
+      return goBack(e);
+    };
+
+    const onPrimaryPress = e => {
+      if (explainSheetConfig.button?.onPress) {
+        return explainSheetConfig.button.onPress(navigate, goBack, handleClose);
+      }
+
+      handleClose(e);
+    };
+
     const secondaryButton = (explainSheetConfig?.readMoreLink ||
       explainSheetConfig?.secondaryButton?.label) && (
       <Column
@@ -841,7 +1044,7 @@ const ExplainSheet = () => {
             explainSheetConfig.secondaryButton?.label ||
             lang.t('explain.read_more')
           }
-          onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
+          onPress={onSecondaryPress}
           size="big"
           textColor={
             explainSheetConfig.secondaryButton?.textColor ??
@@ -854,20 +1057,14 @@ const ExplainSheet = () => {
     const accentCta = (
       <SheetActionButton
         color={
-          colors[explainSheetConfig.button?.bgColor] ||
+          explainSheetConfig.button?.bgColor ||
           colors.alpha(colors.appleBlue, 0.04)
         }
         isTransparent
         label={explainSheetConfig.button?.label || lang.t('button.got_it')}
-        onPress={
-          explainSheetConfig.button?.onPress
-            ? explainSheetConfig.button.onPress(navigate, goBack, handleClose)
-            : handleClose
-        }
+        onPress={onPrimaryPress}
         size="big"
-        textColor={
-          colors[explainSheetConfig.button?.textColor] || colors.appleBlue
-        }
+        textColor={explainSheetConfig.button?.textColor ?? colors.appleBlue}
         weight="heavy"
         testID={'explainer-sheet-accent'}
       />
@@ -880,6 +1077,7 @@ const ExplainSheet = () => {
   }, [
     colors,
     explainSheetConfig.button,
+    explainSheetConfig.secondaryButton,
     explainSheetConfig?.readMoreLink,
     explainSheetConfig.secondaryButton?.bgColor,
     explainSheetConfig.secondaryButton?.label,
