@@ -5,11 +5,12 @@ import { useTheme } from '../../theme/ThemeContext';
 import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { borders } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
+import { borders } from '@/styles';
+import ShadowStack from '@/react-native-shadow-stack';
 
 const buildShadows = (color, size, darkMode, colors) => {
-  if (size === 'small') {
+  // TODO: remove `legacySmall` size once rainbow home screen revamp is released
+  if (size === 'small' || size === 'legacySmall') {
     return [
       [0, 3, 5, colors.shadow, 0.14],
       [
@@ -75,6 +76,16 @@ const sizeConfigs = colors => ({
     textSize: 'larger',
   },
   small: {
+    dimensions: 36,
+    textSize: 'large',
+  },
+  small_shadowless: {
+    dimensions: 36,
+    textSize: 'large',
+    shadow: [[0, 0, 0, colors.shadow, 0]],
+  },
+  // TODO: remove `legacySmall` size once rainbow home screen revamp is released
+  legacySmall: {
     dimensions: 34,
     textSize: 'large',
   },
@@ -103,11 +114,18 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
     colors,
   ]);
 
+  const backgroundColor =
+    typeof color === 'number'
+      ? // sometimes the color is gonna be missing so we fallback to white
+        // otherwise there will be only shadows without the the placeholder "circle"
+        colors.avatarBackgrounds[color] ?? 'white'
+      : color;
+
   return (
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors.avatarBackgrounds[color] || color}
+      backgroundColor={backgroundColor}
       shadows={shadows}
     >
       <Centered flex={1}>

@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
-import { useChartData } from '@rainbow-me/animated-charts';
-import { Text } from '@rainbow-me/design-system';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { useChartData } from '@/react-native-animated-charts/src';
+import { Text } from '@/design-system';
+import { useAccountSettings } from '@/hooks';
+import { supportedNativeCurrencies } from '@/references';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
@@ -46,7 +46,11 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
         position: 'absolute',
       }}
     >
-      <Text color={{ custom: props.color }} size="14px" weight="bold">
+      <Text
+        color={{ custom: props.color }}
+        size="14px / 19px (Deprecated)"
+        weight="bold"
+      >
         {props.children}
       </Text>
     </View>

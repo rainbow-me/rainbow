@@ -7,8 +7,8 @@ import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
   resolveUnstoppableDomain,
-} from '@rainbow-me/handlers/web3';
-import { sanitizeSeedPhrase } from '@rainbow-me/utils';
+} from '@/handlers/web3';
+import { sanitizeSeedPhrase } from '@/utils';
 
 // Currently supported Top Level Domains from Unstoppable Domains
 const supportedUnstoppableDomains = [
@@ -37,13 +37,12 @@ export const isValidEmail = (email: any) =>
 export const isENSAddressFormat = memoFn(address => {
   // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
   const parts = !!address && address.split('.');
+
   if (
     !parts ||
     parts.length === 1 ||
     !parts[parts.length - 1] ||
-    (parseDomain(parts[parts.length - 1].toLowerCase()).type ===
-      ParseResultType.NotListed &&
-      parts[parts.length - 1].toLowerCase() !== 'eth') ||
+    parts[parts.length - 1].toLowerCase() !== 'eth' ||
     supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
   ) {
     return false;

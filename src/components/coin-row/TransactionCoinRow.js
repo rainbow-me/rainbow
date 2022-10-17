@@ -12,21 +12,21 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
-import TransactionActions from '@rainbow-me/helpers/transactionActions';
+import { TransactionStatusTypes, TransactionTypes } from '@/entities';
+import { TransactionActions } from '@/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
-} from '@rainbow-me/helpers/transactions';
-import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
+} from '@/helpers/transactions';
+import { isValidDomainFormat } from '@/helpers/validators';
+import { useAccountSettings } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+} from '@/utils';
 
 const containerStyles = {
   paddingLeft: 19,
@@ -135,7 +135,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
     });
     if (hash) {
-      let buttons = [
+      const buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
         blockExplorerAction,
@@ -217,6 +217,9 @@ export default function TransactionCoinRow({ item, ...props }) {
         bottomRowRender={BottomRow}
         containerStyles={containerStyles}
         contentStyles={contentStyles}
+        testID={`${item.status[0].toUpperCase() + item.status.substring(1)}-${
+          item.name
+        }`}
         topRowRender={TopRow}
         type={item.network}
       />

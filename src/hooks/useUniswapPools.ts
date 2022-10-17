@@ -1,26 +1,20 @@
+import { useQuery } from '@tanstack/react-query';
 import sortBy from 'lodash/sortBy';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import {
-  UniswapPairData,
-  UniswapPairHistoricalData,
-} from '@rainbow-me/entities';
-import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
-import { pickShallow } from '@rainbow-me/helpers/utilities';
-import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@rainbow-me/redux/explorer';
-import { AppState } from '@rainbow-me/redux/store';
+import { UniswapPairData, UniswapPairHistoricalData } from '@/entities';
+import { getUniswapV2Pools } from '@/handlers/dispersion';
+import { pickShallow } from '@/helpers/utilities';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+import { AppState } from '@/redux/store';
 import {
   setPoolsDetails,
   UniswapPoolAddressDetailsFull,
-} from '@rainbow-me/redux/uniswapLiquidity';
-import { WETH_ADDRESS } from '@rainbow-me/references';
-import logger from 'logger';
+} from '@/redux/uniswapLiquidity';
+import { WETH_ADDRESS } from '@/references';
+import logger from '@/utils/logger';
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
 export const SORT_DIRECTION = {

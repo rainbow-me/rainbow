@@ -1,15 +1,17 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { IS_TEST } from '@/env';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
-import { analytics } from '@rainbow-me/analytics';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
-import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
-import { profileUtils } from '@rainbow-me/utils';
+import { analytics } from '@/analytics';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
+import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
+import { profileUtils } from '@/utils';
+import { delay } from '@rainbow-me/helpers/utilities';
 
 export default function WalletProfileState({
   actionType,
@@ -50,7 +52,7 @@ export default function WalletProfileState({
     }
   }, [actionType, goBack, navigate]);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     onCloseModal({
       color:
@@ -60,12 +62,13 @@ export default function WalletProfileState({
       image: profileImage,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
-    const callback = () => {
+    const callback = async () => {
       goBack();
       if (actionType === 'Create' && isNewProfile) {
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
     };
+    IS_TEST && (await delay(2000));
     if (actionType !== 'Create') {
       callback();
     } else {

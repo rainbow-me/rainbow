@@ -1,17 +1,17 @@
 import './languages';
-import messaging from '@react-native-firebase/messaging';
 import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
-import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
 import {
   AppRegistry,
   AppState,
+  Dimensions,
   InteractionManager,
   Linking,
   LogBox,
   View,
 } from 'react-native';
+
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import {
@@ -19,15 +19,15 @@ import {
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
-
+import { MMKV } from 'react-native-mmkv';
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
-import { QueryClientProvider } from 'react-query';
-import { connect, Provider } from 'react-redux';
+import { connect, Provider as ReduxProvider, useSelector } from 'react-redux';
 import { RecoilRoot } from 'recoil';
+import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FedoraToast, OfflineToast } from './components/toasts';
@@ -43,14 +43,13 @@ import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import {
-  runFeatureUnlockChecks,
+  runFeatureAndCampaignChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
-import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
@@ -58,11 +57,14 @@ import RoutesComponent from './navigation/Routes';
 import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
-import { queryClient } from './react-query/queryClient';
+import {
+  PersistQueryClientProvider,
+  persistOptions,
+  queryClient,
+} from './react-query';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
-import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -71,20 +73,19 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
-import { analytics } from '@rainbow-me/analytics';
-import {
-  CODE_PUSH_DEPLOYMENT_KEY,
-  isCustomBuild,
-} from '@rainbow-me/handlers/fedora';
-import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
-import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
-import { Portal } from 'react-native-cool-modals/Portal';
-
-const WALLETCONNECT_SYNC_DELAY = 500;
+import { analytics } from '@/analytics';
+import { STORAGE_IDS } from './model/mmkv';
+import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
+import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
+import { InitialRouteContext } from '@/navigation/initialRoute';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
+import { Portal } from '@/react-native-cool-modals/Portal';
+import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 
 const FedoraToastRef = createRef();
+
+const mmkv = new MMKV();
 
 // We need to disable React Navigation instrumentation for E2E tests
 // because detox doesn't like setTimeout calls that are used inside
@@ -143,11 +144,7 @@ enableScreens();
 
 const containerStyle = { flex: 1 };
 
-class App extends Component {
-  static propTypes = {
-    requestsForTopic: PropTypes.func,
-  };
-
+class OldApp extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
@@ -162,23 +159,7 @@ class App extends Component {
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
-    saveFCMToken();
-    this.onTokenRefreshListener = registerTokenRefreshListener();
-
-    this.foregroundNotificationListener = messaging().onMessage(
-      this.onRemoteNotification
-    );
-
-    this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
-      async remoteMessage => {
-        setTimeout(() => {
-          this.onPushNotificationOpened(remoteMessage?.data?.topic);
-        }, WALLETCONNECT_SYNC_DELAY);
-      }
-    );
-
     this.branchListener = branchListener(this.handleOpenLinkingURL);
-
     // Walletconnect uses direct deeplinks
     if (android) {
       try {
@@ -205,20 +186,21 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runWalletBackupStatusChecks();
-      if (ios) {
-        InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => runFeatureUnlockChecks(), 2000);
-        });
-      }
+
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          if (IS_TESTING === 'true') {
+            return;
+          }
+          runFeatureAndCampaignChecks();
+        }, 2000);
+      });
     }
   }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
     rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
-    this.onTokenRefreshListener?.();
-    this.foregroundNotificationListener?.();
-    this.backgroundNotificationListener?.();
     this.branchListener?.();
   }
 
@@ -233,26 +215,8 @@ class App extends Component {
     store.dispatch(uniswapPairsInit());
   }
 
-  onRemoteNotification = notification => {
-    setTimeout(() => {
-      this.onPushNotificationOpened(notification?.data?.topic);
-    }, WALLETCONNECT_SYNC_DELAY);
-  };
-
   handleOpenLinkingURL = url => {
     handleDeeplink(url, this.state.initialRoute);
-  };
-
-  onPushNotificationOpened = topic => {
-    const { requestsForTopic } = this.props;
-    const requests = requestsForTopic(topic);
-    if (requests) {
-      // WC requests will open automatically
-      return false;
-    }
-    // In the future, here  is where we should
-    // handle all other kinds of push notifications
-    // For ex. incoming txs, etc.
   };
 
   handleInitializeAnalytics = async () => {
@@ -267,6 +231,18 @@ class App extends Component {
       await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
       analytics.track('First App Open');
+      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, true);
+    } else if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
+      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
+      // track device dimensions
+      const screenWidth = Dimensions.get('screen').width;
+      const screenHeight = Dimensions.get('screen').height;
+      const screenScale = Dimensions.get('screen').scale;
+      analytics.identify(storedIdentifier, {
+        screenHeight,
+        screenWidth,
+        screenScale,
+      });
     }
   };
 
@@ -323,57 +299,70 @@ class App extends Component {
   };
 
   render = () => (
-    <MainThemeProvider>
-      <RainbowContextWrapper>
-        <ErrorBoundary>
-          <Portal>
-            <SafeAreaProvider>
-              <QueryClientProvider client={queryClient}>
-                <Provider store={store}>
-                  <RecoilRoot>
-                    <SharedValuesProvider>
-                      <View style={containerStyle}>
-                        {this.state.initialRoute && (
-                          <InitialRouteContext.Provider
-                            value={this.state.initialRoute}
-                          >
-                            <RoutesComponent
-                              onReady={this.handleSentryNavigationIntegration}
-                              ref={this.handleNavigatorRef}
-                            />
-                            <PortalConsumer />
-                          </InitialRouteContext.Provider>
-                        )}
-                        <OfflineToast />
-                        <FedoraToast ref={FedoraToastRef} />
-                      </View>
-                    </SharedValuesProvider>
-                  </RecoilRoot>
-                </Provider>
-              </QueryClientProvider>
-            </SafeAreaProvider>
-          </Portal>
-        </ErrorBoundary>
-      </RainbowContextWrapper>
-    </MainThemeProvider>
+    <Portal>
+      <NotificationsHandler walletReady={this.props.walletReady}>
+        <View style={containerStyle}>
+          {this.state.initialRoute && (
+            <InitialRouteContext.Provider value={this.state.initialRoute}>
+              <RoutesComponent
+                onReady={this.handleSentryNavigationIntegration}
+                ref={this.handleNavigatorRef}
+              />
+              <PortalConsumer />
+            </InitialRouteContext.Provider>
+          )}
+          <OfflineToast />
+          <FedoraToast ref={FedoraToastRef} />
+        </View>
+      </NotificationsHandler>
+    </Portal>
   );
 }
 
-const AppWithRedux = connect(
-  ({ appState: { walletReady } }) => ({ walletReady }),
-  {
-    requestsForTopic,
-  }
-)(App);
+const OldAppWithRedux = connect(state => ({
+  walletReady: state.appState.walletReady,
+}))(OldApp);
 
-const AppWithReduxStore = () => <AppWithRedux store={store} />;
+function App() {
+  return <OldAppWithRedux />;
+}
 
-const AppWithSentry = Sentry.wrap(AppWithReduxStore);
+function Root() {
+  return (
+    <ReduxProvider store={store}>
+      <RecoilRoot>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={persistOptions}
+        >
+          <SafeAreaProvider>
+            <MainThemeProvider>
+              <RainbowContextWrapper>
+                <SharedValuesProvider>
+                  <ErrorBoundary>
+                    <App />
+                  </ErrorBoundary>
+                </SharedValuesProvider>
+              </RainbowContextWrapper>
+            </MainThemeProvider>
+          </SafeAreaProvider>
+        </PersistQueryClientProvider>
+      </RecoilRoot>
+    </ReduxProvider>
+  );
+}
 
-const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
+const RootWithSentry = Sentry.wrap(Root);
+const RootWithCodePush = codePush({
+  checkFrequency: codePush.CheckFrequency.MANUAL,
+})(RootWithSentry);
 
-const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
+const PlaygroundWithReduxStore = () => (
+  <ReduxProvider store={store}>
+    <Playground />
+  </ReduxProvider>
+);
 
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? Playground : AppWithCodePush
+  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush
 );

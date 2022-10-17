@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { View } from 'react-native';
 
@@ -41,8 +40,8 @@ export const nested: Example = {
   name: 'Nested',
   Example: () =>
     source(
-      <Inset horizontal="19px" vertical="24px">
-        <Stack space="42px">
+      <Inset horizontal="20px" vertical="24px">
+        <Stack space="44px">
           <Stack space="12px">
             <Placeholder />
             <Placeholder />
@@ -61,10 +60,16 @@ export const withText: Example = {
   name: 'With text',
   Example: () =>
     source(
-      <Stack space="15px">
-        <Text>Lorem ipsum</Text>
-        <Text>Lorem ipsum</Text>
-        <Text>Lorem ipsum</Text>
+      <Stack space="16px">
+        <Text color="label" size="17pt">
+          Lorem ipsum
+        </Text>
+        <Text color="label" size="17pt">
+          Lorem ipsum
+        </Text>
+        <Text color="label" size="17pt">
+          Lorem ipsum
+        </Text>
       </Stack>
     ),
 };
@@ -73,7 +78,7 @@ export const withCenterAlignment: Example = {
   name: 'With center alignment',
   Example: () =>
     source(
-      <Stack alignHorizontal="center" space="19px">
+      <Stack alignHorizontal="center" space="20px">
         <Placeholder width={30} />
         <Placeholder width={90} />
         <Placeholder width={60} />
@@ -85,7 +90,7 @@ export const withSeparators: Example = {
   name: 'With separators',
   Example: () =>
     source(
-      <Stack separator={<MockDivider />} space="19px">
+      <Stack separator={<MockDivider />} space="20px">
         <Placeholder />
         <Placeholder />
         <Placeholder />
@@ -97,7 +102,7 @@ export const withCenterAlignmentAndDividers: Example = {
   name: 'With center alignment and dividers',
   Example: () =>
     source(
-      <Stack alignHorizontal="center" separator={<MockDivider />} space="19px">
+      <Stack alignHorizontal="center" separator={<MockDivider />} space="20px">
         <Placeholder width={30} />
         <Placeholder width={90} />
         <Placeholder width={60} />
@@ -109,7 +114,7 @@ export const withRightAlignmentAndDividers: Example = {
   name: 'With right alignment and dividers',
   Example: () =>
     source(
-      <Stack alignHorizontal="right" separator={<MockDivider />} space="19px">
+      <Stack alignHorizontal="right" separator={<MockDivider />} space="20px">
         <Placeholder width={30} />
         <Placeholder width={90} />
         <Placeholder width={60} />

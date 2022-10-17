@@ -5,8 +5,8 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
-import { useAccountProfile, useRequests } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
+import { useAccountProfile, useRequests } from '@/hooks';
+import Routes from '@/navigation/routesNames';
 
 export default function ProfileHeaderButton() {
   const { colors } = useTheme();
@@ -35,7 +35,8 @@ export default function ProfileHeaderButton() {
         ) : (
           <ContactAvatar
             color={isNaN(accountColor) ? colors.skeleton : accountColor}
-            size="small"
+            // TODO: remove `legacySmall` size once rainbow home screen revamp is released
+            size="legacySmall"
             value={accountSymbol}
           />
         )}

@@ -35,7 +35,7 @@ import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { BaseButtonAnimationProps } from './types';
 import { HapticFeedbackType } from '@/utils/haptics';
-import { useLongPressEvents } from '@rainbow-me/hooks';
+import { useLongPressEvents } from '@/hooks';
 
 interface BaseProps extends BaseButtonAnimationProps {
   backgroundColor: string;
@@ -91,6 +91,7 @@ const ScaleButton = ({
   overflowMargin,
   scaleTo = 0.86,
   wrapperStyle,
+  testID,
 }: PropsWithChildren<Props>) => {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
@@ -149,7 +150,7 @@ const ScaleButton = ({
   );
 
   return (
-    <View style={[sx.overflow, wrapperStyle]}>
+    <View style={[sx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
           hitSlop={-overflowMargin}
@@ -190,6 +191,7 @@ const SimpleScaleButton = ({
   skipTopMargin,
   transformOrigin,
   wrapperStyle,
+  testID,
 }: Props) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }) => {
@@ -227,6 +229,7 @@ const SimpleScaleButton = ({
         },
         wrapperStyle,
       ]}
+      testID={testID}
     >
       <View
         style={{

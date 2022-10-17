@@ -1,6 +1,9 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
+import { exec } from 'child_process';
 import * as Helpers from './helpers';
+
+const android = device.getPlatform() === 'android';
 
 const testEthereumDeeplink = async (url, coldStart = true) => {
   coldStart
@@ -19,6 +22,24 @@ const testEthereumDeeplink = async (url, coldStart = true) => {
   }
   await Helpers.swipe('send-sheet', 'down');
 };
+
+const escapeUrl = url => {
+  if (android) {
+    return url.replace(/&/g, '\\&');
+  } else {
+    return url;
+  }
+};
+
+beforeAll(async () => {
+  if (android) {
+    // When opening deeplink to rainbow, Android asks if we want to do it in
+    // Chrome or the app. Detox is only able to control tapping within the app,
+    // so this blocks our tests. The only way we found to bypass this is to
+    // uninstall Chrome before.
+    await exec('yarn adb-all shell pm disable-user com.android.chrome');
+  }
+});
 
 describe('Deeplinks spec', () => {
   it('Should show the welcome screen', async () => {
@@ -48,7 +69,7 @@ describe('Deeplinks spec', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -89,34 +110,36 @@ describe('Deeplinks spec', () => {
   });
 
   it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@1?value=1e2';
+    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@1?value=1e2');
     await testEthereumDeeplink(url, false);
   });
 
   it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@10?value=1e15';
+    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@10?value=1e15');
     await testEthereumDeeplink(url, false);
   });
 
   it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
-    const url =
-      'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18';
+    const url = escapeUrl(
+      'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18'
+    );
     await testEthereumDeeplink(url);
   });
 
-  xit('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
+  it.skip('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@42161?value=1e15';
     await testEthereumDeeplink(url);
   });
 
-  xit('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
-    const url =
-      'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15';
+  it.skip('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
+    const url = escapeUrl(
+      'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15'
+    );
     await testEthereumDeeplink(url);
   });
 
-  xit('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@137?value=1e15';
+  it.skip('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
+    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@137?value=1e15');
     await testEthereumDeeplink(url);
   });
 

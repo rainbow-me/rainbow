@@ -1,18 +1,18 @@
 import isNil from 'lodash/isNil';
 import toUpper from 'lodash/toUpper';
 import { dedupeUniqueTokens } from './uniqueTokens';
-import { AssetTypes } from '@rainbow-me/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { AssetTypes } from '@/entities';
+import { isNativeAsset } from '@/handlers/assets';
+import networkTypes from '@/helpers/networkTypes';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
-} from '@rainbow-me/utilities';
-import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
-import { memoFn } from '@rainbow-me/utils/memoFn';
+} from '@/helpers/utilities';
+import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
+import { memoFn } from '@/utils/memoFn';
 
 /**
  * @desc parse account assets

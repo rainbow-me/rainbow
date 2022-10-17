@@ -7,8 +7,9 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { IS_TESTING } from 'react-native-dotenv';
 
 const timingConfig = {
   duration: 2500,
@@ -54,6 +55,10 @@ export default function ShimmerAnimation({
     opacity: opacity.value,
     transform: [{ translateX: positionX.value }],
   }));
+
+  if (IS_TESTING === 'true') {
+    return null;
+  }
 
   return <ColorGradient colors={gradientColors} style={animatedStyle} />;
 }

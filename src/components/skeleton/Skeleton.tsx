@@ -1,15 +1,14 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { withThemeContext } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ShimmerAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { Row } from '../layout';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 

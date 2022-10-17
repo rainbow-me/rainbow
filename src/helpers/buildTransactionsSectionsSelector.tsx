@@ -9,7 +9,7 @@ import {
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes } from '@/entities';
 
 const mainnetAddressesSelector = (state: any) => state.mainnetAddresses;
 const accountAddressSelector = (state: any) => state.accountAddress;
@@ -55,8 +55,7 @@ const buildTransactionsSections = (
   theme: any,
   transactions: any,
   isFocused: any,
-  initialized: any,
-  navigate: any
+  initialized: any
 ) => {
   if (!isFocused && !initialized) {
     return { sections: [] };
@@ -82,8 +81,9 @@ const buildTransactionsSections = (
         })),
         renderItem: ({ item }: any) => (
           <FastTransactionCoinRow
+            accountAddress={accountAddress}
+            contacts={contacts}
             item={item}
-            navigate={navigate}
             theme={theme}
           />
         ),

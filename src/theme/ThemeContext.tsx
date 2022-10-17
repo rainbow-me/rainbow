@@ -6,12 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {
-  LayoutAnimation,
-  NativeModules,
-  StatusBar,
-  useColorScheme,
-} from 'react-native';
+import { LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import {
@@ -20,9 +15,10 @@ import {
   lightModeThemeColors,
 } from '../styles/colors';
 import currentColors from './currentColors';
-import { DesignSystemProvider } from '@rainbow-me/design-system';
-import { getTheme, saveTheme } from '@rainbow-me/handlers/localstorage/theme';
-import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
+import { DesignSystemProvider } from '@/design-system';
+import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
+import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
+import { StyleThingThemeProvider } from '@/styled-thing';
 
 export const Themes = {
   DARK: 'dark',
@@ -52,7 +48,9 @@ export const ThemeContext = createContext<ThemeContextProps>({
 
 const { RNThemeModule } = NativeModules;
 
-export const MainThemeProvider = (props: PropsWithChildren<{}>) => {
+export const MainThemeProvider = (
+  props: PropsWithChildren<Record<string, never>>
+) => {
   const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
 
   // looks like one works on Android and another one on iOS. good.
@@ -81,18 +79,13 @@ export const MainThemeProvider = (props: PropsWithChildren<{}>) => {
             ? 'dark'
             : 'light'
           : userPref;
-      StatusBar.setBarStyle(
-        userPrefSystemAdjusted === Themes.DARK
-          ? 'light-content'
-          : 'dark-content',
-        true
-      );
       currentColors.theme = userPrefSystemAdjusted;
       currentColors.themedColors =
         userPrefSystemAdjusted === Themes.DARK
           ? darkModeThemeColors
           : lightModeThemeColors;
       setColorScheme(userPref);
+      onHandleStatusBar();
     };
     loadUserPref();
   }, [isSystemDarkMode]);
@@ -100,7 +93,7 @@ export const MainThemeProvider = (props: PropsWithChildren<{}>) => {
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
     if (colorScheme) {
-      //setIsDarkMode(colorScheme === Themes.DARK);
+      // setIsDarkMode(colorScheme === Themes.DARK);
       saveTheme(colorScheme);
     }
   }, [colorScheme]);
@@ -124,17 +117,13 @@ export const MainThemeProvider = (props: PropsWithChildren<{}>) => {
               : 'light'
             : scheme;
         currentColors.theme = schemeSystemAdjusted;
-        StatusBar.setBarStyle(
-          schemeSystemAdjusted === Themes.DARK
-            ? 'light-content'
-            : 'dark-content',
-          true
-        );
+
         currentColors.themedColors =
           schemeSystemAdjusted === Themes.DARK
             ? darkModeThemeColors
             : lightModeThemeColors;
         setColorScheme(scheme);
+        onHandleStatusBar();
         LayoutAnimation.configureNext(
           LayoutAnimation.create(1000, 'easeInEaseOut', 'opacity')
         );

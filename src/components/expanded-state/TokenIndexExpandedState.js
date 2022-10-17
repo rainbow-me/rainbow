@@ -15,24 +15,24 @@ import { Text } from '../text';
 import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import { ChartPathProvider } from '@/react-native-animated-charts/src';
+import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useChartThrottledPoints,
   useDimensions,
   useDPI,
-} from '@rainbow-me/hooks';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+} from '@/hooks';
+import { ETH_ADDRESS } from '@/references';
 import {
   convertRawAmountToNativeDisplay,
   divide,
   handleSignificantDecimals,
   multiply,
   times,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
-import { ModalContext } from 'react-native-cool-modals/NativeStackView';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
+import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 
 const formatItem = (
   { address, name, price, symbol, color },

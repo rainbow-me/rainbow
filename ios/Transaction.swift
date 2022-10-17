@@ -52,4 +52,8 @@ import Foundation
   func isSwapped() -> Bool {
     return status == "swapped"
   }
+
+  func isBridged() -> Bool {
+    return status == "bridged"
+  }
 }

@@ -8,7 +8,7 @@ import {
   getProviderForNetwork,
   isHardHat,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
+} from '@/handlers/web3';
 import {
   ENS_SECONDS_PADDING,
   ENS_SECONDS_WAIT,
@@ -16,8 +16,8 @@ import {
   ENS_SECONDS_WAIT_WITH_PADDING,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@rainbow-me/helpers/ens';
-import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+} from '@/helpers/ens';
+import { updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 
 const checkRegisterBlockTimestamp = async ({
   registrationParameters,

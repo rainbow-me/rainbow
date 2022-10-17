@@ -21,7 +21,6 @@ import { Contract } from 'ethers';
 import lang from 'i18n-js';
 import { isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking, NativeModules } from 'react-native';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
@@ -34,16 +33,16 @@ import {
   RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
-} from '@rainbow-me/entities';
-import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
+} from '@/entities';
+import { getOnchainAssetBalance } from '@/handlers/assets';
 import {
   getProviderForNetwork,
   isTestnetNetwork,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
+import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
@@ -53,20 +52,18 @@ import {
   greaterThan,
   isZero,
   subtract,
-} from '@rainbow-me/helpers/utilities';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+} from '@/helpers/utilities';
+import WalletTypes from '@/helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
   identifyWalletType,
   WalletLibraryType,
-} from '@rainbow-me/model/wallet';
-import type {
   EthereumPrivateKey,
   EthereumWalletSeed,
-} from '@rainbow-me/model/wallet';
-import { Navigation } from '@rainbow-me/navigation';
-import { parseAssetNative } from '@rainbow-me/parsers';
-import store from '@rainbow-me/redux/store';
+} from '@/model/wallet';
+import { Navigation } from '@/navigation';
+import { parseAssetNative } from '@/parsers';
+import store from '@/redux/store';
 import {
   ARBITRUM_BLOCK_EXPLORER_URL,
   ARBITRUM_ETH_ADDRESS,
@@ -81,9 +78,9 @@ import {
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
+} from '@/references';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
 
 const { RNBip39 } = NativeModules;
 
@@ -113,7 +110,7 @@ const getNativeAssetForNetwork = async (
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
-  let differentWallet =
+  const differentWallet =
     address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
@@ -271,7 +268,7 @@ const formatGenericAsset = (
 
 export const checkWalletEthZero = () => {
   const ethAsset = getAccountAsset(ETH_ADDRESS);
-  let amount = ethAsset?.balance?.amount ?? 0;
+  const amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
 
@@ -341,7 +338,8 @@ const getNetworkFromChainId = (chainId: number): Network => {
  */
 const getNetworkNameFromChainId = (chainId: number): string | undefined => {
   const networkData = chains.find(chain => chain.chain_id === chainId);
-  const networkName = networkInfo[networkData?.network ?? Network.mainnet].name;
+  const networkName =
+    networkInfo[networkData?.network ?? Network.mainnet]?.name;
   return networkName;
 };
 
@@ -426,6 +424,7 @@ export const daysFromTheFirstTx = (address: EthereumAddress) => {
     }
   });
 };
+
 /**
  * @desc Checks if a an address has previous transactions
  * @param  {String} address
@@ -436,16 +435,21 @@ const hasPreviousTransactions = (
 ): Promise<boolean> => {
   return new Promise(async resolve => {
     try {
-      const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=latest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+      const url = `https://aha.rainbow.me/?address=${address}`;
       const response = await fetch(url);
-      const parsedResponse = await response.json();
-      // Timeout needed to avoid the 5 requests / second rate limit of etherscan API
-      setTimeout(() => {
-        if (parsedResponse.status !== '0' && parsedResponse.result.length > 0) {
-          resolve(true);
-        }
+
+      if (!response.ok) {
         resolve(false);
-      }, 260);
+        return;
+      }
+
+      const parsedResponse: {
+        data: {
+          addresses: Record<string, boolean>;
+        };
+      } = await response.json();
+
+      resolve(parsedResponse?.data?.addresses[address.toLowerCase()] === true);
     } catch (e) {
       resolve(false);
     }

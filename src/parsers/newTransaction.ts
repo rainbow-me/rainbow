@@ -4,14 +4,14 @@ import {
   RainbowTransaction,
   TransactionStatus,
   TransactionType,
-} from '@rainbow-me/entities';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
+} from '@/entities';
+import { isL2Network } from '@/handlers/web3';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
-} from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 
 /**
  * @desc parse transactions from native prices
@@ -48,6 +48,7 @@ export const parseNewTransaction = async (
     type: txType,
     txTo,
     value,
+    swap,
   } = txDetails;
 
   if (amount && asset) {
@@ -116,5 +117,6 @@ export const parseNewTransaction = async (
     txTo: txTo || to,
     type,
     value,
+    swap,
   };
 };

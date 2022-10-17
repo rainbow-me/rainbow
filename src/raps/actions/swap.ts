@@ -1,31 +1,155 @@
 import { Wallet } from '@ethersproject/wallet';
-import { ChainId } from '@rainbow-me/swaps';
+import {
+  ChainId,
+  ETH_ADDRESS,
+  fillQuote,
+  Quote,
+  unwrapNativeAsset,
+  wrapNativeAsset,
+  WRAPPED_ASSET,
+} from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import {
   Rap,
   RapExchangeActionParameters,
   SwapActionParameters,
+  SwapMetadata,
 } from '../common';
-import {
-  ProtocolType,
-  TransactionStatus,
-  TransactionType,
-} from '@rainbow-me/entities';
-import {
-  estimateSwapGasLimit,
-  executeSwap,
-} from '@rainbow-me/handlers/uniswap';
-import { isL2Network, toHex } from '@rainbow-me/handlers/web3';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { additionalDataUpdateL2AssetToWatch } from '@rainbow-me/redux/additionalAssetsData';
-import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import store from '@rainbow-me/redux/store';
-import { greaterThan } from '@rainbow-me/utilities';
-import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
+import {
+  getFlashbotsProvider,
+  getProviderForNetwork,
+  isL2Network,
+  toHex,
+} from '@/handlers/web3';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
+import { dataAddNewTransaction } from '@/redux/data';
+import store from '@/redux/store';
+import { greaterThan } from '@/helpers/utilities';
+import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
+import logger from '@/utils/logger';
+import { Network } from '@/helpers';
+import { loadWallet } from '@/model/wallet';
+import { estimateSwapGasLimit } from '@/handlers/swap';
+import { MMKV } from 'react-native-mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
+
+export const swapMetadataStorage = new MMKV({
+  id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
+});
 const actionName = 'swap';
+
+export const executeSwap = async ({
+  chainId,
+  gasLimit,
+  maxFeePerGas,
+  maxPriorityFeePerGas,
+  gasPrice,
+  nonce,
+  tradeDetails,
+  wallet,
+  permit = false,
+  flashbots = false,
+}: {
+  chainId: ChainId;
+  gasLimit: string | number;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+  gasPrice: string;
+  nonce?: number;
+  tradeDetails: Quote | null;
+  wallet: Wallet | null;
+  permit: boolean;
+  flashbots: boolean;
+}) => {
+  let walletToUse = wallet;
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  let provider;
+
+  // Switch to the flashbots provider if enabled
+  if (flashbots && network === Network.mainnet) {
+    logger.debug('flashbots provider being set on mainnet');
+    provider = await getFlashbotsProvider();
+  } else {
+    logger.debug('normal provider being set', network);
+    provider = await getProviderForNetwork(network);
+  }
+
+  if (!walletToUse) {
+    walletToUse = await loadWallet(undefined, true, provider);
+  } else {
+    walletToUse = new Wallet(walletToUse.privateKey, provider);
+  }
+
+  if (!walletToUse || !tradeDetails) return null;
+
+  const { sellTokenAddress, buyTokenAddress } = tradeDetails;
+  const transactionParams = {
+    gasLimit: toHex(gasLimit) || undefined,
+    // In case it's an L2 with legacy gas price like arbitrum
+    gasPrice,
+    // EIP-1559 like networks
+    maxFeePerGas,
+    maxPriorityFeePerGas,
+    nonce: nonce ? toHex(nonce) : undefined,
+  };
+
+  // Wrap Eth
+  if (
+    sellTokenAddress === ETH_ADDRESS &&
+    buyTokenAddress === WRAPPED_ASSET[chainId]
+  ) {
+    logger.debug(
+      'wrapping native asset',
+      tradeDetails.buyAmount,
+      walletToUse.address,
+      chainId
+    );
+    return wrapNativeAsset(
+      tradeDetails.buyAmount,
+      walletToUse,
+      chainId,
+      transactionParams
+    );
+    // Unwrap Weth
+  } else if (
+    sellTokenAddress === WRAPPED_ASSET[chainId] &&
+    buyTokenAddress === ETH_ADDRESS
+  ) {
+    logger.debug(
+      'unwrapping native asset',
+      tradeDetails.sellAmount,
+      walletToUse.address,
+      chainId
+    );
+    return unwrapNativeAsset(
+      tradeDetails.sellAmount,
+      walletToUse,
+      chainId,
+      transactionParams
+    );
+    // Swap
+  } else {
+    logger.debug(
+      'FILLQUOTE',
+      tradeDetails,
+      transactionParams,
+      walletToUse.address,
+      permit,
+      chainId
+    );
+    return fillQuote(
+      tradeDetails,
+      transactionParams,
+      walletToUse,
+      permit,
+      chainId
+    );
+  }
+};
 
 const swap = async (
   wallet: Wallet,
@@ -46,7 +170,7 @@ const swap = async (
   const { accountAddress } = store.getState().settings;
   const { inputCurrency, outputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
-  let gasParams = parseGasParamsForTransaction(selectedGasFee);
+  const gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   const isL2 = isL2Network(
     ethereumUtils.getNetworkFromChainId(parameters?.chainId || ChainId.mainnet)
@@ -143,27 +267,34 @@ const swap = async (
     flashbots: parameters.flashbots,
     from: accountAddress,
     gasLimit,
-    hash: swap?.hash,
+    hash: swap?.hash ?? null,
     network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-    nonce: swap?.nonce,
+    nonce: swap?.nonce ?? null,
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,
-    to: swap?.to,
+    to: swap?.to ?? null,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
+  if (parameters.meta && swap?.hash) {
+    swapMetadataStorage.set(
+      swap.hash.toLowerCase(),
+      JSON.stringify({ type: 'swap', data: parameters.meta })
+    );
+  }
+
   dispatch(
     dataAddNewTransaction(
-      // @ts-ignore
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider as any
+      // @ts-ignore
+      wallet?.provider
     )
   );
   return swap?.nonce;
 };
 
-export default swap;
+export { swap };

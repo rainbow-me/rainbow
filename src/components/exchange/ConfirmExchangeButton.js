@@ -5,14 +5,15 @@ import React, { useCallback, useMemo } from 'react';
 import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
-import { Box, Row, Rows } from '@rainbow-me/design-system';
-import { ExchangeModalTypes, NetworkTypes } from '@rainbow-me/helpers';
-import { useColorForAsset, useGas, useSwapCurrencies } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { lightModeThemeColors } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { Box, Row, Rows } from '@/design-system';
+import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
+import { useColorForAsset, useGas, useSwapCurrencies } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { lightModeThemeColors } from '@/styles';
+import { useTheme } from '@/theme';
+import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
 
 const NOOP = () => null;
 
@@ -21,13 +22,14 @@ export default function ConfirmExchangeButton({
   disabled,
   loading,
   isHighPriceImpact,
-  insufficientLiquidity,
+  quoteError,
   onPressViewDetails,
   onSubmit,
   testID,
   tradeDetails,
   type = ExchangeModalTypes.swap,
   isSufficientBalance,
+  isBridgeSwap,
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -72,7 +74,7 @@ export default function ConfirmExchangeButton({
     : darkModeThemeColors.blueGreyDark04;
 
   const { buttonColor, shadowsForAsset } = useMemo(() => {
-    const color = insufficientLiquidity
+    const color = quoteError
       ? disabledButtonColor
       : asset.address === ETH_ADDRESS
       ? colors.appleBlue
@@ -95,12 +97,13 @@ export default function ConfirmExchangeButton({
     colorForAsset,
     colors,
     disabledButtonColor,
-    insufficientLiquidity,
+    quoteError,
     isDarkMode,
     isSwapDetailsRoute,
   ]);
 
   let label = '';
+  let explainerType = null;
 
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
@@ -123,6 +126,8 @@ export default function ConfirmExchangeButton({
   } else if (isSwapDetailsRoute) {
     if (isSwapSubmitting) {
       label = lang.t('button.confirm_exchange.submitting');
+    } else if (isBridgeSwap) {
+      label = `${lang.t('button.confirm_exchange.bridge')}`;
     } else {
       label = isHighPriceImpact
         ? lang.t('button.confirm_exchange.swap_anyway')
@@ -132,16 +137,20 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.enter_amount');
   }
 
-  if (insufficientLiquidity) {
-    label = lang.t('button.confirm_exchange.insufficient_liquidity');
+  if (quoteError) {
+    const error = handleSwapErrorCodes(quoteError);
+    label = error.buttonLabel;
+    explainerType = error.explainerType;
   }
 
-  const handleShowLiquidityExplainer = useCallback(() => {
-    android && Keyboard.dismiss();
+  const handleExplainer = useCallback(() => {
+    Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
-      type: 'insufficientLiquidity',
+      inputCurrency,
+      outputCurrency,
+      type: explainerType,
     });
-  }, [navigate]);
+  }, [explainerType, inputCurrency, navigate, outputCurrency]);
 
   const isDisabled =
     disabled ||
@@ -163,12 +172,12 @@ export default function ConfirmExchangeButton({
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
             disableLongPress={
-              (shouldOpenSwapDetails && !insufficientLiquidity) ||
+              (shouldOpenSwapDetails && !quoteError) ||
               loading ||
               isSwapSubmitting
             }
-            disableShimmerAnimation={insufficientLiquidity}
-            disabled={isDisabled && !insufficientLiquidity}
+            disableShimmerAnimation={quoteError}
+            disabled={isDisabled && !quoteError}
             disabledBackgroundColor={
               isSwapSubmitting ? buttonColor : disabledButtonColor
             }
@@ -179,15 +188,15 @@ export default function ConfirmExchangeButton({
             onLongPress={
               loading || isSwapSubmitting
                 ? NOOP
-                : insufficientLiquidity
-                ? handleShowLiquidityExplainer
+                : explainerType
+                ? handleExplainer
                 : shouldOpenSwapDetails
                 ? onPressViewDetails
                 : onSwap
             }
             shadows={
               isSwapDetailsRoute
-                ? isDisabled || insufficientLiquidity
+                ? isDisabled || quoteError
                   ? shadows.disabled
                   : shadowsForAsset
                 : shadows.default

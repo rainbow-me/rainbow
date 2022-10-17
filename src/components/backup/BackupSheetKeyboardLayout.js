@@ -1,15 +1,14 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
 import { SheetHandleFixedToTopHeight } from '../sheet';
-import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
-import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
-import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import KeyboardTypes from '@/helpers/keyboardTypes';
+import { useDimensions, useKeyboardHeight } from '@/hooks';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const Footer = styled(Column)(({ isTallPhone }) => ({
   ...padding.object(20, 15, isTallPhone ? 30 : 15),
@@ -48,7 +47,6 @@ export default function BackupSheetKeyboardLayout({
 
   return (
     <Column height={nativeScreen ? undefined : sheetRegionAboveKeyboardHeight}>
-      <StatusBar barStyle="light-content" />
       {children}
       <Footer isTallPhone={isTallPhone}>
         <RainbowButton

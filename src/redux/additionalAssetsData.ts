@@ -1,15 +1,15 @@
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { dataUpdateAsset } from './data';
-import { ParsedAddressAsset, SwappableAsset } from '@rainbow-me/entities';
-import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
-import { getCoingeckoIds } from '@rainbow-me/handlers/dispersion';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
-import { AppDispatch, AppGetState, AppState } from '@rainbow-me/redux/store';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+import { ParsedAddressAsset, SwappableAsset } from '@/entities';
+import { getOnchainAssetBalance, isL2Asset } from '@/handlers/assets';
+import { getCoingeckoIds } from '@/handlers/dispersion';
+import { getProviderForNetwork, isL2Network } from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { AppDispatch, AppGetState, AppState } from '@/redux/store';
+import { ETH_ADDRESS } from '@/references';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
 const ADDITIONAL_ASSET_DATA_COINGECKO_IDS =
@@ -140,22 +140,31 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
     const assetsToUpdate = l2AssetsToWatch?.[id];
     if (!assetsToUpdate) return;
     const { inputCurrency, outputCurrency, userAddress } = assetsToUpdate;
+    const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+      inputCurrency?.type
+    );
+    const outputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+      outputCurrency?.type
+    );
     const updatedAssets = [
-      await getUpdatedL2AssetBalance(
-        inputCurrency,
-        genericAssets,
-        network,
-        userAddress
-      ),
-      await getUpdatedL2AssetBalance(
-        outputCurrency,
-        genericAssets,
-        network,
-        userAddress
-      ),
+      isL2Network(inputCurrencyNetwork)
+        ? await getUpdatedL2AssetBalance(
+            inputCurrency,
+            genericAssets,
+            inputCurrencyNetwork,
+            userAddress
+          )
+        : null,
+      isL2Network(outputCurrencyNetwork)
+        ? await getUpdatedL2AssetBalance(
+            outputCurrency,
+            genericAssets,
+            outputCurrencyNetwork,
+            userAddress
+          )
+        : null,
     ];
 
-    // @ts-ignore
     updatedAssets.forEach(asset => asset && dispatch(dataUpdateAsset(asset)));
 
     const newL2AssetsToWatch = Object.entries(l2AssetsToWatch).reduce(

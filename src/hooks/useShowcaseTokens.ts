@@ -7,7 +7,7 @@ import {
 import useOpenFamilies from './useOpenFamilies';
 import useWallets from './useWallets';
 import useWebData from './useWebData';
-import { AppState } from '@rainbow-me/redux/store';
+import { AppState } from '@/redux/store';
 
 export default function useShowcaseTokens() {
   const dispatch = useDispatch();

@@ -15,18 +15,18 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 import {
   prefetchENSAvatar,
   prefetchENSCover,
   prefetchENSRecords,
   useAccountENSDomains,
   useENSAvatar,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import { useTheme } from '@rainbow-me/theme';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { useNavigation } from '@/navigation';
+import { useTheme } from '@/theme';
+import { deviceUtils } from '@/utils';
 
 export const SelectENSSheetHeight = 400;
 
@@ -42,7 +42,7 @@ export default function SelectENSSheet() {
     primaryDomain,
   } = useAccountENSDomains();
 
-  const secondary06 = useForegroundColor('secondary06');
+  const secondary06 = useForegroundColor('secondary06 (Deprecated)');
 
   const { goBack } = useNavigation();
   const { params } = useRoute<any>();
@@ -58,17 +58,19 @@ export default function SelectENSSheet() {
     [goBack, params]
   );
 
-  const ownedDomains = useMemo(() => {
-    const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) =>
-      a.name > b.name ? 1 : -1
-    );
+  const controlledDomains = useMemo(() => {
+    const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) => {
+      if (a.name && b.name) return a.name > b.name ? 1 : -1;
+      return 1;
+    });
 
     if (primaryDomain) sortedNonPrimaryDomains.unshift(primaryDomain);
 
     return sortedNonPrimaryDomains;
   }, [primaryDomain, nonPrimaryDomains]);
 
-  let listHeight = (rowHeight + rowPadding) * (ownedDomains?.length || 0) + 21;
+  let listHeight =
+    (rowHeight + rowPadding) * (controlledDomains?.length || 0) + 21;
   let scrollEnabled = false;
   if (listHeight > maxListHeight) {
     listHeight = maxListHeight;
@@ -96,7 +98,12 @@ export default function SelectENSSheet() {
                   <ENSAvatar name={item.name} />
                 </Box>
                 <Box paddingLeft="10px">
-                  <Text numberOfLines={1} size="16px" weight="bold">
+                  <Text
+                    numberOfLines={1}
+                    color="primary (Deprecated)"
+                    size="16px / 22px (Deprecated)"
+                    weight="bold"
+                  >
                     {abbreviateEnsForDisplay(item.name, 25)}
                   </Text>
                 </Box>
@@ -114,7 +121,12 @@ export default function SelectENSSheet() {
     <Sheet>
       <Inset top="6px">
         <Stack space="24px">
-          <Heading align="center" size="18px">
+          <Heading
+            align="center"
+            color="primary (Deprecated)"
+            size="18px / 21px (Deprecated)"
+            weight="heavy"
+          >
             {lang.t('profiles.select_ens_name')}
           </Heading>
           {isSuccess && (
@@ -128,7 +140,7 @@ export default function SelectENSSheet() {
                   paddingBottom: 50,
                   paddingHorizontal: 19,
                 }}
-                data={ownedDomains}
+                data={controlledDomains}
                 height={{ custom: listHeight }}
                 initialNumToRender={15}
                 keyExtractor={({ domain }: { domain: string }) => domain}
@@ -164,7 +176,12 @@ function ENSAvatar({ name }: { name: string }) {
 
   return (
     <AccentColorProvider color={colors.blueGreyDark30}>
-      <Text align="right" color="accent" size="20px" weight="bold">
+      <Text
+        align="right"
+        color="accent"
+        size="20px / 24px (Deprecated)"
+        weight="bold"
+      >
         􀉭
       </Text>
     </AccentColorProvider>

@@ -1,26 +1,22 @@
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
+import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import { EthereumAddress } from '@/entities';
-import {
-  optimismNftAppIconCheck,
-  UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
-} from '@/featuresToUnlock';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletTypes from '@/helpers/walletTypes';
+import { featureUnlockChecks } from '@/featuresToUnlock';
 import {
   AllRainbowWallets,
   RainbowAccount,
   RainbowWallet,
-} from '@rainbow-me/model/wallet';
-import { Navigation } from '@rainbow-me/navigation';
+} from '@/model/wallet';
+import { Navigation } from '@/navigation';
 
-import store from '@rainbow-me/redux/store';
-import { checkKeychainIntegrity } from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
+import store from '@/redux/store';
+import { checkKeychainIntegrity } from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -91,7 +87,7 @@ export const runWalletBackupStatusChecks = () => {
   return;
 };
 
-export const runFeatureUnlockChecks = async () => {
+export const runFeatureUnlockChecks = async (): Promise<boolean> => {
   const {
     wallets,
   }: {
@@ -99,7 +95,7 @@ export const runFeatureUnlockChecks = async () => {
   } = store.getState().wallets;
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
-  if (!wallets) return;
+  if (!wallets) return false;
   const walletsToCheck: EthereumAddress[] = [];
 
   Object.values(wallets).forEach(wallet => {
@@ -113,31 +109,23 @@ export const runFeatureUnlockChecks = async () => {
 
   logger.log('WALLETS TO CHECK', walletsToCheck);
 
-  if (!walletsToCheck.length) return;
+  if (!walletsToCheck.length) return false;
 
-  const featuresToUnlock = [
-    {
-      check: optimismNftAppIconCheck,
-      name: UNLOCK_KEY_OPTIMISM_NFT_APP_ICON,
-    },
-  ];
+  logger.log('Feature Unlocks: Running Checks');
 
-  const mmkv = new MMKV();
-
-  for (const feature of featuresToUnlock) {
-    // Check if it was handled already
-    const handled = mmkv.getBoolean(feature.name);
-    logger.log(`${feature.name} was handled?`, handled);
-    if (!handled) {
-      // if not handled yet, check again
-      logger.log(`${feature.name} being checked`);
-      const result = await feature.check(feature.name, walletsToCheck);
-      logger.log(`${feature.name} check result:`, result);
-      if (result) {
-        // exit early if we found a feature to unlock
-        // because we don't want to show two sheets at the same time
-        break;
-      }
+  // short circuits once the first feature is unlocked
+  for (const featureUnlockCheck of featureUnlockChecks) {
+    const unlockNow = await featureUnlockCheck(walletsToCheck);
+    if (unlockNow) {
+      return true;
     }
+  }
+  return false;
+};
+
+export const runFeatureAndCampaignChecks = async () => {
+  const showingFeatureUnlock: boolean = await runFeatureUnlockChecks();
+  if (!showingFeatureUnlock) {
+    await runCampaignChecks();
   }
 };

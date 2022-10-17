@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { useIsEmulator } from 'react-native-device-info';
 import { Prompt } from '../alerts';
 import { Button } from '../buttons';
-import { useWalletConnectConnections } from '@rainbow-me/hooks';
+import { useWalletConnectConnections } from '@/hooks';
 
 export default function EmulatorPasteUriButton() {
   const { result: isEmulator } = useIsEmulator();

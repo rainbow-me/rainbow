@@ -8,3 +8,10 @@ node_modules/*
 **/node_modules/*
 coverage-ts/**
 out/
+.eslintrc.js
+babel.config.js
+metro.config.js
+jest.config.js
+.detoxrc.js
+__generated__
+coverage

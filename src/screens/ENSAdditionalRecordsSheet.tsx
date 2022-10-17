@@ -4,10 +4,10 @@ import { useWindowDimensions } from 'react-native';
 import { useRecoilState } from 'recoil';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SlackSheet } from '../components/sheet';
-import { AccentColorProvider, Box, Inline } from '@rainbow-me/design-system';
-import { accentColorAtom, textRecordFields } from '@rainbow-me/helpers/ens';
-import { useENSRegistrationForm } from '@rainbow-me/hooks';
-import { deviceUtils } from '@rainbow-me/utils';
+import { AccentColorProvider, Box, Inline } from '@/design-system';
+import { accentColorAtom, textRecordFields } from '@/helpers/ens';
+import { useENSRegistrationForm } from '@/hooks';
+import { deviceUtils } from '@/utils';
 
 export const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;
@@ -49,8 +49,8 @@ export default function ENSAdditionalRecordsSheet() {
     >
       <AccentColorProvider color={accentColor}>
         <Box
-          background="body"
-          paddingHorizontal="19px"
+          background="body (Deprecated)"
+          paddingHorizontal="19px (Deprecated)"
           paddingVertical="24px"
           style={boxStyle}
           testID="ens-additional-records-sheet"
@@ -70,7 +70,7 @@ export default function ENSAdditionalRecordsSheet() {
                         ({ id }) => textRecordField.id === id
                       );
                       const fieldToRemove = selectedFields[index];
-                      let newFields = [...selectedFields];
+                      const newFields = [...selectedFields];
                       newFields.splice(index, 1);
                       onRemoveField(fieldToRemove, newFields);
                     } else {

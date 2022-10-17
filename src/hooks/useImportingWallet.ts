@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
@@ -16,26 +15,23 @@ import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
-import {
-  resolveUnstoppableDomain,
-  web3Provider,
-} from '@rainbow-me/handlers/web3';
+import { analytics } from '@/analytics';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import { fetchReverseRecord } from '@/handlers/ens';
+import { resolveUnstoppableDomain, web3Provider } from '@/handlers/web3';
 import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
   isValidWallet,
-} from '@rainbow-me/helpers/validators';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
-import { walletInit } from '@rainbow-me/model/wallet';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import { walletsLoadState } from '@rainbow-me/redux/wallets';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/helpers/validators';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { walletInit } from '@/model/wallet';
+import { Navigation, useNavigation } from '@/navigation';
+import { walletsLoadState } from '@/redux/wallets';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils, sanitizeSeedPhrase } from '@/utils';
+import logger from '@/utils/logger';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();

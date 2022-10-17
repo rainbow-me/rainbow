@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
+import { IS_TESTING } from 'react-native-dotenv';
 import React, {
   Fragment,
   useCallback,
@@ -46,22 +47,24 @@ import { FLASHBOTS_WC } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import { Text } from '@rainbow-me/design-system';
+import { analytics } from '@/analytics';
+import { Text } from '@/design-system';
+import config from '@/model/config';
 import {
   estimateGas,
   estimateGasWithPadding,
   getFlashbotsProvider,
+  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
   toHex,
-} from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+} from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { isDappAuthenticated } from '@/helpers/dappNameHandler';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -71,7 +74,7 @@ import {
   useTransactionConfirmation,
   useWalletBalances,
   useWallets,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import {
   loadWallet,
   sendTransaction,
@@ -79,13 +82,13 @@ import {
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
-} from '@rainbow-me/model/wallet';
-import { useNavigation } from '@rainbow-me/navigation';
-import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
-import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+} from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { walletConnectRemovePendingRedirect } from '@/redux/walletconnect';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -94,10 +97,10 @@ import {
   greaterThanOrEqualTo,
   multiply,
   omitFlatten,
-} from '@rainbow-me/utilities';
-import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
-import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
+} from '@/helpers/utilities';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -109,8 +112,8 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
-} from '@rainbow-me/utils/signingMethods';
-import logger from 'logger';
+} from '@/utils/signingMethods';
+import logger from '@/utils/logger';
 
 const springConfig = {
   damping: 500,
@@ -144,7 +147,12 @@ const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
 const SwitchText = ({ children, ...props }) => {
   return (
-    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+    <Text
+      color="secondary40 (Deprecated)"
+      size="14px / 19px (Deprecated)"
+      weight="semibold"
+      {...props}
+    >
       {children}
     </Text>
   );
@@ -156,10 +164,10 @@ const WalletText = ({ balanceTooLow, children }) => {
       color={
         balanceTooLow
           ? { custom: lightModeThemeColors.avatarColor[7] }
-          : 'secondary80'
+          : 'secondary80 (Deprecated)'
       }
       numberOfLines={1}
-      size="18px"
+      size="18px / 27px (Deprecated)"
       weight={balanceTooLow ? 'bold' : 'semibold'}
     >
       {children}
@@ -245,7 +253,10 @@ export default function TransactionConfirmationScreen() {
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
-  const flashbotsEnabled = useExperimentalFlag(FLASHBOTS_WC);
+  const disableFlashbotsPostMerge =
+    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const flashbotsEnabled =
+    useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
   useEffect(() => {
     setCurrentNetwork(
@@ -455,7 +466,11 @@ export default function TransactionConfirmationScreen() {
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
-    if (isFocused && (!peerId || !walletConnector)) {
+    if (
+      isFocused &&
+      (!peerId || !walletConnector) &&
+      (ios || IS_TESTING !== 'true')
+    ) {
       Alert.alert(
         lang.t('wallet.transaction.alert.connection_expired'),
         lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
@@ -1096,9 +1111,9 @@ export default function TransactionConfirmationScreen() {
                   <Row marginBottom={android ? 16 : 8} marginHorizontal={32}>
                     <Text
                       align="center"
-                      color="secondary80"
+                      color="secondary80 (Deprecated)"
                       numberOfLines={1}
-                      size="18px"
+                      size="18px / 27px (Deprecated)"
                       weight="bold"
                     >
                       {isAuthenticated ? dappName : formattedDappUrl}
@@ -1111,8 +1126,12 @@ export default function TransactionConfirmationScreen() {
                 >
                   <Text
                     align="center"
-                    color={methodName ? 'primary' : { custom: 'transparent' }}
-                    size="18px"
+                    color={
+                      methodName
+                        ? 'primary (Deprecated)'
+                        : { custom: 'transparent' }
+                    }
+                    size="18px / 27px (Deprecated)"
                     weight="heavy"
                   >
                     {methodName ||

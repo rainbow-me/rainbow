@@ -23,20 +23,24 @@ import {
   ZerionTransaction,
   ZerionTransactionChange,
   ZerionTransactionStatus,
-} from '@rainbow-me/entities';
-import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
+} from '@/entities';
+import { getTransactionMethodName } from '@/handlers/transactions';
+import { isL2Network } from '@/handlers/web3';
+import { Network } from '@/helpers/networkTypes';
 import {
   ETH_ADDRESS,
   savingsAssetsList,
   supportedNativeCurrencies,
-} from '@rainbow-me/references';
+} from '@/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
-} from '@rainbow-me/utilities';
-import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
+} from '@/helpers/utilities';
+import { ethereumUtils, getTokenMetadata, isLowerCaseMatch } from '@/utils';
+import {
+  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
+} from '@rainbow-me/swaps';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -65,6 +69,7 @@ export const parseTransactions = async (
   accountAddress: EthereumAddress,
   nativeCurrency: keyof typeof supportedNativeCurrencies,
   existingTransactions: RainbowTransaction[],
+  pendingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
   network: Network,
   appended = false
@@ -73,9 +78,23 @@ export const parseTransactions = async (
     ethereumUtils.getHash(txn)
   );
 
-  const [allL2Transactions, existingWithoutL2] = partition(
-    existingTransactions,
-    tx => isL2Network(tx.network || '')
+  // pending crosschain swaps transactions now depends on bridge status API
+  // so we need to persist pending txs until bridge is done even tho the tx
+  // on chain was confirmed https://github.com/rainbow-me/rainbow/pull/4189
+  const pendingCrosschainSwapsTransactionHashes = pendingTransactions
+    .filter(txn => txn.protocol === ProtocolType.socket)
+    .map(txn => ethereumUtils.getHash(txn));
+  const filteredExistingTransactions = existingTransactions.filter(
+    txn =>
+      !pendingCrosschainSwapsTransactionHashes.includes(
+        ethereumUtils.getHash(txn)
+      )
+  );
+  const [
+    allL2Transactions,
+    existingWithoutL2,
+  ] = partition(filteredExistingTransactions, tx =>
+    isL2Network(tx.network || '')
   );
 
   const data = appended
@@ -270,6 +289,19 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   };
 };
 
+const overrideSwap = (tx: ZerionTransaction): ZerionTransaction => {
+  if (
+    isLowerCaseMatch(
+      tx.address_to || '',
+      SOCKET_REGISTRY_CONTRACT_ADDRESSESS
+    ) ||
+    isLowerCaseMatch(tx.address_to || '', RAINBOW_ROUTER_CONTRACT_ADDRESS)
+  ) {
+    return { ...tx, type: TransactionType.trade };
+  }
+  return tx;
+};
+
 const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
   nativeCurrency: keyof typeof supportedNativeCurrencies,
@@ -299,7 +331,7 @@ const parseTransactionWithEmptyChanges = async (
       description: methodName || 'Signed',
       from: txn.address_from,
       hash: `${txn.hash}-${0}`,
-      minedAt: txn.mined_at || txn.signed_at!,
+      minedAt: txn.mined_at,
       name: methodName || 'Signed',
       native: nativeDisplay,
       network,
@@ -329,6 +361,7 @@ const parseTransaction = async (
   txn = overrideAuthorizations(txn);
   txn = overrideSelfWalletConnect(txn);
   txn = overrideTradeRefund(txn);
+  txn = overrideSwap(txn);
 
   if (txn.changes.length) {
     const internalTransactions = txn.changes.map(
@@ -384,7 +417,7 @@ const parseTransaction = async (
           description,
           from: internalTxn.address_from ?? txn.address_from,
           hash: `${txn.hash}-${index}`,
-          minedAt: txn.mined_at || txn.signed_at!,
+          minedAt: txn.mined_at,
           name: updatedAsset.name,
           native: isL2Network(network)
             ? { amount: '', display: '' }
@@ -418,7 +451,7 @@ export const getTitle = ({
 }: {
   protocol: ProtocolType | null | undefined;
   status: TransactionStatus;
-  type: TransactionType;
+  type?: TransactionType;
 }) => {
   if (
     protocol &&
@@ -476,7 +509,7 @@ export const getTransactionLabel = ({
   pending: boolean;
   protocol: ProtocolType | null | undefined;
   status: ZerionTransactionStatus | TransactionStatus;
-  type: TransactionType;
+  type?: TransactionType;
 }) => {
   if (status === TransactionStatus.cancelling)
     return TransactionStatus.cancelling;
@@ -524,6 +557,7 @@ export const getTransactionLabel = ({
 
   if (type === TransactionType.authorize) return TransactionStatus.approved;
   if (type === TransactionType.purchase) return TransactionStatus.purchased;
+  if (type === TransactionType.cancel) return TransactionStatus.cancelled;
 
   if (type === TransactionType.deposit) {
     if (protocol === ProtocolType.compound) {

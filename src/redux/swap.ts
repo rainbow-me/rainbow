@@ -1,9 +1,9 @@
-import { Quote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
-import { SwappableAsset } from '@rainbow-me/entities';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
-import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import { SwappableAsset } from '@/entities';
+import { ExchangeModalTypes } from '@/helpers';
+import { AppDispatch, AppGetState } from '@/redux/store';
 
 export interface SwapAmount {
   display: string | null;
@@ -31,6 +31,7 @@ interface SwapState {
   derivedValues: any;
   displayValues: any;
   depositCurrency: SwappableAsset | null;
+  quoteError: QuoteError | null;
   inputCurrency: SwappableAsset | null;
   independentField: SwapModalField;
   independentValue: string | null;
@@ -39,7 +40,7 @@ interface SwapState {
   slippageInBips: number;
   source: Source;
   type: string;
-  tradeDetails: Quote | null;
+  tradeDetails: Quote | CrosschainQuote | null;
   typeSpecificParameters?: TypeSpecificParameters | null;
   outputCurrency: SwappableAsset | null;
 }
@@ -202,7 +203,7 @@ export const updateSwapOutputCurrency = (
 };
 
 export const flipSwapCurrencies = (
-  outputIndependentField: Boolean,
+  outputIndependentField: boolean,
   independentValue?: string | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { inputCurrency, outputCurrency } = getState().swap;
@@ -242,6 +243,7 @@ const INITIAL_STATE: SwapState = {
   inputCurrency: null,
   maxInputUpdate: false,
   outputCurrency: null,
+  quoteError: null,
   slippageInBips: 100,
   source: Source.AggregatorRainbow,
   tradeDetails: null,
@@ -256,6 +258,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         derivedValues: action.payload.derivedValues,
         displayValues: action.payload.displayValues,
+        quoteError: action.payload.quoteError,
         tradeDetails: action.payload.tradeDetails,
       };
     case SWAP_UPDATE_TYPE_DETAILS:

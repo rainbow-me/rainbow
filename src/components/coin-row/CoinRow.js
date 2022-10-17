@@ -1,9 +1,9 @@
 import React, { createElement } from 'react';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
+import { useAccountSettings } from '@/hooks';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
@@ -78,7 +78,7 @@ export default function CoinRow({
             ...props,
           })}
         </Row>
-        <Row align="center" marginBottom={0.5}>
+        <Row align="center" marginBottom={0.5} testID={testID}>
           {bottomRowRender({
             nativeCurrency,
             nativeCurrencySymbol,

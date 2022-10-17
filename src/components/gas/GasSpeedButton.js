@@ -11,26 +11,24 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import {
-  add,
-  greaterThan,
-  toFixedDecimals,
-} from '@rainbow-me/helpers/utilities';
+import { isL2Network } from '@/handlers/web3';
+import networkInfo from '@/helpers/networkInfo';
+import networkTypes from '@/helpers/networkTypes';
+import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
+import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import {
   useAccountSettings,
   useColorForAsset,
   useGas,
   usePrevious,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
+  useSwapCurrencies,
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { fonts, fontWithWidth, margin, padding } from '@/styles';
+import { gasUtils } from '@/utils';
 
 const {
   GAS_EMOJIS,
@@ -109,23 +107,21 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
 }))({});
 
-const TextContainer = styled(Column).attrs(() => ({
-  marginBottom: ios ? 0 : 11,
-}))({});
+const TextContainer = styled(Column).attrs(() => ({}))({});
 
-const TransactionTimeLabel = ({ formatter, theme }) => {
+const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
   const { colors } = useTheme();
+  let color =
+    theme === 'dark'
+      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+      : colors.alpha(colors.blueGreyDark, 0.6);
+
+  if (isLongWait) {
+    color = colors.lightOrange;
+  }
+
   return (
-    <Label
-      align="right"
-      color={
-        theme === 'dark'
-          ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-          : colors.alpha(colors.blueGreyDark, 0.6)
-      }
-      size="lmedium"
-      weight="bold"
-    >
+    <Label align="right" color={color} size="lmedium" weight="bold">
       {formatter()}
     </Label>
   );
@@ -144,11 +140,15 @@ const GasSpeedButton = ({
   canGoBack = true,
   validateGasParams,
   flashbotTransaction = false,
+  crossChainServiceTime,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const rawColorForAsset = useColorForAsset(asset || {}, null, false, true);
+  const [isLongWait, setIsLongWait] = useState(false);
+
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
     gasFeeParamsBySpeed,
@@ -295,25 +295,54 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
+    // override time estimate for cross chain swaps
+    if (crossChainServiceTime) {
+      const { isLongWait, timeEstimateDisplay } = getCrossChainTimeEstimate({
+        serviceTime: crossChainServiceTime,
+        gasTimeInSeconds: selectedGasFee?.estimatedTime?.amount,
+      });
+      setIsLongWait(isLongWait);
+      return timeEstimateDisplay;
+    }
+
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
       ' '
     );
     const [estimatedTimeValue = 0, estimatedTimeUnit = 'min'] = estimatedTime;
     const time = parseFloat(estimatedTimeValue).toFixed(0);
 
-    let timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
+    const timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
     if (!estimatedTime || (time === '0' && estimatedTimeUnit === 'min')) {
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
+  }, [
+    crossChainServiceTime,
+    gasPriceReady,
+    selectedGasFee?.estimatedTime?.amount,
+    selectedGasFee?.estimatedTime?.display,
+  ]);
 
   const openGasHelper = useCallback(() => {
     Keyboard.dismiss();
     const network = currentNetwork ?? networkTypes.mainnet;
-    const networkName = networkInfo[network].name;
-    navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
-  }, [currentNetwork, navigate]);
+    const networkName = networkInfo[network]?.name;
+    if (crossChainServiceTime) {
+      navigate(Routes.EXPLAIN_SHEET, {
+        inputCurrency,
+        outputCurrency,
+        type: 'crossChainGas',
+      });
+    } else {
+      navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
+    }
+  }, [
+    crossChainServiceTime,
+    currentNetwork,
+    inputCurrency,
+    navigate,
+    outputCurrency,
+  ]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -349,7 +378,7 @@ const GasSpeedButton = ({
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
       const totalGwei = add(
-        gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
       const estimatedGwei = add(
@@ -491,7 +520,7 @@ const GasSpeedButton = ({
           scaleTo={0.9}
           testID="estimated-fee-label"
         >
-          <Row style={{ top: android ? 8 : 0 }}>
+          <Row>
             <NativeCoinIconWrapper>
               <CoinIcon
                 address={nativeFeeCurrency.address}
@@ -515,6 +544,7 @@ const GasSpeedButton = ({
                 <TransactionTimeLabel
                   formatter={formatTransactionTime}
                   theme={theme}
+                  isLongWait={isLongWait}
                 />
               </Text>
             </TextContainer>

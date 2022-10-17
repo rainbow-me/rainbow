@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
-import styled from '@rainbow-me/styled-components';
+import { StatusBarHelper } from '@/helpers';
+import styled from '@/styled-thing';
 
 const Container = styled(FlexItem)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
@@ -18,8 +19,8 @@ const formatColor = color =>
   color && typeof color === 'string' ? color.replace('#', '') : null;
 
 const buildPlayerUrl = options => {
-  let qsArray = [];
-  for (let p in options)
+  const qsArray = [];
+  for (const p in options)
     if (options.hasOwnProperty(p)) {
       qsArray.push(
         `${encodeURIComponent(p)}=${encodeURIComponent(options[p])}`
@@ -34,10 +35,11 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
   const webviewRef = useRef();
   const { colors } = useTheme();
   const [ready, setReady] = useState(false);
+  const [closed, setClosed] = useState(false);
   useEffect(() => {
-    StatusBar.setBackgroundColor('transparent', false);
-    StatusBar.setTranslucent(true);
-    StatusBar.setBarStyle('dark-content', true);
+    StatusBarHelper.setBackgroundColor('transparent', false);
+    StatusBarHelper.setTranslucent(true);
+    StatusBarHelper.setDarkContent();
   }, []);
 
   const playerUri = useMemo(() => {
@@ -84,19 +86,22 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
      `;
       // eslint-disable-next-line react-hooks/exhaustive-deps
       webviewRef.current?.injectJavaScript(js);
+      setClosed(true);
     };
   }, []);
 
   return (
     <Container>
-      <StyledWebView
-        ref={webviewRef}
-        scalesPageToFit
-        scrollEnabled={false}
-        source={{
-          uri: playerUri,
-        }}
-      />
+      {!closed && (
+        <StyledWebView
+          ref={webviewRef}
+          scalesPageToFit
+          scrollEnabled={false}
+          source={{
+            uri: playerUri,
+          }}
+        />
+      )}
       {!ready && (
         <Centered
           flex={1}

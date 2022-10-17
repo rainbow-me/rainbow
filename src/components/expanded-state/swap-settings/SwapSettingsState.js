@@ -20,18 +20,18 @@ import {
   Inset,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
+} from '@/design-system';
 
 import {
   useAccountSettings,
   useColorForAsset,
   useKeyboardHeight,
   useSwapSettings,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { Source } from '@rainbow-me/redux/swap';
-import Routes from '@rainbow-me/routes';
-import { deviceUtils } from '@rainbow-me/utils';
+} from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { Source } from '@/redux/swap';
+import Routes from '@/navigation/routesNames';
+import { deviceUtils } from '@/utils';
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -131,11 +131,16 @@ export default function SwapSettingsState({ asset }) {
       scrollEnabled={false}
       testID="swap-settings-state"
     >
-      <FloatingPanel radius={android ? 30 : 39} testID="swap-settings">
+      <FloatingPanel borderRadius={android ? 30 : 39} testID="swap-settings">
         <ExchangeHeader testID="swap-settings" />
         <Inset bottom="24px" horizontal="24px" top="10px">
-          <Stack backgroundColor="body" space="24px">
-            <Text align="center" color="primary" size="18px" weight="bold">
+          <Stack space="24px">
+            <Text
+              align="center"
+              color="primary (Deprecated)"
+              size="18px / 27px (Deprecated)"
+              weight="bold"
+            >
               {lang.t('exchange.settings')}
             </Text>
             {network !== Network.arbitrum && (
@@ -155,9 +160,17 @@ export default function SwapSettingsState({ asset }) {
                     onPress={openFlashbotsExplainer}
                     paddingVertical="12px"
                   >
-                    <Text color="primary" size="16px" weight="bold">
+                    <Text
+                      color="primary (Deprecated)"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       {lang.t('exchange.use_flashbots')}
-                      <Text color="secondary30" size="16px" weight="bold">
+                      <Text
+                        color="secondary30 (Deprecated)"
+                        size="16px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {' 􀅵'}
                       </Text>
                     </Text>
@@ -194,7 +207,11 @@ export default function SwapSettingsState({ asset }) {
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
                   <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
-                    <Text color="primary" weight="bold">
+                    <Text
+                      color="primary (Deprecated)"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       {lang.t('exchange.use_defaults')}
                     </Text>
                   </Inset>
@@ -213,7 +230,11 @@ export default function SwapSettingsState({ asset }) {
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
                   <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
-                    <Text color="primary" weight="bold">
+                    <Text
+                      color="primary (Deprecated)"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       {lang.t('exchange.done')}
                     </Text>
                   </Inset>

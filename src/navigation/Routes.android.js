@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
+import { StatusBar } from 'react-native';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -24,9 +25,12 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsSheet from '../screens/SettingsSheet';
+import SettingsSheet, {
+  CUSTOM_MARGIN_TOP_ANDROID,
+} from '../screens/SettingsSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
+import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -62,9 +66,9 @@ import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+import { deviceUtils } from '@/utils';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -293,6 +297,10 @@ function BSNavigator() {
             name={Routes.REGISTER_ENS_NAVIGATOR}
           />
           <BSStack.Screen
+            component={PairHardwareWalletNavigator}
+            name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
+          />
+          <BSStack.Screen
             component={ENSAdditionalRecordsSheet}
             name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
           />
@@ -315,6 +323,11 @@ function BSNavigator() {
           />
         </>
       )}
+      <BSStack.Screen
+        component={SwapsPromoSheet}
+        name={Routes.SWAPS_PROMO_SHEET}
+        options={bottomSheetPreset}
+      />
       <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
@@ -350,7 +363,13 @@ function BSNavigator() {
       <BSStack.Screen
         component={SettingsSheet}
         name={Routes.SETTINGS_SHEET}
-        options={{ ...bottomSheetPreset, height: '97%' }}
+        options={{
+          ...bottomSheetPreset,
+          height:
+            deviceUtils.dimensions.height +
+            CUSTOM_MARGIN_TOP_ANDROID -
+            StatusBar.currentHeight,
+        }}
       />
     </BSStack.Navigator>
   );

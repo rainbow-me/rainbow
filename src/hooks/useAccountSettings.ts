@@ -10,8 +10,8 @@ import {
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
 } from '../redux/settings';
-import { AppState } from '@rainbow-me/redux/store';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
+import { AppState } from '@/redux/store';
+import { supportedNativeCurrencies } from '@/references';
 
 const languageSelector = (state: AppState) => state.settings.language;
 

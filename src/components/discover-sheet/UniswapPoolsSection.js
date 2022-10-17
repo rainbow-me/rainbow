@@ -10,20 +10,20 @@ import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
-import { analytics } from '@rainbow-me/analytics';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
-import { times } from '@rainbow-me/helpers/utilities';
+import { analytics } from '@/analytics';
+import networkTypes from '@/helpers/networkTypes';
+import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
+import { times } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useLatestCallback,
   useUniswapPools,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { useRemoveNextToLast } from '@rainbow-me/navigation/useRemoveNextToLast';
-import { parseAssetNative } from '@rainbow-me/parsers';
-import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
+} from '@/hooks';
+import { Navigation, useNavigation } from '@/navigation';
+import { useRemoveNextToLast } from '@/navigation/useRemoveNextToLast';
+import { parseAssetNative } from '@/parsers';
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
 
 const INITIAL_PAGE_AMOUNT = 15;
 
@@ -206,6 +206,8 @@ export default function UniswapPools({
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useLatestCallback(item => {
+    const isFromWalletScreen = Navigation.getActiveRoute().params
+      ?.isFromWalletScreen;
     let poolAsset = uniswap.find(pool => pool.address === item.address);
     if (!poolAsset) {
       poolAsset = parseAssetNative(
@@ -227,6 +229,7 @@ export default function UniswapPools({
       asset: poolAsset,
       dpi: true,
       fromDiscover: true,
+      isFromWalletScreen,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: 'uniswap',
     });

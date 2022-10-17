@@ -22,14 +22,11 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
-import {
-  getProviderForNetwork,
-  web3SetHttpProvider,
-} from '@rainbow-me/handlers/web3';
-import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { deleteAllBackups } from '@/handlers/cloudBackup';
+import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
+import { RainbowContext } from '@/helpers/RainbowContext';
+import isTestFlight from '@/helpers/isTestFlight';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useInitializeAccountData,
@@ -37,20 +34,25 @@ import {
   useResetAccountState,
   useUpdateAssetOnchainBalance,
   useWallets,
-} from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { wipeKeychain } from '@rainbow-me/model/keychain';
-import { clearAllStorages } from '@rainbow-me/model/mmkv';
-import { Navigation } from '@rainbow-me/navigation';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { explorerInit } from '@rainbow-me/redux/explorer';
-import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
-import store from '@rainbow-me/redux/store';
-import { walletsUpdate } from '@rainbow-me/redux/wallets';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+} from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { wipeKeychain } from '@/model/keychain';
+import { clearAllStorages } from '@/model/mmkv';
+import { Navigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
+import { explorerInit } from '@/redux/explorer';
+import { clearImageMetadataCache } from '@/redux/imageMetadata';
+import store from '@/redux/store';
+import { walletsUpdate } from '@/redux/wallets';
+import { ETH_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
+import {
+  addDefaultNotificationGroupSettings,
+  removeNotificationSettingsForWallet,
+  useAllNotificationSettingsFromStorage,
+} from '@/notifications/settings';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -61,6 +63,7 @@ const DevSection = () => {
     testnetsEnabled,
     settingsChangeTestnetsEnabled,
   } = useAccountSettings();
+  const { notificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const resetAccountState = useResetAccountState();
@@ -124,10 +127,6 @@ const DevSection = () => {
       )?.[0];
       if (resultString) Alert.alert(resultString);
     }
-  }, [navigate]);
-
-  const navToDevNotifications = useCallback(() => {
-    navigate('DevNotificationsSection');
   }, [navigate]);
 
   const checkAlert = useCallback(async () => {
@@ -201,10 +200,29 @@ const DevSection = () => {
     testnetsEnabled,
   ]);
 
+  const clearAllNotificationSettings = useCallback(async () => {
+    // loop through notification settings and unsubscribe all wallets
+    // from firebase first or we’re gonna keep getting them even after
+    // clearing storage and before changing settings
+    if (notificationSettings.length > 0) {
+      notificationSettings.forEach(wallet => {
+        removeNotificationSettingsForWallet(wallet.address);
+      });
+    }
+  }, [notificationSettings]);
+
   const clearLocalStorage = useCallback(async () => {
+    clearAllNotificationSettings();
     await AsyncStorage.clear();
     clearAllStorages();
-  }, []);
+    addDefaultNotificationGroupSettings();
+  }, [clearAllNotificationSettings]);
+
+  const clearMMKVStorage = useCallback(async () => {
+    clearAllNotificationSettings();
+    clearAllStorages();
+    addDefaultNotificationGroupSettings();
+  }, [clearAllNotificationSettings]);
 
   return (
     <MenuContainer testID="developer-settings-sheet">
@@ -243,7 +261,7 @@ const DevSection = () => {
           <Menu header="Rainbow Developer Settings">
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
-              onPress={AsyncStorage.clear}
+              onPress={async () => await AsyncStorage.clear()}
               size={52}
               titleComponent={
                 <MenuItem.Title
@@ -253,7 +271,7 @@ const DevSection = () => {
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
-              onPress={clearAllStorages}
+              onPress={clearMMKVStorage}
               size={52}
               titleComponent={
                 <MenuItem.Title
@@ -352,17 +370,6 @@ const DevSection = () => {
               testID="alert-section"
               titleComponent={
                 <MenuItem.Title text={lang.t('developer_settings.alert')} />
-              }
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🔔" isEmoji />}
-              onPress={navToDevNotifications}
-              size={52}
-              testID="notifications-section"
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.notifications_debug')}
-                />
               }
             />
 

@@ -12,32 +12,34 @@ import Animated, {
 import RNRestart from 'react-native-restart';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import styled from '@rainbow-me/styled-components';
+import styled from '@/styled-thing';
 
-const Button = styled(ButtonPressAnimation)({
+const Button = styled(ButtonPressAnimation)(({ size, color }) => ({
   alignItems: 'center',
-  backgroundColor: ({ color }) => color,
-  borderRadius: 35,
-  height: 70,
+  backgroundColor: color,
+  borderRadius: size,
+  height: size,
   justifyContent: 'center',
   shadowOpacity: 0.2,
   shadowRadius: 6,
-  width: 70,
-});
+  width: size,
+}));
 
-const Wrapper = styled(Animated.View)({
-  borderRadius: 35,
+const Wrapper = styled(Animated.View)(({ size }) => ({
+  borderRadius: size / 2,
   elevation: 5,
-  height: 70,
+  height: size,
   position: 'absolute',
-  width: 70,
-});
+  width: size,
+}));
 
 export default function DevButton({
   color: givenColor,
   onPress = () => RNRestart.Restart(),
   children = <Icon color="white" name="warning" size="lmedium" />,
   initialDisplacement = 100,
+  testID = '',
+  size = 20,
 }) {
   const { colors } = useTheme();
   const color = givenColor || colors.purpleDark;
@@ -51,7 +53,9 @@ export default function DevButton({
     },
     onEnd: event => {
       x.value = withSpring(
-        x.value + event.velocityX > (width - 35) / 2 ? width - 74 : 2,
+        x.value + event.velocityX > (width - size / 2) / 2
+          ? width - size / 2
+          : 2,
         { velocity: event.velocityX }
       );
       y.value = withDecay({ deceleration: 0.99, velocity: event.velocityY });
@@ -71,8 +75,8 @@ export default function DevButton({
       onGestureEvent={gestureHandler}
       onHandlerStateChange={gestureHandler}
     >
-      <Wrapper style={style}>
-        <Button color={color} onPress={onPress}>
+      <Wrapper style={style} size={size}>
+        <Button color={color} onPress={onPress} testID={testID} size={size}>
           {children}
         </Button>
       </Wrapper>

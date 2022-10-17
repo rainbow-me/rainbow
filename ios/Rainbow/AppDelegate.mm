@@ -17,9 +17,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
 #import <CodePush/CodePush.h>
-
-@import segment_analytics_react_native;
-
+#import <segment_analytics_react_native-Swift.h>
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -135,7 +133,11 @@ RCT_EXPORT_METHOD(hideAnimated) {
 //Called when a notification is delivered to a foreground app.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+  if (@available(iOS 14.0, *)) {
+    completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner);
+  } else {
+    completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNNotificationPresentationOptionAlert);
+  }
 }
 
 
@@ -181,8 +183,20 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
   }
   // delete the badge
   [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-  // delete the notifications
-  [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+  // delete the notifications from WC
+  [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+    NSMutableArray *identifiers = [[NSMutableArray alloc] init];
+    [notifications enumerateObjectsUsingBlock:^(UNNotification * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+      UNNotificationRequest *request = [obj request];
+      NSString *identifier = [request identifier];
+      NSString *type = [[[request content] userInfo] valueForKey:@"type"];
+      if ([type isEqualToString:@"wc"]) {
+        [identifiers addObject:identifier];
+      }
+    }];
+    [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:identifiers];
+  }];
+  
 }
 
 @end

@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { InteractionManager, StatusBar } from 'react-native';
+import { InteractionManager } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
@@ -14,13 +14,13 @@ import {
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import { useDimensions } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
-import logger from 'logger';
+import { analytics } from '@/analytics';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { useDimensions } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import logger from '@/utils/logger';
 
 export default function RestoreSheet() {
   const { goBack, navigate, setParams } = useNavigation();
@@ -99,7 +99,6 @@ export default function RestoreSheet() {
     deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() / 2 : 0);
   return (
     <Column height={wrapperHeight}>
-      <StatusBar barStyle="light-content" />
       <SlackSheet
         contentHeight={longFormHeight}
         deferredHeight={android}

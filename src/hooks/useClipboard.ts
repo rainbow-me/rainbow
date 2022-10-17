@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import { useCallback, useEffect, useState } from 'react';
 import useAppState from './useAppState';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@/utils';
 
 const listeners = new Set<React.Dispatch<React.SetStateAction<string>>>();
 
@@ -22,7 +22,7 @@ export default function useClipboard() {
 
   const getClipboard = useCallback(
     callback =>
-      Clipboard.getString().then(result => {
+      Clipboard.getString().then((result: string) => {
         updateClipboardData(result);
         callback?.(result);
       }),

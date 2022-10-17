@@ -200,15 +200,18 @@
         "fetching_quote": "Fetching Quote",
         "insufficient_eth": "Insufficient ETH",
         "insufficient_funds": "Insufficient Funds",
-        "insufficient_liquidity": "Insufficient Liquidity",
+        "insufficient_liquidity": "􀅵 Insufficient Liquidity",
+        "no_route_found": "􀅵 No route found",
         "insufficient_matic": "Insufficient MATIC",
         "insufficient_token": "Insufficient %{tokenName}",
         "invalid_fee": "Invalid Fee",
         "invalid_fee_lowercase": "Invalid fee",
         "loading": "Loading...",
+        "no_quote_available": "􀅵 No Quote Available",
         "review": "Review",
         "submitting": "Submitting",
         "swap": "Hold to Swap",
+        "bridge": "Hold to Bridge",
         "swap_anyway": "Swap Anyway",
         "symbol_balance_too_low": "%{symbol} balance too low",
         "view_details": "View Details",
@@ -225,6 +228,7 @@
       "exchange": "Exchange",
       "exchange_again": "Exchange Again",
       "exchange_search_placeholder": "Search tokens",
+      "exchange_search_placeholder_network": "Search tokens on %{network}",
       "go_back": "Go Back",
       "go_back_lowercase": "Go back",
       "got_it": "Got it",
@@ -239,6 +243,7 @@
       "learn_more": "Learn more",
       "less": "Less",
       "loading": "Loading",
+      "no_thanks": "No thanks",
       "notify_me": "Get notified",
       "offline": "Offline",
       "ok": "OK",
@@ -395,6 +400,16 @@
         "loser": "Loser",
         "mover": "Mover"
       },
+      "long_wait": {
+        "prefix": "Long Wait",
+        "time": "Up to %{estimatedWaitTime} to swap"
+      },
+      "no_results": {
+        "description": "Some tokens don’t have enough liquidity to perform a successful swap.",
+        "description_l2": "Some tokens don’t have enough layer 2 liquidity to perform a successful swap.",
+        "nothing_found": "Nothing found",
+        "nothing_here": "Nothing here!"
+      },
       "price_impact": {
         "losing_prefix": "Losing",
         "small_market": "Small Market",
@@ -426,6 +441,7 @@
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
         "available_network": "Available on the %{availableNetwork} network",
+        "available_networkv2": "Also available on %{availableNetwork}",
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
@@ -483,7 +499,11 @@
         "us_except": "United States (except Texas and New York)"
       },
       "swap": {
+        "swap": "Swap",
+        "bridge": "Bridge",
+        "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
+        "on": "On",
         "price_impact": "Price impact",
         "price_row_per_token": "per",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade!",
@@ -492,6 +512,7 @@
         "uniswap_v2": "Uniswap v2",
         "view_on": "View on %{blockExplorerName}",
         "network_switcher": "Swapping on the %{network} network",
+        "settling_time": "Estimated settling time",
         "swap_max_alert": {
           "title": "Are you sure?",
           "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}?",
@@ -506,6 +527,7 @@
       "swap_details": {
         "exchange_rate": "Exchange rate",
         "rainbow_fee": "Included Rainbow fee",
+        "refuel": "Extra network tokens",
         "review": "Review",
         "show_details": "More details",
         "hide_details": "Hide details",
@@ -514,6 +536,7 @@
         "maximum_sold": "Maximum sold",
         "token_contract": "%{token} contract",
         "number_of_exchanges": "%{number} Exchanges",
+        "number_of_steps": "%{number} Steps",
         "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
@@ -563,6 +586,7 @@
         "twitter": "Twitter",
         "view_all_with_property": "View All with Property",
         "view_collection": "View Collection",
+        "view_on_marketplace": "View on Marketplace...",
         "view_on_block_explorer": "View on %{blockExplorerName}",
         "view_on_marketplace_name": "View on %{marketplaceName}",
         "view_on_platform": "View on %{platform}",
@@ -572,25 +596,24 @@
       }
     },
     "explain": {
-      "optimism_app_icon": {
-        "title": "You've unlocked\nRainbow 􀆄 Optimism",
-        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+      "icon_unlock": {
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon!",
+        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+        "title": "You've unlocked\nRainbow 􀆄 %{partner}",
         "button": "Snag the icon"
       },
       "output_disabled": {
-        "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
+        "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
         "title": "Enter %{inputToken} Instead",
+        "title_crosschain": "Enter %{fromNetwork} %{inputToken} Instead",
+        "text_crosschain": "Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
+        "text_bridge": "Rainbow can't prepare a bridge based on the amount of %{outputToken} you'd like to receive at the %{toNetwork} destination. \n\n Try entering the amount of %{fromNetwork} %{inputToken} you’d like to bridge instead.",
         "title_empty": "Choose a Token"
       },
       "available_networks": {
         "text": "%{tokenSymbol} is available on %{networks}. To move %{tokenSymbol} between networks, use a Bridge like Hop.",
         "title_plural": "Available on %{length} Networks",
         "title_singular": "Available on the %{network} Network"
-      },
-      "optimism_app_icon": {
-        "title": "You've unlocked\nRainbow 􀆄 Optimism",
-        "text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "button": "Snag the icon"
       },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
@@ -664,6 +687,19 @@
         "fragment3": " about AMMs and token liquidity.",
         "title": "Insufficient Liquidity"
       },
+      "no_route_found": {
+        "fragment1": "We couldn’t find a route for this swap. ",
+        "fragment2": "A route may not exist for this swap, or the amount may be too small.",
+        "title": "No routes found"
+      },
+      "no_quote": {
+        "title": "No quote available",
+        "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
+      },
+      "cross_chain_swap": {
+        "title": "Expect Bridge Delays",
+        "text": "This swap may take longer than expected to complete. \n\n Cross-chain swaps require bridging funds to the destination network, and bridges can sometimes take longer than expected to transfer funds. Your funds will remain safe during this time."
+      },
       "go_to_hop_with_icon": {
         "text": "Go to the Hop Bridge 􀮶"
       },
@@ -677,6 +713,15 @@
           "fragment1": "Still curious? ",
           "fragment2": "Read more",
           "fragment3": " about our approach to routing swaps."
+        }
+      },
+      "wyre_degradation": {
+        "text": "Because of the ongoing Ethereum network upgrade known as \"The Merge,\" our partners have temporarily paused crypto purchasing.",
+        "title": "It's happening \nThe Merge is underway",
+        "still_curious": {
+          "fragment1": "This is a precautionary step to ensure accurate pricing and the safety of user funds. Still curious? ",
+          "fragment2": "Learn more",
+          "fragment3": ""
         }
       },
       "slippage": {
@@ -696,6 +741,21 @@
           "fragment2": "Read more",
           "fragment3": " about Flashbots and the protection it offers."
         }
+      },
+      "swap_refuel": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
+        "button": "Add $3 of %{networkName} %{gasToken}"
+      },
+      "swap_refuel_deduct": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH subtracted from this swap.",
+        "button": "Adjust and add $3 of %{gasToken}"
+      },
+      "swap_refuel_notice": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
+        "button": "Proceed anyway"
       }
     },
     "fedora": {
@@ -712,7 +772,26 @@
       }
     },
     "gas": {
-      "network_fee": "Est. network fee"
+      "network_fee": "Est. network fee",
+      "current_base_fee": "Current base fee",
+      "max_base_fee": "Max base fee",
+      "miner_tip": "Miner tip",
+      "max_transaction_fee": "Max transaction fee",
+      "warning_separator": "·",
+      "lower_than_suggested": "Low · may get stuck",
+      "higher_than_suggested": "High · overpaying",
+      "max_base_fee_too_low_error": "Low · likely to fail",
+      "tip_too_low_error": "Low · likely to fail",
+      "alert_message_higher_miner_tip_needed": "Setting a higher miner tip is recommended to avoid issues.",
+      "alert_message_higher_max_base_fee_needed": "Setting a higher max base fee is recommended to avoid issues.",
+      "alert_message_lower": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
+      "alert_title_higher_max_base_fee_needed": "Low max base fee–transaction may get stuck!",
+      "alert_title_higher_miner_tip_needed": "Low miner tip–transaction may get stuck!",
+      "alert_title_lower_max_base_fee_needed": "High max base fee!",
+      "alert_title_lower_miner_tip_needed": "High miner tip!",
+      "proceed_anyway": "Proceed Anyway",
+      "edit_max_bass_fee": "Edit Max Base Fee",
+      "edit_miner_tip": "Edit Miner Tip"
     },
     "homepage": {
       "back": "Back to rainbow.me",
@@ -786,7 +865,6 @@
       "recipient_address": "Recipient Address"
     },
     "list": {
-      "nothing_here": "Nothing here!",
       "share": {
         "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl}",
         "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl}"
@@ -1086,6 +1164,26 @@
         "since": "Since"
       }
     },
+    "promos": {
+      "swaps_launch": {
+        "primary_button": "􀖅 Try a swap",
+        "secondary_button": "Maybe later",
+        "info_row_1": {
+          "title": "Swap all your favorite tokens",
+          "description": "Rainbow searches everywhere to find the best rate for your trade."
+        },
+        "info_row_2": {
+          "title": "Swap directly on L2",
+          "description": "Fast and cheap swaps on Arbitrum, Optimism and Polygon."
+        },
+        "info_row_3": {
+          "title": "Flashbots protection",
+          "description": "Price protection, plus no fees on failed swaps. Enable in swap settings."
+        },
+        "header": "Swaps on Rainbow",
+        "subheader": "REINTRODUCING"
+      }
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Are you enjoying Rainbow? 🥰",
@@ -1153,11 +1251,19 @@
         "sold": "Sold",
         "minted": "Minted",
         "swapped": "Swapped",
-        "approvals": "Approvals",
-        "contracts_and_more": "Contracts & More",
+        "approvals": "Approved",
+        "other": "Contracts & More",
         "all": "All",
         "off": "Off",
-        "plus_n_more": "+ %{n} more"
+        "plus_n_more": "+ %{n} more",
+        "no_permissions": "Looks like your notification permissions are disabled. Please enable them in Settings to receive notifications from Rainbow.",
+        "no_watched_wallets": "You are not watching any wallets.",
+        "no_owned_wallets": "You do not have any wallets in Rainbow. Create a wallet or import one with your secret phrase.",
+        "open_system_settings": "Open Settings",
+        "unsupported_network": "Notifications are only available for Ethereum Mainnet transactions at this time.",
+        "change_network": "Change your Network",
+        "no_first_time_permissions": "Please allow Rainbow to send you notifications.",
+        "first_time_allow_notifications": "Allow Notifications"
       },
       "privacy": "Privacy",
       "privacy_section": {
@@ -1174,6 +1280,12 @@
         "system": "System",
         "dark": "Dark",
         "light": "Light"
+      },
+      "icon_change": {
+        "title": "Confirm icon change",
+        "warning": "Changing your icon may cause Rainbow to restart.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
       }
     },
     "subscribe_form": {
@@ -1287,6 +1399,14 @@
       "copied": "Copied \"%{copiedText}\"",
       "invalid_paste": "You can't paste that here"
     },
+    "hardware_wallets": {
+      "pair_your_nano": "Pair your Nano X",
+      "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
+      "learn_more_about_ledger": "Learn more about Ledger",
+      "pair_a_new_ledger": "Pair a new Ledger",
+      "looking_for_devices": "Looking for devices",
+      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
+    },
     "wallet": {
       "action": {
         "add_existing": "Add an existing wallet",
@@ -1299,9 +1419,13 @@
         "hide": "Hide",
         "import_wallet": "Add Wallet",
         "input": "Transaction Input",
+        "notifications": "Notification Settings",
+        "pair_hardware_wallet": "Pair a Ledger Nano X",
         "paste": "Paste",
         "pin": "Pin",
         "reject": "Reject",
+        "remove": "Remove Wallet",
+        "remove_confirm": "Are you sure you want to remove this wallet?",
         "send": "Send",
         "to": "To",
         "unhide": "Unhide",

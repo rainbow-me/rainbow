@@ -23,6 +23,7 @@ export type {
   SelectedGasFee,
 } from './gas';
 export { NativeCurrencyKeys } from './nativeCurrencyTypes';
+export type { NativeCurrencyKey } from './nativeCurrencyTypes';
 export type Numberish = string | number;
 export type { NonceManager } from './nonce';
 export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';

@@ -14,12 +14,12 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
-import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
-import store from '@rainbow-me/redux/store';
-import { ETH_ADDRESS } from '@rainbow-me/references';
-import { add } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { isNativeAsset } from '@/handlers/assets';
+import store from '@/redux/store';
+import { ETH_ADDRESS } from '@/references';
+import { add } from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
+import { estimateSwapGasLimit } from '@/handlers/swap';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
@@ -42,7 +42,7 @@ export const estimateUnlockAndSwap = async (
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-  let nativeAsset =
+  const nativeAsset =
     ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
       inputCurrency.address?.toLowerCase() ||
     isNativeAsset(
@@ -72,6 +72,7 @@ export const estimateUnlockAndSwap = async (
     );
     gasLimits = gasLimits.concat(unlockGasLimit);
   }
+
   swapGasLimit = await estimateSwapGasLimit({
     chainId: Number(chainId),
     requiresApprove: swapAssetNeedsUnlocking,
@@ -98,7 +99,7 @@ export const createUnlockAndSwapRap = async (
     chainId === ChainId.mainnet;
 
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-  let nativeAsset =
+  const nativeAsset =
     ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
       inputCurrency?.address?.toLowerCase() ||
     isNativeAsset(
@@ -142,6 +143,7 @@ export const createUnlockAndSwapRap = async (
     permit: swapAssetNeedsUnlocking && allowsPermit,
     requiresApprove: swapAssetNeedsUnlocking && !allowsPermit,
     tradeDetails,
+    meta: swapParameters.meta,
   });
   actions = actions.concat(swap);
 

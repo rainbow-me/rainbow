@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
   runOnJS,
@@ -20,8 +21,8 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import CustomBackground from './androidCustomComponents/customBackground';
 import CustomHandle from './androidCustomComponents/customHandle';
-import styled from '@rainbow-me/styled-components';
-import { deviceUtils } from '@rainbow-me/utils';
+import styled from '@/styled-thing';
+import { deviceUtils } from '@/utils';
 
 function useAreHeaderButtonVisible() {
   const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(false);
@@ -106,7 +107,7 @@ const DiscoverSheet = (_, forwardedRef) => {
   return (
     <AndroidWrapper
       style={{
-        bottom: -24,
+        bottom: -StatusBar.currentHeight,
       }}
     >
       <DiscoverSheetContext.Provider value={value}>
@@ -131,6 +132,7 @@ const DiscoverSheet = (_, forwardedRef) => {
         >
           <DiscoverSheetHeader yPosition={yPosition} />
           <BottomSheetScrollView
+            testID="discover-sheet"
             onScrollWorklet={scrollHandler}
             ref={sheet}
             removeClippedSubviews

@@ -4,10 +4,7 @@ import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -20,26 +17,21 @@ import {
 import { sendRpcCall } from '../handlers/web3';
 import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
-import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@rainbow-me/analytics';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import {
-  convertHexToString,
-  delay,
-  omitBy,
-  pickBy,
-} from '@rainbow-me/helpers/utilities';
-import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
-import Routes from '@rainbow-me/routes';
-import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
-import logger from 'logger';
+import { analytics } from '@/analytics';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import networkTypes from '@/helpers/networkTypes';
+import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
+import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils, watchingAlert } from '@/utils';
+import logger from '@/utils/logger';
+import { getFCMToken } from '@/notifications/tokens';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -271,7 +263,7 @@ export const walletConnectRemovePendingRedirect = (
         Minimizer.goBack();
       }, 300);
     } else {
-      Minimizer.goBack();
+      IS_TESTING !== 'true' && Minimizer.goBack();
     }
     // If it's still active after showRedirectSheetThreshold
     // We need to show the redirect sheet cause the redirect
@@ -527,8 +519,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       );
       const supportedChains = [
         networkTypes.mainnet,
-        networkTypes.ropsten,
-        networkTypes.kovan,
         networkTypes.goerli,
         networkTypes.polygon,
         networkTypes.optimism,

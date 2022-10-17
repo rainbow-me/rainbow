@@ -1,5 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
+import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
@@ -16,24 +17,24 @@ import {
   Box,
   Column,
   Columns,
-  Divider,
   Heading,
   Inset,
   Row,
   Rows,
+  Separator,
   Stack,
   Text,
-} from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+} from '@/design-system';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountENSDomains,
   useDimensions,
   useENSAvatar,
   useENSRecords,
   useENSRegistration,
-} from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
+} from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -49,10 +50,10 @@ export default function ENSIntroSheet() {
   const { params } = useRoute<any>();
 
   const {
+    controlledDomains,
     isLoading,
     isFetched,
     nonPrimaryDomains,
-    ownedDomains,
     uniqueDomain,
   } = useAccountENSDomains();
   const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {
@@ -71,10 +72,16 @@ export default function ENSIntroSheet() {
 
   const profileExists = useMemo(
     () =>
+      ensRecords?.contenthash ||
       Object.keys(ensRecords?.coinAddresses || {}).length > 1 ||
       ensAvatar?.imageUrl ||
       Object.keys(ensRecords?.records || {}).length > 0,
-    [ensAvatar?.imageUrl, ensRecords?.coinAddresses, ensRecords?.records]
+    [
+      ensAvatar?.imageUrl,
+      ensRecords?.coinAddresses,
+      ensRecords?.contenthash,
+      ensRecords?.records,
+    ]
   );
 
   const { navigate } = useNavigation();
@@ -100,7 +107,9 @@ export default function ENSIntroSheet() {
   );
 
   const handleSelectUniqueDomain = useCallback(() => {
-    !!uniqueDomain && navigateToAssignRecords(uniqueDomain?.name);
+    if (uniqueDomain?.name) {
+      navigateToAssignRecords(uniqueDomain?.name);
+    }
   }, [navigateToAssignRecords, uniqueDomain]);
 
   const handleSelectExistingName = useCallback(() => {
@@ -148,30 +157,42 @@ export default function ENSIntroSheet() {
 
   return (
     <Box
-      background="body"
+      background="body (Deprecated)"
       paddingTop={{ custom: topPadding }}
       style={{ height: contentHeight }}
       testID="ens-intro-sheet"
     >
-      <Inset top={isSmallPhone ? '15px' : '36px'}>
+      <Inset top={isSmallPhone ? '15px (Deprecated)' : '36px'}>
         <Box height="full">
           <Rows>
             <Row>
               <Stack space={{ custom: isSmallPhone ? 30 : 38 }}>
                 <Stack alignHorizontal="center" space={{ custom: 17 }}>
-                  <Heading align="center" size="34px">
+                  <Heading
+                    align="center"
+                    color="primary (Deprecated)"
+                    size="34px / 41px (Deprecated)"
+                    weight="heavy"
+                  >
                     {lang.t('profiles.intro.create_your')}
                   </Heading>
-                  <Heading align="center" color="action" size="34px">
+                  <Heading
+                    align="center"
+                    color="action (Deprecated)"
+                    size="34px / 41px (Deprecated)"
+                    weight="heavy"
+                  >
                     {lang.t('profiles.intro.ens_profile')}
                   </Heading>
                 </Stack>
                 <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
                   <Bleed left="10px">
-                    <IntroMarquee isSmallPhone={isSmallPhone} />
+                    {IS_TESTING !== 'true' && (
+                      <IntroMarquee isSmallPhone={isSmallPhone} />
+                    )}
                   </Bleed>
-                  <Inset horizontal="34px">
-                    <Divider color="divider60" />
+                  <Inset horizontal="34px (Deprecated)">
+                    <Separator color="divider60 (Deprecated)" />
                   </Inset>
                 </Stack>
                 <Stack alignHorizontal="center">
@@ -213,16 +234,19 @@ export default function ENSIntroSheet() {
             </Row>
             <Row height="content">
               <Box paddingBottom="4px">
-                <Inset space="19px" {...(isSmallPhone && { bottom: '8px' })}>
+                <Inset
+                  space="19px (Deprecated)"
+                  {...(isSmallPhone && { bottom: '8px' })}
+                >
                   {isLoading && (
-                    <Box alignItems="center" paddingBottom="15px">
+                    <Box alignItems="center" paddingBottom="15px (Deprecated)">
                       {/* @ts-expect-error JavaScript component */}
                       <ActivityIndicator />
                     </Box>
                   )}
                   {isFetched && (
                     <>
-                      {ownedDomains?.length === 0 ? (
+                      {controlledDomains?.length === 0 ? (
                         <Inset bottom={android ? '10px' : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}
@@ -240,7 +264,7 @@ export default function ENSIntroSheet() {
                         </Inset>
                       ) : (
                         <Stack space="12px">
-                          {uniqueDomain ? (
+                          {uniqueDomain?.name ? (
                             <SheetActionButton
                               color={colors.appleBlue}
                               // @ts-expect-error JavaScript component
@@ -338,7 +362,12 @@ function InfoRow({
                 paddingTop: '6px',
               })}
             >
-              <Heading align="center" color="action" size="28px" weight="bold">
+              <Heading
+                align="center"
+                color="action (Deprecated)"
+                size="28px / 33px (Deprecated)"
+                weight="bold"
+              >
                 {icon}
               </Heading>
             </Box>
@@ -358,8 +387,18 @@ function InfoRow({
       </Column>
       <Bleed top="3px">
         <Stack space="12px">
-          <Text weight="bold">{title}</Text>
-          <Text color="secondary60" size="14px" weight="medium">
+          <Text
+            color="primary (Deprecated)"
+            size="16px / 22px (Deprecated)"
+            weight="bold"
+          >
+            {title}
+          </Text>
+          <Text
+            color="secondary60 (Deprecated)"
+            size="14px / 19px (Deprecated)"
+            weight="medium"
+          >
             {description}
           </Text>
         </Stack>

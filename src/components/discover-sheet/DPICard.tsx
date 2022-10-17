@@ -6,7 +6,7 @@ import { CustomShadow } from '../../design-system/layout/shadow';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { analytics } from '@rainbow-me/analytics';
+import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
   Bleed,
@@ -20,13 +20,13 @@ import {
   Stack,
   Text,
   useForegroundColor,
-} from '@rainbow-me/design-system';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import store from '@rainbow-me/redux/store';
-import { DPI_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/design-system';
+import { useAccountSettings } from '@/hooks';
+import store from '@/redux/store';
+import { DPI_ADDRESS } from '@/references';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
+import { ethereumUtils } from '@/utils';
 
 const ButtonShadow: ViewStyle = {
   shadowColor: 'black',
@@ -96,11 +96,15 @@ export default function DPICard() {
       testID="dpi-button"
     >
       <AccentColorProvider color={shadowColor}>
-        <Box background="body" borderRadius={24} shadow={CardShadow}>
+        <Box
+          background="body (Deprecated)"
+          borderRadius={24}
+          shadow={CardShadow}
+        >
           <ColorModeProvider value="darkTinted">
             <Box
               as={LinearGradient}
-              background="body"
+              background="body (Deprecated)"
               borderRadius={24}
               colors={['#6D58F5', '#A970FF']}
               end={{ x: 1, y: 0.5 }}
@@ -118,15 +122,23 @@ export default function DPICard() {
                     space="12px"
                   >
                     <Stack space={{ custom: 13 }}>
-                      <Heading color="primary" size="20px" weight="bold">
+                      <Heading
+                        color="primary (Deprecated)"
+                        size="20px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {lang.t('discover.dpi.title')}
                       </Heading>
-                      <Text color="secondary60" size="15px" weight="semibold">
+                      <Text
+                        color="secondary60 (Deprecated)"
+                        size="15px / 21px (Deprecated)"
+                        weight="semibold"
+                      >
                         {lang.t('discover.dpi.body')}
                       </Text>
                     </Stack>
                     <Column width="content">
-                      <Bleed top="5px">
+                      <Bleed top="5px (Deprecated)">
                         {/* @ts-expect-error JavaScript component */}
                         <CoinIcon
                           address={DPI_ADDRESS}
@@ -141,7 +153,7 @@ export default function DPICard() {
                     <Box style={ButtonShadow}>
                       <Box
                         as={LinearGradient}
-                        background="body"
+                        background="body (Deprecated)"
                         borderRadius={18}
                         colors={['#5236C2', '#7533D6']}
                         end={{ x: 1, y: 0.5 }}
@@ -150,7 +162,12 @@ export default function DPICard() {
                         width="full"
                       >
                         <Cover alignHorizontal="center" alignVertical="center">
-                          <Text align="center" size="15px" weight="heavy">
+                          <Text
+                            align="center"
+                            color="primary (Deprecated)"
+                            size="15px / 21px (Deprecated)"
+                            weight="heavy"
+                          >
                             􀦌 {lang.t('discover.dpi.view')}
                           </Text>
                         </Cover>

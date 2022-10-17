@@ -1,8 +1,11 @@
 /* eslint-disable no-undef */
-jest.mock('react-native-background-timer', () => ({
-  identify: () => null,
-  reset: () => null,
-  setup: () => null,
+// needed to set up global translations
+import '../../src/languages';
+
+jest.mock('@/env', () => ({
+  IS_DEV: false,
+  IS_TEST: true,
+  IS_PROD: false,
 }));
 
 jest.mock('react-native-device-info', () => ({
@@ -21,7 +24,6 @@ jest.mock('@sentry/react-native', () => ({
   captureException: () => null,
 }));
 
-jest.autoMockOff();
 jest.mock('react-native-keychain', () => ({
   ACCESSIBLE: {
     ALWAYS_THIS_DEVICE_ONLY: 'kSecAttrAccessibleAlwaysThisDeviceOnly',
@@ -30,3 +32,13 @@ jest.mock('react-native-keychain', () => ({
   resetGenericPassword: jest.fn(),
   setGenericPassword: jest.fn(),
 }));
+jest.mock('react-native-keychain-android-new', () => ({
+  ACCESSIBLE: {
+    ALWAYS_THIS_DEVICE_ONLY: 'kSecAttrAccessibleAlwaysThisDeviceOnly',
+  },
+  getGenericPassword: jest.fn(),
+  resetGenericPassword: jest.fn(),
+  setGenericPassword: jest.fn(),
+}));
+
+jest.mock('react-native-mmkv');

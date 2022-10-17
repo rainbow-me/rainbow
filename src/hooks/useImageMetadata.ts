@@ -2,13 +2,10 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import OfflineMetadata from '../references/meta/tokens-metadata.json';
 import useDimensions from './useDimensions';
-import {
-  ImageMetadata,
-  updateImageMetadataCache,
-} from '@rainbow-me/redux/imageMetadata';
-import { AppState } from '@rainbow-me/redux/store';
-import { position } from '@rainbow-me/styles';
-import { getDominantColorFromImage } from '@rainbow-me/utils';
+import { ImageMetadata, updateImageMetadataCache } from '@/redux/imageMetadata';
+import { AppState } from '@/redux/store';
+import { position } from '@/styles';
+import { getDominantColorFromImage } from '@/utils';
 
 export default function useImageMetadata(imageUrl: string | null) {
   const dispatch = useDispatch();

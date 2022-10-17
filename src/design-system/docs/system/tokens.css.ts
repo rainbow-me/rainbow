@@ -1,7 +1,6 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import {
   backgroundColors as rootBackgroundColors,
-  colors as rootColors,
+  deprecatedColors as rootColors,
   foregroundColors as rootForegroundColors,
 } from '../../color/palettes';
 import { typeHierarchy } from './typography.css';
@@ -51,7 +50,7 @@ export const colors = {
 
 export const foregroundColors = {
   ...rootForegroundColors,
-  actionShade: {
+  'actionShade (Deprecated)': {
     light: colors.appleBlueDark,
     dark: colors.sky,
   },
@@ -61,13 +60,16 @@ export type ForegroundColor = keyof typeof foregroundColors;
 
 export const backgroundColors = {
   ...rootBackgroundColors,
-  bodyTint: { light: colors.white05, dark: colors.black05 },
-  body: {
+  'bodyTint (Deprecated)': { light: colors.white05, dark: colors.black05 },
+  'body (Deprecated)': {
     light: colors.skyTint,
     dark: colors.blackTint,
   },
-  actionTint: { light: colors.appleBlueTint, dark: colors.appleBlueShade },
-  action: colors.appleBlue,
+  'actionTint (Deprecated)': {
+    light: colors.appleBlueTint,
+    dark: colors.appleBlueShade,
+  },
+  'action (Deprecated)': colors.appleBlue,
 };
 
 export const fontSizes = [

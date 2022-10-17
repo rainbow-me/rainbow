@@ -8,23 +8,23 @@ import {
 } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
-import { analytics } from '@rainbow-me/analytics';
-import { UniqueAsset } from '@rainbow-me/entities';
-import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
+import { analytics } from '@/analytics';
+import { UniqueAsset } from '@/entities';
+import { fetchEnsTokens } from '@/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueToken,
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
-} from '@rainbow-me/handlers/opensea-api';
-import { fetchPoaps } from '@rainbow-me/handlers/poap';
-import { getNftsByWalletAddress } from '@rainbow-me/handlers/simplehash';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
+} from '@/handlers/opensea-api';
+import { fetchPoaps } from '@/handlers/poap';
+import { getNftsByWalletAddress } from '@/handlers/simplehash';
+import { Network } from '@/helpers/networkTypes';
+import { dedupeAssetsWithFamilies, getFamilies } from '@/parsers';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -205,7 +205,7 @@ export const uniqueTokensResetState = () => (
 
 /**
  * Fetches unique tokens via API, updates state, and saves to local storage,
- * as long as the current network is either mainnet or rinkeby.
+ * as long as the current network is mainnet.
  */
 export const uniqueTokensRefreshState = () => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
@@ -214,7 +214,7 @@ export const uniqueTokensRefreshState = () => async (
   const { network } = getState().settings;
 
   // Currently not supported in testnets
-  if (network !== Network.mainnet && network !== Network.rinkeby) {
+  if (network !== Network.mainnet) {
     return;
   }
 
@@ -271,11 +271,16 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const fetchPage = async (page: number, network: Network) => {
     let shouldStopFetching = false;
     try {
-      let newPageResults = await apiGetAccountUniqueTokens(
-        network,
-        accountAddress,
-        page
-      );
+      let newPageResults;
+      try {
+        newPageResults = await apiGetAccountUniqueTokens(
+          network,
+          accountAddress,
+          page
+        );
+      } catch (e) {
+        newPageResults = [];
+      }
 
       // If there are any "unknown" ENS names, fallback to the ENS
       // metadata service.
@@ -326,16 +331,15 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
       uniqueTokens = uniqueTokens.concat(poaps);
     }
-    await fetchNetwork(Network.polygon);
 
     // Fetch Optimism and Arbitrum NFTs
-    const optimismArbitrumNFTs = await getNftsByWalletAddress(accountAddress);
+    const layer2NFTs = await getNftsByWalletAddress(accountAddress);
 
-    if (optimismArbitrumNFTs.length > 0) {
-      uniqueTokens = uniqueTokens.concat(optimismArbitrumNFTs);
+    if (layer2NFTs.length > 0) {
+      uniqueTokens = uniqueTokens.concat(layer2NFTs);
     }
 
-    //we only care about analytics for mainnet + L2's
+    // we only care about analytics for mainnet + L2's
     analytics.identify(undefined, { NFTs: uniqueTokens.length });
 
     // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).

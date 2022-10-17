@@ -14,7 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Centered } from '../layout';
 import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
-import { useInterval, useTimeout } from '@rainbow-me/hooks';
+import { useInterval, useTimeout } from '@/hooks';
 
 interface Props {
   sharedValue: Animated.SharedValue<number>;

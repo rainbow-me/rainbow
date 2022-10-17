@@ -5,24 +5,22 @@ import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { maybeSignUri } from '@/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+} from '@/helpers/emojiHandler';
 import {
   useAccountSettings,
   useContacts,
   useENSAvatar,
   usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
+} from '@/hooks';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
+} from '@/utils/profileUtils';
 
 const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -39,15 +37,13 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
 
   const emoji = useMemo(
     () =>
-      profilesEnabled
-        ? addressHashedEmoji(address)
-        : returnStringFirstEmoji(contactNickname),
-    [address, contactNickname, profilesEnabled]
+      returnStringFirstEmoji(contactNickname) || addressHashedEmoji(address),
+    [address, contactNickname]
   );
 
   const colorIndex = useMemo(
-    () => (profilesEnabled ? addressHashedColorIndex(address) : color || 0),
-    [address, color, profilesEnabled]
+    () => color || addressHashedColorIndex(address) || 0,
+    [address, color]
   );
 
   const { network } = useAccountSettings();
@@ -56,14 +52,21 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     const nickname = profilesEnabled
       ? value
       : (emoji ? `${emoji} ${value}` : value).trim();
-    if (value.length > 0) {
-      onAddOrUpdateContacts(address, nickname, color, network, ens);
+    if (value?.length > 0) {
+      onAddOrUpdateContacts(
+        address,
+        nickname,
+        colors.avatarBackgrounds[colorIndex || 0],
+        network,
+        ens
+      );
       goBack();
     }
     android && Keyboard.dismiss();
   }, [
     address,
-    color,
+    colorIndex,
+    colors.avatarBackgrounds,
     emoji,
     ens,
     goBack,
@@ -86,7 +89,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   );
 
   const accentColor =
-    dominantColor || colors.avatarBackgrounds[colorIndex || 0];
+    dominantColor || color || colors.avatarBackgrounds[colorIndex || 0];
 
   return (
     <ProfileModal

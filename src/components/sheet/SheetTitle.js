@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from '../text';
-import { fonts } from '@rainbow-me/styles';
+import { fonts } from '@/styles';
 
 export default function SheetTitle({
   size = fonts.size.large,

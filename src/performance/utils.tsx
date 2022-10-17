@@ -98,7 +98,6 @@ export function measureAverage(name: string, every = false, delay = 100) {
   return (fn: (...args: any[]) => any) => {
     return function (this: any, ...args: any[]) {
       const start = global.performance.now();
-      // eslint-disable-next-line babel/no-invalid-this
       const result = fn.apply(this, args);
 
       const time = global.performance.now() - start;

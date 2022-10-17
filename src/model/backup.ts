@@ -25,9 +25,8 @@ import {
   createWallet,
   RainbowWallet,
 } from './wallet';
-import { analytics } from '@rainbow-me/analytics';
-
-import logger from 'logger';
+import { analytics } from '@/analytics';
+import logger from '@/utils/logger';
 
 type BackupPassword = string;
 

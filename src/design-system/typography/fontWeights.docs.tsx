@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 
 import { Stack } from '../components/Stack/Stack';
@@ -24,11 +23,21 @@ const docs: DocsType = {
       Example: () =>
         source(
           <Stack space="12px">
-            <Text weight="regular">Regular</Text>
-            <Text weight="medium">Medium</Text>
-            <Text weight="semibold">Semibold</Text>
-            <Text weight="bold">Bold</Text>
-            <Text weight="heavy">Heavy</Text>
+            <Text color="label" size="17pt" weight="regular">
+              Regular
+            </Text>
+            <Text color="label" size="17pt" weight="medium">
+              Medium
+            </Text>
+            <Text color="label" size="17pt" weight="semibold">
+              Semibold
+            </Text>
+            <Text color="label" size="17pt" weight="bold">
+              Bold
+            </Text>
+            <Text color="label" size="17pt" weight="heavy">
+              Heavy
+            </Text>
           </Stack>
         ),
     },

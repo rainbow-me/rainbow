@@ -12,8 +12,8 @@ import {
   Heading,
   Inset,
   useHeadingStyle,
-} from '@rainbow-me/design-system';
-import { useDimensions, useMagicAutofocus } from '@rainbow-me/hooks';
+} from '@/design-system';
+import { useDimensions, useMagicAutofocus } from '@/hooks';
 
 export type SearchInputProps = {
   isLoading?: boolean;
@@ -35,7 +35,11 @@ const SearchInput = ({
   testID,
 }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
-  const headingStyle = useHeadingStyle({ size: '30px', weight: 'heavy' });
+  const headingStyle = useHeadingStyle({
+    color: 'primary (Deprecated)',
+    size: '30px / 34px (Deprecated)',
+    weight: 'heavy',
+  });
 
   const inputRef = useRef();
   const { handleFocus } = useMagicAutofocus(
@@ -57,7 +61,7 @@ const SearchInput = ({
           as={MaskedView}
           maskElement={
             <Box
-              background="body"
+              background="body (Deprecated)"
               borderRadius={46}
               height={`${height}px`}
               width="full"
@@ -79,7 +83,7 @@ const SearchInput = ({
           maskElement={
             <Inset space="3px">
               <Box
-                background="body"
+                background="body (Deprecated)"
                 borderRadius={46}
                 height={{ custom: height - strokeWidth * 2 }}
                 width="full"
@@ -98,7 +102,7 @@ const SearchInput = ({
         </Box>
       </Cover>
       <Box height={`${height}px`} justifyContent="center" width="full">
-        <Inset left="15px" right="19px">
+        <Inset left="15px (Deprecated)" right="19px (Deprecated)">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
               <MaskedView
@@ -110,7 +114,11 @@ const SearchInput = ({
                         <Spinner duration={1000} size={28} />
                       </Box>
                     ) : (
-                      <Heading size="30px" weight="heavy">
+                      <Heading
+                        color="primary (Deprecated)"
+                        size="30px / 34px (Deprecated)"
+                        weight="heavy"
+                      >
                         􀊫
                       </Heading>
                     )}
@@ -146,7 +154,12 @@ const SearchInput = ({
               value={value}
             />
             <Column width="content">
-              <Heading align="right" size="30px" weight="heavy">
+              <Heading
+                align="right"
+                color="primary (Deprecated)"
+                size="30px / 34px (Deprecated)"
+                weight="heavy"
+              >
                 .eth
               </Heading>
             </Column>
