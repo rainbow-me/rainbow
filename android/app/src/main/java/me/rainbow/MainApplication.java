@@ -14,8 +14,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.oblador.keychain.KeychainModuleBuilder;
 import com.oblador.keychain.KeychainPackage;
-import com.obladorfork.keychain.KeychainModuleBuilderNew;
-import com.obladorfork.keychain.KeychainPackageNew;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -67,7 +65,6 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNZoomableButtonPackage());
           packages.add(new InternalPackage());
           packages.add(new KeychainPackage(new KeychainModuleBuilder().withoutWarmUp()));
-          packages.add(new KeychainPackageNew(new KeychainModuleBuilderNew().withoutWarmUp()));
           packages.add(new RNStartTimePackage(MainApplication.START_MARK));
           packages.add(new RNHapticsPackage());
 
