@@ -43,7 +43,7 @@ jobs:
         run: yarn check-lockfile
 
       - name: Audit CI
-        run:  yarn audit-ci --moderate --config audit-ci.json
+        run:  yarn audit-ci --config audit-ci.jsonc
 
       - name: Lint
         run: yarn lint:ci
