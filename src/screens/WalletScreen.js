@@ -38,6 +38,7 @@ import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { atom, useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import EmptyWalletScreen from '@/components/empty-wallet/EmptyWalletScreen';
 
 export const addressCopiedToastAtom = atom({
   default: false,
@@ -276,14 +277,18 @@ export default function WalletScreen() {
         />
       </HeaderOpacityToggler>
       <Box style={{ flex: 1, marginTop: ios ? -navbarHeightWithInset : 0 }}>
-        <AssetList
-          disableRefreshControl={isLoadingAssets}
-          isEmpty={isAccountEmpty || !!params?.emptyWallet}
-          isLoading={android && isLoadingAssets}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        />
+        {!isAccountEmpty && !params?.emptyWallet ? (
+          <AssetList
+            disableRefreshControl={isLoadingAssets}
+            isEmpty={isAccountEmpty || !!params?.emptyWallet}
+            isLoading={android && isLoadingAssets}
+            isWalletEthZero={isWalletEthZero}
+            network={currentNetwork}
+            walletBriefSectionsData={walletBriefSectionsData}
+          />
+        ) : (
+          <EmptyWalletScreen />
+        )}
       </Box>
       <ToastPositionContainer>
         <Toast
