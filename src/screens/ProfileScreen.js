@@ -11,6 +11,7 @@ import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import {
+  useAccountProfile,
   useAccountSettings,
   useAccountTransactions,
   useContacts,
@@ -109,6 +110,7 @@ export default function ProfileScreen({ navigation }) {
       ) : (
         <ActivityList
           addCashAvailable={addCashAvailable}
+          contacts={contacts}
           header={
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
