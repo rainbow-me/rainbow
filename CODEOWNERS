@@ -36,6 +36,9 @@ src/redux/nonceManager.ts @derHowie @skylarbarrera @estrattonbailey
 # navigation
 src/navigation @jkadamczyk @skylarbarrera @estrattonbailey
 
+# analytics & logging
+src/analytics @estrattonbailey @skylarbarrera
+
 # APP INFRA
 package.json @salman-rb @skylarbarrera @estrattonbailey
 .eslintignore @salman-rb @estrattonbailey @skylarbarrera
