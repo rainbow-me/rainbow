@@ -14,8 +14,6 @@ import { Navbar } from '@/components/navbar/Navbar';
 import { Box, ColorModeProvider } from '@/design-system';
 import { SheetHandle } from '@/components/sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { deviceUtils } from '@/utils';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 const Background = styled(View)({
   backgroundColor: 'black',

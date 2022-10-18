@@ -16,7 +16,10 @@ import { Box, Cover, Rows, Row } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 import { IS_ANDROID } from '@/env';
+// @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+
+// Display.getRealMetrics
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;
