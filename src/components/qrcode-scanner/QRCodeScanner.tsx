@@ -104,7 +104,7 @@ export default function QRCodeScanner() {
   }, []);
 
   useEffect(() => {
-    askForPermissions();
+    setTimeout(() => askForPermissions(), 200);
   }, [askForPermissions]);
 
   return (
@@ -112,7 +112,7 @@ export default function QRCodeScanner() {
       <Box
         position="absolute"
         width="full"
-        height={{ custom: deviceHeight + getSoftMenuBarHeight() }}
+        height={{ custom: deviceHeight + androidSoftMenuHeight }}
       >
         {enabled && (
           <Box
@@ -123,7 +123,7 @@ export default function QRCodeScanner() {
             pendingAuthorizationView={undefined}
             borderRadius={40}
             width="full"
-            height={{ custom: deviceHeight + getSoftMenuBarHeight() }}
+            height={{ custom: deviceHeight + androidSoftMenuHeight }}
             position="absolute"
           />
         )}
