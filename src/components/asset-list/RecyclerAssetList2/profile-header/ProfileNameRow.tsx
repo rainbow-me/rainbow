@@ -3,7 +3,14 @@ import { useRecoilState } from 'recoil';
 import Clipboard from '@react-native-community/clipboard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Icon } from '@/components/icons';
-import { Box, Inline, Text, useForegroundColor } from '@/design-system';
+import {
+  Bleed,
+  Box,
+  Inline,
+  Inset,
+  Text,
+  useForegroundColor,
+} from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
@@ -70,31 +77,35 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
   return (
     <>
       {name && (
-        <ButtonPressAnimation
-          onLongPress={onLongPressName}
-          onPress={onPressName}
-          scale={0.8}
-          testID={testIDPrefix ? `${testIDPrefix}-${name}` : undefined}
-        >
-          <Inline alignVertical="center" space="4px" wrap={false}>
-            <Box style={{ maxWidth }}>
-              <Text
-                color="label"
-                numberOfLines={1}
-                size="23px / 27px (Deprecated)"
-                weight="bold"
-              >
-                {name}
-              </Text>
-            </Box>
-            <Icon
-              color={iconColor}
-              height={9}
-              name="caretDownIcon"
-              width={caretIconWidth}
-            />
-          </Inline>
-        </ButtonPressAnimation>
+        <Bleed space="20px">
+          <ButtonPressAnimation
+            onLongPress={onLongPressName}
+            onPress={onPressName}
+            scale={0.8}
+            testID={testIDPrefix ? `${testIDPrefix}-${name}` : undefined}
+          >
+            <Inset space="20px">
+              <Inline alignVertical="center" space="4px" wrap={false}>
+                <Box style={{ maxWidth }}>
+                  <Text
+                    color="label"
+                    numberOfLines={1}
+                    size="23px / 27px (Deprecated)"
+                    weight="bold"
+                  >
+                    {name}
+                  </Text>
+                </Box>
+                <Icon
+                  color={iconColor}
+                  height={9}
+                  name="caretDownIcon"
+                  width={caretIconWidth}
+                />
+              </Inline>
+            </Inset>
+          </ButtonPressAnimation>
+        </Bleed>
       )}
       {/* @ts-expect-error – JS component */}
       <FloatingEmojis
