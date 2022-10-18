@@ -76,19 +76,6 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
           scale={0.8}
           testID={testIDPrefix ? `${testIDPrefix}-${name}` : undefined}
         >
-          {/* @ts-expect-error – JS component */}
-          <FloatingEmojis
-            distance={150}
-            duration={500}
-            fadeOut={false}
-            scaleTo={0}
-            size={50}
-            wiggleFactor={0}
-            // @ts-expect-error – JS component
-            setOnNewEmoji={newOnNewEmoji =>
-              (onNewEmoji.current = newOnNewEmoji)
-            }
-          />
           <Inline alignVertical="center" space="4px" wrap={false}>
             <Box style={{ maxWidth }}>
               <Text
@@ -109,6 +96,17 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
           </Inline>
         </ButtonPressAnimation>
       )}
+      {/* @ts-expect-error – JS component */}
+      <FloatingEmojis
+        distance={150}
+        duration={500}
+        fadeOut={false}
+        scaleTo={0}
+        size={50}
+        wiggleFactor={0}
+        // @ts-expect-error – JS component
+        setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
+      />
     </>
   );
 }
