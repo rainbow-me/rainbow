@@ -47,7 +47,7 @@ package.json @salman-rb @skylarbarrera @estrattonbailey
 .watchmanconfig @jkadamczyk
 .yarnrc @estrattonbailey @skylarbarrera
 audit-ci.json @brunobar79 @salman-rb @skylarbarrera @estebanmino @estrattonbailey
-babel.config.js @brunobar79 @estrattonbailey @jkadamczyk @skylarbarrera
+babel.config.js @estrattonbailey @jkadamczyk @skylarbarrera
 globals.d.ts @estrattonbailey @skylarbarrera
 yarn.lock @salman-rb @estrattonbailey @skylarbarrera
 tsconfig.json @salman-rb @estrattonbailey @skylarbarrera
