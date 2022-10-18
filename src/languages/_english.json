@@ -267,6 +267,18 @@
       "watch_this_wallet": "Watch this Wallet",
       "hidden": "Hidden"
     },
+    "cards": {
+      "learn": {
+        "categories": {
+          "staying_safe": "Staying Safe",
+          "essentials": "The Essentials"
+        },
+        "titles": {
+          "avoid_scams": "Avoid Crypto Scams",
+          "get_started": "Get Started with Rainbow"
+        }
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },

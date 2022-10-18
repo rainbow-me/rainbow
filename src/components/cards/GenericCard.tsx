@@ -3,6 +3,7 @@ import { CustomShadow } from '@/design-system/layout/shadow';
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
+import { useDimensions } from '@/hooks';
 
 const CardShadow: CustomShadow = {
   custom: {
@@ -23,28 +24,38 @@ const CardShadow: CustomShadow = {
 };
 
 interface GenericCardProps {
-  size: 'small' | 'medium' | 'large';
+  type: 'square' | 'stretch';
+  gradient: string[];
+  children: React.ReactNode;
+  onPress: () => void;
 }
 
-const GenericCard = ({ size }: GenericCardProps) => {
+const GenericCard = ({
+  children,
+  type,
+  gradient,
+  onPress,
+}: GenericCardProps) => {
+  const { width } = useDimensions();
+
   return (
     <ButtonPressAnimation
-      onPress={() => {}}
+      onPress={onPress}
       scaleTo={0.92}
       testID="learn-card-button"
     >
       <Box
         as={LinearGradient}
         background="body (Deprecated)"
-        width="full"
-        height={{ custom: 165 }}
+        width={type === 'square' ? { custom: (width - 60) / 2 } : 'full'}
+        height={type === 'square' ? { custom: (width - 60) / 2 } : undefined}
         borderRadius={24}
         shadow={CardShadow}
-        colors={['#6D58F5', '#A970FF']}
+        colors={gradient}
         end={{ x: 1, y: 0.5 }}
         start={{ x: 0, y: 0.5 }}
       >
-        <Text size="13pt">hi</Text>
+        {children}
       </Box>
     </ButtonPressAnimation>
   );

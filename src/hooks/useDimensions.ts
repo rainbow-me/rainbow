@@ -26,6 +26,8 @@ export interface DeviceDimensions extends ScaledSize {
   isTallPhone: boolean;
   isTinyPhone: boolean;
   isSmallAndroidPhone: boolean;
+  width: number;
+  height: number;
 }
 
 export default function useDimensions(): DeviceDimensions {
