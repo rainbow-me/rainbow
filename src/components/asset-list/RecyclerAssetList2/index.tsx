@@ -67,7 +67,8 @@ export default React.memo(RecyclerAssetList);
 // //////////////////////////////////////////////////////////
 
 function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
-  const yOffset = 10;
+  const insets = useSafeAreaInsets();
+  const yOffset = insets.top + 10;
   const animatedStyle = useMemo(
     () => ({
       opacity: position!.interpolate({
@@ -75,7 +76,7 @@ function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
         outputRange: [0, 0, 1],
       }),
     }),
-    [position]
+    [position, yOffset]
   );
 
   return (
