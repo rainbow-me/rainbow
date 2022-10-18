@@ -428,7 +428,6 @@
       "slippage_tolerance": "Max Slippage",
       "source_picker": "Route Swaps via",
       "use_flashbots": "Use Flashbots",
-      "flashbots_protected": "Flashbots Protect enabled",
       "swapping_for_prefix": "Swapping for",
       "view_details": "View Details"
     },
