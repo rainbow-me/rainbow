@@ -536,7 +536,7 @@ export const explainers = (params, colors) => ({
   swapResetInputs: {
     button: {
       label: `Continue with ${networkInfo[params?.network]?.name}`,
-      bgColor: colors?.networkColors[params?.network],
+      bgColor: colors?.secondary30,
     },
     emoji: '🔐',
     extraHeight: -90,
