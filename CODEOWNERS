@@ -44,7 +44,6 @@ package.json @salman-rb @skylarbarrera @estrattonbailey
 .gitignore @salman-rb @estrattonbailey @skylarbarrera
 .nvmrc @salman-rb @estrattonbailey @skylarbarrera
 .prettierrc.js @salman-rb @estrattonbailey @skylarbarrera
-.watchmanconfig @jkadamczyk
 .yarnrc @estrattonbailey @skylarbarrera
 audit-ci.json @brunobar79 @salman-rb @skylarbarrera @estebanmino @estrattonbailey
 babel.config.js @estrattonbailey @jkadamczyk @skylarbarrera
