@@ -83,17 +83,17 @@ export function ProfileAvatarRow({
   const animatedStyle = React.useMemo(
     () => ({
       opacity: position!.interpolate({
-        inputRange: [-insets.top, -insets.top + 1, navbarHeight],
+        inputRange: [-insets.top, 0, navbarHeight + insets.top],
         outputRange: [1, 1, 0],
       }),
       transform: [
         {
           translateY: position!.interpolate({
-            inputRange: [-insets.top, -insets.top + 1, navbarHeight],
+            inputRange: [-insets.top, 0, navbarHeight + insets.top],
             outputRange: [0, 0, 12],
           }),
           scale: position!.interpolate({
-            inputRange: [-insets.top, -insets.top + 1, navbarHeight],
+            inputRange: [-insets.top, 0, navbarHeight + insets.top],
             outputRange: [1, 1, 0.8],
           }),
         },
@@ -147,6 +147,7 @@ export function ProfileAvatarRow({
               onPress={onAvatarPressProfile}
               scale={0.8}
               testID="avatar-button"
+              overflowMargin={20}
             >
               <Box
                 alignItems="center"
