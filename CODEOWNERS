@@ -21,7 +21,7 @@ src/design-system @jxom @estrattonbailey
 src/handlers/aesEncryption.ts @brunobar79 @estebanmino
 src/handlers/authentication.ts @brunobar79 @estebanmino
 src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera @estebanmino @jkadamczyk
-src/handlers/fedora.ts @estebanmino
+src/handlers/fedora.ts @estebanmino @brunobar79 
 
 # Model
 src/model/backup.ts @brunobar79 @estebanmino @salman-rb @jkadamczyk
