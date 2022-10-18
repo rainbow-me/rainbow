@@ -343,6 +343,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     avatarContextMenuConfig,
     avatarActionSheetOptions,
     avatarOptions,
+    hasENSProfile: hasENSAvatar && accountENS,
     onAvatarChooseImage,
     onAvatarCreateProfile,
     onAvatarPickEmoji,
