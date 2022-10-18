@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Animated as RNAnimated, Text as NativeText } from 'react-native';
+import Clipboard from '@react-native-community/clipboard';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -12,6 +13,7 @@ import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
 import { maybeSignUri } from '@/handlers/imgix';
+import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import {
   useAccountProfile,
   useLatestCallback,
@@ -19,11 +21,14 @@ import {
   usePersistentDominantColorFromImage,
 } from '@/hooks';
 import { useTheme } from '@/theme';
-import { getFirstGrapheme } from '@/utils';
+import { getFirstGrapheme, haptics } from '@/utils';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
 import { useRecyclerAssetListPosition } from '../core/Contexts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { useRecoilState } from 'recoil';
+import { FloatingEmojis } from '@/components/floating-emojis';
+import { IS_ANDROID } from '@/env';
 
 export const ProfileAvatarRowHeight = 80;
 export const ProfileAvatarRowTopInset = 24;
@@ -37,7 +42,29 @@ export function ProfileAvatarRow({
   // ////////////////////////////////////////////////////
   // Account
 
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const {
+    accountAddress,
+    accountSymbol,
+    accountColor,
+    accountImage,
+  } = useAccountProfile();
+
+  const [isToastActive, setToastActive] = useRecoilState(
+    addressCopiedToastAtom
+  );
+  const onNewEmoji = React.useRef<() => void>();
+
+  const onLongPress = React.useCallback(() => {
+    if (!isToastActive) {
+      setToastActive(true);
+      setTimeout(() => {
+        setToastActive(false);
+      }, 2000);
+    }
+    haptics.notificationSuccess();
+    onNewEmoji?.current && onNewEmoji.current();
+    Clipboard.setString(accountAddress);
+  }, [accountAddress, isToastActive, setToastActive]);
 
   const {
     avatarContextMenuConfig,
@@ -83,17 +110,29 @@ export function ProfileAvatarRow({
   const animatedStyle = React.useMemo(
     () => ({
       opacity: position!.interpolate({
-        inputRange: [-insets.top, 0, navbarHeight + insets.top],
+        inputRange: [
+          -insets.top,
+          IS_ANDROID ? 0 : -insets.top + 1,
+          navbarHeight + insets.top,
+        ],
         outputRange: [1, 1, 0],
       }),
       transform: [
         {
           translateY: position!.interpolate({
-            inputRange: [-insets.top, 0, navbarHeight + insets.top],
+            inputRange: [
+              -insets.top,
+              IS_ANDROID ? 0 : -insets.top + 1,
+              navbarHeight + insets.top,
+            ],
             outputRange: [0, 0, 12],
           }),
           scale: position!.interpolate({
-            inputRange: [-insets.top, 0, navbarHeight + insets.top],
+            inputRange: [
+              -insets.top,
+              IS_ANDROID ? 0 : -insets.top + 1,
+              navbarHeight + insets.top,
+            ],
             outputRange: [1, 1, 0.8],
           }),
         },
@@ -145,6 +184,7 @@ export function ProfileAvatarRow({
           >
             <ButtonPressAnimation
               onPress={onAvatarPressProfile}
+              onLongPress={onLongPress}
               scale={0.8}
               testID="avatar-button"
               overflowMargin={20}
@@ -221,6 +261,17 @@ export function ProfileAvatarRow({
           </ContextMenuButton>
         </Animated.View>
       </RNAnimated.View>
+      {/* @ts-expect-error – JS component */}
+      <FloatingEmojis
+        distance={150}
+        duration={500}
+        fadeOut={false}
+        scaleTo={0}
+        size={50}
+        wiggleFactor={0}
+        // @ts-expect-error – JS component
+        setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
+      />
     </AccentColorProvider>
   );
 }
