@@ -12,6 +12,7 @@ export const NoResults = ({
   onL2?: boolean;
 }) => {
   const { colors } = useTheme();
+
   return (
     <Inset horizontal={{ custom: 50 }}>
       <Stack space="16px" alignHorizontal="center">

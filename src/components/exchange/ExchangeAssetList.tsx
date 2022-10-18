@@ -157,13 +157,15 @@ const ExchangeAssetList: ForwardRefRenderFunction<
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
-    sectionListRef.current?.scrollToLocation({
-      animated: true,
-      itemIndex: 0,
-      sectionIndex: 0,
-      viewOffset: 0,
-      viewPosition: 0,
-    });
+    setTimeout(() => {
+      sectionListRef.current?.scrollToLocation({
+        animated: true,
+        itemIndex: 0,
+        sectionIndex: 0,
+        viewOffset: 0,
+        viewPosition: 0,
+      });
+    }, 100);
   }
 
   const handleUnverifiedTokenPress = useCallback(
