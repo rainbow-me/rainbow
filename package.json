@@ -315,7 +315,7 @@
     "@types/styled-components": "5.1.7",
     "@types/url-parse": "1.4.3",
     "ast-parser": "0.0.5",
-    "audit-ci": "3.1.1",
+    "audit-ci": "6.3.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-plugin-date-fns": "2.0.0",
     "babel-plugin-graphql-tag": "2.5.0",
