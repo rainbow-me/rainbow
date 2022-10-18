@@ -61,5 +61,5 @@ src/App.js @salman-rb @estrattonbailey @skylarbarrera
 
 # SECURITY / APP INFRA
 metro.config.js @skylarbarrera @estrattonbailey @jkadamczyk @brunobar79 
-metro.transform.js @skylarbarrera @estrattonbailey @jkadamczyk
+metro.transform.js @skylarbarrera @estrattonbailey @jkadamczyk @brunobar79 
 react-native.config.js @salman-rb @skylarbarrera @jkadamczyk @estrattonbailey
