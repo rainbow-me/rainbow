@@ -51,7 +51,7 @@ babel.config.js @estrattonbailey @jkadamczyk @skylarbarrera
 globals.d.ts @estrattonbailey @skylarbarrera
 yarn.lock @salman-rb @estrattonbailey @skylarbarrera
 tsconfig.json @salman-rb @estrattonbailey @skylarbarrera
-hardhat.config.js @salman-rb @skylarbarrera @estebanmino
+hardhat.config.js @salman-rb @skylarbarrera
 
 # APP INFRA
 globalVariables.js @estrattonbailey @skylarbarrera
