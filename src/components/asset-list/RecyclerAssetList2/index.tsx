@@ -7,7 +7,7 @@ import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { UniqueAsset } from '@/entities';
-import { navbarHeightWithInset } from '@/components/navbar/Navbar';
+import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
@@ -50,7 +50,7 @@ function RecyclerAssetList({
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       {ios && type === 'wallet' && <NavbarOverlay position={position} />}
-      <StickyHeaderManager yOffset={ios ? navbarHeightWithInset - 8 : 0}>
+      <StickyHeaderManager yOffset={ios ? navbarHeight - 8 : 0}>
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
@@ -84,7 +84,7 @@ function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
       background="body (Deprecated)"
       style={[
         {
-          height: navbarHeightWithInset,
+          height: navbarHeight,
           width: '100%',
           position: 'absolute',
           top: 0,
