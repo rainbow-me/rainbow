@@ -37,6 +37,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { atom, useRecoilValue } from 'recoil';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const addressCopiedToastAtom = atom({
   default: false,
@@ -80,6 +81,7 @@ export default function WalletScreen() {
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
+  const insets = useSafeAreaInsets();
 
   const revertToMainnet = useCallback(async () => {
     await resetAccountState();
@@ -273,7 +275,9 @@ export default function WalletScreen() {
           }
         />
       </HeaderOpacityToggler>
-      <Box style={{ flex: 1, marginTop: ios ? -navbarHeight : 0 }}>
+      <Box
+        style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
+      >
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}

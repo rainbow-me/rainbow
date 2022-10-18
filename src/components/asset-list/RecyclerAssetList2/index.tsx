@@ -50,7 +50,7 @@ function RecyclerAssetList({
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       {ios && type === 'wallet' && <NavbarOverlay position={position} />}
-      <StickyHeaderManager yOffset={ios ? navbarHeight - 8 : 0}>
+      <StickyHeaderManager yOffset={ios ? navbarHeight + insets.top - 8 : 0}>
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
@@ -68,7 +68,7 @@ export default React.memo(RecyclerAssetList);
 
 function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
   const insets = useSafeAreaInsets();
-  const yOffset = insets.top + 10;
+  const yOffset = 18;
   const animatedStyle = useMemo(
     () => ({
       opacity: position!.interpolate({
@@ -85,7 +85,7 @@ function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
       background="body (Deprecated)"
       style={[
         {
-          height: navbarHeight,
+          height: navbarHeight + insets.top,
           width: '100%',
           position: 'absolute',
           top: 0,

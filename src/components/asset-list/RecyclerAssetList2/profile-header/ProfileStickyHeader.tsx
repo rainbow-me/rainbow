@@ -12,7 +12,7 @@ export function ProfileStickyHeader() {
   return (
     <StickyHeader
       name="profile-header"
-      visibleAtYPosition={ios ? navbarHeight + insets.top : navbarHeight + 80}
+      visibleAtYPosition={ios ? navbarHeight : navbarHeight + 80}
     >
       <Box
         background="body (Deprecated)"
