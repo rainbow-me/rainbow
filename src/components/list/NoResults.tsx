@@ -16,6 +16,7 @@ export const NoResults = ({
   return (
     <Inset horizontal={{ custom: 50 }}>
       <Stack space="16px" alignHorizontal="center">
+        {/* @ts-expect-error emojis don't need text color */}
         <Text size="26pt" containsEmoji>
           👻
         </Text>
