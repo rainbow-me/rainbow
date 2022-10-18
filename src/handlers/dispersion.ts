@@ -8,6 +8,7 @@ import {
 } from '@/entities';
 import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
 import logger from '@/utils/logger';
+import { Network } from '@/helpers';
 
 const dispersionApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',
@@ -82,9 +83,31 @@ export const getTrendingAddresses = async (): Promise<
   }
 };
 
-export const getAdditionalAssetData = async (address: EthereumAddress) => {
+export const getAdditionalAssetData = async (
+  address: EthereumAddress,
+  network: Network | string
+) => {
+  let chainId: number;
+
+  switch (network) {
+    case Network.arbitrum:
+      chainId = 42161;
+      break;
+    case Network.optimism:
+      chainId = 10;
+      break;
+    case Network.polygon:
+      chainId = 137;
+      break;
+    default:
+      chainId = 1;
+      break;
+  }
+
   try {
-    const res = await dispersionApi.get(`/dispersion/v1/expanded/1/${address}`);
+    const res = await dispersionApi.get(
+      `/dispersion/v1/expanded/${chainId}/${address}`
+    );
     return res?.data?.data ?? null;
   } catch (error) {
     logger.sentry(`Error fetching additional asset data: ${error}`);

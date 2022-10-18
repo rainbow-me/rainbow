@@ -8,10 +8,12 @@ import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
 import { implementation } from '@/entities/dispersion';
+import { Network } from '@/helpers';
 
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,
-  tokenPrice = 0
+  tokenPrice = 0,
+  network: Network | string = Network.mainnet
 ): {
   description?: string;
   loading: boolean;
@@ -23,7 +25,7 @@ export default function useAdditionalAssetData(
 } {
   const address = rawAddress === ETH_ADDRESS ? WETH_ADDRESS : rawAddress;
   const { data } = useQuery(['additionalAssetData', address], () =>
-    getAdditionalAssetData(address)
+    getAdditionalAssetData(address, network)
   );
   const { nativeCurrency } = useAccountSettings();
   const format = useCallback(

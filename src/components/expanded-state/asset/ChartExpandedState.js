@@ -224,12 +224,16 @@ export default function ChartExpandedState({ asset }) {
     loading: additionalAssetDataLoading,
     links,
     networks,
-  } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
+  } = useAdditionalAssetData(
+    asset?.address,
+    assetWithPrice?.price?.value,
+    assetWithPrice?.type
+  );
 
   // This one includes the original l2 address if exists
   const ogAsset = useMemo(() => {
     if (networks) {
-      let mappedNetworks = {};
+      const mappedNetworks = {};
       Object.keys(networks).forEach(
         chainId =>
           (mappedNetworks[
@@ -438,40 +442,38 @@ export default function ChartExpandedState({ asset }) {
           <AvailableNetworks asset={assetWithPrice} networks={networks} />
         </Box>
       )}
-      {!isL2 && (
-        <CarouselWrapper
-          isAnyItemLoading={additionalAssetDataLoading}
-          isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
-          setCarouselHeight={setCarouselHeight}
-        >
-          <Carousel>
-            <CarouselItem
-              loading={additionalAssetDataLoading}
-              showDivider
-              title={lang.t('expanded_state.asset.volume_24_hours')}
-              weight="bold"
-            >
-              {totalVolume}
-            </CarouselItem>
-            <CarouselItem
-              loading={additionalAssetDataLoading}
-              showDivider
-              title={lang.t('expanded_state.asset.uniswap_liquidity')}
-              weight="bold"
-            >
-              {totalLiquidity}
-            </CarouselItem>
-            <CarouselItem
-              loading={additionalAssetDataLoading}
-              title={lang.t('expanded_state.asset.market_cap')}
-              weight="bold"
-            >
-              {marketCap}
-            </CarouselItem>
-          </Carousel>
-          <EdgeFade />
-        </CarouselWrapper>
-      )}
+      <CarouselWrapper
+        isAnyItemLoading={additionalAssetDataLoading}
+        isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
+        setCarouselHeight={setCarouselHeight}
+      >
+        <Carousel>
+          <CarouselItem
+            loading={additionalAssetDataLoading}
+            showDivider
+            title={lang.t('expanded_state.asset.volume_24_hours')}
+            weight="bold"
+          >
+            {totalVolume}
+          </CarouselItem>
+          <CarouselItem
+            loading={additionalAssetDataLoading}
+            showDivider
+            title={lang.t('expanded_state.asset.uniswap_liquidity')}
+            weight="bold"
+          >
+            {totalLiquidity}
+          </CarouselItem>
+          <CarouselItem
+            loading={additionalAssetDataLoading}
+            title={lang.t('expanded_state.asset.market_cap')}
+            weight="bold"
+          >
+            {marketCap}
+          </CarouselItem>
+        </Carousel>
+        <EdgeFade />
+      </CarouselWrapper>
       <AdditionalContentWrapper
         onLayout={({
           nativeEvent: {
