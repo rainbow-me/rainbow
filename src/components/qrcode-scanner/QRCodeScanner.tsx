@@ -15,6 +15,8 @@ import { deviceUtils } from '@/utils';
 import { Box, Cover, Rows, Row } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
+import { IS_ANDROID } from '@/env';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;
@@ -29,6 +31,8 @@ const CameraState = {
   // ready to go
   Waiting: 'waiting',
 };
+
+const androidSoftMenuHeight = getSoftMenuBarHeight();
 
 export default function QRCodeScanner() {
   const [cameraState, setCameraState] = useState(CameraState.Waiting);
@@ -105,7 +109,11 @@ export default function QRCodeScanner() {
 
   return (
     <>
-      <Box position="absolute" width="full" height={{ custom: deviceHeight }}>
+      <Box
+        position="absolute"
+        width="full"
+        height={{ custom: deviceHeight + getSoftMenuBarHeight() }}
+      >
         {enabled && (
           <Box
             as={RNCamera}
@@ -115,11 +123,10 @@ export default function QRCodeScanner() {
             pendingAuthorizationView={undefined}
             borderRadius={40}
             width="full"
-            height={{ custom: deviceHeight }}
+            height={{ custom: deviceHeight + getSoftMenuBarHeight() }}
             position="absolute"
           />
         )}
-
         <Rows>
           <Row>
             <Box
@@ -130,8 +137,8 @@ export default function QRCodeScanner() {
           <Row height="content">
             <Box alignItems="center">
               <CameraMaskSvg
-                width={deviceWidth - 20}
-                height={deviceWidth - 20}
+                width={deviceWidth}
+                height={deviceWidth - (IS_ANDROID ? 19 : 20)}
               />
             </Box>
             <Cover alignHorizontal="left">
