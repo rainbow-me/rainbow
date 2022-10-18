@@ -1,80 +1,64 @@
 # Rainbow CODEOWNERS file
+CODEOWNERS @salman-rb @estrattonbailey @skylarbarrera
+LICENSE @jinchung @brunobar79 @nickbytes @estebanmino
+README.md @nickbytes @salman-rb @estrattonbailey @skylarbarrera
+app.json @salman-rb @estrattonbailey @skylarbarrera
 
 # ANDROID
-android/ @brunobar79 @osdnk @terrysahaidak @estebanmino
+android/ @brunobar79 @jkadamczyk @skylarbarrera
 
 # IOS
-ios/ @brunobar79 @osdnk
+ios/ @brunobar79 @benisgold @salman-rb @skylarbarrera
 
 # SECURITY / APP INFRA
-patches/ @brunobar79 @osdnk @estebanmino @nickbytes
-scripts/ @brunobar79 @osdnk @estebanmino
+patches/ @brunobar79 @estrattonbailey @skylarbarrera
+scripts/ @brunobar79 @jkadamczyk @skylarbarrera
 
 # DESIGN SYSTEM
-src/design-system @markdalgleish @jxom
+src/design-system @jxom @estrattonbailey
 
 # Handlers
 src/handlers/aesEncryption.ts @brunobar79 @estebanmino
 src/handlers/authentication.ts @brunobar79 @estebanmino
-src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera @estebanmino
-src/handlers/fedora.ts @osdnk @estebanmino @terrysahaidak
+src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera @estebanmino @jkadamczyk
+src/handlers/fedora.ts @estebanmino @brunobar79 
 
 # Model
-src/model/backup.ts @brunobar79 @estebanmino
-src/model/keychain.ts @brunobar79 @estebanmino
-src/model/migrations.ts @brunobar79 @estebanmino
-src/model/wallet.ts @brunobar79 @estebanmino
+src/model/backup.ts @brunobar79 @estebanmino @salman-rb @jkadamczyk
+src/model/keychain.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera
+src/model/migrations.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera
+src/model/wallet.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera
 
 # redux
-src/redux/gas.ts @brunobar79 @estebanmino
-src/redux/nonceManager.ts @derHowie @brunobar79 @estebanmino
+src/redux/gas.ts @estebanmino @skylarbarrera @estrattonbailey
+src/redux/nonceManager.ts @derHowie @skylarbarrera @estrattonbailey
 
 # navigation
-src/navigation @osdnk @terrysahaidak
+src/navigation @jkadamczyk @skylarbarrera @estrattonbailey
 
 # APP INFRA
-.eslintignore @brunobar79 @osdnk @estebanmino @estrattonbailey
-.eslintrc.js @brunobar79 @osdnk @estebanmino @estrattonbailey
-.gitattributes @brunobar79 @estebanmino
-.gitignore @brunobar79 @estebanmino
-.nvmrc @brunobar79 @osdnk @estebanmino
-.prettierrc.js @brunobar79 @osdnk @estebanmino
-.watchmanconfig @brunobar79 @osdnk @estebanmino
-
-# SECURITY / APP INFRA
-.yarnrc @brunobar79 @estebanmino
-
-# APP INFRA
-app.json @brunobar79 @estebanmino
-
-# SECURITY / APP INFRA
-audit-ci.json @brunobar79 @skylarbarrera @estebanmino @nickbytes
+package.json @salman-rb @skylarbarrera @estrattonbailey
+.eslintignore @salman-rb @estrattonbailey @skylarbarrera
+.eslintrc.js @salman-rb @estrattonbailey @skylarbarrera
+.gitattributes @brunobar79 @salman-rb @estrattonbailey @skylarbarrera
+.gitignore @salman-rb @estrattonbailey @skylarbarrera
+.nvmrc @salman-rb @estrattonbailey @skylarbarrera
+.prettierrc.js @salman-rb @estrattonbailey @skylarbarrera
+.yarnrc @estrattonbailey @skylarbarrera
+audit-ci.json @brunobar79 @salman-rb @skylarbarrera @estebanmino @estrattonbailey
+babel.config.js @estrattonbailey @jkadamczyk @skylarbarrera
+globals.d.ts @estrattonbailey @skylarbarrera
+yarn.lock @salman-rb @estrattonbailey @skylarbarrera
+tsconfig.json @salman-rb @estrattonbailey @skylarbarrera
+hardhat.config.js @salman-rb @skylarbarrera
 
 # APP INFRA
-babel.config.js @brunobar79 @osdnk @estebanmino
-CODEOWNERS @brunobar79 @estebanmino @nickbytes
-globals.d.ts @brunobar79 @osdnk @estebanmino
-globalVariables.js @brunobar79 @osdnk @estebanmino
-
-# HARDHAT
-hardhat.config.js @brunobar79 @estebanmino
-
-# APP CORE
-index.js @brunobar79 @estebanmino @nickbytes
-
-# LEGAL
-LICENSE @jinchung @brunobar79 @nickbytes @estebanmino
+globalVariables.js @estrattonbailey @skylarbarrera
+shim.js @brunobar79 @salman-rb @estrattonbailey @skylarbarrera @jkadamczyk
+index.js @salman-rb @estrattonbailey @jkadamczyk @skylarbarrera
+src/App.js @salman-rb @estrattonbailey @skylarbarrera
 
 # SECURITY / APP INFRA
-metro.config.js @brunobar79 @osdnk @terrysahaidak @estebanmino
-metro.transform.js @brunobar79 @osdnk @estebanmino
-package.json @brunobar79 @estebanmino @nickbytes
-
-# APP INFRA
-react-native.config.js @brunobar79 @estebanmino
-README.md @brunobar79 @estebanmino @nickbytes
-shim.js @brunobar79 @osdnk @estebanmino @nickbytes
-tsconfig.json @brunobar79 @osdnk @estebanmino @nickbytes
-
-# SECURITY / APP INFRA
-yarn.lock @brunobar79 @estebanmino @nickbytes
+metro.config.js @skylarbarrera @estrattonbailey @jkadamczyk @brunobar79 
+metro.transform.js @skylarbarrera @estrattonbailey @jkadamczyk @brunobar79 
+react-native.config.js @salman-rb @skylarbarrera @jkadamczyk @estrattonbailey
