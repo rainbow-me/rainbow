@@ -227,7 +227,7 @@ export default function ChartExpandedState({ asset }) {
   } = useAdditionalAssetData(
     asset?.address,
     assetWithPrice?.price?.value,
-    assetWithPrice?.type
+    ethereumUtils.getChainIdFromNetwork(assetWithPrice?.type)
   );
 
   // This one includes the original l2 address if exists

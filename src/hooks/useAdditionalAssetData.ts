@@ -13,7 +13,7 @@ import { Network } from '@/helpers';
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,
   tokenPrice = 0,
-  network: Network | string = Network.mainnet
+  chainId = 1
 ): {
   description?: string;
   loading: boolean;
@@ -25,7 +25,7 @@ export default function useAdditionalAssetData(
 } {
   const address = rawAddress === ETH_ADDRESS ? WETH_ADDRESS : rawAddress;
   const { data } = useQuery(['additionalAssetData', address], () =>
-    getAdditionalAssetData(address, network)
+    getAdditionalAssetData(address, chainId)
   );
   const { nativeCurrency } = useAccountSettings();
   const format = useCallback(

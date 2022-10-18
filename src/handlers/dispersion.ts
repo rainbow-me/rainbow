@@ -85,25 +85,8 @@ export const getTrendingAddresses = async (): Promise<
 
 export const getAdditionalAssetData = async (
   address: EthereumAddress,
-  network: Network | string
+  chainId = 1
 ) => {
-  let chainId: number;
-
-  switch (network) {
-    case Network.arbitrum:
-      chainId = 42161;
-      break;
-    case Network.optimism:
-      chainId = 10;
-      break;
-    case Network.polygon:
-      chainId = 137;
-      break;
-    default:
-      chainId = 1;
-      break;
-  }
-
   try {
     const res = await dispersionApi.get(
       `/dispersion/v1/expanded/${chainId}/${address}`
