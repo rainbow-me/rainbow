@@ -26,6 +26,7 @@ import {
   RainbowWallet,
 } from './wallet';
 import { analytics } from '@/analytics';
+
 import logger from '@/utils/logger';
 
 type BackupPassword = string;
