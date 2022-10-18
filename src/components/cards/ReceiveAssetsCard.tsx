@@ -12,30 +12,26 @@ import React from 'react';
 import GenericCard from './GenericCard';
 import { Emoji } from '../text';
 
-interface LearnCardProps {
+interface ReceiveAssetsCard {
   emoji: string;
   title: string;
   category: string;
-  onPress: () => void;
-  gradient: string[];
   accentColor: string;
 }
 
-const LearnCard = ({
+const ReceiveAssetsCard = ({
   emoji,
   title,
   category,
-  onPress,
-  gradient,
   accentColor,
-}: LearnCardProps) => {
+}: ReceiveAssetsCard) => {
   return (
-    <GenericCard type="square" gradient={gradient} onPress={onPress}>
+    <GenericCard type="stretch" height={174} onPress={() => {}}>
       <AccentColorProvider color={accentColor}>
         <Inset space="20px">
           <Box height="full" justifyContent="space-between">
             <Inline alignHorizontal="justify">
-              <Text size="13pt" weight="heavy" color="labelWhite">
+              <Text size="13pt" weight="heavy" color="label">
                 􀫸 LEARN
               </Text>
               <Box
@@ -55,7 +51,7 @@ const LearnCard = ({
               <Text color="accent" size="13pt" weight="bold">
                 {category}
               </Text>
-              <Text color="labelWhite" size="17pt" weight="heavy">
+              <Text color="label" size="17pt" weight="heavy">
                 {title}
               </Text>
             </Stack>
@@ -66,4 +62,4 @@ const LearnCard = ({
   );
 };
 
-export default LearnCard;
+export default ReceiveAssetsCard;
