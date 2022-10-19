@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
 import React, { Component, createRef } from 'react';
 import {
-  AppRegistry,
   AppState,
   Dimensions,
   InteractionManager,
@@ -363,6 +362,6 @@ const PlaygroundWithReduxStore = () => (
   </ReduxProvider>
 );
 
-AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush
-);
+export const Application = designSystemPlaygroundEnabled
+  ? PlaygroundWithReduxStore
+  : RootWithCodePush;
