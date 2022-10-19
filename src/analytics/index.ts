@@ -1,17 +1,17 @@
-import {
-  createClient,
-  JsonMap,
-  SegmentClient,
-} from '@segment/analytics-react-native';
+import { createClient, SegmentClient } from '@segment/analytics-react-native';
 import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
-import { TrackingEventProperties, TrackingEvents } from './trackingEvents';
-import { UserProperties } from './userProperties';
+
+import {
+  TrackingEventProperties,
+  TrackingEvents,
+} from '@/analytics/trackingEvents';
+import { UserProperties } from '@/analytics/userProperties';
 import Routes from '@/navigation/routesNames';
 
 // TODO: we only use route properties for 1 sheet, we need to collect all possibles and lay out the same as we do for event properties
 // this should live in navigation once we type that
 type RouteKeys = keyof typeof Routes;
-type RouteNames = typeof Routes[RouteKeys];
+type RouteName = typeof Routes[RouteKeys];
 
 export class Analytics {
   private client: SegmentClient;
@@ -30,17 +30,17 @@ export class Analytics {
     });
   }
 
-  public identify(properties: UserProperties) {
-    const extraMetadata = this.getExtraMetadata();
-    this.client.identify(this.deviceId, ({
-      ...properties,
-      ...extraMetadata,
-    } as unknown) as JsonMap);
+  public identify(userProperties: UserProperties) {
+    const metadata = this.getDefaultMetadata();
+    this.client.identify(this.deviceId, {
+      ...userProperties,
+      ...metadata,
+    });
   }
 
-  public screen(routeName: RouteNames, params?: Record<string, any>): void {
-    // wipe any PII here ( we need to develop a strategy for this )
-    this.client.screen(routeName, params);
+  public screen(routeName: RouteName, params: Record<string, any> = {}): void {
+    const metadata = this.getDefaultMetadata();
+    this.client.screen(routeName, { ...params, ...metadata });
   }
 
   public track<T extends keyof TrackingEventProperties>(
@@ -48,11 +48,11 @@ export class Analytics {
     params?: TrackingEventProperties[T]
   ) {
     const eventCategory = this.getTrackingEventCategory(event);
-    const extraMetadata = this.getExtraMetadata();
-    this.client.track(event, { ...params, ...eventCategory, ...extraMetadata });
+    const metadata = this.getDefaultMetadata();
+    this.client.track(event, { ...params, ...eventCategory, ...metadata });
   }
 
-  private getExtraMetadata() {
+  private getDefaultMetadata() {
     return {
       walletAddressHash: this.currentWalletAddressHash,
     };
@@ -65,13 +65,6 @@ export class Analytics {
   public setCurrentWalletAddressHash(currentWalletAddressHash: string) {
     this.currentWalletAddressHash = currentWalletAddressHash;
   }
-
-  // TODO: flush out what the scope is going to be for wiping PII
-  /*
-  private sanitize(obj: Record<any, any>): Record<any,any> {
-    return obj;
-  }
-  */
 
   // proposed auto categorizing, could get expensive but i think it may be worth doing.
   private getTrackingEventCategory<T extends keyof TrackingEventProperties>(
@@ -91,31 +84,16 @@ export class Analytics {
   }
 }
 
-// export both analytics for now
 export const analyticsV2 = new Analytics({
   debug: false,
 });
+
+/**
+ * @deprecated Use the `analyticsV2` export from this same file
+ */
 export const analytics = createClient({
   debug: false,
   trackAppLifecycleEvents: true,
   trackDeepLinks: true,
   writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
-});
-
-/*
-// Identify Type Checking
-analyticsV2.identify({invalidProperty: false})
-analyticsV2.identify({numberOfNFTs: 69})
-
-// Screen Type Checking
-analyticsV2.screen(Routes.EXPLAIN_SHEET, {type: 'gas'});
-analyticsV2.screen('invalid route');
-
-
-// Track Type Checking
-analyticsV2.track(TrackingEvents.generics.pressedButton2);
-*/
-analyticsV2.track(TrackingEvents.generics.pressedButton, {
-  action: 'swap',
-  buttonName: 'swapButton',
 });
