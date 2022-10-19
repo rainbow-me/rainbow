@@ -21,7 +21,7 @@ type Dim = {
   height: number;
 };
 const ViewDimensions: Record<CellType, Dim> = {
-  [CellType.PROFILE_STICKY_HEADER]: { height: 52 },
+  [CellType.PROFILE_STICKY_HEADER]: { height: ProfileStickyHeaderHeight },
   [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 16 },
   [CellType.COIN]: { height: CoinRowHeight },
   [CellType.COIN_DIVIDER]: { height: CoinDividerContainerHeight },
