@@ -38,6 +38,7 @@ src/navigation @jkadamczyk @skylarbarrera @estrattonbailey
 
 # analytics & logging
 src/analytics @estrattonbailey @skylarbarrera
+src/utils/walletAddressHash.ts @estrattonbailey @skylarbarrera
 
 # APP INFRA
 package.json @salman-rb @skylarbarrera @estrattonbailey
