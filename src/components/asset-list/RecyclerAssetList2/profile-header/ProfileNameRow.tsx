@@ -18,10 +18,17 @@ import Routes from '@rainbow-me/routes';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { haptics } from '@/utils';
+import { Space } from '@/design-system/docs/system/tokens.css';
 
 export const ProfileNameRowHeight = 16;
 
-export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
+export function ProfileNameRow({
+  disableOnPress,
+  testIDPrefix,
+}: {
+  disableOnPress?: any;
+  testIDPrefix?: string;
+}) {
   // ////////////////////////////////////////////////////
   // Account
   const { accountENS, accountName } = useAccountProfile();
@@ -38,9 +45,11 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
   const { accountAddress } = useAccountProfile();
 
   const onPressName = () => {
+    if (disableOnPress) return;
     navigate(Routes.CHANGE_WALLET_SHEET);
   };
   const onLongPressName = React.useCallback(() => {
+    if (disableOnPress) return;
     if (!isToastActive) {
       setToastActive(true);
       setTimeout(() => {
@@ -50,7 +59,7 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
     haptics.notificationSuccess();
     onNewEmoji?.current && onNewEmoji.current();
     Clipboard.setString(accountAddress);
-  }, [accountAddress, isToastActive, setToastActive]);
+  }, [accountAddress, disableOnPress, isToastActive, setToastActive]);
 
   const name = accountENS
     ? abbreviateEnsForDisplay(accountENS, 20)
@@ -74,17 +83,18 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
     (caretIconWidth + accountNameLeftOffset) -
     horizontalInset * 2;
 
+  const hitSlop: Space = '16px';
   return (
-    <>
+    <Box pointerEvents={disableOnPress ? 'none' : 'auto'}>
       {name && (
-        <Bleed space="20px">
+        <Bleed space={hitSlop}>
           <ButtonPressAnimation
             onLongPress={onLongPressName}
             onPress={onPressName}
             scale={0.8}
             testID={testIDPrefix ? `${testIDPrefix}-${name}` : undefined}
           >
-            <Inset space="20px">
+            <Inset space={hitSlop}>
               <Inline alignVertical="center" space="4px" wrap={false}>
                 <Box style={{ maxWidth }}>
                   <Text
@@ -118,6 +128,6 @@ export function ProfileNameRow({ testIDPrefix }: { testIDPrefix?: string }) {
         // @ts-expect-error – JS component
         setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
       />
-    </>
+    </Box>
   );
 }
