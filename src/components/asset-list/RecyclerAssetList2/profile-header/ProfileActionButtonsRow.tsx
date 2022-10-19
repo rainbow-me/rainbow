@@ -45,7 +45,7 @@ export const ProfileActionButtonsRowHeight = 80;
 export function ProfileActionButtonsRow() {
   // ////////////////////////////////////////////////////
   // Account
-  const { accountColor, accountImage } = useAccountProfile();
+  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
   // ////////////////////////////////////////////////////
   // Colors
@@ -55,19 +55,21 @@ export function ProfileActionButtonsRow() {
   );
 
   const { colors } = useTheme();
-  let accentColor = colors.white;
+  let accentColor = colors.appleBlue;
   if (accountImage) {
-    accentColor = dominantColor || colors.white;
+    accentColor = dominantColor || colors.appleBlue;
   } else if (typeof accountColor === 'number') {
     accentColor = colors.avatarBackgrounds[accountColor];
+  } else {
+    accentColor = accountColor;
   }
 
   // ////////////////////////////////////////////////////
   // Animations
 
-  const hasAvatarLoaded = !accountImage && accountColor !== undefined;
+  const hasAvatarLoaded = !!accountImage || accountSymbol;
   const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
+  const hasLoaded = (hasAvatarLoaded || hasImageColorLoaded);
 
   const scale = useDerivedValue(() => (hasLoaded ? 1 : 0.9));
   const expandStyle = useAnimatedStyle(() => ({
