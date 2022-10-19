@@ -21,7 +21,7 @@ type RouteNames = typeof Routes[RouteKeys];
 export class Analytics {
   private client: SegmentClient;
   private secureAddressHash: string;
-  public deviceId: string | undefined;
+  public deviceId?: string;
   public debug: boolean;
 
   constructor({
@@ -40,25 +40,13 @@ export class Analytics {
       writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
     });
 
-    // we need to wait for context to be loaded before we can set the deviceId
-    // TODO: persist this in local storage after initial load
-    this.deviceId = this.getDeviceId();
     this.secureAddressHash = securelyHashWalletAddress(currentAddress);
   }
 
-  private getDeviceId() {
-    const mmkv = new MMKV();
-    const storedDeviceID = mmkv.getString(STORAGE_IDS.DEVICE_ID);
-
-    // if no saved device ID, generate a new one
-    if (!storedDeviceID) {
-      const identifier = nanoid();
-      mmkv.set(STORAGE_IDS.DEVICE_ID, identifier);
-      return identifier;
-    } else {
-      return storedDeviceID;
-    }
+  public setDeviceId(deviceId: string) {
+    this.deviceId = deviceId;
   }
+
   public identify(properties: UserProperties) {
     const extraMetadata = this.getExtraMetadata();
     this.client.identify(this.deviceId, ({
