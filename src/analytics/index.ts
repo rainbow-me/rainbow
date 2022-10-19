@@ -17,17 +17,11 @@ type RouteNames = typeof Routes[RouteKeys];
 
 export class Analytics {
   private client: SegmentClient;
-  private secureAddressHash: string;
+  private currentWalletAddressHash?: string;
   public deviceId?: string;
   public debug: boolean;
 
-  constructor({
-    currentAddress,
-    debug = false,
-  }: {
-    currentAddress: string;
-    debug?: boolean;
-  }) {
+  constructor({ debug = false }: { debug?: boolean }) {
     this.debug = debug;
     this.client = createClient({
       debug: debug,
@@ -36,12 +30,6 @@ export class Analytics {
       // TODO: add dev write key to team env
       writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
     });
-
-    this.secureAddressHash = securelyHashWalletAddress(currentAddress);
-  }
-
-  public setDeviceId(deviceId: string) {
-    this.deviceId = deviceId;
   }
 
   public identify(properties: UserProperties) {
@@ -68,15 +56,22 @@ export class Analytics {
 
   private getExtraMetadata() {
     return {
-      currentAddressHash: this.secureAddressHash,
+      walletAddressHash: this.currentWalletAddressHash,
     };
   }
-  public getCurrentAddressHash(): string {
-    return this.secureAddressHash;
+
+  public setDeviceId(deviceId: string) {
+    this.deviceId = deviceId;
   }
 
-  public setCurrentAddress(currentAddress: EthereumAddress): void {
-    this.secureAddressHash = securelyHashWalletAddress(currentAddress);
+  public setCurrentWalletAddress(currentWalletAddress: EthereumAddress) {
+    this.currentWalletAddressHash = securelyHashWalletAddress(
+      currentWalletAddress
+    );
+  }
+
+  public getCurrentWalletAddressHash() {
+    return this.currentWalletAddressHash;
   }
 
   // TODO: flush out what the scope is going to be for wiping PII
@@ -106,7 +101,6 @@ export class Analytics {
 
 // export both analytics for now
 export const analyticsV2 = new Analytics({
-  currentAddress: '0x7a3d05c70581bD345fe117c06e45f9669205384f',
   debug: false,
 });
 export const analytics = createClient({
