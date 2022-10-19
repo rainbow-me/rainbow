@@ -7,10 +7,7 @@ import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
 import { TrackingEventProperties, TrackingEvents } from './trackingEvents';
 import { UserProperties } from './userProperties';
 import Routes from '@/navigation/routesNames';
-import { MMKV } from 'react-native-mmkv';
-import { STORAGE_IDS } from '@/model/mmkv';
 import { EthereumAddress } from '@/entities';
-import { nanoid } from 'nanoid/non-secure';
 import { securelyHashWalletAddress } from '@/analytics/utils';
 
 // TODO: we only use route properties for 1 sheet, we need to collect all possibles and lay out the same as we do for event properties

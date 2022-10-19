@@ -676,19 +676,6 @@ export default async function runMigrations() {
 
   migrations.push(v17);
 
-  /*
-  *************** Migration v18 ******************
-  Migrate analytics device id from keychain to local storage
-  */
-  const v18 = async () => {
-    const storedIdentifier = await keychain.loadString(analyticsUserIdentifier);
-    if (storedIdentifier) {
-      mmkv.set(STORAGE_IDS.DEVICE_ID, storedIdentifier);
-    }
-  };
-
-  migrations.push(v18);
-
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );

@@ -1,7 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 
 export const STORAGE_IDS = {
-  DEVICE_ID: 'DEVICE_ID',
   ACCOUNT: 'ACCOUNT',
   ASPECT_RATIO: 'ASPECT_RATIO',
   DOMINANT_COLOR: 'DOMINANT_COLOR',
