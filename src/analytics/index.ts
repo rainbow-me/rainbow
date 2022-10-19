@@ -3,26 +3,15 @@ import {
   JsonMap,
   SegmentClient,
 } from '@segment/analytics-react-native';
-import {
-  ANALYTICS_KEY,
-  REACT_APP_SEGMENT_API_WRITE_KEY,
-} from 'react-native-dotenv';
+import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
 import { TrackingEventProperties, TrackingEvents } from './trackingEvents';
 import { UserProperties } from './userProperties';
 import Routes from '@/navigation/routesNames';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { EthereumAddress } from '@/entities';
-import { ethers } from 'ethers';
 import { nanoid } from 'nanoid/non-secure';
-
-export function secureHmac(value: string) {
-  return ethers.utils.computeHmac(
-    ethers.utils.SupportedAlgorithm.sha256,
-    ANALYTICS_KEY,
-    value
-  );
-}
+import { securelyHashWalletAddress } from '@/analytics/utils';
 
 // TODO: we only use route properties for 1 sheet, we need to collect all possibles and lay out the same as we do for event properties
 // this should live in navigation once we type that
@@ -54,7 +43,7 @@ export class Analytics {
     // we need to wait for context to be loaded before we can set the deviceId
     // TODO: persist this in local storage after initial load
     this.deviceId = this.getDeviceId();
-    this.secureAddressHash = secureHmac(currentAddress);
+    this.secureAddressHash = securelyHashWalletAddress(currentAddress);
   }
 
   private getDeviceId() {
@@ -102,7 +91,7 @@ export class Analytics {
   }
 
   public setCurrentAddress(currentAddress: EthereumAddress): void {
-    this.secureAddressHash = secureHmac(currentAddress);
+    this.secureAddressHash = securelyHashWalletAddress(currentAddress);
   }
 
   // TODO: flush out what the scope is going to be for wiping PII
