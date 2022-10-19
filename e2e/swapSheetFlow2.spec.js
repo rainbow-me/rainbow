@@ -109,7 +109,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should show explainer sheet when selecting output input for cross chain swaps', async () => {
-    await Helpers.waitAndTap('exchange-fab');
+    await Helpers.waitAndTap('swap-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
     await Helpers.waitAndTap('exchange-modal-input-max');
