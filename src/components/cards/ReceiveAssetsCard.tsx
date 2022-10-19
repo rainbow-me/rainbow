@@ -57,8 +57,8 @@ const ReceiveAssetsCard = () => {
   }, [navigate]);
 
   return (
-    <GenericCard type="stretch" height={174}>
-      <Box height="full" justifyContent="space-between">
+    <GenericCard type="stretch">
+      <Stack space="36px">
         <Inline alignHorizontal="justify">
           <Stack space="16px">
             <Text size="22pt" weight="heavy" color="label">
@@ -128,7 +128,7 @@ const ReceiveAssetsCard = () => {
             </Box>
           </CopyFloatingEmojis>
         </AccentColorProvider>
-      </Box>
+      </Stack>
     </GenericCard>
   );
 };

@@ -40,7 +40,6 @@ interface GenericCardProps {
   gradient?: string[];
   children: React.ReactNode;
   onPress?: () => void;
-  height?: number;
   color?: 'accent' | BackgroundColor;
   shadowColor?: string;
 }
@@ -50,7 +49,6 @@ const GenericCard = ({
   type,
   gradient,
   onPress,
-  height,
   color = 'surfacePrimaryElevated',
   shadowColor,
 }: GenericCardProps) => {
@@ -86,27 +84,27 @@ const GenericCard = ({
           <Box
             background={gradient ? undefined : color}
             width={type === 'square' ? { custom: (width - 60) / 2 } : 'full'}
-            height={{
-              custom: type === 'square' ? (width - 60) / 2 : height ?? 0,
-            }}
+            height={
+              type === 'square' ? { custom: (width - 60) / 2 } : undefined
+            }
             borderRadius={24}
-            shadow={{
-              custom: {
-                android: {
-                  color: isDarkMode ? 'shadow' : 'accent',
-                  elevation: 24,
-                  opacity: 0.5,
-                },
-                ios: [
-                  {
-                    blur: 24,
-                    color: isDarkMode ? 'shadow' : 'accent',
-                    offset: { x: 0, y: 8 },
-                    opacity: 0.35,
-                  },
-                ],
-              },
-            }}
+            // shadow={{
+            //   custom: {
+            //     android: {
+            //       color: isDarkMode ? 'shadow' : 'accent',
+            //       elevation: 24,
+            //       opacity: 0.5,
+            //     },
+            //     ios: [
+            //       {
+            //         blur: 24,
+            //         color: isDarkMode ? 'shadow' : 'accent',
+            //         offset: { x: 0, y: 8 },
+            //         opacity: 0.35,
+            //       },
+            //     ],
+            //   },
+            // }}
             padding="20px"
           >
             {children}

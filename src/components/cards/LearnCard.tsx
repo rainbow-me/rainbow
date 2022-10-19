@@ -16,9 +16,10 @@ import { LearnCardDetails, learnCategoryColors } from './constants';
 
 interface LearnCardProps {
   cardDetails: LearnCardDetails;
+  type: 'square' | 'stretch';
 }
 
-const LearnCard = ({ cardDetails }: LearnCardProps) => {
+const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { category, title, emoji, url, description } = cardDetails;
   const { gradient, primaryColor, secondaryColor } = learnCategoryColors[
     category
@@ -26,39 +27,74 @@ const LearnCard = ({ cardDetails }: LearnCardProps) => {
 
   return (
     <GenericCard
-      type="square"
+      type={type}
       gradient={gradient}
       onPress={() => Linking.openURL(url)}
       shadowColor={primaryColor}
     >
       <AccentColorProvider color={secondaryColor}>
-        <Box height="full" justifyContent="space-between">
-          <Inline alignHorizontal="justify">
-            <Text size="13pt" weight="heavy" color="labelWhite">
-              􀫸 LEARN
-            </Text>
-            <Box
-              width={{ custom: 36 }}
-              height={{ custom: 36 }}
-              borderRadius={18}
-              background="accent"
-              alignItems="center"
-              justifyContent="center"
+        {type === 'square' ? (
+          <Box height="full" justifyContent="space-between">
+            <Inline alignHorizontal="justify">
+              <Text size="13pt" weight="heavy" color="labelWhite">
+                􀫸 LEARN
+              </Text>
+              <Box
+                width={{ custom: 36 }}
+                height={{ custom: 36 }}
+                borderRadius={18}
+                background="accent"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <NativeText style={{ fontSize: 14, paddingLeft: 1 }}>
+                  {emoji}
+                </NativeText>
+              </Box>
+            </Inline>
+            <Stack space="10px">
+              <Text color="accent" size="13pt" weight="bold">
+                {category}
+              </Text>
+              <Text color="labelWhite" size="17pt" weight="heavy">
+                {title}
+              </Text>
+            </Stack>
+          </Box>
+        ) : (
+          <Stack space="36px">
+            <Inline alignHorizontal="justify">
+              <Stack space="12px">
+                <Text size="13pt" weight="bold" color="accent">
+                  {category}
+                </Text>
+                <Text size="22pt" weight="heavy" color="labelWhite">
+                  {title}
+                </Text>
+              </Stack>
+              <Box
+                width={{ custom: 36 }}
+                height={{ custom: 36 }}
+                borderRadius={18}
+                background="accent"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <NativeText style={{ fontSize: 14, paddingLeft: 1 }}>
+                  {emoji}
+                </NativeText>
+              </Box>
+            </Inline>
+            <Text
+              color="labelWhite"
+              size="13pt"
+              weight="semibold"
+              numberOfLines={3}
             >
-              <NativeText style={{ fontSize: 14, paddingLeft: 1 }}>
-                {emoji}
-              </NativeText>
-            </Box>
-          </Inline>
-          <Stack space="10px">
-            <Text color="accent" size="13pt" weight="bold">
-              {category}
-            </Text>
-            <Text color="labelWhite" size="17pt" weight="heavy">
-              {title}
+              {description}
             </Text>
           </Stack>
-        </Box>
+        )}
       </AccentColorProvider>
     </GenericCard>
   );
