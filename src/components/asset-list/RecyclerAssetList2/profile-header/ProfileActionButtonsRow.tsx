@@ -69,7 +69,7 @@ export function ProfileActionButtonsRow() {
 
   const hasAvatarLoaded = !!accountImage || accountSymbol;
   const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = (hasAvatarLoaded || hasImageColorLoaded);
+  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
 
   const scale = useDerivedValue(() => (hasLoaded ? 1 : 0.9));
   const expandStyle = useAnimatedStyle(() => ({
