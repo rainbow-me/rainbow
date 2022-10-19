@@ -27,14 +27,6 @@ export const defaultOptions = {
 };
 
 export async function initSentry() {
-  /**
-   * Need to suss this out
-   *
-   * SentryOptions.dist: https://docs.sentry.io/platforms/react-native/configuration/options/#dist
-   * SentryOptions.release: https://docs.sentry.io/platforms/react-native/configuration/options/#release
-   *
-   * VersionNumber https://www.npmjs.com/package/react-native-version-number
-   */
   const dist = VersionNumber.buildVersion;
   const release = `${VersionNumber.appVersion} (${VersionNumber.buildVersion})`;
 
