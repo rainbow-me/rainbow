@@ -1,10 +1,7 @@
 import { createClient, SegmentClient } from '@segment/analytics-react-native';
 import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
 
-import {
-  TrackingEventProperties,
-  TrackingEvents,
-} from '@/analytics/trackingEvents';
+import { EventProperties, Events } from '@/analytics/events';
 import { UserProperties } from '@/analytics/userProperties';
 import Routes from '@/navigation/routesNames';
 
@@ -18,6 +15,7 @@ export class Analytics {
   private currentWalletAddressHash?: string;
   public deviceId?: string;
   public debug: boolean;
+  public events = Events;
 
   constructor({ debug = false }: { debug?: boolean }) {
     this.debug = debug;
@@ -43,9 +41,9 @@ export class Analytics {
     this.client.screen(routeName, { ...params, ...metadata });
   }
 
-  public track<T extends keyof TrackingEventProperties>(
+  public track<T extends keyof EventProperties>(
     event: T,
-    params?: TrackingEventProperties[T]
+    params?: EventProperties[T]
   ) {
     const eventCategory = this.getTrackingEventCategory(event);
     const metadata = this.getDefaultMetadata();
@@ -67,14 +65,12 @@ export class Analytics {
   }
 
   // proposed auto categorizing, could get expensive but i think it may be worth doing.
-  private getTrackingEventCategory<T extends keyof TrackingEventProperties>(
-    event: T
-  ) {
+  private getTrackingEventCategory<T extends keyof EventProperties>(event: T) {
     let category = null;
-    const categories = Object.keys(TrackingEvents);
+    const categories = Object.keys(Events);
     categories.forEach(key => {
       // @ts-ignore
-      const events = Object.values(TrackingEvents[key]);
+      const events = Object.values(Events[key]);
 
       if (events.includes(event)) {
         category = key;
