@@ -22,6 +22,12 @@ import {
   UniswapPoolExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
+import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
+import { ProfileStickyHeader } from '../profile-header/ProfileStickyHeader';
+import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsRow';
+import { ProfileAvatarRow } from '../profile-header/ProfileAvatarRow';
+import { ProfileBalanceRow } from '../profile-header/ProfileBalanceRow';
+import { ProfileNameRow } from '../profile-header/ProfileNameRow';
 
 function rowRenderer(
   type: CellType,
@@ -36,6 +42,11 @@ function rowRenderer(
     case CellType.NFT_SPACE_AFTER:
     case CellType.NFTS_HEADER_SPACE_AFTER:
     case CellType.NFTS_HEADER_SPACE_BEFORE:
+    case CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER:
+    case CellType.PROFILE_AVATAR_ROW_SPACE_AFTER:
+    case CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE:
+    case CellType.PROFILE_BALANCE_ROW_SPACE_AFTER:
+    case CellType.PROFILE_NAME_ROW_SPACE_AFTER:
     case CellType.SAVINGS_HEADER_SPACE_BEFORE:
       return null;
     case CellType.COIN_DIVIDER:
@@ -48,11 +59,8 @@ function rowRenderer(
           extendedState={extendedState}
         />
       );
-    case CellType.ASSETS_HEADER:
-      return (
-        // @ts-expect-error JavaScript component
-        <AssetListHeader totalValue={(data as AssetsHeaderExtraData).value} />
-      );
+    case CellType.PROFILE_STICKY_HEADER:
+      return <ProfileStickyHeader />;
     case CellType.COIN:
       return (
         <FastBalanceCoinRow
@@ -72,6 +80,32 @@ function rowRenderer(
     case CellType.POOLS_HEADER:
       return (
         <WrappedPoolsListHeader value={(data as PoolsHeaderExtraData).value} />
+      );
+    case CellType.PROFILE_ACTION_BUTTONS_ROW:
+      return (
+        <ProfileRowWrapper>
+          <ProfileActionButtonsRow />
+        </ProfileRowWrapper>
+      );
+    case CellType.PROFILE_AVATAR_ROW:
+      return (
+        <ProfileRowWrapper>
+          <ProfileAvatarRow />
+        </ProfileRowWrapper>
+      );
+    case CellType.PROFILE_BALANCE_ROW:
+      return (
+        <ProfileRowWrapper>
+          <ProfileBalanceRow
+            totalValue={(data as AssetsHeaderExtraData).value}
+          />
+        </ProfileRowWrapper>
+      );
+    case CellType.PROFILE_NAME_ROW:
+      return (
+        <ProfileRowWrapper>
+          <ProfileNameRow testIDPrefix="profile-name" />
+        </ProfileRowWrapper>
       );
     case CellType.UNISWAP_POOL:
       return (

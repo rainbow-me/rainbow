@@ -10,6 +10,7 @@ import AvatarIcon from './svg/AvatarIcon';
 import BTCIcon from './svg/BTCIcon';
 import BackspaceIcon from './svg/BackspaceIcon';
 import CameraIcon from './svg/CameraIcon';
+import CaretDownIcon from './svg/CaretDownIcon';
 import CaretIcon from './svg/CaretIcon';
 import CaretThinIcon from './svg/CaretThinIcon';
 import CheckmarkCircledIcon from './svg/CheckmarkCircledIcon';
@@ -87,6 +88,7 @@ const IconTypes = {
   btcCoin: BTCIcon,
   camera: CameraIcon,
   caret: CaretIcon,
+  caretDownIcon: CaretDownIcon,
   caretThin: CaretThinIcon,
   checkmark: CheckmarkIcon,
   checkmarkCircled: CheckmarkCircledIcon,

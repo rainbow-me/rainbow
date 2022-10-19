@@ -348,16 +348,14 @@ describe('Register ENS Flow', () => {
   it('Should check new wallet name is the new ENS on profile screen and change wallet screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${RANDOM_NAME_ETH}`
-    );
-    await Helpers.waitAndTap(`wallet-screen-account-name-${RANDOM_NAME_ETH}`);
+    await Helpers.checkIfExists(`profile-name-${RANDOM_NAME_ETH}`);
+    await Helpers.tap(`profile-name-${RANDOM_NAME_ETH}`);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
     await Helpers.swipe('change-wallet-sheet-title', 'down', 'fast');
     await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.tapByText(`${RANDOM_NAME_ETH}`);
+    await Helpers.tapAtPoint('profile-screen', { x: 210, y: 185 });
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
@@ -402,11 +400,9 @@ describe('Register ENS Flow', () => {
   it('Should check wallet name is the new ENS set as primary on profile screen and change wallet screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${RAINBOW_TEST_WALLET_NAME}`
-    );
-    await Helpers.swipe('wallet-screen', 'right', 'fast');
-    await Helpers.tapByText(RAINBOW_TEST_WALLET_NAME);
+    await Helpers.checkIfExists(`profile-name-${RAINBOW_TEST_WALLET_NAME}`);
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.tapAtPoint('profile-screen', { x: 210, y: 185 });
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RAINBOW_TEST_WALLET_NAME}`
     );
@@ -816,10 +812,8 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${TRUNCATED_ADDRESS}`
-    );
-    await Helpers.waitAndTap(`wallet-screen-account-name-${TRUNCATED_ADDRESS}`);
+    await Helpers.checkIfExists(`profile-name-sticky-${TRUNCATED_ADDRESS}`);
+    await Helpers.waitAndTap(`profile-name-sticky-${TRUNCATED_ADDRESS}`);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${WALLET_ROW_TRUNCATED_ADDRESS}`
     );

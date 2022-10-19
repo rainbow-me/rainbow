@@ -16,7 +16,7 @@ const sizeConfigs = (colors, isDarkMode) => ({
     textSize: 'large',
   },
   large: {
-    dimensions: 65,
+    dimensions: 60,
     shadow: [
       [0, 6, 10, colors.shadow, 0.12],
       [0, 2, 5, colors.shadow, 0.08],

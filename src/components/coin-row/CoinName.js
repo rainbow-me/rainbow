@@ -7,6 +7,7 @@ const CoinName = styled(TruncatedText).attrs(
     letterSpacing: 'roundedMedium',
     lineHeight: 'normal',
     size: size || 'lmedium',
+    weight: 'semibold',
   })
 )({
   marginTop: android ? 1.5 : 0,

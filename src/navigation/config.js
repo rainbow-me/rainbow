@@ -150,6 +150,20 @@ export const settingsSheetConfig = {
   }),
 };
 
+export const qrScannerConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 'device',
+      scrollEnabled: true,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.25,
+    }),
+  }),
+};
+
 export const pairHardwareWalletNavigatorConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
