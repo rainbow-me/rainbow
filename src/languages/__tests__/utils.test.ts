@@ -1,0 +1,18 @@
+import { describe, test, expect } from '@jest/globals';
+
+import { simpleObjectProxy } from '@/languages/utils';
+
+const english = {
+  account: {
+    hide: 'Hide',
+  },
+} as const;
+
+const translation = simpleObjectProxy<typeof english>(english);
+
+describe('@/languages/utils', () => {
+  test('translations', () => {
+    // @ts-expect-error We're ignoring TypeScript here
+    expect(translation.account.hide.__keypath__).toEqual('account.hide');
+  });
+});
