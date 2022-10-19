@@ -11,8 +11,12 @@ const english = {
 const translation = simpleObjectProxy<typeof english>(english);
 
 describe('@/languages/utils', () => {
-  test('translations', () => {
+  test('simpleObjectProxy', () => {
+    // @ts-expect-error We're ignoring TypeScript here
+    expect(translation.account.__keypath__).toEqual('account');
     // @ts-expect-error We're ignoring TypeScript here
     expect(translation.account.hide.__keypath__).toEqual('account.hide');
+    // @ts-expect-error We're ignoring TypeScript here
+    expect(translation.account['hide'].__keypath__).toEqual('account.hide');
   });
 });
