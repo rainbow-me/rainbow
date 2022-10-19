@@ -41,7 +41,7 @@ lang.translations = Object.assign(
   }))
 );
 
-export const updateLanguageLocale = (code: string) => {
+export const updateLanguageLocale = (code: Language) => {
   lang.locale = code;
 };
 
