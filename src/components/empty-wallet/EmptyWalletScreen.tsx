@@ -26,6 +26,7 @@ const EmptyWalletScreen = () => {
             }
             gradient={['#FF5CA0', '#FF70B3']}
             accentColor={globalColors.pink20}
+            shadowColor="pink"
             emoji="🤬"
             title={lang.t('cards.learn.titles.avoid_scams')}
             category={lang.t('cards.learn.categories.staying_safe')}
@@ -38,6 +39,7 @@ const EmptyWalletScreen = () => {
             }
             gradient={['#5F5AFA', '#9585FF']}
             accentColor={globalColors.purple20}
+            shadowColor="purple"
             emoji="🔌"
             title={lang.t('cards.learn.titles.get_started')}
             category={lang.t('cards.learn.categories.essentials')}
