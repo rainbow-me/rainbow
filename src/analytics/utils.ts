@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/async';
+import { nanoid } from 'nanoid/non-secure';
 
 import * as ls from '@/storage';
 import * as keychain from '@/model/keychain';
@@ -22,9 +22,7 @@ export async function getDeviceId(): Promise<string> {
     );
     const hasExistingDeviceId = typeof deviceIdFromKeychain === 'string';
     // prefer old ID, otherwise create a new one
-    const deviceId = hasExistingDeviceId
-      ? deviceIdFromKeychain
-      : await nanoid();
+    const deviceId = hasExistingDeviceId ? deviceIdFromKeychain : nanoid();
     // set ID
     ls.device.set(['id'], deviceId);
 
