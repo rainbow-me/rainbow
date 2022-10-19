@@ -7,39 +7,31 @@ import {
   Text,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import { Text as NativeText } from 'react-native';
+import { Linking, Text as NativeText } from 'react-native';
 import React from 'react';
 import GenericCard from './GenericCard';
 import { Emoji } from '../text';
 import { ForegroundColor } from '@/design-system/color/palettes';
+import { LearnCardDetails, learnCategoryColors } from './constants';
 
 interface LearnCardProps {
-  emoji: string;
-  title: string;
-  category: string;
-  onPress: () => void;
-  gradient: string[];
-  accentColor: string;
-  shadowColor: ForegroundColor;
+  cardDetails: LearnCardDetails;
 }
 
-const LearnCard = ({
-  emoji,
-  title,
-  category,
-  onPress,
-  gradient,
-  accentColor,
-  shadowColor,
-}: LearnCardProps) => {
+const LearnCard = ({ cardDetails }: LearnCardProps) => {
+  const { category, title, emoji, url, description } = cardDetails;
+  const { gradient, primaryColor, secondaryColor } = learnCategoryColors[
+    category
+  ];
+
   return (
     <GenericCard
       type="square"
       gradient={gradient}
-      onPress={onPress}
-      shadowColor={shadowColor}
+      onPress={() => Linking.openURL(url)}
+      shadowColor={primaryColor}
     >
-      <AccentColorProvider color={accentColor}>
+      <AccentColorProvider color={secondaryColor}>
         <Box height="full" justifyContent="space-between">
           <Inline alignHorizontal="justify">
             <Text size="13pt" weight="heavy" color="labelWhite">

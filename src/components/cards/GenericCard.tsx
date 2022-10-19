@@ -15,6 +15,7 @@ import {
   ForegroundColor,
 } from '@/design-system/color/palettes';
 import ConditionalWrap from 'conditional-wrap';
+import { useTheme } from '@/theme';
 
 const CardShadow: CustomShadow = {
   custom: {
@@ -41,7 +42,7 @@ interface GenericCardProps {
   onPress?: () => void;
   height?: number;
   color?: 'accent' | BackgroundColor;
-  shadowColor?: ForegroundColor;
+  shadowColor?: string;
 }
 
 const GenericCard = ({
@@ -51,10 +52,11 @@ const GenericCard = ({
   onPress,
   height,
   color = 'surfacePrimaryElevated',
-  shadowColor = 'shadow',
+  shadowColor,
 }: GenericCardProps) => {
   const { width } = useDimensions();
-  const shadowColorString = useForegroundColor(shadowColor);
+  const { isDarkMode } = useTheme();
+  const shadow = useForegroundColor('shadow');
 
   return (
     <ConditionalWrap
@@ -80,7 +82,7 @@ const GenericCard = ({
           </Box>
         )}
       >
-        <AccentColorProvider color={shadowColorString}>
+        <AccentColorProvider color={shadowColor ?? shadow}>
           <Box
             background={gradient ? undefined : color}
             width={type === 'square' ? { custom: (width - 60) / 2 } : 'full'}
@@ -88,7 +90,23 @@ const GenericCard = ({
               custom: type === 'square' ? (width - 60) / 2 : height ?? 0,
             }}
             borderRadius={24}
-            shadow={CardShadow}
+            shadow={{
+              custom: {
+                android: {
+                  color: isDarkMode ? 'shadow' : 'accent',
+                  elevation: 24,
+                  opacity: 0.5,
+                },
+                ios: [
+                  {
+                    blur: 24,
+                    color: isDarkMode ? 'shadow' : 'accent',
+                    offset: { x: 0, y: 8 },
+                    opacity: 0.35,
+                  },
+                ],
+              },
+            }}
             padding="20px"
           >
             {children}

@@ -25,21 +25,12 @@ import { haptics } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
+import QRCodeIcon from '@/assets/qrCodeIcon.png';
+import { ImgixImage } from '../images';
+import { Source } from 'react-native-fast-image';
 
-interface ReceiveAssetsCard {
-  emoji: string;
-  title: string;
-  category: string;
-  accentColor: string;
-}
-
-const ReceiveAssetsCard = ({
-  emoji,
-  title,
-  category,
-  accentColor,
-}: ReceiveAssetsCard) => {
-  const { colors } = useTheme();
+const ReceiveAssetsCard = () => {
+  const { colors, isDarkMode } = useTheme();
   const blueHex = useForegroundColor('blue');
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
@@ -83,7 +74,7 @@ const ReceiveAssetsCard = ({
             </Text>
           </Stack>
           <AccentColorProvider color={blueHex}>
-            <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.92}>
+            <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
               <Box
                 width={{ custom: 36 }}
                 height={{ custom: 36 }}
@@ -94,14 +85,14 @@ const ReceiveAssetsCard = ({
                 shadow={{
                   custom: {
                     android: {
-                      color: 'accent',
+                      color: isDarkMode ? 'shadow' : 'accent',
                       elevation: 24,
                       opacity: 0.5,
                     },
                     ios: [
                       {
                         blur: 24,
-                        color: 'accent',
+                        color: isDarkMode ? 'shadow' : 'accent',
                         offset: { x: 0, y: 8 },
                         opacity: 0.35,
                       },
@@ -109,9 +100,12 @@ const ReceiveAssetsCard = ({
                   },
                 }}
               >
-                <NativeText style={{ fontSize: 14, paddingLeft: 1 }}>
-                  􀖂
-                </NativeText>
+                <Box
+                  as={ImgixImage}
+                  source={QRCodeIcon}
+                  height={{ custom: 16 }}
+                  width={{ custom: 16 }}
+                />
               </Box>
             </ButtonPressAnimation>
           </AccentColorProvider>

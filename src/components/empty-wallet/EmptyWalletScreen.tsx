@@ -13,6 +13,8 @@ import lang from 'i18n-js';
 import LearnCard from '../cards/LearnCard';
 import { Linking } from 'react-native';
 import ReceiveAssetsCard from '../cards/ReceiveAssetsCard';
+import EducationCard from '../cards/EducationCard';
+import { learnCards } from '../cards/constants';
 
 const EmptyWalletScreen = () => {
   return (
@@ -20,18 +22,8 @@ const EmptyWalletScreen = () => {
       <Stack space="20px">
         <Box width="full" height={{ custom: 200 }} />
         <Inline space="20px">
-          <LearnCard
-            onPress={() =>
-              Linking.openURL('https://learn.rainbow.me/avoid-crypto-scams')
-            }
-            gradient={['#FF5CA0', '#FF70B3']}
-            accentColor={globalColors.pink20}
-            shadowColor="pink"
-            emoji="🤬"
-            title={lang.t('cards.learn.titles.avoid_scams')}
-            category={lang.t('cards.learn.categories.staying_safe')}
-          />
-          <LearnCard
+          <LearnCard cardDetails={learnCards[0]} />
+          {/* <LearnCard
             onPress={() =>
               Linking.openURL(
                 'https://learn.rainbow.me/connect-to-a-websiteapp'
@@ -43,13 +35,20 @@ const EmptyWalletScreen = () => {
             emoji="🔌"
             title={lang.t('cards.learn.titles.get_started')}
             category={lang.t('cards.learn.categories.essentials')}
-          />
+          /> */}
         </Inline>
-        <ReceiveAssetsCard
+        <ReceiveAssetsCard />
+        <EducationCard
+          onPress={() =>
+            Linking.openURL('https://learn.rainbow.me/connect-to-a-websiteapp')
+          }
+          gradient={['#5F5AFA', '#9585FF']}
           accentColor={globalColors.purple20}
+          shadowColor="purple"
           emoji="🔌"
           title={lang.t('cards.learn.titles.get_started')}
           category={lang.t('cards.learn.categories.essentials')}
+          height={159}
         />
       </Stack>
     </Inset>
