@@ -1,5 +1,4 @@
 import { expect, test, describe, beforeEach } from '@jest/globals';
-import * as Sentry from '@sentry/react-native';
 
 import * as ls from '@/storage';
 import { getDeviceId } from '@/analytics/utils';
@@ -30,7 +29,6 @@ describe(`@/analytics/utils`, () => {
     });
 
     expect(await getDeviceId()).toEqual('keychain');
-    expect(Sentry.setUser).toHaveBeenCalledWith({ id: 'keychain' });
   });
 
   test(`Creates fresh ID if no other exists`, async () => {
