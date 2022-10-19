@@ -52,7 +52,6 @@ const DiscoverSheet = (_, forwardedRef) => {
 
   const listeners = useRef([]);
   const bottomSheetModalRef = useRef(null);
-  const onFabSearch = useRef(null);
   const sheet = useRef();
 
   const value = useMemo(
@@ -69,7 +68,6 @@ const DiscoverSheet = (_, forwardedRef) => {
         sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
         bottomSheetModalRef.current?.collapse();
       },
-      onFabSearch,
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

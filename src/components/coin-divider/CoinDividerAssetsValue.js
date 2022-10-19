@@ -14,6 +14,7 @@ const ValueText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   size: 'lmedium',
+  weight: 'medium',
 }))({
   paddingBottom: 1,
 });

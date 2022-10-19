@@ -17,7 +17,7 @@ import { BackHandler } from 'react-native';
  * @param {Function} cb - optional callback which will be executed
  */
 export default function useHardwareBack(
-  cb: () => boolean | undefined,
+  cb: () => boolean | void,
   shouldSkip = false,
   deps: unknown[] = []
 ) {

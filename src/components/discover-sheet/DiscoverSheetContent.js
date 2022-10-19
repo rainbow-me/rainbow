@@ -1,27 +1,11 @@
-import lang from 'i18n-js';
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
-import { ColumnWithMargins, FlexItem } from '../layout';
-import { Text } from '../text';
+import { FlexItem } from '../layout';
 import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
 import DiscoverSearchContainer from './DiscoverSearchContainer';
-import styled from '@/styled-thing';
-
-const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.dark,
-  letterSpacing: 'roundedMedium',
-  lineHeight: 'loose',
-  size: 'large',
-  weight: 'heavy',
-}))({
-  marginTop: 2,
-});
-
-const Spacer = styled.View({
-  height: 16,
-});
+import { Box, Inset } from '@/design-system';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function Switcher({ showSearch, children }) {
   return (
@@ -40,17 +24,11 @@ export default function DiscoverSheetContent() {
   const [showSearch, setShowSearch] = useState(false);
   const ref = useRef();
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <>
-      {android && <Spacer />}
-      <HeaderTitle
-        testID={showSearch ? 'discover-header-search' : 'discover-header'}
-      >
-        {showSearch
-          ? lang.t('discover.title_search')
-          : lang.t('discover.title_discover')}
-      </HeaderTitle>
-      <ColumnWithMargins flex={1} margin={42} testID="discover-home">
+    <Box flex={1} testID="discover-home">
+      <Inset top="8px" bottom={{ custom: insets.bottom }}>
         <DiscoverSearchContainer
           ref={ref}
           setShowSearch={setShowSearch}
@@ -61,7 +39,7 @@ export default function DiscoverSheetContent() {
             <DiscoverHome />
           </Switcher>
         </DiscoverSearchContainer>
-      </ColumnWithMargins>
-    </>
+      </Inset>
+    </Box>
   );
 }

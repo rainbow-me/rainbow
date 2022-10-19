@@ -52,7 +52,7 @@ export default React.memo(function UniswapCoinRow({
                   numberOfLines={1}
                   color="primary (Deprecated)"
                   size="16px / 22px (Deprecated)"
-                  weight="regular"
+                  weight="semibold"
                 >
                   {item.tokenNames}
                 </Text>
@@ -61,6 +61,7 @@ export default React.memo(function UniswapCoinRow({
                 <Text
                   color={{ custom: item.theme.colors.blueGreyDark50 }}
                   size="14px / 19px (Deprecated)"
+                  weight="medium"
                 >
                   {item.symbol}
                 </Text>

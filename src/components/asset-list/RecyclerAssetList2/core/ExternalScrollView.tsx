@@ -4,6 +4,7 @@ import {
   ScrollViewProps,
   ViewStyle,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BaseScrollView, {
   ScrollViewDefaultProps,
 } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
@@ -21,6 +22,7 @@ const ExternalScrollViewWithRef = React.forwardRef<
   ref
 ) {
   const y = useRecyclerAssetListPosition()!;
+  const insets = useSafeAreaInsets();
 
   const { onScroll, ...rest } = props;
   const { scrollViewRef } = useContext(StickyHeaderContext)!;
@@ -48,6 +50,8 @@ const ExternalScrollViewWithRef = React.forwardRef<
     <RNAnimated.ScrollView
       {...(rest as ScrollViewProps)}
       contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
+      contentInset={{ top: insets.top }}
+      contentOffset={{ x: 0, y: -insets.top }}
       onScroll={event}
       ref={scrollViewRef}
     />

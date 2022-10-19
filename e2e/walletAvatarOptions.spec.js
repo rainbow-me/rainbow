@@ -4,6 +4,8 @@ import * as Helpers from './helpers';
 
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
 const WALLET_ADDRESS_COORDS = { x: 210, y: 185 };
+const PROFILE_AVATAR_COORDS = { x: 210, y: 125 };
+const PROFILE_ADDRESS_COORDS = { x: 210, y: 185 };
 const DISMISS_AVATAR_BUILDER_COORDS = { x: 20, y: 90 };
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 const RAINBOW_WALLET = 'rainbowwallet.eth';
@@ -82,12 +84,10 @@ describe('Wallet avatar options', () => {
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
     await Helpers.relaunchApp();
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('test watched wallet with ENS but without ENS avatar', async () => {
-    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+  it('test watched wallet with ens but without ens avatar', async () => {
+    await Helpers.tapAtPoint('wallet-screen', PROFILE_AVATAR_COORDS);
     await Helpers.checkIfExistsByText('Choose from Library');
     if (android) {
       await Helpers.checkIfExistsByText('Shuffle Emoji');
@@ -99,15 +99,15 @@ describe('Wallet avatar options', () => {
       await Helpers.tapByText('Pick an Emoji');
       await Helpers.checkIfVisible('avatar-builder');
       await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
-      await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+      await Helpers.tapAtPoint('wallet-screen', PROFILE_AVATAR_COORDS);
     }
     await Helpers.tapByText('View Profile');
     await Helpers.checkIfVisible('profile-sheet');
     await Helpers.swipe('profile-sheet', 'down', 'slow');
   });
 
-  it('import wallet with ENS but without ENS avatar', async () => {
-    await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
+  it('import wallet with ens but without ens avatar', async () => {
+    await Helpers.tapAtPoint('wallet-screen', PROFILE_ADDRESS_COORDS);
     if (android) {
       await Helpers.tapByText('􀂍 Add an existing wallet');
     } else {
@@ -117,12 +117,10 @@ describe('Wallet avatar options', () => {
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
     await Helpers.relaunchApp();
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('test imported wallet with ENS but without ENS avatar', async () => {
-    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+  it('test imported wallet with ens but without ens avatar', async () => {
+    await Helpers.tapAtPoint('wallet-screen', PROFILE_AVATAR_COORDS);
     await Helpers.checkIfExistsByText('Choose from Library');
     if (android) {
       await Helpers.checkIfExistsByText('Shuffle Emoji');
@@ -135,15 +133,19 @@ describe('Wallet avatar options', () => {
       await Helpers.tapByText('Pick an Emoji');
       await Helpers.checkIfVisible('avatar-builder');
       await Helpers.tapAtPoint('avatar-builder', DISMISS_AVATAR_BUILDER_COORDS);
-      await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
+      await Helpers.tapAtPoint('wallet-screen', PROFILE_AVATAR_COORDS);
     }
     await Helpers.tapByText('View Profile');
     await Helpers.checkIfVisible('profile-sheet');
     await Helpers.waitAndSwipe('profile-sheet', 'down');
+    await Helpers.tapAtPoint('wallet-screen', PROFILE_AVATAR_COORDS);
+    await Helpers.tapByText('Edit Profile');
+    await Helpers.checkIfExists('ens-edit-records-sheet');
+    await Helpers.swipe('ens-edit-records-sheet', 'down', 'slow');
   });
 
-  it('import wallet with ENS avatar', async () => {
-    await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
+  it('import wallet with ens avatar', async () => {
+    await Helpers.tapAtPoint('wallet-screen', PROFILE_ADDRESS_COORDS);
     if (android) {
       await Helpers.tapByText('􀂍 Add an existing wallet');
     } else {
@@ -153,14 +155,10 @@ describe('Wallet avatar options', () => {
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
     await Helpers.relaunchApp();
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('test watched wallet with ENS avatar', async () => {
-    await Helpers.tapAtPoint('profile-screen', WALLET_AVATAR_COORDS);
-    await Helpers.checkIfExistsByText('View Profile');
-    await Helpers.tapByText('View Profile');
+  it('test watched wallet with ens avatar', async () => {
+    await Helpers.tapAtPoint('wallet-screen', PROFILE_AVATAR_COORDS);
     await Helpers.checkIfVisible('profile-sheet');
   });
 
