@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import { WALLET_ADDRESS_HASH_KEY } from 'react-native-dotenv';
-
-type WalletAddress = `0x${string}`;
+import { EthereumAddressV2 } from '@/entities/wallet';
 
 let currentWalletAddressHash: string | undefined = undefined;
 
@@ -13,7 +12,7 @@ function hash(value: string) {
   );
 }
 
-export function setCurrentWalletAddress(walletAddress: WalletAddress) {
+export function setCurrentWalletAddress(walletAddress: EthereumAddressV2) {
   currentWalletAddressHash = hash(walletAddress);
 }
 
