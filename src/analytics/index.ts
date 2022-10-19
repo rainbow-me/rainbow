@@ -7,8 +7,6 @@ import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
 import { TrackingEventProperties, TrackingEvents } from './trackingEvents';
 import { UserProperties } from './userProperties';
 import Routes from '@/navigation/routesNames';
-import { EthereumAddress } from '@/entities';
-import { securelyHashWalletAddress } from '@/analytics/utils';
 
 // TODO: we only use route properties for 1 sheet, we need to collect all possibles and lay out the same as we do for event properties
 // this should live in navigation once we type that
@@ -64,14 +62,8 @@ export class Analytics {
     this.deviceId = deviceId;
   }
 
-  public setCurrentWalletAddress(currentWalletAddress: EthereumAddress) {
-    this.currentWalletAddressHash = securelyHashWalletAddress(
-      currentWalletAddress
-    );
-  }
-
-  public getCurrentWalletAddressHash() {
-    return this.currentWalletAddressHash;
+  public setCurrentWalletAddressHash(currentWalletAddressHash: string) {
+    this.currentWalletAddressHash = currentWalletAddressHash;
   }
 
   // TODO: flush out what the scope is going to be for wiping PII
