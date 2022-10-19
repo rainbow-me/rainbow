@@ -1,5 +1,4 @@
 import { nanoid } from 'nanoid/async';
-import * as Sentry from '@sentry/react-native';
 
 import * as ls from '@/storage';
 import * as keychain from '@/model/keychain';
@@ -28,9 +27,6 @@ export async function getDeviceId(): Promise<string> {
       : await nanoid();
     // set ID
     ls.device.set(['id'], deviceId);
-
-    // update Sentry user immediately
-    Sentry.setUser({ id: deviceId });
 
     // log to Sentry
     if (hasExistingDeviceId) {

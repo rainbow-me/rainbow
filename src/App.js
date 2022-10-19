@@ -14,17 +14,12 @@ import {
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
-import {
-  IS_TESTING,
-  SENTRY_ENDPOINT,
-  SENTRY_ENVIRONMENT,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import VersionNumber from 'react-native-version-number';
 import { connect, Provider as ReduxProvider, useSelector } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
@@ -82,17 +77,11 @@ import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
+import { sentryRoutingInstrumentation } from '@/logger/sentry';
 
 const FedoraToastRef = createRef();
 
 const mmkv = new MMKV();
-
-// We need to disable React Navigation instrumentation for E2E tests
-// because detox doesn't like setTimeout calls that are used inside
-// When enabled detox hangs and timeouts on all test cases
-const routingInstrumentation = IS_TESTING
-  ? undefined
-  : new Sentry.ReactNavigationInstrumentation();
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -100,8 +89,7 @@ if (__DEV__) {
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {
   // eslint-disable-next-line no-inner-declarations
-  async function initSentryAndCheckForFedoraMode() {
-    let metadata;
+  async function checkForFedoraMode() {
     try {
       const config = await codePush.getCurrentPackage();
       if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
@@ -113,31 +101,12 @@ if (__DEV__) {
         isCustomBuild.value = true;
         setTimeout(() => FedoraToastRef?.current?.show(), 300);
       }
-
-      metadata = await codePush.getUpdateMetadata();
     } catch (e) {
       logger.log('error initiating codepush settings', e);
     }
-    const sentryOptions = {
-      dsn: SENTRY_ENDPOINT,
-      enableAutoSessionTracking: true,
-      environment: SENTRY_ENVIRONMENT,
-      integrations: [
-        new Sentry.ReactNativeTracing({
-          routingInstrumentation,
-          tracingOrigins: ['localhost', /^\//],
-        }),
-      ],
-      tracesSampleRate: 0.2,
-      ...(metadata && {
-        dist: metadata.label,
-        release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
-      }),
-    };
-    Sentry.init(sentryOptions);
   }
 
-  initSentryAndCheckForFedoraMode();
+  checkForFedoraMode();
 }
 
 enableScreens();
@@ -295,7 +264,9 @@ class OldApp extends Component {
   };
 
   handleSentryNavigationIntegration = () => {
-    routingInstrumentation?.registerNavigationContainer(this.navigatorRef);
+    sentryRoutingInstrumentation?.registerNavigationContainer(
+      this.navigatorRef
+    );
   };
 
   render = () => (
