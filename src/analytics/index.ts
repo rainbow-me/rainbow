@@ -7,13 +7,7 @@ import {
 
 import { EventProperties, events } from '@/analytics/events';
 import { UserProperties } from '@/analytics/userProperties';
-import Routes from '@/navigation/routesNames';
 import { LogLevel } from '@/logger';
-
-// TODO: we only use route properties for 1 sheet, we need to collect all possibles and lay out the same as we do for event properties
-// this should live in navigation once we type that
-type RouteKeys = keyof typeof Routes;
-type RouteName = typeof Routes[RouteKeys];
 
 export class Analytics {
   public client: SegmentClient;
@@ -41,7 +35,7 @@ export class Analytics {
     });
   }
 
-  public screen(routeName: RouteName, params: Record<string, any> = {}): void {
+  public screen(routeName: string, params: Record<string, any> = {}): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
     this.client.screen(routeName, { ...params, ...metadata });
