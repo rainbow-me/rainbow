@@ -77,7 +77,8 @@ import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
-import { sentryRoutingInstrumentation } from '@/logger/sentry';
+import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
+import { getDeviceId } from '@/analytics/utils';
 
 const FedoraToastRef = createRef();
 
@@ -299,7 +300,24 @@ function App() {
 }
 
 function Root() {
-  return (
+  const [initializing, setInitializing] = React.useState(true);
+
+  React.useEffect(() => {
+    async function initializeApplication() {
+      await initSentry(); // must be set up immediately
+
+      const deviceId = await getDeviceId();
+
+      Sentry.setUser({ id: deviceId });
+      // Segment.identify(deviceId)
+
+      setInitializing(false);
+    }
+
+    initializeApplication();
+  }, [setInitializing]);
+
+  return initializing ? null : (
     <ReduxProvider store={store}>
       <RecoilRoot>
         <PersistQueryClientProvider
