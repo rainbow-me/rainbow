@@ -110,13 +110,13 @@ export const createUnlockAndCrosschainSwapRap = async (
       actions = actions.concat(unlock);
     }
   }
-
   const crosschainSwap = createNewAction(RapActionTypes.crosschainSwap, {
     chainId,
     flashbots,
     inputAmount,
     requiresApprove: swapAssetNeedsUnlocking,
     tradeDetails,
+    meta: swapParameters.meta,
   });
   actions = actions.concat(crosschainSwap);
 

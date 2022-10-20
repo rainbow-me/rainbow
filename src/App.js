@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid/non-secure';
 import React, { Component, createRef } from 'react';
 import {
-  AppRegistry,
   AppState,
   Dimensions,
   InteractionManager,
@@ -25,7 +24,7 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
-import { connect, Provider as ReduxProvider } from 'react-redux';
+import { connect, Provider as ReduxProvider, useSelector } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
@@ -144,7 +143,7 @@ enableScreens();
 
 const containerStyle = { flex: 1 };
 
-class App extends Component {
+class OldApp extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
@@ -299,60 +298,63 @@ class App extends Component {
   };
 
   render = () => (
-    <MainThemeProvider>
-      <ReduxProvider store={store}>
-        <RainbowContextWrapper>
-          <ErrorBoundary>
-            <Portal>
-              <SafeAreaProvider>
-                <PersistQueryClientProvider
-                  client={queryClient}
-                  persistOptions={persistOptions}
-                >
-                  <RecoilRoot>
-                    <SharedValuesProvider>
-                      <NotificationsHandler
-                        walletReady={this.props.walletReady}
-                      >
-                        <View style={containerStyle}>
-                          {this.state.initialRoute && (
-                            <InitialRouteContext.Provider
-                              value={this.state.initialRoute}
-                            >
-                              <RoutesComponent
-                                onReady={this.handleSentryNavigationIntegration}
-                                ref={this.handleNavigatorRef}
-                              />
-                              <PortalConsumer />
-                            </InitialRouteContext.Provider>
-                          )}
-                          <OfflineToast />
-                          <FedoraToast ref={FedoraToastRef} />
-                        </View>
-                      </NotificationsHandler>
-                    </SharedValuesProvider>
-                  </RecoilRoot>
-                </PersistQueryClientProvider>
-              </SafeAreaProvider>
-            </Portal>
-          </ErrorBoundary>
-        </RainbowContextWrapper>
-      </ReduxProvider>
-    </MainThemeProvider>
+    <Portal>
+      <NotificationsHandler walletReady={this.props.walletReady}>
+        <View style={containerStyle}>
+          {this.state.initialRoute && (
+            <InitialRouteContext.Provider value={this.state.initialRoute}>
+              <RoutesComponent
+                onReady={this.handleSentryNavigationIntegration}
+                ref={this.handleNavigatorRef}
+              />
+              <PortalConsumer />
+            </InitialRouteContext.Provider>
+          )}
+          <OfflineToast />
+          <FedoraToast ref={FedoraToastRef} />
+        </View>
+      </NotificationsHandler>
+    </Portal>
   );
 }
 
-const AppWithRedux = connect(({ appState: { walletReady } }) => ({
-  walletReady,
-}))(App);
+const OldAppWithRedux = connect(state => ({
+  walletReady: state.appState.walletReady,
+}))(OldApp);
 
-const AppWithReduxStore = () => <AppWithRedux store={store} />;
+function App() {
+  return <OldAppWithRedux />;
+}
 
-const AppWithSentry = Sentry.wrap(AppWithReduxStore);
+function Root() {
+  return (
+    <ReduxProvider store={store}>
+      <RecoilRoot>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={persistOptions}
+        >
+          <SafeAreaProvider>
+            <MainThemeProvider>
+              <RainbowContextWrapper>
+                <SharedValuesProvider>
+                  <ErrorBoundary>
+                    <App />
+                  </ErrorBoundary>
+                </SharedValuesProvider>
+              </RainbowContextWrapper>
+            </MainThemeProvider>
+          </SafeAreaProvider>
+        </PersistQueryClientProvider>
+      </RecoilRoot>
+    </ReduxProvider>
+  );
+}
 
-const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
-
-const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
+const RootWithSentry = Sentry.wrap(Root);
+const RootWithCodePush = codePush({
+  checkFrequency: codePush.CheckFrequency.MANUAL,
+})(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>
@@ -360,6 +362,6 @@ const PlaygroundWithReduxStore = () => (
   </ReduxProvider>
 );
 
-AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : AppWithCodePush
-);
+export const Application = designSystemPlaygroundEnabled
+  ? PlaygroundWithReduxStore
+  : RootWithCodePush;

@@ -79,6 +79,11 @@ const sizeConfigs = colors => ({
     dimensions: 36,
     textSize: 'large',
   },
+  small_shadowless: {
+    dimensions: 36,
+    textSize: 'large',
+    shadow: [[0, 0, 0, colors.shadow, 0]],
+  },
   // TODO: remove `legacySmall` size once rainbow home screen revamp is released
   legacySmall: {
     dimensions: 34,

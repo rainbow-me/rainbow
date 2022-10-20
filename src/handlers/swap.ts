@@ -101,6 +101,9 @@ async function getClosestGasEstimate(
 const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) =>
   tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
+export const getCrosschainSwapServiceTime = (tradeDetails: CrosschainQuote) =>
+  tradeDetails?.routes?.[0]?.serviceTime;
+
 export const getDefaultGasLimitForTrade = (
   tradeDetails: Quote,
   chainId: ChainId
@@ -258,7 +261,6 @@ export const estimateSwapGasLimit = async ({
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
-
   const isWrapNativeAsset =
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
     buyTokenAddress === WRAPPED_ASSET[chainId];

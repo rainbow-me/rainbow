@@ -3,13 +3,13 @@ import {
   ChainId,
   CrosschainQuote,
   fillCrosschainQuote,
+  SwapType,
 } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
-import { toLower } from 'lodash';
 import {
+  CrosschainSwapActionParameters,
   Rap,
   RapExchangeActionParameters,
-  SwapActionParameters,
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
@@ -20,15 +20,16 @@ import {
   toHex,
 } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { greaterThan } from '@/helpers/utilities';
-import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
+import { ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
+import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
+import { swapMetadataStorage } from './swap';
 
 const actionName = 'crosschainSwap';
 
@@ -79,10 +80,10 @@ export const executeCrosschainSwap = async ({
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
-    gasPrice,
+    ...(gasPrice ? { gasPrice } : {}),
     // EIP-1559 like networks
-    maxFeePerGas,
-    maxPriorityFeePerGas,
+    ...(maxFeePerGas ? { maxFeePerGas } : {}),
+    ...(maxPriorityFeePerGas ? { maxPriorityFeePerGas } : {}),
     nonce: nonce ? toHex(nonce) : undefined,
   };
 
@@ -108,10 +109,9 @@ const crosschainSwap = async (
   const {
     inputAmount,
     tradeDetails,
-    permit,
     chainId,
     requiresApprove,
-  } = parameters as SwapActionParameters;
+  } = parameters as CrosschainSwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
   const { inputCurrency, outputCurrency } = store.getState().swap;
@@ -188,15 +188,6 @@ const crosschainSwap = async (
         })
       );
     }
-
-    if (permit) {
-      // Clear the allowance
-      const cacheKey = toLower(
-        `${wallet.address}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`
-      );
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete AllowancesCache.cache[cacheKey];
-    }
   } catch (e) {
     logger.sentry('Error', e);
     const fakeError = new Error('Failed to execute swap');
@@ -206,6 +197,7 @@ const crosschainSwap = async (
 
   logger.log(`[${actionName}] response`, swap);
 
+  const isBridge = inputCurrency.symbol === outputCurrency.symbol;
   const newTransaction = {
     ...gasParams,
     amount: inputAmount,
@@ -217,13 +209,26 @@ const crosschainSwap = async (
     hash: swap?.hash,
     network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
     nonce: swap?.nonce,
-    protocol: ProtocolType.uniswap,
-    status: TransactionStatus.swapping,
+    protocol: ProtocolType.socket,
+    status: isBridge ? TransactionStatus.bridging : TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
+    swap: {
+      type: SwapType.crossChain,
+      fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
+      toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+      isBridge,
+    },
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
+
+  if (parameters.meta && swap?.hash) {
+    swapMetadataStorage.set(
+      swap.hash.toLowerCase(),
+      JSON.stringify({ type: 'swap', data: parameters.meta })
+    );
+  }
 
   dispatch(
     dataAddNewTransaction(

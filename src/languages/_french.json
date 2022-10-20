@@ -210,6 +210,7 @@
         "review": "Review :)",
         "submitting": "Submitting :)",
         "swap": "Tenir pour Swap",
+        "bridge": "Tenir pour Bridge",
         "swap_anyway": "Echanger quand Même",
         "symbol_balance_too_low": "%{symbol} balance too low :)",
         "view_details": "View Details :)",
@@ -227,6 +228,7 @@
       "exchange": "Échanger",
       "exchange_again": "Échanger encore",
       "exchange_search_placeholder": "Cherche",
+      "exchange_search_placeholder_network": "Search tokens on %{network} :)",
       "go_back": "Retourner",
       "go_back_undercase": "Go back :)",
       "got_it": "Got it :)",
@@ -241,7 +243,7 @@
       "learn_more": "En savoir plus",
       "less": "Moins",
       "loading": "Se charge",
-      "no_thanks": "No thanks :)",
+      "no_thanks": "No thanks",
       "notify_me": "Recevoir des notifications",
       "offline": "Hors connexion",
       "ok": "D'accord",
@@ -399,6 +401,12 @@
         "loser": "Loser :)",
         "mover": "Mover :)"
       },
+      "no_results": {
+        "description": "Some tokens don’t have enough liquidity to perform a successful swap.: )",
+        "description_l2": "Some tokens don’t have enough layer 2 liquidity to perform a successful swap. :)",
+        "nothing_found": "Nothing found :)",
+        "nothing_here": "Nothing here! :)"
+      },
       "price_impact": {
         "losing_prefix": "Losing :)",
         "small_market": "Small Market :)",
@@ -485,6 +493,8 @@
         "us_except": "United States (except Texas and New York) :)"
       },
       "swap": {
+        "swap": "Swap",
+        "bridge": "Bridge",
         "copy_contract_address": "Copy Contract Address :)",
         "flashbots_protect": "Flashbots Protect :)",
         "losing": "Losing :)",
@@ -497,6 +507,7 @@
         "uniswap_v2": "Uniswap v2 :)",
         "view_on": "View on %{blockExplorerName} :)",
         "network_switcher": "Swapping on the %{network} network :)",
+        "settling_time": "Estimated settling time :)",
         "swap_max_alert": {
           "title": "Are you sure? :)",
           "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}? :)",
@@ -520,6 +531,7 @@
       "swap_details": {
         "exchange_rate": "Exchange rate :)",
         "rainbow_fee": "Included Rainbow fee :)",
+        "refuel": "Extra network tokens",
         "review": "Review :)",
         "show_details": "More details :)",
         "hide_details": "Hide details :)",
@@ -528,6 +540,7 @@
         "maximum_sold": "Maximum sold :)",
         "token_contract": "%{token} contract :)",
         "number_of_exchanges": "%{number} Exchanges :)",
+        "number_of_steps": "%{number} Steps :)",
         "input_exchange_rate": "1 %{inputSymbol} pour %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} pour %{executionRate} %{inputSymbol}"
       },
@@ -593,8 +606,11 @@
         "button": "Snag the icon :)"
       },
       "output_disabled": {
-        "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
+        "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
         "title": "Enter %{inputToken} Instead :)",
+        "title_crosschain": "Enter %{fromNetwork} %{inputToken} Instead :)",
+        "text_crosschain": "Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
+        "text_bridge": "Rainbow can't prepare a bridge based on the amount of %{outputToken} you'd like to receive at the %{toNetwork} destination. \n\n Try entering the amount of %{fromNetwork} %{inputToken} you’d like to bridge instead. :)",
         "title_empty": "Choose a Token :)"
       },
       "available_networks": {
@@ -669,6 +685,10 @@
         "title": "No quote available",
         "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
+      "cross_chain_swap": {
+        "title": "Expect Bridge Delays :)",
+        "text": "This swap may take longer than expected to complete. \n\n Cross-chain swaps require bridging funds to the destination network, and bridges can sometimes take longer than expected to transfer funds. Your funds will remain safe during this time. :)"
+      },
       "unverified": {
         "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
         "fragment2": "token contract :)",
@@ -681,6 +701,30 @@
         "fragment2": "Read more :)",
         "fragment3": " about bridges. :)",
         "title": "No Tokens on %{networkName} :)"
+      },
+      "swap_refuel": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
+        "button": "Add $3 of %{networkName} %{gasToken}"
+      },
+      "swap_refuel_deduct": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH subtracted from this swap.",
+        "button": "Adjust and add $3 of %{gasToken}"
+      },
+      "swap_refuel_notice": {
+        "title": "No %{networkName} %{gasToken} detected",
+        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
+        "button": "Adjust and add $3 of %{gasToken}"
+      },
+      "flashbots": {
+        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing. :)",
+        "title": "Flashbots :)",
+        "still_curious": {
+          "fragment1": "Still curious? :)",
+          "fragment2": "Read more :)",
+          "fragment3": " about Flashbots and the protection it offers. :)"
+        }
       }
     },
     "fedora": {
@@ -761,7 +805,6 @@
       "recipient_address": "Adresse du destinataire"
     },
     "list": {
-      "nothing_here": "Nothing here! :)",
       "share": {
         "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl} :)",
         "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl} :)"
@@ -1049,7 +1092,7 @@
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library :)",
-        "create_profile": "Create your Profile :)",
+        "create_profile": "Create Profile :)",
         "edit_profile": "Edit Profile :)",
         "pick_emoji": "Pick an Emoji :)",
         "shuffle_emoji": "Shuffle Emoji :)",
@@ -1307,7 +1350,7 @@
         "hide": "Hide :)",
         "import_wallet": "Importer un portefeuille",
         "notifications": "Notification Settings :)",
-        "pair_hardware_wallet": "Pair a hardware wallet",
+        "pair_hardware_wallet": "Pair a Ledger Nano X :)",
         "paste": "Coller",
         "pin": "Pin :)",
         "reject": "Refuser",
@@ -1467,8 +1510,8 @@
         "enable_camera_access": "Enable camera access :)",
         "error_mounting_camera": "Error mounting camera :)",
         "find_a_code": "Find a code to scan :)",
-        "qr_1_app_connected": "1 app connected :)",
-        "qr_multiple_apps_connected": "%{appsConnectedCount} apps connected :)",
+        "qr_1_app_connected": "1 Connected App :)",
+        "qr_multiple_apps_connected": "%{appsConnectedCount} Connected Apps :)",
         "scan_to_pay_or_connect": "Scan to pay or connect :)",
         "simulator_mode": "Simulator Mode :)",
         "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized. :)",

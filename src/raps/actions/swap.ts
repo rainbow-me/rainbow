@@ -14,6 +14,7 @@ import {
   Rap,
   RapExchangeActionParameters,
   SwapActionParameters,
+  SwapMetadata,
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
@@ -33,7 +34,12 @@ import logger from '@/utils/logger';
 import { Network } from '@/helpers';
 import { loadWallet } from '@/model/wallet';
 import { estimateSwapGasLimit } from '@/handlers/swap';
+import { MMKV } from 'react-native-mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 
+export const swapMetadataStorage = new MMKV({
+  id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
+});
 const actionName = 'swap';
 
 export const executeSwap = async ({
@@ -261,23 +267,30 @@ const swap = async (
     flashbots: parameters.flashbots,
     from: accountAddress,
     gasLimit,
-    hash: swap?.hash,
+    hash: swap?.hash ?? null,
     network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-    nonce: swap?.nonce,
+    nonce: swap?.nonce ?? null,
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,
-    to: swap?.to,
+    to: swap?.to ?? null,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
+  if (parameters.meta && swap?.hash) {
+    swapMetadataStorage.set(
+      swap.hash.toLowerCase(),
+      JSON.stringify({ type: 'swap', data: parameters.meta })
+    );
+  }
+
   dispatch(
     dataAddNewTransaction(
-      // @ts-ignore
       newTransaction,
       accountAddress,
       false,
+      // @ts-ignore
       wallet?.provider
     )
   );

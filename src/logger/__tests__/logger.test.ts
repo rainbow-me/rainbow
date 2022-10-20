@@ -63,6 +63,35 @@ describe('general functionality', () => {
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, 'message', extra);
   });
 
+  test('supports nullish/falsy metadata', () => {
+    const logger = new Logger({ enabled: true });
+
+    const mockTransport = jest.fn();
+
+    const remove = logger.addTransport(mockTransport);
+
+    // @ts-expect-error testing the JS case
+    logger.warn('a', null);
+    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, 'a', {});
+
+    // @ts-expect-error testing the JS case
+    logger.warn('b', false);
+    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, 'b', {});
+
+    // @ts-expect-error testing the JS case
+    logger.warn('c', 0);
+    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, 'c', {});
+
+    remove();
+
+    logger.addTransport((level, message, metadata) => {
+      expect(typeof metadata).toEqual('object');
+    });
+
+    // @ts-expect-error testing the JS case
+    logger.warn('message', null);
+  });
+
   test('logger.error expects a RainbowError', () => {
     const logger = new Logger({ enabled: true });
 
