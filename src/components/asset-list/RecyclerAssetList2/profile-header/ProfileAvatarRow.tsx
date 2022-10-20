@@ -174,22 +174,26 @@ export function ProfileAvatarRow({
                         custom: {
                           ios: [
                             {
-                              offset: { x: 0, y: 2 },
+                              x: 0,
+                              y: 2,
                               blur: 8,
                               opacity: 0.08,
-                              color: 'shadow',
+                              color: 'shadowFar',
                             },
                             {
-                              offset: { x: 0, y: 8 },
+                              x: 0,
+                              y: 8,
                               blur: 24,
                               opacity: 0.3,
-                              color: colorMode === 'dark' ? 'shadow' : 'accent',
+                              color:
+                                colorMode === 'dark' ? 'shadowFar' : 'accent',
                             },
                           ],
                           android: {
                             elevation: 30,
                             opacity: 0.8,
-                            color: colorMode === 'dark' ? 'shadow' : 'accent',
+                            color:
+                              colorMode === 'dark' ? 'shadowFar' : 'accent',
                           },
                         },
                       }

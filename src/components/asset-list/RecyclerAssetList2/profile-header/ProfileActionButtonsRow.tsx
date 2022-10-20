@@ -143,22 +143,24 @@ function ActionButton({
             custom: {
               ios: [
                 {
-                  offset: { x: 0, y: 8 },
+                  x: 0,
+                  y: 8,
                   blur: 24,
                   opacity: 0.3,
-                  color: colorMode === 'dark' ? 'shadow' : 'accent',
+                  color: colorMode === 'dark' ? 'shadowFar' : 'accent',
                 },
                 {
-                  offset: { x: 0, y: 2 },
+                  x: 0,
+                  y: 2,
                   blur: 6,
                   opacity: 0.04,
-                  color: 'shadow',
+                  color: 'shadowFar',
                 },
               ],
               android: {
                 elevation: 21,
                 opacity: 1,
-                color: colorMode === 'dark' ? 'shadow' : 'accent',
+                color: colorMode === 'dark' ? 'shadowFar' : 'accent',
               },
             },
           }}
