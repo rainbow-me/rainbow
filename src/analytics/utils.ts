@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 import { ethers } from 'ethers';
-// TODO
-import { ANALYTICS_KEY } from 'react-native-dotenv';
+import { SECURE_WALLET_HASH_KEY } from 'react-native-dotenv';
 
 import * as ls from '@/storage';
 import * as keychain from '@/model/keychain';
@@ -41,7 +40,7 @@ export async function getDeviceId(): Promise<string> {
 export function securelyHashWalletAddress(walletAddress: string) {
   return ethers.utils.computeHmac(
     ethers.utils.SupportedAlgorithm.sha256,
-    ANALYTICS_KEY,
+    SECURE_WALLET_HASH_KEY,
     walletAddress
   );
 }
