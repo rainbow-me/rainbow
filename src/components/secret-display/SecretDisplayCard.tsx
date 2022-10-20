@@ -9,6 +9,7 @@ import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
+import { number } from '@/design-system/docs/node_modules/@types/prop-types';
 
 const GridItem = styled(Row).attrs({
   align: 'center',
@@ -81,7 +82,9 @@ export default function SecretDisplayCard({
         <Box
           background="card (Deprecated)"
           borderRadius={25}
-          height={{ custom: 240 }}
+          height={{
+            custom: seed.split(' ').length === 12 ? 240 : 450,
+          }}
           paddingHorizontal="30px (Deprecated)"
           paddingVertical="19px (Deprecated)"
           shadow="21px light"
