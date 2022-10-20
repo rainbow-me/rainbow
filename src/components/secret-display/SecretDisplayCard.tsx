@@ -9,7 +9,6 @@ import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
-import { number } from '@/design-system/docs/node_modules/@types/prop-types';
 
 const GridItem = styled(Row).attrs({
   align: 'center',
