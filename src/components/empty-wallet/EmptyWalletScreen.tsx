@@ -13,7 +13,8 @@ import lang from 'i18n-js';
 import LearnCard from '../cards/LearnCard';
 import { Linking } from 'react-native';
 import ReceiveAssetsCard from '../cards/ReceiveAssetsCard';
-import { learnCards } from '../cards/constants';
+import { cardColorways, learnCards } from '../cards/constants';
+import ActionCard from '../cards/ActionCard';
 
 const EmptyWalletScreen = () => {
   return (
@@ -36,7 +37,47 @@ const EmptyWalletScreen = () => {
             category={lang.t('cards.learn.categories.essentials')}
           /> */}
         </Inline>
+        <Box
+          background="blue"
+          width="full"
+          height={undefined}
+          borderRadius={24}
+          shadow={{
+            custom: {
+              android: {
+                color: 'shadow',
+                elevation: 24,
+                opacity: 0.5,
+              },
+              ios: [
+                {
+                  blur: 24,
+                  color: 'shadow',
+                  offset: { x: 0, y: 8 },
+                  opacity: 0.35,
+                },
+              ],
+            },
+          }}
+          padding="20px"
+        >
+          <Box height={{ custom: 100 }} width="full" />
+        </Box>
         <ReceiveAssetsCard />
+        <Inline space="20px">
+          <ActionCard
+            colorway={cardColorways.green}
+            onPress={() => {}}
+            title="Buy Crypto with Cash"
+            sfSymbolIcon="􀅼"
+          />
+          <ActionCard
+            colorway={cardColorways.yellow}
+            onPress={() => {}}
+            title="Create a token watchlist"
+            sfSymbolIcon="􀣩"
+          />
+        </Inline>
       </Stack>
     </Inset>
   );

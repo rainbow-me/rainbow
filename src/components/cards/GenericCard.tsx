@@ -42,6 +42,7 @@ interface GenericCardProps {
   onPress?: () => void;
   color?: 'accent' | BackgroundColor;
   shadowColor?: string;
+  rowLength?: number;
 }
 
 const GenericCard = ({
@@ -51,6 +52,7 @@ const GenericCard = ({
   onPress,
   color = 'surfacePrimaryElevated',
   shadowColor,
+  rowLength,
 }: GenericCardProps) => {
   const { width } = useDimensions();
   const { isDarkMode } = useTheme();

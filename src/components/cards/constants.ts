@@ -8,6 +8,15 @@ type LearnCategory =
   | 'Blockchains and Fees'
   | 'What is Web3?';
 
+type CardColor =
+  | 'pink'
+  | 'yellow'
+  | 'green'
+  | 'blue'
+  | 'purple'
+  | 'darkGreen'
+  | 'darkBlue';
+
 // enum LearnCategories {
 //   Essentials = 'Essentials',
 //   Safety = 'Staying Safe',
@@ -26,50 +35,70 @@ export interface LearnCardDetails {
   description: string;
 }
 
-interface LearnCategoryColorway {
+export interface CardColorway {
   gradient: string[];
-  primaryColor: string;
-  secondaryColor: string;
+  shadowColor: string;
+  accentColor: string;
+  accentColorDark: string;
 }
 
-export const learnCategoryColors: {
-  [key in LearnCategory]: LearnCategoryColorway;
+export const cardColorways: {
+  [key in CardColor]: CardColorway;
 } = {
-  'Essentials': {
+  purple: {
     gradient: [globalColors.purple60, '#9585FF'],
-    primaryColor: globalColors.purple60,
-    secondaryColor: globalColors.purple20,
+    shadowColor: globalColors.purple60,
+    accentColor: globalColors.purple20,
+    accentColorDark: globalColors.purple70,
   },
-  'Staying Safe': {
+  pink: {
     gradient: [globalColors.pink60, '#FF70B3'],
-    primaryColor: globalColors.pink60,
-    secondaryColor: globalColors.pink20,
+    shadowColor: globalColors.pink60,
+    accentColor: globalColors.pink20,
+    accentColorDark: globalColors.pink70,
   },
-  'How to use Rainbow': {
+  blue: {
     gradient: [globalColors.blue60, '#268FFF'],
-    primaryColor: globalColors.blue60,
-    secondaryColor: globalColors.blue20,
+    shadowColor: globalColors.blue60,
+    accentColor: globalColors.blue20,
+    accentColorDark: globalColors.blue70,
   },
-  // 'How to use Rainbow 2': {
-  //   gradient: [globalColors.blue90, globalColors.blue80],
-  //   primaryColor: globalColors.blue90,
-  //   secondaryColor: globalColors.blue20,
-  // },
-  "Beginner's Guides": {
+  darkBlue: {
+    gradient: [globalColors.blue90, globalColors.blue80],
+    shadowColor: globalColors.blue90,
+    accentColor: globalColors.blue20,
+    accentColorDark: globalColors.blue100,
+  },
+  yellow: {
     gradient: ['#FFCB0F', '#FFDA24'],
-    primaryColor: '#FFCB0F',
-    secondaryColor: globalColors.yellow20,
+    shadowColor: '#FFCB0F',
+    accentColor: globalColors.yellow20,
+    accentColorDark: globalColors.yellow70,
   },
-  'What is Web3?': {
+  green: {
     gradient: [globalColors.green60, '#3ECF5B'],
-    primaryColor: globalColors.green60,
-    secondaryColor: globalColors.green20,
+    shadowColor: globalColors.green60,
+    accentColor: globalColors.green20,
+    accentColorDark: globalColors.green70,
   },
-  'Blockchains and Fees': {
+  darkGreen: {
     gradient: [globalColors.green90, globalColors.green80],
-    primaryColor: globalColors.green90,
-    secondaryColor: globalColors.green20,
+    shadowColor: globalColors.green90,
+    accentColor: globalColors.green20,
+    accentColorDark: globalColors.green100,
   },
+};
+
+export const learnCategoryColors: {
+  [key in LearnCategory]: CardColorway;
+} = {
+  'Essentials': cardColorways.purple,
+  'Staying Safe': cardColorways.pink,
+  'How to use Rainbow': cardColorways.blue,
+  // 'How to use Rainbow 2': cardColorways.darkBlue,
+  "Beginner's Guides": cardColorways.yellow,
+  'What is Web3?': cardColorways.green,
+  'Blockchains and Fees': cardColorways.darkGreen,
 };
 
 const getStartedCard: LearnCardDetails = {

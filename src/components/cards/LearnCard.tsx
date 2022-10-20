@@ -13,6 +13,7 @@ import GenericCard from './GenericCard';
 import { Emoji } from '../text';
 import { ForegroundColor } from '@/design-system/color/palettes';
 import { LearnCardDetails, learnCategoryColors } from './constants';
+import IconOrb from './IconOrb';
 
 interface LearnCardProps {
   cardDetails: LearnCardDetails;
@@ -21,18 +22,16 @@ interface LearnCardProps {
 
 const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { category, title, emoji, url, description } = cardDetails;
-  const { gradient, primaryColor, secondaryColor } = learnCategoryColors[
-    category
-  ];
+  const { gradient, shadowColor, accentColor } = learnCategoryColors[category];
 
   return (
     <GenericCard
       type={type}
       gradient={gradient}
       onPress={() => Linking.openURL(url)}
-      shadowColor={primaryColor}
+      shadowColor={shadowColor}
     >
-      <AccentColorProvider color={secondaryColor}>
+      <AccentColorProvider color={accentColor}>
         {type === 'square' ? (
           <Box height="full" justifyContent="space-between">
             <Inline alignHorizontal="justify">
@@ -47,7 +46,7 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
                 alignItems="center"
                 justifyContent="center"
               >
-                <NativeText style={{ fontSize: 14, paddingLeft: 1 }}>
+                <NativeText style={{ fontSize: 14, textAlign: 'center' }}>
                   {emoji}
                 </NativeText>
               </Box>
@@ -72,18 +71,11 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
                   {title}
                 </Text>
               </Stack>
-              <Box
-                width={{ custom: 36 }}
-                height={{ custom: 36 }}
-                borderRadius={18}
-                background="accent"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <NativeText style={{ fontSize: 14, paddingLeft: 1 }}>
+              <IconOrb color={accentColor}>
+                <NativeText style={{ fontSize: 14, textAlign: 'center' }}>
                   {emoji}
                 </NativeText>
-              </Box>
+              </IconOrb>
             </Inline>
             <Text
               color="labelWhite"

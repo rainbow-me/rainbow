@@ -28,6 +28,7 @@ import { analytics } from '@/analytics';
 import QRCodeIcon from '@/assets/qrCodeIcon.png';
 import { ImgixImage } from '../images';
 import { Source } from 'react-native-fast-image';
+import IconOrb from './IconOrb';
 
 const ReceiveAssetsCard = () => {
   const { colors, isDarkMode } = useTheme();
@@ -75,38 +76,14 @@ const ReceiveAssetsCard = () => {
           </Stack>
           <AccentColorProvider color={blueHex}>
             <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
-              <Box
-                width={{ custom: 36 }}
-                height={{ custom: 36 }}
-                borderRadius={18}
-                background="blue"
-                alignItems="center"
-                justifyContent="center"
-                shadow={{
-                  custom: {
-                    android: {
-                      color: isDarkMode ? 'shadow' : 'accent',
-                      elevation: 24,
-                      opacity: 0.5,
-                    },
-                    ios: [
-                      {
-                        blur: 24,
-                        color: isDarkMode ? 'shadow' : 'accent',
-                        offset: { x: 0, y: 8 },
-                        opacity: 0.35,
-                      },
-                    ],
-                  },
-                }}
-              >
+              <IconOrb color={blueHex} shadowColor="tint">
                 <Box
                   as={ImgixImage}
                   source={QRCodeIcon}
                   height={{ custom: 16 }}
                   width={{ custom: 16 }}
                 />
-              </Box>
+              </IconOrb>
             </ButtonPressAnimation>
           </AccentColorProvider>
         </Inline>
