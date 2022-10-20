@@ -48,7 +48,10 @@ export default async function handleDeeplink(
   if (urlObj.protocol === 'ethereum:') {
     ethereumUtils.parseEthereumUrl(url);
   } else if (urlObj.protocol === 'https:' || urlObj.protocol === 'rainbow:') {
-    const action = urlObj.host;
+    const action =
+      urlObj.protocol === 'https:'
+        ? urlObj.pathname.split('/')[1]
+        : urlObj.host;
     switch (action) {
       case 'wc': {
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
