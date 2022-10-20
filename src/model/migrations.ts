@@ -7,8 +7,6 @@ import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
-import * as keychain from './keychain';
-import { STORAGE_IDS } from '@/model/mmkv';
 import {
   getMigrationVersion,
   setMigrationVersion,
