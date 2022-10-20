@@ -229,53 +229,6 @@ export const shadows: Example = {
                     borderRadius={18}
                     background="surfacePrimaryElevated"
                     padding="12px"
-                    shadow="6px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
-                      6px
-                    </Text>
-                  </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="6px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
-                      Accent
-                    </Text>
-                  </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="6px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
-                      Purple
-                    </Text>
-                  </Box>
-                </Columns>
-                <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
                     shadow="12px"
                   >
                     <Text
@@ -307,6 +260,53 @@ export const shadows: Example = {
                     background="purple"
                     padding="12px"
                     shadow="12px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="18px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      18px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="18px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="18px purple"
                   >
                     <Text
                       size="15pt"
@@ -425,53 +425,6 @@ export const shadows: Example = {
                     borderRadius={18}
                     background="surfacePrimaryElevated"
                     padding="12px"
-                    shadow="6px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
-                      6px
-                    </Text>
-                  </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="6px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
-                      Accent
-                    </Text>
-                  </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="6px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
-                      Purple
-                    </Text>
-                  </Box>
-                </Columns>
-                <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
                     shadow="12px"
                   >
                     <Text
@@ -503,6 +456,53 @@ export const shadows: Example = {
                     background="purple"
                     padding="12px"
                     shadow="12px purple"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Purple
+                    </Text>
+                  </Box>
+                </Columns>
+                <Columns space="20px">
+                  <Box
+                    borderRadius={18}
+                    background="surfacePrimaryElevated"
+                    padding="12px"
+                    shadow="18px"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      18px
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="accent"
+                    padding="12px"
+                    shadow="18px accent"
+                  >
+                    <Text
+                      size="15pt"
+                      color="label"
+                      weight="bold"
+                      align="center"
+                    >
+                      Accent
+                    </Text>
+                  </Box>
+                  <Box
+                    borderRadius={18}
+                    background="purple"
+                    padding="12px"
+                    shadow="18px purple"
                   >
                     <Text
                       size="15pt"

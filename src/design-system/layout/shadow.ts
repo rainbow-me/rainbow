@@ -5,7 +5,7 @@ import {
 } from './../color/palettes';
 import { CustomColor } from '../color/useForegroundColor';
 
-type ShadowSize = '6px' | '12px' | '24px' | '30px';
+type ShadowSize = '12px' | '18px' | '24px' | '30px';
 type ShadowColorMode = 'light' | 'dark';
 type ShadowColorValue = ForegroundColor | 'accent' | CustomColor;
 
@@ -42,39 +42,6 @@ const shadowHierarchy: Record<
   ShadowSize | `${ShadowSize} ${ShadowColor}`,
   ShadowValue
 > = {
-  '6px': {
-    light: {
-      ios: [
-        { x: 0, y: 8, blur: 24, color: 'shadowFar', opacity: 0.02 },
-        { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
-      ],
-      android: { elevation: 8, color: 'shadowFar', opacity: 0.25 },
-    },
-    dark: {
-      ios: [
-        { x: 0, y: 8, blur: 24, color: 'shadowFar', opacity: 0.2 },
-        { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
-      ],
-      android: { elevation: 8, color: 'shadowFar', opacity: 1 },
-    },
-  },
-  ...coloredShadows('6px', color => ({
-    light: {
-      ios: [
-        { x: 0, y: 8, blur: 24, color, opacity: 0.2 },
-        { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
-      ],
-      android: { elevation: 52, color, opacity: 1 },
-    },
-    dark: {
-      ios: [
-        { x: 0, y: 8, blur: 24, color: 'shadowFar', opacity: 0.2 },
-        { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
-      ],
-      android: { elevation: 8, color: 'shadowFar', opacity: 1 },
-    },
-  })),
-
   '12px': {
     light: {
       ios: [
@@ -105,6 +72,39 @@ const shadowHierarchy: Record<
         { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
       ],
       android: { elevation: 16, color: 'shadowFar', opacity: 1 },
+    },
+  })),
+
+  '18px': {
+    light: {
+      ios: [
+        { x: 0, y: 6, blur: 18, color: 'shadowFar', opacity: 0.08 },
+        { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
+      ],
+      android: { elevation: 24, color: 'shadowFar', opacity: 0.6 },
+    },
+    dark: {
+      ios: [
+        { x: 0, y: 6, blur: 18, color: 'shadowFar', opacity: 0.24 },
+        { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
+      ],
+      android: { elevation: 24, color: 'shadowFar', opacity: 1 },
+    },
+  },
+  ...coloredShadows('18px', color => ({
+    light: {
+      ios: [
+        { x: 0, y: 6, blur: 18, color, opacity: 0.24 },
+        { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
+      ],
+      android: { elevation: 44, color, opacity: 1 },
+    },
+    dark: {
+      ios: [
+        { x: 0, y: 6, blur: 18, color: 'shadowFar', opacity: 0.24 },
+        { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
+      ],
+      android: { elevation: 24, color: 'shadowFar', opacity: 1 },
     },
   })),
 
