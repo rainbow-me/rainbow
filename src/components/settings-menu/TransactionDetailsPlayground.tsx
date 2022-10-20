@@ -10,6 +10,8 @@ import {
 } from '@/entities';
 import { Network } from '@/helpers';
 
+// TODO: Remove this file after finishing work on APP-27
+
 const transactions: Record<string, RainbowTransaction> = {
   'Sent': {
     address: 'eth',

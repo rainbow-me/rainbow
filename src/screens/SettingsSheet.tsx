@@ -278,6 +278,7 @@ export default function SettingsSheet() {
             title: route.params?.title || lang.t('settings.backup'),
           })}
         />
+        {/* TODO: Remove below screen after finishing work on APP-27*/}
         <Stack.Screen
           component={TransactionDetailsPlayground}
           name="TransactionDetailsPlayground"
