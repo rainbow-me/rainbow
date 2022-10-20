@@ -1,5 +1,4 @@
-Fixes RNBW-####
-Figma link (if any):
+Fixes APP-####
 
 ## What changed (plus any additional context for devs)
 
