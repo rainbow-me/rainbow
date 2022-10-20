@@ -60,8 +60,6 @@ export function ProfileActionButtonsRow() {
     accentColor = dominantColor || colors.appleBlue;
   } else if (typeof accountColor === 'number') {
     accentColor = colors.avatarBackgrounds[accountColor];
-  } else {
-    accentColor = accountColor;
   }
 
   // ////////////////////////////////////////////////////
