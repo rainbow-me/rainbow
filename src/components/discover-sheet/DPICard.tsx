@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { CustomShadow } from '../../design-system/layout/shadow';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -15,6 +14,7 @@ import {
   Column,
   Columns,
   Cover,
+  CustomShadow,
   Heading,
   Inset,
   Stack,
@@ -46,7 +46,8 @@ const CardShadow: CustomShadow = {
       {
         blur: 24,
         color: 'accent',
-        offset: { x: 0, y: 8 },
+        x: 0,
+        y: 8,
         opacity: 0.35,
       },
     ],
@@ -75,7 +76,7 @@ export default function DPICard() {
     });
   }, [nativeCurrency, navigate]);
 
-  const shadow = useForegroundColor('shadow');
+  const shadow = useForegroundColor('shadowFar');
   const shadowColor = useForegroundColor({
     custom: {
       dark: shadow,

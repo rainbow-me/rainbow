@@ -84,7 +84,7 @@ export default function SecretDisplayCard({
           height={{ custom: 240 }}
           paddingHorizontal="30px (Deprecated)"
           paddingVertical="19px (Deprecated)"
-          shadow="21px light"
+          shadow="21px light (Deprecated)"
         >
           <CopyTooltip
             textToCopy={seed}
