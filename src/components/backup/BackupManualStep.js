@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, ScrollView } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
@@ -13,6 +13,8 @@ import { useDimensions, useWalletManualBackup, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import ConditionalWrap from 'conditional-wrap';
+import { Box } from '@/design-system';
 
 const Content = styled(Column).attrs({
   align: 'center',
@@ -101,51 +103,56 @@ export default function BackupManualStep() {
   }, []);
 
   return (
-    <Fragment>
-      <Masthead>
-        <MastheadTitleRow>
-          <MastheadIcon>􀉆</MastheadIcon>
-          <MastheadTitle>{lang.t('back_up.manual.label')}</MastheadTitle>
-        </MastheadTitleRow>
-        <MastheadDescription>
-          <MastheadDescription weight="semibold">
+    <ConditionalWrap
+      condition={true}
+      wrap={children => <ScrollView>{children}</ScrollView>}
+    >
+      <Box justifyContent="center" alignItems="center" width="full">
+        <Masthead>
+          <MastheadTitleRow>
+            <MastheadIcon>􀉆</MastheadIcon>
+            <MastheadTitle>{lang.t('back_up.manual.label')}</MastheadTitle>
+          </MastheadTitleRow>
+          <MastheadDescription>
+            <MastheadDescription weight="semibold">
+              {type === WalletTypes.privateKey
+                ? lang.t('back_up.manual.pkey.these_keys')
+                : lang.t('back_up.manual.seed.these_keys')}
+            </MastheadDescription>
+            <Nbsp />
             {type === WalletTypes.privateKey
-              ? lang.t('back_up.manual.pkey.these_keys')
-              : lang.t('back_up.manual.seed.these_keys')}
+              ? lang.t('back_up.manual.pkey.save_them')
+              : lang.t('back_up.manual.seed.save_them')}
           </MastheadDescription>
-          <Nbsp />
-          {type === WalletTypes.privateKey
-            ? lang.t('back_up.manual.pkey.save_them')
-            : lang.t('back_up.manual.seed.save_them')}
-        </MastheadDescription>
-      </Masthead>
-      <Content
-        isSmallPhone={isSmallPhone}
-        isTallPhone={isTallPhone}
-        paddingHorizontal={30}
-      >
-        <SecretDisplaySection
-          onSecretLoaded={setSecretLoaded}
-          onWalletTypeIdentified={setType}
-        />
-      </Content>
-      <Footer>
-        {secretLoaded && (
-          <View marginTop={isSmallPhone ? -20 : 30}>
-            <SheetActionButton
-              color={colors.appleBlue}
-              label={`􀁣  ${
-                type === WalletTypes.privateKey
-                  ? lang.t('back_up.manual.pkey.confirm_save')
-                  : lang.t('back_up.manual.seed.confirm_save')
-              }`}
-              onPress={onComplete}
-              size="big"
-              weight="bold"
-            />
-          </View>
-        )}
-      </Footer>
-    </Fragment>
+        </Masthead>
+        <Content
+          isSmallPhone={isSmallPhone}
+          isTallPhone={isTallPhone}
+          paddingHorizontal={30}
+        >
+          <SecretDisplaySection
+            onSecretLoaded={setSecretLoaded}
+            onWalletTypeIdentified={setType}
+          />
+        </Content>
+        <Footer>
+          {secretLoaded && (
+            <View marginTop={isSmallPhone ? -20 : 30}>
+              <SheetActionButton
+                color={colors.appleBlue}
+                label={`􀁣  ${
+                  type === WalletTypes.privateKey
+                    ? lang.t('back_up.manual.pkey.confirm_save')
+                    : lang.t('back_up.manual.seed.confirm_save')
+                }`}
+                onPress={onComplete}
+                size="big"
+                weight="bold"
+              />
+            </View>
+          )}
+        </Footer>
+      </Box>
+    </ConditionalWrap>
   );
 }

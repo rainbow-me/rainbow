@@ -1,8 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Centered } from '../../layout';
 import { ModalHeaderHeight } from '../../modal';
 import SecretDisplaySection from '../../secret-display/SecretDisplaySection';
 import { analytics } from '@/analytics';
+import { ScrollView } from 'react-native';
+import { Box } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { settingsOptions } from '@/navigation/config';
+import { useTheme } from '@/theme/ThemeContext';
+import ConditionalWrap from 'conditional-wrap';
+import { SecretDisplayCard } from '@/components/secret-display';
 
 export default function ShowSecretView() {
   useEffect(() => {
@@ -11,10 +18,28 @@ export default function ShowSecretView() {
     });
   }, []);
 
+  const { colors } = useTheme();
+  const { height } = useDimensions();
+  const heightSettingsOptions = useMemo(() => settingsOptions(colors), [
+    colors,
+  ]);
+
   return (
-    <Centered flex={1} paddingBottom={ModalHeaderHeight}>
-      {/* @ts-ignore */}
-      <SecretDisplaySection />
-    </Centered>
+    <ConditionalWrap
+      condition={
+        true
+        // need to figure out how to access secretSeedLength from SecretDisplayCard
+      }
+      wrap={children => <ScrollView>{children}</ScrollView>}
+    >
+      <Box
+        justifyContent="center"
+        alignItems="center"
+        width="full"
+        height={{ custom: height - heightSettingsOptions.headerStyle.height }}
+      >
+        <SecretDisplaySection />
+      </Box>
+    </ConditionalWrap>
   );
 }

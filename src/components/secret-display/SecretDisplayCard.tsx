@@ -75,6 +75,7 @@ export default function SecretDisplayCard({
   seed,
   type,
 }: SecretDisplayCardProps) {
+  const secretSeedLength = seed.split(' ').length;
   return (
     <Centered>
       <Inset vertical="10px">
@@ -82,7 +83,7 @@ export default function SecretDisplayCard({
           background="card (Deprecated)"
           borderRadius={25}
           height={{
-            custom: seed.split(' ').length <= 12 ? 240 : 450,
+            custom: secretSeedLength <= 12 ? 240 : 450,
           }}
           paddingHorizontal="30px (Deprecated)"
           paddingVertical="19px (Deprecated)"
