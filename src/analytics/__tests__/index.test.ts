@@ -15,7 +15,7 @@ jest.mock('@segment/analytics-react-native', () => ({
 
 describe('@/analytics', () => {
   test('track', () => {
-    const analytics = new Analytics({});
+    const analytics = new Analytics();
 
     analytics.setCurrentWalletAddressHash('hash');
     analytics.track(analytics.events.generics.pressedButton);
@@ -30,7 +30,7 @@ describe('@/analytics', () => {
   });
 
   test('identify', () => {
-    const analytics = new Analytics({});
+    const analytics = new Analytics();
 
     analytics.setCurrentWalletAddressHash('hash');
     analytics.setDeviceId('id');
@@ -43,7 +43,7 @@ describe('@/analytics', () => {
   });
 
   test('screen', () => {
-    const analytics = new Analytics({});
+    const analytics = new Analytics();
 
     analytics.setCurrentWalletAddressHash('hash');
     analytics.screen(Routes.BACKUP_SHEET);
@@ -54,7 +54,7 @@ describe('@/analytics', () => {
   });
 
   test('Analytics.getTrackingEventCategory', () => {
-    const analytics = new Analytics({});
+    const analytics = new Analytics();
 
     expect(
       analytics.getTrackingEventCategory(analytics.events.swaps.submittedSwap)
@@ -64,9 +64,23 @@ describe('@/analytics', () => {
         analytics.events.generics.pressedButton
       )
     ).toEqual('generics');
-    // @ts-expect-error Just testing JS case
     expect(
+      // @ts-expect-error Just testing JS case
       analytics.getTrackingEventCategory(analytics.events.foo?.pressedButton)
     ).toEqual(undefined);
+  });
+
+  test('disablement', () => {
+    const analytics = new Analytics();
+
+    analytics.disable();
+
+    analytics.track(analytics.events.generics.pressedButton);
+    analytics.identify({ currency: 'USD' });
+    analytics.screen(Routes.BACKUP_SHEET);
+
+    expect(analytics.client.track).not.toHaveBeenCalled();
+    expect(analytics.client.identify).not.toHaveBeenCalled();
+    expect(analytics.client.screen).not.toHaveBeenCalled();
   });
 });

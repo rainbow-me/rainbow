@@ -1,9 +1,14 @@
 import { createClient, SegmentClient } from '@segment/analytics-react-native';
-import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
+import {
+  REACT_APP_SEGMENT_API_WRITE_KEY,
+  LOG_LEVEL,
+  LOG_DEBUG,
+} from 'react-native-dotenv';
 
 import { EventProperties, events } from '@/analytics/events';
 import { UserProperties } from '@/analytics/userProperties';
 import Routes from '@/navigation/routesNames';
+import { LogLevel } from '@/logger';
 
 // TODO: we only use route properties for 1 sheet, we need to collect all possibles and lay out the same as we do for event properties
 // this should live in navigation once we type that
@@ -14,13 +19,12 @@ export class Analytics {
   public client: SegmentClient;
   public currentWalletAddressHash?: string;
   public deviceId?: string;
-  public debug: boolean;
   public events = events;
+  public disabled = false;
 
-  constructor({ debug = false }: { debug?: boolean }) {
-    this.debug = debug;
+  constructor() {
     this.client = createClient({
-      debug: debug,
+      debug: Boolean(LOG_DEBUG) || LOG_LEVEL === LogLevel.Debug,
       trackAppLifecycleEvents: true,
       trackDeepLinks: true,
       // TODO: add dev write key to team env
@@ -29,6 +33,7 @@ export class Analytics {
   }
 
   public identify(userProperties: UserProperties) {
+    if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
     this.client.identify(this.deviceId, {
       ...userProperties,
@@ -37,6 +42,7 @@ export class Analytics {
   }
 
   public screen(routeName: RouteName, params: Record<string, any> = {}): void {
+    if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
     this.client.screen(routeName, { ...params, ...metadata });
   }
@@ -45,6 +51,7 @@ export class Analytics {
     event: T,
     params?: EventProperties[T]
   ) {
+    if (this.disabled) return;
     const category = this.getTrackingEventCategory(event);
     const metadata = this.getDefaultMetadata();
     this.client.track(event, { ...params, category, ...metadata });
@@ -64,6 +71,14 @@ export class Analytics {
     this.currentWalletAddressHash = currentWalletAddressHash;
   }
 
+  public enable() {
+    this.disabled = false;
+  }
+
+  public disable() {
+    this.disabled = true;
+  }
+
   public getTrackingEventCategory<T extends keyof EventProperties>(event: T) {
     for (const category of Object.keys(events)) {
       // @ts-expect-error We know the index type of `events`
@@ -74,9 +89,7 @@ export class Analytics {
   }
 }
 
-export const analyticsV2 = new Analytics({
-  debug: false,
-});
+export const analyticsV2 = new Analytics();
 
 /**
  * @deprecated Use the `analyticsV2` export from this same file
