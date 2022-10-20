@@ -1,7 +1,7 @@
 import { createClient, SegmentClient } from '@segment/analytics-react-native';
 import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
 
-import { EventProperties, Events } from '@/analytics/events';
+import { EventProperties, events } from '@/analytics/events';
 import { UserProperties } from '@/analytics/userProperties';
 import Routes from '@/navigation/routesNames';
 
@@ -11,11 +11,11 @@ type RouteKeys = keyof typeof Routes;
 type RouteName = typeof Routes[RouteKeys];
 
 export class Analytics {
-  private client: SegmentClient;
-  private currentWalletAddressHash?: string;
+  public client: SegmentClient;
+  public currentWalletAddressHash?: string;
   public deviceId?: string;
   public debug: boolean;
-  public events = Events;
+  public events = events;
 
   constructor({ debug = false }: { debug?: boolean }) {
     this.debug = debug;
@@ -45,9 +45,9 @@ export class Analytics {
     event: T,
     params?: EventProperties[T]
   ) {
-    const eventCategory = this.getTrackingEventCategory(event);
+    const category = this.getTrackingEventCategory(event);
     const metadata = this.getDefaultMetadata();
-    this.client.track(event, { ...params, ...eventCategory, ...metadata });
+    this.client.track(event, { ...params, category, ...metadata });
   }
 
   private getDefaultMetadata() {
@@ -64,19 +64,13 @@ export class Analytics {
     this.currentWalletAddressHash = currentWalletAddressHash;
   }
 
-  // proposed auto categorizing, could get expensive but i think it may be worth doing.
-  private getTrackingEventCategory<T extends keyof EventProperties>(event: T) {
-    let category = null;
-    const categories = Object.keys(Events);
-    categories.forEach(key => {
-      // @ts-ignore
-      const events = Object.values(Events[key]);
-
-      if (events.includes(event)) {
-        category = key;
+  public getTrackingEventCategory<T extends keyof EventProperties>(event: T) {
+    for (const category of Object.keys(events)) {
+      // @ts-expect-error We know the index type of `events`
+      for (const ev of Object.values(events[category])) {
+        if (ev === event) return category;
       }
-    });
-    return category ? { category } : {};
+    }
   }
 }
 

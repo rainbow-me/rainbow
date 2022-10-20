@@ -1,32 +1,32 @@
 /**
  * Uncategorized events
  */
-export enum GenericEvent {
-  pressedButton = 'Pressed Button',
-  pressedButton2 = 'Pressed Button 2',
-}
+export const genericEvent = {
+  pressedButton: 'Pressed Button',
+  pressedButton2: 'Pressed Button 2',
+} as const;
 
 /**
  * Events relevant to or within the swaps product
  */
-export enum SwapEvent {
-  submittedSwap = 'Submitted Swap',
-}
+export const swapEvent = {
+  submittedSwap: 'Submitted Swap',
+} as const;
 
 /**
  * A union of all event names. Use this when firing events via
  * `analytics.track`
  */
-export const Events = {
-  swaps: SwapEvent,
-  generics: GenericEvent,
+export const events = {
+  generics: genericEvent,
+  swaps: swapEvent,
 } as const;
 
 /**
  * Properties corresponding to our uncategorized event enum `GenericEvent`
  */
 type GenericEventProperties = {
-  [Events.generics.pressedButton]: {
+  [events.generics.pressedButton]: {
     buttonName: string;
     action: string;
   };
@@ -36,7 +36,7 @@ type GenericEventProperties = {
  * Properties corresponding to our swaps event enum `GenericEvent`
  */
 type SwapEventProperties = {
-  [Events.swaps.submittedSwap]: {
+  [events.swaps.submittedSwap]: {
     usdValue: number;
     inputCurrencySymbol: string;
     outputCurrencySymbol: string;
