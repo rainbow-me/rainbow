@@ -14,6 +14,7 @@ type SwappableAddresses = {
   [Network.mainnet]: EthereumAddress[];
   [Network.optimism]: EthereumAddress[];
   [Network.polygon]: EthereumAddress[];
+  [Network.bsc]: EthereumAddress[];
   [Network.arbitrum]: EthereumAddress[];
 };
 
@@ -27,6 +28,7 @@ export const useSwappableUserAssets = (params: {
     [Network.mainnet]: [],
     [Network.optimism]: [],
     [Network.polygon]: [],
+    [Network.bsc]: [],
     [Network.arbitrum]: [],
   });
 
@@ -71,6 +73,7 @@ export const useSwappableUserAssets = (params: {
       Network.mainnet,
       Network.optimism,
       Network.polygon,
+      Network.bsc,
       Network.arbitrum,
     ];
     const walletFilterRequests: Promise<void>[] = [];

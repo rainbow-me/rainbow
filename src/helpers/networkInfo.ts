@@ -61,6 +61,19 @@ const networkInfo = {
     gasToken: 'MATIC',
     value: networkTypes.polygon,
   },
+  [`${networkTypes.bsc}`]: {
+    balance_checker_contract_address:
+      '0x400A9f1Bb1Db80643C33710C2232A0D74EF5CFf1',
+    color: '#F0B90B',
+    disabled: false,
+    exchange_enabled: true,
+    faucet_url: null,
+    layer2: true,
+    longName: 'Binance Smart Chain',
+    name: 'BSC',
+    gasToken: 'BNB',
+    value: networkTypes.bsc,
+  },
 };
 
 export default networkInfo;

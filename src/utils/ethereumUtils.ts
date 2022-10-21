@@ -72,11 +72,13 @@ import {
   ethUnits,
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
+  BNB_BSC_ADDRESS,
   OPTIMISM_BLOCK_EXPLORER_URL,
   OPTIMISM_ETH_ADDRESS,
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
+  BSC_BLOCK_EXPLORER_URL,
   supportedNativeCurrencies,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -97,6 +99,9 @@ const getNetworkNativeAsset = (
       break;
     case Network.polygon:
       nativeAssetUniqueId = `${MATIC_POLYGON_ADDRESS}_${network}`;
+      break;
+    case Network.bsc:
+      nativeAssetUniqueId = `${BNB_BSC_ADDRESS}_${network}`;
       break;
     default:
       nativeAssetUniqueId = ETH_ADDRESS;
@@ -123,6 +128,10 @@ const getNativeAssetForNetwork = async (
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
       switch (network) {
+        case Network.bsc:
+          nativeAsset.mainnet_address = mainnetAddress;
+          nativeAsset.address = BNB_BSC_ADDRESS;
+          break;
         case Network.polygon:
           nativeAsset.mainnet_address = mainnetAddress;
           nativeAsset.address = MATIC_POLYGON_ADDRESS;
@@ -216,12 +225,18 @@ export const useEthUSDMonthChart = (): number => {
 };
 
 const getPriceOfNativeAssetForNetwork = (network: Network) => {
-  return network === Network.polygon ? getMaticPriceUnit() : getEthPriceUnit();
+  if (network === Network.polygon) {
+    return getMaticPriceUnit();
+  } else if (network === Network.bsc) {
+    return getBnbPriceUnit();
+  }
+  return getEthPriceUnit();
 };
 
 const getEthPriceUnit = () => getAssetPrice();
 
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
+const getBnbPriceUnit = () => getAssetPrice(BNB_BSC_ADDRESS);
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -364,6 +379,8 @@ function getEtherscanHostForNetwork(network?: Network): string {
     return OPTIMISM_BLOCK_EXPLORER_URL;
   } else if (network === Network.polygon) {
     return POLYGON_BLOCK_EXPLORER_URL;
+  } else if (network === Network.bsc) {
+    return BSC_BLOCK_EXPLORER_URL;
   } else if (network === Network.arbitrum) {
     return ARBITRUM_BLOCK_EXPLORER_URL;
   } else if (network && isTestnetNetwork(network)) {
@@ -551,6 +568,8 @@ function getBlockExplorer(network: Network) {
       return 'etherscan';
     case Network.polygon:
       return 'polygonscan';
+    case Network.bsc:
+      return 'bscscan';
     case Network.optimism:
       return 'etherscan';
     case Network.arbitrum:
@@ -737,6 +756,11 @@ const getMultichainAssetAddress = (
     address.toLowerCase() === MATIC_POLYGON_ADDRESS
   ) {
     realAddress = MATIC_POLYGON_ADDRESS;
+  } else if (
+    network === Network.bsc &&
+    address.toLowerCase() === BNB_BSC_ADDRESS
+  ) {
+    realAddress = BNB_BSC_ADDRESS;
   }
 
   return realAddress;
@@ -748,6 +772,8 @@ const getBasicSwapGasLimit = (chainId: number) => {
       return ethUnits.basic_swap_arbitrum;
     case ChainId.polygon:
       return ethUnits.basic_swap_polygon;
+    case ChainId.bsc:
+      return ethUnits.basic_swap_bsc;
     case ChainId.optimism:
       return ethUnits.basic_swap_optimism;
     default:
@@ -775,6 +801,7 @@ export default {
   getEthPriceUnit,
   getHash,
   getMaticPriceUnit,
+  getBnbPriceUnit,
   getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,

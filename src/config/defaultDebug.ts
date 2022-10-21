@@ -18,4 +18,5 @@ export const showNetworkResponses = false;
 export const arbitrumEnabled = false;
 export const optimismEnabled = false;
 export const polygonEnabled = false;
+export const bscEnabled = false;
 export const designSystemPlaygroundEnabled = false;

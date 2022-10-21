@@ -59,6 +59,7 @@ const getGasPricePollingInterval = (network: Network): number => {
   switch (network) {
     case Network.polygon:
       return 2000;
+    case Network.bsc:
     case Network.arbitrum:
       return 3000;
     default:
@@ -74,6 +75,7 @@ const getDefaultGasLimit = (
     case Network.arbitrum:
       return ethUnits.arbitrum_basic_tx;
     case Network.polygon:
+    case Network.bsc:
     case Network.optimism:
     case Network.mainnet:
     default:
@@ -139,11 +141,9 @@ const getUpdatedGasFeeParams = (
   txNetwork: Network,
   l1GasFeeOptimism: BigNumber | null = null
 ) => {
-  const nativeTokenPriceUnit =
-    txNetwork !== Network.polygon
-      ? ethereumUtils.getEthPriceUnit()
-      : ethereumUtils.getMaticPriceUnit();
-
+  const nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork(
+    txNetwork
+  );
   const isL2 = isL2Network(txNetwork);
 
   const gasFeesBySpeed = isL2
@@ -281,6 +281,23 @@ const getPolygonGasPrices = async () => {
   return polygonGasStationPrices;
 };
 
+const getBscGasPrices = async () => {
+  const provider = await getProviderForNetwork(Network.bsc);
+  const baseGasPrice = await provider.getGasPrice();
+  const normalGasPrice = weiToGwei(baseGasPrice.toString());
+
+  const priceData = {
+    fast: Number(normalGasPrice),
+    fastWait: 0.14,
+    // 2 blocks, 8 secs
+    normal: Number(normalGasPrice),
+    normalWait: 0.14,
+    urgent: Number(normalGasPrice),
+    urgentWait: 0.14,
+  };
+
+  return priceData;
+};
 const getArbitrumGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.arbitrum);
   const baseGasPrice = await provider.getGasPrice();
@@ -372,6 +389,8 @@ export const gasPricesStartPolling = (
                 adjustedGasFees = await getPolygonGasPrices();
               } else if (network === Network.arbitrum) {
                 adjustedGasFees = await getArbitrumGasPrices();
+              } else if (network === Network.bsc) {
+                adjustedGasFees = await getBscGasPrices();
               } else if (network === Network.optimism) {
                 adjustedGasFees = await getOptimismGasPrices();
                 dataIsReady = l1GasFeeOptimism !== null;

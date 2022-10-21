@@ -50,6 +50,7 @@ type CrosschainVerifiedAssets = {
   [Network.mainnet]: RT[];
   [Network.optimism]: RT[];
   [Network.polygon]: RT[];
+  [Network.bsc]: RT[];
   [Network.arbitrum]: RT[];
 };
 
@@ -126,6 +127,7 @@ const useSwapCurrencyList = (
     [Network.mainnet]: [],
     [Network.optimism]: [],
     [Network.polygon]: [],
+    [Network.bsc]: [],
     [Network.arbitrum]: [],
   });
 

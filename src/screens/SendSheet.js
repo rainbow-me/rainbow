@@ -338,6 +338,10 @@ export default function SendSheet(props) {
             setCurrentNetwork(Network.polygon);
             provider = await getProviderForNetwork(Network.polygon);
             break;
+          case AssetTypes.bsc:
+            setCurrentNetwork(Network.bsc);
+            provider = await getProviderForNetwork(Network.bsc);
+            break;
           case AssetTypes.arbitrum:
             setCurrentNetwork(Network.arbitrum);
             provider = await getProviderForNetwork(Network.arbitrum);
@@ -706,6 +710,8 @@ export default function SendSheet(props) {
     let nativeToken = 'ETH';
     if (currentNetwork === Network.polygon) {
       nativeToken = 'MATIC';
+    } else if (currentNetwork === Network.bsc) {
+      nativeToken = 'BNB';
     }
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');

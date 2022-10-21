@@ -369,6 +369,7 @@ const GasSpeedButton = ({
         return [NORMAL, FAST, URGENT];
       case networkTypes.optimism:
       case networkTypes.arbitrum:
+      case networkTypes.bsc:
         return [NORMAL];
       default:
         return GasSpeedOrder;

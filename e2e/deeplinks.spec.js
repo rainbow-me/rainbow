@@ -142,6 +142,10 @@ describe('Deeplinks spec', () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@137?value=1e15');
     await testEthereumDeeplink(url);
   });
+  it.skip('should be able to handle ethereum payments urls for BNB (BSC)', async () => {
+    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@56?value=1e15');
+    await testEthereumDeeplink(url);
+  });
 
   afterAll(async () => {
     // Reset the app state

@@ -9,6 +9,9 @@ import OptimismBadgeNoShadow from '../assets/badges/optimismBadgeNoShadow.png';
 import PolygonBadge from '../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../assets/badges/polygonBadgeDark.png';
 import PolygonBadgeNoShadow from '../assets/badges/polygonBadgeNoShadow.png';
+import BscBadge from '../assets/badges/bscBadge.png';
+import BscBadgeDark from '../assets/badges/bscBadgeDark.png';
+import BscBadgeNoShadow from '../assets/badges/bscBadgeNoShadow.png';
 import { Centered } from './layout';
 import networkTypes from '@/helpers/networkTypes';
 import styled from '@/styled-thing';
@@ -52,6 +55,12 @@ export default function ChainLogo({
           ? PolygonBadgeDark
           : PolygonBadge
         : PolygonBadgeNoShadow;
+    } else if (network === networkTypes.bsc) {
+      val = withShadows
+        ? isDarkMode
+          ? BscBadgeDark
+          : BscBadge
+        : BscBadgeNoShadow;
     }
     return val;
   }, [isDarkMode, network, withShadows]);

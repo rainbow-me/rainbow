@@ -41,6 +41,7 @@ declare module 'react-native-dotenv' {
   export const ETHEREUM_ROPSTEN_RPC_DEV: string;
   export const OPTIMISM_MAINNET_RPC: string;
   export const POLYGON_MAINNET_RPC: string;
+  export const BSC_MAINNET_RPC: string;
   export const RAINBOW_WYRE_MERCHANT_ID: string;
   export const RAINBOW_WYRE_MERCHANT_ID_TEST: string;
   export const WYRE_ACCOUNT_ID: string;

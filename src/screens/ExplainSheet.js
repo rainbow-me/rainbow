@@ -200,6 +200,8 @@ const ARBITRUM_EXPLAINER = lang.t('explain.arbitrum.text');
 
 const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 
+const BSC_EXPLAINER = lang.t('explain.bsc.text');
+
 const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
 
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
@@ -512,6 +514,22 @@ export const explainers = (params, colors) => ({
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
     text: POLYGON_EXPLAINER,
     title: lang.t('explain.polygon.title'),
+  },
+  bsc: {
+    emoji: '⛽️',
+    extraHeight: 120,
+    logo: (
+      <ChainBadge
+        assetType={networkTypes.bsc}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+    readMoreLink:
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    text: BSC_EXPLAINER,
+    title: lang.t('explain.bsc.title'),
   },
   failed_wc_connection: {
     emoji: '😵',

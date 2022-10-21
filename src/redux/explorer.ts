@@ -71,6 +71,7 @@ const messages = {
     RECEIVED_ARBITRUM: 'received address arbitrum-assets',
     RECEIVED_OPTIMISM: 'received address optimism-assets',
     RECEIVED_POLYGON: 'received address polygon-assets',
+    RECEIVED_BSC: 'received address bsc-assets',
     REMOVED: 'removed address assets',
   },
   ADDRESS_PORTFOLIO: {
@@ -83,6 +84,7 @@ const messages = {
     RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
     RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
+    RECEIVED_BSC: 'received address bsc-transactions',
     REMOVED: 'removed address transactions',
   },
   ASSET_CHARTS: {
@@ -443,6 +445,7 @@ const l2AddressTransactionHistoryRequest = (
       `${Network.arbitrum}-transactions`,
       `${Network.optimism}-transactions`,
       `${Network.polygon}-transactions`,
+      `${Network.bsc}-transactions`,
     ],
   },
 ];
@@ -846,6 +849,7 @@ export const explorerInitL2 = (network: Network | null = null) => (
   if (getState().settings.network === Network.mainnet) {
     switch (network) {
       case Network.arbitrum:
+      case Network.bsc:
       case Network.polygon:
         // Fetch all assets from refraction
         dispatch(fetchAssetsFromRefraction());
@@ -988,6 +992,14 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
   );
 
   socket.on(
+    messages.ADDRESS_TRANSACTIONS.RECEIVED_BSC,
+    (message: TransactionsReceivedMessage) => {
+      // logger.log('bsc txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    }
+  );
+
+  socket.on(
     messages.ADDRESS_TRANSACTIONS.APPENDED,
     (message: TransactionsReceivedMessage) => {
       logger.log('txns appended', message?.payload?.transactions);
@@ -1038,6 +1050,12 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
     messages.ADDRESS_ASSETS.RECEIVED_POLYGON,
     (message: L2AddressAssetsReceivedMessage) => {
       dispatch(l2AddressAssetsReceived(message, Network.polygon));
+    }
+  );
+  socket.on(
+    messages.ADDRESS_ASSETS.RECEIVED_BSC,
+    (message: L2AddressAssetsReceivedMessage) => {
+      dispatch(l2AddressAssetsReceived(message, Network.bsc));
     }
   );
 
