@@ -60,6 +60,9 @@ import {
   stackNavigationConfig,
   swapDetailsSheetConfig,
   swapsPromoSheetConfig,
+  webViewScreenConfig,
+  webViewScreenNavigatorConfig,
+  webViewScreenOptions,
 } from './config';
 import {
   emojiPreset,
@@ -80,6 +83,7 @@ import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
+import WebViewScreen from '@/screens/WebViewScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -186,12 +190,26 @@ function MainNavigatorWrapper() {
   );
 }
 
+function WebViewScreenNavigator() {
+  return (
+    <NativeStack.Navigator
+      screenOptions={defaultScreenStackOptions}
+      {...nativeStackConfig}
+    >
+      <NativeStack.Screen
+        component={WebViewScreen}
+        name={Routes.WEB_VIEW_SCREEN}
+        {...webViewScreenConfig}
+      />
+    </NativeStack.Navigator>
+  );
+}
+
 function NativeStackFallbackNavigator() {
   return (
     <Stack.Navigator
       initialRouteName={Routes.MAIN_NAVIGATOR}
       {...stackNavigationConfig}
-      screenOptions={defaultScreenStackOptions}
     >
       <Stack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
       <Stack.Screen
@@ -245,6 +263,11 @@ function NativeStackNavigator() {
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
+      <NativeStack.Screen
+        component={WebViewScreenNavigator}
+        name={Routes.WEB_VIEW_SCREEN_NAVIGATOR}
+        {...webViewScreenNavigatorConfig}
+      />
       <NativeStack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}

@@ -13,6 +13,8 @@ import GenericCard from './GenericCard';
 import { Emoji } from '../text';
 import { ForegroundColor } from '@/design-system/color/palettes';
 import { LearnCardDetails, learnCategoryColors } from './constants';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 interface LearnCardProps {
   cardDetails: LearnCardDetails;
@@ -23,12 +25,18 @@ const LearnCard = ({ cardDetails }: LearnCardProps) => {
   const { gradient, primaryColor, secondaryColor } = learnCategoryColors[
     category
   ];
+  const { navigate } = useNavigation();
 
   return (
     <GenericCard
       type="square"
       gradient={gradient}
-      onPress={() => Linking.openURL(url)}
+      onPress={() =>
+        navigate(Routes.WEB_VIEW_SCREEN_NAVIGATOR, {
+          params: { title, url },
+          screen: Routes.WEB_VIEW_SCREEN,
+        })
+      }
       shadowColor={primaryColor}
     >
       <AccentColorProvider color={secondaryColor}>

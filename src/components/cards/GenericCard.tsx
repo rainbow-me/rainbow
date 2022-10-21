@@ -49,7 +49,7 @@ const GenericCard = ({
 }: GenericCardProps) => {
   const { isDarkMode } = useTheme();
   const themedShadowColor =
-    !isDarkMode && shadowColor ? { custom: shadowColor } : undefined;
+    !isDarkMode && shadowColor ? { custom: shadowColor } : '#000';
 
   return (
     <ConditionalWrap
@@ -78,27 +78,44 @@ const GenericCard = ({
         <Box
           background={gradient ? undefined : color}
           width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
-          height={{
-            custom: type === 'square' ? SquareCardHeight : height ?? 0,
-          }}
+          height={
+            type === 'square'
+              ? {
+                  custom: SquareCardHeight,
+                }
+              : undefined
+          }
           borderRadius={24}
-          shadow={{
-            custom: {
-              android: {
-                color: themedShadowColor,
-                elevation: 24,
-                opacity: 0.5,
-              },
-              ios: [
-                {
-                  blur: 24,
-                  color: themedShadowColor,
-                  offset: { x: 0, y: 8 },
-                  opacity: 0.35,
-                },
-              ],
+          style={{
+            shadowColor: themedShadowColor,
+            shadowOffset: {
+              width: 0,
+              height: 5,
             },
+            shadowOpacity: 0.34,
+            shadowRadius: 6.27,
+
+            elevation: 10,
           }}
+          // shadow={{
+          //   custom: {
+          //     android: {
+          //       color: themedShadowColor,
+          //       elevation: 24,
+          //       opacity: 0.5,
+          //     },
+          //     ios: [
+          //       {
+          //         blur: 24,
+          //         color: themedShadowColor,
+          //         offset: { x: 0, y: 8 },
+          //         opacity: 0.35,
+          //       },
+          //     ],
+          //   },
+          // }}
+          // shadow="12px heavy blue"
+          // shadow="30px heavy blue"
           padding="20px"
         >
           {children}
