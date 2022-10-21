@@ -93,6 +93,7 @@ interface ChartPathProps extends PathProps {
   longPressGestureHandlerProps?: LongPressGestureHandlerProperties;
   timingFeedbackConfig?: WithTimingConfig;
   timingAnimationConfig?: WithTimingConfig;
+  isCard?: boolean;
 }
 
 function positionXWithMargin(x: number, margin: number, width: number) {
@@ -130,6 +131,7 @@ const ChartPathInner = React.memo(
     pathOpacity,
     currentPath,
     previousPath,
+    isCard,
     ...props
   }: ChartPathProps & Omit<ChartData, 'data' | 'dotScale'>) => {
     ChartPathInner.displayName = 'chartPathInner';
@@ -379,7 +381,7 @@ const ChartPathInner = React.memo(
         <Animated.View>
           <Svg
             style={{
-              height: height + FIX_CLIPPED_PATH_MAGIC_NUMBER,
+              height: height + (isCard ? 0 : FIX_CLIPPED_PATH_MAGIC_NUMBER),
               width,
             }}
             viewBox={`0 0 ${width} ${height}`}
@@ -414,6 +416,7 @@ export const ChartPath = React.memo(
     timingFeedbackConfig,
     timingAnimationConfig,
     longPressGestureHandlerProps = {},
+    isCard = false,
     ...props
   }: ChartPathProps) => {
     const {
@@ -440,6 +443,7 @@ export const ChartPath = React.memo(
           {...{
             ...props,
             currentPath,
+            isCard,
             gestureEnabled,
             hapticsEnabled,
             height,

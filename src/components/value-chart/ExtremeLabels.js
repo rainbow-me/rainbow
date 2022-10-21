@@ -57,7 +57,7 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
   );
 };
 
-const Labels = React.memo(function Labels({ color, width }) {
+const Labels = React.memo(function Labels({ color, width, isCard }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
@@ -80,7 +80,7 @@ const Labels = React.memo(function Labels({ color, width }) {
           color={colors.alpha(color, 0.8)}
           position={positionMin}
           style={{
-            bottom: -40,
+            bottom: isCard ? -14 : -40,
           }}
           width={width}
         >
@@ -92,7 +92,8 @@ const Labels = React.memo(function Labels({ color, width }) {
           color={colors.alpha(color, 0.8)}
           position={positionMax}
           style={{
-            top: -20,
+            top: isCard ? -14 : -20,
+            left: isCard ? 0 : 40,
           }}
           width={width}
         >

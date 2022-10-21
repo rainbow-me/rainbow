@@ -203,8 +203,9 @@ const AssetCard = () => {
                   width={CHART_WIDTH}
                   chartXOffset={0}
                   disableOnPress
+                  isCard
                 />
-                <Labels color={colorForAsset} width={CHART_WIDTH} />
+                <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
               </ChartPathProvider>
             </Box>
           </Inset>
