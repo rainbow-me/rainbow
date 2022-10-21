@@ -8,15 +8,60 @@ import {
   Rows,
   Stack,
 } from '@/design-system';
-import React from 'react';
+import React, { useCallback } from 'react';
 import lang from 'i18n-js';
 import LearnCard from '../cards/LearnCard';
 import { Linking } from 'react-native';
 import ReceiveAssetsCard from '../cards/ReceiveAssetsCard';
 import { cardColorways, learnCards } from '../cards/constants';
 import ActionCard from '../cards/ActionCard';
+import {
+  useAccountProfile,
+  useExpandedStateNavigation,
+  useWallets,
+} from '@/hooks';
+import showWalletErrorAlert from '@/helpers/support';
+import Routes from '@/navigation/routesNames';
+import { useNavigation } from '@/navigation';
+import { IS_IOS } from '@/env';
+import { useRoute } from '@react-navigation/native';
+import config from '@/model/config';
+import { analytics } from '@/analytics';
 
 const EmptyWalletScreen = () => {
+  const { isDamaged } = useWallets();
+  const { navigate } = useNavigation();
+  const { accountAddress } = useAccountProfile();
+  const { params } = useRoute();
+
+  const onPressBuy = useCallback(() => {
+    if (isDamaged) {
+      showWalletErrorAlert();
+      return;
+    }
+
+    if (!config.wyre_enabled) {
+      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
+      return;
+    }
+
+    if (IS_IOS) {
+      navigate(Routes.ADD_CASH_FLOW, { params });
+    } else {
+      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, () => ({
+        params: {
+          address: accountAddress,
+        },
+        screen: Routes.WYRE_WEBVIEW,
+      }));
+    }
+
+    analytics.track('Tapped Add Cash', {
+      category: 'add cash',
+      source: 'expanded state',
+    });
+  }, [accountAddress, isDamaged, navigate]);
+
   return (
     <Inset horizontal="20px">
       <Stack space="20px">
@@ -67,7 +112,7 @@ const EmptyWalletScreen = () => {
         <Inline space="20px">
           <ActionCard
             colorway={cardColorways.green}
-            onPress={() => {}}
+            onPress={onPressBuy}
             title="Buy Crypto with Cash"
             sfSymbolIcon="􀅼"
           />
