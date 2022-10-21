@@ -20,7 +20,7 @@ import { MMKV } from 'react-native-mmkv';
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import { connect, Provider as ReduxProvider, useSelector } from 'react-redux';
+import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
@@ -45,7 +45,7 @@ import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
-import * as keychain from './model/keychain';
+import * as keychain from '@/model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
@@ -67,8 +67,8 @@ import { rainbowTokenList } from './references';
 import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
-import { analyticsUserIdentifier } from './utils/keychainConstants';
-import { analytics } from '@/analytics';
+import { addressKey, analyticsUserIdentifier } from './utils/keychainConstants';
+import { analytics, analyticsV2 } from '@/analytics';
 import { STORAGE_IDS } from './model/mmkv';
 import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
@@ -78,7 +78,7 @@ import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
-import { getDeviceId } from '@/analytics/utils';
+import { getDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 
 const FedoraToastRef = createRef();
 
@@ -307,9 +307,22 @@ function Root() {
       await initSentry(); // must be set up immediately
 
       const deviceId = await getDeviceId();
+      const currentWalletAddress = await keychain.loadString(addressKey);
+      const currentWalletAddressHash =
+        typeof currentWalletAddress === 'string'
+          ? securelyHashWalletAddress(currentWalletAddress)
+          : undefined;
 
-      Sentry.setUser({ id: deviceId });
-      // Segment.identify(deviceId)
+      Sentry.setUser({
+        id: deviceId,
+        currentWalletAddress: currentWalletAddressHash,
+      });
+
+      analyticsV2.setDeviceId(deviceId);
+      if (currentWalletAddressHash) {
+        analyticsV2.setCurrentWalletAddressHash(currentWalletAddressHash);
+      }
+      analyticsV2.identify({});
 
       setInitializing(false);
     }
