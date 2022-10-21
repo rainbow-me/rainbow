@@ -75,7 +75,7 @@ export default function SwapDetailsMasthead({
         background="body (Deprecated)"
         borderRadius={16}
         height={{ custom: 32 }}
-        shadow="21px light"
+        shadow="21px light (Deprecated)"
         style={{
           alignItems: 'center',
           justifyContent: 'center',

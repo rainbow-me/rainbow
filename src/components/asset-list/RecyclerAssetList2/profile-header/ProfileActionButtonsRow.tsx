@@ -39,25 +39,37 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 export const ProfileActionButtonsRowHeight = 80;
 
 export function ProfileActionButtonsRow() {
   // ////////////////////////////////////////////////////
   // Account
-  const { accountColor, accountImage } = useAccountProfile();
-
-  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
+  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
   // ////////////////////////////////////////////////////
   // Colors
 
+  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
+    maybeSignUri(accountImage ?? '') ?? ''
+  );
+
+  const { colors } = useTheme();
+  let accentColor = colors.appleBlue;
+  if (accountImage) {
+    accentColor = dominantColor || colors.appleBlue;
+  } else if (typeof accountColor === 'number') {
+    accentColor = colors.avatarBackgrounds[accountColor];
+  } else {
+    accentColor = accountColor;
+  }
+
   // ////////////////////////////////////////////////////
   // Animations
 
-  const hasAvatarLoaded = !accountImage && accountColor !== undefined;
-  const hasLoaded = hasAvatarLoaded || accentColorLoaded;
+  const hasAvatarLoaded = !!accountImage || accountSymbol;
+  const hasImageColorLoaded = state === 2 || state === 3;
+  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
 
   const scale = useDerivedValue(() => (hasLoaded ? 1 : 0.9));
   const expandStyle = useAnimatedStyle(() => ({
@@ -131,22 +143,24 @@ function ActionButton({
             custom: {
               ios: [
                 {
-                  offset: { x: 0, y: 8 },
+                  x: 0,
+                  y: 8,
                   blur: 24,
                   opacity: 0.3,
-                  color: colorMode === 'dark' ? 'shadow' : 'accent',
+                  color: colorMode === 'dark' ? 'shadowFar' : 'accent',
                 },
                 {
-                  offset: { x: 0, y: 2 },
+                  x: 0,
+                  y: 2,
                   blur: 6,
                   opacity: 0.04,
-                  color: 'shadow',
+                  color: 'shadowFar',
                 },
               ],
               android: {
                 elevation: 21,
                 opacity: 1,
-                color: colorMode === 'dark' ? 'shadow' : 'accent',
+                color: colorMode === 'dark' ? 'shadowFar' : 'accent',
               },
             },
           }}

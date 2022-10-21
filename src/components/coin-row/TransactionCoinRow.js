@@ -13,7 +13,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { TransactionStatusTypes, TransactionTypes } from '@/entities';
-import TransactionActions from '@/helpers/transactionActions';
+import { TransactionActions } from '@/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
@@ -135,7 +135,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
     });
     if (hash) {
-      let buttons = [
+      const buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
         blockExplorerAction,

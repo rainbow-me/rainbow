@@ -234,13 +234,14 @@ export class Logger {
   protected transport(
     level: LogLevel,
     message: string | RainbowError,
-    metadata: Metadata
+    metadata: Metadata = {}
   ) {
     if (!this.enabled) return;
     if (!enabledLogLevels[this.level].includes(level)) return;
 
     for (const transport of this.transports) {
-      transport(level, message, metadata);
+      // metadata fallback accounts for JS usage
+      transport(level, message, metadata || {});
     }
   }
 }

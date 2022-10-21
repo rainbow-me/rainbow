@@ -6,6 +6,7 @@ import SwapDetailsContractRow from './SwapDetailsContractRow';
 import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
+import SwapDetailsRefuelRow from './SwapDetailsRefuelRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { AccentColorProvider, Box, Rows, Separator } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
@@ -21,15 +22,15 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
+import { Network } from '@/helpers';
 
 const Container = styled(Box).attrs({
   flex: 1,
-})(({ isHighPriceImpact }) =>
-  padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
-);
+})(({ hasWarning }) => padding.object(hasWarning ? 24 : 30, 19, 30));
 
 export default function SwapDetailsContent({
   isHighPriceImpact,
+  isRefuelTx,
   onCopySwapDetailsText,
   tradeDetails,
   onPressMore,
@@ -51,10 +52,11 @@ export default function SwapDetailsContent({
   const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
     inputCurrency?.type
   );
+
   return (
     <AccentColorProvider color={colorForAsset}>
       <Container
-        isHighPriceImpact={isHighPriceImpact}
+        hasWarning={isHighPriceImpact}
         testID="swap-details-state"
         {...props}
       >
@@ -68,6 +70,14 @@ export default function SwapDetailsContent({
               {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
             </SwapDetailsValue>
           </SwapDetailsRow>
+
+          {(isRefuelTx || tradeDetails?.refuel) && (
+            <SwapDetailsRefuelRow
+              testID="swaps-details-refuel-row"
+              tradeDetails={tradeDetails}
+            />
+          )}
+
           {tradeDetails?.protocols && (
             <SwapDetailsExchangeRow
               protocols={tradeDetails?.protocols}
@@ -82,7 +92,7 @@ export default function SwapDetailsContent({
               tradeDetails={tradeDetails}
             />
           )}
-          {flashbotsEnabled && (
+          {flashbotsEnabled && inputCurrencyNetwork === Network.mainnet && (
             <SwapDetailsRow
               labelPress={() =>
                 navigate(Routes.EXPLAIN_SHEET, {

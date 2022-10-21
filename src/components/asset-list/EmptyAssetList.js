@@ -11,11 +11,11 @@ import { times } from '@/helpers/utilities';
 import { useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { navbarHeight, navbarHeightWithInset } from '../navbar/Navbar';
+import { navbarHeight } from '../navbar/Navbar';
 
 const Container = styled(Column)({
   ...position.sizeAsObject('100%'),
-  paddingTop: navbarHeightWithInset,
+  paddingTop: navbarHeight,
 });
 
 const EmptyAssetList = ({

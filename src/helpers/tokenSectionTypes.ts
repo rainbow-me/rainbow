@@ -4,5 +4,6 @@ export default {
   favoriteTokenSection: '􀋃 Favorites',
   lowLiquidityTokenSection: '􀇿 Low Liquidity',
   unverifiedTokenSection: '􀇿 Unverified',
-  verifiedTokenSection: '􀇻 Rainbow Verified',
+  verifiedTokenSection: '􀇻 Verified',
+  unswappableTokenSection: '􀘰 No trade routes',
 };

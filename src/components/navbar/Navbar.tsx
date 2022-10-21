@@ -4,7 +4,7 @@ import { Box, Cover, Inline, Inset, Text } from '@/design-system';
 import { NavbarSvgIcon } from './NavbarSvgIcon';
 import { NavbarItem } from './NavbarItem';
 import { NavbarTextIcon } from './NavbarTextIcon';
-import { safeAreaInsetValues } from '@/utils';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;
@@ -15,8 +15,6 @@ type NavbarProps = {
 };
 
 export const navbarHeight = 48;
-export const navbarInset = safeAreaInsetValues.top + (android ? 20 : 0);
-export const navbarHeightWithInset = navbarHeight + navbarInset;
 
 export function Navbar({
   hasStatusBarInset = false,
@@ -25,9 +23,11 @@ export function Navbar({
   testID,
   title,
 }: NavbarProps) {
+  const { top: topInset } = useSafeAreaInsets();
+
   return (
     <Box testID={testID}>
-      {hasStatusBarInset && <Box height={{ custom: navbarInset }} />}
+      {hasStatusBarInset && <Box height={{ custom: topInset }} />}
       <Box
         height={{ custom: navbarHeight }}
         justifyContent="center"

@@ -19,7 +19,7 @@ import {
   updateSettingsForWallets,
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
-  WalletNotificationSettingsType,
+  WalletNotificationSettings,
 } from '@/notifications/settings';
 import { abbreviations, deviceUtils } from '@/utils';
 import { Box } from '@/design-system';
@@ -35,12 +35,12 @@ type WalletRowProps = {
   isTestnet: boolean;
   wallet: RainbowAccount;
   ens: string;
-  notificationSettings: WalletNotificationSettingsType[];
+  notificationSettings: WalletNotificationSettings[];
 };
 
 type WalletRowLabelProps = {
   groupOff: boolean;
-  notifications?: WalletNotificationSettingsType;
+  notifications?: WalletNotificationSettings;
 };
 
 const DEVICE_WIDTH = deviceUtils.dimensions.width;
@@ -101,7 +101,7 @@ const WalletRow = ({
 }: WalletRowProps) => {
   const { navigate } = useNavigation();
   const notificationSetting = notificationSettings?.find(
-    (x: WalletNotificationSettingsType) => x.address === wallet.address
+    (x: WalletNotificationSettings) => x.address === wallet.address
   );
   const cleanedUpLabel = useMemo(
     () => removeFirstEmojiFromString(wallet.label),

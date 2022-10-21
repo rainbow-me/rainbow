@@ -72,7 +72,7 @@ const useInterpolationRange = isCoinListEdited => {
     ref.current?.measureLayout?.(
       nativeScrollRef,
       (_left, top) => {
-        setRanges([top - 50, top]);
+        setRanges([top - (ios ? 100 : 50), top]);
       },
       () => {}
     );
@@ -104,6 +104,7 @@ export default function CoinDivider({
 }) {
   const { isCoinListEdited, setIsCoinListEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
+  console.log(interpolation);
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const assets = useSelector(({ data: { assets } }) => assets);

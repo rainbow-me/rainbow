@@ -24,6 +24,7 @@ import ContextMenu from '@/components/native-context-menu/contextMenu';
 import { useRecyclerAssetListPosition } from '../core/Contexts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { IS_ANDROID } from '@/env';
 
 export const ProfileAvatarRowHeight = 80;
 export const ProfileAvatarRowTopInset = 24;
@@ -83,17 +84,29 @@ export function ProfileAvatarRow({
   const animatedStyle = React.useMemo(
     () => ({
       opacity: position!.interpolate({
-        inputRange: [-insets.top, -insets.top + 1, navbarHeight],
+        inputRange: [
+          -insets.top,
+          IS_ANDROID ? 0 : -insets.top + 1,
+          navbarHeight + insets.top,
+        ],
         outputRange: [1, 1, 0],
       }),
       transform: [
         {
           translateY: position!.interpolate({
-            inputRange: [-insets.top, -insets.top + 1, navbarHeight],
+            inputRange: [
+              -insets.top,
+              IS_ANDROID ? 0 : -insets.top + 1,
+              navbarHeight + insets.top,
+            ],
             outputRange: [0, 0, 12],
           }),
           scale: position!.interpolate({
-            inputRange: [-insets.top, -insets.top + 1, navbarHeight],
+            inputRange: [
+              -insets.top,
+              IS_ANDROID ? 0 : -insets.top + 1,
+              navbarHeight + insets.top,
+            ],
             outputRange: [1, 1, 0.8],
           }),
         },
@@ -147,6 +160,7 @@ export function ProfileAvatarRow({
               onPress={onAvatarPressProfile}
               scale={0.8}
               testID="avatar-button"
+              overflowMargin={20}
             >
               <Box
                 alignItems="center"
@@ -160,22 +174,26 @@ export function ProfileAvatarRow({
                         custom: {
                           ios: [
                             {
-                              offset: { x: 0, y: 2 },
+                              x: 0,
+                              y: 2,
                               blur: 8,
                               opacity: 0.08,
-                              color: 'shadow',
+                              color: 'shadowFar',
                             },
                             {
-                              offset: { x: 0, y: 8 },
+                              x: 0,
+                              y: 8,
                               blur: 24,
                               opacity: 0.3,
-                              color: colorMode === 'dark' ? 'shadow' : 'accent',
+                              color:
+                                colorMode === 'dark' ? 'shadowFar' : 'accent',
                             },
                           ],
                           android: {
                             elevation: 30,
                             opacity: 0.8,
-                            color: colorMode === 'dark' ? 'shadow' : 'accent',
+                            color:
+                              colorMode === 'dark' ? 'shadowFar' : 'accent',
                           },
                         },
                       }

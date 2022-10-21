@@ -55,8 +55,7 @@ const buildTransactionsSections = (
   theme: any,
   transactions: any,
   isFocused: any,
-  initialized: any,
-  navigate: any
+  initialized: any
 ) => {
   if (!isFocused && !initialized) {
     return { sections: [] };
@@ -82,8 +81,9 @@ const buildTransactionsSections = (
         })),
         renderItem: ({ item }: any) => (
           <FastTransactionCoinRow
+            accountAddress={accountAddress}
+            contacts={contacts}
             item={item}
-            navigate={navigate}
             theme={theme}
           />
         ),

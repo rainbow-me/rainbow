@@ -222,7 +222,7 @@ export default function AlreadyBackedUpView() {
                 height={{ custom: 48 }}
                 justifyContent="center"
                 paddingHorizontal="19px (Deprecated)"
-                shadow="15px light"
+                shadow="15px light (Deprecated)"
               >
                 <Text
                   color="secondary (Deprecated)"
