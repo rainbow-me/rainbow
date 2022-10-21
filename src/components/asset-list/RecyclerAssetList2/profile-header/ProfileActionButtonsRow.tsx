@@ -39,6 +39,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
+import useAccountAccentColor from '@/hooks/useAccountAccentColor';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -47,27 +48,16 @@ export function ProfileActionButtonsRow() {
   // Account
   const { accountColor, accountImage } = useAccountProfile();
 
+  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
+
   // ////////////////////////////////////////////////////
   // Colors
-
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
-  );
-
-  const { colors } = useTheme();
-  let accentColor = colors.white;
-  if (accountImage) {
-    accentColor = dominantColor || colors.white;
-  } else if (typeof accountColor === 'number') {
-    accentColor = colors.avatarBackgrounds[accountColor];
-  }
 
   // ////////////////////////////////////////////////////
   // Animations
 
   const hasAvatarLoaded = !accountImage && accountColor !== undefined;
-  const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
+  const hasLoaded = hasAvatarLoaded || accentColorLoaded;
 
   const scale = useDerivedValue(() => (hasLoaded ? 1 : 0.9));
   const expandStyle = useAnimatedStyle(() => ({
