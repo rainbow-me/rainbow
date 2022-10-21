@@ -38,6 +38,7 @@ import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { atom, useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { analytics } from '@/analytics';
 
 export const addressCopiedToastAtom = atom({
   default: false,
@@ -71,7 +72,11 @@ export default function WalletScreen() {
   const initializeWallet = useInitializeWallet();
   const { isCoinListEdited } = useCoinListEdited();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network: currentNetwork, accountAddress } = useAccountSettings();
+  const {
+    network: currentNetwork,
+    accountAddress,
+    appIcon,
+  } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
@@ -230,6 +235,11 @@ export default function WalletScreen() {
       });
     }
   }, [profilesEnabled, trackENSProfile, walletReady]);
+
+  // track current app icon
+  useEffect(() => {
+    analytics.identify(undefined, { appIcon });
+  }, [appIcon]);
 
   const { navigate } = useNavigation();
 

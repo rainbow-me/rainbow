@@ -14,6 +14,7 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import { OptimismIcon, SmolIcon } from '@/featuresToUnlock/unlockableAppIcons';
+import { analytics } from '@/analytics';
 
 type AppIcon = {
   accentColor?: string;
@@ -67,6 +68,7 @@ const AppIconSection = () => {
   const onSelectIcon = useCallback(
     icon => {
       Logger.log('onSelectIcon', icon);
+      analytics.track('Set App Icon', { appIcon: icon });
       settingsChangeAppIcon(icon);
     },
     [settingsChangeAppIcon]

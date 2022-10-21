@@ -247,18 +247,6 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'optimismRed',
       bgColor: 'optimismRed06',
-      onPress: (navigate, goBack, handleClose) => {
-        if (handleClose) handleClose();
-        if (goBack) goBack();
-        setTimeout(() => {
-          navigate(Routes.SETTINGS_SHEET);
-          setTimeout(() => {
-            navigate(Routes.SETTINGS_SHEET, {
-              screen: 'AppIconSection',
-            });
-          }, 300);
-        }, 300);
-      },
     },
   },
   smol_app_icon: {
@@ -270,18 +258,6 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'smolPurple',
       bgColor: 'smolPurple06',
-      onPress: (navigate, goBack, handleClose) => {
-        if (handleClose) handleClose();
-        if (goBack) goBack();
-        setTimeout(() => {
-          navigate(Routes.SETTINGS_SHEET);
-          setTimeout(() => {
-            navigate(Routes.SETTINGS_SHEET, {
-              screen: 'AppIconSection',
-            });
-          }, 300);
-        }, 300);
-      },
     },
   },
   output_disabled: {
