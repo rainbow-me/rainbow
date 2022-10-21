@@ -19,18 +19,15 @@ import {
   Text,
   useColorMode,
 } from '@/design-system';
-import { maybeSignUri } from '@/handlers/imgix';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
-  usePersistentDominantColorFromImage,
   useSwapCurrencyHandlers,
   useWalletConnectConnections,
   useWallets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
-import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
@@ -39,30 +36,17 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useAccountAccentColor from '@/hooks/useAccountAccentColor';
 
 export const ProfileActionButtonsRowHeight = 80;
 
 export function ProfileActionButtonsRow() {
-  // ////////////////////////////////////////////////////
-  // Account
   const { accountColor, accountImage, accountSymbol } = useAccountProfile();
-
-  // ////////////////////////////////////////////////////
-  // Colors
-
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
-  );
 
   const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
-  // ////////////////////////////////////////////////////
-  // Animations
-
-  const hasAvatarLoaded = !!accountImage || accountSymbol;
-  const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
+  const hasAvatarLoaded = !accountImage && accountColor !== undefined;
+  const hasLoaded = hasAvatarLoaded || accentColorLoaded;
 
   const scale = useDerivedValue(() => (hasLoaded ? 1 : 0.9));
   const expandStyle = useAnimatedStyle(() => ({

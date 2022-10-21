@@ -4,12 +4,12 @@ import { useNavigation } from '@/navigation';
 import React, { useCallback } from 'react';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useAccountAccentColor from '@/hooks/useAccountAccentColor';
 
 export const DiscoverMoreButton = () => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
-  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
+  const { accentColor } = useAccountAccentColor();
 
   const handlePressDiscover = useCallback(() => {
     navigate(Routes.DISCOVER_SCREEN);

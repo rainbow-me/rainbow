@@ -21,7 +21,7 @@ import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import QRCodeIcon from '@/assets/qrCodeIcon.png';
 import { ImgixImage } from '../images';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useAccountAccentColor from '@/hooks/useAccountAccentColor';
 
 export const ReceiveCardHeight = 174;
 
