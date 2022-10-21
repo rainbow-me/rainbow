@@ -5,7 +5,7 @@ import {
   usePersistentDominantColorFromImage,
 } from '@/hooks';
 
-export default function useAccountAccentColor() {
+export function useAccountAccentColor() {
   const { accountColor, accountImage } = useAccountProfile();
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(

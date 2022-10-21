@@ -132,6 +132,7 @@ const ChartPathInner = React.memo(
     previousPath,
     ...props
   }: ChartPathProps & Omit<ChartData, 'data' | 'dotScale'>) => {
+    ChartPathInner.displayName = 'chartPathInner';
     const interpolatorWorklet = useWorkletValue();
 
     const translationX = useSharedValue<number | null>(null);
@@ -388,6 +389,7 @@ const ChartPathInner = React.memo(
               animatedProps={animatedProps}
               stroke={stroke}
               strokeWidth={strokeWidth}
+              strokeLinecap="round"
               style={pathAnimatedStyles}
               {...props}
             />

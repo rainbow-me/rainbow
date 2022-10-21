@@ -41,10 +41,7 @@ export default function useChartData(asset: any, secondStore: any) {
   const dispatch = useDispatch();
   const { setParams } = useNavigation();
 
-  const {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'chartType' does not exist on type 'Reado... Remove this comment to see the full error message
-    params: { chartType = DEFAULT_CHART_TYPE },
-  } = useRoute();
+  const chartType = DEFAULT_CHART_TYPE;
   const { address, price: priceObject } = asset;
 
   const { value: price } = priceObject || {};
@@ -82,6 +79,7 @@ export default function useChartData(asset: any, secondStore: any) {
     [setParams]
   );
 
+  // FIXME: check if native currency is correct
   // add current price at the very end
   const filteredData = useMemo(() => {
     const now = Math.floor(Date.now() / 1000);

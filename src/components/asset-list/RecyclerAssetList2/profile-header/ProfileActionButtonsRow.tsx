@@ -39,7 +39,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
-import useAccountAccentColor from '@/hooks/useAccountAccentColor';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 export const ProfileActionButtonsRowHeight = 80;
 
