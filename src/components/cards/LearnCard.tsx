@@ -1,6 +1,9 @@
 import {
   AccentColorProvider,
   Box,
+  Column,
+  Columns,
+  DebugLayout,
   Inline,
   Inset,
   Stack,
@@ -16,6 +19,7 @@ import { LearnCardDetails, learnCategoryColors } from './constants';
 import IconOrb from './IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useDimensions } from '@/hooks';
 
 interface LearnCardProps {
   cardDetails: LearnCardDetails;
@@ -26,6 +30,7 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { category, title, emoji, url, description } = cardDetails;
   const { gradient, shadowColor, accentColor } = learnCategoryColors[category];
   const { navigate } = useNavigation();
+  const { width } = useDimensions();
 
   return (
     <GenericCard
@@ -70,21 +75,25 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
           </Box>
         ) : (
           <Stack space="36px">
-            <Inline alignHorizontal="justify">
-              <Stack space="12px">
-                <Text size="13pt" weight="bold" color="accent">
-                  {category}
-                </Text>
-                <Text size="22pt" weight="heavy" color="labelWhite">
-                  {title}
-                </Text>
-              </Stack>
-              <IconOrb color={accentColor}>
-                <NativeText style={{ fontSize: 14, textAlign: 'center' }}>
-                  {emoji}
-                </NativeText>
-              </IconOrb>
-            </Inline>
+            <Columns space="20px">
+              <Column>
+                <Stack space="12px">
+                  <Text size="13pt" weight="bold" color="accent">
+                    {category}
+                  </Text>
+                  <Text size="22pt" weight="heavy" color="labelWhite">
+                    {title}
+                  </Text>
+                </Stack>
+              </Column>
+              <Column width="content">
+                <IconOrb color={accentColor}>
+                  <NativeText style={{ fontSize: 14, textAlign: 'center' }}>
+                    {emoji}
+                  </NativeText>
+                </IconOrb>
+              </Column>
+            </Columns>
             <Text
               color="labelWhite"
               size="13pt"
