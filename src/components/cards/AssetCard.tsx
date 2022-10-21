@@ -1,15 +1,5 @@
 import lang from 'i18n-js';
-import {
-  Box,
-  Inline,
-  Inset,
-  Rows,
-  Row,
-  Stack,
-  Text,
-  Columns,
-  Column,
-} from '@/design-system';
+import { Box, Inline, Inset, Rows, Row, Text } from '@/design-system';
 
 import { useTheme } from '@/theme';
 
@@ -108,9 +98,8 @@ const AssetCard = () => {
     colorForAsset = colors.whiteLabel;
   }
 
-  const { color, fetchingCharts, throttledData } = useChartThrottledPoints({
+  const { throttledData } = useChartThrottledPoints({
     asset: assetWithPrice,
-    chartWidthOffset: 0,
   });
 
   const CHART_WIDTH = deviceUtils.dimensions.width - 80;
@@ -130,9 +119,9 @@ const AssetCard = () => {
     <GenericCard type="stretch" height={AssetCardHeight}>
       <Rows alignVertical="center" space="12px">
         <Row height="content">
-          <Columns alignHorizontal="justify">
-            <Column>
-              <Stack space="12px">
+          <Rows space="12px">
+            <Row height="content">
+              <Inline alignVertical="center" alignHorizontal="justify">
                 <Inline alignVertical="center" space="6px">
                   {/* @ts-expect-error – JS component */}
                   <CoinIcon
@@ -148,47 +137,43 @@ const AssetCard = () => {
                     {assetWithPrice.name}
                   </Text>
                 </Inline>
-                <Text
-                  size="26pt"
-                  color={{ custom: colorForAsset }}
-                  weight="heavy"
-                >
-                  {assetWithPrice.native.price.display}
-                </Text>
-              </Stack>
-            </Column>
-            <Column width="content">
-              <Inline alignVertical="bottom">
-                <Text
-                  size="17pt"
-                  color={{ custom: priceChangeColor }}
-                  weight="bold"
-                >
-                  {`${isNegativePriceChange ? '􀄩' : '􀄨'}${priceChangeDisplay}`}
-                </Text>
-                <Text
-                  size="13pt"
-                  color={{ custom: priceChangeColor }}
-                  weight="bold"
-                >
-                  {` ${lang.t('expanded_state.chart.today')}`}
-                </Text>
+
+                <Inline alignVertical="center" space="2px">
+                  <Text
+                    size="17pt"
+                    color={{ custom: priceChangeColor }}
+                    weight="bold"
+                  >
+                    {`${
+                      isNegativePriceChange ? '􀄩' : '􀄨'
+                    }${priceChangeDisplay}`}
+                  </Text>
+                  <Text
+                    size="13pt"
+                    color={{ custom: priceChangeColor }}
+                    weight="bold"
+                  >
+                    {`${lang.t('expanded_state.chart.today')}`}
+                  </Text>
+                </Inline>
               </Inline>
-            </Column>
-          </Columns>
+            </Row>
+            <Row height="content">
+              <Text size="26pt" color={{ custom: colorForAsset }} weight="bold">
+                {assetWithPrice.native.price.display}
+              </Text>
+            </Row>
+          </Rows>
         </Row>
         <Row height="content">
           <Inset vertical="16px">
             <Box height={{ custom: CHART_HEIGHT }}>
-              {/* @ts-expect-error – JS component */}
-
               <ChartPathProvider
                 data={throttledData}
                 width={CHART_WIDTH}
                 height={CHART_HEIGHT}
               >
                 {/* @ts-expect-error – JS component */}
-
                 <ChartPath
                   fill="none"
                   gestureEnabled={false}
@@ -201,8 +186,6 @@ const AssetCard = () => {
                   strokeLinejoin="round"
                   strokeWidth={4}
                   width={CHART_WIDTH}
-                  chartXOffset={0}
-                  disableOnPress
                   isCard
                 />
                 <Labels color={colorForAsset} width={CHART_WIDTH} isCard />

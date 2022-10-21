@@ -39,6 +39,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -54,15 +55,7 @@ export function ProfileActionButtonsRow() {
     maybeSignUri(accountImage ?? '') ?? ''
   );
 
-  const { colors } = useTheme();
-  let accentColor = colors.appleBlue;
-  if (accountImage) {
-    accentColor = dominantColor || colors.appleBlue;
-  } else if (typeof accountColor === 'number') {
-    accentColor = colors.avatarBackgrounds[accountColor];
-  } else {
-    accentColor = accountColor;
-  }
+  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
   // ////////////////////////////////////////////////////
   // Animations
