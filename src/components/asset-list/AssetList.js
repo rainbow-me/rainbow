@@ -23,16 +23,7 @@ const AssetList = ({
 }) => {
   const insets = useSafeAreaInsets();
 
-  return isEmpty || isLoading ? (
-    <EmptyAssetList
-      {...props}
-      hideHeader={hideHeader}
-      isLoading={isLoading}
-      isWalletEthZero={isWalletEthZero}
-      network={network}
-      title={lang.t('account.tab_balances')}
-    />
-  ) : props.showcase ? (
+  return props.showcase ? (
     <RecyclerAssetList
       hideHeader={hideHeader}
       paddingBottom={

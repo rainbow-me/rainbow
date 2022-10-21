@@ -351,11 +351,13 @@ export const buildBriefUniqueTokenList = (
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
-  const result = [
-    { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
-    { type: 'NFTS_HEADER', uid: 'nfts-header' },
-    { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
-  ];
+  const result = families2.length
+    ? [
+        { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
+        { type: 'NFTS_HEADER', uid: 'nfts-header' },
+        { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
+      ]
+    : [];
   if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
     result.push({
       // @ts-expect-error "name" does not exist in type.

@@ -277,18 +277,14 @@ export default function WalletScreen() {
         />
       </HeaderOpacityToggler>
       <Box style={{ flex: 1, marginTop: ios ? -navbarHeightWithInset : 0 }}>
-        {!isAccountEmpty && !params?.emptyWallet ? (
-          <AssetList
-            disableRefreshControl={isLoadingAssets}
-            isEmpty={isAccountEmpty || !!params?.emptyWallet}
-            isLoading={android && isLoadingAssets}
-            isWalletEthZero={isWalletEthZero}
-            network={currentNetwork}
-            walletBriefSectionsData={walletBriefSectionsData}
-          />
-        ) : (
-          <EmptyWalletScreen />
-        )}
+        <AssetList
+          disableRefreshControl={isLoadingAssets}
+          isEmpty={isAccountEmpty || !!params?.emptyWallet}
+          isLoading={android && isLoadingAssets}
+          isWalletEthZero={isWalletEthZero}
+          network={currentNetwork}
+          walletBriefSectionsData={walletBriefSectionsData}
+        />
       </Box>
       <ToastPositionContainer>
         <Toast

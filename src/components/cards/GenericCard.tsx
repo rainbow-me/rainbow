@@ -1,21 +1,14 @@
-import {
-  globalColors,
-  Box,
-  Text,
-  AccentColorProvider,
-  useForegroundColor,
-} from '@/design-system';
+import { Box, AccentColorProvider, useForegroundColor } from '@/design-system';
 import { CustomShadow } from '@/design-system/layout/shadow';
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
-import { useDimensions } from '@/hooks';
-import {
-  BackgroundColor,
-  ForegroundColor,
-} from '@/design-system/color/palettes';
+import { BackgroundColor } from '@/design-system/color/palettes';
 import ConditionalWrap from 'conditional-wrap';
 import { useTheme } from '@/theme';
+import { deviceUtils } from '@/utils';
+
+export const SquareCardHeight = (deviceUtils.dimensions.width - 60) / 2;
 
 const CardShadow: CustomShadow = {
   custom: {
@@ -54,7 +47,6 @@ const GenericCard = ({
   color = 'surfacePrimaryElevated',
   shadowColor,
 }: GenericCardProps) => {
-  const { width } = useDimensions();
   const { isDarkMode } = useTheme();
   const shadow = useForegroundColor('shadow');
 
@@ -85,9 +77,9 @@ const GenericCard = ({
         <AccentColorProvider color={shadowColor ?? shadow}>
           <Box
             background={gradient ? undefined : color}
-            width={type === 'square' ? { custom: (width - 60) / 2 } : 'full'}
+            width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
             height={{
-              custom: type === 'square' ? (width - 60) / 2 : height ?? 0,
+              custom: type === 'square' ? SquareCardHeight : height ?? 0,
             }}
             borderRadius={24}
             shadow={{

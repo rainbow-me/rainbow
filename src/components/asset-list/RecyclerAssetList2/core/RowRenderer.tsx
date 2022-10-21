@@ -1,4 +1,5 @@
 import React from 'react';
+import lang from 'i18n-js';
 import { CoinDivider } from '../../../coin-divider';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
@@ -29,6 +30,14 @@ import { ProfileAvatarRow } from '../profile-header/ProfileAvatarRow';
 import { ProfileBalanceRow } from '../profile-header/ProfileBalanceRow';
 import { ProfileNameRow } from '../profile-header/ProfileNameRow';
 
+import { globalColors } from '@/design-system';
+import AssetCard from '@/components/cards/AssetCard';
+import ReceiveAssetsCard from '@/components/cards/ReceiveAssetsCard';
+import EducationCard from '@/components/cards/EducationCard';
+import { Linking } from 'react-native';
+import { CardRowWrapper } from '../cards/CardRowWrapper';
+import { DiscoverMoreButton } from './DiscoverMoreButton';
+
 function rowRenderer(
   type: CellType,
   { uid }: { uid: string },
@@ -36,7 +45,6 @@ function rowRenderer(
   extendedState: ExtendedState
 ) {
   const data = extendedState.additionalData[uid];
-
   switch (type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:
@@ -48,6 +56,7 @@ function rowRenderer(
     case CellType.PROFILE_BALANCE_ROW_SPACE_AFTER:
     case CellType.PROFILE_NAME_ROW_SPACE_AFTER:
     case CellType.SAVINGS_HEADER_SPACE_BEFORE:
+    case CellType.EMPTY_WALLET_SPACER:
       return null;
     case CellType.COIN_DIVIDER:
       return (
@@ -58,6 +67,44 @@ function rowRenderer(
           }
           extendedState={extendedState}
         />
+      );
+    case CellType.DISCOVER_MORE_BUTTON:
+      return (
+        <CardRowWrapper>
+          <DiscoverMoreButton />
+        </CardRowWrapper>
+      );
+
+    case CellType.RECEIVE_CARD:
+      return (
+        <CardRowWrapper>
+          <ReceiveAssetsCard />
+        </CardRowWrapper>
+      );
+    case CellType.BUY_ETH_CARD:
+      return (
+        <CardRowWrapper>
+          <AssetCard />
+        </CardRowWrapper>
+      );
+    case CellType.GET_STARTED_CARD:
+      return (
+        <CardRowWrapper>
+          <EducationCard
+            onPress={() =>
+              Linking.openURL(
+                'https://learn.rainbow.me/connect-to-a-websiteapp'
+              )
+            }
+            gradient={['#5F5AFA', '#9585FF']}
+            accentColor={globalColors.purple20}
+            shadowColor="purple"
+            emoji="🔌"
+            title={lang.t('cards.learn.titles.get_started')}
+            category={lang.t('cards.learn.categories.essentials')}
+            height={159}
+          />
+        </CardRowWrapper>
       );
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
