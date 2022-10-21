@@ -23,6 +23,7 @@ type Dim = {
   height: number;
 };
 const ViewDimensions: Record<CellType, Dim> = {
+  [CellType.EMPTY_ROW]: { height: 0 },
   [CellType.DISCOVER_MORE_BUTTON]: { height: 40 },
   [CellType.RECEIVE_CARD]: { height: ReceiveCardHeight },
   [CellType.BUY_ETH_CARD]: { height: AssetCardHeight },
