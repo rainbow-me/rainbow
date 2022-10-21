@@ -83,7 +83,7 @@ const ReceiveAssetsCard = () => {
             </IconOrb>
           </ButtonPressAnimation>
         </Inline>
-        <AccentColorProvider color={colors.alpha(accentColor, 0.6)}>
+        <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
           <CopyFloatingEmojis onPress={onPressCopy} textToCopy={accountAddress}>
             <Box
               background="accent"
@@ -95,7 +95,7 @@ const ReceiveAssetsCard = () => {
             >
               <ColorModeProvider value="light">
                 <Text
-                  color={{ custom: colors.black }}
+                  color={{ custom: accentColor }}
                   containsEmoji
                   size="15pt"
                   weight="bold"
