@@ -47,6 +47,7 @@ import {
   defaultScreenStackOptions,
   restoreSheetConfig,
   stackNavigationConfig,
+  webViewScreenOptions,
   wyreWebviewOptions,
 } from './config';
 import {
@@ -70,6 +71,7 @@ import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
+import WebViewScreen from '@/screens/WebViewScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -107,6 +109,22 @@ function AddCashFlowNavigator() {
       screenOptions={themedWyreWebviewOptions}
     >
       <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
+    </Stack.Navigator>
+  );
+}
+
+function WebViewScreenNavigator() {
+  const { colors } = useTheme();
+  const themedWebViewScreenOptions = useMemo(
+    () => webViewScreenOptions(colors),
+    [colors]
+  );
+  return (
+    <Stack.Navigator
+      initialRouteName={Routes.WEB_VIEW_SCREEN}
+      screenOptions={themedWebViewScreenOptions}
+    >
+      <Stack.Screen component={WebViewScreen} name={Routes.WEB_VIEW_SCREEN} />
     </Stack.Navigator>
   );
 }
@@ -218,6 +236,10 @@ function MainNavigator() {
       <Stack.Screen
         component={AddCashFlowNavigator}
         name={Routes.WYRE_WEBVIEW_NAVIGATOR}
+      />
+      <Stack.Screen
+        component={WebViewScreenNavigator}
+        name={Routes.WEB_VIEW_SCREEN_NAVIGATOR}
       />
     </Stack.Navigator>
   );

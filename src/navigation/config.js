@@ -150,6 +150,17 @@ export const settingsSheetConfig = {
   }),
 };
 
+export const webViewScreenConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+    }),
+  }),
+};
+
 export const qrScannerConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -182,6 +193,18 @@ export const registerENSNavigatorConfig = {
       ...params,
       backgroundOpacity: 1,
       scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const webViewScreenNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: false,
       springDamping: 1,
       transitionDuration: 0.3,
     }),
@@ -454,6 +477,22 @@ const SettingsTitle = ({ children }) => {
 };
 
 export const wyreWebviewOptions = colors => ({
+  ...headerConfigOptions,
+  headerLeft: props => <BackButton {...props} textChevron />,
+  headerStatusBarHeight: 24,
+  headerStyle: {
+    backgroundColor: colors.white,
+    elevation: 24,
+    shadowColor: 'transparent',
+  },
+  headerTitleStyle: {
+    ...headerConfigOptions.headerTitleStyle,
+    color: colors.dark,
+  },
+  title: 'Add Cash',
+});
+
+export const webViewScreenOptions = colors => ({
   ...headerConfigOptions,
   headerLeft: props => <BackButton {...props} textChevron />,
   headerStatusBarHeight: 24,

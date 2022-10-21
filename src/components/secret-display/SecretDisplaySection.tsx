@@ -21,6 +21,7 @@ import styled from '@/styled-thing';
 import { margin, position, shadow } from '@/styles';
 import { useTheme } from '@/theme';
 import logger from '@/utils/logger';
+import { ScrollView } from 'react-native';
 
 const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }: any) => ({
   color: colors.appleBlue,

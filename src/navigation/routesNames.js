@@ -75,6 +75,8 @@ const Routes = {
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
+  WEB_VIEW_SCREEN: 'WebViewScreen',
+  WEB_VIEW_SCREEN_NAVIGATOR: 'WebViewScreenNavigator',
   WYRE_WEBVIEW: 'WyreWebview',
   WYRE_WEBVIEW_NAVIGATOR: 'WyreWebviewNavigator',
 };
