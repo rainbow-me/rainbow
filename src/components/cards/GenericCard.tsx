@@ -48,6 +48,8 @@ const GenericCard = ({
   shadowColor,
 }: GenericCardProps) => {
   const { isDarkMode } = useTheme();
+  const themedShadowColor =
+    !isDarkMode && shadowColor ? { custom: shadowColor } : undefined;
 
   return (
     <ConditionalWrap
@@ -73,36 +75,34 @@ const GenericCard = ({
           </Box>
         )}
       >
-        <AccentColorProvider color={shadowColor ?? globalColors.blue100}>
-          <Box
-            background={gradient ? undefined : color}
-            width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
-            height={{
-              custom: type === 'square' ? SquareCardHeight : height ?? 0,
-            }}
-            borderRadius={24}
-            shadow={{
-              custom: {
-                android: {
-                  color: isDarkMode ? 'shadow' : 'accent',
-                  elevation: 24,
-                  opacity: 0.5,
-                },
-                ios: [
-                  {
-                    blur: 24,
-                    color: isDarkMode ? 'shadow' : 'accent',
-                    offset: { x: 0, y: 8 },
-                    opacity: 0.35,
-                  },
-                ],
+        <Box
+          background={gradient ? undefined : color}
+          width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
+          height={{
+            custom: type === 'square' ? SquareCardHeight : height ?? 0,
+          }}
+          borderRadius={24}
+          shadow={{
+            custom: {
+              android: {
+                color: themedShadowColor,
+                elevation: 24,
+                opacity: 0.5,
               },
-            }}
-            padding="20px"
-          >
-            {children}
-          </Box>
-        </AccentColorProvider>
+              ios: [
+                {
+                  blur: 24,
+                  color: themedShadowColor,
+                  offset: { x: 0, y: 8 },
+                  opacity: 0.35,
+                },
+              ],
+            },
+          }}
+          padding="20px"
+        >
+          {children}
+        </Box>
       </ConditionalWrap>
     </ConditionalWrap>
   );
