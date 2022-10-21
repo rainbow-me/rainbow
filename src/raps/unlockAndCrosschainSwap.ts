@@ -116,6 +116,7 @@ export const createUnlockAndCrosschainSwapRap = async (
     inputAmount,
     requiresApprove: swapAssetNeedsUnlocking,
     tradeDetails,
+    meta: swapParameters.meta,
   });
   actions = actions.concat(crosschainSwap);
 

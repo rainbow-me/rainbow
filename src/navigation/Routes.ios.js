@@ -17,7 +17,7 @@ import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
-import RestoreSheet from '../screens/RestoreSheet';
+import { RestoreSheet } from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';

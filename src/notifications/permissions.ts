@@ -4,10 +4,11 @@ import logger from 'logger';
 import { Alert } from '@/components/alerts';
 import lang from 'i18n-js';
 import { saveFCMToken } from '@/notifications/tokens';
+import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
 
 export const getPermissionStatus = () => messaging().hasPermission();
 
-export const requestPermission = () => {
+export const requestPermission = (): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     requestNotifications(['alert', 'sound', 'badge'])
       .then(({ status }) => {
@@ -38,7 +39,10 @@ export const checkPushNotificationPermissions = async () => {
           {
             onPress: async () => {
               try {
-                await requestPermission();
+                const status = await requestPermission();
+                trackPushNotificationPermissionStatus(
+                  status ? 'enabled' : 'disabled'
+                );
                 await saveFCMToken();
               } catch (error) {
                 logger.log('ERROR while getting permissions', error);

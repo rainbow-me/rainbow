@@ -31,6 +31,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { abbreviations } from '@/utils';
+import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 
 const AnimatedContainer = styled(Animated.View)({
   ...position.sizeAsObject('100%'),
@@ -86,7 +87,13 @@ export default function SwapDetailsState({
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
   const {
-    params: { longFormHeight, currentNetwork, flashbotTransaction } = {},
+    params: {
+      longFormHeight,
+      currentNetwork,
+      flashbotTransaction,
+      isRefuelTx,
+      onClose,
+    } = {},
   } = useRoute();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
@@ -161,6 +168,12 @@ export default function SwapDetailsState({
     });
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
 
+  useEffect(() => {
+    return () => {
+      onClose?.();
+    };
+  }, [onClose]);
+
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
@@ -196,6 +209,7 @@ export default function SwapDetailsState({
           priceImpactPercentDisplay={priceImpactPercentDisplay}
         />
         <SwapDetailsContent
+          isRefuelTx={isRefuelTx}
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={onContentHeightChange}
@@ -214,6 +228,7 @@ export default function SwapDetailsState({
               flashbotTransaction={flashbotTransaction}
               testID="swap-details-gas"
               theme="light"
+              crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails)}
             />
           </Footer>
         </Animated.View>

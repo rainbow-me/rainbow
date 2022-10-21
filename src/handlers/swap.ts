@@ -101,6 +101,9 @@ async function getClosestGasEstimate(
 const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) =>
   tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
+export const getCrosschainSwapServiceTime = (tradeDetails: CrosschainQuote) =>
+  tradeDetails?.routes?.[0]?.serviceTime;
+
 export const getDefaultGasLimitForTrade = (
   tradeDetails: Quote,
   chainId: ChainId

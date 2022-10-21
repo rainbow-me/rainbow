@@ -11,6 +11,7 @@ import { emitAssetRequest } from '@/redux/explorer';
 import {
   flipSwapCurrencies,
   updateSwapDepositCurrency,
+  updateSwapInputAmount,
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
 } from '@/redux/swap';
@@ -270,8 +271,14 @@ export default function useSwapCurrencyHandlers({
     [navigate, outputFieldRef, setParams, updateOutputCurrency]
   );
 
+  const updateAndFocusInputAmount = (value: string) => {
+    dispatch(updateSwapInputAmount(updatePrecisionToDisplay(value), true));
+    focusTextInput(inputFieldRef);
+  };
+
   return {
     flipCurrencies,
+    updateAndFocusInputAmount,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
     updateInputCurrency,

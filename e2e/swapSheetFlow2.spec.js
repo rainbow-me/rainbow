@@ -74,6 +74,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should go to swap and try different cross chain swaps', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.checkIfExists('unswappableAssets');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
 
@@ -104,6 +105,32 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-polygon');
     await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
     await Helpers.checkIfVisible(`exchange-modal-output-DAI-polygon`);
+    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+  });
+
+  it('Should show explainer sheet when selecting output input for cross chain swaps', async () => {
+    await Helpers.waitAndTap('swap-button');
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
+    await Helpers.waitAndTap('exchange-modal-input-max');
+    await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
+    await Helpers.checkIfVisible(`exchange-modal-output-empty-empty`);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('network-switcher-v2');
+    await Helpers.tap('currency-select-network-switcher-optimism');
+    await Helpers.typeText('currency-select-search-input', 'USDC', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-USDC-optimism');
+    await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
+    await Helpers.checkIfVisible(`exchange-modal-output-USDC-optimism`);
+    await Helpers.waitAndTap('exchange-modal-output-USDC-optimism');
+    await Helpers.waitAndTap('explainer-sheet-accent-action-button');
+    await Helpers.tapAndLongPress('exchange-modal-confirm-button');
+    await Helpers.checkIfVisible('swaps-details-value-row');
+    await Helpers.checkIfNotVisible('swaps-details-refuel-row');
+    await Helpers.waitAndTap('swaps-details-protocols-row');
+    await Helpers.waitAndTap('swaps-details-protocols-row');
+    await Helpers.checkIfVisible('swaps-details-fee-row');
+    await Helpers.swipe('swap-details-header', 'down', 'slow');
     await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
 

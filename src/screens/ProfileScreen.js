@@ -8,6 +8,7 @@ import TransactionList from '../components/transaction-list/TransactionList';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import {
+  useAccountProfile,
   useAccountSettings,
   useAccountTransactions,
   useContacts,
@@ -98,6 +99,7 @@ export default function ProfileScreen({ navigation }) {
       ) : (
         <ActivityList
           addCashAvailable={addCashAvailable}
+          contacts={contacts}
           header={
             <ProfileMasthead
               addCashAvailable={addCashAvailable}

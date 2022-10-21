@@ -29,7 +29,15 @@ export default function ContextMenuAndroid({
         ...(menuItems || []).map(item => ({
           id: item.actionKey,
           image: item.icon?.iconValue,
-          title: item.actionTitle,
+          title: item.actionTitle || item.menuTitle,
+          ...(item.menuTitle && {
+            titleColor: 'black',
+            subactions: item.menuItems.map(item => ({
+              id: item.actionKey,
+              image: item.icon?.iconValue,
+              title: item.actionTitle,
+            })),
+          }),
         }))
       );
     }

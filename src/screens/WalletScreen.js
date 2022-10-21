@@ -11,7 +11,7 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import { Navbar, navbarHeightWithInset } from '@/components/navbar/Navbar';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { Box, Inline } from '@/design-system';
 import {
   useAccountEmptyState,
@@ -38,7 +38,6 @@ import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { atom, useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import EmptyWalletScreen from '@/components/empty-wallet/EmptyWalletScreen';
 
 export const addressCopiedToastAtom = atom({
   default: false,
@@ -276,7 +275,9 @@ export default function WalletScreen() {
           }
         />
       </HeaderOpacityToggler>
-      <Box style={{ flex: 1, marginTop: ios ? -navbarHeightWithInset : 0 }}>
+      <Box
+        style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
+      >
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}

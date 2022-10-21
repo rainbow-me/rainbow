@@ -3,7 +3,7 @@ import { CustomShadow } from '@/design-system/layout/shadow';
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
-import { BackgroundColor } from '@/design-system/color/palettes';
+import { BackgroundColor, globalColors } from '@/design-system/color/palettes';
 import ConditionalWrap from 'conditional-wrap';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
@@ -48,7 +48,7 @@ const GenericCard = ({
   rowLength,
 }: GenericCardProps) => {
   const { isDarkMode } = useTheme();
-  const shadow = useForegroundColor('shadow');
+  // const shadow = useForegroundColor('shadow');
 
   return (
     <ConditionalWrap
@@ -74,7 +74,7 @@ const GenericCard = ({
           </Box>
         )}
       >
-        <AccentColorProvider color={shadowColor ?? shadow}>
+        <AccentColorProvider color={shadowColor ?? globalColors.blue10}>
           <Box
             background={gradient ? undefined : color}
             width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
