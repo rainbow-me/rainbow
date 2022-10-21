@@ -15,7 +15,8 @@ import {
 } from '../../helpers/ChartContext';
 import { findYExtremes } from '../../helpers/extremesHelpers';
 
-export const { width: WIDTH } = Dimensions.get('window');
+const { width: WIDTH } = Dimensions.get('window');
+
 const HEIGHT = 146.5;
 
 interface ChartPathProviderProps {

@@ -221,7 +221,8 @@ const withBriefBalanceSavingsSection = (
   if (network !== Network.mainnet) {
     return [];
   }
-
+  //TODO: make this logic conditional
+  return [];
   if (isLoadingAssets) return [];
   return [
     {
@@ -355,7 +356,8 @@ const withBriefBalanceSection = (
   hiddenCoins: any,
   collectibles: any,
   savingsSection: any,
-  uniswapTotal: any
+  uniswapTotal: any,
+  uniqueTokens: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
@@ -385,6 +387,29 @@ const withBriefBalanceSection = (
     totalBalanceWithAllSectionValues,
     nativeCurrency
   );
+
+  //TODO: add check for tokens as well
+  const isEmpty = !uniqueTokens?.length;
+
+  const emptySection = [
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+    {
+      type: 'RECEIVE_CARD',
+      uid: 'receive_card',
+    },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
+    { type: 'BUY_ETH_CARD', uid: 'buy-eth-card' },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-3' },
+    {
+      type: 'GET_STARTED_CARD',
+      uid: 'get-started-card',
+    },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-3' },
+    {
+      type: 'DISCOVER_MORE_BUTTON',
+      uid: 'discover-home-button',
+    },
+  ];
 
   return [
     {
@@ -431,7 +456,11 @@ const withBriefBalanceSection = (
       uid: 'profile-action-buttons-space-after',
       value: totalValue,
     },
-    ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),
+    ...(isEmpty
+      ? emptySection
+      : isLoadingAssets
+      ? LOADING_ASSETS_PLACEHOLDER
+      : briefAssets),
   ];
 };
 
@@ -473,7 +502,12 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector, isLoadingAssetsSelector, networkSelector],
+  [
+    savingsSelector,
+    isLoadingAssetsSelector,
+    networkSelector,
+    uniqueTokensSelector,
+  ],
   withBriefBalanceSavingsSection
 );
 

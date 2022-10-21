@@ -2,22 +2,16 @@ import {
   AccentColorProvider,
   Box,
   ColorModeProvider,
-  globalColors,
   Inline,
-  Inset,
   Stack,
   Text,
-  useForegroundColor,
 } from '@/design-system';
 import Clipboard from '@react-native-community/clipboard';
 import { useTheme } from '@/theme';
-import { Text as NativeText } from 'react-native';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback } from 'react';
 import GenericCard from './GenericCard';
-import { Emoji } from '../text';
+import { useAccountProfile } from '@/hooks';
 import { ButtonPressAnimation } from '../animations';
-import { useAccountProfile, useWallets } from '@/hooks';
-import showWalletErrorAlert from '@/helpers/support';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
@@ -29,10 +23,12 @@ import QRCodeIcon from '@/assets/qrCodeIcon.png';
 import { ImgixImage } from '../images';
 import { Source } from 'react-native-fast-image';
 import IconOrb from './IconOrb';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+
+export const ReceiveCardHeight = 174;
 
 const ReceiveAssetsCard = () => {
   const { colors, isDarkMode } = useTheme();
-  const blueHex = useForegroundColor('blue');
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(
@@ -57,6 +53,8 @@ const ReceiveAssetsCard = () => {
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);
 
+  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
+
   return (
     <GenericCard type="stretch">
       <Stack space="36px">
@@ -74,20 +72,18 @@ const ReceiveAssetsCard = () => {
               {'You can also long press your\naddress above to copy it.'}
             </Text>
           </Stack>
-          <AccentColorProvider color={blueHex}>
-            <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
-              <IconOrb color={blueHex} shadowColor="tint">
-                <Box
-                  as={ImgixImage}
-                  source={QRCodeIcon}
-                  height={{ custom: 16 }}
-                  width={{ custom: 16 }}
-                />
-              </IconOrb>
-            </ButtonPressAnimation>
-          </AccentColorProvider>
+          <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
+            <IconOrb color={accentColor} shadowColor="accent">
+              <Box
+                as={ImgixImage}
+                source={QRCodeIcon}
+                height={{ custom: 16 }}
+                width={{ custom: 16 }}
+              />
+            </IconOrb>
+          </ButtonPressAnimation>
         </Inline>
-        <AccentColorProvider color={colors.alpha(blueHex, 0.1)}>
+        <AccentColorProvider color={colors.alpha(accentColor, 0.6)}>
           <CopyFloatingEmojis onPress={onPressCopy} textToCopy={accountAddress}>
             <Box
               background="accent"
@@ -98,7 +94,12 @@ const ReceiveAssetsCard = () => {
               justifyContent="center"
             >
               <ColorModeProvider value="light">
-                <Text color="blue" containsEmoji size="15pt" weight="bold">
+                <Text
+                  color={{ custom: colors.black }}
+                  containsEmoji
+                  size="15pt"
+                  weight="bold"
+                >
                   􀐅 Copy Address
                 </Text>
               </ColorModeProvider>
