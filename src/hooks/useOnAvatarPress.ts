@@ -306,44 +306,9 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     callback,
   ]);
 
-  const avatarOptions = useMemo(
-    () => [
-      {
-        id: 'newimage',
-        label: 'Choose from Library',
-        uiImage: 'photo',
-      },
-      ...(!accountImage
-        ? [
-            {
-              id: 'newemoji',
-              label: 'Pick an Emoji',
-              uiImage: 'face.smiling',
-            },
-          ]
-        : []),
-      ...(accountImage
-        ? [
-            {
-              id: 'removeimage',
-              label: 'Remove Photo',
-              uiImage: 'trash',
-            },
-          ]
-        : []),
-      {
-        id: 'webprofile',
-        label: 'View Web Profile',
-        uiImage: 'safari',
-      },
-    ],
-    [accountImage]
-  );
-
   return {
     avatarContextMenuConfig,
     avatarActionSheetOptions,
-    avatarOptions,
     hasENSProfile: hasENSAvatar && accountENS,
     onAvatarChooseImage,
     onAvatarCreateProfile,

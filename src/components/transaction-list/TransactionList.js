@@ -215,7 +215,6 @@ export default function TransactionList({
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
-        avatarOptions={avatarOptions}
         darkMode={isDarkMode}
         data={data}
         isLoading={loading}

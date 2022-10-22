@@ -35,43 +35,6 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
   }
   
-  func activelyWaitToPresentDiscoverSheetBack(controller: DiscoverSheetViewController) {
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-      if (self.window?.rootViewController?.presentedViewController == nil) {
-        controller.moved = false;
-        controller.hacked = false;
-        self.window?.rootViewController?.present(controller, animated: true)
-      } else {
-        self.activelyWaitToPresentDiscoverSheetBack(controller: controller)
-      }
-    }
-  }
-  
-  @objc var avatarOptions: NSArray? {
-    didSet {
-      if #available(iOS 14.0, *), false {
-        let options: Array = avatarOptions as! Array<NSDictionary>;
-        let actions: [UIAction] = options.map { opt in
-          return UIAction(title: opt["label"] as! String, 
-          image: UIImage(systemName: opt["uiImage"] as! String), 
-          handler: { _ in 
-            self.avatarOnPressFunction(optionId: opt["id"] as! String)   
-          })
-        }
-        let contextMenu = UIMenu(title: "Profile Image", options: .displayInline, children: actions)
-        header.accountView.menu = contextMenu
-        header.accountView.showsMenuAsPrimaryAction = true
-        header.accountView.addAction(UIAction(title: ""){ _ in
-          let discoverSheeet: DiscoverSheetViewController = self.window?.rootViewController!.presentedViewController! as! DiscoverSheetViewController;
-          self.window?.rootViewController?.presentedViewController?.dismiss(animated: true, completion: {
-            self.activelyWaitToPresentDiscoverSheetBack(controller: discoverSheeet)
-          })
-          
-        },for: .menuActionTriggered)
-        
-      }
-    }
-  }
   @objc var isLoading: Bool = false {
     didSet {
       if(isLoading != oldValue){
