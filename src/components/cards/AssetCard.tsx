@@ -9,6 +9,8 @@ import {
   Text,
   Columns,
   Column,
+  AccentColorProvider,
+  DebugLayout,
 } from '@/design-system';
 
 import { useTheme } from '@/theme';
@@ -127,12 +129,12 @@ const AssetCard = () => {
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
   return (
-    <GenericCard type="stretch" height={AssetCardHeight}>
-      <Rows alignVertical="center" space="12px">
-        <Row height="content">
-          <Columns alignHorizontal="justify">
-            <Column>
-              <Stack space="12px">
+    <GenericCard type="stretch">
+      <Stack space="20px">
+        <Stack space="12px">
+          <Box style={{ marginTop: -4 }}>
+            <Columns alignHorizontal="justify" alignVertical="center">
+              <Column>
                 <Inline alignVertical="center" space="6px">
                   {/* @ts-expect-error – JS component */}
                   <CoinIcon
@@ -148,77 +150,73 @@ const AssetCard = () => {
                     {assetWithPrice.name}
                   </Text>
                 </Inline>
-                <Text
-                  size="26pt"
-                  color={{ custom: colorForAsset }}
-                  weight="heavy"
-                >
-                  {assetWithPrice.native.price.display}
-                </Text>
-              </Stack>
-            </Column>
-            <Column width="content">
-              <Inline alignVertical="bottom">
-                <Text
-                  size="17pt"
-                  color={{ custom: priceChangeColor }}
-                  weight="bold"
-                >
-                  {`${isNegativePriceChange ? '􀄩' : '􀄨'}${priceChangeDisplay}`}
-                </Text>
-                <Text
-                  size="13pt"
-                  color={{ custom: priceChangeColor }}
-                  weight="bold"
-                >
-                  {` ${lang.t('expanded_state.chart.today')}`}
-                </Text>
-              </Inline>
-            </Column>
-          </Columns>
-        </Row>
-        <Row height="content">
-          <Inset vertical="16px">
-            <Box height={{ custom: CHART_HEIGHT }}>
+              </Column>
+              <Column width="content">
+                <Inline alignVertical="bottom">
+                  <Text
+                    size="17pt"
+                    color={{ custom: priceChangeColor }}
+                    weight="bold"
+                  >
+                    {`${
+                      isNegativePriceChange ? '􀄩' : '􀄨'
+                    }${priceChangeDisplay}`}
+                  </Text>
+                  <Text
+                    size="13pt"
+                    color={{ custom: priceChangeColor }}
+                    weight="bold"
+                  >
+                    {` ${lang.t('expanded_state.chart.today').toLowerCase()}`}
+                  </Text>
+                </Inline>
+              </Column>
+            </Columns>
+          </Box>
+          <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
+            {assetWithPrice.native.price.display}
+          </Text>
+        </Stack>
+        <Inset vertical="16px">
+          <Box height={{ custom: CHART_HEIGHT }}>
+            {/* @ts-expect-error – JS component */}
+
+            <ChartPathProvider
+              data={throttledData}
+              width={CHART_WIDTH}
+              height={CHART_HEIGHT}
+            >
               {/* @ts-expect-error – JS component */}
 
-              <ChartPathProvider
-                data={throttledData}
-                width={CHART_WIDTH}
+              <ChartPath
+                fill="none"
+                gestureEnabled={false}
                 height={CHART_HEIGHT}
-              >
-                {/* @ts-expect-error – JS component */}
-
-                <ChartPath
-                  fill="none"
-                  gestureEnabled={false}
-                  height={CHART_HEIGHT}
-                  hitSlop={0}
-                  longPressGestureHandlerProps={undefined}
-                  selectedStrokeWidth={3}
-                  stroke={colorForAsset}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={4}
-                  width={CHART_WIDTH}
-                  chartXOffset={0}
-                  disableOnPress
-                  isCard
-                />
-                <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
-              </ChartPathProvider>
-            </Box>
-          </Inset>
-        </Row>
-        <Row>
-          <ButtonPressAnimation onPress={handlePress} scaleTo={0.8}>
+                hitSlop={0}
+                longPressGestureHandlerProps={undefined}
+                selectedStrokeWidth={3}
+                stroke={colorForAsset}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={4}
+                width={CHART_WIDTH}
+                chartXOffset={0}
+                disableOnPress
+                isCard
+              />
+              <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
+            </ChartPathProvider>
+          </Box>
+        </Inset>
+        <ButtonPressAnimation onPress={handlePress} scaleTo={0.8}>
+          <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
             <Box
               width="full"
               height={{ custom: 36 }}
-              borderRadius={18}
+              borderRadius={99}
               alignItems="center"
               justifyContent="center"
-              style={{ backgroundColor: colors.alpha(colorForAsset, 0.06) }}
+              background="accent"
             >
               <Text
                 color={{ custom: colorForAsset }}
@@ -229,9 +227,9 @@ const AssetCard = () => {
                 􀍯 Buy Ethereum
               </Text>
             </Box>
-          </ButtonPressAnimation>
-        </Row>
-      </Rows>
+          </AccentColorProvider>
+        </ButtonPressAnimation>
+      </Stack>
     </GenericCard>
   );
 };
