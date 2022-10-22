@@ -38,67 +38,106 @@ export interface LearnCardDetails {
 export interface CardColorway {
   gradient: string[];
   shadowColor: string;
-  accentColor: string;
-  accentColorDark: string;
+  orbColorLight: string;
+  orbColorDark: string;
+  primaryTextColor: string;
+  secondaryTextColor: string;
 }
 
-export const cardColorways: {
+export const cardColorways: (
+  isDarkMode: boolean
+) => {
   [key in CardColor]: CardColorway;
-} = {
-  purple: {
-    gradient: [globalColors.purple60, '#9585FF'],
-    shadowColor: globalColors.purple60,
-    accentColor: globalColors.purple20,
-    accentColorDark: globalColors.purple70,
-  },
-  pink: {
-    gradient: [globalColors.pink60, '#FF70B3'],
-    shadowColor: globalColors.pink60,
-    accentColor: globalColors.pink20,
-    accentColorDark: globalColors.pink70,
-  },
-  blue: {
-    gradient: [globalColors.blue60, '#268FFF'],
-    shadowColor: globalColors.blue60,
-    accentColor: globalColors.blue20,
-    accentColorDark: globalColors.blue70,
-  },
-  darkBlue: {
-    gradient: [globalColors.blue90, globalColors.blue80],
-    shadowColor: globalColors.blue90,
-    accentColor: globalColors.blue20,
-    accentColorDark: globalColors.blue100,
-  },
-  yellow: {
-    gradient: ['#FFCB0F', '#FFDA24'],
-    shadowColor: '#FFCB0F',
-    accentColor: globalColors.yellow20,
-    accentColorDark: globalColors.yellow70,
-  },
-  green: {
-    gradient: [globalColors.green60, '#3ECF5B'],
-    shadowColor: globalColors.green60,
-    accentColor: globalColors.green20,
-    accentColorDark: globalColors.green70,
-  },
-  darkGreen: {
-    gradient: [globalColors.green90, globalColors.green80],
-    shadowColor: globalColors.green90,
-    accentColor: globalColors.green20,
-    accentColorDark: globalColors.green100,
-  },
+} = (isDarkMode: boolean) => {
+  return {
+    purple: {
+      gradient: isDarkMode
+        ? [globalColors.purple70, globalColors.purple60]
+        : [globalColors.purple60, '#9585FF'],
+      shadowColor: globalColors.purple60,
+      orbColorLight: globalColors.purple20,
+      orbColorDark: globalColors.purple70,
+      primaryTextColor: globalColors.white100,
+      secondaryTextColor: globalColors.purple20,
+    },
+    pink: {
+      gradient: isDarkMode
+        ? [globalColors.pink70, globalColors.pink60]
+        : [globalColors.pink60, '#FF70B3'],
+      shadowColor: globalColors.pink60,
+      orbColorLight: globalColors.pink20,
+      orbColorDark: globalColors.pink70,
+      primaryTextColor: globalColors.white100,
+      secondaryTextColor: globalColors.pink20,
+    },
+    blue: {
+      gradient: isDarkMode
+        ? [globalColors.blue70, globalColors.blue60]
+        : [globalColors.blue60, '#268FFF'],
+      shadowColor: globalColors.blue60,
+      orbColorLight: globalColors.blue20,
+      orbColorDark: globalColors.blue70,
+      primaryTextColor: globalColors.white100,
+      secondaryTextColor: globalColors.blue20,
+    },
+    darkBlue: {
+      gradient: isDarkMode
+        ? [globalColors.blue100, globalColors.blue90]
+        : [globalColors.blue90, globalColors.blue80],
+      shadowColor: globalColors.blue90,
+      orbColorLight: globalColors.blue20,
+      orbColorDark: globalColors.blue100,
+      primaryTextColor: globalColors.white100,
+      secondaryTextColor: globalColors.blue20,
+    },
+    yellow: {
+      gradient: isDarkMode
+        ? [globalColors.yellow70, '#FFCB0F']
+        : ['#FFCB0F', '#FFDA24'],
+      shadowColor: '#FFCB0F',
+      orbColorLight: globalColors.yellow20,
+      orbColorDark: globalColors.yellow70,
+      primaryTextColor: globalColors.orange100,
+      secondaryTextColor: globalColors.yellow90,
+    },
+    green: {
+      gradient: isDarkMode
+        ? [globalColors.green70, globalColors.green60]
+        : [globalColors.green60, '#3ECF5B'],
+      shadowColor: globalColors.green60,
+      orbColorLight: globalColors.green20,
+      orbColorDark: globalColors.green70,
+      primaryTextColor: globalColors.white100,
+      secondaryTextColor: globalColors.green20,
+    },
+    darkGreen: {
+      gradient: isDarkMode
+        ? [globalColors.green100, globalColors.green90]
+        : [globalColors.green90, globalColors.green80],
+      shadowColor: globalColors.green90,
+      orbColorLight: globalColors.green20,
+      orbColorDark: globalColors.green100,
+      primaryTextColor: globalColors.white100,
+      secondaryTextColor: globalColors.green20,
+    },
+  };
 };
 
-export const learnCategoryColors: {
+export const learnCategoryColors: (
+  isDarkMode: boolean
+) => {
   [key in LearnCategory]: CardColorway;
-} = {
-  'Essentials': cardColorways.purple,
-  'Staying Safe': cardColorways.pink,
-  'How to use Rainbow': cardColorways.blue,
-  // 'How to use Rainbow 2': cardColorways.darkBlue,
-  "Beginner's Guides": cardColorways.yellow,
-  'What is Web3?': cardColorways.green,
-  'Blockchains and Fees': cardColorways.darkGreen,
+} = (isDarkMode: boolean) => {
+  const themedCardColorways = cardColorways(isDarkMode);
+  return {
+    'Essentials': themedCardColorways.purple,
+    'Staying Safe': themedCardColorways.pink,
+    'How to use Rainbow': themedCardColorways.blue,
+    // 'How to use Rainbow 2': cardColorways.darkBlue,
+    "Beginner's Guides": themedCardColorways.yellow,
+    'What is Web3?': themedCardColorways.green,
+    'Blockchains and Fees': themedCardColorways.darkGreen,
+  };
 };
 
 const getStartedCard: LearnCardDetails = {

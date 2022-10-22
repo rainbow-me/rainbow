@@ -27,12 +27,14 @@ import { IS_IOS } from '@/env';
 import { useRoute } from '@react-navigation/native';
 import config from '@/model/config';
 import { analytics } from '@/analytics';
+import { useTheme } from '@/theme';
 
 const EmptyWalletScreen = () => {
   const { isDamaged } = useWallets();
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountProfile();
   const { params } = useRoute();
+  const { isDarkMode } = useTheme();
 
   const onPressBuy = useCallback(() => {
     if (isDamaged) {
@@ -61,6 +63,8 @@ const EmptyWalletScreen = () => {
       source: 'expanded state',
     });
   }, [accountAddress, isDamaged, navigate]);
+
+  const themedCardColorways = cardColorways(isDarkMode);
 
   return (
     <Inset horizontal="20px">
@@ -111,13 +115,13 @@ const EmptyWalletScreen = () => {
         <ReceiveAssetsCard />
         <Inline space="20px">
           <ActionCard
-            colorway={cardColorways.green}
+            colorway={themedCardColorways.green}
             onPress={onPressBuy}
             title="Buy Crypto with Cash"
             sfSymbolIcon="􀅼"
           />
           <ActionCard
-            colorway={cardColorways.yellow}
+            colorway={themedCardColorways.yellow}
             onPress={() => {}}
             title="Create a token watchlist"
             sfSymbolIcon="􀣩"

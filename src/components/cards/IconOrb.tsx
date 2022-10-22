@@ -1,15 +1,29 @@
 import React from 'react';
-import { AccentColorProvider, Box } from '@/design-system';
-import { useTheme } from '@/theme';
+import { AccentColorProvider, Box, Text } from '@/design-system';
 
 interface IconOrbProps {
-  children: React.ReactNode;
   color: string;
   shadowColor?: 'accent' | 'shadow';
+  textIcon?: string;
+  children?: React.ReactNode;
 }
 
-const IconOrb = ({ children, color, shadowColor }: IconOrbProps) => {
-  const { isDarkMode } = useTheme();
+const IconOrb = ({ color, textIcon, children, shadowColor }: IconOrbProps) => {
+  const Icon = () => {
+    return textIcon ? (
+      <Text
+        containsEmoji
+        size="17pt"
+        weight="bold"
+        align="center"
+        color="label"
+      >
+        {textIcon}
+      </Text>
+    ) : (
+      <>{children}</>
+    );
+  };
 
   return (
     <AccentColorProvider color={color}>
@@ -21,25 +35,9 @@ const IconOrb = ({ children, color, shadowColor }: IconOrbProps) => {
           background="accent"
           alignItems="center"
           justifyContent="center"
-          shadow={{
-            custom: {
-              android: {
-                color: isDarkMode ? 'shadow' : shadowColor,
-                elevation: 24,
-                opacity: 0.5,
-              },
-              ios: [
-                {
-                  blur: 24,
-                  color: isDarkMode ? 'shadow' : shadowColor,
-                  offset: { x: 0, y: 8 },
-                  opacity: 0.35,
-                },
-              ],
-            },
-          }}
+          shadow={shadowColor === 'accent' ? '18px accent' : '18px'}
         >
-          {children}
+          <Icon />
         </Box>
       ) : (
         <Box
@@ -50,7 +48,7 @@ const IconOrb = ({ children, color, shadowColor }: IconOrbProps) => {
           alignItems="center"
           justifyContent="center"
         >
-          {children}
+          <Icon />
         </Box>
       )}
     </AccentColorProvider>

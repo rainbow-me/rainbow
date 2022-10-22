@@ -32,7 +32,7 @@ const ActionCard = ({
   onPress,
   title,
 }: ActionCardProps) => {
-  const { gradient, shadowColor, accentColorDark } = colorway;
+  const { gradient, shadowColor, orbColorDark, primaryTextColor } = colorway;
   return (
     <GenericCard
       type="square"
@@ -41,19 +41,13 @@ const ActionCard = ({
       shadowColor={shadowColor}
     >
       <Box height="full" justifyContent="space-between" alignItems="flex-start">
-        <IconOrb color={accentColorDark} shadowColor="shadow">
-          <Text
-            align="center"
-            size="17pt"
-            weight="bold"
-            containsEmoji
-            color="labelWhite"
-          >
-            {sfSymbolIcon}
-          </Text>
-        </IconOrb>
+        <IconOrb
+          color={orbColorDark}
+          textIcon={sfSymbolIcon}
+          shadowColor="shadow"
+        />
         <Stack space="10px">
-          <Text color="labelWhite" size="20pt" weight="heavy">
+          <Text color={{ custom: primaryTextColor }} size="20pt" weight="heavy">
             {title}
           </Text>
         </Stack>

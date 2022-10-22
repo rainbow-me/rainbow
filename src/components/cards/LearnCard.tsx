@@ -27,10 +27,18 @@ interface LearnCardProps {
 }
 
 const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
-  const { category, title, emoji, url, description } = cardDetails;
-  const { gradient, shadowColor, accentColor } = learnCategoryColors[category];
   const { navigate } = useNavigation();
   const { width } = useDimensions();
+  const { isDarkMode } = useTheme();
+  const themedLearnCategoryColors = learnCategoryColors(isDarkMode);
+  const { category, title, emoji, url, description } = cardDetails;
+  const {
+    gradient,
+    shadowColor,
+    orbColorLight,
+    primaryTextColor,
+    secondaryTextColor,
+  } = themedLearnCategoryColors[category];
 
   return (
     <GenericCard
@@ -44,79 +52,70 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
       }
       shadowColor={shadowColor}
     >
-      <AccentColorProvider color={accentColor}>
-        {type === 'square' ? (
-          <Box height="full" justifyContent="space-between">
-            <Inline alignHorizontal="justify">
-              <Text size="13pt" weight="heavy" color="labelWhite">
-                􀫸 LEARN
-              </Text>
-              <Box
-                width={{ custom: 36 }}
-                height={{ custom: 36 }}
-                borderRadius={18}
-                background="accent"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Text
-                  containsEmoji
-                  size="17pt"
-                  weight="bold"
-                  align="center"
-                  color="label"
-                >
-                  {emoji}
-                </Text>
-              </Box>
-            </Inline>
-            <Stack space="10px">
-              <Text color="accent" size="13pt" weight="bold">
-                {category}
-              </Text>
-              <Text color="labelWhite" size="17pt" weight="heavy">
-                {title}
-              </Text>
-            </Stack>
-          </Box>
-        ) : (
-          <Stack space="36px">
-            <Columns space="20px">
-              <Column>
-                <Stack space="12px">
-                  <Text size="13pt" weight="bold" color="accent">
-                    {category}
-                  </Text>
-                  <Text size="22pt" weight="heavy" color="labelWhite">
-                    {title}
-                  </Text>
-                </Stack>
-              </Column>
-              <Column width="content">
-                <IconOrb color={accentColor}>
-                  <Text
-                    containsEmoji
-                    size="17pt"
-                    weight="bold"
-                    align="center"
-                    color="label"
-                  >
-                    {emoji}
-                  </Text>
-                </IconOrb>
-              </Column>
-            </Columns>
+      {type === 'square' ? (
+        <Box height="full" justifyContent="space-between">
+          <Inline alignHorizontal="justify">
             <Text
-              color="labelWhite"
               size="13pt"
-              weight="semibold"
-              numberOfLines={3}
+              weight="heavy"
+              color={{ custom: primaryTextColor }}
             >
-              {description}
+              􀫸 LEARN
+            </Text>
+            <IconOrb color={orbColorLight} textIcon={emoji} />
+          </Inline>
+          <Stack space="10px">
+            <Text
+              color={{ custom: secondaryTextColor }}
+              size="13pt"
+              weight="bold"
+            >
+              {category}
+            </Text>
+            <Text
+              color={{ custom: primaryTextColor }}
+              size="17pt"
+              weight="heavy"
+            >
+              {title}
             </Text>
           </Stack>
-        )}
-      </AccentColorProvider>
+        </Box>
+      ) : (
+        <Stack space="36px">
+          <Columns space="20px">
+            <Column>
+              <Stack space="12px">
+                <Text
+                  size="13pt"
+                  weight="bold"
+                  color={{ custom: secondaryTextColor }}
+                >
+                  {category}
+                </Text>
+                <Text
+                  size="22pt"
+                  weight="heavy"
+                  color={{ custom: primaryTextColor }}
+                >
+                  {title}
+                </Text>
+              </Stack>
+            </Column>
+            <Column width="content">
+              <IconOrb color={orbColorLight} textIcon={emoji} />
+            </Column>
+          </Columns>
+          <Text
+            color={{ custom: primaryTextColor }}
+            size="13pt"
+            weight="semibold"
+            numberOfLines={3}
+          >
+            {description}
+          </Text>
+        </Stack>
+      )}
     </GenericCard>
   );
 };
