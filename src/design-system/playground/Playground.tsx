@@ -12,7 +12,6 @@ import {
   Box,
   DesignSystemProvider,
   Separator,
-  Heading,
   Inline,
   Inset,
   Stack,

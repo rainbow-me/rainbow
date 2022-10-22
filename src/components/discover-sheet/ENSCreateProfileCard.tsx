@@ -12,6 +12,7 @@ import {
   Column,
   Columns,
   Cover,
+  CustomShadow,
   Heading,
   Inset,
   Stack,
@@ -36,22 +37,27 @@ export default function ENSCreateProfileCard() {
   const { navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
 
-  const cardShadow = useMemo(
+  const cardShadow = useMemo<CustomShadow>(
     () => ({
       custom: {
         android: {
           elevation: 24,
+          color: 'shadowFar',
           opacity: 0.5,
         },
         ios: [
           {
             blur: 24,
-            offset: { x: 0, y: 8 },
+            x: 0,
+            y: 8,
+            color: 'shadowFar',
             opacity: colorMode === 'dark' ? 0.3 : 0.1,
           },
           {
             blur: 6,
-            offset: { x: 0, y: 2 },
+            x: 0,
+            y: 2,
+            color: 'shadowFar',
             opacity: 0.02,
           },
         ],
@@ -95,7 +101,7 @@ export default function ENSCreateProfileCard() {
     );
   }, []);
 
-  const shadow = useForegroundColor('shadow');
+  const shadow = useForegroundColor('shadowFar');
   const shadowColor = useForegroundColor({
     custom: {
       dark: shadow,

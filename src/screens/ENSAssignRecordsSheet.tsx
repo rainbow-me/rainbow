@@ -493,7 +493,7 @@ function HideKeyboardButton({ color }: { color: string }) {
             background="accent"
             borderRadius={15}
             height={{ custom: 30 }}
-            shadow="15px light"
+            shadow="15px light (Deprecated)"
             width={{ custom: 30 }}
           >
             <Cover alignHorizontal="center" alignVertical="center">
@@ -526,15 +526,15 @@ function Shadow() {
             custom: {
               android: {
                 elevation: 30,
+                color: 'shadowFar',
                 opacity: 0.08,
               },
               ios: [
                 {
                   blur: 30,
-                  offset: {
-                    x: 0,
-                    y: -10,
-                  },
+                  x: 0,
+                  y: -10,
+                  color: 'shadowFar',
                   opacity: 0.08,
                 },
               ],
