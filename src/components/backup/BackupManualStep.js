@@ -104,6 +104,9 @@ export default function BackupManualStep() {
 
   return (
     <ConditionalWrap
+      // need to figure out how to access secretSeedLength from SecretDisplayCard
+      // then put the condition equal to: if secretSeedLength > 12, show enable the conditional wrap.
+      // Also this isn't working bc it's on a slackSheet
       condition={true}
       wrap={children => <ScrollView>{children}</ScrollView>}
     >

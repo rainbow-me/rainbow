@@ -26,10 +26,9 @@ export default function ShowSecretView() {
 
   return (
     <ConditionalWrap
-      condition={
-        true
-        // need to figure out how to access secretSeedLength from SecretDisplayCard
-      }
+      // need to figure out how to access secretSeedLength from SecretDisplayCard
+      // then put the condition equal to: if secretSeedLength > 12, show enable the conditional wrap.
+      condition={true}
       wrap={children => <ScrollView>{children}</ScrollView>}
     >
       <Box

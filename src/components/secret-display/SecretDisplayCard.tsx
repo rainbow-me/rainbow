@@ -83,6 +83,7 @@ export default function SecretDisplayCard({
           background="card (Deprecated)"
           borderRadius={25}
           height={{
+            // 240 was here previously, added 450 as the option for 24 word phrases
             custom: secretSeedLength <= 12 ? 240 : 450,
           }}
           paddingHorizontal="30px (Deprecated)"
