@@ -1004,7 +1004,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Resolve promise for when a user has push notif permissions
 - Uncomment copy seeds
 - Enable native debugging in Xcode
-- Fix displaying alerts in Portal.m
+- Fix displaying alerts in Index.m
 - Remove console.log
 - Fix memory leak in Cool Modals
 - Move hiding of portal to effect's cleanup

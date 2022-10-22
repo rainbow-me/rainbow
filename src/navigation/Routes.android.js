@@ -40,7 +40,7 @@ import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
-import { createBottomSheetNavigator } from './bottom-sheet';
+import { createBottomSheetNavigator } from '@/lib/bottom-sheet-navigator';
 import {
   addTokenSheetConfig,
   closeKeyboardOnClose,

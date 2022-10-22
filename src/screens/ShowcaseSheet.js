@@ -6,7 +6,7 @@ import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { rainbowFetch } from '../rainbow-fetch';
-import { ModalContext } from '../react-native-cool-modals/NativeStackView';
+import { ModalContext } from '../lib/pan-modal/NativeStackView';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
 import { tokenFamilyItem } from '@/helpers/buildWalletSections';

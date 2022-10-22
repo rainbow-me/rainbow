@@ -77,7 +77,7 @@ import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
-import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
+import createNativeStackNavigator from '@/lib/pan-modal/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 

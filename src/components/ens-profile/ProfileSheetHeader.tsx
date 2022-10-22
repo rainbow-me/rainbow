@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useContext, useMemo } from 'react';
-import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
+import { ModalContext } from '../../lib/pan-modal/NativeStackView';
 import { ProfileSheetConfigContext } from '../../screens/ProfileSheet';
 import Skeleton from '../skeleton/Skeleton';
 import ActionButtons from './ActionButtons/ActionButtons';

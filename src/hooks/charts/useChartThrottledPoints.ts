@@ -11,7 +11,7 @@ import {
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 
-import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
+import { ModalContext } from '@/lib/pan-modal/NativeStackView';
 
 export const UniBalanceHeightDifference = 100;
 

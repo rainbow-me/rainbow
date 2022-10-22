@@ -30,13 +30,13 @@
 		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
 		4D098C2F2811A9A5006A801A /* RNStartTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D098C2E2811A9A5006A801A /* RNStartTime.m */; };
+		4D9AADE329042E3700E9EDB1 /* Portal.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D9AADE229042E3700E9EDB1 /* Portal.m */; };
 		6630540924A38A1900E5B030 /* RainbowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 6630540824A38A1900E5B030 /* RainbowText.m */; };
 		6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635730524939991006ACFA6 /* SafeStoreReview.m */; };
 		6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6655FFB325BB2B0700642961 /* ThemeModule.m */; };
 		66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */; };
 		66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */; };
 		66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB324AB641100C3F539 /* RNCMScreen.m */; };
-		66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */; };
 		66A28EB024CAF1B500410A88 /* TestFlight.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A28EAF24CAF1B500410A88 /* TestFlight.m */; };
 		66F889DB260CEF1E00E27D6E /* UIViewController+PanModalPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F889D8260CEF1E00E27D6E /* UIViewController+PanModalPresenter.swift */; };
 		66F889DC260CEF1E00E27D6E /* SlackBottomSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 66F889DA260CEF1E00E27D6E /* SlackBottomSheet.m */; };
@@ -241,6 +241,7 @@
 		4D098C2D2811A979006A801A /* RNStartTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNStartTime.h; sourceTree = "<group>"; };
 		4D098C2E2811A9A5006A801A /* RNStartTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNStartTime.m; sourceTree = "<group>"; };
 		4D61F9B45755AD85D9E3770E /* Pods-PriceWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
+		4D9AADE229042E3700E9EDB1 /* Portal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Portal.m; path = ../src/lib/portal/ios/Portal.m; sourceTree = "<group>"; };
 		6630540824A38A1900E5B030 /* RainbowText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowText.m; sourceTree = "<group>"; };
 		6635730524939991006ACFA6 /* SafeStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafeStoreReview.m; sourceTree = "<group>"; };
 		664612EC2748489B00B43F5A /* PriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PriceWidgetExtension.entitlements; sourceTree = "<group>"; };
@@ -249,12 +250,11 @@
 		668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Medium.otf"; path = "../src/assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		668ADB2C25A4E3A40050859D /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
 		668ADB2E25A4E3A40050859D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		66A1FEAF24AB641100C3F539 /* RNCMScreenStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreenStack.h; path = "../src/react-native-cool-modals/ios/RNCMScreenStack.h"; sourceTree = "<group>"; };
-		66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMScreenStack.m; path = "../src/react-native-cool-modals/ios/RNCMScreenStack.m"; sourceTree = "<group>"; };
-		66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIViewController+slack.swift"; path = "../src/react-native-cool-modals/ios/UIViewController+slack.swift"; sourceTree = "<group>"; };
-		66A1FEB224AB641100C3F539 /* RNCMScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreen.h; path = "../src/react-native-cool-modals/ios/RNCMScreen.h"; sourceTree = "<group>"; };
-		66A1FEB324AB641100C3F539 /* RNCMScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMScreen.m; path = "../src/react-native-cool-modals/ios/RNCMScreen.m"; sourceTree = "<group>"; };
-		66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMPortal.m; path = "../src/react-native-cool-modals/ios/RNCMPortal.m"; sourceTree = "<group>"; };
+		66A1FEAF24AB641100C3F539 /* RNCMScreenStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreenStack.h; path = "../src/lib/pan-modal/ios/RNCMScreenStack.h"; sourceTree = "<group>"; };
+		66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMScreenStack.m; path = "../src/lib/pan-modal/ios/RNCMScreenStack.m"; sourceTree = "<group>"; };
+		66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIViewController+slack.swift"; path = "../src/lib/pan-modal/ios/UIViewController+slack.swift"; sourceTree = "<group>"; };
+		66A1FEB224AB641100C3F539 /* RNCMScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreen.h; path = "../src/lib/pan-modal/ios/RNCMScreen.h"; sourceTree = "<group>"; };
+		66A1FEB324AB641100C3F539 /* RNCMScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMScreen.m; path = "../src/lib/pan-modal/ios/RNCMScreen.m"; sourceTree = "<group>"; };
 		66A28EAF24CAF1B500410A88 /* TestFlight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestFlight.m; sourceTree = "<group>"; };
 		66A29CCA2511074500481F4A /* ReaHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaHeader.h; sourceTree = SOURCE_ROOT; };
 		66F889D8260CEF1E00E27D6E /* UIViewController+PanModalPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+PanModalPresenter.swift"; sourceTree = "<group>"; };
@@ -411,6 +411,7 @@
 		13B07FAE1A68108700A75B9A /* Rainbow */ = {
 			isa = PBXGroup;
 			children = (
+				4D9AADE129042D7800E9EDB1 /* Portal */,
 				15C398772880DF82006033AC /* AppIcons */,
 				4D098C2C2811A95F006A801A /* RNStartTime */,
 				66F889D0260CEE0E00E27D6E /* DiscoverSheet */,
@@ -544,6 +545,14 @@
 			name = RNStartTime;
 			sourceTree = "<group>";
 		};
+		4D9AADE129042D7800E9EDB1 /* Portal */ = {
+			isa = PBXGroup;
+			children = (
+				4D9AADE229042E3700E9EDB1 /* Portal.m */,
+			);
+			name = Portal;
+			sourceTree = "<group>";
+		};
 		668ADB2B25A4E3A20050859D /* Rainbow Stickers */ = {
 			isa = PBXGroup;
 			children = (
@@ -556,7 +565,6 @@
 		66A1FEAE24AB63D600C3F539 /* RNCoolModals */ = {
 			isa = PBXGroup;
 			children = (
-				66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */,
 				66A1FEB224AB641100C3F539 /* RNCMScreen.h */,
 				66A1FEB324AB641100C3F539 /* RNCMScreen.m */,
 				66A1FEAF24AB641100C3F539 /* RNCMScreenStack.h */,
@@ -1210,6 +1218,7 @@
 				A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */,
 				4D098C2F2811A9A5006A801A /* RNStartTime.m in Sources */,
 				66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */,
+				4D9AADE329042E3700E9EDB1 /* Portal.m in Sources */,
 				A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */,
 				66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */,
 				C18FCD3E273C64D60079CE28 /* PriceData.swift in Sources */,
@@ -1235,7 +1244,6 @@
 				A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */,
 				A4AF3CD023DA3A0F00F230F3 /* TransactionListRequestViewCell.swift in Sources */,
 				A4D04BA923D12F99008C1DEC /* Button.swift in Sources */,
-				66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */,
 				A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */,
 				C18FCD43273C64E40079CE28 /* PriceDataProvider.swift in Sources */,
 				A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */,
