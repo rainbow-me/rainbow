@@ -201,7 +201,7 @@ const RegistrationAvatar = ({
                 borderRadius={size / 2}
                 height={{ custom: size }}
                 justifyContent="center"
-                shadow={avatarUrl ? '15px light' : undefined}
+                shadow={avatarUrl ? '15px light (Deprecated)' : undefined}
                 width={{ custom: size }}
               >
                 {avatarUrl ? (
