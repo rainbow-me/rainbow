@@ -411,12 +411,10 @@
 		13B07FAE1A68108700A75B9A /* Rainbow */ = {
 			isa = PBXGroup;
 			children = (
-				4D9AADE129042D7800E9EDB1 /* Portal */,
+				4D9AADE42904487E00E9EDB1 /* Modules */,
 				15C398772880DF82006033AC /* AppIcons */,
-				4D098C2C2811A95F006A801A /* RNStartTime */,
 				66F889D0260CEE0E00E27D6E /* DiscoverSheet */,
 				1539422B24C7CF7B00E4A9D1 /* Settings */,
-				66A1FEAE24AB63D600C3F539 /* RNCoolModals */,
 				15E531D7242DAB3500797B89 /* NSNotifications */,
 				15E531D6242B28F800797B89 /* Animations */,
 				157155042418734C009B698B /* RainbowDebug.entitlements */,
@@ -536,13 +534,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4D098C2C2811A95F006A801A /* RNStartTime */ = {
+		4D098C2C2811A95F006A801A /* StartTime */ = {
 			isa = PBXGroup;
 			children = (
 				4D098C2D2811A979006A801A /* RNStartTime.h */,
 				4D098C2E2811A9A5006A801A /* RNStartTime.m */,
 			);
-			name = RNStartTime;
+			name = StartTime;
 			sourceTree = "<group>";
 		};
 		4D9AADE129042D7800E9EDB1 /* Portal */ = {
@@ -551,6 +549,16 @@
 				4D9AADE229042E3700E9EDB1 /* Portal.m */,
 			);
 			name = Portal;
+			sourceTree = "<group>";
+		};
+		4D9AADE42904487E00E9EDB1 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				66A1FEAE24AB63D600C3F539 /* PanModal */,
+				4D9AADE129042D7800E9EDB1 /* Portal */,
+				4D098C2C2811A95F006A801A /* StartTime */,
+			);
+			name = Modules;
 			sourceTree = "<group>";
 		};
 		668ADB2B25A4E3A20050859D /* Rainbow Stickers */ = {
@@ -562,7 +570,7 @@
 			path = "Rainbow Stickers";
 			sourceTree = "<group>";
 		};
-		66A1FEAE24AB63D600C3F539 /* RNCoolModals */ = {
+		66A1FEAE24AB63D600C3F539 /* PanModal */ = {
 			isa = PBXGroup;
 			children = (
 				66A1FEB224AB641100C3F539 /* RNCMScreen.h */,
@@ -571,7 +579,7 @@
 				66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */,
 				66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */,
 			);
-			name = RNCoolModals;
+			name = PanModal;
 			sourceTree = "<group>";
 		};
 		66F889D0260CEE0E00E27D6E /* DiscoverSheet */ = {
