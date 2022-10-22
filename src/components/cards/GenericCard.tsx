@@ -86,6 +86,17 @@ const GenericCard = ({
                 : undefined
             }
             borderRadius={24}
+            style={{
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 5,
+              },
+              shadowOpacity: 0.34,
+              shadowRadius: 6.27,
+
+              elevation: 10,
+            }}
             // shadow={{
             //   custom: {
             //     android: {
@@ -103,6 +114,7 @@ const GenericCard = ({
             //     ],
             //   },
             // }}
+            // shadow="18px blue"
             padding="20px"
           >
             {children}

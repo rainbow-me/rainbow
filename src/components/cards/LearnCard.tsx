@@ -59,9 +59,15 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
                 alignItems="center"
                 justifyContent="center"
               >
-                <NativeText style={{ fontSize: 14, textAlign: 'center' }}>
+                <Text
+                  containsEmoji
+                  size="17pt"
+                  weight="bold"
+                  align="center"
+                  color="label"
+                >
                   {emoji}
-                </NativeText>
+                </Text>
               </Box>
             </Inline>
             <Stack space="10px">
@@ -88,9 +94,15 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
               </Column>
               <Column width="content">
                 <IconOrb color={accentColor}>
-                  <NativeText style={{ fontSize: 14, textAlign: 'center' }}>
+                  <Text
+                    containsEmoji
+                    size="17pt"
+                    weight="bold"
+                    align="center"
+                    color="label"
+                  >
                     {emoji}
-                  </NativeText>
+                  </Text>
                 </IconOrb>
               </Column>
             </Columns>
