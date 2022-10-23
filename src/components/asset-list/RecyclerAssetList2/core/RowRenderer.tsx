@@ -38,6 +38,7 @@ import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import LearnCard from '@/components/cards/LearnCard';
 import { learnCards } from '@/components/cards/constants';
+import { deviceUtils } from '@/utils';
 
 function rowRenderer(
   type: CellType,
@@ -91,7 +92,10 @@ function rowRenderer(
     case CellType.GET_STARTED_CARD:
       return (
         <CardRowWrapper>
-          <LearnCard cardDetails={learnCards[0]} type="stretch" />
+          <LearnCard
+            cardDetails={learnCards(deviceUtils.dimensions.width)[0]}
+            type="stretch"
+          />
         </CardRowWrapper>
       );
     case CellType.PROFILE_STICKY_HEADER:

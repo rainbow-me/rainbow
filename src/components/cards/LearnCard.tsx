@@ -10,7 +10,7 @@ import {
   Text,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import { Linking, Text as NativeText } from 'react-native';
+import { Linking, Text as NativeText, View } from 'react-native';
 import React from 'react';
 import GenericCard from './GenericCard';
 import { Emoji } from '../text';
