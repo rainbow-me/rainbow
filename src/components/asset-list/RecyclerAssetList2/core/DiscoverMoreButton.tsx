@@ -1,5 +1,5 @@
 import { ButtonPressAnimation } from '@/components/animations';
-import { AccentColorProvider, Box, Text } from '@/design-system';
+import { AccentColorProvider, Box, Text, Rows } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import React, { useCallback } from 'react';
 import Routes from '@/navigation/routesNames';

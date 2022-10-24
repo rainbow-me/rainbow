@@ -93,16 +93,14 @@ const ReceiveAssetsCard = () => {
               alignItems="center"
               justifyContent="center"
             >
-              <ColorModeProvider value="light">
-                <Text
-                  color={{ custom: accentColor }}
-                  containsEmoji
-                  size="15pt"
-                  weight="bold"
-                >
-                  􀐅 Copy Address
-                </Text>
-              </ColorModeProvider>
+              <Text
+                color={{ custom: accentColor }}
+                containsEmoji
+                size="15pt"
+                weight="bold"
+              >
+                􀐅 Copy Address
+              </Text>
             </Box>
           </CopyFloatingEmojis>
         </AccentColorProvider>

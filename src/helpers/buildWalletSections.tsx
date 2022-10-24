@@ -388,8 +388,7 @@ const withBriefBalanceSection = (
     nativeCurrency
   );
 
-  //TODO: add check for tokens as well
-  const isEmpty = !uniqueTokens?.length;
+  const isEmpty = !uniqueTokens?.length && briefAssets?.length <= 1;
 
   const emptySection = [
     { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
@@ -437,11 +436,16 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    {
-      type: 'PROFILE_BALANCE_ROW',
-      uid: 'profile-balance',
-      value: totalValue,
-    },
+    !isEmpty
+      ? {
+          type: 'PROFILE_BALANCE_ROW',
+          uid: 'profile-balance',
+          value: totalValue,
+        }
+      : {
+          type: 'EMPTY_ROW',
+          uid: 'empty-row',
+        },
     {
       type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
       uid: 'profile-balance-space-after',
