@@ -223,7 +223,6 @@ export default function PanModalStackView({
         // TODO: FIX TS
         // @ts-ignore
         const { limitActiveModals } = options;
-        console.log(JSON.stringify(colors));
         return (
           <ScreenView
             colors={colors}
