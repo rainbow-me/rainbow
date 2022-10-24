@@ -12,12 +12,12 @@ import { haptics } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import IconOrb from './IconOrb';
+import { IconOrb } from './IconOrb';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 export const ReceiveCardHeight = 174;
 
-const ReceiveAssetsCard = () => {
+export const ReceiveAssetsCard = () => {
   const { colors } = useTheme();
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
@@ -62,6 +62,8 @@ const ReceiveAssetsCard = () => {
           </ButtonPressAnimation>
         </Inline>
         <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
+          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+          /* @ts-ignore - JS component */}
           <CopyFloatingEmojis onPress={onPressCopy} textToCopy={accountAddress}>
             <Box
               background="accent"
@@ -86,5 +88,3 @@ const ReceiveAssetsCard = () => {
     </GenericCard>
   );
 };
-
-export default ReceiveAssetsCard;

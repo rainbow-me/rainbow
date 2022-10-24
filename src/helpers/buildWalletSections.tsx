@@ -221,7 +221,7 @@ const withBriefBalanceSavingsSection = (
   if (network !== Network.mainnet) {
     return [];
   }
-  //TODO: make this logic conditional
+  // TODO: make this logic conditional
   return [];
   if (isLoadingAssets) return [];
   return [

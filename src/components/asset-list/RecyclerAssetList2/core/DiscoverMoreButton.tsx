@@ -1,5 +1,5 @@
 import { ButtonPressAnimation } from '@/components/animations';
-import { AccentColorProvider, Box, Text, Rows } from '@/design-system';
+import { AccentColorProvider, Box, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import React, { useCallback } from 'react';
 import Routes from '@/navigation/routesNames';
@@ -9,7 +9,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 export const DiscoverMoreButton = () => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
-  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
+  const { accentColor } = useAccountAccentColor();
 
   const handlePressDiscover = useCallback(() => {
     navigate(Routes.DISCOVER_SCREEN);

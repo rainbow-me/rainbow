@@ -40,7 +40,7 @@ function least(length: number, compare: (value: number) => number) {
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    let pivot = Math.round(bound1 + (bound2 - bound1) / 2);
+    const pivot = Math.round(bound1 + (bound2 - bound1) / 2);
     if (bound1 === bound2) {
       return bound1;
     }

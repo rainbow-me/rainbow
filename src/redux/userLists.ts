@@ -120,10 +120,9 @@ export const userListsLoadState = () => async (
   }
 };
 
-export const userListsSetSelectedList = (
-  listId: string,
-  save: boolean = true
-) => (dispatch: Dispatch<UserListsSetSelectedListAction>) => {
+export const userListsSetSelectedList = (listId: string, save = true) => (
+  dispatch: Dispatch<UserListsSetSelectedListAction>
+) => {
   dispatch({
     payload: listId,
     type: USER_LISTS_SET_SELECTED_LIST,

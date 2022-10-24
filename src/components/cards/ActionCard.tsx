@@ -2,7 +2,7 @@ import { Box, Stack, Text } from '@/design-system';
 import React from 'react';
 import { GenericCard } from './GenericCard';
 import { CardColorway } from './constants';
-import IconOrb from './IconOrb';
+import { IconOrb } from './IconOrb';
 
 interface ActionCardProps {
   colorway: CardColorway;
@@ -11,7 +11,7 @@ interface ActionCardProps {
   title: string;
 }
 
-const ActionCard = ({
+export const ActionCard = ({
   colorway,
   sfSymbolIcon,
   onPress,
@@ -40,5 +40,3 @@ const ActionCard = ({
     </GenericCard>
   );
 };
-
-export default ActionCard;

@@ -35,7 +35,7 @@ export function isDecrypted(name: string) {
   const nameArray = name.split('.');
   const decrypted = nameArray.reduce((acc, label) => {
     if (acc === false) return false;
-    return isEncodedLabelhash(label) ? false : true;
+    return !isEncodedLabelhash(label);
   }, true);
 
   return decrypted;

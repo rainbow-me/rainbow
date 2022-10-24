@@ -230,7 +230,7 @@ export const EmojiSelector = ({
 
       if (allEmojiList[2]) {
         for (let i = 0; i < columns * 10; i += columns) {
-          let emojis = [];
+          const emojis = [];
           for (let j = 0; j < columns; j++) {
             emojis.push(
               charFromEmojiObject(

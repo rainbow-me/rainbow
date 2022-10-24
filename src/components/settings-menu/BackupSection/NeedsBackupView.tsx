@@ -41,7 +41,7 @@ export default function NeedsBackupView() {
     // We can't use a readonly wallet to back up, so we need to find the primary
     if (selectedWallet.type === WalletTypes.readOnly) {
       // Loop through the wallets and find the primary
-      for (let wallet of Object.values(wallets)) {
+      for (const wallet of Object.values(wallets)) {
         const rainbowWallet = wallet as RainbowWallet;
         // Found the non watched wallet, take the id and break out of the loop
         if (rainbowWallet.type !== WalletTypes.readOnly) {

@@ -24,6 +24,7 @@ interface ChartPathProviderProps {
   width?: number;
   height?: number;
   yRange?: [number, number];
+  children: React.ReactNode;
 }
 
 function getCurveType(curveType: keyof typeof CurveType) {
@@ -93,7 +94,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
   const smallestX = data.points[0];
   const greatestX = data.points[data.points.length - 1];
 
-  for (let point of data.points) {
+  for (const point of data.points) {
     points.push({
       originalX: point.x,
       originalY: point.y,

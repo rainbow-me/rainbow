@@ -44,8 +44,7 @@ export const GenericCard = ({
               : undefined
           }
           borderRadius={24}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+          // @ts-expect-error - Box will take flex prop it just doesn't want to
           flex={0}
           shadow="18px accent"
           padding="20px"

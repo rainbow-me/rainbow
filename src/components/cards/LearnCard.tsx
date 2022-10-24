@@ -3,7 +3,7 @@ import { useTheme } from '@/theme';
 import React from 'react';
 import { GenericCard } from './GenericCard';
 import { LearnCardDetails, learnCategoryColors } from './constants';
-import IconOrb from './IconOrb';
+import { IconOrb } from './IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
@@ -12,7 +12,7 @@ interface LearnCardProps {
   type: 'square' | 'stretch';
 }
 
-const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
+export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
   const themedLearnCategoryColors = learnCategoryColors(isDarkMode);
@@ -104,5 +104,3 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
     </GenericCard>
   );
 };
-
-export default LearnCard;

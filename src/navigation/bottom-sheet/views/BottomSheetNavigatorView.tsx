@@ -23,11 +23,11 @@ const BottomSheetNavigatorView = ({
   state,
   navigation,
 }: Props) => {
-  //#region hooks
+  // #region hooks
   const forceUpdate = useForceUpdate();
-  //#endregion
+  // #endregion
 
-  //#region variables
+  // #region variables
   const descriptorsCache = useRef<BottomSheetDescriptorMap>({});
   const [firstKey, ...restKeys] = useMemo(
     () => state.routes.map(route => route.key),
@@ -49,9 +49,9 @@ const BottomSheetNavigatorView = ({
     .forEach(key => {
       descriptorsCache.current[key].removing = true;
     });
-  //#endregion
+  // #endregion
 
-  //#region callbacks
+  // #region callbacks
   const handleOnDismiss = useCallback((key: string, removed: boolean) => {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete descriptorsCache.current[key];
@@ -73,7 +73,7 @@ const BottomSheetNavigatorView = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //#endregion
+  // #endregion
   return (
     <NavigationHelpersContext.Provider value={navigation}>
       {descriptors[firstKey].render()}

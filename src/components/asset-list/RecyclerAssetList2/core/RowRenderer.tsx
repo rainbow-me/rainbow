@@ -28,11 +28,11 @@ import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsR
 import { ProfileAvatarRow } from '../profile-header/ProfileAvatarRow';
 import { ProfileBalanceRow } from '../profile-header/ProfileBalanceRow';
 import { ProfileNameRow } from '../profile-header/ProfileNameRow';
-import AssetCard from '@/components/cards/AssetCard';
-import ReceiveAssetsCard from '@/components/cards/ReceiveAssetsCard';
+import { AssetCard } from '@/components/cards/AssetCard';
+import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
-import LearnCard from '@/components/cards/LearnCard';
+import { LearnCard } from '@/components/cards/LearnCard';
 import { learnCards } from '@/components/cards/constants';
 
 function rowRenderer(

@@ -60,7 +60,7 @@ export const updateNonce = (
   accountAddress: EthereumAddress,
   nonce: number,
   network = Network.mainnet,
-  increment: boolean = true
+  increment = true
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { nonceManager: currentNonceData } = getState();
   const currentNonce =

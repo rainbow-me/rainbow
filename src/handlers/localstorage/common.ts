@@ -1,4 +1,4 @@
-/*global storage*/
+/* global storage*/
 import logger from '@/utils/logger';
 
 const defaultVersion = '0.1.0';

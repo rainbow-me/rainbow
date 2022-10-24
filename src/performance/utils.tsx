@@ -23,11 +23,7 @@ export function measureEventEnd(name: string) {
 
 const timeoutRegistry = new Map<string, any>();
 
-function createDebounceAverage(
-  title: string,
-  phase: string,
-  delay: number = 100
-) {
+function createDebounceAverage(title: string, phase: string, delay = 100) {
   let values: number[] = [];
   let timeout: NodeJS.Timeout;
 

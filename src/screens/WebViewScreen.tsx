@@ -1,40 +1,25 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Share } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { Centered, FlexItem } from '../components/layout';
-import { reserveWyreOrder } from '../handlers/wyre';
-import { StatusBarHelper } from '@/helpers';
-import { useAccountSettings, useDimensions } from '@/hooks';
-import styled from '@/styled-thing';
+import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import Spinner from '@/components/Spinner';
-import {
-  SheetHandleFixedToTopHeight,
-  SheetTitle,
-  SlackSheet,
-} from '@/components/sheet';
-import { Box, DebugLayout, Text, useForegroundColor } from '@/design-system';
-import { ScrollView } from 'react-native-gesture-handler';
+import { SlackSheet } from '@/components/sheet';
+import { Box, DebugLayout, Text } from '@/design-system';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { backgroundColors, globalColors } from '@/design-system/color/palettes';
+import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
+import { IS_ANDROID } from '@/env';
 
-const HEADER_HEIGHT = 60;
-
-const Container = styled(FlexItem)({
-  backgroundColor: ({ theme: { colors } }) => colors.white,
-});
-
-const StyledWebView = styled(WebView)({
-  backgroundColor: ({ theme: { colors } }) => colors.white,
-});
+const HeaderHeight = 60;
 
 export default function WebViewScreen() {
   const {
     params: { title, url },
-  } = useRoute();
+  }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any = useRoute();
 
   // useEffect(() => {
   //   StatusBarHelper.setBackgroundColor('transparent', false);
@@ -42,26 +27,26 @@ export default function WebViewScreen() {
   //   StatusBarHelper.setDarkContent();
   // }, []);
 
-  const defaultInputWidth = 180;
-
-  const { colors, isDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
 
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
   const contentHeight =
     deviceHeight -
-    HEADER_HEIGHT -
+    HeaderHeight -
     (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
-  const LoadingSpinner = android ? Spinner : ActivityIndicator;
+  const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - JS component
     <SlackSheet
       renderHeader={() => (
         <Box
           top="0px"
           background="surfacePrimary"
-          height={{ custom: HEADER_HEIGHT }}
+          height={{ custom: HeaderHeight }}
           width="full"
           justifyContent="center"
           alignItems="center"
@@ -99,6 +84,8 @@ export default function WebViewScreen() {
                 alignItems="center"
                 justifyContent="center"
               >
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+                /* @ts-ignore - JS component */}
                 <LoadingSpinner />
               </Box>
             )}

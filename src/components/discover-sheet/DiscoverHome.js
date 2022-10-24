@@ -11,7 +11,7 @@ import { Columns, Inset, Stack } from '@/design-system';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
-import LearnCard from '../cards/LearnCard';
+import { LearnCard } from '../cards/LearnCard';
 import { learnCards } from '@/components/cards/constants';
 
 export default function DiscoverHome() {

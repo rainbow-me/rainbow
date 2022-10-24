@@ -7,7 +7,7 @@ interface IconOrbProps {
   icon: string;
 }
 
-const IconOrb = ({ color, icon, shadowColor }: IconOrbProps) => (
+export const IconOrb = ({ color, icon, shadowColor }: IconOrbProps) => (
   <AccentColorProvider color={color}>
     {shadowColor ? (
       <Box
@@ -51,5 +51,3 @@ const IconOrb = ({ color, icon, shadowColor }: IconOrbProps) => (
     )}
   </AccentColorProvider>
 );
-
-export default IconOrb;

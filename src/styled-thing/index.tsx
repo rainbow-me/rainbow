@@ -52,7 +52,7 @@ function useResolvedAttrs(theme = {}, props: any, attrs = []) {
 
   for (let i = 0; i < attrs.length; i++) {
     const attrDef = attrs[i];
-    let resolvedAttrDef =
+    const resolvedAttrDef =
       // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       typeof attrDef === 'function' ? attrDef(context) : attrDef;
     let key;
@@ -67,7 +67,7 @@ function useResolvedAttrs(theme = {}, props: any, attrs = []) {
 }
 
 function processStyles(nestedStyles: any, props: any) {
-  let result = {};
+  const result = {};
 
   for (let i = 0; i < nestedStyles.length; i++) {
     const styles = nestedStyles[i];

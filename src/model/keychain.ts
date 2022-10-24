@@ -46,7 +46,7 @@ export async function saveString(
       );
       await delay(1000);
       try {
-        let acOptions = accessControlOptions;
+        const acOptions = accessControlOptions;
         // This is a bug on iOS 14 and 15 simulators
         // See https://github.com/oblador/react-native-keychain/issues/509
         if (IS_TESTING === 'true') {

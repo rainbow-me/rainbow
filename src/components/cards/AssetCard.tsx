@@ -40,7 +40,7 @@ import chartTypes from '@/helpers/chartTypes';
 
 export const AssetCardHeight = 274;
 
-const AssetCard = () => {
+export const AssetCard = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
@@ -72,8 +72,6 @@ const AssetCard = () => {
     });
   }, [accountAddress, isDamaged, navigate]);
 
-  // If we don't have a balance for this asset
-  // It's a generic asset
   const assetWithPrice = useMemo(() => {
     return {
       ...ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency),
@@ -186,12 +184,17 @@ const AssetCard = () => {
                   longPressGestureHandlerProps={undefined}
                   selectedStrokeWidth={3}
                   stroke={colorForAsset}
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore - prop is accepted via prop spreading
                   strokeLinecap="round"
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore - prop is accepted via prop spreading
                   strokeLinejoin="round"
                   strokeWidth={4}
                   width={CHART_WIDTH}
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore - prop is accepted via prop spreading
                   chartXOffset={0}
-                  disableOnPress
                   isCard
                 />
                 <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
@@ -224,5 +227,3 @@ const AssetCard = () => {
     </ButtonPressAnimation>
   );
 };
-
-export default AssetCard;

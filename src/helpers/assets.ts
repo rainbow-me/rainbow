@@ -94,7 +94,7 @@ export const buildCoinsList = (
   includePlaceholder = false,
   emptyCollectibles: any
 ) => {
-  let standardAssets: any = [],
+  const standardAssets: any = [],
     pinnedAssets: any = [],
     smallAssets: any = [],
     hiddenAssets: any = [];
@@ -206,7 +206,7 @@ export const buildBriefCoinsList = (
   );
   const briefAssets = [];
   if (assets) {
-    for (let asset of assets) {
+    for (const asset of assets) {
       if (asset.coinDivider) {
         briefAssets.push({
           defaultToEditButton: asset.defaultToEditButton,
@@ -215,7 +215,7 @@ export const buildBriefCoinsList = (
           value: smallBalancesValue,
         });
       } else if (asset.smallBalancesContainer) {
-        for (let smallAsset of asset.assets) {
+        for (const smallAsset of asset.assets) {
           briefAssets.push({
             type: 'COIN',
             uid: 'coin-' + smallAsset.uniqueId,
@@ -246,7 +246,7 @@ export const buildUniqueTokenList = (
   const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
-  for (let family of families) {
+  for (const family of families) {
     const tokensRow: any = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
       if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
@@ -399,7 +399,7 @@ export const buildBriefUniqueTokenList = (
     }
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
-  for (let family of families2) {
+  for (const family of families2) {
     result.push({
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       image: grouped2[family][0].familyImage,

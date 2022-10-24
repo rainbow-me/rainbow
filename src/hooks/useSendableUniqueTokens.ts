@@ -13,7 +13,7 @@ const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
   );
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
   const families = Object.keys(grouped).sort();
-  let sendableTokens = [];
+  const sendableTokens = [];
   for (let i = 0; i < families.length; i++) {
     let newObject = {};
     newObject = {

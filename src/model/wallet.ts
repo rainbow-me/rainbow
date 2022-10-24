@@ -550,8 +550,8 @@ export const createWallet = async (
   overwrite = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent: boolean = false,
-  clearCallbackOnStartCreation: boolean = false
+  silent = false,
+  clearCallbackOnStartCreation = false
 ): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();

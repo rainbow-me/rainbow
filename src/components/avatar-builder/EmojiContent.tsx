@@ -24,10 +24,10 @@ const EmojiContent = ({
   const { colors } = useTheme();
 
   const categoryEmojis = useMemo(() => {
-    let categoryEmojis = [];
+    const categoryEmojis = [];
     for (let i = 0; i < data.length; i += columns) {
-      let rowContent = [];
-      let touchableNet = [];
+      const rowContent = [];
+      const touchableNet = [];
       for (let j = 0; j < columns; j++) {
         if (i + j < data.length) {
           rowContent.push(charFromEmojiObject(data[i + j].emoji));

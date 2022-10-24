@@ -616,7 +616,7 @@ export const onMainnetAssetDiscoveryResponse = (
     return;
   }
   assetDiscoveryCallbackQueue[queueKey] = undefined;
-  for (let callback of callbacks) {
+  for (const callback of callbacks) {
     callback(response.payload!.assets);
   }
 };
@@ -820,7 +820,7 @@ export const fetchOnchainBalances = ({
     ) => {
       // Fix prices
       const parsedAssets: Parameters<AssetDiscoveryCallback>[0] = {};
-      for (let [key, asset] of Object.entries(assets!)) {
+      for (const [key, asset] of Object.entries(assets!)) {
         parsedAssets[key] = {
           ...asset,
           asset: {
