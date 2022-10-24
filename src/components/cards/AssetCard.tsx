@@ -209,7 +209,7 @@ const AssetCard = () => {
           <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
             <Box
               width="full"
-              height={{ custom: 36 }}
+              height="36px"
               borderRadius={99}
               alignItems="center"
               justifyContent="center"

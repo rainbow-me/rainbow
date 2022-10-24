@@ -47,6 +47,8 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
     secondaryTextColor,
   } = themedLearnCategoryColors[category];
 
+  console.log(width);
+  console.log(numberOfLines);
   return (
     <GenericCard
       type={type}
@@ -105,7 +107,7 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
                   size="22pt"
                   weight="heavy"
                   color={{ custom: primaryTextColor }}
-                  numberOfLines={numberOfLines}
+                  numberOfLines={2}
                 >
                   {title}
                 </Text>

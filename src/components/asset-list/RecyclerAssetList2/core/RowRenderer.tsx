@@ -39,6 +39,7 @@ import { DiscoverMoreButton } from './DiscoverMoreButton';
 import LearnCard from '@/components/cards/LearnCard';
 import { learnCards } from '@/components/cards/constants';
 import { deviceUtils } from '@/utils';
+import { deviceDimensions } from '@/hooks/useDimensions';
 
 function rowRenderer(
   type: CellType,
@@ -93,7 +94,11 @@ function rowRenderer(
       return (
         <CardRowWrapper>
           <LearnCard
-            cardDetails={learnCards(deviceUtils.dimensions.width)[0]}
+            cardDetails={
+              learnCards(
+                deviceUtils.dimensions.height <= deviceDimensions.iphone6.height
+              )[4]
+            }
             type="stretch"
           />
         </CardRowWrapper>

@@ -88,7 +88,7 @@ const ReceiveAssetsCard = () => {
             <Box
               background="accent"
               borderRadius={99}
-              height={{ custom: 36 }}
+              height="36px"
               width="full"
               alignItems="center"
               justifyContent="center"

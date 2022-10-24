@@ -141,8 +141,8 @@ export const learnCategoryColors: (
   };
 };
 
-const getStartedCard: (deviceWidth: number) => LearnCardDetails = (
-  deviceWidth: number
+const getStartedCard: (isSmallPhone: boolean) => LearnCardDetails = (
+  isSmallPhone: boolean
 ) => {
   return {
     url: 'https://learn.rainbow.me/get-started-with-rainbow',
@@ -151,12 +151,12 @@ const getStartedCard: (deviceWidth: number) => LearnCardDetails = (
     emoji: '🌈',
     description:
       "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey.",
-    numberOfLines: deviceWidth <= 369 ? 2 : 1,
+    numberOfLines: isSmallPhone ? 2 : 1,
   };
 };
 
-const backupsCard: (deviceWidth: number) => LearnCardDetails = (
-  deviceWidth: number
+const backupsCard: (isSmallPhone: boolean) => LearnCardDetails = (
+  isSmallPhone: boolean
 ) => {
   return {
     url: 'https://learn.rainbow.me/the-importance-of-backups',
@@ -165,26 +165,22 @@ const backupsCard: (deviceWidth: number) => LearnCardDetails = (
     emoji: '☮️',
     description:
       'Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we’ll chat about why it’s important to backup your wallet and the different methods that you can backup with.',
-    numberOfLines: deviceWidth <= 389 ? 2 : 1,
+    numberOfLines: isSmallPhone ? 2 : 1,
   };
 };
 
-const protectWalletCard: (deviceWidth: number) => LearnCardDetails = (
-  deviceWidth: number
-) => {
-  return {
-    url: 'https://learn.rainbow.me/protect-your-wallet',
-    category: 'Staying Safe',
-    title: 'Protect Your Wallet',
-    emoji: '🔒',
-    description:
-      'One of the best parts of having an Ethereum wallet like Rainbow is that you are in total control of your money. Unlike a bank account from Wells Fargo or a crypto exchange like Coinbase, we do not hold your assets on your behalf.',
-    numberOfLines: deviceWidth <= 301 ? 2 : 1,
-  };
+const protectWalletCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/protect-your-wallet',
+  category: 'Staying Safe',
+  title: 'Protect Your Wallet',
+  emoji: '🔒',
+  description:
+    'One of the best parts of having an Ethereum wallet like Rainbow is that you are in total control of your money. Unlike a bank account from Wells Fargo or a crypto exchange like Coinbase, we do not hold your assets on your behalf.',
+  numberOfLines: 1,
 };
 
-const connectToDappCard: (deviceWidth: number) => LearnCardDetails = (
-  deviceWidth: number
+const connectToDappCard: (isSmallPhone: boolean) => LearnCardDetails = (
+  isSmallPhone: boolean
 ) => {
   return {
     url: 'https://learn.rainbow.me/connect-to-a-website-or-app',
@@ -193,30 +189,26 @@ const connectToDappCard: (deviceWidth: number) => LearnCardDetails = (
     emoji: '🔌',
     description:
       "Now that you have an Ethereum wallet, you can login to certain websites using it. Instead of creating new accounts and passwords for every website you interact with, you'll just connect your wallet instead.",
-    numberOfLines: deviceWidth <= 399 ? 2 : 1,
+    numberOfLines: isSmallPhone ? 2 : 1,
   };
 };
 
-const avoidScamsCard: (deviceWidth: number) => LearnCardDetails = (
-  deviceWidth: number
-) => {
-  return {
-    url: 'https://learn.rainbow.me/avoid-crypto-scams',
-    category: 'Staying Safe',
-    title: 'Avoid Crypto Scams',
-    emoji: '🤬',
-    description:
-      "Here at Rainbow, one of our goals is to make exploring the new world of Ethereum fun, friendly, and safe. You know what's not any of those things? Scams. They're mean, and no one likes them. We want to help you avoid them, so we wrote this brief guide to help you do exactly that!",
-    numberOfLines: deviceWidth <= 464 ? 2 : 1,
-  };
+const avoidScamsCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/avoid-crypto-scams',
+  category: 'Staying Safe',
+  title: 'Avoid Crypto Scams',
+  emoji: '🤬',
+  description:
+    "Here at Rainbow, one of our goals is to make exploring the new world of Ethereum fun, friendly, and safe. You know what's not any of those things? Scams. They're mean, and no one likes them. We want to help you avoid them, so we wrote this brief guide to help you do exactly that!",
+  numberOfLines: 1,
 };
 
-export const learnCards: (deviceWidth: number) => LearnCardDetails[] = (
-  deviceWidth: number
+export const learnCards: (isSmallPhone: boolean) => LearnCardDetails[] = (
+  isSmallPhone: boolean
 ) => [
-  getStartedCard(deviceWidth),
-  backupsCard(deviceWidth),
-  protectWalletCard(deviceWidth),
-  connectToDappCard(deviceWidth),
-  avoidScamsCard(deviceWidth),
+  getStartedCard(isSmallPhone),
+  backupsCard(isSmallPhone),
+  protectWalletCard,
+  connectToDappCard(isSmallPhone),
+  avoidScamsCard,
 ];
