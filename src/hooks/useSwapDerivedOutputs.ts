@@ -111,6 +111,7 @@ const getInputAmount = async (
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
+    // @ts-ignore About to get quote
     const quote = await getQuote(quoteParams);
 
     // if no quote, if quote is error or there's no sell amount
@@ -211,7 +212,7 @@ const getOutputAmount = async (
 
     const rand = Math.floor(Math.random() * 100);
     Logger.debug('Getting quote ', rand, { quoteParams });
-
+    // @ts-ignore About to get quote
     const quote:
       | Quote
       | CrosschainQuote
