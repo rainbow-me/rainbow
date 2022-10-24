@@ -389,7 +389,6 @@ export type ForegroundColor =
   | 'labelSecondary'
   | 'labelTertiary'
   | 'labelQuaternary'
-  | 'labelWhite'
   | 'blue'
   | 'green'
   | 'red'
@@ -465,10 +464,6 @@ export const foregroundColors: Record<
   'labelQuaternary': {
     light: globalColors.grey60,
     dark: globalColors.white60,
-  },
-  'labelWhite': {
-    light: globalColors.white100,
-    dark: globalColors.white100,
   },
   'blue': selectBackgroundAsForeground('blue'),
   'green': selectBackgroundAsForeground('green'),
@@ -687,7 +682,6 @@ export const textColors = selectForegroundColors(
   'labelSecondary',
   'labelTertiary',
   'labelQuaternary',
-  'labelWhite',
   'blue',
   'green',
   'red',
