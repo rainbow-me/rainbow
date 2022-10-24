@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useContext, useMemo } from 'react';
-import { ModalContext } from '../../lib/pan-modal/NativeStackView';
-import { ProfileSheetConfigContext } from '../../screens/ProfileSheet';
+import { ModalContext } from '@/lib/pan-modal-navigator/PanModalStackView';
+import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
 import Skeleton from '../skeleton/Skeleton';
 import ActionButtons from './ActionButtons/ActionButtons';
 import ProfileAvatar from './ProfileAvatar/ProfileAvatar';
@@ -102,7 +102,7 @@ export default function ProfileSheetHeader({
   return (
     <Box
       background="body (Deprecated)"
-      {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
+      {...(ios && { onLayout: (e: any) => setTimeout(() => layout(), 500) })}
     >
       <Stack space={{ custom: 18 }}>
         <ProfileCover

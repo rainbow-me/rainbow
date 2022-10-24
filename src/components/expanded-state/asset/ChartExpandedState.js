@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { ModalContext } from '../../../lib/pan-modal/NativeStackView';
+import { ModalContext } from '@/lib/pan-modal-navigator/PanModalStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';

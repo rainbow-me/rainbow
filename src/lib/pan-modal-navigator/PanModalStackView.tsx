@@ -1,9 +1,34 @@
-import { StackActions, useTheme } from '@react-navigation/native';
+import {
+  StackActions,
+  StackNavigationState,
+  Theme,
+  useTheme,
+} from '@react-navigation/native';
 import React, { createContext, useMemo, useRef } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
-import Components from './screens';
+import PanModalScreenStackNativeComponent from './native-components/PanModalScreenStackNativeComponent';
+import PanModalScreenNativeComponent from './native-components/PanModalScreenNativeComponent';
+import {
+  StackDescriptorMap,
+  StackNavigationHelpers,
+} from '@react-navigation/stack/src/types';
 
-export const ModalContext = createContext();
+type ContextType = {
+  jumpToLong: () => void;
+  jumpToShort: () => void;
+  layout: () => void;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
+
+const defaultContextValue: ContextType = {
+  jumpToShort: noop,
+  jumpToLong: noop,
+  layout: noop,
+};
+
+export const ModalContext = createContext<ContextType>(defaultContextValue);
 
 const sx = StyleSheet.create({
   container: {
@@ -11,11 +36,24 @@ const sx = StyleSheet.create({
   },
 });
 
-const { RNCMScreenManager } = NativeModules;
+const PanModalScreenManager = NativeModules.RNCMScreenManager;
 
-function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
+type ScreenViewProps = {
+  colors: Theme['colors'];
+};
+
+function ScreenView({
+  colors,
+  descriptors,
+  navigation,
+  route,
+  state,
+  hidden,
+}: // TODO: FIX TS
+ScreenViewProps & any) {
   const { options, render: renderScene } = descriptors[route.key];
-  const ref = useRef();
+  // TODO: FIX TS
+  const ref = useRef<any>();
   const {
     allowsDragToDismiss,
     allowsTapToDismiss,
@@ -52,19 +90,19 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
       jumpToLong: () => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          RNCMScreenManager.jumpTo(true, screen);
+          PanModalScreenManager.jumpTo(true, screen);
         }
       },
       jumpToShort: () => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          RNCMScreenManager.jumpTo(false, screen);
+          PanModalScreenManager.jumpTo(false, screen);
         }
       },
       layout: () => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          RNCMScreenManager.layout(screen);
+          PanModalScreenManager.layout(screen);
         }
       },
     }),
@@ -77,7 +115,9 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
 
   return (
     <ModalContext.Provider value={context}>
-      <Components.Screen
+      <PanModalScreenNativeComponent
+        // TODO: FIX TS
+        // @ts-ignore
         allowsDragToDismiss={allowsDragToDismiss}
         allowsTapToDismiss={allowsTapToDismiss}
         anchorModalToLongForm={anchorModalToLongForm}
@@ -150,27 +190,45 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
         >
           {renderScene()}
         </View>
-      </Components.Screen>
+      </PanModalScreenNativeComponent>
     </ModalContext.Provider>
   );
 }
 
-export default function NativeStackView({ state, navigation, descriptors }) {
+type PanModalStackViewProps = {
+  state: StackNavigationState;
+  navigation: StackNavigationHelpers;
+  descriptors: StackDescriptorMap;
+};
+
+export default function PanModalStackView({
+  state,
+  navigation,
+  descriptors,
+}: PanModalStackViewProps) {
   const { colors } = useTheme();
 
+  // TODO: FIX TS
   const nonSingleRoutesLength = state.routes.filter(route => {
     const { options } = descriptors[route.key];
+    // TODO: FIX TS
+    // @ts-ignore
     return !options.single;
   }).length;
 
   return (
-    <Components.ScreenStack style={sx.container}>
+    <PanModalScreenStackNativeComponent style={sx.container}>
       {state.routes.map((route, i) => {
         const { options } = descriptors[route.key];
+        // TODO: FIX TS
+        // @ts-ignore
         const { limitActiveModals } = options;
+        console.log(JSON.stringify(colors));
         return (
           <ScreenView
             colors={colors}
+            // TODO: FIX TS
+            // @ts-ignore
             descriptors={descriptors}
             hidden={
               limitActiveModals && nonSingleRoutesLength - 3 >= i && i !== 0
@@ -182,6 +240,6 @@ export default function NativeStackView({ state, navigation, descriptors }) {
           />
         );
       })}
-    </Components.ScreenStack>
+    </PanModalScreenStackNativeComponent>
   );
 }

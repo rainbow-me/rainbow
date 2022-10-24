@@ -32,7 +32,7 @@ import {
   times,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import { ModalContext } from '@/lib/pan-modal/NativeStackView';
+import { ModalContext } from '@/lib/pan-modal-navigator/PanModalStackView';
 
 const formatItem = (
   { address, name, price, symbol, color },
