@@ -83,7 +83,7 @@ const ReceiveAssetsCard = () => {
             </IconOrb>
           </ButtonPressAnimation>
         </Inline>
-        <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
+        <AccentColorProvider color={colors.alpha(accentColor, 0.3)}>
           <CopyFloatingEmojis onPress={onPressCopy} textToCopy={accountAddress}>
             <Box
               background="accent"
@@ -93,16 +93,9 @@ const ReceiveAssetsCard = () => {
               alignItems="center"
               justifyContent="center"
             >
-              <ColorModeProvider value="light">
-                <Text
-                  color={{ custom: accentColor }}
-                  containsEmoji
-                  size="15pt"
-                  weight="bold"
-                >
-                  􀐅 Copy Address
-                </Text>
-              </ColorModeProvider>
+              <Text color="label" containsEmoji size="15pt" weight="bold">
+                􀐅 Copy Address
+              </Text>
             </Box>
           </CopyFloatingEmojis>
         </AccentColorProvider>
