@@ -33,7 +33,6 @@ export interface LearnCardDetails {
   title: string;
   emoji: string;
   description: string;
-  numberOfLines: number;
 }
 
 export interface CardColorway {
@@ -141,32 +140,22 @@ export const learnCategoryColors: (
   };
 };
 
-const getStartedCard: (isSmallPhone: boolean) => LearnCardDetails = (
-  isSmallPhone: boolean
-) => {
-  return {
-    url: 'https://learn.rainbow.me/get-started-with-rainbow',
-    category: 'Essentials',
-    title: 'Get Started with Rainbow',
-    emoji: '🌈',
-    description:
-      "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey.",
-    numberOfLines: isSmallPhone ? 2 : 1,
-  };
+const getStartedCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/get-started-with-rainbow',
+  category: 'Essentials',
+  title: 'Get Started with Rainbow',
+  emoji: '🌈',
+  description:
+    "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey.",
 };
 
-const backupsCard: (isSmallPhone: boolean) => LearnCardDetails = (
-  isSmallPhone: boolean
-) => {
-  return {
-    url: 'https://learn.rainbow.me/the-importance-of-backups',
-    category: 'Essentials',
-    title: 'The Importance of Backups',
-    emoji: '☮️',
-    description:
-      'Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we’ll chat about why it’s important to backup your wallet and the different methods that you can backup with.',
-    numberOfLines: isSmallPhone ? 2 : 1,
-  };
+const backupsCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/the-importance-of-backups',
+  category: 'Essentials',
+  title: 'The Importance of Backups',
+  emoji: '☮️',
+  description:
+    'Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we’ll chat about why it’s important to backup your wallet and the different methods that you can backup with.',
 };
 
 const protectWalletCard: LearnCardDetails = {
@@ -176,21 +165,15 @@ const protectWalletCard: LearnCardDetails = {
   emoji: '🔒',
   description:
     'One of the best parts of having an Ethereum wallet like Rainbow is that you are in total control of your money. Unlike a bank account from Wells Fargo or a crypto exchange like Coinbase, we do not hold your assets on your behalf.',
-  numberOfLines: 1,
 };
 
-const connectToDappCard: (isSmallPhone: boolean) => LearnCardDetails = (
-  isSmallPhone: boolean
-) => {
-  return {
-    url: 'https://learn.rainbow.me/connect-to-a-website-or-app',
-    category: 'Essentials',
-    title: 'Connect to a Website or App',
-    emoji: '🔌',
-    description:
-      "Now that you have an Ethereum wallet, you can login to certain websites using it. Instead of creating new accounts and passwords for every website you interact with, you'll just connect your wallet instead.",
-    numberOfLines: isSmallPhone ? 2 : 1,
-  };
+const connectToDappCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/connect-to-a-website-or-app',
+  category: 'Essentials',
+  title: 'Connect to a Website or App',
+  emoji: '🔌',
+  description:
+    "Now that you have an Ethereum wallet, you can login to certain websites using it. Instead of creating new accounts and passwords for every website you interact with, you'll just connect your wallet instead.",
 };
 
 const avoidScamsCard: LearnCardDetails = {
@@ -200,15 +183,12 @@ const avoidScamsCard: LearnCardDetails = {
   emoji: '🤬',
   description:
     "Here at Rainbow, one of our goals is to make exploring the new world of Ethereum fun, friendly, and safe. You know what's not any of those things? Scams. They're mean, and no one likes them. We want to help you avoid them, so we wrote this brief guide to help you do exactly that!",
-  numberOfLines: 1,
 };
 
-export const learnCards: (isSmallPhone: boolean) => LearnCardDetails[] = (
-  isSmallPhone: boolean
-) => [
-  getStartedCard(isSmallPhone),
-  backupsCard(isSmallPhone),
+export const learnCards: LearnCardDetails[] = [
+  getStartedCard,
+  backupsCard,
   protectWalletCard,
-  connectToDappCard(isSmallPhone),
+  connectToDappCard,
   avoidScamsCard,
 ];

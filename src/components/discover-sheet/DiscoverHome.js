@@ -8,7 +8,7 @@ import Lists from './ListsSection';
 import UniswapPools from './UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Columns, Inset, Stack } from '@/design-system';
-import { useAccountAsset, useAccountSettings, useDimensions } from '@/hooks';
+import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
 import LearnCard from '../cards/LearnCard';
@@ -19,8 +19,6 @@ export default function DiscoverHome() {
   const accountAsset = useAccountAsset(ETH_ADDRESS);
 
   const isTestNetwork = isTestnetNetwork(network);
-
-  const { width: deviceWidth } = useDimensions();
 
   const hasBalance = !isZero(accountAsset.balance.amount);
   return (
@@ -34,10 +32,7 @@ export default function DiscoverHome() {
                 {hasBalance && !isTestNetwork ? (
                   <ENSSearchCard />
                 ) : (
-                  <LearnCard
-                    type="square"
-                    cardDetails={learnCards(deviceWidth)[3]}
-                  />
+                  <LearnCard type="square" cardDetails={learnCards[3]} />
                 )}
               </Columns>
               {hasBalance && !isTestNetwork && <ENSCreateProfileCard />}
