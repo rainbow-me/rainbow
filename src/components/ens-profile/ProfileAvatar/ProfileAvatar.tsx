@@ -47,7 +47,7 @@ export default function ProfileAvatar({
         background={showAccentBackground ? 'accent' : 'body (Deprecated)'}
         borderRadius={size / 2}
         justifyContent="center"
-        shadow="15px light"
+        shadow="15px light (Deprecated)"
         width={{ custom: size }}
       >
         <ImagePreviewOverlayTarget

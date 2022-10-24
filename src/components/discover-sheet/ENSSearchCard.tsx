@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { CustomShadow } from '../../design-system/layout/shadow';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { enableActionsOnReadOnlyWallet } from '@/config';
@@ -16,6 +15,7 @@ import {
   Box,
   ColorModeProvider,
   Cover,
+  CustomShadow,
   Heading,
   Inset,
   Stack,
@@ -39,7 +39,8 @@ const CardShadow: CustomShadow = {
       {
         blur: 24,
         color: 'accent',
-        offset: { x: 0, y: 8 },
+        x: 0,
+        y: 8,
         opacity: 0.35,
       },
     ],
@@ -83,7 +84,7 @@ export default function ENSSearchCard() {
     }
   }, [isReadOnlyWallet, navigate]);
 
-  const shadow = useForegroundColor('shadow');
+  const shadow = useForegroundColor('shadowFar');
   const shadowColor = useForegroundColor({
     custom: {
       dark: shadow,
@@ -158,7 +159,7 @@ export default function ENSSearchCard() {
                         background="accent"
                         borderRadius={20}
                         height={{ custom: 40 }}
-                        shadow="12px light"
+                        shadow="12px light (Deprecated)"
                         style={{
                           borderColor: '#EDF9FF',
                           borderWidth: 2.5,
@@ -188,7 +189,7 @@ export default function ENSSearchCard() {
                         background="accent"
                         borderRadius={20}
                         height={{ custom: 40 }}
-                        shadow="12px light"
+                        shadow="12px light (Deprecated)"
                         width={{ custom: 40 }}
                       >
                         <MaskedView

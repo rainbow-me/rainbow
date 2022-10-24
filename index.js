@@ -26,4 +26,4 @@ require('react-native-gesture-handler');
 require('./shim');
 require('./src/model/config');
 
-require('./src/init');
+require('./src/App');
