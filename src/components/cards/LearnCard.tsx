@@ -47,7 +47,7 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
             >
               􀫸 LEARN
             </Text>
-            <IconOrb color={orbColorLight} textIcon={emoji} />
+            <IconOrb color={orbColorLight} icon={emoji} />
           </Inline>
           <Stack space="10px">
             <Text
@@ -88,7 +88,7 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
               </Stack>
             </Column>
             <Column width="content">
-              <IconOrb color={orbColorLight} textIcon={emoji} />
+              <IconOrb color={orbColorLight} icon={emoji} />
             </Column>
           </Columns>
           <Text

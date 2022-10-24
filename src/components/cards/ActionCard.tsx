@@ -28,7 +28,7 @@ const ActionCard = ({
       <Box height="full" justifyContent="space-between" alignItems="flex-start">
         <IconOrb
           color={orbColorDark}
-          textIcon={sfSymbolIcon}
+          icon={sfSymbolIcon}
           shadowColor="shadow"
         />
         <Stack space="10px">

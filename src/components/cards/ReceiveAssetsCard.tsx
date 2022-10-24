@@ -12,8 +12,6 @@ import { haptics } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import QRCodeIcon from '@/assets/qrCodeIcon.png';
-import { ImgixImage } from '../images';
 import IconOrb from './IconOrb';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
@@ -65,14 +63,7 @@ const ReceiveAssetsCard = () => {
             </Text>
           </Stack>
           <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
-            <IconOrb color={accentColor} shadowColor="accent">
-              <Box
-                as={ImgixImage}
-                source={QRCodeIcon}
-                height={{ custom: 16 }}
-                width={{ custom: 16 }}
-              />
-            </IconOrb>
+            <IconOrb color={accentColor} icon="􀖂" shadowColor="accent" />
           </ButtonPressAnimation>
         </Inline>
         <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
