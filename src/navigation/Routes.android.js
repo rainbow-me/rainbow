@@ -19,7 +19,7 @@ import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
-import RestoreSheet from '../screens/RestoreSheet';
+import { RestoreSheet } from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
@@ -68,6 +68,7 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 
 const Stack = createStackNavigator();
@@ -281,6 +282,10 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         options={expandedPresetWithSmallGestureResponseDistance}
+      />
+      <BSStack.Screen
+        component={QRScannerScreen}
+        name={Routes.QR_SCANNER_SCREEN}
       />
       {profilesEnabled && (
         <>

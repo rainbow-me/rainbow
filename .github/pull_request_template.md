@@ -23,7 +23,7 @@ Don't know what to write here? List all the steps you did to test the changes. T
 ## Final checklist
 
 - [ ] Assigned individual reviewers?
-- [ ] Added labels? (`team1/team2`, `critical path`, `release`, `dev QA`)
+- [ ] Added labels? (`critical path`, `release`, `dev QA`)
 - [ ] Did you test both iOS and Android?
 - [ ] If your changes are visual, did you check both the light and dark themes?
 - [ ] Added e2e tests? If not, please specify why

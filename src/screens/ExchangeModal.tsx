@@ -81,6 +81,7 @@ import {
 } from '@/raps';
 import {
   swapClearState,
+  SwapModalField,
   TypeSpecificParameters,
   updateSwapSlippage,
   updateSwapTypeDetails,
@@ -90,6 +91,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_TEST } from '@/env';
+import logger from '@/utils/logger';
 import {
   CrosschainSwapActionParameters,
   SwapActionParameters,
@@ -97,8 +99,10 @@ import {
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';
 import networkInfo from '@/helpers/networkInfo';
-import logger from '@/utils/logger';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import store from '@/redux/store';
+import { getCrosschainSwapServiceTime } from '@/handlers/swap';
+import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -628,6 +632,12 @@ export default function ExchangeModal({
     }
   };
 
+  const isFillingParams = useParamsForExchangeModal({
+    inputFieldRef,
+    outputFieldRef,
+    nativeFieldRef,
+  });
+
   const submit = useCallback(
     async amountInUSD => {
       setIsAuthorizing(true);
@@ -656,9 +666,13 @@ export default function ExchangeModal({
         };
         logger.log('[exchange - handle submit] rap');
         const nonce = await getNextNonce();
-        const swapParameters:
-          | SwapActionParameters
-          | CrosschainSwapActionParameters = {
+        const {
+          independentField,
+          independentValue,
+          slippageInBips,
+          source,
+        } = store.getState().swap;
+        const swapParameters = {
           chainId,
           flashbots,
           inputAmount: inputAmount!,
@@ -669,7 +683,17 @@ export default function ExchangeModal({
             fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
             toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
           } as Quote | CrosschainQuote,
+          meta: {
+            flashbots,
+            inputAsset: inputCurrency,
+            outputAsset: outputCurrency,
+            independentField: independentField as SwapModalField,
+            independentValue: independentValue as string,
+            slippage: slippageInBips,
+            route: source,
+          },
         };
+
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
         logger.log('[exchange - handle submit] executed rap!');
@@ -715,23 +739,16 @@ export default function ExchangeModal({
       flashbots,
       getNextNonce,
       inputAmount,
-      inputCurrency?.address,
-      inputCurrency?.name,
-      inputCurrency?.symbol,
-      inputCurrency?.type,
+      inputCurrency,
       isCrosschainSwap,
       navigate,
       outputAmount,
-      outputCurrency?.address,
-      outputCurrency?.name,
-      outputCurrency?.symbol,
-      outputCurrency?.type,
+      outputCurrency,
       priceImpactPercentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,
       selectedGasFee?.option,
       setParams,
-      slippageInBips,
       tradeDetails,
       type,
     ]
@@ -1194,7 +1211,9 @@ export default function ExchangeModal({
                 setInputAmount={updateInputAmount}
                 setNativeAmount={updateNativeAmount}
                 testID={`${testID}-input`}
-                updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
+                updateAmountOnFocus={
+                  maxInputUpdate || flipCurrenciesUpdate || isFillingParams
+                }
               />
               {showOutputField && (
                 <ExchangeOutputField
@@ -1223,7 +1242,9 @@ export default function ExchangeModal({
                   outputFieldRef={outputFieldRef}
                   setOutputAmount={updateOutputAmount}
                   testID={`${testID}-output`}
-                  updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate}
+                  updateAmountOnFocus={
+                    maxInputUpdate || flipCurrenciesUpdate || isFillingParams
+                  }
                 />
               )}
             </FloatingPanel>
@@ -1280,6 +1301,9 @@ export default function ExchangeModal({
                 marginBottom={0}
                 marginTop={0}
                 testID={`${testID}-gas`}
+                crossChainServiceTime={getCrosschainSwapServiceTime(
+                  tradeDetails as CrosschainQuote
+                )}
               />
             </Row>
           </Rows>

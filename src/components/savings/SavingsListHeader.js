@@ -19,6 +19,7 @@ const TokenFamilyHeaderHeight = 44;
 
 const SumValueText = styled(Text).attrs({
   align: 'right',
+  weight: 'medium',
   size: 'large',
 })({
   color: ({ theme: { colors } }) => colors.dark,

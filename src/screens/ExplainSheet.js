@@ -536,7 +536,12 @@ export const explainers = (params, colors) => ({
   swapResetInputs: {
     button: {
       label: `Continue with ${networkInfo[params?.network]?.name}`,
-      bgColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.06),
+      textColor:
+        colors?.networkColors[params?.network] &&
+        colors?.networkColors?.[params?.network],
     },
     emoji: '🔐',
     extraHeight: -90,
@@ -598,6 +603,18 @@ export const explainers = (params, colors) => ({
     emoji: '🏦',
     title: lang.t('explain.no_quote.title'),
     text: lang.t('explain.no_quote.text'),
+    logo: (
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <CoinIcon size={40} {...params?.inputCurrency} />
+        <DoubleChevron />
+        <CoinIcon size={40} {...params?.outputCurrency} />
+      </RowWithMargins>
+    ),
+  },
+  crossChainGas: {
+    extraHeight: 20,
+    title: lang.t('explain.cross_chain_swap.title'),
+    text: lang.t('explain.cross_chain_swap.text'),
     logo: (
       <RowWithMargins justify="center" margin={35} marginBottom={10}>
         <CoinIcon size={40} {...params?.inputCurrency} />
@@ -880,6 +897,7 @@ export const explainers = (params, colors) => ({
       </DashedWrapper>
     ),
     title: lang.t('explain.swap_refuel_deduct.title', {
+      networkName: params?.networkName,
       gasToken: params?.gasToken,
     }),
     text: lang.t('explain.swap_refuel_deduct.text', {
@@ -928,6 +946,7 @@ export const explainers = (params, colors) => ({
       </DashedWrapper>
     ),
     title: lang.t('explain.swap_refuel_notice.title', {
+      networkName: params?.networkName,
       gasToken: params?.gasToken,
     }),
     text: lang.t('explain.swap_refuel_notice.text', {
@@ -1043,16 +1062,14 @@ const ExplainSheet = () => {
     const accentCta = (
       <SheetActionButton
         color={
-          colors[explainSheetConfig.button?.bgColor] ||
+          explainSheetConfig.button?.bgColor ||
           colors.alpha(colors.appleBlue, 0.04)
         }
         isTransparent
         label={explainSheetConfig.button?.label || lang.t('button.got_it')}
         onPress={onPrimaryPress}
         size="big"
-        textColor={
-          colors[explainSheetConfig.button?.textColor] || colors.appleBlue
-        }
+        textColor={explainSheetConfig.button?.textColor ?? colors.appleBlue}
         weight="heavy"
         testID={'explainer-sheet-accent'}
       />

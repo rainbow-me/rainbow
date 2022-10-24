@@ -12,7 +12,6 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, Keyboard, Linking, TextInput } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -30,7 +29,7 @@ import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Network } from '@/handlers/web3';
-import { CurrencySelectionTypes, Network } from '@/helpers';
+import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
@@ -51,7 +50,8 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
-import networkTypes from '@/helpers/networkTypes';
+import { IS_TEST } from '@/env';
+import DiscoverSearchInput from '@/components/discover-sheet/DiscoverSearchInput';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -62,6 +62,7 @@ export interface EnrichedExchangeAsset extends SwappableAsset {
   useGradientText: boolean;
   title?: string;
   key: string;
+  disabled?: boolean;
 }
 
 const storage = new MMKV();
@@ -70,7 +71,11 @@ const getHasShownWarning = () =>
 const setHasShownWarning = () =>
   storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
 
-const headerlessSection = (data: SwappableAsset[]) => [{ data, title: '' }];
+const headerlessSection = (
+  data: SwappableAsset[]
+): { data: SwappableAsset[]; title: string; key: string }[] => [
+  { data, title: '', key: 'swappableAssets' },
+];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 const searchWalletCurrencyList = (
@@ -145,9 +150,12 @@ export default function CurrencySelectModal() {
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = !crosschainSwapsEnabled
-    ? NetworkSwitcherv1
-    : NetworkSwitcherv2;
+  const NetworkSwitcher = crosschainSwapsEnabled
+    ? NetworkSwitcherv2
+    : NetworkSwitcherv1;
+  const SearchInput = crosschainSwapsEnabled
+    ? DiscoverSearchInput
+    : ExchangeSearch;
 
   useEffect(() => {
     if (chainId && typeof chainId === 'number') {
@@ -192,7 +200,10 @@ export default function CurrencySelectModal() {
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
 
-  const { swappableUserAssets } = useSwappableUserAssets({ outputCurrency });
+  const {
+    swappableUserAssets,
+    unswappableUserAssets,
+  } = useSwappableUserAssets({ outputCurrency });
 
   const checkForSameNetwork = useCallback(
     (newAsset, selectAsset, type) => {
@@ -239,15 +250,54 @@ export default function CurrencySelectModal() {
     const listToUse = crosschainSwapsEnabled
       ? swappableUserAssets
       : filteredAssetsInWallet;
+    let walletCurrencyList;
     if (type === CurrencySelectionTypes.input) {
       if (searchQueryForSearch !== '') {
         const searchResults = searchWalletCurrencyList(
           listToUse,
           searchQueryForSearch
         );
-        return headerlessSection(searchResults);
+        walletCurrencyList = headerlessSection(searchResults);
+        if (crosschainSwapsEnabled) {
+          const unswappableSearchResults = searchWalletCurrencyList(
+            unswappableUserAssets,
+            searchQueryForSearch
+          );
+          walletCurrencyList.push({
+            data: unswappableSearchResults.map(unswappableAsset => ({
+              ...unswappableAsset,
+              disabled: true,
+            })),
+            title: TokenSectionTypes.unswappableTokenSection,
+            key: 'unswappableAssets',
+          });
+        }
+        return walletCurrencyList;
       } else {
-        return headerlessSection(listToUse);
+        walletCurrencyList = headerlessSection(listToUse);
+        let unswappableAssets = unswappableUserAssets;
+        if (IS_TEST) {
+          unswappableAssets = unswappableAssets.concat({
+            address: '0x123',
+            decimals: 18,
+            name: 'Unswappable',
+            symbol: 'UNSWAP',
+            type: 'token',
+            id: 'foobar',
+            uniqueId: '0x123',
+          });
+        }
+        if (crosschainSwapsEnabled) {
+          walletCurrencyList.push({
+            data: unswappableAssets.map(unswappableAsset => ({
+              ...unswappableAsset,
+              disabled: true,
+            })),
+            title: TokenSectionTypes.unswappableTokenSection,
+            key: 'unswappableAssets',
+          });
+        }
+        return walletCurrencyList;
       }
     }
   }, [
@@ -256,6 +306,7 @@ export default function CurrencySelectModal() {
     type,
     crosschainSwapsEnabled,
     swappableUserAssets,
+    unswappableUserAssets,
   ]);
 
   const activeSwapCurrencyList = useMemo(() => {
@@ -289,7 +340,7 @@ export default function CurrencySelectModal() {
     });
 
     // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
-    if (IS_TESTING === 'true' && type === CurrencySelectionTypes.output) {
+    if (IS_TEST && type === CurrencySelectionTypes.output) {
       let symbols: string[] = [];
       list = list?.map(section => {
         // Remove dupes
@@ -566,7 +617,9 @@ export default function CurrencySelectModal() {
               />
             </Row>
             <Row height="content">
-              <ExchangeSearch
+              <SearchInput
+                isDiscover={false}
+                currentChainId={currentChainId}
                 clearTextOnFocus={false}
                 isFetching={swapCurrencyListLoading}
                 isSearching={swapCurrencyListLoading}
@@ -590,6 +643,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
+                isExchangeList={crosschainSwapsEnabled}
                 onL2={searchingOnL2Network}
                 footerSpacer={android}
                 itemProps={itemProps}

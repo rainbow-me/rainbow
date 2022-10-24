@@ -1,6 +1,12 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   Easing,
@@ -18,7 +24,8 @@ import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
-import { deviceUtils } from '@/utils';
+import { deviceUtils, ethereumUtils } from '@/utils';
+import networkInfo from '@/helpers/networkInfo';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
@@ -118,6 +125,7 @@ const ExchangeSearch = (
     testID,
     placeholderText = lang.t('button.exchange_search_placeholder'),
     clearTextOnFocus = true,
+    currentChainId,
   },
   ref
 ) => {
@@ -136,6 +144,14 @@ const ExchangeSearch = (
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
   const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) || {};
+
+  const placeholder = useMemo(() => {
+    if (!currentChainId) return placeholderText;
+    const network = ethereumUtils.getNetworkFromChainId(currentChainId);
+    return lang.t('button.exchange_search_placeholder_network', {
+      network: networkInfo[network].name,
+    });
+  }, [currentChainId, placeholderText]);
 
   const spinnerTimeout = useRef();
   useEffect(() => {
@@ -193,7 +209,7 @@ const ExchangeSearch = (
         isSearchModeEnabled={isSearchModeEnabled}
         onChangeText={onChangeText}
         onFocus={onFocus}
-        placeholder={placeholderText}
+        placeholder={placeholder}
         ref={ref}
         testID={testID + '-input'}
         value={searchQuery}

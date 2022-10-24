@@ -17,7 +17,7 @@ import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
-import RestoreSheet from '../screens/RestoreSheet';
+import { RestoreSheet } from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
@@ -52,6 +52,7 @@ import {
   pairHardwareWalletNavigatorConfig,
   profileConfig,
   profilePreviewConfig,
+  qrScannerConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
@@ -62,6 +63,7 @@ import {
 } from './config';
 import {
   emojiPreset,
+  emojiPresetWallet,
   exchangePreset,
   overlayExpandedPreset,
   sheetPreset,
@@ -76,6 +78,7 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
+import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 
 const Stack = createStackNavigator();
@@ -158,6 +161,11 @@ function MainNavigator() {
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
+      />
+      <Stack.Screen
+        component={AvatarBuilder}
+        name={Routes.AVATAR_BUILDER_WALLET}
+        options={emojiPresetWallet}
       />
     </Stack.Navigator>
   );
@@ -407,6 +415,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.SWAP_SETTINGS_SHEET}
         {...customGasSheetConfig}
+      />
+      <NativeStack.Screen
+        component={QRScannerScreen}
+        name={Routes.QR_SCANNER_SCREEN}
+        {...qrScannerConfig}
       />
       <NativeStack.Screen
         component={PairHardwareWalletNavigator}

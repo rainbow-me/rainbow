@@ -228,6 +228,7 @@
       "exchange": "Échanger",
       "exchange_again": "Échanger encore",
       "exchange_search_placeholder": "Cherche",
+      "exchange_search_placeholder_network": "Search tokens on %{network} :)",
       "go_back": "Retourner",
       "go_back_undercase": "Go back :)",
       "got_it": "Got it :)",
@@ -506,6 +507,7 @@
         "uniswap_v2": "Uniswap v2 :)",
         "view_on": "View on %{blockExplorerName} :)",
         "network_switcher": "Swapping on the %{network} network :)",
+        "settling_time": "Estimated settling time :)",
         "swap_max_alert": {
           "title": "Are you sure? :)",
           "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}? :)",
@@ -683,6 +685,10 @@
         "title": "No quote available",
         "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
+      "cross_chain_swap": {
+        "title": "Expect Bridge Delays :)",
+        "text": "This swap may take longer than expected to complete. \n\n Cross-chain swaps require bridging funds to the destination network, and bridges can sometimes take longer than expected to transfer funds. Your funds will remain safe during this time. :)"
+      },
       "unverified": {
         "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
         "fragment2": "token contract :)",
@@ -710,6 +716,15 @@
         "title": "No %{networkName} %{gasToken} detected",
         "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
         "button": "Adjust and add $3 of %{gasToken}"
+      },
+      "flashbots": {
+        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing. :)",
+        "title": "Flashbots :)",
+        "still_curious": {
+          "fragment1": "Still curious? :)",
+          "fragment2": "Read more :)",
+          "fragment3": " about Flashbots and the protection it offers. :)"
+        }
       }
     },
     "fedora": {
@@ -1077,7 +1092,7 @@
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library :)",
-        "create_profile": "Create your Profile :)",
+        "create_profile": "Create Profile :)",
         "edit_profile": "Edit Profile :)",
         "pick_emoji": "Pick an Emoji :)",
         "shuffle_emoji": "Shuffle Emoji :)",
@@ -1495,8 +1510,8 @@
         "enable_camera_access": "Enable camera access :)",
         "error_mounting_camera": "Error mounting camera :)",
         "find_a_code": "Find a code to scan :)",
-        "qr_1_app_connected": "1 app connected :)",
-        "qr_multiple_apps_connected": "%{appsConnectedCount} apps connected :)",
+        "qr_1_app_connected": "1 Connected App :)",
+        "qr_multiple_apps_connected": "%{appsConnectedCount} Connected Apps :)",
         "scan_to_pay_or_connect": "Scan to pay or connect :)",
         "simulator_mode": "Simulator Mode :)",
         "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized. :)",

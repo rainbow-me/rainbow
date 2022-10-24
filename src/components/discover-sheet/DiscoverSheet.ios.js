@@ -35,7 +35,6 @@ function DiscoverSheet(_, forwardedRef) {
   const sheet = useRef();
   const ref = useRef();
   const listeners = useRef([]);
-  const onFabSearch = useRef(null);
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
   const value = useMemo(
     () => ({
@@ -63,7 +62,6 @@ function DiscoverSheet(_, forwardedRef) {
           NativeModules.DiscoverSheet.layout(screen);
         }
       },
-      onFabSearch,
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

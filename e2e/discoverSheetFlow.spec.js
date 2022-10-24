@@ -56,12 +56,6 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('discover-header');
   });
 
-  it('Should show the camera if Discover is minimized', async () => {
-    await Helpers.swipe('discover-header', 'down');
-    await Helpers.checkIfVisible('scanner-header');
-    await Helpers.checkIfNotVisible('lists-section');
-  });
-
   // TODO: doesn't work for unknown reason on Android.
   if (ios) {
     it('Should see the gas card', async () => {

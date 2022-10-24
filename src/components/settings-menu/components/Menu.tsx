@@ -24,7 +24,7 @@ const Menu = ({ children, description, header }: MenuProps) => {
       <Box
         background="card (Deprecated)"
         borderRadius={18}
-        shadow="21px light"
+        shadow="21px light (Deprecated)"
         width="full"
       >
         <Stack separator={<Separator color="divider60 (Deprecated)" />}>

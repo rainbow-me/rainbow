@@ -21,7 +21,7 @@ import { useDelayedValueWithLayoutAnimation } from '@/hooks';
 import styled from '@/styled-thing';
 
 const CancelButton = styled(ButtonPressAnimation)({
-  marginTop: 27,
+  marginTop: 9,
 });
 
 const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -58,13 +58,9 @@ export default forwardRef(function DiscoverSearchContainer(
   const [isFetchingEns, setIsFetchingEns] = useState(false);
   const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
 
-  const upperContext = useContext(DiscoverSheetContext);
-  const {
-    setIsSearchModeEnabled,
-    isSearchModeEnabled,
-    jumpToLong,
-    onFabSearch,
-  } = upperContext;
+  const { setIsSearchModeEnabled, isSearchModeEnabled } = useContext(
+    DiscoverSheetContext
+  );
   const {
     params: { setSwipeEnabled: setViewPagerSwipeEnabled },
   } = useRoute();
@@ -72,16 +68,10 @@ export default forwardRef(function DiscoverSearchContainer(
   const setIsInputFocused = useCallback(
     value => {
       setShowSearch(value);
-      setTimeout(() => jumpToLong(), 10);
       setIsSearchModeEnabled(value);
       setViewPagerSwipeEnabled(!value);
     },
-    [
-      setIsSearchModeEnabled,
-      setShowSearch,
-      setViewPagerSwipeEnabled,
-      jumpToLong,
-    ]
+    [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
   );
 
   const onTapSearch = useCallback(() => {
@@ -102,8 +92,6 @@ export default forwardRef(function DiscoverSearchContainer(
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 
-  onFabSearch.current = onTapSearch;
-
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();
     setIsInputFocused(false);
@@ -112,7 +100,8 @@ export default forwardRef(function DiscoverSearchContainer(
 
   const contextValue = useMemo(
     () => ({
-      ...upperContext,
+      isSearchModeEnabled,
+      setIsSearchModeEnabled,
       cancelSearch,
       isFetchingEns,
       isSearching,
@@ -122,7 +111,14 @@ export default forwardRef(function DiscoverSearchContainer(
       setIsFetchingEns,
       setIsSearching,
     }),
-    [upperContext, isFetchingEns, isSearching, searchQuery, cancelSearch]
+    [
+      isSearchModeEnabled,
+      setIsSearchModeEnabled,
+      cancelSearch,
+      isFetchingEns,
+      isSearching,
+      searchQuery,
+    ]
   );
 
   useEffect(() => {
@@ -143,7 +139,7 @@ export default forwardRef(function DiscoverSearchContainer(
   return (
     <>
       <Row>
-        <Column flex={1} marginHorizontal={4} marginTop={19}>
+        <Column flex={1} marginHorizontal={4}>
           <DiscoverSearchInput
             clearTextOnFocus={false}
             isDiscover
