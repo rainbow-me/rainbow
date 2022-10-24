@@ -1,11 +1,4 @@
-import {
-  AccentColorProvider,
-  Box,
-  ColorModeProvider,
-  Inline,
-  Stack,
-  Text,
-} from '@/design-system';
+import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
 import Clipboard from '@react-native-community/clipboard';
 import { useTheme } from '@/theme';
 import React, { useCallback } from 'react';
@@ -21,14 +14,13 @@ import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import QRCodeIcon from '@/assets/qrCodeIcon.png';
 import { ImgixImage } from '../images';
-import { Source } from 'react-native-fast-image';
 import IconOrb from './IconOrb';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 export const ReceiveCardHeight = 174;
 
 const ReceiveAssetsCard = () => {
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(
@@ -53,7 +45,7 @@ const ReceiveAssetsCard = () => {
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);
 
-  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
+  const { accentColor } = useAccountAccentColor();
 
   return (
     <GenericCard type="stretch">

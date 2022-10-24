@@ -47,7 +47,6 @@ import {
   defaultScreenStackOptions,
   restoreSheetConfig,
   stackNavigationConfig,
-  webViewScreenOptions,
   wyreWebviewOptions,
 } from './config';
 import {
@@ -114,16 +113,8 @@ function AddCashFlowNavigator() {
 }
 
 function WebViewScreenNavigator() {
-  const { colors } = useTheme();
-  const themedWebViewScreenOptions = useMemo(
-    () => webViewScreenOptions(colors),
-    [colors]
-  );
   return (
-    <Stack.Navigator
-      initialRouteName={Routes.WEB_VIEW_SCREEN}
-      screenOptions={themedWebViewScreenOptions}
-    >
+    <Stack.Navigator initialRouteName={Routes.WEB_VIEW_SCREEN}>
       <Stack.Screen component={WebViewScreen} name={Routes.WEB_VIEW_SCREEN} />
     </Stack.Navigator>
   );

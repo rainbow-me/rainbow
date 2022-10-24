@@ -1,22 +1,7 @@
-import {
-  AccentColorProvider,
-  Box,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-} from '@/design-system';
-import { useTheme } from '@/theme';
-import { Linking, Text as NativeText } from 'react-native';
+import { Box, Stack, Text } from '@/design-system';
 import React from 'react';
 import GenericCard from './GenericCard';
-import { Emoji } from '../text';
-import { ForegroundColor } from '@/design-system/color/palettes';
-import {
-  CardColorway,
-  LearnCardDetails,
-  learnCategoryColors,
-} from './constants';
+import { CardColorway } from './constants';
 import IconOrb from './IconOrb';
 
 interface ActionCardProps {

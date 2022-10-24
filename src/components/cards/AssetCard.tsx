@@ -3,16 +3,12 @@ import {
   Box,
   Inline,
   Inset,
-  Rows,
-  Row,
   Stack,
   Text,
   Columns,
   Column,
   AccentColorProvider,
-  DebugLayout,
 } from '@/design-system';
-
 import { useTheme } from '@/theme';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import React, { useCallback, useMemo } from 'react';
@@ -25,38 +21,33 @@ import {
   useGenericAsset,
   useWallets,
 } from '@/hooks';
-
 import { deviceUtils, ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-
 import { ETH_ADDRESS } from '@/references';
 import {
   ChartPath,
   ChartPathProvider,
 } from '@/react-native-animated-charts/src';
-
 import { CoinIcon } from '../coin-icon';
 import { AssetType } from '@/entities';
 import Labels from '../value-chart/ExtremeLabels';
 import showWalletErrorAlert from '@/helpers/support';
-
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import { emitChartsRequest } from '@/redux/explorer';
 import chartTypes from '@/helpers/chartTypes';
-import { View } from 'react-native';
 
 export const AssetCardHeight = 274;
+
 const AssetCard = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
-
-  emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
-
   const { colors, isDarkMode } = useTheme();
-
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
+  const genericAsset = useGenericAsset(ETH_ADDRESS);
+
+  emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
 
   const handlePressBuy = useCallback(() => {
     if (isDamaged) {
@@ -81,8 +72,6 @@ const AssetCard = () => {
     });
   }, [accountAddress, isDamaged, navigate]);
 
-  const genericAsset = useGenericAsset(ETH_ADDRESS);
-
   // If we don't have a balance for this asset
   // It's a generic asset
   const assetWithPrice = useMemo(() => {
@@ -91,10 +80,6 @@ const AssetCard = () => {
       address: ETH_ADDRESS,
     };
   }, [genericAsset, nativeCurrency]);
-
-  if (IS_ANDROID) {
-    console.log(assetWithPrice);
-  }
 
   const handleAssetPress = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {

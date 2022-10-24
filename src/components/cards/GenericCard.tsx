@@ -1,11 +1,10 @@
-import { Box, AccentColorProvider, useForegroundColor } from '@/design-system';
+import { Box, AccentColorProvider } from '@/design-system';
 import { CustomShadow } from '@/design-system/layout/shadow';
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
 import { BackgroundColor, globalColors } from '@/design-system/color/palettes';
 import ConditionalWrap from 'conditional-wrap';
-import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 
 export const SquareCardHeight = (deviceUtils.dimensions.width - 60) / 2;
@@ -35,7 +34,6 @@ interface GenericCardProps {
   onPress?: () => void;
   color?: 'accent' | BackgroundColor;
   shadowColor?: string;
-  rowLength?: number;
 }
 
 const GenericCard = ({
@@ -45,11 +43,7 @@ const GenericCard = ({
   onPress,
   color = 'surfacePrimaryElevated',
   shadowColor,
-  rowLength,
 }: GenericCardProps) => {
-  const { isDarkMode } = useTheme();
-  // const shadow = useForegroundColor('shadow');
-
   return (
     <ConditionalWrap
       condition={onPress}

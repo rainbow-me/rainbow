@@ -60,9 +60,7 @@ import {
   stackNavigationConfig,
   swapDetailsSheetConfig,
   swapsPromoSheetConfig,
-  webViewScreenConfig,
   webViewScreenNavigatorConfig,
-  webViewScreenOptions,
 } from './config';
 import {
   emojiPreset,
@@ -191,20 +189,11 @@ function MainNavigatorWrapper() {
 }
 
 function WebViewScreenNavigator() {
-  const { colors } = useTheme();
-  const themedWebViewScreenOptions = useMemo(
-    () => webViewScreenOptions(colors),
-    [colors]
-  );
   return (
-    <NativeStack.Navigator
-      screenOptions={defaultScreenStackOptions}
-      {...nativeStackConfig}
-    >
+    <NativeStack.Navigator screenOptions={defaultScreenStackOptions}>
       <NativeStack.Screen
         component={WebViewScreen}
         name={Routes.WEB_VIEW_SCREEN}
-        {...webViewScreenConfig}
       />
     </NativeStack.Navigator>
   );
