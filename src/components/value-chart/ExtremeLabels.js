@@ -80,7 +80,7 @@ const Labels = React.memo(function Labels({ color, width, isCard }) {
           color={colors.alpha(color, 0.8)}
           position={positionMin}
           style={{
-            bottom: isCard ? -16 : -40,
+            bottom: isCard ? -18 : -40,
           }}
           width={width}
         >
@@ -92,7 +92,7 @@ const Labels = React.memo(function Labels({ color, width, isCard }) {
           color={colors.alpha(color, 0.8)}
           position={positionMax}
           style={{
-            top: isCard ? -16 : -20,
+            top: isCard ? -18 : -20,
             left: isCard ? 0 : 40,
           }}
           width={width}
