@@ -403,7 +403,7 @@ const withBriefBalanceSection = (
       type: 'GET_STARTED_CARD',
       uid: 'get-started-card',
     },
-    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-3' },
+    { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer' },
     {
       type: 'DISCOVER_MORE_BUTTON',
       uid: 'discover-home-button',

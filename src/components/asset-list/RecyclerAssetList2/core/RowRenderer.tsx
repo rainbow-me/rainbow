@@ -54,6 +54,7 @@ function rowRenderer(
     case CellType.PROFILE_NAME_ROW_SPACE_AFTER:
     case CellType.SAVINGS_HEADER_SPACE_BEFORE:
     case CellType.EMPTY_WALLET_SPACER:
+    case CellType.BIG_EMPTY_WALLET_SPACER:
     case CellType.EMPTY_ROW:
       return null;
     case CellType.COIN_DIVIDER:
