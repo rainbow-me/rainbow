@@ -1,6 +1,6 @@
 import { ScaledSize, useWindowDimensions } from 'react-native';
 
-export const deviceDimensions = {
+const deviceDimensions = {
   iphone6: {
     height: 667,
     width: 375,
@@ -26,8 +26,6 @@ export interface DeviceDimensions extends ScaledSize {
   isTallPhone: boolean;
   isTinyPhone: boolean;
   isSmallAndroidPhone: boolean;
-  width: number;
-  height: number;
 }
 
 export default function useDimensions(): DeviceDimensions {

@@ -1,31 +1,14 @@
 import { Box, AccentColorProvider } from '@/design-system';
-import { CustomShadow } from '@/design-system/layout/shadow';
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
 import { BackgroundColor, globalColors } from '@/design-system/color/palettes';
 import ConditionalWrap from 'conditional-wrap';
 import { deviceUtils } from '@/utils';
+import { View } from 'react-native';
 
+// (device width - (horizontal inset * 2 + padding between cards)) / # of cards in row
 export const SquareCardHeight = (deviceUtils.dimensions.width - 60) / 2;
-
-const CardShadow: CustomShadow = {
-  custom: {
-    android: {
-      color: 'accent',
-      elevation: 24,
-      opacity: 0.5,
-    },
-    ios: [
-      {
-        blur: 24,
-        color: 'accent',
-        offset: { x: 0, y: 8 },
-        opacity: 0.35,
-      },
-    ],
-  },
-};
 
 interface GenericCardProps {
   type: 'square' | 'stretch';
@@ -53,68 +36,45 @@ const GenericCard = ({
         </ButtonPressAnimation>
       )}
     >
-      <ConditionalWrap
+      {/* <ConditionalWrap
         condition={gradient}
         wrap={children => (
           <Box
             as={LinearGradient}
-            borderRadius={24}
             colors={gradient}
             end={{ x: 1, y: 0.5 }}
             start={{ x: 0, y: 0.5 }}
-            shadow={CardShadow}
+            shadow="18px accent"
+            borderRadius={24}
           >
             {children}
           </Box>
         )}
-      >
-        <AccentColorProvider color={shadowColor ?? globalColors.blue10}>
-          <Box
-            background={gradient ? undefined : color}
-            width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
-            height={
-              type === 'square'
-                ? {
-                    custom: SquareCardHeight,
-                  }
-                : undefined
-            }
-            borderRadius={24}
-            style={{
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 5,
-              },
-              shadowOpacity: 0.34,
-              shadowRadius: 6.27,
-
-              elevation: 10,
-            }}
-            // shadow={{
-            //   custom: {
-            //     android: {
-            //       color: isDarkMode ? 'shadow' : 'accent',
-            //       elevation: 24,
-            //       opacity: 0.5,
-            //     },
-            //     ios: [
-            //       {
-            //         blur: 24,
-            //         color: isDarkMode ? 'shadow' : 'accent',
-            //         offset: { x: 0, y: 8 },
-            //         opacity: 0.35,
-            //       },
-            //     ],
-            //   },
-            // }}
-            // shadow="18px blue"
-            padding="20px"
-          >
-            {children}
-          </Box>
-        </AccentColorProvider>
-      </ConditionalWrap>
+      > */}
+      <AccentColorProvider color={shadowColor ?? globalColors.blue100}>
+        <Box
+          background={gradient ? undefined : color}
+          as={gradient ? LinearGradient : View}
+          colors={gradient}
+          end={gradient ? { x: 1, y: 0.5 } : undefined}
+          start={gradient ? { x: 0, y: 0.5 } : undefined}
+          width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
+          height={
+            type === 'square'
+              ? {
+                  custom: SquareCardHeight,
+                }
+              : undefined
+          }
+          borderRadius={24}
+          flex={0}
+          shadow="18px accent"
+          padding="20px"
+        >
+          {children}
+        </Box>
+      </AccentColorProvider>
+      {/* </ConditionalWrap> */}
     </ConditionalWrap>
   );
 };
