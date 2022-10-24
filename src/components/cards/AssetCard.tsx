@@ -45,7 +45,6 @@ import showWalletErrorAlert from '@/helpers/support';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { emitChartsRequest } from '@/redux/explorer';
 import chartTypes from '@/helpers/chartTypes';
-import { View } from 'react-native';
 
 export const AssetCardHeight = 274;
 const AssetCard = () => {
