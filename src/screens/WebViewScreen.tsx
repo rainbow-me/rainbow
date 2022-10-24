@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
+import { Share } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Centered, FlexItem } from '../components/layout';
 import { reserveWyreOrder } from '../handlers/wyre';
@@ -18,6 +19,7 @@ import { Box, DebugLayout, Text, useForegroundColor } from '@/design-system';
 import { ScrollView } from 'react-native-gesture-handler';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { backgroundColors, globalColors } from '@/design-system/color/palettes';
+import { ButtonPressAnimation } from '@/components/animations';
 
 const HEADER_HEIGHT = 60;
 
@@ -67,6 +69,15 @@ export default function WebViewScreen() {
           <Text align="center" color="label" size="20pt" weight="heavy">
             {title}
           </Text>
+          <Box position="absolute" right={{ custom: 20 }}>
+            <ButtonPressAnimation
+              onPress={async () => await Share.share({ url })}
+            >
+              <Text align="center" color="label" size="20pt" weight="heavy">
+                􀈂
+              </Text>
+            </ButtonPressAnimation>
+          </Box>
         </Box>
       )}
       backgroundColor={

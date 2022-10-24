@@ -53,12 +53,7 @@ const ReceiveAssetsCard = () => {
             <Text size="22pt" weight="heavy" color="label">
               Receive Assets
             </Text>
-            <Text
-              size="15pt"
-              weight="semibold"
-              color="labelSecondary"
-              numberOfLines={2}
-            >
+            <Text size="15pt" weight="semibold" color="labelSecondary">
               {'You can also long press your\naddress above to copy it.'}
             </Text>
           </Stack>
