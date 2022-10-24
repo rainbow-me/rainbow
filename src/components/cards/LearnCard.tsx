@@ -1,7 +1,7 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import React from 'react';
-import GenericCard from './GenericCard';
+import { GenericCard } from './GenericCard';
 import { LearnCardDetails, learnCategoryColors } from './constants';
 import IconOrb from './IconOrb';
 import { useNavigation } from '@/navigation';
@@ -35,7 +35,7 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
           screen: Routes.WEB_VIEW_SCREEN,
         })
       }
-      shadowColor={shadowColor}
+      color={shadowColor}
     >
       {type === 'square' ? (
         <Box height="full" justifyContent="space-between">

@@ -2,7 +2,7 @@ import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
 import Clipboard from '@react-native-community/clipboard';
 import { useTheme } from '@/theme';
 import React, { useCallback } from 'react';
-import GenericCard from './GenericCard';
+import { GenericCard } from './GenericCard';
 import { useAccountProfile } from '@/hooks';
 import { ButtonPressAnimation } from '../animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';

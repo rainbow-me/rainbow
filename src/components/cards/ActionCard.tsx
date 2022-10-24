@@ -1,6 +1,6 @@
 import { Box, Stack, Text } from '@/design-system';
 import React from 'react';
-import GenericCard from './GenericCard';
+import { GenericCard } from './GenericCard';
 import { CardColorway } from './constants';
 import IconOrb from './IconOrb';
 
@@ -23,7 +23,7 @@ const ActionCard = ({
       type="square"
       gradient={gradient}
       onPress={onPress}
-      shadowColor={shadowColor}
+      color={shadowColor}
     >
       <Box height="full" justifyContent="space-between" alignItems="flex-start">
         <IconOrb

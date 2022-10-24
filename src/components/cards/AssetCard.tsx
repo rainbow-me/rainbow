@@ -12,7 +12,7 @@ import {
 import { useTheme } from '@/theme';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import React, { useCallback, useMemo } from 'react';
-import GenericCard from './GenericCard';
+import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
 import {
   useAccountSettings,
