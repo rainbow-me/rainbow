@@ -1,5 +1,4 @@
 import React from 'react';
-import lang from 'i18n-js';
 import { CoinDivider } from '../../../coin-divider';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
@@ -29,17 +28,12 @@ import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsR
 import { ProfileAvatarRow } from '../profile-header/ProfileAvatarRow';
 import { ProfileBalanceRow } from '../profile-header/ProfileBalanceRow';
 import { ProfileNameRow } from '../profile-header/ProfileNameRow';
-
-import { globalColors } from '@/design-system';
 import AssetCard from '@/components/cards/AssetCard';
 import ReceiveAssetsCard from '@/components/cards/ReceiveAssetsCard';
-import { Linking } from 'react-native';
 import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import LearnCard from '@/components/cards/LearnCard';
 import { learnCards } from '@/components/cards/constants';
-import { deviceUtils } from '@/utils';
-import { deviceDimensions } from '@/hooks/useDimensions';
 
 function rowRenderer(
   type: CellType,
@@ -94,14 +88,7 @@ function rowRenderer(
     case CellType.GET_STARTED_CARD:
       return (
         <CardRowWrapper>
-          <LearnCard
-            cardDetails={
-              learnCards(
-                deviceUtils.dimensions.height <= deviceDimensions.iphone6.height
-              )[4]
-            }
-            type="stretch"
-          />
+          <LearnCard cardDetails={learnCards[0]} type="stretch" />
         </CardRowWrapper>
       );
     case CellType.PROFILE_STICKY_HEADER:

@@ -31,14 +31,7 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { width } = useDimensions();
   const { isDarkMode } = useTheme();
   const themedLearnCategoryColors = learnCategoryColors(isDarkMode);
-  const {
-    category,
-    title,
-    emoji,
-    url,
-    description,
-    numberOfLines,
-  } = cardDetails;
+  const { category, title, emoji, url, description } = cardDetails;
   const {
     gradient,
     shadowColor,
@@ -47,8 +40,6 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
     secondaryTextColor,
   } = themedLearnCategoryColors[category];
 
-  console.log(width);
-  console.log(numberOfLines);
   return (
     <GenericCard
       type={type}
@@ -85,7 +76,6 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
               color={{ custom: primaryTextColor }}
               size="17pt"
               weight="heavy"
-              numberOfLines={numberOfLines}
             >
               {title}
             </Text>
@@ -107,7 +97,6 @@ const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
                   size="22pt"
                   weight="heavy"
                   color={{ custom: primaryTextColor }}
-                  numberOfLines={2}
                 >
                   {title}
                 </Text>
