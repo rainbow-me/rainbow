@@ -180,15 +180,11 @@ const AssetCard = () => {
         </Stack>
         <Inset vertical="16px">
           <Box height={{ custom: CHART_HEIGHT }}>
-            {/* @ts-expect-error – JS component */}
-
             <ChartPathProvider
               data={throttledData}
               width={CHART_WIDTH}
               height={CHART_HEIGHT}
             >
-              {/* @ts-expect-error – JS component */}
-
               <ChartPath
                 fill="none"
                 gestureEnabled={false}

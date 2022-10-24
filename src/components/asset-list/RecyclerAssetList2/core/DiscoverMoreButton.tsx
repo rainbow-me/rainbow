@@ -17,17 +17,22 @@ export const DiscoverMoreButton = () => {
 
   return (
     <ButtonPressAnimation onPress={handlePressDiscover}>
-      <AccentColorProvider color={colors.alpha(accentColor, 0.6)}>
+      <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
         <Box
           background="accent"
           borderRadius={99}
           height="40px"
-          width="full"
+          width={{ custom: 163 }}
           alignItems="center"
           justifyContent="center"
         >
-          <Text weight="semibold" size="15pt" color="accent">
-            {`Discover Web3`}
+          <Text
+            weight="bold"
+            size="15pt"
+            containsEmoji
+            color={{ custom: accentColor }}
+          >
+            􀎬 Discover Web3
           </Text>
         </Box>
       </AccentColorProvider>
