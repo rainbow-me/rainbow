@@ -1,22 +1,38 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
-import React from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { GenericCard } from './GenericCard';
-import { LearnCardDetails, learnCategoryColors } from './constants';
+import { LearnCardDetails, learnCards, learnCategoryColors } from './constants';
 import { IconOrb } from './IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
 interface LearnCardProps {
-  cardDetails: LearnCardDetails;
+  cardDetails?: LearnCardDetails;
   type: 'square' | 'stretch';
 }
 
 export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
+  const [index, incrementIndex] = useReducer(
+    x => (x === learnCards.length - 1 ? 0 : x + 1),
+    0
+  );
+
   const themedLearnCategoryColors = learnCategoryColors(isDarkMode);
-  const { category, title, emoji, url, description } = cardDetails;
+
+  useEffect(() => {
+    if (!cardDetails) {
+      const interval = setInterval(() => {
+        incrementIndex();
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [cardDetails, type]);
+
+  const { category, title, emoji, url, description } =
+    cardDetails ?? learnCards[index];
   const {
     gradient,
     shadowColor,

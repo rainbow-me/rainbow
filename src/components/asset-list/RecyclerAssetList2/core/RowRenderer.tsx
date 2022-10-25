@@ -89,7 +89,7 @@ function rowRenderer(
     case CellType.GET_STARTED_CARD:
       return (
         <CardRowWrapper>
-          <LearnCard cardDetails={learnCards[0]} type="stretch" />
+          <LearnCard type="stretch" />
         </CardRowWrapper>
       );
     case CellType.PROFILE_STICKY_HEADER:
