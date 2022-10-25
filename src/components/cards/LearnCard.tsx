@@ -1,11 +1,12 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
-import React, { useEffect, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { GenericCard } from './GenericCard';
 import { LearnCardDetails, learnCards, learnCategoryColors } from './constants';
 import { IconOrb } from './IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { delay } from '@/helpers/utilities';
 
 interface LearnCardProps {
   cardDetails?: LearnCardDetails;
@@ -19,18 +20,7 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
     x => (x === learnCards.length - 1 ? 0 : x + 1),
     0
   );
-
   const themedLearnCategoryColors = learnCategoryColors(isDarkMode);
-
-  useEffect(() => {
-    if (!cardDetails) {
-      const interval = setInterval(() => {
-        incrementIndex();
-      }, 10000);
-      return () => clearInterval(interval);
-    }
-  }, [cardDetails, type]);
-
   const { category, title, emoji, url, description } =
     cardDetails ?? learnCards[index];
   const {
@@ -45,12 +35,13 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
     <GenericCard
       type={type}
       gradient={gradient}
-      onPress={() =>
+      onPress={() => {
         navigate(Routes.WEB_VIEW_SCREEN_NAVIGATOR, {
           params: { title, url },
           screen: Routes.WEB_VIEW_SCREEN,
-        })
-      }
+        });
+        delay(100).then(incrementIndex);
+      }}
       color={shadowColor}
     >
       {type === 'square' ? (
