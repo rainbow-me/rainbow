@@ -58,7 +58,7 @@ export const unlockableAppIconCheck = async (
         Navigation.handleAction(Routes.EXPLAIN_SHEET, {
           type: explainSheetType,
           onPress: () => {
-            analytics.track('Activated App Icon Unlock', { campaign: 'smol' });
+            analytics.track('Activated App Icon Unlock', { campaign: key });
             setTimeout(() => {
               Navigation.handleAction(Routes.SETTINGS_SHEET, {});
               setTimeout(() => {
