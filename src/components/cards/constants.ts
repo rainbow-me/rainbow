@@ -17,16 +17,6 @@ type CardColor =
   | 'darkGreen'
   | 'darkBlue';
 
-// enum LearnCategories {
-//   Essentials = 'Essentials',
-//   Safety = 'Staying Safe',
-//   Guides = "Beginner's Guides",
-//   Web3 = 'What is Web3?',
-//   Blockchains = 'Blockchains and Fees',
-//   HowTo = 'How to use Rainbow',
-//   HowToDark = 'How to use Rainbow',
-// }
-
 export interface LearnCardDetails {
   url: string;
   category: LearnCategory;
@@ -143,7 +133,7 @@ export const learnCategoryColors: (
 const getStartedCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/get-started-with-rainbow',
   category: 'Essentials',
-  title: 'Get Started with Rainbow',
+  title: 'Get Started with\nRainbow',
   emoji: '🌈',
   description:
     "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey.",

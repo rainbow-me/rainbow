@@ -27,7 +27,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.DISCOVER_MORE_BUTTON]: { height: 40 },
   [CellType.RECEIVE_CARD]: { height: ReceiveCardHeight },
   [CellType.BUY_ETH_CARD]: { height: AssetCardHeight },
-  [CellType.GET_STARTED_CARD]: { height: 159 },
+  [CellType.GET_STARTED_CARD]: { height: 184 },
   [CellType.EMPTY_WALLET_SPACER]: { height: 20 },
   [CellType.BIG_EMPTY_WALLET_SPACER]: { height: 32 },
   [CellType.PROFILE_STICKY_HEADER]: { height: ProfileStickyHeaderHeight },
