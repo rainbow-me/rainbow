@@ -5,9 +5,8 @@ import {
   Inset,
   Stack,
   Text,
-  Columns,
-  Column,
   AccentColorProvider,
+  Bleed,
 } from '@/design-system';
 import { useTheme } from '@/theme';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
@@ -126,47 +125,46 @@ export const AssetCard = () => {
     >
       <Stack space="20px">
         <Stack space="12px">
-          <Box style={{ marginTop: -4 }}>
-            <Columns alignHorizontal="justify" alignVertical="center">
-              <Column>
-                <Inline alignVertical="center" space="6px">
-                  {/* @ts-expect-error – JS component */}
-                  <CoinIcon
-                    address={assetWithPrice.address}
-                    size={20}
-                    symbol={assetWithPrice.symbol}
-                  />
-                  <Text
-                    size="17pt"
-                    color={{ custom: colorForAsset }}
-                    weight="heavy"
-                  >
-                    {assetWithPrice.name}
-                  </Text>
-                </Inline>
-              </Column>
-              <Column width="content">
-                <Inline alignVertical="bottom">
-                  <Text
-                    size="17pt"
-                    color={{ custom: priceChangeColor }}
-                    weight="bold"
-                  >
-                    {`${
-                      isNegativePriceChange ? '􀄩' : '􀄨'
-                    }${priceChangeDisplay}`}
-                  </Text>
-                  <Text
-                    size="13pt"
-                    color={{ custom: priceChangeColor }}
-                    weight="bold"
-                  >
-                    {` ${lang.t('expanded_state.chart.today').toLowerCase()}`}
-                  </Text>
-                </Inline>
-              </Column>
-            </Columns>
-          </Box>
+          <Bleed top="4px">
+            <Inline alignVertical="center" alignHorizontal="justify">
+              <Inline alignVertical="center" space="6px">
+                {/* @ts-expect-error – JS component */}
+
+                <CoinIcon
+                  address={assetWithPrice.address}
+                  size={20}
+                  symbol={assetWithPrice.symbol}
+                />
+
+                <Text
+                  size="17pt"
+                  color={{ custom: colorForAsset }}
+                  weight="heavy"
+                >
+                  {assetWithPrice.name}
+                </Text>
+              </Inline>
+              {/* </Bleed>
+              </Column> */}
+              {/* <Column width="content"> */}
+              <Inline alignVertical="bottom">
+                <Text
+                  size="17pt"
+                  color={{ custom: priceChangeColor }}
+                  weight="bold"
+                >
+                  {`${isNegativePriceChange ? '􀄩' : '􀄨'}${priceChangeDisplay}`}
+                </Text>
+                <Text
+                  size="13pt"
+                  color={{ custom: priceChangeColor }}
+                  weight="bold"
+                >
+                  {` ${lang.t('expanded_state.chart.today').toLowerCase()}`}
+                </Text>
+              </Inline>
+            </Inline>
+          </Bleed>
           <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
             {assetWithPrice.native.price.display}
           </Text>
