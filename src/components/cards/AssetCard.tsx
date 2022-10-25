@@ -36,7 +36,7 @@ import { IS_IOS } from '@/env';
 import { emitChartsRequest } from '@/redux/explorer';
 import chartTypes from '@/helpers/chartTypes';
 
-export const AssetCardHeight = 274;
+export const AssetCardHeight = 284.3;
 
 export const AssetCard = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
