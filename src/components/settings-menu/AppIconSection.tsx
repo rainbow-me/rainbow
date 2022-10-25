@@ -42,17 +42,17 @@ type LockedAppIcon = AppIcon & {
   unlock_key: string;
 };
 
-const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
+export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
   optimism: {
     accentColor: 'optimismRed',
-    key: 'optimism',
+    key: OptimismIcon.key,
     name: 'Optimism',
     source: AppIconOptimism,
     unlock_key: OptimismIcon.unlockKey,
   },
   smol: {
     accentColor: 'smolPurple',
-    key: 'smol',
+    key: SmolIcon.key,
     name: 'SMOL',
     source: AppIconSmol,
     unlock_key: SmolIcon.unlockKey,
