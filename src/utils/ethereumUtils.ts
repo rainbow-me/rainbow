@@ -163,6 +163,15 @@ const getAsset = (
   return accountAssets[loweredUniqueId];
 };
 
+const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
+  const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
+  const accountAsset = store.getState().data?.accountAssetsData?.[
+    loweredUniqueId
+  ];
+  const genericAsset = store.getState().data?.genericAssets?.[loweredUniqueId];
+  return accountAsset ?? genericAsset;
+};
+
 const getAccountAsset = (
   uniqueId: EthereumAddress | undefined
 ): ParsedAddressAsset | undefined => {
@@ -762,6 +771,7 @@ export default {
   deriveAccountFromPrivateKey,
   deriveAccountFromWalletInput,
   formatGenericAsset,
+  getAssetFromAllAssets,
   getAccountAsset,
   getAsset,
   getAssetPrice,

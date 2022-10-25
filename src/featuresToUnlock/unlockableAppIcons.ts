@@ -16,6 +16,7 @@ const SMOL_BODIES_PETS_NFT_ADDRESS: EthereumAddress =
   '0xae0d0c4cc3335fd49402781e406adf3f02d41bca';
 
 export interface UnlockableAppIcon {
+  key: string; // string used for analytics
   network: Network; // network that the unlockingNfts exist on
   explainSheetType: string; // ExplainSheet type to navigate to upon unlock
   unlockKey: string; // MMKV key to unlock feature
@@ -23,6 +24,7 @@ export interface UnlockableAppIcon {
 }
 
 export const OptimismIcon: UnlockableAppIcon = {
+  key: 'optimism',
   explainSheetType: 'optimism_app_icon',
   network: Network.optimism,
   unlockingNfts: [OPTIMISTIC_EXPLORER_NFT_ADDRESS],
@@ -30,6 +32,7 @@ export const OptimismIcon: UnlockableAppIcon = {
 };
 
 export const SmolIcon: UnlockableAppIcon = {
+  key: 'smol',
   explainSheetType: 'smol_app_icon',
   network: Network.arbitrum,
   unlockingNfts: [

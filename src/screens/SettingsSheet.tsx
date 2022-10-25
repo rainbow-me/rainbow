@@ -17,6 +17,7 @@ import {
   PrivacySection,
   SettingsSection,
   WalletNotificationsSettings,
+  TransactionDetailsPlayground,
 } from '../components/settings-menu';
 import BackupSection from '../components/settings-menu/BackupSection/BackupSection';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
@@ -275,6 +276,15 @@ export default function SettingsSheet() {
           options={({ route }: any) => ({
             cardStyleInterpolator,
             title: route.params?.title || lang.t('settings.backup'),
+          })}
+        />
+        {/* TODO: Remove below screen after finishing work on APP-27*/}
+        <Stack.Screen
+          component={TransactionDetailsPlayground}
+          name="TransactionDetailsPlayground"
+          options={({ route }: any) => ({
+            cardStyleInterpolator,
+            title: route.params?.title || 'Transaction Details Playground',
           })}
         />
       </Stack.Navigator>
