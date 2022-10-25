@@ -10,11 +10,11 @@ import { UserProperties } from '@/analytics/userProperties';
 import { LogLevel } from '@/logger';
 
 export class Analytics {
-  public client: SegmentClient;
-  public currentWalletAddressHash?: string;
-  public deviceId?: string;
-  public events = events;
-  public disabled = false;
+  client: SegmentClient;
+  currentWalletAddressHash?: string;
+  deviceId?: string;
+  events = events;
+  disabled = false;
 
   constructor() {
     this.client = createClient({
@@ -26,7 +26,7 @@ export class Analytics {
     });
   }
 
-  public identify(userProperties: UserProperties) {
+  identify(userProperties: UserProperties) {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
     this.client.identify(this.deviceId, {
@@ -35,13 +35,13 @@ export class Analytics {
     });
   }
 
-  public screen(routeName: string, params: Record<string, any> = {}): void {
+  screen(routeName: string, params: Record<string, any> = {}): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
     this.client.screen(routeName, { ...params, ...metadata });
   }
 
-  public track<T extends keyof EventProperties>(
+  track<T extends keyof EventProperties>(
     event: T,
     params?: EventProperties[T]
   ) {
@@ -57,23 +57,23 @@ export class Analytics {
     };
   }
 
-  public setDeviceId(deviceId: string) {
+  setDeviceId(deviceId: string) {
     this.deviceId = deviceId;
   }
 
-  public setCurrentWalletAddressHash(currentWalletAddressHash: string) {
+  setCurrentWalletAddressHash(currentWalletAddressHash: string) {
     this.currentWalletAddressHash = currentWalletAddressHash;
   }
 
-  public enable() {
+  enable() {
     this.disabled = false;
   }
 
-  public disable() {
+  disable() {
     this.disabled = true;
   }
 
-  public getTrackingEventCategory<T extends keyof EventProperties>(event: T) {
+  getTrackingEventCategory<T extends keyof EventProperties>(event: T) {
     for (const category of Object.keys(events)) {
       // @ts-expect-error We know the index type of `events`
       for (const ev of Object.values(events[category])) {
