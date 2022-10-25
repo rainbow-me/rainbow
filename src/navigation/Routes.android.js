@@ -114,7 +114,10 @@ function AddCashFlowNavigator() {
 
 function WebViewScreenNavigator() {
   return (
-    <Stack.Navigator initialRouteName={Routes.WEB_VIEW_SCREEN}>
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.WEB_VIEW_SCREEN}
+    >
       <Stack.Screen component={WebViewScreen} name={Routes.WEB_VIEW_SCREEN} />
     </Stack.Navigator>
   );
@@ -228,10 +231,6 @@ function MainNavigator() {
         component={AddCashFlowNavigator}
         name={Routes.WYRE_WEBVIEW_NAVIGATOR}
       />
-      <Stack.Screen
-        component={WebViewScreenNavigator}
-        name={Routes.WEB_VIEW_SCREEN_NAVIGATOR}
-      />
     </Stack.Navigator>
   );
 }
@@ -286,6 +285,10 @@ function BSNavigator() {
         options={{
           height: '95%',
         }}
+      />
+      <BSStack.Screen
+        component={WebViewScreenNavigator}
+        name={Routes.WEB_VIEW_SCREEN_NAVIGATOR}
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}

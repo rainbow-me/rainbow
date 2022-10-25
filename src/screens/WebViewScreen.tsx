@@ -1,17 +1,18 @@
 import { useRoute } from '@react-navigation/core';
-import React from 'react';
-import { Share } from 'react-native';
+import React, { useEffect } from 'react';
+import { Share, StatusBar } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import Spinner from '@/components/Spinner';
 import { SlackSheet } from '@/components/sheet';
-import { Box, DebugLayout, Text } from '@/design-system';
+import { Box, Text } from '@/design-system';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
+import { StatusBarHelper } from '@/helpers';
 
 const HeaderHeight = 60;
 
@@ -21,11 +22,11 @@ export default function WebViewScreen() {
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
 
-  // useEffect(() => {
-  //   StatusBarHelper.setBackgroundColor('transparent', false);
-  //   StatusBarHelper.setTranslucent(true);
-  //   StatusBarHelper.setDarkContent();
-  // }, []);
+  useEffect(() => {
+    StatusBarHelper.setBackgroundColor('transparent', false);
+    StatusBarHelper.setTranslucent(true);
+    StatusBarHelper.setDarkContent();
+  }, []);
 
   const { isDarkMode } = useTheme();
 
@@ -71,30 +72,29 @@ export default function WebViewScreen() {
       contentHeight={contentHeight}
       height="100%"
       removeTopPadding
+      additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
     >
-      <DebugLayout>
-        <Box width="full" height={{ custom: contentHeight }}>
-          <WebView
-            startInLoadingState
-            renderLoading={() => (
-              <Box
-                background="surfacePrimary"
-                width="full"
-                height="full"
-                alignItems="center"
-                justifyContent="center"
-              >
-                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-                /* @ts-ignore - JS component */}
-                <LoadingSpinner />
-              </Box>
-            )}
-            source={{
-              uri: url,
-            }}
-          />
-        </Box>
-      </DebugLayout>
+      <Box width="full" height={{ custom: contentHeight }}>
+        <WebView
+          startInLoadingState
+          renderLoading={() => (
+            <Box
+              background="surfacePrimary"
+              width="full"
+              height="full"
+              alignItems="center"
+              justifyContent="center"
+            >
+              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+              /* @ts-ignore - JS component */}
+              <LoadingSpinner />
+            </Box>
+          )}
+          source={{
+            uri: url,
+          }}
+        />
+      </Box>
     </SlackSheet>
   );
 }
