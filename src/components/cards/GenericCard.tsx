@@ -25,7 +25,7 @@ export const GenericCard = ({
   color,
 }: GenericCardProps) => (
   <ConditionalWrap
-    condition={onPress}
+    condition={!!onPress}
     wrap={(children: React.ReactNode) => (
       <ButtonPressAnimation onPress={onPress}>{children}</ButtonPressAnimation>
     )}
