@@ -5,6 +5,7 @@ import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
 import Routes from '@/navigation/routesNames';
+import { analytics } from '@/analytics';
 
 const mmkv = new MMKV();
 
@@ -19,6 +20,7 @@ export const unlockableAppIconCheck = async (
   walletsToCheck: EthereumAddress[]
 ) => {
   const {
+    key,
     explainSheetType,
     network,
     unlockKey,
@@ -52,8 +54,23 @@ export const unlockableAppIconCheck = async (
           unlockKey,
           'set to true. Wont show up anymore!'
         );
+        analytics.track('Viewed App Icon Unlock', { campaign: key });
         Navigation.handleAction(Routes.EXPLAIN_SHEET, {
           type: explainSheetType,
+          onPress: () => {
+            analytics.track('Activated App Icon Unlock', { campaign: 'smol' });
+            setTimeout(() => {
+              Navigation.handleAction(Routes.SETTINGS_SHEET, {});
+              setTimeout(() => {
+                Navigation.handleAction(Routes.SETTINGS_SHEET, {
+                  screen: 'AppIconSection',
+                });
+              }, 300);
+            }, 300);
+          },
+          handleClose: () => {
+            analytics.track('Dismissed App Icon Unlock', { campaign: key });
+          },
         });
         return true;
       }
