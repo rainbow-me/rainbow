@@ -31,7 +31,7 @@ export default function useCollectible(
   );
 
   const asset = useMemo(() => {
-    const matched = uniqueTokens!.find(
+    let matched = uniqueTokens!.find(
       (uniqueToken: UniqueAsset) =>
         uniqueToken.uniqueId === initialAsset?.uniqueId
     );

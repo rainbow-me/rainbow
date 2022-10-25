@@ -711,7 +711,7 @@ const formatTotalRegistrationCost = (
   wei: string,
   nativeCurrency: any,
   nativeAssetPrice: any,
-  skipDecimals = false
+  skipDecimals: boolean = false
 ) => {
   const networkFeeInEth = fromWei(wei);
   const eth = handleSignificantDecimals(networkFeeInEth, 3);

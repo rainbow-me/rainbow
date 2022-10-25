@@ -22,7 +22,7 @@ const MemoFastPoolValue = React.memo(function FastPoolValue({
       type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
 
     if (type === 'annualized_fees' || type === 'profit30d') {
-      const percent: number = value;
+      let percent: number = value;
       if (!percent || percent === 0) {
         formattedValue = '0%';
       }
@@ -35,7 +35,7 @@ const MemoFastPoolValue = React.memo(function FastPoolValue({
         formattedValue = '< 0.0001%';
       }
 
-      const fixedPercent = percent.toFixed(2);
+      let fixedPercent = percent.toFixed(2);
       if (fixedPercent === '0.00') {
         formattedValue = '0%';
       }

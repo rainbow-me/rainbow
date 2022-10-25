@@ -4,7 +4,7 @@ import { maybeSignUri } from '../handlers/imgix';
 
 export default function useSafeImageUri(
   maybeUnsafeUri: string | undefined,
-  skipCaching = false
+  skipCaching: boolean = false
 ): string | undefined {
   return useMemo(() => {
     return maybeSignUri(maybeUnsafeUri, {}, skipCaching);

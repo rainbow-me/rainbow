@@ -31,15 +31,15 @@ const sortAssetsByNativeAmount = (
   } = groupAssetsByMarketValue(assetsNativePrices);
 
   const sortedAssetsNoShitcoins = hasValue.sort((a: any, b: any) => {
-    const itemA = Number(a.native?.balance?.amount) ?? 0;
-    const itemB = Number(b.native?.balance?.amount) ?? 0;
+    let itemA = Number(a.native?.balance?.amount) ?? 0;
+    let itemB = Number(b.native?.balance?.amount) ?? 0;
 
     return itemA < itemB ? 1 : -1;
   });
 
   const sortedShitcoins = noValue.sort((a: any, b: any) => {
-    const itemA = a.name;
-    const itemB = b.name;
+    let itemA = a.name;
+    let itemB = b.name;
 
     return itemA > itemB ? 1 : -1;
   });

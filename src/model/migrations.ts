@@ -334,7 +334,7 @@ export default async function runMigrations() {
       const { selected, wallets } = store.getState().wallets;
       if (!wallets) return;
       const walletKeys = Object.keys(wallets);
-      const updatedWallets = { ...wallets };
+      let updatedWallets = { ...wallets };
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
@@ -369,7 +369,7 @@ export default async function runMigrations() {
 
       // migrate contacts to new color index
       const contacts = await getContacts();
-      const updatedContacts = { ...contacts };
+      let updatedContacts = { ...contacts };
       if (!contacts) return;
       const contactKeys = Object.keys(contacts);
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -405,7 +405,7 @@ export default async function runMigrations() {
     try {
       // migrate contacts to corresponding emoji
       const contacts = await getContacts();
-      const updatedContacts = { ...contacts };
+      let updatedContacts = { ...contacts };
       if (!contacts) return;
       const contactKeys = Object.keys(contacts);
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -541,8 +541,8 @@ export default async function runMigrations() {
       // which look like'signature_0x...'
       const { wallets } = store.getState().wallets;
       if (Object.keys(wallets!).length > 0) {
-        for (const wallet of Object.values(wallets!)) {
-          for (const account of (wallet as RainbowWallet).addresses) {
+        for (let wallet of Object.values(wallets!)) {
+          for (let account of (wallet as RainbowWallet).addresses) {
             keysToMigrate.push(`signature_${account.address}`);
           }
         }
@@ -578,8 +578,8 @@ export default async function runMigrations() {
     const { network } = store.getState().settings;
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
-    for (const wallet of Object.values(wallets)) {
-      for (const account of (wallet as RainbowWallet).addresses) {
+    for (let wallet of Object.values(wallets)) {
+      for (let account of (wallet as RainbowWallet).addresses) {
         const hiddenCoins = await getHiddenCoins(account.address, network);
         const pinnedCoins = await getPinnedCoins(account.address, network);
 
@@ -641,8 +641,8 @@ export default async function runMigrations() {
   const v17 = async () => {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
-    for (const wallet of Object.values(wallets)) {
-      for (const account of (wallet as RainbowWallet).addresses) {
+    for (let wallet of Object.values(wallets)) {
+      for (let account of (wallet as RainbowWallet).addresses) {
         const pinnedCoins = JSON.parse(
           mmkv.getString('pinned-coins-' + account.address) ?? '[]'
         );

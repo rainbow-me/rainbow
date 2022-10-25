@@ -132,7 +132,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
-      const guardedForceColor =
+      let guardedForceColor =
         typeof forceColor === 'string' || typeof forceColor === 'number'
           ? forceColor
           : null;

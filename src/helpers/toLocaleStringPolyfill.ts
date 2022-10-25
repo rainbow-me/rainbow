@@ -3,12 +3,12 @@ export default function toLocaleStringPolyfill() {
   'use strict';
   // Got this from MDN:
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString#Example:_Checking_for_support_for_locales_and_options_arguments
-  const roundOff = function (number: any, precision: any) {
+  var roundOff = function (number: any, precision: any) {
     return +(+number).toFixed(precision);
   };
-  const replaceSeparators = function (sNum: any, separators: any) {
+  var replaceSeparators = function (sNum: any, separators: any) {
     sNum = '' + roundOff(sNum, 2);
-    const sNumParts = sNum.split('.');
+    var sNumParts = sNum.split('.');
     if (!!separators && separators.thousands) {
       sNumParts[0] = sNumParts[0].replace(
         /(\d)(?=(\d\d\d)+(?!\d))/g,
@@ -23,9 +23,9 @@ export default function toLocaleStringPolyfill() {
     sNum = sNumParts.join(separators.decimal);
     return sNum;
   };
-  const getLast3Digits = function (sNum: any) {
+  var getLast3Digits = function (sNum: any) {
     sNum = '' + roundOff(sNum, 3);
-    const sNumParts = sNum.split('.');
+    var sNumParts = sNum.split('.');
     switch (sNumParts[0].length) {
       case 0:
         sNumParts[0] = '000';
@@ -40,16 +40,16 @@ export default function toLocaleStringPolyfill() {
     sNum = sNumParts.join('.');
     return sNum;
   };
-  const renderFormat = function (template: any, props: any) {
-    for (const prop in props) {
+  var renderFormat = function (template: any, props: any) {
+    for (var prop in props) {
       template = template.replace('{{' + prop + '}}', props[prop]);
     }
     return template;
   };
-  const mapMatch = function (map: any, locale: any) {
-    let match = locale;
+  var mapMatch = function (map: any, locale: any) {
+    var match = locale;
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-    const language = locale && locale.toLowerCase().match(/^\w+/);
+    var language = locale && locale.toLowerCase().match(/^\w+/);
     if (!map.hasOwnProperty(locale)) {
       if (map.hasOwnProperty(language)) {
         match = language;
@@ -59,29 +59,29 @@ export default function toLocaleStringPolyfill() {
     }
     return map[match];
   };
-  const dotThousCommaDec = function (sNum: any) {
-    const separators = {
+  var dotThousCommaDec = function (sNum: any) {
+    var separators = {
       decimal: ',',
       thousands: '.',
     };
     return replaceSeparators(sNum, separators);
   };
-  const commaThousDotDec = function (sNum: any) {
-    const separators = {
+  var commaThousDotDec = function (sNum: any) {
+    var separators = {
       decimal: '.',
       thousands: ',',
     };
     return replaceSeparators(sNum, separators);
   };
-  const spaceThousCommaDec = function (sNum: any) {
-    const seperators = {
+  var spaceThousCommaDec = function (sNum: any) {
+    var seperators = {
       decimal: ',',
       thousands: '\u00A0',
     };
     return replaceSeparators(sNum, seperators);
   };
-  const spaceHundredsCommaThousCommaDec = function (sNum: any) {
-    const hundredSeperators = {
+  var spaceHundredsCommaThousCommaDec = function (sNum: any) {
+    var hundredSeperators = {
         decimal: '.',
         hundreds: ',',
       },
@@ -100,14 +100,14 @@ export default function toLocaleStringPolyfill() {
       return replaceSeparators(sNum + '', thoudandSeperators);
     }
   };
-  const apostrophThousDotDec = function (sNum: any) {
-    const seperators = {
+  var apostrophThousDotDec = function (sNum: any) {
+    var seperators = {
       decimal: '.',
       thousands: '\u0027',
     };
     return replaceSeparators(sNum, seperators);
   };
-  const transformForLocale = {
+  var transformForLocale = {
     'en': commaThousDotDec,
     'it': dotThousCommaDec,
     'fr': spaceThousCommaDec,
@@ -127,7 +127,7 @@ export default function toLocaleStringPolyfill() {
     'nb-NO': spaceThousCommaDec,
     'sv-SE': spaceThousCommaDec,
   };
-  const currencyFormatMap = {
+  var currencyFormatMap = {
     'en': 'pre',
     'it': 'post',
     'fr': 'post',
@@ -145,7 +145,7 @@ export default function toLocaleStringPolyfill() {
     'nb-NO': 'post',
     'sv-SE': 'post',
   };
-  const currencySymbols = {
+  var currencySymbols = {
     afn: '؋',
     ars: '$',
     awg: 'ƒ',
@@ -262,7 +262,7 @@ export default function toLocaleStringPolyfill() {
     yer: '﷼',
     zwd: 'Z$',
   };
-  const currencyFormats = {
+  var currencyFormats = {
     pre: '{{code}}{{num}}',
     post: '{{num}} {{code}}',
     prespace: '{{code}} {{num}}',
@@ -271,7 +271,7 @@ export default function toLocaleStringPolyfill() {
   Number.prototype.toLocaleString = function (locale: any, options: any) {
     if (locale && locale.length < 2)
       throw new RangeError('Invalid language tag: ' + locale);
-    let sNum;
+    var sNum;
     if (!!options && options.minimumFractionDigits !== undefined) {
       sNum = this.toFixed(options.minimumFractionDigits);
     } else {
@@ -280,7 +280,7 @@ export default function toLocaleStringPolyfill() {
     sNum = mapMatch(transformForLocale, locale)(sNum, options);
     if (!!options && options.currency && options.style === 'currency') {
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      const format = currencyFormats[mapMatch(currencyFormatMap, locale)];
+      var format = currencyFormats[mapMatch(currencyFormatMap, locale)];
       if (options.currencyDisplay === 'code') {
         sNum = renderFormat(format, {
           num: sNum,

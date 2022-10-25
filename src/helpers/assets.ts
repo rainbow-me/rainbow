@@ -94,7 +94,7 @@ export const buildCoinsList = (
   includePlaceholder = false,
   emptyCollectibles: any
 ) => {
-  const standardAssets: any = [],
+  let standardAssets: any = [],
     pinnedAssets: any = [],
     smallAssets: any = [],
     hiddenAssets: any = [];
@@ -206,7 +206,7 @@ export const buildBriefCoinsList = (
   );
   const briefAssets = [];
   if (assets) {
-    for (const asset of assets) {
+    for (let asset of assets) {
       if (asset.coinDivider) {
         briefAssets.push({
           defaultToEditButton: asset.defaultToEditButton,
@@ -215,7 +215,7 @@ export const buildBriefCoinsList = (
           value: smallBalancesValue,
         });
       } else if (asset.smallBalancesContainer) {
-        for (const smallAsset of asset.assets) {
+        for (let smallAsset of asset.assets) {
           briefAssets.push({
             type: 'COIN',
             uid: 'coin-' + smallAsset.uniqueId,
@@ -246,7 +246,7 @@ export const buildUniqueTokenList = (
   const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
-  for (const family of families) {
+  for (let family of families) {
     const tokensRow: any = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
       if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
@@ -351,13 +351,11 @@ export const buildBriefUniqueTokenList = (
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
-  const result = families2.length
-    ? [
-        { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
-        { type: 'NFTS_HEADER', uid: 'nfts-header' },
-        { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
-      ]
-    : [];
+  const result = [
+    { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
+    { type: 'NFTS_HEADER', uid: 'nfts-header' },
+    { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
+  ];
   if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
     result.push({
       // @ts-expect-error "name" does not exist in type.
@@ -399,7 +397,7 @@ export const buildBriefUniqueTokenList = (
     }
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
-  for (const family of families2) {
+  for (let family of families2) {
     result.push({
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       image: grouped2[family][0].familyImage,

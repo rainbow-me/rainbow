@@ -100,7 +100,7 @@ export const countDecimalPlaces = (value: BigNumberish): number =>
 export const updatePrecisionToDisplay = (
   amount: BigNumberish | null,
   nativePrice?: BigNumberish | null,
-  roundUp = false
+  roundUp: boolean = false
 ): string => {
   if (!amount) return '0';
   const roundingMode = roundUp ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN;
@@ -207,7 +207,7 @@ export const fraction = (
 export const convertAmountFromNativeValue = (
   value: BigNumberish,
   priceUnit: BigNumberish | null,
-  decimals = 18
+  decimals: number = 18
 ): string => {
   if (isNil(priceUnit) || isZero(priceUnit)) return '0';
   return new BigNumber(
@@ -228,8 +228,8 @@ export const lessThan = (
 export const handleSignificantDecimalsWithThreshold = (
   value: BigNumberish,
   decimals: number,
-  buffer = 3,
-  threshold = '0.0001'
+  buffer: number = 3,
+  threshold: string = '0.0001'
 ) => {
   const result = handleSignificantDecimals(value, decimals, buffer);
   return lessThan(result, threshold) ? `< ${threshold}` : result;
@@ -238,7 +238,7 @@ export const handleSignificantDecimalsWithThreshold = (
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
-  buffer = 3,
+  buffer: number = 3,
   skipDecimals = false
 ): string => {
   if (lessThan(new BigNumber(value).abs(), 1)) {
@@ -272,7 +272,7 @@ export const convertAmountAndPriceToNativeDisplay = (
   priceUnit: BigNumberish,
   nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
-  skipDecimals = false
+  skipDecimals: boolean = false
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
   const nativeDisplay = convertAmountToNativeDisplay(
@@ -344,7 +344,7 @@ export const convertAmountToBalanceDisplay = (
  */
 export const convertAmountToPercentageDisplay = (
   value: BigNumberish,
-  decimals = 2,
+  decimals: number = 2,
   buffer?: number,
   skipDecimals?: boolean
 ): string => {
@@ -363,8 +363,8 @@ export const convertAmountToPercentageDisplay = (
  */
 export const convertAmountToPercentageDisplayWithThreshold = (
   value: BigNumberish,
-  decimals = 2,
-  threshold = '0.0001'
+  decimals: number = 2,
+  threshold: string = '0.0001'
 ): string => {
   if (lessThan(value, threshold)) {
     return '< 0.01%';
@@ -379,7 +379,7 @@ export const convertAmountToPercentageDisplayWithThreshold = (
  */
 export const convertBipsToPercentage = (
   value: BigNumberish | null,
-  decimals = 2
+  decimals: number = 2
 ): string => {
   if (value === null) return '0';
   return new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
@@ -413,7 +413,7 @@ export const convertAmountToNativeDisplay = (
  */
 export const convertRawAmountToDecimalFormat = (
   value: BigNumberish,
-  decimals = 18
+  decimals: number = 18
 ): string =>
   new BigNumber(value).dividedBy(new BigNumber(10).pow(decimals)).toFixed();
 

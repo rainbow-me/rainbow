@@ -78,7 +78,7 @@ class SvgImage extends Component {
   }
 
   doFetch = async props => {
-    const uri = props.source && props.source.uri;
+    let uri = props.source && props.source.uri;
     if (uri) {
       props.onLoadStart && props.onLoadStart();
       if (uri.match(/^data:image\/svg/)) {

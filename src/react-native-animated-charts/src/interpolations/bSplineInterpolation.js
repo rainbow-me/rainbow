@@ -28,8 +28,8 @@ class BSpline {
   }
 
   seqAt(dim) {
-    const points = this.points;
-    const margin = this.degree + 1;
+    let points = this.points;
+    let margin = this.degree + 1;
     return function (n) {
       if (n < margin) {
         return points[0][dim];
@@ -97,9 +97,9 @@ class BSpline {
   }
 
   getInterpol(seq, t) {
-    const f = this.baseFunc;
-    const rangeInt = this.baseFuncRangeInt;
-    const tInt = Math.floor(t);
+    let f = this.baseFunc;
+    let rangeInt = this.baseFuncRangeInt;
+    let tInt = Math.floor(t);
     let result = 0;
     for (let i = tInt - rangeInt; i <= tInt + rangeInt; i++) {
       result += seq(i) * f(t - i);
@@ -153,7 +153,7 @@ class BSpline {
   }
 
   calcAt(t) {
-    t = t * ((this.degree + 1) * 2 + this.points.length); // t must be in [0,1]
+    t = t * ((this.degree + 1) * 2 + this.points.length); //t must be in [0,1]
     if (this.dimension === 2) {
       return [
         this.getInterpol(this.seqAt(0), t),
@@ -166,7 +166,7 @@ class BSpline {
         this.getInterpol(this.seqAt(2), t),
       ];
     } else {
-      const res = [];
+      let res = [];
       for (let i = 0; i < this.dimension; i++) {
         res.push(this.getInterpol(this.seqAt(i), t));
       }

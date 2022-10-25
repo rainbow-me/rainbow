@@ -161,7 +161,7 @@ const LiquidityPoolExpandedState = () => {
 
   const chartDataLabels = useMemo(() => {
     if (chartType === chartTypes.month && params?.asset?.profit30d) {
-      const overrideChartDataLabels = { ...initialChartDataLabels };
+      let overrideChartDataLabels = { ...initialChartDataLabels };
       overrideChartDataLabels.latestChange = params.asset.profit30d;
       return overrideChartDataLabels;
     }

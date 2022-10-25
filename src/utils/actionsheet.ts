@@ -3,10 +3,10 @@ import ActionSheet from 'react-native-action-sheet';
 
 export default function showActionSheetWithOptions(...args: any[]) {
   if (ios) {
-    // @ts-ignore
+    //@ts-ignore
     ActionSheetIOS.showActionSheetWithOptions(...args);
   } else {
-    // @ts-ignore
+    //@ts-ignore
     ActionSheet.showActionSheetWithOptions(...args);
   }
 }

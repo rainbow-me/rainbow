@@ -162,7 +162,7 @@ export async function restoreCloudBackup(
     if (!data) {
       throw new Error('Invalid password');
     }
-    const dataToRestore = {
+    let dataToRestore = {
       ...data.secrets,
     };
 

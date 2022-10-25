@@ -39,7 +39,7 @@ export function isCID(hash: any) {
   }
 }
 
-export function parseNFT(uri: string, seperator = '/') {
+export function parseNFT(uri: string, seperator: string = '/') {
   // parse valid nft spec (CAIP-22/CAIP-29)
   // @see: https://github.com/ChainAgnostic/CAIPs/tree/master/CAIPs
   try {

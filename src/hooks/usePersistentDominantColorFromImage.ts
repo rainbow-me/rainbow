@@ -21,7 +21,7 @@ type Result = {
 
 export default function usePersistentDominantColorFromImage(
   url: string,
-  colorToMeasureAgainst = '#333333'
+  colorToMeasureAgainst: string = '#333333'
 ): Result {
   const [dominantColor, setPersistentDominantColor] = useMMKVString(
     (url || '') as string,

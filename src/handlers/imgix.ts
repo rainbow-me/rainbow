@@ -81,7 +81,7 @@ const saveToMemory = async () => {
     const keys = [];
     const values = [];
 
-    for (const [key, value] of staticSignatureLRU.entries()) {
+    for (let [key, value] of staticSignatureLRU.entries()) {
       if (!key.includes(SEPARATOR) && !value.includes(SEPARATOR)) {
         keys.push(key);
         values.push(value);
@@ -193,7 +193,7 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
 export const maybeSignUri = (
   externalImageUri: string | undefined,
   options?: ImgOptions,
-  skipCaching = false
+  skipCaching: boolean = false
 ): string | undefined => {
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}`;
