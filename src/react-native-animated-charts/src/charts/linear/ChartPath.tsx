@@ -381,7 +381,7 @@ const ChartPathInner = React.memo(
         <Animated.View>
           <Svg
             style={{
-              height: height + (isCard ? 0 : FIX_CLIPPED_PATH_MAGIC_NUMBER),
+              height: height + (isCard ? 3 : FIX_CLIPPED_PATH_MAGIC_NUMBER),
               width,
             }}
             viewBox={`0 0 ${width} ${height}`}

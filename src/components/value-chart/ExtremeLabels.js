@@ -10,7 +10,13 @@ function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
 }
 
-const CenteredLabel = ({ position, style, width, ...props }) => {
+const CenteredLabel = ({
+  position,
+  fontSize = '14px / 19px (Deprecated)',
+  style,
+  width,
+  ...props
+}) => {
   const [componentWidth, setWidth] = useState(0);
   const onLayout = useCallback(
     ({
@@ -46,11 +52,7 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
         position: 'absolute',
       }}
     >
-      <Text
-        color={{ custom: props.color }}
-        size="14px / 19px (Deprecated)"
-        weight="bold"
-      >
+      <Text color={{ custom: props.color }} size={fontSize} weight="bold">
         {props.children}
       </Text>
     </View>
@@ -79,8 +81,9 @@ const Labels = ({ color, width, isCard }) => {
         <CenteredLabel
           color={colors.alpha(color, 0.8)}
           position={positionMin}
+          fontSize={isCard ? '13pt' : undefined}
           style={{
-            bottom: isCard ? -18 : -40,
+            bottom: isCard ? -24 : -40,
           }}
           width={width}
         >
@@ -91,8 +94,9 @@ const Labels = ({ color, width, isCard }) => {
         <CenteredLabel
           color={colors.alpha(color, 0.8)}
           position={positionMax}
+          fontSize={isCard ? '13pt' : undefined}
           style={{
-            top: isCard ? -18 : -20,
+            top: -20,
             left: isCard ? 0 : 40,
           }}
           width={width}

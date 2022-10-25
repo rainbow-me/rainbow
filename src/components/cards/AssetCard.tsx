@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import {
   Box,
   Inline,
-  Inset,
   Stack,
   Text,
   AccentColorProvider,
@@ -123,7 +122,7 @@ export const AssetCard = () => {
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
       type="stretch"
     >
-      <Stack space="20px">
+      <Stack space={{ custom: 41 }}>
         <Stack space="12px">
           <Bleed top="4px">
             <Inline alignVertical="center" alignHorizontal="justify">
@@ -169,38 +168,36 @@ export const AssetCard = () => {
             {assetWithPrice.native.price.display}
           </Text>
         </Stack>
-        <Inset vertical="16px">
-          <Box height={{ custom: CHART_HEIGHT }}>
-            <ChartPathProvider
-              data={throttledData}
-              width={CHART_WIDTH}
+        <Box height={{ custom: CHART_HEIGHT }}>
+          <ChartPathProvider
+            data={throttledData}
+            width={CHART_WIDTH}
+            height={CHART_HEIGHT}
+          >
+            <ChartPath
+              fill="none"
+              gestureEnabled={false}
               height={CHART_HEIGHT}
-            >
-              <ChartPath
-                fill="none"
-                gestureEnabled={false}
-                height={CHART_HEIGHT}
-                hitSlop={0}
-                longPressGestureHandlerProps={undefined}
-                selectedStrokeWidth={3}
-                stroke={colorForAsset}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
-                strokeLinecap="round"
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
-                strokeLinejoin="round"
-                strokeWidth={4}
-                width={CHART_WIDTH}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
-                chartXOffset={0}
-                isCard
-              />
-              <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
-            </ChartPathProvider>
-          </Box>
-        </Inset>
+              hitSlop={0}
+              longPressGestureHandlerProps={undefined}
+              selectedStrokeWidth={3}
+              stroke={colorForAsset}
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore - prop is accepted via prop spreading
+              strokeLinecap="round"
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore - prop is accepted via prop spreading
+              strokeLinejoin="round"
+              strokeWidth={4}
+              width={CHART_WIDTH}
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore - prop is accepted via prop spreading
+              chartXOffset={0}
+              isCard
+            />
+            <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
+          </ChartPathProvider>
+        </Box>
         <ButtonPressAnimation onPress={handlePressBuy}>
           <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
             <Box
