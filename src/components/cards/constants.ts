@@ -133,7 +133,7 @@ export const learnCategoryColors: (
 const getStartedCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/get-started-with-rainbow',
   category: 'Essentials',
-  title: 'Get Started with\nRainbow',
+  title: 'Get Started with Rainbow',
   emoji: '🌈',
   description:
     "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey.",

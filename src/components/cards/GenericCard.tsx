@@ -27,9 +27,7 @@ export const GenericCard = ({
   <ConditionalWrap
     condition={onPress}
     wrap={(children: React.ReactNode) => (
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.92}>
-        {children}
-      </ButtonPressAnimation>
+      <ButtonPressAnimation onPress={onPress}>{children}</ButtonPressAnimation>
     )}
   >
     <AccentColorProvider color={color ?? globalColors.grey100}>

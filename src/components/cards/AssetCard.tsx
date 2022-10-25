@@ -201,7 +201,7 @@ export const AssetCard = () => {
               </ChartPathProvider>
             </Box>
           </Inset>
-          <ButtonPressAnimation onPress={handlePressBuy} scaleTo={0.8}>
+          <ButtonPressAnimation onPress={handlePressBuy}>
             <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
               <Box
                 width="full"

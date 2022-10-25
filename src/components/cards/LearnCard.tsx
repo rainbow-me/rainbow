@@ -68,29 +68,31 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
         </Box>
       ) : (
         <Stack space="36px">
-          <Columns space="20px">
-            <Column>
-              <Stack space="12px">
-                <Text
-                  size="13pt"
-                  weight="bold"
-                  color={{ custom: secondaryTextColor }}
-                >
-                  {category}
-                </Text>
-                <Text
-                  size="22pt"
-                  weight="heavy"
-                  color={{ custom: primaryTextColor }}
-                >
-                  {title}
-                </Text>
-              </Stack>
-            </Column>
-            <Column width="content">
-              <IconOrb color={orbColorLight} icon={emoji} />
-            </Column>
-          </Columns>
+          <Box height={{ custom: 65 }}>
+            <Columns space="20px">
+              <Column>
+                <Stack space="12px">
+                  <Text
+                    size="13pt"
+                    weight="bold"
+                    color={{ custom: secondaryTextColor }}
+                  >
+                    {category}
+                  </Text>
+                  <Text
+                    size="22pt"
+                    weight="heavy"
+                    color={{ custom: primaryTextColor }}
+                  >
+                    {title}
+                  </Text>
+                </Stack>
+              </Column>
+              <Column width="content">
+                <IconOrb color={orbColorLight} icon={emoji} />
+              </Column>
+            </Columns>
+          </Box>
           <Text
             color={{ custom: primaryTextColor }}
             size="13pt"
