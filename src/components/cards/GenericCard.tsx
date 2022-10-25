@@ -46,7 +46,7 @@ export const GenericCard = ({
           borderRadius={24}
           // @ts-expect-error - Box will take flex prop it just doesn't want to
           flex={0}
-          shadow="18px accent"
+          shadow={color ? '18px accent' : '18px'}
           padding="20px"
         >
           {children}
