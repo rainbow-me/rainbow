@@ -4,6 +4,7 @@ import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
 import { globalColors } from '@/design-system/color/palettes';
 import { deviceUtils } from '@/utils';
+import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 
 // (device width - (horizontal inset * 2 + padding between cards)) / # of cards in row
@@ -20,26 +21,25 @@ interface GenericCardProps {
 export const GenericCard = ({
   children,
   type,
-  gradient,
+  gradient = ['transparent', 'transparent'],
   onPress,
   color,
 }: GenericCardProps) => (
   <ConditionalWrap
     condition={!!onPress}
     wrap={(children: React.ReactNode) => (
-      <ButtonPressAnimation onPress={onPress}>{children}</ButtonPressAnimation>
+      <ButtonPressAnimation onPress={onPress} overflowMargin={50}>
+        {children}
+      </ButtonPressAnimation>
     )}
   >
     <AccentColorProvider color={color ?? globalColors.grey100}>
       <Box
         background={color ? 'accent' : 'surfacePrimaryElevated'}
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        {...(gradient && {
-          as: LinearGradient,
-          colors: gradient,
-          end: { x: 1, y: 0.5 },
-          start: { x: 0, y: 0.5 },
-        })}
+        as={LinearGradient}
+        colors={gradient}
+        end={{ x: 1, y: 0 }}
+        start={{ x: 0, y: 0.5 }}
         width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
         height={
           type === 'square'
@@ -49,8 +49,7 @@ export const GenericCard = ({
             : undefined
         }
         borderRadius={24}
-        // @ts-expect-error - Box will take flex prop it just doesn't want to
-        flex={0}
+        style={{ flex: IS_IOS ? 0 : undefined }}
         shadow={color ? '18px accent' : '18px'}
         padding="20px"
       >
