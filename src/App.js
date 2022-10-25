@@ -79,6 +79,7 @@ import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
 import { getDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
+import { logger as loggr, RainbowError } from '@/logger';
 
 const FedoraToastRef = createRef();
 
@@ -327,7 +328,13 @@ function Root() {
       setInitializing(false);
     }
 
-    initializeApplication();
+    initializeApplication()
+      .then(() => {
+        loggr.debug(`Application initialized with Sentry and Segment`);
+      })
+      .catch(e => {
+        loggr.error(new RainbowError(`initializeApplication failed`));
+      });
   }, [setInitializing]);
 
   return initializing ? null : (
