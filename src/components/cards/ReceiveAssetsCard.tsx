@@ -1,11 +1,10 @@
 import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
-import Clipboard from '@react-native-community/clipboard';
 import { useTheme } from '@/theme';
 import React, { useCallback } from 'react';
 import { GenericCard } from './GenericCard';
-import { useAccountProfile } from '@/hooks';
+import { useAccountProfile, useClipboard } from '@/hooks';
 import { ButtonPressAnimation } from '../animations';
-import { CopyFloatingEmojis } from '@/components/floating-emojis';
+import { FloatingEmojis } from '@/components/floating-emojis';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import { haptics } from '@/utils';
@@ -21,20 +20,25 @@ export const ReceiveAssetsCard = () => {
   const { colors } = useTheme();
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
+  const { setClipboard } = useClipboard();
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
   );
 
-  const onPressCopy = useCallback(() => {
-    if (!isToastActive) {
-      setToastActive(true);
-      setTimeout(() => {
-        setToastActive(false);
-      }, 2000);
-    }
-    haptics.notificationSuccess();
-    Clipboard.setString(accountAddress);
-  }, [accountAddress, isToastActive, setToastActive]);
+  const onPressCopy = useCallback(
+    onNewEmoji => {
+      if (!isToastActive) {
+        setToastActive(true);
+        setTimeout(() => {
+          setToastActive(false);
+        }, 2000);
+      }
+      haptics.notificationSuccess();
+      onNewEmoji();
+      setClipboard(accountAddress);
+    },
+    [accountAddress, isToastActive, setClipboard, setToastActive]
+  );
 
   const onPressQRCode = useCallback(() => {
     analytics.track('Tapped "My QR Code"', {
@@ -61,29 +65,40 @@ export const ReceiveAssetsCard = () => {
             <IconOrb color={accentColor} icon="􀖂" shadowColor="accent" />
           </ButtonPressAnimation>
         </Inline>
-        <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
-          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-          /* @ts-ignore - JS component */}
-          <CopyFloatingEmojis onPress={onPressCopy} textToCopy={accountAddress}>
-            <Box
-              background="accent"
-              borderRadius={99}
-              height="36px"
-              width="full"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text
-                color={{ custom: accentColor }}
-                containsEmoji
-                size="15pt"
-                weight="bold"
-              >
-                􀐅 Copy Address
-              </Text>
-            </Box>
-          </CopyFloatingEmojis>
-        </AccentColorProvider>
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+        /* @ts-ignore - JS component */}
+        <FloatingEmojis
+          distance={250}
+          duration={500}
+          fadeOut={false}
+          scaleTo={0}
+          size={50}
+          wiggleFactor={0}
+        >
+          {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+            <ButtonPressAnimation onPress={() => onPressCopy(onNewEmoji)}>
+              <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
+                <Box
+                  background="accent"
+                  borderRadius={99}
+                  height="36px"
+                  width="full"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Text
+                    color={{ custom: accentColor }}
+                    containsEmoji
+                    size="15pt"
+                    weight="bold"
+                  >
+                    􀐅 Copy Address
+                  </Text>
+                </Box>
+              </AccentColorProvider>
+            </ButtonPressAnimation>
+          )}
+        </FloatingEmojis>
       </Stack>
     </GenericCard>
   );
