@@ -243,7 +243,7 @@ export const AssetCard = () => {
         {!loadedPrice ? (
           <Box height={{ custom: 30 }} justifyContent="center">
             <Skeleton>
-              <FakeText width={310} height={30} />
+              <FakeText width={CHART_WIDTH} height={30} />
             </Skeleton>
           </Box>
         ) : (
