@@ -80,6 +80,7 @@ import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
 import { getDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 import { logger as loggr, RainbowError } from '@/logger';
+import * as ls from '@/storage';
 
 const FedoraToastRef = createRef();
 
@@ -129,7 +130,6 @@ class OldApp extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
-    await this.handleInitializeAnalytics();
     this.branchListener = branchListener(this.handleOpenLinkingURL);
     // Walletconnect uses direct deeplinks
     if (android) {
@@ -188,33 +188,6 @@ class OldApp extends Component {
 
   handleOpenLinkingURL = url => {
     handleDeeplink(url, this.state.initialRoute);
-  };
-
-  handleInitializeAnalytics = async () => {
-    // Comment the line below to debug analytics
-    if (__DEV__) return false;
-    const storedIdentifier = await keychain.loadString(analyticsUserIdentifier);
-
-    if (!storedIdentifier) {
-      const identifier = await RNIOS11DeviceCheck.getToken()
-        .then(deviceId => deviceId)
-        .catch(() => nanoid());
-      await keychain.saveString(analyticsUserIdentifier, identifier);
-      analytics.identify(identifier);
-      analytics.track('First App Open');
-      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, true);
-    } else if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
-      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
-      // track device dimensions
-      const screenWidth = Dimensions.get('screen').width;
-      const screenHeight = Dimensions.get('screen').height;
-      const screenScale = Dimensions.get('screen').scale;
-      analytics.identify(storedIdentifier, {
-        screenHeight,
-        screenWidth,
-        screenScale,
-      });
-    }
   };
 
   handleAppStateChange = async nextAppState => {
@@ -320,11 +293,31 @@ function Root() {
       });
 
       analyticsV2.setDeviceId(deviceId);
+
       if (currentWalletAddressHash) {
         analyticsV2.setCurrentWalletAddressHash(currentWalletAddressHash);
       }
-      analyticsV2.identify({});
 
+      // if not a brand-new user, just identify
+      if (ls.device.get(['isReturningUser'])) {
+        analyticsV2.identify({});
+      } else {
+        // on very first open, set some default data and fire event
+        loggr.info(`User opened application for the first time`);
+
+        const {
+          width: screenWidth,
+          height: screenHeight,
+          scale: screenScale,
+        } = Dimensions.get('screen');
+
+        analyticsV2.identify({ screenHeight, screenWidth, screenScale });
+        analyticsV2.track(analyticsV2.events.generics.firstAppOpen);
+
+        ls.device.set(['isReturningUser'], true);
+      }
+
+      // init complete, load the rest of the app
       setInitializing(false);
     }
 

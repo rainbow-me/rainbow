@@ -2,6 +2,7 @@
  * Uncategorized events
  */
 export const genericEvent = {
+  firstAppOpen: 'First App Open',
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
   pressedButton: 'Pressed Button',
@@ -27,6 +28,7 @@ export const events = {
  * Properties corresponding to our uncategorized event enum `GenericEvent`
  */
 type GenericEventProperties = {
+  [events.generics.firstAppOpen]: undefined;
   [events.generics.analyticsTrackingDisabled]: undefined;
   [events.generics.analyticsTrackingEnabled]: undefined;
   [events.generics.pressedButton]: {
