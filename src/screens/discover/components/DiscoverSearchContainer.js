@@ -10,10 +10,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ButtonPressAnimation } from '../../../components/animations';
-import { Column, Row } from '../../../components/layout';
-import { Text } from '../../../components/text';
-import DiscoverSearchInput from '../../../components/discover/DiscoverSearchInput';
+import { ButtonPressAnimation } from '@/components/animations';
+import { Column, Row } from '@/components/layout';
+import { Text } from '@/components/text';
+import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import DiscoverSheetContext from '../context/DiscoverScreenContext';
 import { deviceUtils } from '@/utils';
 import { analytics } from '@/analytics';

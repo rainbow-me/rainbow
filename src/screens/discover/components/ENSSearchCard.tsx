@@ -7,8 +7,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { ButtonPressAnimation } from '../../../components/animations';
+import { useNavigation } from '@/navigation/Navigation';
+import { ButtonPressAnimation } from '@/components/animations';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,

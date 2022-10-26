@@ -10,7 +10,7 @@ import GasCard from './GasCard';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
 import TopMoversSection from './TopMoversSection';
-import UniswapPools from '../../../components/discover/UniswapPoolsSection';
+import UniswapPools from '@/components/discover/UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Columns, Inset, Stack } from '@/design-system';
 import { useAccountAsset, useAccountSettings } from '@/hooks';

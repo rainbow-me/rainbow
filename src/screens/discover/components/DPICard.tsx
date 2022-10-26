@@ -3,8 +3,8 @@ import React, { useCallback } from 'react';
 import { ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { ButtonPressAnimation } from '../../../components/animations';
-import { CoinIcon } from '../../../components/coin-icon';
+import { ButtonPressAnimation } from '@/components/animations';
+import { CoinIcon } from '@/components/coin-icon';
 import { analytics } from '@/analytics';
 import {
   AccentColorProvider,

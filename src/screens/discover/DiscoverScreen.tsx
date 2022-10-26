@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { ScrollView } from 'react-native';
-import { useFocusEffect, useRoute } from '@react-navigation/core';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import DiscoverScreenContent from '@/screens/discover/components/DiscoverScreenContent';
-import DiscoverSheetContext from '@/screens/discover/context/DiscoverScreenContext';
+import DiscoverScreenContent from './components/DiscoverScreenContent';
+import DiscoverSheetContext from './context/DiscoverScreenContext';
 import CaretLeftIcon from '@/components/icons/svg/CaretLeftIcon';
 import Routes from '@rainbow-me/routes';
 import { useNavigation } from '@/navigation';

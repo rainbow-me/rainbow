@@ -2,7 +2,7 @@ import React from 'react';
 import {
   FabWrapperBottomPosition,
   FloatingActionButtonSize,
-} from '../../../components/fab';
+} from '@/components/fab';
 import styled from '@/styled-thing';
 
 const SpacerHeight = FabWrapperBottomPosition + FloatingActionButtonSize;

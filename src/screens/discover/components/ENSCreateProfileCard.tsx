@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import RainbowGrid from '../../../assets/discover-profiles-card.png';
+import RainbowGrid from '@/assets/discover-profiles-card.png';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { ButtonPressAnimation } from '../../../components/animations';
-import { ensAvatarUrl } from '../../../components/ens-registration/IntroMarquee/IntroMarquee';
-import ImgixImage from '../../../components/images/ImgixImage';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ensAvatarUrl } from '@/components/ens-registration/IntroMarquee/IntroMarquee';
+import ImgixImage from '@/components/images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,

@@ -1,12 +1,12 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import { TopMoverCoinRow } from '../../../components/coin-row';
-import { initialChartExpandedStateSheetHeight } from '../../../components/expanded-state/asset/ChartExpandedState';
-import { Centered, Column, Flex } from '../../../components/layout';
-import { MarqueeList } from '../../../components/list';
-import { Text } from '../../../components/text';
-import EdgeFade from '../../../components/discover/EdgeFade';
+import { TopMoverCoinRow } from '@/components/coin-row';
+import { initialChartExpandedStateSheetHeight } from '@/components/expanded-state/asset/ChartExpandedState';
+import { Centered, Column, Flex } from '@/components/layout';
+import { MarqueeList } from '@/components/list';
+import { Text } from '@/components/text';
+import EdgeFade from '@/components/discover/EdgeFade';
 import networkTypes from '@/helpers/networkTypes';
 import { useAccountSettings, useTopMovers } from '@/hooks';
 import { useNavigation } from '@/navigation';
