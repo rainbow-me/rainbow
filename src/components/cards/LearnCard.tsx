@@ -8,6 +8,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { delay } from '@/helpers/utilities';
 
+export const LearnCardHeight = 184;
+
 interface LearnCardProps {
   cardDetails?: LearnCardDetails;
   type: 'square' | 'stretch';

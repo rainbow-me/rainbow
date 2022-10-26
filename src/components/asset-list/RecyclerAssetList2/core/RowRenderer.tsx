@@ -33,7 +33,6 @@ import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { LearnCard } from '@/components/cards/LearnCard';
-import { learnCards } from '@/components/cards/constants';
 
 function rowRenderer(
   type: CellType,
@@ -86,7 +85,7 @@ function rowRenderer(
           <AssetCard />
         </CardRowWrapper>
       );
-    case CellType.GET_STARTED_CARD:
+    case CellType.LEARN_CARD:
       return (
         <CardRowWrapper>
           <LearnCard type="stretch" />

@@ -400,8 +400,8 @@ const withBriefBalanceSection = (
     { type: 'BUY_ETH_CARD', uid: 'buy-eth-card' },
     { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-3' },
     {
-      type: 'GET_STARTED_CARD',
-      uid: 'get-started-card',
+      type: 'LEARN_CARD',
+      uid: 'learn-card',
     },
     { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer' },
     {
