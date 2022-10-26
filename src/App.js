@@ -1,6 +1,5 @@
 import './languages';
 import * as Sentry from '@sentry/react-native';
-import { nanoid } from 'nanoid/non-secure';
 import React, { Component, createRef } from 'react';
 import {
   AppRegistry,
@@ -15,9 +14,6 @@ import {
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import { IS_TESTING } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
-// eslint-disable-next-line import/default
-import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -67,9 +63,8 @@ import { rainbowTokenList } from './references';
 import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
-import { addressKey, analyticsUserIdentifier } from './utils/keychainConstants';
+import { addressKey } from './utils/keychainConstants';
 import { analytics, analyticsV2 } from '@/analytics';
-import { STORAGE_IDS } from './model/mmkv';
 import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
@@ -83,8 +78,6 @@ import { logger as loggr, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 
 const FedoraToastRef = createRef();
-
-const mmkv = new MMKV();
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
