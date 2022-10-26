@@ -4,6 +4,7 @@ import React, { useCallback } from 'react';
 import Routes from '@/navigation/routesNames';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from '@/components/cards/reusables/TintButton';
+import { analytics } from '@/analytics';
 
 export const DiscoverMoreButtonHeight = 40;
 
@@ -13,6 +14,7 @@ export const DiscoverMoreButton = () => {
 
   const handlePressDiscover = useCallback(() => {
     navigate(Routes.DISCOVER_SCREEN);
+    analytics.track('DiscoverMoreButton pressed');
   }, [navigate]);
 
   return (

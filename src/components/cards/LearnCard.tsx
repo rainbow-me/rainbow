@@ -1,12 +1,13 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
-import React, { useReducer } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { GenericCard } from './GenericCard';
 import { LearnCardDetails, learnCards, learnCategoryColors } from './constants';
 import { IconOrb } from './reusables/IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { delay } from '@/helpers/utilities';
+import { analytics } from '@/analytics';
 
 export const LearnCardHeight = 184;
 
@@ -33,17 +34,25 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
     secondaryTextColor,
   } = themedLearnCategoryColors[category];
 
+  const onPress = useCallback(() => {
+    navigate(Routes.WEB_VIEW_SCREEN_NAVIGATOR, {
+      params: { title, url },
+      screen: Routes.WEB_VIEW_SCREEN,
+    });
+    !cardDetails && delay(100).then(incrementIndex);
+    analytics.track('Learn card opened', {
+      category,
+      title,
+      url,
+      cardType: type,
+    });
+  }, [cardDetails, category, navigate, title, type, url]);
+
   return (
     <GenericCard
       type={type}
       gradient={gradient}
-      onPress={() => {
-        navigate(Routes.WEB_VIEW_SCREEN_NAVIGATOR, {
-          params: { title, url },
-          screen: Routes.WEB_VIEW_SCREEN,
-        });
-        delay(100).then(incrementIndex);
-      }}
+      onPress={onPress}
       color={shadowColor}
     >
       {type === 'square' ? (

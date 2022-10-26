@@ -57,7 +57,7 @@ export const ReceiveAssetsCard = () => {
   const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
   return (
-    <GenericCard type="stretch">
+    <GenericCard type="stretch" disabled={!accentColorLoaded}>
       <Stack space="36px">
         <Inline alignHorizontal="justify">
           <Stack space="16px">

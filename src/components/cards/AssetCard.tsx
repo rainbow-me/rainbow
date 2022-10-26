@@ -37,6 +37,7 @@ import { emitChartsRequest } from '@/redux/explorer';
 import chartTypes from '@/helpers/chartTypes';
 import Spinner from '../Spinner';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 export const AssetCardHeight = 284.3;
 
@@ -46,6 +47,7 @@ export const AssetCard = () => {
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
   const genericAsset = useAccountAsset(ETH_ADDRESS);
+  const { loaded: accentColorLoaded } = useAccountAccentColor();
 
   emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
 
@@ -86,6 +88,7 @@ export const AssetCard = () => {
       longFormHeight: initialChartExpandedStateSheetHeight,
       type: 'token',
     });
+    analytics.track('Asset card opened');
   }, [assetWithPrice, navigate]);
 
   let colorForAsset = useColorForAsset(
@@ -120,7 +123,7 @@ export const AssetCard = () => {
 
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
-  const loadedPrice = assetWithPrice.native.change;
+  const loadedPrice = accentColorLoaded && assetWithPrice.native.change;
   const loadedChart = throttledData?.points.length && loadedPrice;
 
   return (
@@ -165,7 +168,7 @@ export const AssetCard = () => {
                 </Inline>
               )}
               {!loadedPrice ? (
-                <Box height={{ custom: 17 }}>
+                <Box height={{ custom: 17 }} justifyContent="center">
                   <Skeleton>
                     <FakeText height={17} width={110} />
                   </Skeleton>
@@ -193,7 +196,7 @@ export const AssetCard = () => {
             </Inline>
           </Bleed>
           {!loadedPrice ? (
-            <Box height={{ custom: 18 }}>
+            <Box height={{ custom: 18 }} justifyContent="center">
               <Skeleton>
                 <FakeText height={26} width={130} />
               </Skeleton>
@@ -204,7 +207,7 @@ export const AssetCard = () => {
             </Text>
           )}
         </Stack>
-        <Box height={{ custom: CHART_HEIGHT }}>
+        <Box height={{ custom: CHART_HEIGHT }} width={{ custom: CHART_WIDTH }}>
           {!loadedChart ? (
             <Box width="full" alignItems="center" justifyContent="center">
               <Spinner color={colorForAsset} size={30} />
