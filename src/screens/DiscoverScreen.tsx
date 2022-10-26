@@ -4,8 +4,8 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import DiscoverSheetContent from '@/components/discover-sheet/DiscoverSheetContent';
-import DiscoverSheetContext from '@/components/discover-sheet/DiscoverSheetContext';
+import DiscoverScreenContent from '@/components/discover-screen/DiscoverScreenContent';
+import DiscoverSheetContext from '@/components/discover-screen/DiscoverScreenContext';
 import CaretLeftIcon from '@/components/icons/svg/CaretLeftIcon';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
@@ -58,7 +58,7 @@ export default function DiscoverScreen() {
           removeClippedSubviews
           testID="discover-sheet"
         >
-          <DiscoverSheetContent />
+          <DiscoverScreenContent />
         </Box>
       </Box>
     </DiscoverSheetContext.Provider>

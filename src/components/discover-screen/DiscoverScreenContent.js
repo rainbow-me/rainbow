@@ -20,7 +20,7 @@ function Switcher({ showSearch, children }) {
   );
 }
 
-export default function DiscoverSheetContent() {
+export default function DiscoverScreenContent() {
   const [showSearch, setShowSearch] = useState(false);
   const ref = useRef();
 

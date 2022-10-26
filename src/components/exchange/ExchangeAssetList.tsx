@@ -21,7 +21,7 @@ import { ButtonPressAnimation } from '../animations';
 import useAccountSettings from '../../hooks/useAccountSettings';
 import FastCurrencySelectionRow from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { ContactRow } from '../contacts';
-import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
+import DiscoverSheetContext from '../discover-screen/DiscoverScreenContext';
 import { GradientText } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';

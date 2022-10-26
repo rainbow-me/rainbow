@@ -53,7 +53,7 @@ import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import DiscoverSearchInput from '@/components/discover-sheet/DiscoverSearchInput';
+import DiscoverSearchInput from '@/components/discover-screen/DiscoverSearchInput';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;

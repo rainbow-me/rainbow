@@ -14,7 +14,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSearchInput from './DiscoverSearchInput';
-import DiscoverSheetContext from './DiscoverSheetContext';
+import DiscoverSheetContext from './DiscoverScreenContext';
 import { deviceUtils } from '@/utils';
 import { analytics } from '@/analytics';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';

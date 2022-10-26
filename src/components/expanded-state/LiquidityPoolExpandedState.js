@@ -5,7 +5,7 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
-import EdgeFade from '../discover-sheet/EdgeFade';
+import EdgeFade from '../discover-screen/EdgeFade';
 import { PoolValue } from '../investment-cards/PoolValue';
 import { Column, Row } from '../layout';
 
@@ -161,7 +161,7 @@ const LiquidityPoolExpandedState = () => {
 
   const chartDataLabels = useMemo(() => {
     if (chartType === chartTypes.month && params?.asset?.profit30d) {
-      let overrideChartDataLabels = { ...initialChartDataLabels };
+      const overrideChartDataLabels = { ...initialChartDataLabels };
       overrideChartDataLabels.latestChange = params.asset.profit30d;
       return overrideChartDataLabels;
     }

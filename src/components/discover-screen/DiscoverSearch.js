@@ -18,7 +18,7 @@ import deviceUtils from '../../utils/deviceUtils';
 import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
-import DiscoverSheetContext from './DiscoverSheetContext';
+import DiscoverSheetContext from './DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchSuggestions } from '@/handlers/ens';
