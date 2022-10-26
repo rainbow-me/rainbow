@@ -133,11 +133,18 @@ export const AssetCard = () => {
           <Bleed top="4px">
             <Inline alignVertical="center" alignHorizontal="justify">
               {!loadedPrice ? (
-                <Box height={{ custom: 17 }} width={{ custom: 100 }}>
-                  <Skeleton>
-                    <FakeText height={17} width={100} />
-                  </Skeleton>
-                </Box>
+                <Inline alignVertical="center" space="6px">
+                  <Box height={{ custom: 20 }}>
+                    <Skeleton>
+                      <FakeText height={20} width={20} />
+                    </Skeleton>
+                  </Box>
+                  <Box height={{ custom: 17 }}>
+                    <Skeleton>
+                      <FakeText height={17} width={100} />
+                    </Skeleton>
+                  </Box>
+                </Inline>
               ) : (
                 <Inline alignVertical="center" space="6px">
                   {/* @ts-expect-error – JS component */}
@@ -157,9 +164,9 @@ export const AssetCard = () => {
                 </Inline>
               )}
               {!loadedPrice ? (
-                <Box height={{ custom: 17 }} width={{ custom: 80 }}>
+                <Box height={{ custom: 17 }}>
                   <Skeleton>
-                    <FakeText height={17} width={80} />
+                    <FakeText height={17} width={110} />
                   </Skeleton>
                 </Box>
               ) : (
@@ -185,9 +192,9 @@ export const AssetCard = () => {
             </Inline>
           </Bleed>
           {!loadedPrice ? (
-            <Box height={{ custom: 26 }} width={{ custom: 120 }}>
+            <Box height={{ custom: 18 }}>
               <Skeleton>
-                <FakeText height={26} width={120} />
+                <FakeText height={26} width={130} />
               </Skeleton>
             </Box>
           ) : (
@@ -198,12 +205,7 @@ export const AssetCard = () => {
         </Stack>
         <Box height={{ custom: CHART_HEIGHT }}>
           {!loadedChart ? (
-            <Box
-              height="full"
-              width={{ custom: CHART_WIDTH }}
-              alignItems="center"
-              justifyContent="center"
-            >
+            <Box width="full" alignItems="center" justifyContent="center">
               <Spinner color={colorForAsset} size={30} />
             </Box>
           ) : (
@@ -238,9 +240,9 @@ export const AssetCard = () => {
           )}
         </Box>
         {!loadedPrice ? (
-          <Box height={{ custom: 30 }} justifyContent="center">
+          <Box height={{ custom: 36 }}>
             <Skeleton>
-              <FakeText width={CHART_WIDTH} height={30} />
+              <FakeText width={CHART_WIDTH} height={36} />
             </Skeleton>
           </Box>
         ) : (
