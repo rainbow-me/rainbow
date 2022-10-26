@@ -64,7 +64,6 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { addressKey } from './utils/keychainConstants';
-import { analytics, analyticsV2 } from '@/analytics';
 import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
@@ -73,6 +72,7 @@ import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
+import { analyticsV2 } from '@/analytics';
 import { getDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 import { logger as loggr, RainbowError } from '@/logger';
 import * as ls from '@/storage';
@@ -142,7 +142,7 @@ class OldApp extends Component {
     PerformanceTracking.finishMeasuring(
       PerformanceMetrics.loadRootAppComponent
     );
-    analytics.track('React component tree finished initial mounting');
+    analyticsV2.track(analyticsV2.event.generic.applicationDidMount);
   }
 
   componentDidUpdate(prevProps) {
@@ -193,7 +193,7 @@ class OldApp extends Component {
     }
     this.setState({ appState: nextAppState });
 
-    analytics.track('State change', {
+    analyticsV2.track(analyticsV2.event.generic.appStateChange, {
       category: 'app state',
       label: nextAppState,
     });
@@ -305,7 +305,7 @@ function Root() {
         } = Dimensions.get('screen');
 
         analyticsV2.identify({ screenHeight, screenWidth, screenScale });
-        analyticsV2.track(analyticsV2.events.generics.firstAppOpen);
+        analyticsV2.track(analyticsV2.event.generic.firstAppOpen);
 
         ls.device.set(['isReturningUser'], true);
       }

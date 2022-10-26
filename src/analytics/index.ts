@@ -5,7 +5,7 @@ import {
   LOG_DEBUG,
 } from 'react-native-dotenv';
 
-import { EventProperties, events } from '@/analytics/events';
+import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
 import { LogLevel, logger } from '@/logger';
 
@@ -13,7 +13,7 @@ export class Analytics {
   client: SegmentClient;
   currentWalletAddressHash?: string;
   deviceId?: string;
-  events = events;
+  event = event;
   disabled = false;
 
   constructor() {
@@ -53,7 +53,7 @@ export class Analytics {
 
   /**
    * Send an event to Segment. Param `event` must exist in
-   * `@/analytics/events`, and if properties are associated with it, they must
+   * `@/analytics/event`, and if properties are associated with it, they must
    * be defined as part of `EventProperties` in the same file
    */
   track<T extends keyof EventProperties>(
@@ -95,7 +95,7 @@ export class Analytics {
    */
   enable() {
     logger.debug(`Analytics tracking enabled`);
-    this.track(events.generics.analyticsTrackingEnabled);
+    this.track(event.generic.analyticsTrackingEnabled);
     this.disabled = false;
   }
 
@@ -104,15 +104,15 @@ export class Analytics {
    */
   disable() {
     logger.debug(`Analytics tracking disabled`);
-    this.track(events.generics.analyticsTrackingDisabled);
+    this.track(event.generic.analyticsTrackingDisabled);
     this.disabled = true;
   }
 
-  getTrackingEventCategory<T extends keyof EventProperties>(event: T) {
-    for (const category of Object.keys(events)) {
-      // @ts-expect-error We know the index type of `events`
-      for (const ev of Object.values(events[category])) {
-        if (ev === event) return category;
+  getTrackingEventCategory<T extends keyof EventProperties>(ev: T) {
+    for (const category of Object.keys(event)) {
+      // @ts-expect-error We know the index type of `event`
+      for (const e of Object.values(event[category])) {
+        if (e === ev) return category;
       }
     }
   }

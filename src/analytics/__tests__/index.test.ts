@@ -18,12 +18,12 @@ describe('@/analytics', () => {
     const analytics = new Analytics();
 
     analytics.setCurrentWalletAddressHash('hash');
-    analytics.track(analytics.events.generics.pressedButton);
+    analytics.track(analytics.event.generic.pressedButton);
 
     expect(analytics.client.track).toHaveBeenCalledWith(
-      analytics.events.generics.pressedButton,
+      analytics.event.generic.pressedButton,
       {
-        category: 'generics',
+        category: 'generic',
         walletAddressHash: 'hash',
       }
     );
@@ -57,16 +57,14 @@ describe('@/analytics', () => {
     const analytics = new Analytics();
 
     expect(
-      analytics.getTrackingEventCategory(analytics.events.swaps.submittedSwap)
-    ).toEqual('swaps');
+      analytics.getTrackingEventCategory(analytics.event.swap.submittedSwap)
+    ).toEqual('swap');
     expect(
-      analytics.getTrackingEventCategory(
-        analytics.events.generics.pressedButton
-      )
-    ).toEqual('generics');
+      analytics.getTrackingEventCategory(analytics.event.generic.pressedButton)
+    ).toEqual('generic');
     expect(
       // @ts-expect-error Just testing JS case
-      analytics.getTrackingEventCategory(analytics.events.foo?.pressedButton)
+      analytics.getTrackingEventCategory(analytics.event.foo?.pressedButton)
     ).toEqual(undefined);
   });
 
@@ -75,7 +73,7 @@ describe('@/analytics', () => {
 
     analytics.disable();
 
-    analytics.track(analytics.events.generics.pressedButton);
+    analytics.track(analytics.event.generic.pressedButton);
     analytics.identify({ currency: 'USD' });
     analytics.screen(Routes.BACKUP_SHEET);
 
