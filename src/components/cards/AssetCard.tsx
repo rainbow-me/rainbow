@@ -58,12 +58,12 @@ export const AssetCard = () => {
     if (IS_IOS) {
       navigate(Routes.ADD_CASH_FLOW);
     } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, () => ({
+      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
         params: {
           address: accountAddress,
         },
         screen: Routes.WYRE_WEBVIEW,
-      }));
+      });
     }
 
     analytics.track('Tapped Add Cash', {
@@ -125,6 +125,7 @@ export const AssetCard = () => {
 
   return (
     <GenericCard
+      disabled={!loadedChart}
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
       type="stretch"
     >
