@@ -97,13 +97,15 @@ export function RestoreSheet() {
   }, [goBack, navigate]);
 
   const wrapperHeight =
-    deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() / 2 : 0);
+    deviceHeight +
+    longFormHeight +
+    (IS_ANDROID ? getSoftMenuBarHeight() / 2 : 0);
 
   return (
     <Column height={wrapperHeight}>
       <SlackSheet
         contentHeight={longFormHeight}
-        deferredHeight={android}
+        deferredHeight={IS_ANDROID}
         testID="restore-sheet"
       >
         {step === WalletBackupStepTypes.cloud ? (
