@@ -156,9 +156,6 @@ export const AssetCard = () => {
                   </Text>
                 </Inline>
               )}
-              {/* </Bleed>
-              </Column> */}
-              {/* <Column width="content"> */}
               {!loadedPrice ? (
                 <Box height={{ custom: 17 }} width={{ custom: 80 }}>
                   <Skeleton>

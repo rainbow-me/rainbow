@@ -8,7 +8,7 @@ import {
 export function useAccountAccentColor() {
   const { accountColor, accountImage } = useAccountProfile();
 
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
     maybeSignUri(accountImage ?? '') ?? ''
   );
 
@@ -21,6 +21,6 @@ export function useAccountAccentColor() {
   }
   return {
     accentColor,
-    loaded: state === 2 || state === 3,
+    loaded: accentColor !== colors.white,
   };
 }

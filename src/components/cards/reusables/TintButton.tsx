@@ -8,24 +8,27 @@ import React from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import ConditionalWrap from 'conditional-wrap';
 import { colors } from '@/styles';
+import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 
 interface TintButtonProps {
   children: string;
   onPress: () => void;
   width?: number;
   height: number;
+  loaded?: boolean;
 }
 
 export const TintButton = ({
   children,
   height,
+  loaded = true,
   onPress,
   width,
 }: TintButtonProps) => {
   const { color, mode } = useAccentColor();
   const isDarkMode = mode === 'darkTinted' || mode === 'dark';
 
-  return (
+  return loaded ? (
     <ConditionalWrap
       condition={isDarkMode}
       wrap={(children: React.ReactNode) => (
@@ -54,5 +57,11 @@ export const TintButton = ({
         </Box>
       </ButtonPressAnimation>
     </ConditionalWrap>
+  ) : (
+    <Box height={{ custom: height }}>
+      <Skeleton>
+        <FakeText height={height} />
+      </Skeleton>
+    </Box>
   );
 };
