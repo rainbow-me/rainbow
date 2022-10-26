@@ -107,6 +107,15 @@ export const swapDetailsSheetConfig = {
   }),
 };
 
+export const transactionDetailsConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: 400,
+    }),
+  }),
+};
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
