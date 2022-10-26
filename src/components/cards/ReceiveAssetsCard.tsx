@@ -1,5 +1,4 @@
-import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
-import { useTheme } from '@/theme';
+import { AccentColorProvider, Inline, Stack, Text } from '@/design-system';
 import React, { useCallback } from 'react';
 import { GenericCard } from './GenericCard';
 import { useAccountProfile, useClipboard } from '@/hooks';
@@ -11,13 +10,13 @@ import { haptics } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import { IconOrb } from './IconOrb';
+import { IconOrb } from './reusables/IconOrb';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { TintButton } from './reusables/TintButton';
 
 export const ReceiveCardHeight = 174;
 
 export const ReceiveAssetsCard = () => {
-  const { colors } = useTheme();
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
@@ -76,27 +75,11 @@ export const ReceiveAssetsCard = () => {
           wiggleFactor={0}
         >
           {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-            <ButtonPressAnimation onPress={() => onPressCopy(onNewEmoji)}>
-              <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
-                <Box
-                  background="accent"
-                  borderRadius={99}
-                  height="36px"
-                  width="full"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Text
-                    color={{ custom: accentColor }}
-                    containsEmoji
-                    size="15pt"
-                    weight="bold"
-                  >
-                    􀐅 Copy Address
-                  </Text>
-                </Box>
-              </AccentColorProvider>
-            </ButtonPressAnimation>
+            <AccentColorProvider color={accentColor}>
+              <TintButton onPress={() => onPressCopy(onNewEmoji)} height={36}>
+                􀐅 Copy Address
+              </TintButton>
+            </AccentColorProvider>
           )}
         </FloatingEmojis>
       </Stack>

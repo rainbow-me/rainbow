@@ -1,13 +1,11 @@
-import { ButtonPressAnimation } from '@/components/animations';
-import { AccentColorProvider, Box, Text } from '@/design-system';
+import { AccentColorProvider } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import React, { useCallback } from 'react';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { TintButton } from '@/components/cards/reusables/TintButton';
 
 export const DiscoverMoreButton = () => {
-  const { colors } = useTheme();
   const { navigate } = useNavigation();
   const { accentColor } = useAccountAccentColor();
 
@@ -16,26 +14,10 @@ export const DiscoverMoreButton = () => {
   }, [navigate]);
 
   return (
-    <ButtonPressAnimation onPress={handlePressDiscover}>
-      <AccentColorProvider color={colors.alpha(accentColor, 0.1)}>
-        <Box
-          background="accent"
-          borderRadius={99}
-          height="40px"
-          width={{ custom: 163 }}
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Text
-            weight="bold"
-            size="15pt"
-            containsEmoji
-            color={{ custom: accentColor }}
-          >
-            􀎬 Discover Web3
-          </Text>
-        </Box>
-      </AccentColorProvider>
-    </ButtonPressAnimation>
+    <AccentColorProvider color={accentColor}>
+      <TintButton height={40} onPress={handlePressDiscover} width={163}>
+        􀎬 Discover Web3
+      </TintButton>
+    </AccentColorProvider>
   );
 };

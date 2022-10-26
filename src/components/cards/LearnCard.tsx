@@ -3,7 +3,7 @@ import { useTheme } from '@/theme';
 import React, { useReducer } from 'react';
 import { GenericCard } from './GenericCard';
 import { LearnCardDetails, learnCards, learnCategoryColors } from './constants';
-import { IconOrb } from './IconOrb';
+import { IconOrb } from './reusables/IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { delay } from '@/helpers/utilities';
