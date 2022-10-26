@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import RainbowGrid from '../../assets/discover-profiles-card.png';
-import { useNavigation } from '../../navigation/Navigation';
-import { ButtonPressAnimation } from '../animations';
-import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
-import ImgixImage from '../images/ImgixImage';
+import RainbowGrid from '../../../assets/discover-profiles-card.png';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { ButtonPressAnimation } from '../../../components/animations';
+import { ensAvatarUrl } from '../../../components/ens-registration/IntroMarquee/IntroMarquee';
+import ImgixImage from '../../../components/images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
@@ -27,7 +27,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { ensIntroMarqueeNames } from '@/references';
-import Routes from '@/navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@/utils';
 
 const CARD_BORDER_WIDTH = 0.25;

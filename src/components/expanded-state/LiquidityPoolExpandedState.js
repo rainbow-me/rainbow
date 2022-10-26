@@ -5,7 +5,7 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
-import EdgeFade from '../discover-screen/EdgeFade';
+import EdgeFade from '../discover/EdgeFade';
 import { PoolValue } from '../investment-cards/PoolValue';
 import { Column, Row } from '../layout';
 

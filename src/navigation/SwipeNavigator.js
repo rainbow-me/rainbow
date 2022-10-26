@@ -2,8 +2,8 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useMemo, useState } from 'react';
 import { FlexItem } from '../components/layout';
 import { TestnetToast } from '../components/toasts';
-import { web3Provider } from '../handlers/web3';
-import DiscoverScreen from '../screens/DiscoverScreen';
+import { web3Provider } from '@/handlers/web3';
+import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';

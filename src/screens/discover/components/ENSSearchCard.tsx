@@ -7,8 +7,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { useNavigation } from '../../navigation/Navigation';
-import { ButtonPressAnimation } from '../animations';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { ButtonPressAnimation } from '../../../components/animations';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
@@ -24,7 +24,7 @@ import {
 } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useDimensions, useENSPendingRegistrations, useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
 

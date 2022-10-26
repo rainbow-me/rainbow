@@ -9,22 +9,25 @@ import React, {
 import { FlatList, LayoutAnimation } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch, useSelector } from 'react-redux';
-import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
-import { DefaultTokenLists } from '../../references';
-import { ButtonPressAnimation } from '../animations';
-import { AssetListItemSkeleton } from '../asset-list';
-import { ListCoinRow } from '../coin-row';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
-import { Centered, Column, Flex, Row } from '../layout';
-import { Emoji, Text } from '../text';
-import EdgeFade from './EdgeFade';
+import {
+  emitAssetRequest,
+  emitChartsRequest,
+} from '@rainbow-me/redux/explorer';
+import { DefaultTokenLists } from '@rainbow-me/references';
+import { ButtonPressAnimation } from '../../../components/animations';
+import { AssetListItemSkeleton } from '../../../components/asset-list';
+import { ListCoinRow } from '../../../components/coin-row';
+import { initialChartExpandedStateSheetHeight } from '../../../components/expanded-state/asset/ChartExpandedState';
+import { Centered, Column, Flex, Row } from '../../../components/layout';
+import { Emoji, Text } from '../../../components/text';
+import EdgeFade from '../../../components/discover/EdgeFade';
 import { analytics } from '@/analytics';
 import { getTrendingAddresses } from '@/handlers/dispersion';
 import networkTypes from '@/helpers/networkTypes';
 import { times } from '@/helpers/utilities';
 import { useAccountSettings, useUserLists } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
 

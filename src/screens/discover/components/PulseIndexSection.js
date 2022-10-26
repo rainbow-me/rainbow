@@ -3,20 +3,20 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
-import font from '../../styles/fonts';
-import { ButtonPressAnimation } from '../animations';
-import { CoinIcon } from '../coin-icon';
-import { Column, Row } from '../layout';
+import font from '../../../styles/fonts';
+import { ButtonPressAnimation } from '../../../components/animations';
+import { CoinIcon } from '../../../components/coin-icon';
+import { Column, Row } from '../../../components/layout';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { DPI_ADDRESS } from '@/references';
-import Routes from '@/navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import { fontWithWidth } from '@/styles';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import ShadowStack from '@/react-native-shadow-stack';
+import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
   const change = `${parseFloat(

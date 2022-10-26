@@ -12,7 +12,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation } from '../../../components/animations';
 import {
   AccentColorProvider,
   Box,

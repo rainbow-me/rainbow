@@ -4,10 +4,10 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import DiscoverScreenContent from '@/components/discover-screen/DiscoverScreenContent';
-import DiscoverSheetContext from '@/components/discover-screen/DiscoverScreenContext';
+import DiscoverScreenContent from '@/screens/discover/components/DiscoverScreenContent';
+import DiscoverSheetContext from '@/screens/discover/context/DiscoverScreenContext';
 import CaretLeftIcon from '@/components/icons/svg/CaretLeftIcon';
-import Routes from '@/navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import { useNavigation } from '@/navigation';
 
 export default function DiscoverScreen() {

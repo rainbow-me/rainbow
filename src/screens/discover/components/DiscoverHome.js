@@ -1,5 +1,7 @@
 import React from 'react';
-import useExperimentalFlag, { PROFILES } from '../../config/experimentalHooks';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import BottomSpacer from './BottomSpacer';
 import DPICard from './DPICard';
 import ENSCreateProfileCard from './ENSCreateProfileCard';
@@ -8,7 +10,7 @@ import GasCard from './GasCard';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
 import TopMoversSection from './TopMoversSection';
-import UniswapPools from './UniswapPoolsSection';
+import UniswapPools from '../../../components/discover/UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Columns, Inset, Stack } from '@/design-system';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
