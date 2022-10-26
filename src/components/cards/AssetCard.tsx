@@ -13,17 +13,17 @@ import React, { useCallback, useMemo } from 'react';
 import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
 import {
+  useAccountAsset,
   useAccountSettings,
   useChartThrottledPoints,
   useColorForAsset,
-  useGenericAsset,
   useWallets,
 } from '@/hooks';
 import { deviceUtils, ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import { ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import {
   ChartPath,
   ChartPathProvider,
@@ -35,6 +35,8 @@ import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
 import { emitChartsRequest } from '@/redux/explorer';
 import chartTypes from '@/helpers/chartTypes';
+import Spinner from '../Spinner';
+import Skeleton, { FakeText } from '../skeleton/Skeleton';
 
 export const AssetCardHeight = 284.3;
 
@@ -43,7 +45,7 @@ export const AssetCard = () => {
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
-  const genericAsset = useGenericAsset(ETH_ADDRESS);
+  const genericAsset = useAccountAsset(ETH_ADDRESS);
 
   emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
 
@@ -74,6 +76,7 @@ export const AssetCard = () => {
     return {
       ...ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency),
       address: ETH_ADDRESS,
+      symbol: ETH_SYMBOL,
     };
   }, [genericAsset, nativeCurrency]);
 
@@ -117,6 +120,9 @@ export const AssetCard = () => {
 
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
+  const loadedPrice = assetWithPrice.native.change;
+  const loadedChart = throttledData?.points.length && loadedPrice;
+
   return (
     <GenericCard
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
@@ -126,99 +132,143 @@ export const AssetCard = () => {
         <Stack space="12px">
           <Bleed top="4px">
             <Inline alignVertical="center" alignHorizontal="justify">
-              <Inline alignVertical="center" space="6px">
-                {/* @ts-expect-error – JS component */}
+              {!loadedPrice ? (
+                <Box height={{ custom: 17 }} width={{ custom: 100 }}>
+                  <Skeleton>
+                    <FakeText height={17} width={100} />
+                  </Skeleton>
+                </Box>
+              ) : (
+                <Inline alignVertical="center" space="6px">
+                  {/* @ts-expect-error – JS component */}
+                  <CoinIcon
+                    address={assetWithPrice.address}
+                    size={20}
+                    symbol={assetWithPrice.symbol}
+                  />
 
-                <CoinIcon
-                  address={assetWithPrice.address}
-                  size={20}
-                  symbol={assetWithPrice.symbol}
-                />
-
-                <Text
-                  size="17pt"
-                  color={{ custom: colorForAsset }}
-                  weight="heavy"
-                >
-                  {assetWithPrice.name}
-                </Text>
-              </Inline>
+                  <Text
+                    size="17pt"
+                    color={{ custom: colorForAsset }}
+                    weight="heavy"
+                  >
+                    {assetWithPrice.name}
+                  </Text>
+                </Inline>
+              )}
               {/* </Bleed>
               </Column> */}
               {/* <Column width="content"> */}
-              <Inline alignVertical="bottom">
-                <Text
-                  size="17pt"
-                  color={{ custom: priceChangeColor }}
-                  weight="bold"
-                >
-                  {`${isNegativePriceChange ? '􀄩' : '􀄨'}${priceChangeDisplay}`}
-                </Text>
-                <Text
-                  size="13pt"
-                  color={{ custom: priceChangeColor }}
-                  weight="bold"
-                >
-                  {` ${lang.t('expanded_state.chart.today').toLowerCase()}`}
-                </Text>
-              </Inline>
+              {!loadedPrice ? (
+                <Box height={{ custom: 17 }} width={{ custom: 80 }}>
+                  <Skeleton>
+                    <FakeText height={17} width={80} />
+                  </Skeleton>
+                </Box>
+              ) : (
+                <Inline alignVertical="bottom">
+                  <Text
+                    size="17pt"
+                    color={{ custom: priceChangeColor }}
+                    weight="bold"
+                  >
+                    {`${
+                      isNegativePriceChange ? '􀄩' : '􀄨'
+                    }${priceChangeDisplay}`}
+                  </Text>
+                  <Text
+                    size="13pt"
+                    color={{ custom: priceChangeColor }}
+                    weight="bold"
+                  >
+                    {` ${lang.t('expanded_state.chart.today').toLowerCase()}`}
+                  </Text>
+                </Inline>
+              )}
             </Inline>
           </Bleed>
-          <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
-            {assetWithPrice.native.price.display}
-          </Text>
+          {!loadedPrice ? (
+            <Box height={{ custom: 26 }} width={{ custom: 120 }}>
+              <Skeleton>
+                <FakeText height={26} width={120} />
+              </Skeleton>
+            </Box>
+          ) : (
+            <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
+              {assetWithPrice.native.price.display}
+            </Text>
+          )}
         </Stack>
         <Box height={{ custom: CHART_HEIGHT }}>
-          <ChartPathProvider
-            data={throttledData}
-            width={CHART_WIDTH}
-            height={CHART_HEIGHT}
-          >
-            <ChartPath
-              fill="none"
-              gestureEnabled={false}
-              height={CHART_HEIGHT}
-              hitSlop={0}
-              longPressGestureHandlerProps={undefined}
-              selectedStrokeWidth={3}
-              stroke={colorForAsset}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore - prop is accepted via prop spreading
-              strokeLinecap="round"
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore - prop is accepted via prop spreading
-              strokeLinejoin="round"
-              strokeWidth={4}
-              width={CHART_WIDTH}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore - prop is accepted via prop spreading
-              chartXOffset={0}
-              isCard
-            />
-            <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
-          </ChartPathProvider>
-        </Box>
-        <ButtonPressAnimation onPress={handlePressBuy}>
-          <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
+          {!loadedChart ? (
             <Box
-              width="full"
-              height={{ custom: 36 }}
-              borderRadius={99}
+              height="full"
+              width={{ custom: CHART_WIDTH }}
               alignItems="center"
               justifyContent="center"
-              background="accent"
             >
-              <Text
-                color={{ custom: colorForAsset }}
-                containsEmoji
-                size="15pt"
-                weight="bold"
-              >
-                􀍯 Buy Ethereum
-              </Text>
+              <Spinner color={colorForAsset} size={30} />
             </Box>
-          </AccentColorProvider>
-        </ButtonPressAnimation>
+          ) : (
+            <ChartPathProvider
+              data={throttledData}
+              width={CHART_WIDTH}
+              height={CHART_HEIGHT}
+            >
+              <ChartPath
+                fill="none"
+                gestureEnabled={false}
+                height={CHART_HEIGHT}
+                hitSlop={0}
+                longPressGestureHandlerProps={undefined}
+                selectedStrokeWidth={3}
+                stroke={colorForAsset}
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore - prop is accepted via prop spreading
+                strokeLinecap="round"
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore - prop is accepted via prop spreading
+                strokeLinejoin="round"
+                strokeWidth={4}
+                width={CHART_WIDTH}
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore - prop is accepted via prop spreading
+                chartXOffset={0}
+                isCard
+              />
+              <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
+            </ChartPathProvider>
+          )}
+        </Box>
+        {!loadedPrice ? (
+          <Box height={{ custom: 30 }} justifyContent="center">
+            <Skeleton>
+              <FakeText width={310} height={30} />
+            </Skeleton>
+          </Box>
+        ) : (
+          <ButtonPressAnimation onPress={handlePressBuy}>
+            <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
+              <Box
+                width="full"
+                height={{ custom: 36 }}
+                borderRadius={99}
+                alignItems="center"
+                justifyContent="center"
+                background="accent"
+              >
+                <Text
+                  color={{ custom: colorForAsset }}
+                  containsEmoji
+                  size="15pt"
+                  weight="bold"
+                >
+                  􀍯 Buy Ethereum
+                </Text>
+              </Box>
+            </AccentColorProvider>
+          </ButtonPressAnimation>
+        )}
       </Stack>
     </GenericCard>
   );
