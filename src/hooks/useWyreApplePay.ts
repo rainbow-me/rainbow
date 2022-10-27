@@ -237,7 +237,7 @@ export default function useWyreApplePay() {
 
     handlePaymentCallback();
 
-    // TODO
+    // TODO Do we need this?
     // dispatch(
     //   addCashOrderCreationFailure({
     //     errorCategory,

@@ -147,6 +147,10 @@ export default function AddCashSheet() {
                 <WebView
                   source={{ uri: wyreAuthenticationUrl }}
                   onMessage={event => {
+                    /**
+                     * Handling pulled from Wyre docs
+                     * @see https://docs.sendwyre.com/docs/authentication-widget-whitelabel-api#remove-webview
+                     */
                     if (
                       event.origin &&
                       (event.origin.includes('sendwyre') ||
