@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import RainbowGrid from '@/assets/discover-profiles-card.png';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ensAvatarUrl } from '@/components/ens-registration/IntroMarquee/IntroMarquee';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -27,8 +26,9 @@ import {
   useWallets,
 } from '@/hooks';
 import { ensIntroMarqueeNames } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
+import { useNavigation } from '@/navigation';
 
 const CARD_BORDER_WIDTH = 0.25;
 

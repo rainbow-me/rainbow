@@ -7,7 +7,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { useNavigation } from '@/navigation/Navigation';
+import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {

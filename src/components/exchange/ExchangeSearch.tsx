@@ -18,7 +18,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
-import DiscoverSheetContext from '../../screens/discover/context/DiscoverScreenContext';
+import DiscoverSheetContext from '../../screens/discover/DiscoverScreenContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';

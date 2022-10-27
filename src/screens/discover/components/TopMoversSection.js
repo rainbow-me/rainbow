@@ -6,11 +6,11 @@ import { initialChartExpandedStateSheetHeight } from '@/components/expanded-stat
 import { Centered, Column, Flex } from '@/components/layout';
 import { MarqueeList } from '@/components/list';
 import { Text } from '@/components/text';
-import EdgeFade from '@/components/discover/EdgeFade';
+import EdgeFade from '@/components/EdgeFade';
 import networkTypes from '@/helpers/networkTypes';
 import { useAccountSettings, useTopMovers } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 
 const ErrorMessage = ({ colors, children }) => (

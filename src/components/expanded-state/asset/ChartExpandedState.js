@@ -15,7 +15,7 @@ import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
-import EdgeFade from '../../discover/EdgeFade';
+import EdgeFade from '../../EdgeFade';
 import UniswapPools from '../../discover/UniswapPoolsSection';
 import useExperimentalFlag, {
   CROSSCHAIN_SWAPS,

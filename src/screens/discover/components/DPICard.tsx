@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CoinIcon } from '@/components/coin-icon';
 import { analytics } from '@/analytics';

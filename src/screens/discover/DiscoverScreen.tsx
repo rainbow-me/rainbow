@@ -5,9 +5,9 @@ import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
 import DiscoverScreenContent from './components/DiscoverScreenContent';
-import DiscoverSheetContext from './context/DiscoverScreenContext';
+import DiscoverSheetContext from './DiscoverScreenContext';
 import CaretLeftIcon from '@/components/icons/svg/CaretLeftIcon';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 
 export default function DiscoverScreen() {

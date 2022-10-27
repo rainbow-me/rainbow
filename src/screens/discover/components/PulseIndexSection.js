@@ -12,7 +12,7 @@ import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { DPI_ADDRESS } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { fontWithWidth } from '@/styles';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
@@ -189,7 +189,7 @@ const PulseIndex = () => {
             size="14px / 19px (Deprecated)"
             weight="bold"
           >
-            {item.isPositive ? `↑` : `↓`} {item.change}
+            {item.isPositive ? `↑` : `↓`} {item.change}
             <Text
               align="right"
               color={{ custom: item.isPositive ? colors.green : colors.red }}
