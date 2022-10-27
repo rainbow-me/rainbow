@@ -47,7 +47,7 @@ import {
   defaultScreenStackOptions,
   restoreSheetConfig,
   stackNavigationConfig,
-  webViewScreenConfig,
+  learnWebViewScreenConfig,
   wyreWebviewOptions,
 } from './config';
 import {
@@ -71,7 +71,7 @@ import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
-import WebViewScreen from '@/screens/WebViewScreen';
+import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -109,17 +109,6 @@ function AddCashFlowNavigator() {
       screenOptions={themedWyreWebviewOptions}
     >
       <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
-    </Stack.Navigator>
-  );
-}
-
-function WebViewScreenNavigator() {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.WEB_VIEW_SCREEN}
-    >
-      <Stack.Screen component={WebViewScreen} name={Routes.WEB_VIEW_SCREEN} />
     </Stack.Navigator>
   );
 }
@@ -288,9 +277,9 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen
-        component={WebViewScreen}
-        name={Routes.WEB_VIEW_SCREEN}
-        {...webViewScreenConfig}
+        component={LearnWebViewScreen}
+        name={Routes.LEARN_WEB_VIEW_SCREEN}
+        {...learnWebViewScreenConfig}
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}

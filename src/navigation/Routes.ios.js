@@ -60,7 +60,7 @@ import {
   stackNavigationConfig,
   swapDetailsSheetConfig,
   swapsPromoSheetConfig,
-  webViewScreenConfig,
+  learnWebViewScreenConfig,
 } from './config';
 import {
   emojiPreset,
@@ -81,7 +81,7 @@ import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
-import WebViewScreen from '@/screens/WebViewScreen';
+import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -247,9 +247,9 @@ function NativeStackNavigator() {
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
       <NativeStack.Screen
-        component={WebViewScreen}
-        name={Routes.WEB_VIEW_SCREEN}
-        {...webViewScreenConfig}
+        component={LearnWebViewScreen}
+        name={Routes.LEARN_WEB_VIEW_SCREEN}
+        {...learnWebViewScreenConfig}
       />
       <NativeStack.Screen
         component={ReceiveModal}

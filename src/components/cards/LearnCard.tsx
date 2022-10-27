@@ -34,7 +34,7 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   } = themedLearnCategoryColors[category];
 
   const onPress = useCallback(() => {
-    navigate(Routes.WEB_VIEW_SCREEN, {
+    navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
       title,
       category,
       url,

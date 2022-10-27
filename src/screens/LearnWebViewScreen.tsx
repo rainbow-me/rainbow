@@ -16,7 +16,7 @@ import { analytics } from '@/analytics';
 
 const HeaderHeight = 60;
 
-export default function WebViewScreen() {
+export default function LearnWebViewScreen() {
   const {
     params: { cardType, category, title, url },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,31 +40,36 @@ export default function WebViewScreen() {
     [cardType, category, title, url]
   );
 
-  const renderHeader = useCallback(
-    () => (
-      <Box
-        top="0px"
-        background="surfacePrimary"
-        height={{ custom: HeaderHeight }}
-        width="full"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Text align="center" color="label" size="20pt" weight="heavy">
-          {title}
-        </Text>
-        <Box position="absolute" right={{ custom: 20 }}>
-          <ButtonPressAnimation
-            onPress={async () => await Share.share({ url })}
-          >
-            <Text align="center" color="label" size="20pt" weight="heavy">
-              􀈂
-            </Text>
-          </ButtonPressAnimation>
-        </Box>
+  const onPressShare = useCallback(async () => {
+    await Share.share({ url });
+    analytics.track('Learn card web view share modal opened', {
+      url,
+      category,
+      title,
+      cardType,
+    });
+  }, [cardType, category, title, url]);
+
+  const renderHeader = () => (
+    <Box
+      top="0px"
+      background="surfacePrimary"
+      height={{ custom: HeaderHeight }}
+      width="full"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Text align="center" color="label" size="20pt" weight="heavy">
+        {title}
+      </Text>
+      <Box position="absolute" right={{ custom: 20 }}>
+        <ButtonPressAnimation onPress={onPressShare}>
+          <Text align="center" color="label" size="20pt" weight="heavy">
+            􀈂
+          </Text>
+        </ButtonPressAnimation>
       </Box>
-    ),
-    [title, url]
+    </Box>
   );
 
   const contentHeight =

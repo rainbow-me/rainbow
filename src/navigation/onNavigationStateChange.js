@@ -66,7 +66,7 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:
     case Routes.WYRE_WEBVIEW:
-    case Routes.WEB_VIEW_SCREEN:
+    case Routes.LEARN_WEB_VIEW_SCREEN:
     case Routes.SAVINGS_SHEET:
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
