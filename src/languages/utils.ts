@@ -32,6 +32,8 @@ export function simpleObjectProxy<T extends object>(obj: T): T {
 
       if (typeof nextTarget === 'string') {
         nextTarget = new String(nextTarget);
+      } else if (nextTarget === undefined) {
+        nextTarget = {};
       }
 
       nextTarget.__keypath__ = nextKeypath;

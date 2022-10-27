@@ -19,4 +19,9 @@ describe('@/languages/utils', () => {
     // @ts-expect-error We're ignoring TypeScript here
     expect(translation.account['hide'].__keypath__).toEqual('account.hide');
   });
+
+  test('simpleObjectProxy with actually undefined values', () => {
+    // @ts-expect-error We're ignoring TypeScript here
+    expect(translation.foo.bar.baz.__keypath__).toEqual('foo.bar.baz');
+  });
 });
