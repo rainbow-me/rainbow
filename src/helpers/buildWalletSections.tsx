@@ -388,7 +388,8 @@ const withBriefBalanceSection = (
     nativeCurrency
   );
 
-  const isEmpty = !uniqueTokens?.length && briefAssets?.length <= 1;
+  const isEmpty = !briefAssets?.length && !collectibles?.length;
+  const isOnlyNFTs = !isEmpty && collectibles?.length;
 
   const emptySection = [
     { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
@@ -408,6 +409,12 @@ const withBriefBalanceSection = (
       type: 'DISCOVER_MORE_BUTTON',
       uid: 'discover-home-button',
     },
+  ];
+
+  const isOnlyNFTsSection = [
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+    { type: 'BUY_ETH_CARD', uid: 'buy-eth-card' },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
   ];
 
   return [
@@ -436,7 +443,7 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    !isEmpty
+    briefAssets?.length
       ? {
           type: 'PROFILE_BALANCE_ROW',
           uid: 'profile-balance',
@@ -462,6 +469,8 @@ const withBriefBalanceSection = (
     },
     ...(isEmpty
       ? emptySection
+      : isOnlyNFTs
+      ? isOnlyNFTsSection
       : isLoadingAssets
       ? LOADING_ASSETS_PLACEHOLDER
       : briefAssets),
