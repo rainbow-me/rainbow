@@ -789,13 +789,13 @@ const getMultichainAssetAddress = (
 
 const getBasicSwapGasLimit = (chainId: number) => {
   switch (chainId) {
-    case ChainId.arbitrum:
+    case getChainIdFromNetwork(Network.arbitrum):
       return ethUnits.basic_swap_arbitrum;
-    case ChainId.polygon:
+    case getChainIdFromNetwork(Network.polygon):
       return ethUnits.basic_swap_polygon;
-    case ChainId.bsc:
+    case getChainIdFromNetwork(Network.bsc):
       return ethUnits.basic_swap_bsc;
-    case ChainId.optimism:
+    case getChainIdFromNetwork(Network.optimism):
       return ethUnits.basic_swap_optimism;
     default:
       return ethUnits.basic_swap;
