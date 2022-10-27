@@ -50,10 +50,10 @@ export const updateLanguageLocale = (code: Language) => {
  *   `import * as i18n from '@/languages'`
  *
  * Type-safe usage:
- *   `i18n.translate(i18n.translations.account.hide)`
+ *   `i18n.t(i18n.l.account.hide)`
  *
  * Alternative standard usage:
- *   `i18n.translate('account.hide')`
+ *   `i18n.t('account.hide')`
  */
 export function t(keypath: string) {
   // @ts-expect-error
