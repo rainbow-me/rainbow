@@ -9,14 +9,14 @@ import {
 } from '@/design-system';
 import { useTheme } from '@/theme';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
 import {
-  useAccountAsset,
   useAccountSettings,
   useChartThrottledPoints,
   useColorForAsset,
+  useGenericAsset,
   useWallets,
 } from '@/hooks';
 import { deviceUtils, ethereumUtils } from '@/utils';
@@ -46,7 +46,7 @@ export const AssetCard = () => {
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
-  const genericAsset = useAccountAsset(ETH_ADDRESS);
+  const genericAsset = useGenericAsset(ETH_ADDRESS);
   const { loaded: accentColorLoaded } = useAccountAccentColor();
 
   emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
@@ -125,6 +125,19 @@ export const AssetCard = () => {
 
   const loadedPrice = accentColorLoaded && assetWithPrice.native.change;
   const loadedChart = throttledData?.points.length && loadedPrice;
+
+  const [noChartData, setNoChartData] = useState(false);
+
+  // If we cant load chart data we should tell the user
+  useEffect(() => {
+    setTimeout(() => {
+      if (!loadedChart) {
+        setNoChartData(true);
+      } else {
+        setNoChartData(false);
+      }
+    }, 15000);
+  }, [loadedChart]);
 
   return (
     <GenericCard
@@ -215,7 +228,13 @@ export const AssetCard = () => {
               alignItems="center"
               justifyContent="center"
             >
-              <Spinner color={colorForAsset} size={30} />
+              {noChartData ? (
+                <Text color="label" size="20pt" weight="semibold">
+                  {!loadedPrice ? 'No Price Data' : 'No Chart Data'}
+                </Text>
+              ) : (
+                <Spinner color={colorForAsset} size={30} />
+              )}
             </Box>
           ) : (
             <ChartPathProvider
