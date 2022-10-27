@@ -260,6 +260,30 @@ const addressSubscription = (
 ];
 
 /**
+ * Configures a subscription to get asset balances for a network
+ *
+ * @param address The address.
+ * @param currency The currency to use.
+ * @param action The subscription asset.
+ * @returns The arguments for the `emit` function call.
+ */
+const addressAssetBalanceSubscription = (
+  address: string,
+  currency: string,
+  network: Network,
+  action: SocketSubscriptionActionType = 'subscribe'
+): SocketEmitArguments => [
+  action,
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+    },
+    scope: [`${network === Network.mainnet ? '' : `${network}-`}assets`],
+  },
+];
+
+/**
  * Configures a portfolio subscription.
  *
  * @param address The address to subscribe to.
@@ -517,6 +541,14 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
     addressSocket.emit(
       ...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe')
     );
+    addressSocket.emit(
+      ...addressSubscription(
+        addressSubscribed!,
+        nativeCurrency,
+        Network.bsc,
+        'unsubscribe'
+      )
+    );
     addressSocket.close();
   }
   if (!isNil(assetsSocket)) {
@@ -631,6 +663,13 @@ export const explorerInit = () => async (
   newAddressSocket.on(messages.CONNECT, () => {
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
+    );
+    newAddressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        accountAddress,
+        nativeCurrency,
+        Network.bsc
+      )
     );
   });
 
