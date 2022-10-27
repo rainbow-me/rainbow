@@ -495,7 +495,7 @@ export const explainers = (params, colors) => ({
   },
   bsc: {
     emoji: '⛽️',
-    extraHeight: 120,
+    extraHeight: 160,
     logo: (
       <ChainBadge
         assetType={networkTypes.bsc}
