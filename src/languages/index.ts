@@ -55,7 +55,7 @@ export const updateLanguageLocale = (code: Language) => {
  * Alternative standard usage:
  *   `i18n.translate('account.hide')`
  */
-export function translate(keypath: string) {
+export function t(keypath: string) {
   // @ts-expect-error
   return lang.t(keypath.__keypath__ || keypath);
 }
@@ -65,12 +65,12 @@ export function translate(keypath: string) {
  *   `import * as i18n from '@/languages'`
  *
  * Type-safe usage:
- *   `i18n.translate(i18n.translations.account.hide)`
+ *   `i18n.t(i18n.l.account.hide)`
  *
  * Alternative standard usage:
- *   `i18n.translate('account.hide')`
+ *   `i18n.t('account.hide')`
  * `i18n-js`
  */
-export const translations = simpleObjectProxy<Translation['translation']>(
+export const l = simpleObjectProxy<Translation['translation']>(
   english['translation']
 );
