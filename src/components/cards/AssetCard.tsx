@@ -6,6 +6,7 @@ import {
   Text,
   AccentColorProvider,
   Bleed,
+  DebugLayout,
 } from '@/design-system';
 import { useTheme } from '@/theme';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
@@ -209,11 +210,13 @@ export const AssetCard = () => {
             </Inline>
           </Bleed>
           {!loadedPrice ? (
-            <Box height={{ custom: 18 }} justifyContent="center">
-              <Skeleton>
-                <FakeText height={26} width={130} />
-              </Skeleton>
-            </Box>
+            <Bleed vertical={{ custom: 7 }}>
+              <Box height={{ custom: 32 }} justifyContent="center">
+                <Skeleton>
+                  <FakeText height={26} width={130} />
+                </Skeleton>
+              </Box>
+            </Bleed>
           ) : (
             <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
               {assetWithPrice.native.price.display}
