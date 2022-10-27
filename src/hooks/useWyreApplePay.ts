@@ -175,7 +175,7 @@ export default function useWyreApplePay() {
   const wyreAuthenticationFlowCallback = useCallback(() => {
     if (!addCashGetOrderStatusPayload.current.length) {
       loggr.error(
-        new Error(
+        new RainbowError(
           `wyreAuthenticationFlowCallback was called, but no addCashGetOrderStatusPayload exists`
         )
       );
@@ -210,6 +210,48 @@ export default function useWyreApplePay() {
     handlePaymentCallback,
   ]);
 
+  const wyreAuthenticationFlowFailureCallback = useCallback(() => {
+    if (!addCashGetOrderStatusPayload.current.length) {
+      loggr.error(
+        new RainbowError(
+          `wyreAuthenticationFlowFailureCallback was called, but no addCashGetOrderStatusPayload exists`
+        )
+      );
+      return;
+    }
+
+    const [
+      referenceInfo,
+      currency,
+      orderId,
+      applePayResponse,
+      value,
+    ] = addCashGetOrderStatusPayload.current;
+
+    applePayResponse.complete(PaymentRequestStatusTypes.FAIL);
+
+    // reset values
+    setOrderId(null);
+    setWyreAuthenticationUrl('');
+    addCashGetOrderStatusPayload.current = [];
+
+    handlePaymentCallback();
+
+    // TODO
+    // dispatch(
+    //   addCashOrderCreationFailure({
+    //     errorCategory,
+    //     errorCode,
+    //     errorMessage,
+    //   })
+    // );
+  }, [
+    addCashGetOrderStatusPayload,
+    dispatch,
+    addCashOrderCreationFailure,
+    handlePaymentCallback,
+  ]);
+
   return {
     error,
     isPaymentComplete,
@@ -220,6 +262,7 @@ export default function useWyreApplePay() {
     resetAddCashForm,
     transferStatus,
     wyreAuthenticationFlowCallback,
+    wyreAuthenticationFlowFailureCallback,
     wyreAuthenticationUrl,
   };
 }

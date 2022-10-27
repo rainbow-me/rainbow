@@ -2,6 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { WebView } from 'react-native-webview';
 import { AddCashForm, AddCashStatus } from '../components/add-cash';
 import { Column, ColumnWithMargins, FlexItem } from '../components/layout';
 import {
@@ -46,6 +47,10 @@ export default function AddCashSheet() {
 
   const [errorAnimation, onShake] = useShakeAnimation();
   const [startErrorTimeout, stopErrorTimeout] = useTimeout();
+  const [
+    setWyreAuthenticationFailureTimeout,
+    clearWyreAuthenticationFailureTimeout,
+  ] = useTimeout();
 
   const [errorIndex, setErrorIndex] = useState(null);
   const onClearError = useCallback(() => setErrorIndex(null), []);
@@ -79,6 +84,9 @@ export default function AddCashSheet() {
     orderStatus,
     resetAddCashForm,
     transferStatus,
+    wyreAuthenticationFlowCallback,
+    wyreAuthenticationFlowFailureCallback,
+    wyreAuthenticationUrl,
   } = useWyreApplePay();
 
   const onLimitExceeded = useCallback(
@@ -89,6 +97,15 @@ export default function AddCashSheet() {
     },
     [stopErrorTimeout, cashLimits, startErrorTimeout, onClearError]
   );
+
+  useEffect(() => {
+    if (wyreAuthenticationUrl) {
+      setWyreAuthenticationFailureTimeout(
+        wyreAuthenticationFlowFailureCallback,
+        10_000
+      );
+    }
+  }, [wyreAuthenticationUrl]);
 
   return (
     <SheetContainer colors={colors}>
@@ -125,14 +142,38 @@ export default function AddCashSheet() {
               transferStatus={transferStatus}
             />
           ) : (
-            <AddCashForm
-              limitWeekly={weeklyRemainingLimit}
-              onClearError={onClearError}
-              onLimitExceeded={onLimitExceeded}
-              onPurchase={onPurchase}
-              onShake={onShake}
-              shakeAnim={errorAnimation}
-            />
+            <>
+              {wyreAuthenticationUrl ? (
+                <WebView
+                  source={{ uri: wyreAuthenticationUrl }}
+                  onMessage={event => {
+                    if (
+                      event.origin &&
+                      (event.origin.includes('sendwyre') ||
+                        event.origin.includes('testwyre'))
+                    ) {
+                      const result = JSON.parse(event.data);
+                      if (
+                        result.type === 'authentication' &&
+                        result.status === 'completed'
+                      ) {
+                        clearWyreAuthenticationFailureTimeout();
+                        wyreAuthenticationFlowCallback();
+                      }
+                    }
+                  }}
+                />
+              ) : (
+                <AddCashForm
+                  limitWeekly={weeklyRemainingLimit}
+                  onClearError={onClearError}
+                  onLimitExceeded={onLimitExceeded}
+                  onPurchase={onPurchase}
+                  onShake={onShake}
+                  shakeAnim={errorAnimation}
+                />
+              )}
+            </>
           )}
         </FlexItem>
       </Column>
