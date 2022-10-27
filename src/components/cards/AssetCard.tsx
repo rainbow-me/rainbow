@@ -137,13 +137,13 @@ export const AssetCard = () => {
           <Bleed top="4px">
             <Inline alignVertical="center" alignHorizontal="justify">
               {!loadedPrice ? (
-                <Inline alignVertical="center" space="6px">
-                  <Box height={{ custom: 20 }}>
+                <Inline space="6px">
+                  <Box height={{ custom: 20 }} width={{ custom: 20 }}>
                     <Skeleton>
                       <FakeText height={20} width={20} />
                     </Skeleton>
                   </Box>
-                  <Box height={{ custom: 17 }}>
+                  <Box height={{ custom: 17 }} width={{ custom: 100 }}>
                     <Skeleton>
                       <FakeText height={17} width={100} />
                     </Skeleton>
@@ -168,7 +168,7 @@ export const AssetCard = () => {
                 </Inline>
               )}
               {!loadedPrice ? (
-                <Box height={{ custom: 17 }} justifyContent="center">
+                <Box height={{ custom: 17 }} width={{ custom: 110 }}>
                   <Skeleton>
                     <FakeText height={17} width={110} />
                   </Skeleton>
@@ -196,9 +196,9 @@ export const AssetCard = () => {
             </Inline>
           </Bleed>
           {!loadedPrice ? (
-            <Box height={{ custom: 18 }} justifyContent="center">
+            <Box height={{ custom: 20 }} justifyContent="center">
               <Skeleton>
-                <FakeText height={26} width={130} />
+                <FakeText height={20} width={130} />
               </Skeleton>
             </Box>
           ) : (
@@ -209,7 +209,12 @@ export const AssetCard = () => {
         </Stack>
         <Box height={{ custom: CHART_HEIGHT }} width={{ custom: CHART_WIDTH }}>
           {!loadedChart ? (
-            <Box width="full" alignItems="center" justifyContent="center">
+            <Box
+              height="full"
+              width="full"
+              alignItems="center"
+              justifyContent="center"
+            >
               <Spinner color={colorForAsset} size={30} />
             </Box>
           ) : (
