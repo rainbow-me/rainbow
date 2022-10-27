@@ -114,7 +114,7 @@ export default function LearnWebViewScreen() {
           height: webViewHeight,
         }}
         source={{
-          uri: url,
+          uri: `${url}${isDarkMode ? '?theme=dark' : ''}`,
         }}
       />
     </SlackSheet>
