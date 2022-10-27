@@ -41,7 +41,7 @@ export async function getDeviceId(): Promise<string> {
 }
 
 export function securelyHashWalletAddress(
-  walletAddress: string
+  walletAddress: `0x${string}`
 ): string | undefined {
   if (!SECURE_WALLET_HASH_KEY) {
     logger.error(
