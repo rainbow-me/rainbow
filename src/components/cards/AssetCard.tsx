@@ -136,7 +136,7 @@ export const AssetCard = () => {
       } else {
         setNoChartData(false);
       }
-    }, 15000);
+    }, 20000);
   }, [loadedChart]);
 
   return (
