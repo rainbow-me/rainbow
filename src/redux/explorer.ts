@@ -46,7 +46,12 @@ import {
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
-import { DPI_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import {
+  BNB_MAINNET_ADDRESS,
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 
@@ -347,7 +352,8 @@ const assetPricesSubscription = (
     tokenAddresses,
     ETH_ADDRESS,
     DPI_ADDRESS,
-    MATIC_MAINNET_ADDRESS
+    MATIC_MAINNET_ADDRESS,
+    BNB_MAINNET_ADDRESS
   );
   return [
     action,

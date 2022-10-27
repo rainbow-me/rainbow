@@ -22,6 +22,7 @@ import {
 } from '@/entities';
 
 import {
+  bscGasStationGetGasPrices,
   polygonGasStationGetGasPrices,
   rainbowMeteorologyGetData,
 } from '@/handlers/gasFees';
@@ -47,6 +48,7 @@ import { ethUnits, supportedNativeCurrencies } from '@/references';
 import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { GasFeesBscGasStationData } from '@/entities/gas';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -57,6 +59,7 @@ const withRunExclusive = async (callback: (...args: any[]) => void) =>
 
 const getGasPricePollingInterval = (network: Network): number => {
   switch (network) {
+    case Network.bsc:
     case Network.polygon:
       return 2000;
     case Network.arbitrum:
@@ -214,10 +217,19 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || getDefaultGasLimit(txNetwork, defaultGasLimit);
 
-  const nativeTokenPriceUnit =
-    txNetwork !== Network.polygon
-      ? ethereumUtils.getEthPriceUnit()
-      : ethereumUtils.getMaticPriceUnit();
+  let nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
+
+  switch (txNetwork) {
+    case Network.polygon:
+      nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
+      break;
+    case Network.bsc:
+      nativeTokenPriceUnit = ethereumUtils.getBnbPriceUnit();
+      break;
+    default:
+      nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
+      break;
+  }
 
   const customGasFees = parseGasFees(
     gasParams,
@@ -281,6 +293,35 @@ const getPolygonGasPrices = async () => {
   return polygonGasStationPrices;
 };
 
+const getBscGasPrices = async () => {
+  const {
+    data: { result },
+  }: {
+    data: GasFeesBscGasStationData;
+  } = await bscGasStationGetGasPrices();
+
+  const bscGasPriceBumpFactor = 1.05;
+
+  // Override required to make it compatible with other responses
+  const bscGasStationPrices = {
+    fast: Math.ceil(
+      Number(multiply(result['ProposeGasPrice'], bscGasPriceBumpFactor))
+    ),
+    // 1 blocks, 2.5 - 3 secs
+    fastWait: 0.05,
+    normal: Math.ceil(
+      Number(multiply(result['SafeGasPrice'], bscGasPriceBumpFactor))
+    ),
+    // 2 blocks, 6 secs
+    normalWait: 0.1,
+    urgent: Math.ceil(
+      Number(multiply(result['FastGasPrice'], bscGasPriceBumpFactor))
+    ),
+    // 1 blocks, 2.5 - 3 secs
+    urgentWait: 0.05,
+  };
+  return bscGasStationPrices;
+};
 const getArbitrumGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.arbitrum);
   const baseGasPrice = await provider.getGasPrice();
