@@ -18,6 +18,7 @@ import NetworkTypes from '@/helpers/networkTypes';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@/references';
 import { subtract } from '@/helpers/utilities';
 import logger from '@/utils/logger';
+import { logger as loggr, RainbowError } from '@/logger';
 
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
@@ -241,7 +242,7 @@ export const trackWyreTransfer = async (
   return { destAmount, destCurrency, transferHash };
 };
 
-export const getOrderId = async (
+export const getWyreWalletOrder = async (
   referenceInfo: any,
   paymentResponse: any,
   amount: any,
@@ -267,13 +268,37 @@ export const getOrderId = async (
     );
 
     const orderId = response?.data?.id ?? null;
+    let authenticationUrl = response?.data?.authenticationUrl;
 
-    return { orderId };
+    if (authenticationUrl) {
+      const { host, pathname } = new URL(authenticationUrl);
+
+      /**
+       * If some other host or path, we will ignore for security
+       * @see https://docs.sendwyre.com/docs/authentication-widget-whitelabel-api
+       */
+      if (
+        host !== 'pay.testwyre.com' ||
+        !pathname.startsWith('/authentication')
+      ) {
+        authenticationUrl = undefined;
+        loggr.error(
+          new RainbowError(
+            `getWyreWalletOrder returned an invalid authenticationUrl`
+          )
+        );
+      }
+    }
+
+    return { orderId, authenticationUrl };
   } catch (error: any) {
     if (error && error.type === RAINBOW_FETCH_ERROR) {
       const { responseBody } = error;
 
-      logger.sentry('WYRE - getOrderId response - was not 200', responseBody);
+      logger.sentry(
+        'WYRE - getWyreWalletOrder response - was not 200',
+        responseBody
+      );
       const {
         data: { errorCode, exceptionId, message, type },
       } = responseBody;
@@ -294,7 +319,7 @@ export const getOrderId = async (
       };
     } else {
       logger.sentry(
-        `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
+        `WYRE - getWyreWalletOrder response catch - ${referenceInfo.referenceId}`
       );
       captureException(error);
       return {};

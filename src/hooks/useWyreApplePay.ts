@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Alert } from '../components/alerts';
 import {
-  getOrderId,
+  getWyreWalletOrder,
   getReferenceId,
   getWalletOrderQuotation,
   PaymentRequestStatusTypes,
@@ -115,10 +115,11 @@ export default function useWyreApplePay() {
         logger.log('[add cash] - get order id');
         const {
           orderId,
+          authenticationUrl,
           errorCategory,
           errorCode,
           errorMessage,
-        } = await getOrderId(
+        } = await getWyreWalletOrder(
           referenceInfo,
           applePayResponse,
           sourceAmountWithFees,
