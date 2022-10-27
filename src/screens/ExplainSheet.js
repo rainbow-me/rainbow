@@ -247,8 +247,8 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
     button: {
       label: lang.t('explain.icon_unlock.button'),
-      textColor: 'optimismRed',
-      bgColor: 'optimismRed06',
+      textColor: colors?.optimismRed,
+      bgColor: colors?.optimismRed06,
     },
   },
   smol_app_icon: {
@@ -258,8 +258,8 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
     button: {
       label: lang.t('explain.icon_unlock.button'),
-      textColor: 'smolPurple',
-      bgColor: 'smolPurple06',
+      textColor: colors?.smolPurple,
+      bgColor: colors?.smolPurple06,
     },
   },
   output_disabled: {
@@ -412,7 +412,8 @@ export const explainers = (params, colors) => ({
     emoji: '⚠️',
     button: {
       label: lang.t('button.continue'),
-      bgColor: colors?.blueGreyDark80,
+      bgColor: colors?.alpha(colors?.blueGreyDark80, 0.04),
+      textColor: colors?.blueGreyDark80,
     },
     secondaryButton: {
       label: lang.t('button.go_back_lowercase'),
@@ -661,7 +662,8 @@ export const explainers = (params, colors) => ({
     extraHeight: 40,
     button: {
       label: lang.t('explain.go_to_hop_with_icon.text'),
-      bgColor: colors?.blueGreyDark80,
+      bgColor: colors?.alpha(colors?.blueGreyDark80, 0.04),
+      textColor: colors?.blueGreyDark80,
     },
     secondaryButton: {
       label: lang.t('button.go_back_lowercase'),
