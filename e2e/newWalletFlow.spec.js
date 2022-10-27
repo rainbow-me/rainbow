@@ -30,8 +30,14 @@ describe('New Wallet flow', () => {
   //   await Helpers.swipe('backup-sheet', 'down');
   // });
 
-  it('should show the "Add funds" button', async () => {
+  it('should show the receive card and its contents', async () => {
+    await Helpers.checkIfVisible('receive-card');
     await Helpers.checkIfVisible('copy-address-button');
+  });
+
+  it('should show eth asset card with a buy button', async () => {
+    await Helpers.checkIfVisible('buy-asset-card-ETH');
+    await Helpers.checkIfVisible('buy-button-ETH');
   });
 
   it('should show "No transactions yet" in the activity list', async () => {

@@ -16,6 +16,7 @@ interface TintButtonProps {
   width?: number;
   height: number;
   loaded?: boolean;
+  testID?: string;
 }
 
 export const TintButton = ({
@@ -24,6 +25,7 @@ export const TintButton = ({
   loaded = true,
   onPress,
   width,
+  testID,
 }: TintButtonProps) => {
   const { color, mode } = useAccentColor();
   const isDarkMode = mode === 'darkTinted' || mode === 'dark';
@@ -37,7 +39,7 @@ export const TintButton = ({
         </AccentColorProvider>
       )}
     >
-      <ButtonPressAnimation onPress={onPress}>
+      <ButtonPressAnimation onPress={onPress} testID={testID}>
         <Box
           background="accent"
           borderRadius={99}
