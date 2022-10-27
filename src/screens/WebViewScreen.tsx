@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Share, StatusBar } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useDimensions } from '@/hooks';
@@ -12,17 +12,33 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
+import { analytics } from '@/analytics';
 
 const HeaderHeight = 60;
 
 export default function WebViewScreen() {
   const {
-    params: { title, url },
+    params: { cardType, category, title, url },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
   const { isDarkMode } = useTheme();
   const { height: deviceHeight, isSmallPhone } = useDimensions();
   const [webViewHeight, setWebViewHeight] = useState(0);
+  const startTime = useRef(Date.now());
+
+  useEffect(
+    () => () => {
+      analytics.track('Learn card opened', {
+        durationSeconds: (Date.now() - startTime.current) / 1000,
+        url,
+        title,
+        category,
+        cardType,
+      });
+      return;
+    },
+    [cardType, category, title, url]
+  );
 
   const renderHeader = useCallback(
     () => (

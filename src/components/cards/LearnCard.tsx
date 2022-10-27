@@ -7,7 +7,6 @@ import { IconOrb } from './reusables/IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { delay } from '@/helpers/utilities';
-import { analytics } from '@/analytics';
 
 export const LearnCardHeight = 184;
 
@@ -37,15 +36,11 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const onPress = useCallback(() => {
     navigate(Routes.WEB_VIEW_SCREEN, {
       title,
-      url,
-    });
-    !cardDetails && delay(300).then(incrementIndex);
-    analytics.track('Learn card opened', {
       category,
-      title,
       url,
       cardType: type,
     });
+    !cardDetails && delay(300).then(incrementIndex);
   }, [cardDetails, category, navigate, title, type, url]);
 
   return (
