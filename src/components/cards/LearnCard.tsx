@@ -7,6 +7,7 @@ import { IconOrb } from './reusables/IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { delay } from '@/helpers/utilities';
+import lang from 'i18n-js';
 
 export const LearnCardHeight = 184;
 
@@ -58,7 +59,7 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
               weight="heavy"
               color={{ custom: primaryTextColor }}
             >
-              􀫸 LEARN
+              {`􀫸 ${lang.t('cards.learn.learn')}`}
             </Text>
             <IconOrb color={orbColorLight} icon={emoji} />
           </Inline>

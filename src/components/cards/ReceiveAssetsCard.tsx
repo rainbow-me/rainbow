@@ -21,6 +21,7 @@ import { IconOrb } from './reusables/IconOrb';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from './reusables/TintButton';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
+import lang from 'i18n-js';
 
 export const ReceiveCardHeight = 174;
 
@@ -69,7 +70,7 @@ export const ReceiveAssetsCard = () => {
               <Box height={{ custom: 28 }} justifyContent="center">
                 {accentColorLoaded ? (
                   <Text size="22pt" weight="heavy" color="label">
-                    Receive Assets
+                    {lang.t('cards.receive.receive_assets')}
                   </Text>
                 ) : (
                   <Skeleton>
@@ -82,7 +83,7 @@ export const ReceiveAssetsCard = () => {
               <Box height={{ custom: 40 }} justifyContent="center">
                 {accentColorLoaded ? (
                   <Text size="15pt" weight="semibold" color="labelSecondary">
-                    {'You can also long press your\naddress above to copy it.'}
+                    {lang.t('cards.receive.description')}
                   </Text>
                 ) : (
                   <>
@@ -124,7 +125,7 @@ export const ReceiveAssetsCard = () => {
                 loaded={accentColorLoaded}
                 testID="copy-address-button"
               >
-                􀐅 Copy Address
+                {`􀐅 ${lang.t('cards.receive.copy_address')}`}
               </TintButton>
             </AccentColorProvider>
           )}

@@ -268,6 +268,17 @@
       "watch_this_wallet": "Watch this Wallet :)",
       "hidden": "Caché"
     },
+    "cards": {
+      "learn": {
+        "learn": "LEARN :)"
+      },
+      "receive": {
+        "receive_assets": "Receive Assets :)",
+        "copy_address": "Copy Address :)",
+        "description": "You can also long press your\naddress above to copy it. :)"
+      },
+      "asset": { "buy_ethereum": "Buy Ethereum :)", "today": "today :)" }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },
@@ -784,7 +795,8 @@
         "description": "Connectez-vous et signez vos transactions avec votre ",
         "link_text": "portefeuille mobile WalletConnect",
         "link_title": "portefeuille mobile WalletConnect"
-      }
+      },
+      "discover_web3": "Discover Web3 :)"
     },
     "image_picker": {
       "cancel": "Cancel :)",

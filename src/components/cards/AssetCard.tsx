@@ -196,14 +196,14 @@ export const AssetCard = () => {
                   >
                     {`${
                       isNegativePriceChange ? '􀄩' : '􀄨'
-                    }${priceChangeDisplay}`}
+                    }${priceChangeDisplay} `}
                   </Text>
                   <Text
                     size="13pt"
                     color={{ custom: priceChangeColor }}
                     weight="bold"
                   >
-                    {` ${lang.t('expanded_state.chart.today').toLowerCase()}`}
+                    {lang.t('cards.asset.today')}
                   </Text>
                 </Inline>
               )}
@@ -296,7 +296,7 @@ export const AssetCard = () => {
                   size="15pt"
                   weight="bold"
                 >
-                  􀍯 Buy Ethereum
+                  {`􀍯 ${lang.t('cards.asset.buy_ethereum')}`}
                 </Text>
               </Box>
             </AccentColorProvider>

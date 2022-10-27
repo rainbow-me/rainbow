@@ -271,15 +271,14 @@
     },
     "cards": {
       "learn": {
-        "categories": {
-          "staying_safe": "Staying Safe",
-          "essentials": "The Essentials"
-        },
-        "titles": {
-          "avoid_scams": "Avoid Crypto Scams",
-          "get_started": "Get Started with Rainbow"
-        }
-      }
+        "learn": "LEARN"
+      },
+      "receive": {
+        "receive_assets": "Receive Assets",
+        "copy_address": "Copy Address",
+        "description": "You can also long press your\naddress above to copy it."
+      },
+      "asset": { "buy_ethereum": "Buy Ethereum", "today": "today" }
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -856,7 +855,8 @@
         "tracking_link": "We do not track you",
         "work": "This is a web-based tool to help you manage the funds in your wallet. It does this by connecting to your wallet through its Application Programming Interface (API). Here are some important points about how we designed Balance Manager:",
         "work_title": "How does Manager work?"
-      }
+      },
+      "discover_web3": "Discover Web3"
     },
     "image_picker": {
       "cancel": "Cancel",

@@ -5,6 +5,7 @@ import Routes from '@/navigation/routesNames';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from '@/components/cards/reusables/TintButton';
 import { analytics } from '@/analytics';
+import lang from 'i18n-js';
 
 export const DiscoverMoreButtonHeight = 40;
 
@@ -24,7 +25,7 @@ export const DiscoverMoreButton = () => {
         onPress={handlePressDiscover}
         width={163}
       >
-        􀎬 Discover Web3
+        {`􀎬 ${lang.t('homepage.discover_web3')}`}
       </TintButton>
     </AccentColorProvider>
   );
