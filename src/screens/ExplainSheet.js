@@ -37,6 +37,7 @@ import {
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { isL2Network } from '@/handlers/web3';
+import { IS_ANDROID } from '@/env';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -60,12 +61,13 @@ const getBodyTextPropsWithColor = colors =>
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   align: 'center',
   alignItems: 'center',
-  color: color || colors.appleBlue,
+  color: color ?? colors.appleBlue,
   size: 'lmedium',
   weight: 'heavy',
 }))({
-  ...padding.object(android ? 5 : 8, 12),
-  borderColor: ({ theme: { colors }, color }) => colors.alpha(color, 0.06),
+  ...padding.object(IS_ANDROID ? 5 : 8, 12),
+  borderColor: ({ theme: { colors }, color }) =>
+    colors.alpha(color ?? colors.appleBlue, 0.06),
   borderRadius: 20,
   borderWidth: 2,
   height: 40,
@@ -249,18 +251,6 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'optimismRed',
       bgColor: 'optimismRed06',
-      onPress: (navigate, goBack, handleClose) => {
-        if (handleClose) handleClose();
-        if (goBack) goBack();
-        setTimeout(() => {
-          navigate(Routes.SETTINGS_SHEET);
-          setTimeout(() => {
-            navigate(Routes.SETTINGS_SHEET, {
-              screen: 'AppIconSection',
-            });
-          }, 300);
-        }, 300);
-      },
     },
   },
   smol_app_icon: {
@@ -272,18 +262,6 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: 'smolPurple',
       bgColor: 'smolPurple06',
-      onPress: (navigate, goBack, handleClose) => {
-        if (handleClose) handleClose();
-        if (goBack) goBack();
-        setTimeout(() => {
-          navigate(Routes.SETTINGS_SHEET);
-          setTimeout(() => {
-            navigate(Routes.SETTINGS_SHEET, {
-              screen: 'AppIconSection',
-            });
-          }, 300);
-        }, 300);
-      },
     },
   },
   output_disabled: {
@@ -554,8 +532,12 @@ export const explainers = (params, colors) => ({
   swapResetInputs: {
     button: {
       label: `Continue with ${networkInfo[params?.network]?.name}`,
-      bgColor: colors?.alpha(colors?.networkColors[params?.network], 0.06),
-      textColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.06),
+      textColor:
+        colors?.networkColors[params?.network] &&
+        colors?.networkColors?.[params?.network],
     },
     emoji: '🔐',
     extraHeight: -90,

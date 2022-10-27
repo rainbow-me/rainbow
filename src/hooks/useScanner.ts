@@ -23,7 +23,7 @@ import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
@@ -116,7 +116,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       haptics.notificationSuccess();
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
-
+      goBack();
       onSuccess();
       try {
         await walletConnectOnSessionRequest(qrCodeData, () => {});
@@ -124,7 +124,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         logger.log('walletConnectOnSessionRequest exception', e);
       }
     },
-    [walletConnectOnSessionRequest, onSuccess]
+    [goBack, onSuccess, walletConnectOnSessionRequest]
   );
 
   const handleScanInvalid = useCallback(

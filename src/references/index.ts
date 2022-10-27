@@ -147,7 +147,7 @@ export type TokenListsExtendedRecord = Record<
 >;
 
 export const DefaultUniswapFavorites = {
-  mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, DOG_ADDRESS, SOCKS_ADDRESS],
+  mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],
 };
 
 export const DefaultUniswapFavoritesMeta: Record<
@@ -179,19 +179,6 @@ export const DefaultUniswapFavoritesMeta: Record<
       symbol: 'ETH',
       type: 'token',
       uniqueId: ETH_ADDRESS,
-    },
-    [DOG_ADDRESS]: {
-      address: DOG_ADDRESS,
-      color: '#d6c492',
-      decimals: 18,
-      favorite: true,
-      highLiquidity: true,
-      isRainbowCurated: true,
-      isVerified: true,
-      name: 'The Doge NFT',
-      symbol: 'DOG',
-      type: 'token',
-      uniqueId: DOG_ADDRESS,
     },
     [SOCKS_ADDRESS]: {
       address: SOCKS_ADDRESS,
