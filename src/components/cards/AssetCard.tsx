@@ -209,9 +209,9 @@ export const AssetCard = () => {
             </Inline>
           </Bleed>
           {!loadedPrice ? (
-            <Box height={{ custom: 20 }} justifyContent="center">
+            <Box height={{ custom: 18 }} justifyContent="center">
               <Skeleton>
-                <FakeText height={20} width={130} />
+                <FakeText height={26} width={130} />
               </Skeleton>
             </Box>
           ) : (
