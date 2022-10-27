@@ -28,8 +28,6 @@ export const defaultOptions = {
 };
 
 export async function initSentry() {
-  if (!IS_PROD) return;
-
   try {
     const dist = VersionNumber.buildVersion;
     const release = `${VersionNumber.appVersion} (${VersionNumber.buildVersion})`;

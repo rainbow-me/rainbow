@@ -21,7 +21,6 @@ export class Analytics {
       debug: Boolean(LOG_DEBUG) || LOG_LEVEL === LogLevel.Debug,
       trackAppLifecycleEvents: true,
       trackDeepLinks: true,
-      // TODO: add dev write key to team env
       writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
     });
 
