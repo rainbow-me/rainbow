@@ -639,6 +639,9 @@ export const explorerInit = () => async (
       disableGenericAssetsFallbackIfNeeded();
     }
 
+    // we want to get ETH info ASAP
+    dispatch(emitAssetRequest(ETH_ADDRESS));
+
     dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
