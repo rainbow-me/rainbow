@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { Alert } from '../components/alerts';
 import {
@@ -20,6 +20,7 @@ import useTimeout from './useTimeout';
 import { analytics } from '@/analytics';
 import { getTokenMetadata } from '@/utils';
 import logger from '@/utils/logger';
+import { logger as loggr, RainbowError } from '@/logger';
 
 export default function useWyreApplePay() {
   const dispatch = useDispatch();
@@ -33,6 +34,8 @@ export default function useWyreApplePay() {
   const [isPaymentComplete, setPaymentComplete] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);
   const [orderId, setOrderId] = useState(null);
+  const addCashGetOrderStatusPayload = useRef<any[]>([]);
+  const [wyreAuthenticationUrl, setWyreAuthenticationUrl] = useState('');
 
   const { error, orderStatus, transferStatus } = usePurchaseTransactionStatus();
 
@@ -129,21 +132,20 @@ export default function useWyreApplePay() {
           reservationId
         );
         if (orderId) {
+          setOrderId(orderId);
+
           // @ts-expect-error ts-migrate(2339) FIXME: Property 'orderId' does not exist on type '{ refer... Remove this comment to see the full error message
           referenceInfo.orderId = orderId;
-          applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
-          setOrderId(orderId);
-          handlePaymentCallback();
-          dispatch(
-            addCashGetOrderStatus(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ referenceId: string; }' is not... Remove this comment to see the full error message
-              referenceInfo,
-              currency,
-              orderId,
-              applePayResponse,
-              value
-            )
-          );
+
+          addCashGetOrderStatusPayload.current = [
+            referenceInfo,
+            currency,
+            orderId,
+            applePayResponse,
+            value,
+          ];
+
+          setWyreAuthenticationUrl(authenticationUrl);
         } else {
           dispatch(
             addCashOrderCreationFailure({
@@ -170,6 +172,44 @@ export default function useWyreApplePay() {
     [accountAddress, dispatch, handlePaymentCallback, network]
   );
 
+  const wyreAuthenticationFlowCallback = useCallback(() => {
+    if (!addCashGetOrderStatusPayload.current.length) {
+      loggr.error(
+        new Error(
+          `wyreAuthenticationFlowCallback was called, but no addCashGetOrderStatusPayload exists`
+        )
+      );
+      return;
+    }
+
+    const [
+      referenceInfo,
+      currency,
+      orderId,
+      applePayResponse,
+      value,
+    ] = addCashGetOrderStatusPayload.current;
+
+    applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
+
+    handlePaymentCallback();
+
+    dispatch(
+      addCashGetOrderStatus(
+        referenceInfo,
+        currency,
+        orderId,
+        applePayResponse,
+        value
+      )
+    );
+  }, [
+    addCashGetOrderStatusPayload,
+    dispatch,
+    addCashGetOrderStatus,
+    handlePaymentCallback,
+  ]);
+
   return {
     error,
     isPaymentComplete,
@@ -179,5 +219,7 @@ export default function useWyreApplePay() {
     orderStatus,
     resetAddCashForm,
     transferStatus,
+    wyreAuthenticationFlowCallback,
+    wyreAuthenticationUrl,
   };
 }
