@@ -145,6 +145,7 @@ export const AssetCard = () => {
       disabled={!loadedChart}
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
       type="stretch"
+      testID={`buy-asset-card-${assetWithPrice?.symbol}`}
     >
       <Stack space={{ custom: 41 }}>
         <Stack space="12px">
@@ -277,7 +278,10 @@ export const AssetCard = () => {
             </Skeleton>
           </Box>
         ) : (
-          <ButtonPressAnimation onPress={handlePressBuy}>
+          <ButtonPressAnimation
+            onPress={handlePressBuy}
+            testID={`buy-button-${assetWithPrice.symbol}`}
+          >
             <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
               <Box
                 width="full"

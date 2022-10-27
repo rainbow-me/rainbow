@@ -17,6 +17,7 @@ interface GenericCardProps {
   disabled?: boolean;
   onPress?: () => void;
   color?: string;
+  testID?: string;
 }
 
 export const GenericCard = ({
@@ -26,6 +27,7 @@ export const GenericCard = ({
   gradient = ['transparent', 'transparent'],
   onPress,
   color,
+  testID,
 }: GenericCardProps) => (
   <ConditionalWrap
     condition={!!onPress}
@@ -58,6 +60,7 @@ export const GenericCard = ({
         style={{ flex: IS_IOS ? 0 : undefined }}
         shadow={color ? '18px accent' : '18px'}
         padding="20px"
+        testID={testID}
       >
         {children}
       </Box>

@@ -57,7 +57,11 @@ export const ReceiveAssetsCard = () => {
   const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
   return (
-    <GenericCard type="stretch" disabled={!accentColorLoaded}>
+    <GenericCard
+      type="stretch"
+      disabled={!accentColorLoaded}
+      testID="receive-card"
+    >
       <Stack space="36px">
         <Inline alignHorizontal="justify">
           <Stack space="16px">
@@ -118,6 +122,7 @@ export const ReceiveAssetsCard = () => {
                 onPress={() => onPressCopy(onNewEmoji)}
                 height={36}
                 loaded={accentColorLoaded}
+                testID="copy-address-button"
               >
                 􀐅 Copy Address
               </TintButton>
