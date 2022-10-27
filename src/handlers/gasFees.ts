@@ -31,3 +31,25 @@ const polygonGasStationApi = new RainbowFetchClient({
  */
 export const polygonGasStationGetGasPrices = () =>
   polygonGasStationApi.get(`/gasapi.ashx?apikey=key&method=gasoracle`);
+
+/**
+ * Configuration for BSC GAS Station API
+ * @type RainbowFetchClient instance
+ */
+const bscGasStationApi = new RainbowFetchClient({
+  baseURL: 'https://api.bscscan.com/api',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000, // 30 secs
+});
+
+/**
+ * @desc get BSC gas prices
+ * @return {Promise}
+ */
+export const bscGasStationGetGasPrices = () =>
+  bscGasStationApi.get(
+    `?module=gastracker&action=gasoracle&apikey=B395TC4T7BXEWSSUIQCEG1WWSIZ2JCJW35`
+  );
