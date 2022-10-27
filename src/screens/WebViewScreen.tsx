@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Share, StatusBar } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useDimensions } from '@/hooks';
@@ -12,7 +12,6 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
-import { StatusBarHelper } from '@/helpers';
 
 const HeaderHeight = 60;
 
@@ -21,16 +20,36 @@ export default function WebViewScreen() {
     params: { title, url },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
-
-  useEffect(() => {
-    StatusBarHelper.setBackgroundColor('transparent', false);
-    StatusBarHelper.setTranslucent(true);
-    StatusBarHelper.setDarkContent();
-  }, []);
-
   const { isDarkMode } = useTheme();
-
   const { height: deviceHeight, isSmallPhone } = useDimensions();
+  const [webViewHeight, setWebViewHeight] = useState(0);
+
+  const renderHeader = useCallback(
+    () => (
+      <Box
+        top="0px"
+        background="surfacePrimary"
+        height={{ custom: HeaderHeight }}
+        width="full"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Text align="center" color="label" size="20pt" weight="heavy">
+          {title}
+        </Text>
+        <Box position="absolute" right={{ custom: 20 }}>
+          <ButtonPressAnimation
+            onPress={async () => await Share.share({ url })}
+          >
+            <Text align="center" color="label" size="20pt" weight="heavy">
+              􀈂
+            </Text>
+          </ButtonPressAnimation>
+        </Box>
+      </Box>
+    ),
+    [title, url]
+  );
 
   const contentHeight =
     deviceHeight -
@@ -43,58 +62,40 @@ export default function WebViewScreen() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - JS component
     <SlackSheet
-      renderHeader={() => (
-        <Box
-          top="0px"
-          background="surfacePrimary"
-          height={{ custom: HeaderHeight }}
-          width="full"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Text align="center" color="label" size="20pt" weight="heavy">
-            {title}
-          </Text>
-          <Box position="absolute" right={{ custom: 20 }}>
-            <ButtonPressAnimation
-              onPress={async () => await Share.share({ url })}
-            >
-              <Text align="center" color="label" size="20pt" weight="heavy">
-                􀈂
-              </Text>
-            </ButtonPressAnimation>
-          </Box>
-        </Box>
-      )}
+      renderHeader={renderHeader}
       backgroundColor={
         isDarkMode ? globalColors.grey100 : globalColors.white100
       }
+      contentContainerStyle={{ flexGrow: 1 }}
       contentHeight={contentHeight}
       height="100%"
       removeTopPadding
       additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
     >
-      <Box width="full" height={{ custom: contentHeight }}>
-        <WebView
-          startInLoadingState
-          renderLoading={() => (
-            <Box
-              background="surfacePrimary"
-              width="full"
-              height="full"
-              alignItems="center"
-              justifyContent="center"
-            >
-              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-              /* @ts-ignore - JS component */}
-              <LoadingSpinner />
-            </Box>
-          )}
-          source={{
-            uri: url,
-          }}
-        />
-      </Box>
+      <WebView
+        startInLoadingState
+        renderLoading={() => (
+          <Box
+            background="surfacePrimary"
+            width="full"
+            height={{ custom: contentHeight }}
+            alignItems="center"
+            justifyContent="center"
+          >
+            {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+            /* @ts-ignore - JS component */}
+            <LoadingSpinner />
+          </Box>
+        )}
+        onMessage={event => setWebViewHeight(Number(event.nativeEvent.data))}
+        injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
+        style={{
+          height: webViewHeight,
+        }}
+        source={{
+          uri: url,
+        }}
+      />
     </SlackSheet>
   );
 }

@@ -35,11 +35,11 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   } = themedLearnCategoryColors[category];
 
   const onPress = useCallback(() => {
-    navigate(Routes.WEB_VIEW_SCREEN_NAVIGATOR, {
-      params: { title, url },
-      screen: Routes.WEB_VIEW_SCREEN,
+    navigate(Routes.WEB_VIEW_SCREEN, {
+      title,
+      url,
     });
-    !cardDetails && delay(100).then(incrementIndex);
+    !cardDetails && delay(300).then(incrementIndex);
     analytics.track('Learn card opened', {
       category,
       title,

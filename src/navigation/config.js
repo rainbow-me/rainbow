@@ -188,7 +188,7 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
-export const webViewScreenNavigatorConfig = {
+export const webViewScreenConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

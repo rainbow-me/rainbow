@@ -60,7 +60,7 @@ import {
   stackNavigationConfig,
   swapDetailsSheetConfig,
   swapsPromoSheetConfig,
-  webViewScreenNavigatorConfig,
+  webViewScreenConfig,
 } from './config';
 import {
   emojiPreset,
@@ -188,17 +188,6 @@ function MainNavigatorWrapper() {
   );
 }
 
-function WebViewScreenNavigator() {
-  return (
-    <NativeStack.Navigator screenOptions={defaultScreenStackOptions}>
-      <NativeStack.Screen
-        component={WebViewScreen}
-        name={Routes.WEB_VIEW_SCREEN}
-      />
-    </NativeStack.Navigator>
-  );
-}
-
 function NativeStackFallbackNavigator() {
   return (
     <Stack.Navigator
@@ -258,9 +247,9 @@ function NativeStackNavigator() {
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
       <NativeStack.Screen
-        component={WebViewScreenNavigator}
-        name={Routes.WEB_VIEW_SCREEN_NAVIGATOR}
-        {...webViewScreenNavigatorConfig}
+        component={WebViewScreen}
+        name={Routes.WEB_VIEW_SCREEN}
+        {...webViewScreenConfig}
       />
       <NativeStack.Screen
         component={ReceiveModal}

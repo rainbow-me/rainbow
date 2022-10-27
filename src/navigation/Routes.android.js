@@ -47,6 +47,7 @@ import {
   defaultScreenStackOptions,
   restoreSheetConfig,
   stackNavigationConfig,
+  webViewScreenConfig,
   wyreWebviewOptions,
 } from './config';
 import {
@@ -287,8 +288,9 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen
-        component={WebViewScreenNavigator}
-        name={Routes.WEB_VIEW_SCREEN_NAVIGATOR}
+        component={WebViewScreen}
+        name={Routes.WEB_VIEW_SCREEN}
+        {...webViewScreenConfig}
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}

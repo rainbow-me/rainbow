@@ -6,7 +6,6 @@ import {
   Text,
   AccentColorProvider,
   Bleed,
-  DebugLayout,
 } from '@/design-system';
 import { useTheme } from '@/theme';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
