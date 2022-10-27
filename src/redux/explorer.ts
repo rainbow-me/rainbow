@@ -548,7 +548,7 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
       ...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe')
     );
     addressSocket.emit(
-      ...addressSubscription(
+      ...addressAssetBalanceSubscription(
         addressSubscribed!,
         nativeCurrency,
         Network.bsc,
