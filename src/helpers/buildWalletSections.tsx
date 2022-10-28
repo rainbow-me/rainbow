@@ -389,7 +389,7 @@ const withBriefBalanceSection = (
   );
 
   const isEmpty = !briefAssets?.length && !collectibles?.length;
-  const isOnlyNFTs = !isEmpty && collectibles?.length;
+  const isOnlyNFTs = !briefAssets?.length && collectibles?.length;
 
   const emptySection = [
     { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
