@@ -39,7 +39,7 @@ export const TintButton = ({
         </AccentColorProvider>
       )}
     >
-      <ButtonPressAnimation onPress={onPress} testID={testID}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.92} testID={testID}>
         <Box
           background="accent"
           borderRadius={99}

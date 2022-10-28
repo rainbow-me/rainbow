@@ -279,6 +279,7 @@ export const AssetCard = () => {
           <ButtonPressAnimation
             onPress={handlePressBuy}
             testID={`buy-button-${assetWithPrice.symbol}`}
+            scaleTo={0.92}
           >
             <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
               <Box
