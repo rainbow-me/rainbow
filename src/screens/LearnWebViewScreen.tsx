@@ -60,11 +60,11 @@ export default function LearnWebViewScreen() {
       alignItems="center"
     >
       <Text align="center" color="label" size="20pt" weight="heavy">
-        {category}
+        Learn
       </Text>
       <Box position="absolute" right={{ custom: 20 }}>
         <ButtonPressAnimation onPress={onPressShare}>
-          <Text align="center" color="label" size="20pt" weight="heavy">
+          <Text align="center" color="label" size="20pt" weight="bold">
             􀈂
           </Text>
         </ButtonPressAnimation>
