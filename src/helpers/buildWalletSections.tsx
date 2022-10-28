@@ -392,19 +392,19 @@ const withBriefBalanceSection = (
   const isOnlyNFTs = !briefAssets?.length && collectibles?.length;
 
   const emptySection = [
-    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+    { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
     {
       type: 'RECEIVE_CARD',
       uid: 'receive_card',
     },
-    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
     { type: 'BUY_ETH_CARD', uid: 'buy-eth-card' },
-    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-3' },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
     {
       type: 'LEARN_CARD',
       uid: 'learn-card',
     },
-    { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer' },
+    { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-2' },
     {
       type: 'DISCOVER_MORE_BUTTON',
       uid: 'discover-home-button',
@@ -439,10 +439,15 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW',
       uid: 'profile-name',
     },
-    {
-      type: 'PROFILE_NAME_ROW_SPACE_AFTER',
-      uid: 'profile-name-space-after',
-    },
+    briefAssets?.length
+      ? {
+          type: 'PROFILE_NAME_ROW_SPACE_AFTER',
+          uid: 'profile-name-space-after',
+        }
+      : {
+          type: 'EMPTY_ROW',
+          uid: 'empty-row-1',
+        },
     briefAssets?.length
       ? {
           type: 'PROFILE_BALANCE_ROW',
@@ -451,7 +456,7 @@ const withBriefBalanceSection = (
         }
       : {
           type: 'EMPTY_ROW',
-          uid: 'empty-row',
+          uid: 'empty-row-2',
         },
     {
       type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
@@ -462,11 +467,13 @@ const withBriefBalanceSection = (
       uid: 'profile-action-buttons',
       value: totalValue,
     },
-    {
-      type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
-      uid: 'profile-action-buttons-space-after',
-      value: totalValue,
-    },
+    isEmpty || isOnlyNFTs
+      ? { type: 'EMPTY_ROW', uid: 'empty-row-3' }
+      : {
+          type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
+          uid: 'profile-action-buttons-space-after',
+          value: totalValue,
+        },
     ...(isEmpty
       ? emptySection
       : isOnlyNFTs
