@@ -2,6 +2,7 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
+  DebugLayout,
   Inline,
   Stack,
   Text,
@@ -66,37 +67,31 @@ export const ReceiveAssetsCard = () => {
       <Stack space="36px">
         <Inline alignHorizontal="justify">
           <Stack space="16px">
-            <Bleed vertical="6px">
-              <Box height={{ custom: 28 }} justifyContent="center">
-                {accentColorLoaded ? (
-                  <Text size="22pt" weight="heavy" color="label">
-                    {lang.t('cards.receive.receive_assets')}
-                  </Text>
-                ) : (
-                  <Skeleton>
-                    <FakeText width={170} height={22} />
-                  </Skeleton>
-                )}
+            {accentColorLoaded ? (
+              <Text size="22pt" weight="heavy" color="label">
+                {lang.t('cards.receive.receive_assets')}
+              </Text>
+            ) : (
+              <Box height={{ custom: 16 }}>
+                <Skeleton>
+                  <FakeText width={170} height={16} />
+                </Skeleton>
               </Box>
-            </Bleed>
-            <Bleed vertical={{ custom: 5 }}>
-              <Box height={{ custom: 40 }} justifyContent="center">
-                {accentColorLoaded ? (
-                  <Text size="15pt" weight="semibold" color="labelSecondary">
-                    {lang.t('cards.receive.description')}
-                  </Text>
-                ) : (
-                  <>
-                    <Skeleton>
-                      <FakeText width={200} height={15} />
-                    </Skeleton>
-                    <Skeleton>
-                      <FakeText width={180} height={15} />
-                    </Skeleton>
-                  </>
-                )}
+            )}
+            {accentColorLoaded ? (
+              <Text size="15pt" weight="semibold" color="labelSecondary">
+                {lang.t('cards.receive.description')}
+              </Text>
+            ) : (
+              <Box height={{ custom: 30 }} justifyContent="space-between">
+                <Skeleton>
+                  <FakeText width={200} height={10} />
+                </Skeleton>
+                <Skeleton>
+                  <FakeText width={180} height={10} />
+                </Skeleton>
               </Box>
-            </Bleed>
+            )}
           </Stack>
           <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
             <IconOrb

@@ -150,41 +150,42 @@ export const AssetCard = () => {
         <Stack space="12px">
           <Bleed top="4px">
             <Inline alignVertical="center" alignHorizontal="justify">
+              <Inline alignVertical="center" space="6px">
+                {!loadedPrice ? (
+                  <>
+                    <Box height={{ custom: 20 }} width={{ custom: 20 }}>
+                      <Skeleton>
+                        <FakeText height={20} width={20} />
+                      </Skeleton>
+                    </Box>
+                    <Box height={{ custom: 12 }} width={{ custom: 100 }}>
+                      <Skeleton>
+                        <FakeText height={12} width={100} />
+                      </Skeleton>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    {/* @ts-expect-error – JS component */}
+                    <CoinIcon
+                      address={assetWithPrice.address}
+                      size={20}
+                      symbol={assetWithPrice.symbol}
+                    />
+                    <Text
+                      size="17pt"
+                      color={{ custom: colorForAsset }}
+                      weight="heavy"
+                    >
+                      {assetWithPrice.name}
+                    </Text>
+                  </>
+                )}
+              </Inline>
               {!loadedPrice ? (
-                <Inline space="6px">
-                  <Box height={{ custom: 20 }} width={{ custom: 20 }}>
-                    <Skeleton>
-                      <FakeText height={20} width={20} />
-                    </Skeleton>
-                  </Box>
-                  <Box height={{ custom: 17 }} width={{ custom: 100 }}>
-                    <Skeleton>
-                      <FakeText height={17} width={100} />
-                    </Skeleton>
-                  </Box>
-                </Inline>
-              ) : (
-                <Inline alignVertical="center" space="6px">
-                  {/* @ts-expect-error – JS component */}
-                  <CoinIcon
-                    address={assetWithPrice.address}
-                    size={20}
-                    symbol={assetWithPrice.symbol}
-                  />
-
-                  <Text
-                    size="17pt"
-                    color={{ custom: colorForAsset }}
-                    weight="heavy"
-                  >
-                    {assetWithPrice.name}
-                  </Text>
-                </Inline>
-              )}
-              {!loadedPrice ? (
-                <Box height={{ custom: 17 }} width={{ custom: 110 }}>
+                <Box height={{ custom: 12 }} width={{ custom: 110 }}>
                   <Skeleton>
-                    <FakeText height={17} width={110} />
+                    <FakeText height={12} width={110} />
                   </Skeleton>
                 </Box>
               ) : (
@@ -210,13 +211,11 @@ export const AssetCard = () => {
             </Inline>
           </Bleed>
           {!loadedPrice ? (
-            <Bleed vertical={{ custom: 7 }}>
-              <Box height={{ custom: 32 }} justifyContent="center">
-                <Skeleton>
-                  <FakeText height={26} width={130} />
-                </Skeleton>
-              </Box>
-            </Bleed>
+            <Box height={{ custom: 18 }} width={{ custom: 130 }}>
+              <Skeleton>
+                <FakeText height={18} width={130} />
+              </Skeleton>
+            </Box>
           ) : (
             <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
               {assetWithPrice.native.price.display}
