@@ -1,5 +1,7 @@
 import { Dimensions, Platform } from 'react-native';
 
+import { IS_IOS } from '@/env';
+
 const { height, width } = Dimensions.get('window');
 
 const deviceUtils = (function () {
@@ -18,7 +20,7 @@ const deviceUtils = (function () {
     iphoneSEHeight,
     iPhoneXHeight,
     iPhoneXWidth,
-    isIOS14: ios && parseFloat(Platform.Version as string) >= 14,
+    isIOS14: IS_IOS && parseFloat(Platform.Version as string) >= 14,
     isLargePhone: width >= iPhoneXWidth,
     isNarrowPhone: width < iPhoneXWidth,
     isSmallPhone: height <= iPhone6Height,
