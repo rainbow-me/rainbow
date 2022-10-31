@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.10)
+
+### Added
+
+- New updated Homescreen
+
+### Changed
+
+- Small bug fixes / dev improvements
+- Some more cross-chain swaps PRs (still behind a feature flag)
+- LooksRare marketplace link
+- Audio NFTs bugfix
+
 ## [1.7.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.9)
 
 ### Changed

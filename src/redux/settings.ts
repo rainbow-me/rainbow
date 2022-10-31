@@ -3,7 +3,7 @@ import { changeIcon } from 'react-native-change-icon';
 import lang from 'i18n-js';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { updateLanguageLocale } from '../languages';
+import { updateLanguageLocale, Language } from '../languages';
 import { analytics } from '@/analytics';
 import { NativeCurrencyKeys } from '@/entities';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -179,7 +179,7 @@ export const settingsLoadLanguage = () => async (
 ) => {
   try {
     const language = await getLanguage();
-    updateLanguageLocale(language);
+    updateLanguageLocale(language as Language);
     dispatch({
       payload: language,
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
@@ -275,7 +275,7 @@ export const settingsUpdateNetwork = (network: Network) => async (
 export const settingsChangeLanguage = (language: string) => async (
   dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>
 ) => {
-  updateLanguageLocale(language);
+  updateLanguageLocale(language as Language);
   try {
     dispatch({
       payload: language,
