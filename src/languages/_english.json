@@ -443,7 +443,16 @@
       "source_picker": "Route Swaps via",
       "use_flashbots": "Use Flashbots",
       "swapping_for_prefix": "Swapping for",
-      "view_details": "View Details"
+      "view_details": "View Details",
+      "token_sections": {
+        "bridgeTokenSection": "􀊝 Bridge",
+        "crosschainMatchSection": "􀤆 On other networks",
+        "favoriteTokenSection": "􀋃 Favorites",
+        "lowLiquidityTokenSection": "􀇿 Low Liquidity",
+        "unverifiedTokenSection": "􀇿 Unverified",
+        "verifiedTokenSection": "􀇻 Verified",
+        "unswappableTokenSection": "􀘰 No trade routes"
+      }
     },
     "expanded_state": {
       "asset": {
