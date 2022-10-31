@@ -11,6 +11,8 @@ import { isL2Asset } from '@/handlers/assets';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
+import { ethereumUtils } from '@/utils';
+import networkInfo from '@/helpers/networkInfo';
 
 const L2Disclaimer = ({
   assetType,
@@ -78,7 +80,8 @@ const L2Disclaimer = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {verb ? verb : sending ? `Sending` : `This ${symbol} is`} on the{' '}
-              {capitalize(assetType)} network
+              {networkInfo[ethereumUtils.getNetworkFromType(assetType)].name}{' '}
+              network
             </Text>
           </Column>
           <Column align="end" justify="center">
