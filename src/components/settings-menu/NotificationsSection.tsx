@@ -29,6 +29,7 @@ import {
 } from '@/helpers/emojiHandler';
 import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
+import { useFocusEffect } from '@react-navigation/native';
 
 type WalletRowProps = {
   groupOff: boolean;
@@ -182,10 +183,19 @@ const NotificationsSection = () => {
   const { wallets, walletNames } = useWallets();
 
   const {
-    ownerEnabled,
-    watcherEnabled,
+    ownerEnabled: centralOwnedStatus,
     updateGroupSettings,
+    watcherEnabled: centralWatchedStatus,
   } = useWalletGroupNotificationSettings();
+  // local state controls the switch UI for better UX
+  const [ownedState, setOwnedState] = useState({
+    status: centralOwnedStatus,
+    loading: false,
+  });
+  const [watchedState, setWatchedState] = useState({
+    status: centralWatchedStatus,
+    loading: false,
+  });
   const { notificationSettings } = useAllNotificationSettingsFromStorage();
   const { ownedWallets, watchedWallets } = useMemo(() => {
     const ownedWallets: RainbowAccount[] = [];
@@ -212,6 +222,13 @@ const NotificationsSection = () => {
     return { ownedWallets, watchedWallets };
   }, [wallets]);
 
+  useFocusEffect(
+    useCallback(() => {
+      setOwnedState({ loading: false, status: centralOwnedStatus });
+      setWatchedState({ loading: false, status: centralWatchedStatus });
+    }, [])
+  );
+
   const noOwnedWallets = !ownedWallets.length;
   const noWatchedWallets = !watchedWallets.length;
   const [permissionStatus, setPermissionStatus] = useState<string>('');
@@ -219,22 +236,32 @@ const NotificationsSection = () => {
   const disabledInSystem = permissionStatus === RESULTS.BLOCKED;
 
   const toggleAllOwnedNotifications = useCallback(() => {
+    setOwnedState(prev => ({ status: !prev.status, loading: true }));
+    updateGroupSettings(NotificationRelationship.OWNER, !centralOwnedStatus)
+      .then(() => {
+        setOwnedState(prev => ({ ...prev, loading: false }));
+      })
+      .catch(() => {
+        setOwnedState(prev => ({ status: !prev.status, loading: false }));
+      });
     updateSettingsForWallets(NotificationRelationship.OWNER, {
-      enabled: !ownerEnabled,
+      enabled: !centralOwnedStatus,
     });
-    updateGroupSettings({
-      [NotificationRelationship.OWNER]: !ownerEnabled,
-    });
-  }, [ownerEnabled, updateGroupSettings]);
+  }, [centralOwnedStatus, updateGroupSettings]);
 
   const toggleAllWatchedNotifications = useCallback(() => {
+    setWatchedState(prev => ({ status: !prev.status, loading: true }));
+    updateGroupSettings(NotificationRelationship.WATCHER, !centralWatchedStatus)
+      .then(() => {
+        setWatchedState(prev => ({ ...prev, loading: false }));
+      })
+      .catch(() => {
+        setWatchedState(prev => ({ status: !prev.status, loading: false }));
+      });
     updateSettingsForWallets(NotificationRelationship.WATCHER, {
-      enabled: !watcherEnabled,
+      enabled: !centralWatchedStatus,
     });
-    updateGroupSettings({
-      [NotificationRelationship.WATCHER]: !watcherEnabled,
-    });
-  }, [updateGroupSettings, watcherEnabled]);
+  }, [updateGroupSettings, centralWatchedStatus]);
 
   const openSystemSettings = Linking.openSettings;
   const openNetworkSettings = useCallback(
@@ -364,6 +391,7 @@ const NotificationsSection = () => {
         ) : (
           <>
             <Menu
+              loading={ownedState.loading}
               description={
                 noOwnedWallets
                   ? lang.t('settings.notifications_section.no_owned_wallets')
@@ -374,9 +402,9 @@ const NotificationsSection = () => {
                 disabled
                 rightComponent={
                   <Switch
-                    disabled={noOwnedWallets || isTestnet}
+                    disabled={noOwnedWallets || isTestnet || ownedState.loading}
                     onValueChange={toggleAllOwnedNotifications}
-                    value={ownerEnabled}
+                    value={ownedState.status}
                   />
                 }
                 size={52}
@@ -391,7 +419,7 @@ const NotificationsSection = () => {
                 <WalletRow
                   key={wallet.address}
                   wallet={wallet}
-                  groupOff={!ownerEnabled}
+                  groupOff={!centralOwnedStatus}
                   isTestnet={isTestnet}
                   ens={walletNames[wallet.address]}
                   notificationSettings={notificationSettings}
@@ -399,6 +427,7 @@ const NotificationsSection = () => {
               ))}
             </Menu>
             <Menu
+              loading={watchedState.loading}
               description={
                 noWatchedWallets
                   ? lang.t('settings.notifications_section.no_watched_wallets')
@@ -409,9 +438,11 @@ const NotificationsSection = () => {
                 disabled
                 rightComponent={
                   <Switch
-                    disabled={noWatchedWallets || isTestnet}
+                    disabled={
+                      noWatchedWallets || isTestnet || watchedState.loading
+                    }
                     onValueChange={toggleAllWatchedNotifications}
-                    value={watcherEnabled}
+                    value={watchedState.status}
                   />
                 }
                 size={52}
@@ -428,7 +459,7 @@ const NotificationsSection = () => {
                 <WalletRow
                   key={wallet.address}
                   wallet={wallet}
-                  groupOff={!watcherEnabled}
+                  groupOff={!centralWatchedStatus}
                   isTestnet={isTestnet}
                   ens={walletNames[wallet.address]}
                   notificationSettings={notificationSettings}

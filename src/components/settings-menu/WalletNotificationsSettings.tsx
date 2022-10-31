@@ -35,11 +35,12 @@ const WalletNotificationsSettings = () => {
   const { notifications, updateSettings } = useNotificationSettings(address);
 
   const {
-    ownerEnabled,
-    watcherEnabled,
+    existingGroupSettings,
     lastOwnedWalletEnabled,
     lastWatchedWalletEnabled,
+    ownerEnabled,
     updateSectionSettings,
+    watcherEnabled,
   } = useWalletGroupNotificationSettings();
 
   const {
@@ -70,6 +71,7 @@ const WalletNotificationsSettings = () => {
   ]);
 
   const toggleAllowNotifications = useCallback(() => {
+    const previousGroupSettings = { ...existingGroupSettings };
     if (
       !notificationsSectionEnabled ||
       (notificationsSectionEnabled && lastWalletEnabled)
@@ -85,7 +87,7 @@ const WalletNotificationsSettings = () => {
       [notifications],
       notifications.type,
       !notificationsEnabled
-    );
+    ).catch(() => {});
   }, [
     notificationsSectionEnabled,
     lastWalletEnabled,
