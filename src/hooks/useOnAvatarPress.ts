@@ -27,6 +27,7 @@ import { buildRainbowUrl, showActionSheetWithOptions } from '@/utils';
 import useAccountAsset from './useAccountAsset';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
+import { IS_IOS } from '@/env';
 
 type UseOnAvatarPressProps = {
   /** Is the avatar selection being used on the wallet or transaction screen? */
@@ -178,21 +179,21 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         if (isReadOnly || isZeroETH) {
           if (buttonIndex === 0) onAvatarViewProfile();
           if (buttonIndex === 1) onAvatarChooseImage();
-          if (buttonIndex === 2) ios ? onAvatarPickEmoji() : setNextEmoji();
+          if (buttonIndex === 2) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
         } else {
           if (buttonIndex === 0) onAvatarEditProfile();
           if (buttonIndex === 1) onAvatarViewProfile();
           if (buttonIndex === 2) onAvatarChooseImage();
-          if (buttonIndex === 3) ios ? onAvatarPickEmoji() : setNextEmoji();
+          if (buttonIndex === 3) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
         }
       } else {
         if (isReadOnly || isZeroETH) {
           if (buttonIndex === 0) onAvatarChooseImage();
-          if (buttonIndex === 1) ios ? onAvatarPickEmoji() : setNextEmoji();
+          if (buttonIndex === 1) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
         } else {
           if (buttonIndex === 0) onAvatarCreateProfile();
           if (buttonIndex === 1) onAvatarChooseImage();
-          if (buttonIndex === 2) ios ? onAvatarPickEmoji() : setNextEmoji();
+          if (buttonIndex === 2) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
         }
       }
     },
