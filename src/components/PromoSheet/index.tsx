@@ -9,7 +9,6 @@ import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
   Box,
-  Heading,
   Inset,
   Row,
   Rows,
@@ -146,20 +145,12 @@ export function PromoSheet({
                       </Box>
                     </Box>
                     <Stack alignHorizontal="center" space={{ custom: 13 }}>
-                      <Text
-                        color="secondary60 (Deprecated)"
-                        size="15px / 21px (Deprecated)"
-                        weight="heavy"
-                      >
+                      <Text color="labelSecondary" size="15pt" weight="heavy">
                         {subHeader}
                       </Text>
-                      <Heading
-                        color="primary (Deprecated)"
-                        size="30px / 34px (Deprecated)"
-                        weight="heavy"
-                      >
+                      <Text color="label" size="30pt" weight="heavy">
                         {header}
-                      </Heading>
+                      </Text>
                     </Stack>
                   </Box>
                   <Inset horizontal={{ custom: 43.5 }}>
@@ -174,14 +165,14 @@ export function PromoSheet({
                                     paddingTop: '6px',
                                   })}
                                 >
-                                  <Heading
+                                  <Text
                                     align="center"
-                                    color="action (Deprecated)"
-                                    size="28px / 33px (Deprecated)"
+                                    color="accent"
+                                    size="30pt"
                                     weight="bold"
                                   >
                                     {item.icon}
-                                  </Heading>
+                                  </Text>
                                 </Box>
                               }
                               style={{ width: 42 }}
@@ -199,16 +190,12 @@ export function PromoSheet({
                           </Column>
                           <Bleed top="3px">
                             <Stack space="12px">
-                              <Text
-                                color="primary (Deprecated)"
-                                size="16px / 22px (Deprecated)"
-                                weight="bold"
-                              >
+                              <Text color="label" size="17pt" weight="bold">
                                 {item.title}
                               </Text>
                               <Text
-                                color="secondary60 (Deprecated)"
-                                size="14px / 19px (Deprecated)"
+                                color="labelSecondary"
+                                size="15pt"
                                 weight="medium"
                               >
                                 {item.description}
