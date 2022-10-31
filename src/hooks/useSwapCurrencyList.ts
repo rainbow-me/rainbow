@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { isAddress } from '@ethersproject/address';
 import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
 import { Contract, ethers } from 'ethers';
@@ -508,7 +509,9 @@ const useSwapCurrencyList = (
               ],
             data: [bridgeAsset],
             key: 'bridgeAsset',
-            title: tokenSectionTypes.bridgeTokenSection,
+            title: lang.t(
+              `exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`
+            ),
           });
         }
       }
@@ -517,14 +520,18 @@ const useSwapCurrencyList = (
           color: colors.yellowFavorite,
           data: abcSort(favoriteAssets, 'name'),
           key: 'favorites',
-          title: tokenSectionTypes.favoriteTokenSection,
+          title: lang.t(
+            `exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`
+          ),
         });
       }
       if (verifiedAssetsWithImport?.length) {
         list.push({
           data: verifiedAssetsWithImport,
           key: 'verified',
-          title: tokenSectionTypes.verifiedTokenSection,
+          title: lang.t(
+            `exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`
+          ),
           useGradientText: !IS_TEST,
         });
       }
@@ -532,14 +539,18 @@ const useSwapCurrencyList = (
         list.push({
           data: highLiquidityAssetsWithImport,
           key: 'highLiquidity',
-          title: tokenSectionTypes.unverifiedTokenSection,
+          title: lang.t(
+            `exchange.token_sections.${tokenSectionTypes.unverifiedTokenSection}`
+          ),
         });
       }
       if (lowLiquidityAssetsWithoutImport?.length) {
         list.push({
           data: lowLiquidityAssetsWithoutImport,
           key: 'lowLiquidity',
-          title: tokenSectionTypes.lowLiquidityTokenSection,
+          title: lang.t(
+            `exchange.token_sections.${tokenSectionTypes.lowLiquidityTokenSection}`
+          ),
         });
       }
     } else {
@@ -556,7 +567,9 @@ const useSwapCurrencyList = (
               ],
             data: [bridgeAsset],
             key: 'bridgeAsset',
-            title: tokenSectionTypes.bridgeTokenSection,
+            title: lang.t(
+              `exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`
+            ),
           });
         }
       }
@@ -565,14 +578,18 @@ const useSwapCurrencyList = (
           color: colors.yellowFavorite,
           data: abcSort(unfilteredFavorites, 'name'),
           key: 'unfilteredFavorites',
-          title: tokenSectionTypes.favoriteTokenSection,
+          title: lang.t(
+            `exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`
+          ),
         });
       }
       if (curatedAssets && curatedAssets.length) {
         list.push({
           data: curatedAssets,
           key: 'curated',
-          title: tokenSectionTypes.verifiedTokenSection,
+          title: lang.t(
+            `exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`
+          ),
           useGradientText: !IS_TEST,
         });
       }
@@ -624,7 +641,9 @@ const useSwapCurrencyList = (
         {
           data: exactMatches,
           key: 'verified',
-          title: tokenSectionTypes.crosschainMatchSection,
+          title: lang.t(
+            `exchange.token_sections.${tokenSectionTypes.crosschainMatchSection}`
+          ),
           useGradientText: !IS_TEST,
         },
       ];
