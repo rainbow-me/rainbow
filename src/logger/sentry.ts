@@ -29,13 +29,13 @@ export const defaultOptions = {
 
 export async function initSentry() {
   try {
-    const dist = VersionNumber.buildVersion;
-    const release = `${VersionNumber.appVersion} (${VersionNumber.buildVersion})`;
+    const dist = `${VersionNumber.buildVersion}`; // MUST BE A STRING
+    const release = `${VersionNumber.appVersion} (${dist})`; // MUST BE A STRING
 
     Sentry.init({
       ...defaultOptions,
-      dist,
-      release,
+      dist, // MUST BE A STRING or Sentry will break in native code
+      release, // MUST BE A STRING or Sentry will break in native code
     });
 
     logger.debug(`Sentry initialized`);
