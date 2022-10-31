@@ -73,7 +73,10 @@ import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
 import { analyticsV2 } from '@/analytics';
-import { getDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
+import {
+  getOrCreateDeviceId,
+  securelyHashWalletAddress,
+} from '@/analytics/utils';
 import { logger as loggr, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 
@@ -273,7 +276,8 @@ function Root() {
     async function initializeApplication() {
       await initSentry(); // must be set up immediately
 
-      const deviceId = await getDeviceId();
+      const isReturningUser = ls.device.get(['isReturningUser']);
+      const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
       const currentWalletAddress = await keychain.loadString(addressKey);
       const currentWalletAddressHash =
         typeof currentWalletAddress === 'string'
@@ -285,16 +289,29 @@ function Root() {
         currentWalletAddress: currentWalletAddressHash,
       });
 
+      /**
+       * Add helpful values to `analyticsV2` instance
+       */
       analyticsV2.setDeviceId(deviceId);
-
       if (currentWalletAddressHash) {
         analyticsV2.setCurrentWalletAddressHash(currentWalletAddressHash);
       }
 
-      // if not a brand-new user, just identify
-      if (ls.device.get(['isReturningUser'])) {
-        analyticsV2.identify({});
-      } else {
+      /**
+       * `analyticsv2` has all it needs to function.
+       */
+      analyticsV2.identify({});
+
+      /**
+       * We previously relied on the existence of a deviceId on keychain to
+       * determine if a user was new or not. For backwards compat, we do this
+       * still with `deviceIdWasJustCreated`, but we also set a new value on
+       * local storage `isReturningUser` so that other parts of the app can
+       * read from that, if necessary.
+       *
+       * This block of code will only run once.
+       */
+      if (deviceIdWasJustCreated && !isReturningUser) {
         // on very first open, set some default data and fire event
         loggr.info(`User opened application for the first time`);
 
@@ -306,9 +323,18 @@ function Root() {
 
         analyticsV2.identify({ screenHeight, screenWidth, screenScale });
         analyticsV2.track(analyticsV2.event.generic.firstAppOpen);
-
-        ls.device.set(['isReturningUser'], true);
       }
+
+      /**
+       * Always set this — we may have just migrated deviceId with
+       * `getOrCreateDeviceId`, which would mean `deviceIdWasJustCreated` would
+       * be false and the new-user block of code above won't run.
+       *
+       * But by this point in the `initializeApplication`, we've handled new
+       * user events and migrations, so we need to make sure this is set to
+       * `true`.
+       */
+      ls.device.set(['isReturningUser'], true);
 
       // init complete, load the rest of the app
       setInitializing(false);
