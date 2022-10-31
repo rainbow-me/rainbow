@@ -335,17 +335,20 @@ function Root() {
        * `true`.
        */
       ls.device.set(['isReturningUser'], true);
-
-      // init complete, load the rest of the app
-      setInitializing(false);
     }
 
     initializeApplication()
       .then(() => {
         loggr.debug(`Application initialized with Sentry and Segment`);
+
+        // init complete, load the rest of the app
+        setInitializing(false);
       })
       .catch(e => {
         loggr.error(new RainbowError(`initializeApplication failed`));
+
+        // for failure, continue to rest of the app for now
+        setInitializing(false);
       });
   }, [setInitializing]);
 
