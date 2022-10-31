@@ -9,7 +9,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { Box } from '@/design-system';
+import { SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
+import { InteractionManager, Keyboard, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
@@ -53,6 +55,7 @@ import {
   useColorForAsset,
   useContacts,
   useCurrentNonce,
+  useDimensions,
   useENSProfile,
   useENSRegistrationActionHandler,
   useGas,
@@ -81,6 +84,7 @@ import {
 } from '@/helpers/utilities';
 import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
+import { NoResults } from '@/components/list';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -100,6 +104,13 @@ const SheetContainer = styled(Column).attrs({
   backgroundColor: ({ theme: { colors } }) => colors.white,
   height: isNativeStackAvailable || android ? sheetHeight : '100%',
   width: '100%',
+});
+
+const SendSheetTitle = styled(SheetTitle).attrs({
+  weight: 'heavy',
+})({
+  marginBottom: android ? -10 : 0,
+  marginTop: android ? 10 : 17,
 });
 
 export default function SendSheet(props) {
@@ -131,7 +142,7 @@ export default function SendSheet(props) {
   const { action: transferENS } = useENSRegistrationActionHandler({
     step: 'TRANSFER',
   });
-
+  const { isTinyPhone } = useDimensions();
   const savings = useSendSavingsAccount();
   const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
@@ -943,24 +954,32 @@ export default function SendSheet(props) {
   return (
     <Container testID="send-sheet">
       <SheetContainer>
-        <SendHeader
-          contacts={contacts}
-          fromProfile={params?.fromProfile}
-          hideDivider={showAssetForm}
-          isValidAddress={isValidAddress}
-          nickname={nickname}
-          onChangeAddressInput={onChangeInput}
-          onPressPaste={recipient => {
-            checkAddress(recipient);
-            setRecipient(recipient);
-          }}
-          recipient={recipient}
-          recipientFieldRef={recipientFieldRef}
-          removeContact={onRemoveContact}
-          showAssetList={showAssetList}
-          userAccounts={userAccounts}
-          watchedAccounts={watchedAccounts}
-        />
+        <View onLayout={event => console.log(event.nativeEvent.layout.height)}>
+          <SheetHandleFixedToTop />
+          {isTinyPhone ? null : (
+            <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>
+          )}
+        </View>
+        {!(showAssetList && !sortedAssets.length) && (
+          <SendHeader
+            contacts={contacts}
+            fromProfile={params?.fromProfile}
+            hideDivider={showAssetForm}
+            isValidAddress={isValidAddress}
+            nickname={nickname}
+            onChangeAddressInput={onChangeInput}
+            onPressPaste={recipient => {
+              checkAddress(recipient);
+              setRecipient(recipient);
+            }}
+            recipient={recipient}
+            recipientFieldRef={recipientFieldRef}
+            removeContact={onRemoveContact}
+            showAssetList={showAssetList}
+            userAccounts={userAccounts}
+            watchedAccounts={watchedAccounts}
+          />
+        )}
         {showEmptyState && (
           <SendContactList
             contacts={filteredContacts}
@@ -978,19 +997,30 @@ export default function SendSheet(props) {
             watchedAccounts={watchedAccounts}
           />
         )}
-        {showAssetList && (
-          <SendAssetList
-            hiddenCoins={hiddenCoinsObj}
-            nativeCurrency={nativeCurrency}
-            network={network}
-            onSelectAsset={sendUpdateSelected}
-            pinnedCoins={pinnedCoinsObj}
-            savings={savings}
-            sortedAssets={sortedAssets}
-            theme={theme}
-            uniqueTokens={sendableUniqueTokens}
-          />
-        )}
+        {showAssetList &&
+          (sortedAssets.length ? (
+            <SendAssetList
+              hiddenCoins={hiddenCoinsObj}
+              nativeCurrency={nativeCurrency}
+              network={network}
+              onSelectAsset={sendUpdateSelected}
+              pinnedCoins={pinnedCoinsObj}
+              savings={savings}
+              sortedAssets={sortedAssets}
+              theme={theme}
+              uniqueTokens={sendableUniqueTokens}
+            />
+          ) : (
+            <Box
+              height={{ custom: sheetHeight }}
+              bottom="0px"
+              width="full"
+              position="absolute"
+              justifyContent="center"
+            >
+              <NoResults type="send" />
+            </Box>
+          ))}
         {showAssetForm && (
           <SendAssetForm
             {...props}

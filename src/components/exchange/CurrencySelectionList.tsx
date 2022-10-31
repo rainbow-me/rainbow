@@ -62,7 +62,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<
             custom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
           }}
         >
-          <NoResults fromDiscover={fromDiscover} onL2={onL2} />
+          <NoResults onL2={onL2} type={fromDiscover ? 'discover' : 'swap'} />
         </Box>
       ) : (
         <Centered flex={1}>
