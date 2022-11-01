@@ -21,6 +21,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 export function RestoreSheet() {
   const { goBack, navigate, setParams } = useNavigation();
@@ -95,34 +96,33 @@ export function RestoreSheet() {
     });
   }, [goBack, navigate]);
 
-  const wrapperHeight = deviceHeight + longFormHeight;
+  const wrapperHeight =
+    deviceHeight +
+    longFormHeight +
+    (IS_ANDROID ? getSoftMenuBarHeight() / 2 : 0);
 
-  const content = (
-    <SlackSheet
-      contentHeight={longFormHeight}
-      deferredHeight={IS_ANDROID}
-      testID="restore-sheet"
-    >
-      {step === WalletBackupStepTypes.cloud ? (
-        <RestoreCloudStep
-          backupSelected={backupSelected}
-          fromSettings={fromSettings}
-          userData={userData}
-        />
-      ) : (
-        <RestoreSheetFirstStep
-          onCloudRestore={onCloudRestore}
-          onManualRestore={onManualRestore}
-          onWatchAddress={onWatchAddress}
-          userData={userData}
-        />
-      )}
-    </SlackSheet>
+  return (
+    <Column height={wrapperHeight}>
+      <SlackSheet
+        contentHeight={longFormHeight}
+        deferredHeight={IS_ANDROID}
+        testID="restore-sheet"
+      >
+        {step === WalletBackupStepTypes.cloud ? (
+          <RestoreCloudStep
+            backupSelected={backupSelected}
+            fromSettings={fromSettings}
+            userData={userData}
+          />
+        ) : (
+          <RestoreSheetFirstStep
+            onCloudRestore={onCloudRestore}
+            onManualRestore={onManualRestore}
+            onWatchAddress={onWatchAddress}
+            userData={userData}
+          />
+        )}
+      </SlackSheet>
+    </Column>
   );
-
-  if (IS_IOS) {
-    return <Column height={wrapperHeight}>{content}</Column>;
-  } else {
-    return content;
-  }
 }
