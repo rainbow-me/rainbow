@@ -10,7 +10,13 @@ function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
 }
 
-const CenteredLabel = ({ position, style, width, ...props }) => {
+const CenteredLabel = ({
+  position,
+  fontSize = '14px / 19px (Deprecated)',
+  style,
+  width,
+  ...props
+}) => {
   const [componentWidth, setWidth] = useState(0);
   const onLayout = useCallback(
     ({
@@ -46,18 +52,14 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
         position: 'absolute',
       }}
     >
-      <Text
-        color={{ custom: props.color }}
-        size="14px / 19px (Deprecated)"
-        weight="bold"
-      >
+      <Text color={{ custom: props.color }} size={fontSize} weight="bold">
         {props.children}
       </Text>
     </View>
   );
 };
 
-const Labels = React.memo(function Labels({ color, width }) {
+const Labels = ({ color, width, isCard }) => {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
@@ -79,8 +81,9 @@ const Labels = React.memo(function Labels({ color, width }) {
         <CenteredLabel
           color={colors.alpha(color, 0.8)}
           position={positionMin}
+          fontSize={isCard ? '13pt' : undefined}
           style={{
-            bottom: -40,
+            bottom: isCard ? -24 : -40,
           }}
           width={width}
         >
@@ -91,8 +94,10 @@ const Labels = React.memo(function Labels({ color, width }) {
         <CenteredLabel
           color={colors.alpha(color, 0.8)}
           position={positionMax}
+          fontSize={isCard ? '13pt' : undefined}
           style={{
             top: -20,
+            left: isCard ? 0 : 40,
           }}
           width={width}
         >
@@ -101,6 +106,6 @@ const Labels = React.memo(function Labels({ color, width }) {
       ) : null}
     </>
   );
-});
+};
 
-export default Labels;
+export default React.memo(Labels);

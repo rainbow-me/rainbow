@@ -400,6 +400,15 @@ const findAssetsToWatch = async (
   dispatch: Dispatch<FallbackExplorerSetLatestTxBlockNumberAction>,
   coingeckoIds: AdditionalAssetsDataState['coingeckoIds']
 ) => {
+  const COINGECKO_ETH = {
+    asset: {
+      asset_code: ETH_ADDRESS,
+      coingecko_id: ETH_COINGECKO_ID,
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+    },
+  };
   // 1 - Discover the list of tokens for the address
   const tokensInWallet = await discoverTokens(
     coingeckoIds,
@@ -407,22 +416,11 @@ const findAssetsToWatch = async (
     latestTxBlockNumber,
     dispatch
   );
-  if (latestTxBlockNumber && tokensInWallet.length === 0) {
-    return [];
+  if (tokensInWallet.length === 0) {
+    return [COINGECKO_ETH];
   }
 
-  const tokens = [
-    ...tokensInWallet,
-    {
-      asset: {
-        asset_code: ETH_ADDRESS,
-        coingecko_id: ETH_COINGECKO_ID,
-        decimals: 18,
-        name: 'Ethereum',
-        symbol: 'ETH',
-      },
-    },
-  ];
+  const tokens = [...tokensInWallet, COINGECKO_ETH];
   return keyBy(tokens, 'asset.asset_code');
 };
 
