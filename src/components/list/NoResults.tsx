@@ -5,12 +5,18 @@ import { Inset, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { useAssetsInWallet } from '@/hooks';
 
+export enum NoResultsType {
+  discover,
+  send,
+  swap,
+}
+
 export const NoResults = ({
   onL2,
   type,
 }: {
   onL2?: boolean;
-  type: 'discover' | 'send' | 'swap';
+  type: NoResultsType;
 }) => {
   const { colors } = useTheme();
   const assets = useAssetsInWallet();
@@ -19,10 +25,10 @@ export const NoResults = ({
   let description;
 
   switch (type) {
-    case 'discover':
+    case NoResultsType.discover:
       title = lang.t('exchange.no_results.nothing_here');
       break;
-    case 'swap':
+    case NoResultsType.swap:
       title = lang.t('exchange.no_results.nothing_found');
       if (assets.length) {
         description = onL2
@@ -34,7 +40,7 @@ export const NoResults = ({
         });
       }
       break;
-    case 'send':
+    case NoResultsType.send:
       title = lang.t('exchange.no_results.nothing_to_send');
       description = lang.t('exchange.no_results.description_no_assets', {
         action: type,

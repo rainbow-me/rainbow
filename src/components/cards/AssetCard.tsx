@@ -141,7 +141,6 @@ export const AssetCard = () => {
 
   return (
     <GenericCard
-      disabled={!loadedChart}
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
       type="stretch"
       testID={`buy-asset-card-${assetWithPrice?.symbol}`}

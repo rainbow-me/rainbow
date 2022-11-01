@@ -12,7 +12,7 @@ import lang from 'i18n-js';
 export const LearnCardHeight = 184;
 
 interface LearnCardProps {
-  cardDetails?: LearnCardDetails;
+  cardDetails: LearnCardDetails;
   type: 'square' | 'stretch';
 }
 

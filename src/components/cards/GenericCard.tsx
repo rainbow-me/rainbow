@@ -14,7 +14,6 @@ interface GenericCardProps {
   type: 'square' | 'stretch';
   gradient?: string[];
   children: React.ReactNode;
-  disabled?: boolean;
   onPress?: () => void;
   color?: string;
   testID?: string;
@@ -22,7 +21,6 @@ interface GenericCardProps {
 
 export const GenericCard = ({
   children,
-  disabled = false,
   type,
   gradient = ['transparent', 'transparent'],
   onPress,
@@ -33,7 +31,6 @@ export const GenericCard = ({
     condition={!!onPress}
     wrap={(children: React.ReactNode) => (
       <ButtonPressAnimation
-        disabled={disabled}
         onPress={onPress}
         scaleTo={0.96}
         overflowMargin={50}

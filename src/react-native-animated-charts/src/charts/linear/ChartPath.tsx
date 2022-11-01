@@ -31,6 +31,7 @@ import {
 import { useChartData } from '../../helpers/useChartData';
 
 export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
+const FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER = 3;
 
 function least(length: number, compare: (value: number) => number) {
   'worklet';
@@ -381,7 +382,11 @@ const ChartPathInner = React.memo(
         <Animated.View>
           <Svg
             style={{
-              height: height + (isCard ? 3 : FIX_CLIPPED_PATH_MAGIC_NUMBER),
+              height:
+                height +
+                (isCard
+                  ? FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER
+                  : FIX_CLIPPED_PATH_MAGIC_NUMBER),
               width,
             }}
             viewBox={`0 0 ${width} ${height}`}

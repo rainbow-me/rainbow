@@ -30,40 +30,44 @@ export const TintButton = ({
   const { color, mode } = useAccentColor();
   const isDarkMode = mode === 'darkTinted' || mode === 'dark';
 
-  return loaded ? (
-    <ConditionalWrap
-      condition={isDarkMode}
-      wrap={(children: React.ReactNode) => (
-        <AccentColorProvider color={colors.alpha(color, 0.1)}>
-          {children}
-        </AccentColorProvider>
-      )}
-    >
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.92} testID={testID}>
-        <Box
-          background="accent"
-          borderRadius={99}
-          height={{ custom: height }}
-          width={width ? { custom: width } : 'full'}
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Text
-            color={isDarkMode ? { custom: color } : 'label'}
-            containsEmoji
-            size="15pt"
-            weight="bold"
-          >
+  if (loaded) {
+    return (
+      <ConditionalWrap
+        condition={isDarkMode}
+        wrap={(children: React.ReactNode) => (
+          <AccentColorProvider color={colors.alpha(color, 0.1)}>
             {children}
-          </Text>
-        </Box>
-      </ButtonPressAnimation>
-    </ConditionalWrap>
-  ) : (
-    <Box height={{ custom: height }}>
-      <Skeleton>
-        <FakeText height={height} />
-      </Skeleton>
-    </Box>
-  );
+          </AccentColorProvider>
+        )}
+      >
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.92} testID={testID}>
+          <Box
+            background="accent"
+            borderRadius={99}
+            height={{ custom: height }}
+            width={width ? { custom: width } : 'full'}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text
+              color={isDarkMode ? { custom: color } : 'label'}
+              containsEmoji
+              size="15pt"
+              weight="bold"
+            >
+              {children}
+            </Text>
+          </Box>
+        </ButtonPressAnimation>
+      </ConditionalWrap>
+    );
+  } else {
+    return (
+      <Box height={{ custom: height }}>
+        <Skeleton>
+          <FakeText height={height} />
+        </Skeleton>
+      </Box>
+    );
+  }
 };

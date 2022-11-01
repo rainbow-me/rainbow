@@ -85,6 +85,7 @@ import {
 import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
 import { NoResults } from '@/components/list';
+import { NoResultsType } from '@/components/list/NoResults';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -954,12 +955,10 @@ export default function SendSheet(props) {
   return (
     <Container testID="send-sheet">
       <SheetContainer>
-        <View onLayout={event => console.log(event.nativeEvent.layout.height)}>
-          <SheetHandleFixedToTop />
-          {isTinyPhone ? null : (
-            <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>
-          )}
-        </View>
+        <SheetHandleFixedToTop />
+        {isTinyPhone ? null : (
+          <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>
+        )}
         {!(showAssetList && !sortedAssets.length) && (
           <SendHeader
             contacts={contacts}
@@ -998,7 +997,7 @@ export default function SendSheet(props) {
           />
         )}
         {showAssetList &&
-          (sortedAssets.length ? (
+          (sortedAssets.length || sendableUniqueTokens.length ? (
             <SendAssetList
               hiddenCoins={hiddenCoinsObj}
               nativeCurrency={nativeCurrency}
@@ -1018,7 +1017,7 @@ export default function SendSheet(props) {
               position="absolute"
               justifyContent="center"
             >
-              <NoResults type="send" />
+              <NoResults type={NoResultsType.send} />
             </Box>
           ))}
         {showAssetForm && (
