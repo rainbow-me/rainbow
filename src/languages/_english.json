@@ -269,6 +269,16 @@
       "watch_this_wallet": "Watch this Wallet",
       "hidden": "Hidden"
     },
+    "cards": {
+      "learn": {
+        "learn": "LEARN"
+      },
+      "receive": {
+        "receive_assets": "Receive assets",
+        "copy_address": "Copy Address",
+        "description": "You can also long press your\naddress above to copy it."
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },
