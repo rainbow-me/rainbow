@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import Logger from '@/utils/logger';
 import { trackChangedNotificationSettings } from './analytics';
-import { Alert } from 'react-native';
 
 export const NotificationTopic = {
   SENT: 'sent',
@@ -374,6 +373,7 @@ export const useWalletGroupNotificationSettings = () => {
         [type]: enabled,
       };
       const newSettings = { ...existingGroupSettings, ...options };
+      console.log(JSON.stringify(newSettings, null, 2));
       const newOwnerEnabled = newSettings[NotificationRelationship.OWNER];
       const newWatcherEnabled = newSettings[NotificationRelationship.WATCHER];
 

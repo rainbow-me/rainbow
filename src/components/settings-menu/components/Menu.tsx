@@ -1,14 +1,13 @@
 import React from 'react';
-import { Box, Cover, Separator, Stack, Text } from '@/design-system';
+import { Box, Separator, Stack, Text } from '@/design-system';
 
 interface MenuProps {
   children: React.ReactNode;
   header?: string;
   description?: string;
-  loading?: boolean;
 }
 
-const Menu = ({ children, description, header, loading }: MenuProps) => {
+const Menu = ({ children, description, header }: MenuProps) => {
   return (
     <>
       {!!header && (
@@ -31,22 +30,6 @@ const Menu = ({ children, description, header, loading }: MenuProps) => {
         <Stack separator={<Separator color="divider60 (Deprecated)" />}>
           {children}
         </Stack>
-        {!!loading && (
-          <Cover>
-            <Box
-              height="full"
-              width="full"
-              alignItems="center"
-              justifyContent="center"
-              background="fillSecondary"
-              borderRadius={18}
-            >
-              <Text color="purple" size="12px / 14px (Deprecated)">
-                Loading...
-              </Text>
-            </Box>
-          </Cover>
-        )}
       </Box>
       {!!description && (
         <Box paddingHorizontal={{ custom: 16 }} paddingTop={{ custom: 17 }}>

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Linking, Switch } from 'react-native';
+import { ActivityIndicator, Linking, Switch } from 'react-native';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import Menu from './components/Menu';
@@ -30,13 +30,15 @@ import {
 import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { useFocusEffect } from '@react-navigation/native';
+import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
 
 type WalletRowProps = {
+  ens: string;
   groupOff: boolean;
   isTestnet: boolean;
-  wallet: RainbowAccount;
-  ens: string;
+  loading?: boolean;
   notificationSettings: WalletNotificationSettings[];
+  wallet: RainbowAccount;
 };
 
 type WalletRowLabelProps = {
@@ -94,11 +96,12 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
 };
 
 const WalletRow = ({
-  wallet,
+  ens,
   groupOff,
   isTestnet,
+  loading,
   notificationSettings,
-  ens,
+  wallet,
 }: WalletRowProps) => {
   const { navigate } = useNavigation();
   const notificationSetting = notificationSettings?.find(
@@ -136,7 +139,7 @@ const WalletRow = ({
 
   return (
     <MenuItem
-      disabled={isTestnet}
+      disabled={isTestnet || loading}
       key={wallet.address}
       hasRightArrow={!isTestnet}
       labelComponent={
@@ -183,17 +186,17 @@ const NotificationsSection = () => {
   const { wallets, walletNames } = useWallets();
 
   const {
-    ownerEnabled: centralOwnedStatus,
+    ownerEnabled: storedOwnerEnabled,
     updateGroupSettings,
-    watcherEnabled: centralWatchedStatus,
+    watcherEnabled: storedWatcherEnabled,
   } = useWalletGroupNotificationSettings();
   // local state controls the switch UI for better UX
   const [ownedState, setOwnedState] = useState({
-    status: centralOwnedStatus,
+    status: storedOwnerEnabled,
     loading: false,
   });
   const [watchedState, setWatchedState] = useState({
-    status: centralWatchedStatus,
+    status: storedWatcherEnabled,
     loading: false,
   });
   const { notificationSettings } = useAllNotificationSettingsFromStorage();
@@ -224,9 +227,9 @@ const NotificationsSection = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setOwnedState({ loading: false, status: centralOwnedStatus });
-      setWatchedState({ loading: false, status: centralWatchedStatus });
-    }, [])
+      setOwnedState({ loading: false, status: storedOwnerEnabled });
+      setWatchedState({ loading: false, status: storedWatcherEnabled });
+    }, [storedOwnerEnabled, storedWatcherEnabled])
   );
 
   const noOwnedWallets = !ownedWallets.length;
@@ -237,31 +240,31 @@ const NotificationsSection = () => {
 
   const toggleAllOwnedNotifications = useCallback(() => {
     setOwnedState(prev => ({ status: !prev.status, loading: true }));
-    updateGroupSettings(NotificationRelationship.OWNER, !centralOwnedStatus)
+    updateGroupSettings(NotificationRelationship.OWNER, !storedOwnerEnabled)
       .then(() => {
         setOwnedState(prev => ({ ...prev, loading: false }));
+        updateSettingsForWallets(NotificationRelationship.OWNER, {
+          enabled: !storedOwnerEnabled,
+        });
       })
       .catch(() => {
         setOwnedState(prev => ({ status: !prev.status, loading: false }));
       });
-    updateSettingsForWallets(NotificationRelationship.OWNER, {
-      enabled: !centralOwnedStatus,
-    });
-  }, [centralOwnedStatus, updateGroupSettings]);
+  }, [storedOwnerEnabled, updateGroupSettings]);
 
   const toggleAllWatchedNotifications = useCallback(() => {
     setWatchedState(prev => ({ status: !prev.status, loading: true }));
-    updateGroupSettings(NotificationRelationship.WATCHER, !centralWatchedStatus)
+    updateGroupSettings(NotificationRelationship.WATCHER, !storedWatcherEnabled)
       .then(() => {
         setWatchedState(prev => ({ ...prev, loading: false }));
+        updateSettingsForWallets(NotificationRelationship.WATCHER, {
+          enabled: !storedWatcherEnabled,
+        });
       })
       .catch(() => {
         setWatchedState(prev => ({ status: !prev.status, loading: false }));
       });
-    updateSettingsForWallets(NotificationRelationship.WATCHER, {
-      enabled: !centralWatchedStatus,
-    });
-  }, [updateGroupSettings, centralWatchedStatus]);
+  }, [updateGroupSettings, storedWatcherEnabled]);
 
   const openSystemSettings = Linking.openSettings;
   const openNetworkSettings = useCallback(
@@ -316,7 +319,7 @@ const NotificationsSection = () => {
   return (
     <Box>
       <MenuContainer
-        // requird key to force re-render when permission status changes
+        // required key to force re-render when permission status changes
         // while the app is in the background
         key={permissionStatus}
       >
@@ -391,7 +394,6 @@ const NotificationsSection = () => {
         ) : (
           <>
             <Menu
-              loading={ownedState.loading}
               description={
                 noOwnedWallets
                   ? lang.t('settings.notifications_section.no_owned_wallets')
@@ -401,11 +403,16 @@ const NotificationsSection = () => {
               <MenuItem
                 disabled
                 rightComponent={
-                  <Switch
-                    disabled={noOwnedWallets || isTestnet || ownedState.loading}
-                    onValueChange={toggleAllOwnedNotifications}
-                    value={ownedState.status}
-                  />
+                  <>
+                    {ownedState.loading && <NotificationLoadingIndicator />}
+                    <Switch
+                      disabled={
+                        noOwnedWallets || isTestnet || ownedState.loading
+                      }
+                      onValueChange={toggleAllOwnedNotifications}
+                      value={ownedState.status}
+                    />
+                  </>
                 }
                 size={52}
                 titleComponent={
@@ -417,17 +424,17 @@ const NotificationsSection = () => {
               />
               {ownedWallets.map(wallet => (
                 <WalletRow
-                  key={wallet.address}
-                  wallet={wallet}
-                  groupOff={!centralOwnedStatus}
-                  isTestnet={isTestnet}
                   ens={walletNames[wallet.address]}
+                  groupOff={!storedOwnerEnabled}
+                  isTestnet={isTestnet}
+                  key={wallet.address}
+                  loading={ownedState.loading}
                   notificationSettings={notificationSettings}
+                  wallet={wallet}
                 />
               ))}
             </Menu>
             <Menu
-              loading={watchedState.loading}
               description={
                 noWatchedWallets
                   ? lang.t('settings.notifications_section.no_watched_wallets')
@@ -437,13 +444,16 @@ const NotificationsSection = () => {
               <MenuItem
                 disabled
                 rightComponent={
-                  <Switch
-                    disabled={
-                      noWatchedWallets || isTestnet || watchedState.loading
-                    }
-                    onValueChange={toggleAllWatchedNotifications}
-                    value={watchedState.status}
-                  />
+                  <>
+                    {watchedState.loading && <NotificationLoadingIndicator />}
+                    <Switch
+                      disabled={
+                        noWatchedWallets || isTestnet || watchedState.loading
+                      }
+                      onValueChange={toggleAllWatchedNotifications}
+                      value={watchedState.status}
+                    />
+                  </>
                 }
                 size={52}
                 titleComponent={
@@ -457,12 +467,13 @@ const NotificationsSection = () => {
               />
               {watchedWallets.map(wallet => (
                 <WalletRow
-                  key={wallet.address}
-                  wallet={wallet}
-                  groupOff={!centralWatchedStatus}
-                  isTestnet={isTestnet}
                   ens={walletNames[wallet.address]}
+                  groupOff={!storedWatcherEnabled}
+                  isTestnet={isTestnet}
+                  key={wallet.address}
+                  loading={watchedState.loading}
                   notificationSettings={notificationSettings}
+                  wallet={wallet}
                 />
               ))}
             </Menu>
