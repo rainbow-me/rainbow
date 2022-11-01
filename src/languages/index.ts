@@ -71,7 +71,6 @@ export function t(keypath: string) {
  *
  * Alternative standard usage:
  *   `i18n.t('account.hide')`
- * `i18n-js`
  */
 export const l = simpleObjectProxy<Translation['translation']>(
   english['translation']
