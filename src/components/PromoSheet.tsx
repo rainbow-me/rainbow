@@ -21,6 +21,7 @@ import {
 import { useDimensions } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useTheme } from '@/theme';
+import { IS_IOS, IS_ANDROID } from '@/env';
 
 const MIN_HEIGHT = 740;
 
@@ -31,7 +32,7 @@ type SheetActionButtonProps = {
   color?: string;
 };
 
-interface PromoSheetProps {
+type PromoSheetProps = {
   headerImage: StaticImageData;
   headerImageAspectRatio: number;
   backgroundImage?: StaticImageData;
@@ -49,7 +50,7 @@ interface PromoSheetProps {
     description: string;
     gradient: string[];
   }[];
-}
+};
 
 export function PromoSheet({
   headerImage,
@@ -102,7 +103,7 @@ export function PromoSheet({
   return (
     // @ts-ignore
     <SlackSheet
-      additionalTopPadding={android ? StatusBar.currentHeight : false}
+      additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
       contentHeight={contentHeight}
       height="100%"
       hideHandle
@@ -132,7 +133,7 @@ export function PromoSheet({
                         height={{
                           custom: deviceWidth / headerImageAspectRatio,
                         }}
-                        {...(isSmallPhone && { marginTop: { custom: -70 } })}
+                        marginTop={{ custom: isSmallPhone ? -70 : 0 }}
                         source={headerImage}
                         width="full"
                       >
@@ -161,9 +162,7 @@ export function PromoSheet({
                             <MaskedView
                               maskElement={
                                 <Box
-                                  {...(android && {
-                                    paddingTop: '6px',
-                                  })}
+                                  paddingTop={IS_ANDROID ? '6px' : undefined}
                                 >
                                   <Text
                                     align="center"
@@ -210,7 +209,7 @@ export function PromoSheet({
               </Row>
               <Row height="content">
                 <Inset
-                  bottom={isSmallPhone && ios ? '24px' : '42px (Deprecated)'}
+                  bottom={isSmallPhone && IS_IOS ? '24px' : '42px (Deprecated)'}
                   horizontal="19px (Deprecated)"
                 >
                   <Stack space="12px">
