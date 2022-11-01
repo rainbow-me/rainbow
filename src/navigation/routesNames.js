@@ -33,6 +33,7 @@ const Routes = {
   PAIR_HARDWARE_WALLET_SEARCH_SHEET: 'PairHardwareWalletSearchSheet',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
   IMPORT_SEED_PHRASE_SHEET_NAVIGATOR: 'ImportSeedPhraseSheetNavigator',
+  LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',

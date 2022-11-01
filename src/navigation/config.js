@@ -188,6 +188,18 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
+export const learnWebViewScreenConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: false,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const swapsPromoSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
