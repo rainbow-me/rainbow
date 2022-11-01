@@ -57,7 +57,7 @@ export const GenericCard = ({
               }
             : undefined
         }
-        borderRadius={24}
+        borderRadius={20}
         style={{ flex: IS_IOS ? 0 : undefined }}
         shadow={color ? '18px accent' : '18px'}
         padding="20px"

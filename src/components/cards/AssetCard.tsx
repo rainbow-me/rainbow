@@ -191,13 +191,18 @@ export const AssetCard = () => {
               ) : (
                 <Inline alignVertical="bottom">
                   <Text
+                    size="13pt"
+                    color={{ custom: priceChangeColor }}
+                    weight="heavy"
+                  >
+                    {isNegativePriceChange ? '􀄩' : '􀄨'}
+                  </Text>
+                  <Text
                     size="17pt"
                     color={{ custom: priceChangeColor }}
                     weight="bold"
                   >
-                    {`${
-                      isNegativePriceChange ? '􀄩' : '􀄨'
-                    }${priceChangeDisplay} `}
+                    {`${priceChangeDisplay} `}
                   </Text>
                   <Text
                     size="13pt"
