@@ -10,7 +10,7 @@ import PulseIndex from './PulseIndexSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Columns, Inset, Stack } from '@/design-system';
+import { Columns, Inline, Inset, Stack } from '@/design-system';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
@@ -37,6 +37,10 @@ export default function DiscoverHome() {
                 </Columns>
                 <ENSCreateProfileCard />
                 <LearnCard cardDetails={learnCards[0]} type="stretch" />
+                <Inline space="20px">
+                  <LearnCard cardDetails={learnCards[1]} type="square" />
+                  <LearnCard cardDetails={learnCards[2]} type="square" />
+                </Inline>
                 <DPICard />
               </Stack>
             </Inset>

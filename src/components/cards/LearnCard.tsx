@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
 
-export const LearnCardHeight = 184;
+export const LEARN_CARD_HEIGHT = 184;
 
 interface LearnCardProps {
   cardDetails: LearnCardDetails;
@@ -33,7 +33,7 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
       card: key,
       category,
       url,
-      cardType: type,
+      displayType: type,
     });
   }, [category, key, navigate, type, url]);
 

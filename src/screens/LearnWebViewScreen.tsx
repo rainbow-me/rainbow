@@ -15,11 +15,11 @@ import { IS_ANDROID } from '@/env';
 import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 
-const HeaderHeight = 60;
+const HEADER_HEIGHT = 60;
 
 export default function LearnWebViewScreen() {
   const {
-    params: { cardType, category, title, url },
+    params: { card, displayType, category, url },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
   const { isDarkMode } = useTheme();
@@ -32,13 +32,13 @@ export default function LearnWebViewScreen() {
       analytics.track('Learn card opened', {
         durationSeconds: (Date.now() - startTime.current) / 1000,
         url,
-        title,
+        card,
         category,
-        cardType,
+        displayType,
       });
       return;
     },
-    [cardType, category, title, url]
+    [card, category, displayType, url]
   );
 
   const onPressShare = useCallback(async () => {
@@ -46,16 +46,16 @@ export default function LearnWebViewScreen() {
     analytics.track('Learn card web view share modal opened', {
       url,
       category,
-      title,
-      cardType,
+      card,
+      displayType,
     });
-  }, [cardType, category, title, url]);
+  }, [card, category, displayType, url]);
 
   const renderHeader = () => (
     <Box
       top="0px"
       background="surfacePrimary"
-      height={{ custom: HeaderHeight }}
+      height={{ custom: HEADER_HEIGHT }}
       width="full"
       justifyContent="center"
       alignItems="center"
@@ -75,7 +75,7 @@ export default function LearnWebViewScreen() {
 
   const contentHeight =
     deviceHeight -
-    HeaderHeight -
+    HEADER_HEIGHT -
     (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
@@ -101,6 +101,7 @@ export default function LearnWebViewScreen() {
             background="surfacePrimary"
             width="full"
             height={{ custom: contentHeight }}
+            paddingBottom={{ custom: HEADER_HEIGHT }}
             alignItems="center"
             justifyContent="center"
           >

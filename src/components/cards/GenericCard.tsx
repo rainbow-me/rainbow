@@ -8,7 +8,7 @@ import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 
 // (device width - (horizontal inset * 2 + padding between cards)) / # of cards in row
-export const SquareCardHeight = (deviceUtils.dimensions.width - 60) / 2;
+export const SQUARE_CARD_HEIGHT = (deviceUtils.dimensions.width - 60) / 2;
 
 type CardType = 'square' | 'stretch';
 
@@ -48,11 +48,11 @@ export const GenericCard = ({
         colors={gradient}
         end={{ x: 1, y: 0 }}
         start={{ x: 0, y: 0.5 }}
-        width={type === 'square' ? { custom: SquareCardHeight } : 'full'}
+        width={type === 'square' ? { custom: SQUARE_CARD_HEIGHT } : 'full'}
         height={
           type === 'square'
             ? {
-                custom: SquareCardHeight,
+                custom: SQUARE_CARD_HEIGHT,
               }
             : undefined
         }
