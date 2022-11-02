@@ -1193,7 +1193,10 @@
         "subheader": "REINTRODUCING"
       },
       "notifications_launch": {
-        "primary_button": "Configure",
+        "primary_button": {
+          "permissions_enabled": "Configure",
+          "permissions_not_enabled": "Enable Permissions"
+        },
         "secondary_button": "Not Now",
         "info_row_1": {
           "title": "For all your wallet activity",
