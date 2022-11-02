@@ -1,12 +1,20 @@
 import { globalColors } from '@/design-system';
 
-type LearnCategory =
-  | 'Essentials'
-  | 'Staying Safe'
-  | 'How to use Rainbow'
-  | "Beginner's Guides"
-  | 'Blockchains and Fees'
-  | 'What is Web3?';
+enum LearnCategory {
+  Essentials = 'essentials',
+  Safety = 'safety',
+  Rainbow = 'rainbow',
+  BeginnersGuides = 'beginners_guides',
+  Blockchains = 'blockchains',
+  Web3 = 'web3',
+}
+
+type LearnCardKey =
+  | 'get_started'
+  | 'backups'
+  | 'protect_wallet'
+  | 'connect_to_dapp'
+  | 'avoid_scams';
 
 type CardColor =
   | 'pink'
@@ -20,9 +28,8 @@ type CardColor =
 export interface LearnCardDetails {
   url: string;
   category: LearnCategory;
-  title: string;
   emoji: string;
-  description: string;
+  key: LearnCardKey;
 }
 
 export interface CardColorway {
@@ -34,7 +41,7 @@ export interface CardColorway {
   secondaryTextColor: string;
 }
 
-export const cardColorways: (
+export const getCardColorways: (
   isDarkMode: boolean
 ) => {
   [key in CardColor]: CardColorway;
@@ -113,66 +120,62 @@ export const cardColorways: (
   };
 };
 
-export const learnCategoryColors: (
+export const getLearnCardColorway: (
+  category: LearnCategory,
   isDarkMode: boolean
-) => {
-  [key in LearnCategory]: CardColorway;
-} = (isDarkMode: boolean) => {
-  const themedCardColorways = cardColorways(isDarkMode);
-  return {
-    'Essentials': themedCardColorways.purple,
-    'Staying Safe': themedCardColorways.pink,
-    'How to use Rainbow': themedCardColorways.blue,
-    // 'How to use Rainbow 2': cardColorways.darkBlue,
-    "Beginner's Guides": themedCardColorways.yellow,
-    'What is Web3?': themedCardColorways.green,
-    'Blockchains and Fees': themedCardColorways.darkGreen,
-  };
+) => CardColorway = (category: LearnCategory, isDarkMode: boolean) => {
+  const colorways = getCardColorways(isDarkMode);
+  switch (category) {
+    case LearnCategory.Essentials:
+      return colorways.purple;
+    case LearnCategory.Safety:
+      return colorways.pink;
+    case LearnCategory.Rainbow:
+      return colorways.blue;
+    case LearnCategory.BeginnersGuides:
+      return colorways.yellow;
+    case LearnCategory.Blockchains:
+      return colorways.darkGreen;
+    case LearnCategory.Web3:
+      return colorways.green;
+    default:
+      return colorways.darkBlue;
+  }
 };
 
 const getStartedCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/get-started-with-rainbow',
-  category: 'Essentials',
-  title: 'Get Started with Rainbow',
+  category: LearnCategory.Essentials,
+  key: 'get_started',
   emoji: '🌈',
-  description:
-    "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey.",
 };
 
 const backupsCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/the-importance-of-backups',
-  category: 'Essentials',
-  title: 'The Importance of Backups',
+  category: LearnCategory.Essentials,
+  key: 'backups',
   emoji: '☮️',
-  description:
-    'Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we’ll chat about why it’s important to backup your wallet and the different methods that you can backup with.',
 };
 
 const protectWalletCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/protect-your-wallet',
-  category: 'Staying Safe',
-  title: 'Protect Your Wallet',
+  category: LearnCategory.Safety,
+  key: 'protect_wallet',
   emoji: '🔒',
-  description:
-    'One of the best parts of having an Ethereum wallet like Rainbow is that you are in total control of your money. Unlike a bank account from Wells Fargo or a crypto exchange like Coinbase, we do not hold your assets on your behalf.',
 };
 
 const connectToDappCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/connect-to-a-website-or-app',
-  category: 'Essentials',
-  title: 'Connect to a Website or App',
+  category: LearnCategory.Essentials,
+  key: 'connect_to_dapp',
   emoji: '🔌',
-  description:
-    "Now that you have an Ethereum wallet, you can login to certain websites using it. Instead of creating new accounts and passwords for every website you interact with, you'll just connect your wallet instead.",
 };
 
 const avoidScamsCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/avoid-crypto-scams',
-  category: 'Staying Safe',
-  title: 'Avoid Crypto Scams',
+  category: LearnCategory.Safety,
+  key: 'avoid_scams',
   emoji: '🤬',
-  description:
-    "Here at Rainbow, one of our goals is to make exploring the new world of Ethereum fun, friendly, and safe. You know what's not any of those things? Scams. They're mean, and no one likes them. We want to help you avoid them, so we wrote this brief guide to help you do exactly that!",
 };
 
 export const learnCards: LearnCardDetails[] = [

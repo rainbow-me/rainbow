@@ -1,13 +1,12 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
-import { useTheme } from '@/theme';
-import React, { useCallback, useReducer } from 'react';
+import React, { useCallback } from 'react';
 import { GenericCard } from './GenericCard';
-import { LearnCardDetails, learnCards, learnCategoryColors } from './constants';
+import { getLearnCardColorway, LearnCardDetails } from './constants';
 import { IconOrb } from './reusables/IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { delay } from '@/helpers/utilities';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
+import { useTheme } from '@/theme';
 
 export const LearnCardHeight = 184;
 
@@ -19,30 +18,25 @@ interface LearnCardProps {
 export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
-  const [index, incrementIndex] = useReducer(
-    x => (x === learnCards.length - 1 ? 0 : x + 1),
-    0
-  );
-  const themedLearnCategoryColors = learnCategoryColors(isDarkMode);
-  const { category, title, emoji, url, description } =
-    cardDetails ?? learnCards[index];
+  const { category, emoji, url, key } = cardDetails;
   const {
     gradient,
     shadowColor,
     orbColorLight,
     primaryTextColor,
     secondaryTextColor,
-  } = themedLearnCategoryColors[category];
+  } = getLearnCardColorway(category, isDarkMode);
 
   const onPress = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
-      title,
+      card: key,
       category,
       url,
       cardType: type,
     });
-    !cardDetails && delay(300).then(incrementIndex);
-  }, [cardDetails, category, navigate, title, type, url]);
+  }, [category, key, navigate, type, url]);
+
+  const translations = i18n.l.cards.learn;
 
   return (
     <GenericCard
@@ -59,7 +53,7 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
               weight="heavy"
               color={{ custom: primaryTextColor }}
             >
-              {`􀫸 ${lang.t('cards.learn.learn')}`}
+              {`􀫸 ${i18n.t(translations.learn).toUpperCase()}`}
             </Text>
             <IconOrb color={orbColorLight} icon={emoji} />
           </Inline>
@@ -69,14 +63,14 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
               size="13pt"
               weight="bold"
             >
-              {category}
+              {i18n.t(translations.categories[category])}
             </Text>
             <Text
               color={{ custom: primaryTextColor }}
               size="17pt"
               weight="heavy"
             >
-              {title}
+              {i18n.t(translations.cards[key].title)}
             </Text>
           </Stack>
         </Box>
@@ -91,14 +85,14 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
                     weight="bold"
                     color={{ custom: secondaryTextColor }}
                   >
-                    {category}
+                    {i18n.t(translations.categories[category])}
                   </Text>
                   <Text
                     size="22pt"
                     weight="heavy"
                     color={{ custom: primaryTextColor }}
                   >
-                    {title}
+                    {i18n.t(translations.cards[key].title)}
                   </Text>
                 </Stack>
               </Column>
@@ -113,7 +107,7 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
             weight="semibold"
             numberOfLines={3}
           >
-            {description}
+            {i18n.t(translations.cards[key].description)}
           </Text>
         </Stack>
       )}

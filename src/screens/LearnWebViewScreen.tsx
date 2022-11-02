@@ -13,6 +13,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
 import { analytics } from '@/analytics';
+import * as i18n from '@/languages';
 
 const HeaderHeight = 60;
 
@@ -60,7 +61,7 @@ export default function LearnWebViewScreen() {
       alignItems="center"
     >
       <Text align="center" color="label" size="20pt" weight="heavy">
-        Learn
+        {i18n.t(i18n.l.cards.learn.learn)}
       </Text>
       <Box position="absolute" right={{ custom: 20 }}>
         <ButtonPressAnimation onPress={onPressShare}>

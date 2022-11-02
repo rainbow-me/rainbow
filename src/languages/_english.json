@@ -271,7 +271,37 @@
     },
     "cards": {
       "learn": {
-        "learn": "LEARN"
+        "learn": "Learn",
+        "cards": {
+          "get_started": {
+            "title": "Get Started with Rainbow",
+            "description": "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey."
+          },
+          "backups": {
+            "title": "The Importance of Backups",
+            "description": "Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we’ll chat about why it’s important to backup your wallet and the different methods that you can backup with."
+          },
+          "protect_wallet": {
+            "title": "Protect Your Wallet",
+            "description": "One of the best parts of having an Ethereum wallet like Rainbow is that you are in total control of your money. Unlike a bank account from Wells Fargo or a crypto exchange like Coinbase, we do not hold your assets on your behalf."
+          },
+          "connect_to_dapp": {
+            "title": "Connect to a Website or App",
+            "description": "Now that you have an Ethereum wallet, you can login to certain websites using it. Instead of creating new accounts and passwords for every website you interact with, you'll just connect your wallet instead."
+          },
+          "avoid_scams": {
+            "title": "Avoid Crypto Scams",
+            "description": "Here at Rainbow, one of our goals is to make exploring the new world of Ethereum fun, friendly, and safe. You know what's not any of those things? Scams. They're mean, and no one likes them. We want to help you avoid them, so we wrote this brief guide to help you do exactly that!"
+          }
+        },
+        "categories": {
+          "essentials": "Essentials",
+          "safety": "Staying Safe",
+          "rainbow": "How to use Rainbow",
+          "beginners_guides": "Beginner's Guides",
+          "blockchains": "Blockchains and Fees",
+          "web3": "What is Web3?"
+        }
       },
       "receive": {
         "receive_assets": "Receive assets",
