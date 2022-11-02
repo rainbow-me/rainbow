@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import * as perms from 'react-native-permissions';
 
 import useAppState from '@/hooks/useAppState';
@@ -37,7 +37,7 @@ export function NotificationsPromoSheetInner({
   const notificationsDenied = status === perms.RESULTS.DENIED;
   const notificationsBlocked = status === perms.RESULTS.BLOCKED;
 
-  const navigateToNotifications = useCallback(() => {
+  const navigateToNotifications = React.useCallback(() => {
     goBack();
     delay(300).then(() => {
       navigate(Routes.SETTINGS_SHEET);
@@ -49,7 +49,7 @@ export function NotificationsPromoSheetInner({
     });
   }, [goBack, navigate]);
 
-  const primaryButtonOnPress = useCallback(async () => {
+  const primaryButtonOnPress = React.useCallback(async () => {
     if (notificationsDenied) {
       logger.debug(
         `NotificationsPromoSheet: notifications permissions denied (could be default state)`
