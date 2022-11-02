@@ -31,6 +31,7 @@ import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { useFocusEffect } from '@react-navigation/native';
 import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
+import { showNotificationSubscriptionErrorAlert } from '@/components/settings-menu/notificationAlerts';
 
 type WalletRowProps = {
   ens: string;
@@ -248,6 +249,7 @@ const NotificationsSection = () => {
         });
       })
       .catch(() => {
+        showNotificationSubscriptionErrorAlert();
         setOwnedState(prev => ({ status: !prev.status, loading: false }));
       });
   }, [storedOwnerEnabled, updateGroupSettings]);
@@ -262,6 +264,7 @@ const NotificationsSection = () => {
         });
       })
       .catch(() => {
+        showNotificationSubscriptionErrorAlert();
         setWatchedState(prev => ({ status: !prev.status, loading: false }));
       });
   }, [updateGroupSettings, storedWatcherEnabled]);

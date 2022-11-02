@@ -1263,7 +1263,9 @@
         "unsupported_network": "Notifications are only available for Ethereum Mainnet transactions at this time.",
         "change_network": "Change your Network",
         "no_first_time_permissions": "Please allow Rainbow to send you notifications.",
-        "first_time_allow_notifications": "Allow Notifications"
+        "first_time_allow_notifications": "Allow Notifications",
+        "error_alert_title": "Subscription Failed",
+        "error_alert_content": "It likely happened because of poor network conditions or because you changed settings too often.\n\nPlease try again later when your connection is more stable."
       },
       "privacy": "Privacy",
       "privacy_section": {

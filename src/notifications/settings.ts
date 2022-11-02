@@ -437,6 +437,7 @@ export function toggleGroupNotifications(
   relationship: NotificationRelationshipType,
   enableNotifications: boolean
 ): Promise<void[][] | void[]> {
+  return Promise.reject();
   if (enableNotifications) {
     return Promise.all(
       // loop through all owned wallets, loop through their topics, subscribe to enabled topics
@@ -543,12 +544,7 @@ const subscribeWalletToSingleNotificationTopic = (
     .subscribeToTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
     .then(() =>
       trackChangedNotificationSettings(chainId, topic, type, 'subscribe')
-    )
-    .catch(() => {
-      Logger.log(
-        `Notifications: failed to subscribe ${type}:${address} to [ ${topic.toUpperCase()} ]`
-      );
-    });
+    );
 };
 
 const unsubscribeWalletFromSingleNotificationTopic = async (
@@ -566,10 +562,5 @@ const unsubscribeWalletFromSingleNotificationTopic = async (
     )
     .then(() => {
       trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
-    })
-    .catch(() => {
-      Logger.log(
-        `Notifications: failed to unsubscribe ${type}:${address} from [ ${topic.toUpperCase()} ]`
-      );
     });
 };

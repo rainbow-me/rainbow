@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Switch } from 'react-native';
+import { Alert, Switch } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -21,6 +21,7 @@ import {
   useWalletGroupNotificationSettings,
 } from '@/notifications/settings';
 import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
+import { showNotificationSubscriptionErrorAlert } from '@/components/settings-menu/notificationAlerts';
 
 type RouteParams = {
   WalletNotificationsSettings: {
@@ -109,6 +110,7 @@ const WalletNotificationsSettings = () => {
         setAllLoading(false);
       })
       .catch(() => {
+        showNotificationSubscriptionErrorAlert();
         setAllState(prev => ({ status: !prev.status, loading: false }));
       });
   }, [
@@ -139,6 +141,7 @@ const WalletNotificationsSettings = () => {
           });
         })
         .catch(() => {
+          showNotificationSubscriptionErrorAlert();
           toggleStateForTopic(topic);
         })
         .finally(() => {
